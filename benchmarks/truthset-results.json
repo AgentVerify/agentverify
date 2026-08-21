@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T11:44:32.223908+00:00",
-  "labels": 247,
-  "passed": 247,
+  "generated_at": "2026-08-21T12:13:12.782651+00:00",
+  "labels": 262,
+  "passed": 262,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 14,
@@ -29,17 +29,17 @@
       "recall": 1.0
     },
     "AV-EXEC002": {
-      "tp": 17,
+      "tp": 20,
       "fp": 0,
-      "tn": 8,
+      "tn": 11,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
     },
     "AV-FS001": {
-      "tp": 44,
+      "tp": 45,
       "fp": 0,
-      "tn": 39,
+      "tn": 41,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -61,9 +61,9 @@
       "recall": 1.0
     },
     "AV-NET001": {
-      "tp": 9,
+      "tp": 11,
       "fp": 0,
-      "tn": 10,
+      "tn": 14,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -2295,6 +2295,141 @@
     {
       "id": "exec-code-skyvern-evaluate-real",
       "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-registry-metagpt-function-local",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-registry-metagpt-class-local",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-registry-qwen-class-local",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-registry-metagpt-unlisted-method-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-registry-metagpt-dynamic-entrypoints-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-registry-qwen-helper-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-registry-fixed-local-alias-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-registry-fixed-class-format-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-qwen-crop-url-real",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-qwen-image-url-real",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-qwen-fixed-host-real-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-qwen-fixed-format-real-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "fs-registry-memory-open-local-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "fs-registry-fixed-path-local-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "fs-metagpt-editor-write-real",
+      "rule_id": "AV-FS001",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

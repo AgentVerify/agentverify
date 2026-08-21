@@ -140,9 +140,14 @@ def python_expression_names(node: ast.AST | None) -> set[str]:
     return {candidate.id for candidate in ast.walk(node) if isinstance(candidate, ast.Name)}
 
 
-def python_static_url_prefix(node: ast.AST | None) -> str:
+def python_static_url_prefix(
+    node: ast.AST | None, known_prefixes: dict[str, str] | None = None
+) -> str:
+    known_prefixes = known_prefixes or {}
     if isinstance(node, ast.Constant) and isinstance(node.value, str):
         return node.value
+    if isinstance(node, (ast.Name, ast.Attribute)):
+        return known_prefixes.get(dotted_name(node), "")
     if isinstance(node, ast.JoinedStr):
         prefix = []
         for value in node.values:
@@ -151,14 +156,24 @@ def python_static_url_prefix(node: ast.AST | None) -> str:
             prefix.append(value.value)
         return "".join(prefix)
     if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
-        return python_static_url_prefix(node.left)
+        return python_static_url_prefix(node.left, known_prefixes)
+    if (
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and node.func.attr == "format"
+    ):
+        return python_static_url_prefix(node.func.value, known_prefixes)
     return ""
 
 
-def python_http_origin_is_dynamic(node: ast.AST | None, dynamic_names: set[str]) -> bool:
+def python_http_origin_is_dynamic(
+    node: ast.AST | None,
+    dynamic_names: set[str],
+    known_prefixes: dict[str, str] | None = None,
+) -> bool:
     if not python_expression_names(node) & dynamic_names:
         return False
-    prefix = python_static_url_prefix(node)
+    prefix = python_static_url_prefix(node, known_prefixes)
     return re.match(r"^https?://[^/?#]+", prefix, re.IGNORECASE) is None
 
 
@@ -298,6 +313,14 @@ class PythonToolRegistration:
     resolution: str
     needs_approval: bool
     wrappers: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class PythonRegistryTool:
+    framework: str
+    name: str
+    registrar: str
+    entrypoints: tuple[str, ...] = ()
 
 
 @dataclass
@@ -1278,10 +1301,19 @@ def python_filesystem_path_name(
         node, path_constructors or set(), path_bindings or {}
     ):
         expression = path_write[2]
-    elif short_name == "open" and node.args:
+    elif call_name == "open" and node.args:
         expression = node.args[0]
-    elif short_name in {"write_text", "write_bytes", "unlink", "rmdir", "mkdir"} and isinstance(
-        node.func, ast.Attribute
+    elif isinstance(node.func, ast.Attribute) and (
+        (
+            short_name == "open"
+            and python_path_expression_proof(
+                node.func.value,
+                path_constructors or set(),
+                path_bindings or {},
+            )
+            is not None
+        )
+        or short_name in {"write_text", "write_bytes", "unlink", "rmdir", "mkdir"}
     ):
         expression = node.func.value
     if (
@@ -1682,6 +1714,9 @@ class PythonVisitor(ast.NodeVisitor):
         definition_symbol_ids: dict[int, str],
         registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
         registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
+        registry_function_tools: dict[int, PythonRegistryTool],
+        registry_class_tools: dict[int, PythonRegistryTool],
+        module_static_http_prefixes: dict[str, str],
         module_rebound_names: set[str],
         path_constructors: set[str],
         filesystem_api_aliases: dict[str, str],
@@ -1728,6 +1763,12 @@ class PythonVisitor(ast.NodeVisitor):
         self.definition_symbol_ids = definition_symbol_ids
         self.registry_class_exports = registry_class_exports
         self.registered_tool_functions = registered_tool_functions
+        self.registry_function_tools = registry_function_tools
+        self.registry_class_tools = registry_class_tools
+        self.active_registry_class_tools: list[tuple[PythonRegistryTool, str] | None] = []
+        self.module_static_http_prefixes = module_static_http_prefixes
+        self.class_static_http_prefixes: list[dict[str, str]] = []
+        self.static_http_prefixes = dict(module_static_http_prefixes)
         self.module_rebound_names = module_rebound_names
         self.path_constructors = path_constructors
         self.filesystem_api_aliases = filesystem_api_aliases
@@ -1917,10 +1958,15 @@ class PythonVisitor(ast.NodeVisitor):
     def visit_Assign(self, node: ast.Assign) -> None:
         if self.current_tool:
             dynamic_origin = python_http_origin_is_dynamic(
-                node.value, self.dynamic_http_origin_names
+                node.value,
+                self.dynamic_http_origin_names,
+                self.static_http_prefixes,
             )
             dynamic_tool_input = bool(
                 python_expression_names(node.value) & self.dynamic_tool_input_names
+            )
+            static_http_prefix = python_static_url_prefix(
+                node.value, self.static_http_prefixes
             )
             for target in node.targets:
                 if not isinstance(target, ast.Name):
@@ -1933,6 +1979,10 @@ class PythonVisitor(ast.NodeVisitor):
                     self.dynamic_tool_input_names.add(target.id)
                 else:
                     self.dynamic_tool_input_names.discard(target.id)
+                if static_http_prefix:
+                    self.static_http_prefixes[target.id] = static_http_prefix
+                else:
+                    self.static_http_prefixes.pop(target.id, None)
         if isinstance(node.value, ast.Call):
             constructor = dotted_name(node.value.func)
             if constructor in {
@@ -2039,10 +2089,22 @@ class PythonVisitor(ast.NodeVisitor):
         previous_allowlist_control_names = self.allowlist_control_names
         previous_http_client_names = self.http_client_names
         previous_approval_environment_flags = self.approval_environment_flags
+        previous_static_http_prefixes = self.static_http_prefixes
         self.allowlisted_names = set()
         self.allowlist_evidence = {}
         self.allowlist_control_names = {}
         self.http_client_names = set()
+        if self.function_depth == 0:
+            self.static_http_prefixes = {
+                **self.module_static_http_prefixes,
+                **(
+                    self.class_static_http_prefixes[-1]
+                    if self.class_static_http_prefixes
+                    else {}
+                ),
+            }
+        else:
+            self.static_http_prefixes = dict(self.static_http_prefixes)
         if self.function_depth == 0:
             self.approval_environment_flags = self.module_approval_environment_flags.copy()
         else:
@@ -2099,14 +2161,34 @@ class PythonVisitor(ast.NodeVisitor):
             if self.function_depth == 1 and not self.class_stack
             else None
         )
-        if (
+        registry_function = self.registry_function_tools.get(id(node))
+        direct_tool = bool(
             decorators & TOOL_DECORATORS
             or any(name.endswith(".tool") for name in decorators)
             or registration is not None
-        ):
+            or registry_function is not None
+        )
+        active_class_tool = (
+            self.active_registry_class_tools[-1]
+            if self.active_registry_class_tools
+            and self.function_depth == 1
+            and self.active_registry_class_tools[-1] is not None
+            and node.name in self.active_registry_class_tools[-1][0].entrypoints
+            else None
+        )
+        if direct_tool or active_class_tool is not None:
             qualified_name = ".".join([*self.class_stack, node.name])
+            tool_name = (
+                active_class_tool[0].name
+                if active_class_tool is not None
+                else registry_function.name
+                if registry_function is not None
+                else node.name
+            )
             tool_id = (
-                self.definition_symbol_ids.get(id(node))
+                active_class_tool[1]
+                if active_class_tool is not None
+                else self.definition_symbol_ids.get(id(node))
                 or self.local_symbol_ids.get(("tool", qualified_name))
                 or source_symbol("py", self.path, "tool", qualified_name)
             )
@@ -2123,6 +2205,15 @@ class PythonVisitor(ast.NodeVisitor):
                 "decorators": sorted(decorators),
                 "needs_approval": needs_approval,
             }
+            if registry_function:
+                attributes.update(
+                    {
+                        "registration": "registry-decorator",
+                        "registration_target": "function",
+                        "registrar": registry_function.registrar,
+                        "framework": registry_function.framework,
+                    }
+                )
             if registration:
                 attributes.update(
                     {
@@ -2140,15 +2231,16 @@ class PythonVisitor(ast.NodeVisitor):
                             "wrapper_summary": "metadata-preserving-forwarder",
                         }
                     )
-            self.ir.add_component(
-                Component(
-                    "tool",
-                    node.name,
-                    self.ev(node),
-                    attributes,
-                    tool_id,
+            if active_class_tool is None:
+                self.ir.add_component(
+                    Component(
+                        "tool",
+                        tool_name,
+                        self.ev(node),
+                        attributes,
+                        tool_id,
+                    )
                 )
-            )
             if needs_approval:
                 approval_evidence = registration.evidence if registration else self.ev(node)
                 self.ir.add_component(
@@ -2157,7 +2249,7 @@ class PythonVisitor(ast.NodeVisitor):
                 self.ir.add_relationship(
                     Relationship(
                         "tool",
-                        node.name,
+                        tool_name,
                         "governed-by",
                         "control",
                         "human-approval",
@@ -2169,7 +2261,7 @@ class PythonVisitor(ast.NodeVisitor):
             previous_tool_id = self.current_tool_id
             previous_dynamic_http_origin_names = self.dynamic_http_origin_names
             previous_dynamic_tool_input_names = self.dynamic_tool_input_names
-            self.current_tool = node.name
+            self.current_tool = tool_name
             self.current_tool_id = tool_id
             self.dynamic_http_origin_names = {
                 argument.arg
@@ -2208,10 +2300,38 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_path_bindings.pop()
         self.function_path_constructors.pop()
         self.approval_environment_flags = previous_approval_environment_flags
+        self.static_http_prefixes = previous_static_http_prefixes
 
     visit_AsyncFunctionDef = visit_FunctionDef
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        registry_tool = self.registry_class_tools.get(id(node))
+        active_registry_tool: tuple[PythonRegistryTool, str] | None = None
+        if registry_tool is not None:
+            tool_id = self.definition_symbol_ids.get(id(node)) or source_symbol(
+                "py", self.path, "tool", registry_tool.name
+            )
+            self.ir.add_component(
+                Component(
+                    "tool",
+                    registry_tool.name,
+                    self.ev(node),
+                    {
+                        "decorators": [registry_tool.registrar],
+                        "needs_approval": False,
+                        "registration": "registry-decorator",
+                        "registration_target": "class",
+                        "registrar": registry_tool.registrar,
+                        "framework": registry_tool.framework,
+                        "entrypoints": list(registry_tool.entrypoints),
+                        "entrypoint_resolution": (
+                            "literal" if registry_tool.entrypoints else "unresolved"
+                        ),
+                    },
+                    tool_id,
+                )
+            )
+            active_registry_tool = (registry_tool, tool_id)
         for decorator in node.decorator_list:
             self.visit(decorator)
         for base in node.bases:
@@ -2219,6 +2339,32 @@ class PythonVisitor(ast.NodeVisitor):
         for keyword in node.keywords:
             self.visit(keyword.value)
         self.class_stack.append(node.name)
+        self.active_registry_class_tools.append(active_registry_tool)
+        class_url_assignments: dict[str, list[ast.AST | None]] = defaultdict(list)
+        for method in node.body:
+            if not isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef)) or method.name != "__init__":
+                continue
+            for candidate in ast.walk(method):
+                if isinstance(candidate, ast.Assign):
+                    for target in candidate.targets:
+                        if dotted_name(target).startswith("self."):
+                            class_url_assignments[dotted_name(target)].append(candidate.value)
+                elif isinstance(candidate, ast.AnnAssign) and dotted_name(
+                    candidate.target
+                ).startswith("self."):
+                    class_url_assignments[dotted_name(candidate.target)].append(candidate.value)
+        self.class_static_http_prefixes.append(
+            {
+                name: prefix
+                for name, values in class_url_assignments.items()
+                if len(values) == 1
+                and (
+                    prefix := python_static_url_prefix(
+                        values[0], self.module_static_http_prefixes
+                    )
+                )
+            }
+        )
         fixed_bindings, fixed_accessors = self.fixed_class_tool_bindings(node)
         self.class_fixed_tool_bindings.append(fixed_bindings)
         self.class_fixed_tool_accessors.append(fixed_accessors)
@@ -2256,6 +2402,8 @@ class PythonVisitor(ast.NodeVisitor):
         self.class_registry_manager_bindings.pop()
         self.class_registry_method_summaries.pop()
         self.class_path_helper_summaries.pop()
+        self.class_static_http_prefixes.pop()
+        self.active_registry_class_tools.pop()
         self.class_stack.pop()
 
     def registry_manager_bindings(self, node: ast.ClassDef) -> dict[str, RegistryClassTarget]:
@@ -3454,6 +3602,10 @@ class PythonVisitor(ast.NodeVisitor):
                     "receiver_proof": receiver_proof,
                     "write_access": True,
                     "dynamic_path": not isinstance(path_expression, ast.Constant),
+                    "tool_input_path": bool(
+                        python_expression_names(path_expression)
+                        & self.dynamic_tool_input_names
+                    ),
                     "operation": filesystem_spec.operation,
                     "path_role": filesystem_spec.path_role,
                     "path_boundary_guard": boundary is not None,
@@ -3467,15 +3619,52 @@ class PythonVisitor(ast.NodeVisitor):
                 self.add_python_path_boundary_control(node, boundary)
             if prefix_check is not None:
                 self.add_python_path_prefix_control(node, prefix_check)
-        elif short_name in {"open", "write_text", "write_bytes", "unlink", "rmdir", "mkdir"}:
-            path_expression = node.args[0] if short_name == "open" and node.args else None
-            mode_expression = node.args[1] if short_name == "open" and len(node.args) > 1 else None
+        proven_path_open = (
+            short_name == "open"
+            and isinstance(node.func, ast.Attribute)
+            and python_path_expression_proof(
+                node.func.value,
+                self.path_constructors,
+                self.function_path_bindings[-1] if self.function_path_bindings else {},
+            )
+            is not None
+        )
+        if filesystem_function is None and path_method is None and (
+            call_name == "open"
+            or proven_path_open
+            or short_name in {
+                "write_text",
+                "write_bytes",
+                "unlink",
+                "rmdir",
+                "mkdir",
+            }
+        ):
+            path_expression = (
+                node.func.value
+                if proven_path_open and isinstance(node.func, ast.Attribute)
+                else node.args[0]
+                if call_name == "open" and node.args
+                else node.func.value
+                if isinstance(node.func, ast.Attribute)
+                else None
+            )
+            mode_expression = (
+                node.args[0]
+                if proven_path_open and node.args
+                else node.args[1]
+                if call_name == "open" and len(node.args) > 1
+                else None
+            )
             for keyword in node.keywords:
                 if short_name == "open" and keyword.arg == "mode":
                     mode_expression = keyword.value
             mode = str(mode_expression.value) if isinstance(mode_expression, ast.Constant) else "r"
             write_access = short_name != "open" or any(flag in mode for flag in "wax+")
             dynamic_path = short_name != "open" or not isinstance(path_expression, ast.Constant)
+            tool_input_path = bool(
+                python_expression_names(path_expression) & self.dynamic_tool_input_names
+            )
             path_control = (
                 self.function_path_boundary_calls[-1].get(id(node))
                 if self.function_path_boundary_calls and write_access
@@ -3498,6 +3687,7 @@ class PythonVisitor(ast.NodeVisitor):
                     "api": call_name,
                     "write_access": write_access,
                     "dynamic_path": dynamic_path,
+                    "tool_input_path": tool_input_path,
                     "path_boundary_guard": boundary is not None,
                     "path_boundary_scope": (
                         boundary.boundary_scope if boundary is not None else "unresolved"
@@ -3530,7 +3720,9 @@ class PythonVisitor(ast.NodeVisitor):
                 {
                     "api": call_name,
                     "dynamic_origin": python_http_origin_is_dynamic(
-                        url_expression, self.dynamic_http_origin_names
+                        url_expression,
+                        self.dynamic_http_origin_names,
+                        self.static_http_prefixes,
                     ),
                 },
             )
@@ -3600,6 +3792,28 @@ def scan_python(
         name for candidate in nodes if isinstance(candidate, ast.Global) for name in candidate.names
     )
     module_rebound_names = imported_bindings & module_mutations
+    module_assignment_counts = Counter(
+        target.id
+        for statement in tree.body
+        if isinstance(statement, (ast.Assign, ast.AnnAssign))
+        for target in (
+            statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+        )
+        if isinstance(target, ast.Name)
+    )
+    module_static_http_prefixes: dict[str, str] = {}
+    for statement in tree.body:
+        if not isinstance(statement, (ast.Assign, ast.AnnAssign)):
+            continue
+        targets = statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+        if len(targets) != 1 or not isinstance(targets[0], ast.Name):
+            continue
+        target = targets[0].id
+        if module_assignment_counts[target] != 1:
+            continue
+        prefix = python_static_url_prefix(statement.value, module_static_http_prefixes)
+        if prefix:
+            module_static_http_prefixes[target] = prefix
     path_constructors = {
         alias.asname or alias.name
         for statement in tree.body
@@ -3641,10 +3855,94 @@ def scan_python(
         for alias, canonical in filesystem_api_aliases.items()
         if alias.split(".", 1)[0] not in module_rebound_names
     }
+    registry_decorator_origins = {
+        "metagpt.tools.tool_registry": "MetaGPT",
+        "qwen_agent.tools.base": "Qwen-Agent",
+    }
+    registry_decorator_bindings = {
+        alias.asname or alias.name: (registry_decorator_origins[statement.module], statement.module)
+        for statement in tree.body
+        if isinstance(statement, ast.ImportFrom)
+        and statement.level == 0
+        and statement.module in registry_decorator_origins
+        for alias in statement.names
+        if alias.name == "register_tool"
+        and (alias.asname or alias.name) not in module_rebound_names
+    }
+
+    def registry_decorator(
+        node: ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef,
+    ) -> tuple[str, str, ast.Call] | None:
+        matches: list[tuple[str, str, ast.Call]] = []
+        for decorator in node.decorator_list:
+            if not (
+                isinstance(decorator, ast.Call)
+                and isinstance(decorator.func, ast.Name)
+                and decorator.func.id in registry_decorator_bindings
+            ):
+                continue
+            framework, module = registry_decorator_bindings[decorator.func.id]
+            matches.append((framework, f"{module}.register_tool", decorator))
+        return matches[0] if len(matches) == 1 else None
+
+    registry_function_tools: dict[int, PythonRegistryTool] = {}
+    registry_class_tools: dict[int, PythonRegistryTool] = {}
+    for node in nodes:
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            continue
+        resolved_decorator = registry_decorator(node)
+        if resolved_decorator is None:
+            continue
+        framework, registrar, decorator = resolved_decorator
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if framework == "MetaGPT":
+                registry_function_tools[id(node)] = PythonRegistryTool(
+                    framework, node.name, registrar
+                )
+            continue
+        methods = Counter(
+            statement.name
+            for statement in node.body
+            if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef))
+        )
+        entrypoints: tuple[str, ...] = ()
+        tool_name = node.name
+        if framework == "Qwen-Agent":
+            if not (
+                len(decorator.args) == 1
+                and isinstance(decorator.args[0], ast.Constant)
+                and isinstance(decorator.args[0].value, str)
+            ):
+                continue
+            tool_name = decorator.args[0].value
+            if methods["call"] == 1:
+                entrypoints = ("call",)
+        else:
+            include_values = [
+                keyword.value
+                for keyword in decorator.keywords
+                if keyword.arg == "include_functions"
+            ]
+            if len(include_values) == 1 and isinstance(
+                include_values[0], (ast.List, ast.Tuple)
+            ):
+                names = [
+                    element.value
+                    for element in include_values[0].elts
+                    if isinstance(element, ast.Constant)
+                    and isinstance(element.value, str)
+                    and methods[element.value] == 1
+                ]
+                if len(names) == len(include_values[0].elts):
+                    entrypoints = tuple(names)
+        registry_class_tools[id(node)] = PythonRegistryTool(
+            framework, tool_name, registrar, entrypoints
+        )
     symbol_candidates: dict[tuple[str, str], set[str]] = {}
     call_symbol_ids: dict[int, str] = {}
     definition_symbol_ids: dict[int, str] = {}
     decorated_tools: list[tuple[ast.FunctionDef | ast.AsyncFunctionDef, str]] = []
+    registered_class_tools: list[tuple[ast.ClassDef, PythonRegistryTool]] = []
 
     def collect_definitions(
         statements: list[ast.stmt],
@@ -3654,6 +3952,8 @@ def scan_python(
     ) -> None:
         for node in statements:
             if isinstance(node, ast.ClassDef):
+                if registry_tool := registry_class_tools.get(id(node)):
+                    registered_class_tools.append((node, registry_tool))
                 collect_definitions(
                     node.body,
                     (*class_stack, node.name),
@@ -3671,6 +3971,7 @@ def scan_python(
             if (
                 decorators & TOOL_DECORATORS
                 or any(name.endswith(".tool") for name in decorators)
+                or id(node) in registry_function_tools
                 or (
                     module_scope
                     and (relative, node.name) in registered_tool_functions
@@ -3690,6 +3991,13 @@ def scan_python(
         )
         symbol_id = source_symbol("py", relative, "tool", identity)
         symbol_candidates.setdefault(("tool", qualified_name), set()).add(symbol_id)
+        symbol_candidates.setdefault(("tool", node.name), set()).add(symbol_id)
+        definition_symbol_ids[id(node)] = symbol_id
+    class_tool_counts = Counter(tool.name for _, tool in registered_class_tools)
+    for node, tool in registered_class_tools:
+        identity = f"{tool.name}@{node.lineno}" if class_tool_counts[tool.name] > 1 else tool.name
+        symbol_id = source_symbol("py", relative, "tool", identity)
+        symbol_candidates.setdefault(("tool", tool.name), set()).add(symbol_id)
         symbol_candidates.setdefault(("tool", node.name), set()).add(symbol_id)
         definition_symbol_ids[id(node)] = symbol_id
     assigned_constructors: list[tuple[ast.Assign, str, str]] = []
@@ -3750,7 +4058,7 @@ def scan_python(
         scope_nodes = [
             node
             for node in nodes
-            if isinstance(node, (ast.Assign, ast.FunctionDef, ast.AsyncFunctionDef))
+            if isinstance(node, (ast.Assign, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))
             or (
                 isinstance(node, ast.Call)
                 and dotted_name(node.func).rsplit(".", 1)[-1] in AGENT_CALLS
@@ -3764,6 +4072,13 @@ def scan_python(
             ):
                 continue
             for name in {qualified_name, node.name}:
+                scoped_symbol_candidates.setdefault(
+                    (node_scopes[id(node)], "tool", name), []
+                ).append((node.lineno, definition_symbol_ids[id(node)]))
+        for node, tool in registered_class_tools:
+            if not isinstance(parent_by_id.get(id(node)), (ast.Module, ast.ClassDef)):
+                continue
+            for name in {tool.name, node.name}:
                 scoped_symbol_candidates.setdefault(
                     (node_scopes[id(node)], "tool", name), []
                 ).append((node.lineno, definition_symbol_ids[id(node)]))
@@ -3796,6 +4111,9 @@ def scan_python(
         definition_symbol_ids=definition_symbol_ids,
         registry_class_exports=registry_class_exports,
         registered_tool_functions=registered_tool_functions,
+        registry_function_tools=registry_function_tools,
+        registry_class_tools=registry_class_tools,
+        module_static_http_prefixes=module_static_http_prefixes,
         module_rebound_names=module_rebound_names,
         path_constructors=path_constructors,
         filesystem_api_aliases=filesystem_api_aliases,

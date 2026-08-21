@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T11:44:56.989270+00:00",
-  "labels": 126,
-  "passed": 126,
+  "generated_at": "2026-08-21T12:12:33.285065+00:00",
+  "labels": 139,
+  "passed": 139,
   "metrics": {
     "IR-APPROVAL-CONTROL": {
       "tp": 3,
@@ -112,6 +112,14 @@
       "tp": 4,
       "fp": 0,
       "tn": 3,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-REGISTRY-TOOL": {
+      "tp": 8,
+      "fp": 0,
+      "tn": 5,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -1288,6 +1296,123 @@
       "check_id": "IR-PY-BROWSER-EVALUATE",
       "expected": false,
       "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-registry-metagpt-function-local",
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-registry-metagpt-class-local",
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-registry-qwen-class-local",
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-registry-unlisted-method-local-negative",
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-registry-opaque-entrypoints-local-negative",
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-registry-rebound-local-negative",
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-registry-ordinary-import-local-negative",
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-registry-fixed-network-local",
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-registry-memory-filesystem-local-negative",
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-registry-fixed-filesystem-local",
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-registry-metagpt-editor-real",
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-registry-qwen-image-network-real",
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-registry-qwen-fixed-format-real",
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "expected": true,
+      "observed": true,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

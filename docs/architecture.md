@@ -56,10 +56,20 @@ record every wrapper name on the tool. Metadata-only or branch-only wrappers, ne
 rebound bindings, wildcard imports, duplicate registrations, and unrelated `.tool` factories remain
 unresolved.
 
+Two import-proven registry decorators extend Python tool identity without treating every
+`register_tool` spelling as a framework API. MetaGPT function decorators resolve the decorated body
+directly; MetaGPT classes expose only direct methods named in a literal `include_functions` list.
+Qwen-Agent class decorators require a literal registered tool name and resolve one direct `call`
+method. Class capabilities are attached to the class tool identity rather than inventing duplicate
+method tools. Exact source modules and statement-ordered alias rebinding are part of the proof;
+nonliteral entrypoints, unrelated imports, and rebound decorators remain unresolved.
+
 Within decorated Python tools and structurally resolved TypeScript execution callbacks, tool
 parameters begin as potential dynamic HTTP origins. Direct assignment aliases preserve that state,
 while reassignment to a literal or a URL expression whose literal prefix contains a complete HTTP
-scheme and host clears it. The TypeScript frontend also resolves unique module string constants used
+scheme and host clears it. Python also propagates a proven fixed origin through unique module string
+assignments, immutable `self` fields initialized in `__init__`, concatenation, and `.format(...)`;
+dynamic paths and queries on that origin remain inventory-only. The TypeScript frontend also resolves unique module string constants used
 as a template prefix. For a uniquely named same-file free function or static method containing a
 recognized network call, a bounded summary records which formal parameters can control the origin;
 tool calls map positional and destructured-object arguments back to those parameters. `AV-NET001`
@@ -95,6 +105,14 @@ candidate is not equal to the root. Reassigning either binding invalidates the p
 non-filesystem roots carry `restricts-filesystem-path`; parameter/configured roots carry
 `validates-filesystem-path` with unresolved scope and retain `AV-FS001`. String-prefix checks,
 unresolved candidates and shadowed `Path` imports are not treated as equivalent controls.
+
+Filesystem capabilities separately record whether the governed path is derived from a current tool
+input. AV-FS001 requires that fact in addition to a writable dynamic path and unresolved narrow
+boundary, so configured and literal write locations remain visible inventory rather than reviews.
+AV-FS002 intentionally does not require this immediate taint fact: a proven weak string-prefix
+boundary remains reportable. Built-in `open(...)` retains its ordinary path semantics, while an
+attribute `.open(...)` is classified as filesystem access only for a proven `pathlib.Path` receiver;
+the receiver is the path and the first argument is the mode.
 
 A fail-closed `candidate.relative_to(root)` exception check can establish the same Python boundary
 fact. The try body must contain only that check, the first handler capable of catching `ValueError`

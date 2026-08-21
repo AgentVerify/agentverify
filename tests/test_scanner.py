@@ -1434,6 +1434,62 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
     ]
 
 
+def test_python_registry_decorators_are_import_proven_and_entrypoint_scoped() -> None:
+    ir = scan_repository(ROOT / "cases/python_registry_tools")
+
+    assert [
+        (
+            item.name,
+            item.evidence.path,
+            item.evidence.line,
+            item.attributes.get("framework"),
+            item.attributes.get("entrypoints"),
+        )
+        for item in ir.components
+        if item.kind == "tool"
+    ] == [
+        ("direct_tool", "meta.py", 7, "MetaGPT", None),
+        ("Runner", "meta.py", 12, "MetaGPT", ["run"]),
+        ("OpaqueRunner", "meta.py", 24, "MetaGPT", []),
+        ("memory_write", "meta.py", 30, "MetaGPT", None),
+        ("fixed_write", "meta.py", 37, "MetaGPT", None),
+        ("code_runner", "qwen.py", 7, "Qwen-Agent", ["call"]),
+        ("fixed_search", "qwen.py", 25, "Qwen-Agent", ["call"]),
+    ]
+    assert [
+        (edge.source_name, edge.evidence.path, edge.evidence.line)
+        for edge in ir.relationships
+        if edge.target_name == "code-execution"
+    ] == [
+        ("direct_tool", "meta.py", 8),
+        ("Runner", "meta.py", 14),
+        ("code_runner", "qwen.py", 9),
+    ]
+    assert [
+        (item.evidence.path, item.evidence.line, item.attributes["tool_input_path"])
+        for item in ir.components
+        if item.name == "filesystem"
+    ] == [("meta.py", 38, False)]
+    assert [
+        (item.evidence.line, item.attributes["dynamic_origin"])
+        for item in ir.components
+        if item.name == "network"
+    ] == [(32, False), (33, False)]
+    assert [
+        (edge.source_name, edge.evidence.line)
+        for edge in ir.relationships
+        if edge.target_name == "network"
+    ] == [("fixed_search", 32), ("fixed_search", 33)]
+    assert [
+        (finding.rule_id, finding.evidence.path, finding.evidence.line)
+        for finding in ir.findings
+    ] == [
+        ("AV-EXEC002", "meta.py", 8),
+        ("AV-EXEC002", "meta.py", 14),
+        ("AV-EXEC002", "qwen.py", 9),
+    ]
+
+
 def test_python_filesystem_mutations_resolve_destinations_aliases_and_guards() -> None:
     ir = scan_repository(ROOT / "cases/filesystem_mutations")
 

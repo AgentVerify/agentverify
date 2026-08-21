@@ -14,9 +14,9 @@ coverage to justify them.
 | AV-EXEC002 | finding | high | Dynamic input reaches an evaluator/interpreter | 51 default-scope matches across 15 repositories, including one tool-controlled Playwright evaluator |
 | AV-APPROVAL001 | review | high | Enabled auto-approve or skip-confirmation path | 15 default-scope engine candidates after semantic-name and approval-flow filtering |
 | AV-APPROVAL002 | review | high | Reachable local OpenAI Agents Python/TypeScript shell tool uses the SDK's disabled approval policy | 2 default-scope matches in the pinned SDK examples |
-| AV-FS001 | review | high | Agent tool writes, copies, moves, or deletes a dynamic filesystem path without a proven narrow path-boundary control | 22 default-scope matches across 8 repositories after post-definition FastMCP registration recovery |
+| AV-FS001 | review | high | Agent tool writes, copies, moves, or deletes a tool-input-controlled filesystem path without a proven narrow path-boundary control | 26 default-scope matches across 9 repositories after Python registry-decorator recovery and fixed-path filtering |
 | AV-FS002 | review | high | Agent tool relies on `str(resolved).startswith(str(root))` as a filesystem boundary check | 4 default-scope matches in CrewAI Examples |
-| AV-NET001 | review | high | Agent tool sends an HTTP request to a parameter-controlled origin | 5 default-scope matches across 5 repositories |
+| AV-NET001 | review | high | Agent tool sends an HTTP request to a parameter-controlled origin | 7 default-scope matches across 6 repositories |
 | AV-MCP002 | review | high | Dynamic MCP tool name and arguments are forwarded to a server | 49 default-scope matches across 23 repositories after policy resolution |
 | AV-SANDBOX001 | review | high | Container/Kubernetes workload or Docker SDK call exposes a host, privilege, or service-account boundary | 19 matches across 9 repositories |
 | AV-AUDIT001 | warning | medium | Consequential action has no attributable durable audit edge | Requires action-level data flow |

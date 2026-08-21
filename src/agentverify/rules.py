@@ -154,7 +154,10 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                             "review",
                         )
                     )
-                elif component.attributes.get("path_boundary_scope") != "constrained":
+                elif (
+                    component.attributes.get("tool_input_path", True)
+                    and component.attributes.get("path_boundary_scope") != "constrained"
+                ):
                     ir.findings.append(
                         make_finding(
                             ir,

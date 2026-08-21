@@ -139,6 +139,15 @@ def main() -> int:
         python_post_registered_tool_ids = {
             item.symbol_id for item in python_post_registered_tools if item.symbol_id
         }
+        python_registry_tools = [
+            item
+            for item in ir.components
+            if item.kind == "tool"
+            and item.attributes.get("registration") == "registry-decorator"
+        ]
+        python_registry_tool_ids = {
+            item.symbol_id for item in python_registry_tools if item.symbol_id
+        }
         python_browser_evaluations = [
             item
             for item in ir.components
@@ -293,6 +302,35 @@ def main() -> int:
                     for edge in ir.relationships
                 ),
             },
+            "python_registry_tools": {
+                "total": len(python_registry_tools),
+                "functions": sum(
+                    item.attributes.get("registration_target") == "function"
+                    for item in python_registry_tools
+                ),
+                "classes": sum(
+                    item.attributes.get("registration_target") == "class"
+                    for item in python_registry_tools
+                ),
+                "resolved_entrypoints": sum(
+                    item.attributes.get("registration_target") == "function"
+                    or bool(item.attributes.get("entrypoints"))
+                    for item in python_registry_tools
+                ),
+                "metagpt": sum(
+                    item.attributes.get("framework") == "MetaGPT"
+                    for item in python_registry_tools
+                ),
+                "qwen_agent": sum(
+                    item.attributes.get("framework") == "Qwen-Agent"
+                    for item in python_registry_tools
+                ),
+                "capability_edges": sum(
+                    edge.source_id in python_registry_tool_ids
+                    and edge.target_kind == "capability"
+                    for edge in ir.relationships
+                ),
+            },
             "python_browser_evaluate": {
                 "total": len(python_browser_evaluations),
                 "dynamic": sum(
@@ -402,7 +440,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 24,
+        "schema_version": 25,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -509,6 +547,18 @@ def main() -> int:
                     "relative_import",
                     "same_module",
                     "approval_enabled",
+                    "capability_edges",
+                )
+            },
+            "python_registry_tools": {
+                name: sum(result["python_registry_tools"][name] for result in successful)
+                for name in (
+                    "total",
+                    "functions",
+                    "classes",
+                    "resolved_entrypoints",
+                    "metagpt",
+                    "qwen_agent",
                     "capability_edges",
                 )
             },

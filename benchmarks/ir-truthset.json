@@ -2270,6 +2270,102 @@
       "expected": false,
       "source_contains": "calculator.evaluate(expression)",
       "relationship": {"source_kind":"tool","relation":"uses","target_kind":"capability","target_name":"code-execution"}
+    },
+    {
+      "id": "python-registry-metagpt-function-local",
+      "target": {"kind":"local","path":"cases/python_registry_tools"},
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "path": "meta.py", "line": 8, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"direct_tool","relation":"uses","target_kind":"capability","target_name":"code-execution"}
+    },
+    {
+      "id": "python-registry-metagpt-class-local",
+      "target": {"kind":"local","path":"cases/python_registry_tools"},
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "path": "meta.py", "line": 14, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"Runner","relation":"uses","target_kind":"capability","target_name":"code-execution"}
+    },
+    {
+      "id": "python-registry-qwen-class-local",
+      "target": {"kind":"local","path":"cases/python_registry_tools"},
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "path": "qwen.py", "line": 9, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"code_runner","relation":"uses","target_kind":"capability","target_name":"code-execution"}
+    },
+    {
+      "id": "python-registry-unlisted-method-local-negative",
+      "target": {"kind":"local","path":"cases/python_registry_tools"},
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "path": "meta.py", "line": 17, "expected": false,
+      "source_contains": "return page.evaluate(code)",
+      "relationship": {"source_kind":"tool","source_name":"Runner","relation":"uses","target_kind":"capability","target_name":"code-execution"}
+    },
+    {
+      "id": "python-registry-opaque-entrypoints-local-negative",
+      "target": {"kind":"local","path":"cases/python_registry_tools"},
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "path": "meta.py", "line": 26, "expected": false,
+      "source_contains": "return page.evaluate(code)",
+      "relationship": {"source_kind":"tool","source_name":"OpaqueRunner","relation":"uses","target_kind":"capability","target_name":"code-execution"}
+    },
+    {
+      "id": "python-registry-rebound-local-negative",
+      "target": {"kind":"local","path":"cases/python_registry_tools"},
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "path": "rebound.py", "line": 11, "expected": false,
+      "source_contains": "return page.evaluate(code)",
+      "relationship": {"source_kind":"tool","source_name":"rebound_function","relation":"uses","target_kind":"capability","target_name":"code-execution"}
+    },
+    {
+      "id": "python-registry-ordinary-import-local-negative",
+      "target": {"kind":"local","path":"cases/python_registry_tools"},
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "path": "ordinary.py", "line": 6, "expected": false,
+      "source_contains": "return code",
+      "relationship": {"source_kind":"tool","source_name":"ordinary_function","relation":"uses","target_kind":"capability"}
+    },
+    {
+      "id": "python-registry-fixed-network-local",
+      "target": {"kind":"local","path":"cases/python_registry_tools"},
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "path": "qwen.py", "line": 32, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"fixed_search","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-registry-memory-filesystem-local-negative",
+      "target": {"kind":"local","path":"cases/python_registry_tools"},
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "path": "meta.py", "line": 32, "expected": false,
+      "source_contains": "memory.open(name, \"w\")",
+      "relationship": {"source_kind":"tool","source_name":"memory_write","relation":"uses","target_kind":"capability","target_name":"filesystem"}
+    },
+    {
+      "id": "python-registry-fixed-filesystem-local",
+      "target": {"kind":"local","path":"cases/python_registry_tools"},
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "path": "meta.py", "line": 38, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"fixed_write","relation":"uses","target_kind":"capability","target_name":"filesystem"}
+    },
+    {
+      "id": "python-registry-metagpt-editor-real",
+      "target": {"kind":"repository","repository":"FoundationAgents/MetaGPT","commit":"11cdf466d042aece04fc6cfd13b28e1a70341b1f"},
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "path": "metagpt/tools/libs/editor.py", "line": 128, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"Editor","relation":"uses","target_kind":"capability","target_name":"filesystem"}
+    },
+    {
+      "id": "python-registry-qwen-image-network-real",
+      "target": {"kind":"repository","repository":"QwenLM/Qwen-Agent","commit":"31a4d36d123688581a9e9744427272b33ce940e0"},
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "path": "qwen_agent/tools/image_zoom_in_qwen3vl.py", "line": 143, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"image_zoom_in_tool","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-registry-qwen-fixed-format-real",
+      "target": {"kind":"repository","repository":"QwenLM/Qwen-Agent","commit":"31a4d36d123688581a9e9744427272b33ce940e0"},
+      "check_id": "IR-PY-REGISTRY-TOOL",
+      "path": "qwen_agent/tools/amap_weather.py", "line": 63, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"amap_weather","relation":"uses","target_kind":"capability","target_name":"network"}
     }
   ]
 }

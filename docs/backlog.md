@@ -86,7 +86,8 @@ semantics. Model containment as a control attached to the exact code/shell capab
 
 `AV-NET001` now reports Python and structurally resolved TypeScript tool parameters and their direct
 aliases when they determine the HTTP origin. Literal URLs and formatted URLs with a fixed scheme and
-host remain inventory-only. TypeScript coverage includes Mastra `createTool` object properties and
+host remain inventory-only; Python fixed-origin state propagates through module constants, immutable
+instance fields, concatenation, and `.format(...)`. TypeScript coverage includes Mastra `createTool` object properties and
 MCP `registerTool` callbacks with exact tool identities. Unique same-file free/static network helpers
 now propagate positional/destructured parameter flow to exact tool edges. Next
 resolve URL parsing/normalization guards, hostname allowlists, DNS rebinding defenses, proxy policy,
@@ -102,8 +103,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 247 pinned positive/negative locations, with 126 separately
-scored IR relationship labels. Schema-v24 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 262 pinned positive/negative locations, with 139 separately
+scored IR relationship labels. Schema-v25 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.
