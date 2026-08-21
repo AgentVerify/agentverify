@@ -84,6 +84,12 @@ review path but do not suppress `AV-NET001` or claim SSRF prevention. Positive b
 validators, normalized hostname expressions, redirects, DNS, proxies, imported/transitive helpers,
 arrow functions, and general client request-object data flow remain unresolved.
 
+The TypeScript network reader also proves immutable same-file Axios instances created through an
+exact default import or CommonJS binding. Direct verbs and `.request(...)` preserve URL origin flow;
+literal `baseURL` and `allowAbsoluteUrls: false` state distinguish a locked configured origin from an
+absolute-URL override. Rebinding, mutation, interceptors, computed options, and generic cross-file
+clients are withheld.
+
 The Python frontend also recognizes `urllib.request.urlopen` only through an exact module-level
 `urllib`/`urllib.request` import, `from urllib import request`, or named `urlopen` import. Aliases are
 canonicalized to the stdlib API, while module rebinding or any same-function binding with the same
@@ -158,6 +164,13 @@ against explicit IPv4/IPv6 ranges with mapped-address handling, and disable redi
 fetch. Because that fetch performs a separate connection-time lookup, the control is recorded as
 preflight-only with an unpinned-transport residual. Removing any stage withholds both reachability and
 the control edge.
+
+A fifth TypeScript composition pass resolves Activepieces only through an exact named `safeHttp`
+import and the selected MCP transport/entry chain. It requires `request-filtering-agent` 3.2.0 in the
+nearest package manifest, both HTTP and HTTPS filtering agents constructed after caller config, URL
+shorthand at `safeHttp.axios.request`, and no caller proxy or agent override. The control records
+connection-time address filtering and `AP_SSRF_ALLOW_LIST` IP/CIDR exceptions, but retains
+environment-proxy dependence because a proxy can become the directly filtered connection target.
 
 The A2A endpoint-provenance passes model a different authority transition from tool-input SSRF.
 They create an `a2a-rpc` capability at SDK client construction when a network-resolved AgentCard can

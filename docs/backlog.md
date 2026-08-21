@@ -103,11 +103,11 @@ unresolved. Exact module-level `urllib.request.urlopen` imports and aliases now 
 shadowing and module rebinding invalidate the API proof.
 Exact same-function Python `urlparse`/`urlsplit` guards now add a control edge only when immutable
 tool-origin data is rejected outside a static scheme and hostname set before the request. Redirect
-disabling is recorded separately; DNS and other redirect states stay unresolved. Schema v39 finds
+disabling is recorded separately; DNS and other redirect states stay unresolved. Schema v40 finds
 zero such controls on the Python corpus reviews, making the absence visible without calling every review
 SSRF. A same-file TypeScript validator summary now resolves MCP Servers' scheme allowlist and
 environment-backed exact/subdomain predicate, while preserving its empty hostname default as open.
-Schema v39 separately proves two CrewAI loader calls through a locally defined `safe_get` transport:
+Schema v40 separately proves two CrewAI loader calls through a locally defined `safe_get` transport:
 both validate every redirect hop, pin the connected peer after DNS checks, disable proxies, and are
 enabled by default. The `CREWAI_TOOLS_ALLOW_UNSAFE_PATHS` opt-out and
 `CREWAI_TOOLS_FORCE_SAFE_PATHS` override remain explicit governance state. Next resolve normalized
@@ -125,9 +125,13 @@ normalizes mapped addresses, validates each redirect, and pins direct DNS; envir
 and the explicit opt-out remain residuals. Its Web Scraper path also resolves through `secureFetch`,
 whose post-spread pinned agent overrides caller transport options on every validated hop. Google ADK
 JS's `LOAD_WEB_PAGE` now preserves the opposite transport state: always-on public-address preflight
-and disabled redirects, but unpinned global fetch with a DNS-rebinding residual. Next generalize
-beyond these exact request-object, `node-fetch`, and `FunctionTool` shapes to client instances,
-general fetch/Undici transports, and runtime egress controls.
+and disabled redirects, but unpinned global fetch with a DNS-rebinding residual. Immutable same-file
+Axios instances now preserve verb/`.request(...)` flow and `allowAbsoluteUrls: false` origin locking.
+Activepieces' configured MCP transport additionally resolves through imported `safeHttp.axios` into
+`request-filtering-agent` 3.2.0: both HTTP agents are forced after caller options and filter each
+direct connection, while `AP_SSRF_ALLOW_LIST` exceptions and environment-proxy routing remain
+explicit. Next resolve general imported clients, mutated/interceptor-configured instances, fetch and
+Undici dispatchers, and runtime egress controls.
 
 ## P1 — A2A AgentCard endpoint provenance
 
@@ -150,8 +154,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 320 pinned positive/negative locations, with 233 separately
-scored IR relationship labels. Schema-v39 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 328 pinned positive/negative locations, with 241 separately
+scored IR relationship labels. Schema-v40 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

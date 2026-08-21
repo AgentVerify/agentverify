@@ -57,6 +57,13 @@ dynamic query is materially different from allowing the tool parameter to choose
 host. Destination analysis must preserve that distinction and eventually combine hostname policy,
 DNS resolution, redirects, proxies, and runtime egress controls.
 
+Axios instances add two separate questions: whether a relative request is locked to a fixed
+`baseURL`, and whether absolute URLs may override that origin. Transport-bound filtering agents can
+validate direct IPs and connection-time DNS results, but environment proxy routing may move that
+validation boundary to the proxy connection. The IR must preserve `allowAbsoluteUrls`, agent
+override ordering, configured IP/CIDR exceptions, and proxy dependence instead of flattening the
+client to “safe” or “unsafe.”
+
 ## A2A card → negotiated RPC endpoint
 
 Remote-agent configuration often names an AgentCard location, not the final RPC origin. The card can

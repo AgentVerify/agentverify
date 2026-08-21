@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T17:00:28.735265+00:00",
-  "labels": 233,
-  "passed": 233,
+  "generated_at": "2026-08-21T17:30:57.326656+00:00",
+  "labels": 241,
+  "passed": 241,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -204,7 +204,23 @@
       "precision": 1.0,
       "recall": 1.0
     },
+    "IR-TS-AXIOS-INSTANCE": {
+      "tp": 4,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
     "IR-TS-CONFIGURABLE-SSRF-COMPOSITION": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-FILTERING-AXIOS-INSTANCE": {
       "tp": 2,
       "fp": 0,
       "tn": 1,
@@ -2369,6 +2385,78 @@
     {
       "id": "python-adk-a2a-card-policy-real-shared",
       "check_id": "IR-A2A-CARD-ENDPOINT-PROVENANCE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-axios-instance-get-local",
+      "check_id": "IR-TS-AXIOS-INSTANCE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-axios-instance-request-local",
+      "check_id": "IR-TS-AXIOS-INSTANCE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-axios-instance-fixed-origin-local",
+      "check_id": "IR-TS-AXIOS-INSTANCE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-axios-instance-absolute-lock-local",
+      "check_id": "IR-TS-AXIOS-INSTANCE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-axios-instance-shadowed-local-negative",
+      "check_id": "IR-TS-AXIOS-INSTANCE",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-activepieces-safe-http-local",
+      "check_id": "IR-TS-FILTERING-AXIOS-INSTANCE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-activepieces-safe-http-raw-local-negative",
+      "check_id": "IR-TS-FILTERING-AXIOS-INSTANCE",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-activepieces-safe-http-real",
+      "check_id": "IR-TS-FILTERING-AXIOS-INSTANCE",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

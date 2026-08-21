@@ -39,6 +39,12 @@ never imported or executed.
 - `typescript_google_adk_secure_fetch`: Google ADK's `FunctionTool` validates a model URL and every
   preflight DNS answer before unpinned global `fetch`; redirects are disabled and the DNS-rebinding
   residual remains explicit.
+- `typescript_axios_instance`: immutable same-file Axios instances preserve direct verb and
+  `.request(...)` origin flow, including fixed-base and `allowAbsoluteUrls: false` negatives;
+  shadowed local clients and no-base instances remain distinct.
+- `typescript_activepieces_safe_http`: Activepieces' imported `safeHttp.axios` client composes both
+  request-filtering agents after caller configuration, a pinned filtering-library version, and MCP
+  transport propagation; import, ordering, manifest, and caller-override mutations withhold the edge.
 - `typescript_a2a_card_endpoint`: ADK JS and Gemini compositions preserve remotely supplied
   AgentCard authority at SDK client construction; fixed/local cards, wrong imports, and unproven
   transports stay negative.

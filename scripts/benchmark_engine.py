@@ -219,6 +219,17 @@ def main() -> int:
             and edge.attributes.get("scope") == "production"
             and edge.attributes.get("frontend") == "typescript"
         ]
+        typescript_axios_instance_network = [
+            item
+            for item in ir.components
+            if item.kind == "capability"
+            and item.name == "network"
+            and item.attributes.get("summary") == "same-file-axios-instance"
+        ]
+        typescript_axios_instance_locations = {
+            (item.evidence.path, item.evidence.line)
+            for item in typescript_axios_instance_network
+        }
         typescript_network_origin_controls = [
             edge
             for edge in ir.relationships
@@ -574,6 +585,28 @@ def main() -> int:
                     for edge in python_secure_network_controls
                 ),
             },
+            "typescript_axios_instance_network": {
+                "capabilities": len(typescript_axios_instance_network),
+                "dynamic_origins": sum(
+                    bool(item.attributes.get("dynamic_origin"))
+                    for item in typescript_axios_instance_network
+                ),
+                "absolute_override_allowed": sum(
+                    item.attributes.get("absolute_url_override") == "allowed"
+                    for item in typescript_axios_instance_network
+                ),
+                "absolute_override_disabled": sum(
+                    item.attributes.get("absolute_url_override") == "disabled"
+                    for item in typescript_axios_instance_network
+                ),
+                "capability_edges": sum(
+                    edge.target_kind == "capability"
+                    and edge.target_name == "network"
+                    and (edge.evidence.path, edge.evidence.line)
+                    in typescript_axios_instance_locations
+                    for edge in ir.relationships
+                ),
+            },
             "typescript_network_origin_controls": {
                 "total": len(typescript_network_origin_controls),
                 "configured_optional": sum(
@@ -620,6 +653,11 @@ def main() -> int:
                     edge.attributes.get("redirect_scope") == "disabled"
                     for edge in typescript_secure_network_controls
                 ),
+                "redirects_direct_connection_filtered": sum(
+                    edge.attributes.get("redirect_scope")
+                    == "each-direct-connection-filtered"
+                    for edge in typescript_secure_network_controls
+                ),
                 "secure_lookup_configured": sum(
                     edge.attributes.get("dns_scope")
                     == "secure-lookup-configured-when-enforced"
@@ -637,6 +675,11 @@ def main() -> int:
                 "dns_preflight_only_rebinding_residual": sum(
                     edge.attributes.get("dns_scope")
                     == "preflight-only-rebinding-residual"
+                    for edge in typescript_secure_network_controls
+                ),
+                "dns_connection_time_filtered_unless_proxied": sum(
+                    edge.attributes.get("dns_scope")
+                    == "connection-time-filtered-unless-proxied"
                     for edge in typescript_secure_network_controls
                 ),
                 "proxy_unresolved": sum(
@@ -661,6 +704,16 @@ def main() -> int:
                 ),
                 "global_fetch_unpinned": sum(
                     edge.attributes.get("transport_scope") == "global-fetch-unpinned"
+                    for edge in typescript_secure_network_controls
+                ),
+                "imported_axios_client_instance": sum(
+                    edge.attributes.get("transport_scope")
+                    == "imported-axios-client-instance"
+                    for edge in typescript_secure_network_controls
+                ),
+                "configured_address_allowlist": sum(
+                    edge.attributes.get("escape_hatch")
+                    == "configured-address-allowlist"
                     for edge in typescript_secure_network_controls
                 ),
                 "ipv4_mapped_ipv6_normalized": sum(
@@ -807,7 +860,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 39,
+        "schema_version": 40,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -993,6 +1046,19 @@ def main() -> int:
                     "no_escape_hatch",
                 )
             },
+            "typescript_axios_instance_network": {
+                name: sum(
+                    result["typescript_axios_instance_network"][name]
+                    for result in successful
+                )
+                for name in (
+                    "capabilities",
+                    "dynamic_origins",
+                    "absolute_override_allowed",
+                    "absolute_override_disabled",
+                    "capability_edges",
+                )
+            },
             "typescript_network_origin_controls": {
                 name: sum(
                     result["typescript_network_origin_controls"][name]
@@ -1019,16 +1085,20 @@ def main() -> int:
                     "bounded_redirect_hooks",
                     "redirects_validated",
                     "redirects_disabled",
+                    "redirects_direct_connection_filtered",
                     "secure_lookup_configured",
                     "dns_connection_pinned_unless_proxied",
                     "dns_connection_pinned",
                     "dns_preflight_only_rebinding_residual",
+                    "dns_connection_time_filtered_unless_proxied",
                     "proxy_unresolved",
                     "proxy_environment_dependent",
                     "proxy_pinned_agent",
                     "fixed_caller_config",
                     "caller_agent_overridden",
                     "global_fetch_unpinned",
+                    "imported_axios_client_instance",
+                    "configured_address_allowlist",
                     "ipv4_mapped_ipv6_normalized",
                     "domain_hitl_independent",
                     "no_escape_hatch",

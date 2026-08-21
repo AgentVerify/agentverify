@@ -1883,6 +1883,191 @@ def test_typescript_google_adk_fetch_preserves_preflight_dns_residual(
         )
 
 
+def test_typescript_axios_instances_preserve_absolute_url_override_semantics(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/typescript_axios_instance"
+    ir = scan_repository(root)
+    capabilities = [
+        item
+        for item in ir.components
+        if item.kind == "capability"
+        and item.name == "network"
+        and item.evidence.path == "direct.ts"
+    ]
+    assert [
+        (
+            item.evidence.line,
+            item.attributes["api"],
+            item.attributes["dynamic_origin"],
+            item.attributes.get("base_url_scope"),
+            item.attributes.get("absolute_url_override"),
+        )
+        for item in capabilities
+    ] == [
+        (12, "axios.instance.get", True, "fixed-origin", "allowed"),
+        (16, "axios.instance.request", True, "fixed-origin", "allowed"),
+        (20, "axios.get", True, None, None),
+        (25, "axios.instance.get", False, "fixed-origin", "allowed"),
+        (29, "axios.instance.get", False, "fixed-origin", "disabled"),
+        (33, "axios.instance.get", True, "absent", "disabled"),
+    ]
+    assert [
+        finding.evidence.line
+        for finding in ir.findings
+        if finding.rule_id == "AV-NET001" and finding.evidence.path == "direct.ts"
+    ] == [12, 16, 20, 33]
+    assert not any(
+        item.kind == "capability" and item.evidence.path == "shadowed.ts"
+        for item in ir.components
+    )
+
+    locked = tmp_path / "locked-override-enabled"
+    shutil.copytree(root, locked)
+    locked_path = locked / "direct.ts"
+    source = locked_path.read_text(encoding="utf-8")
+    locked_path.write_text(
+        source.replace("allowAbsoluteUrls: false,", "allowAbsoluteUrls: true,", 1),
+        encoding="utf-8",
+    )
+    locked_ir = scan_repository(locked)
+    assert any(
+        finding.rule_id == "AV-NET001"
+        and finding.evidence.path == "direct.ts"
+        and finding.evidence.line == 29
+        for finding in locked_ir.findings
+    )
+
+    wrong_import = tmp_path / "wrong-import"
+    shutil.copytree(root, wrong_import)
+    wrong_import_path = wrong_import / "direct.ts"
+    source = wrong_import_path.read_text(encoding="utf-8")
+    wrong_import_path.write_text(
+        source.replace('from "axios"', 'from "./local-http"'),
+        encoding="utf-8",
+    )
+    wrong_import_ir = scan_repository(wrong_import)
+    assert not any(
+        item.attributes.get("summary") == "same-file-axios-instance"
+        for item in wrong_import_ir.components
+    )
+
+
+def test_typescript_activepieces_imported_axios_control_preserves_proxy_residual(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/typescript_activepieces_safe_http"
+    ir = scan_repository(root)
+    edges = [
+        edge
+        for edge in ir.relationships
+        if edge.attributes.get("analysis")
+        == "typescript-imported-filtering-axios-instance"
+    ]
+    assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [
+        ("mcp-transport.ts", 8)
+    ]
+    assert edges[0].attributes == {
+        "scope": "production",
+        "policy_effect": "filters-connected-addresses-unless-proxied",
+        "frontend": "typescript",
+        "analysis": "typescript-imported-filtering-axios-instance",
+        "initial_origin_scope": "http-https-with-connected-address-filter",
+        "redirect_scope": "each-direct-connection-filtered",
+        "dns_scope": "connection-time-filtered-unless-proxied",
+        "proxy_scope": "environment-dependent",
+        "transport_scope": "imported-axios-client-instance",
+        "enforcement_default": "enabled",
+        "escape_hatch": "configured-address-allowlist",
+        "enforcement_mode": "always-on-with-configured-exceptions",
+        "allowlist_environment": "AP_SSRF_ALLOW_LIST",
+        "allowlist_scope": "ip-or-cidr",
+        "filter_library": "request-filtering-agent",
+        "filter_library_version": "3.2.0",
+        "manifest_path": "package.json",
+        "helper_path": "safe-http.ts",
+        "helper_line": 31,
+        "transport_path": "mcp-transport.ts",
+        "transport_line": 19,
+        "entry_path": "mcp-tool-validator.ts",
+        "entry_line": 4,
+    }
+    capability = next(
+        item
+        for item in ir.components
+        if item.kind == "capability"
+        and item.name == "network"
+        and item.attributes.get("summary") == "imported-axios-client-instance"
+    )
+    assert capability.attributes["origin_authority"] == "configured-mcp-server"
+    assert capability.attributes["dynamic_origin"] is False
+    assert not any(
+        finding.rule_id == "AV-NET001"
+        and finding.evidence.path == "mcp-transport.ts"
+        for finding in ir.findings
+    )
+    protocol_edges = [
+        edge
+        for edge in ir.relationships
+        if edge.source_kind == "protocol"
+        and edge.source_name == "MCP"
+        and edge.relation == "uses"
+        and edge.target_name == "network"
+    ]
+    assert [(edge.evidence.path, edge.evidence.line) for edge in protocol_edges] == [
+        ("mcp-transport.ts", 8)
+    ]
+
+    without_manifest = scan_repository(
+        root,
+        selected_paths=["safe-http.ts", "mcp-transport.ts", "mcp-tool-validator.ts"],
+    )
+    assert not any(
+        edge.attributes.get("analysis")
+        == "typescript-imported-filtering-axios-instance"
+        for edge in without_manifest.relationships
+    )
+
+    for name, relative, before, after in (
+        (
+            "private-addresses-enabled",
+            "safe-http.ts",
+            "allowPrivateIPAddress: false",
+            "allowPrivateIPAddress: true",
+        ),
+        (
+            "caller-overrides-agent",
+            "safe-http.ts",
+            "...config,\n    httpAgent,\n    httpsAgent,",
+            "httpAgent,\n    httpsAgent,\n    ...config,",
+        ),
+        (
+            "wrong-safe-import",
+            "mcp-transport.ts",
+            'from "./safe-http"',
+            'from "./raw-http"',
+        ),
+        (
+            "caller-proxy",
+            "mcp-transport.ts",
+            "method, url, headers, data: init?.body,",
+            "method, url, headers, proxy: {}, data: init?.body,",
+        ),
+    ):
+        incomplete = tmp_path / name
+        shutil.copytree(root, incomplete)
+        source_path = incomplete / relative
+        source = source_path.read_text(encoding="utf-8")
+        assert before in source
+        source_path.write_text(source.replace(before, after), encoding="utf-8")
+        incomplete_ir = scan_repository(incomplete)
+        assert not any(
+            edge.attributes.get("analysis")
+            == "typescript-imported-filtering-axios-instance"
+            for edge in incomplete_ir.relationships
+        )
+
+
 def test_typescript_a2a_remote_cards_preserve_endpoint_authority_and_transport(
     tmp_path: Path,
 ) -> None:

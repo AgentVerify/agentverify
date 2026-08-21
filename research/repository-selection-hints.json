@@ -38,6 +38,11 @@
     ],
     "google-gemini/gemini-cli": [
       "packages/core/src/agents/a2a-client-manager.ts"
+    ],
+    "activepieces/activepieces": [
+      "packages/server/api/src/app/agents/mcp-tool-validator.ts",
+      "packages/server/utils/src/mcp-transport.ts",
+      "packages/server/utils/src/safe-http.ts"
     ]
   }
 }

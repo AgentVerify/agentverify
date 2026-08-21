@@ -3135,6 +3135,54 @@
         "source_kind":"capability","source_name":"a2a-rpc","relation":"governed-by","target_kind":"control","target_name":"a2a-card-rpc-origin-policy",
         "attributes":{"analysis":"python-google-adk-a2a-card-endpoint-policy","rpc_origin_scope":"same-origin-with-card-source","rpc_scheme_scope":"https-or-loopback-http","advertised_interface_scope":"all-rpc-urls","enforcement_mode":"always-on-for-network-cards","control_line":907}
       }
+    },
+    {
+      "id":"typescript-axios-instance-get-local",
+      "target":{"kind":"local","path":"cases/typescript_axios_instance"},
+      "check_id":"IR-TS-AXIOS-INSTANCE","path":"direct.ts","line":12,"expected":true,
+      "relationship":{"source_kind":"tool","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id":"typescript-axios-instance-request-local",
+      "target":{"kind":"local","path":"cases/typescript_axios_instance"},
+      "check_id":"IR-TS-AXIOS-INSTANCE","path":"direct.ts","line":16,"expected":true,
+      "relationship":{"source_kind":"tool","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id":"typescript-axios-instance-fixed-origin-local",
+      "target":{"kind":"local","path":"cases/typescript_axios_instance"},
+      "check_id":"IR-TS-AXIOS-INSTANCE","path":"direct.ts","line":25,"expected":true,
+      "relationship":{"source_kind":"tool","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id":"typescript-axios-instance-absolute-lock-local",
+      "target":{"kind":"local","path":"cases/typescript_axios_instance"},
+      "check_id":"IR-TS-AXIOS-INSTANCE","path":"direct.ts","line":29,"expected":true,
+      "relationship":{"source_kind":"tool","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id":"typescript-axios-instance-shadowed-local-negative",
+      "target":{"kind":"local","path":"cases/typescript_axios_instance"},
+      "check_id":"IR-TS-AXIOS-INSTANCE","path":"shadowed.ts","line":7,"expected":false,"source_contains":"client.get(url)",
+      "relationship":{"source_kind":"tool","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id":"typescript-activepieces-safe-http-local",
+      "target":{"kind":"local","path":"cases/typescript_activepieces_safe_http"},
+      "check_id":"IR-TS-FILTERING-AXIOS-INSTANCE","path":"mcp-transport.ts","line":8,"expected":true,
+      "relationship":{"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy","attributes":{"analysis":"typescript-imported-filtering-axios-instance","dns_scope":"connection-time-filtered-unless-proxied","proxy_scope":"environment-dependent","transport_scope":"imported-axios-client-instance","enforcement_default":"enabled","escape_hatch":"configured-address-allowlist","filter_library_version":"3.2.0"}}
+    },
+    {
+      "id":"typescript-activepieces-safe-http-raw-local-negative",
+      "target":{"kind":"local","path":"cases/typescript_activepieces_safe_http"},
+      "check_id":"IR-TS-FILTERING-AXIOS-INSTANCE","path":"raw.ts","line":2,"expected":false,"source_contains":"safeHttp.axios.request",
+      "relationship":{"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy"}
+    },
+    {
+      "id":"typescript-activepieces-safe-http-real",
+      "target":{"kind":"repository","repository":"activepieces/activepieces","commit":"d4cc3eaff77209b773f31e947b3b71306b02059d"},
+      "check_id":"IR-TS-FILTERING-AXIOS-INSTANCE","path":"packages/server/utils/src/mcp-transport.ts","line":56,"expected":true,
+      "relationship":{"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy","attributes":{"analysis":"typescript-imported-filtering-axios-instance","dns_scope":"connection-time-filtered-unless-proxied","proxy_scope":"environment-dependent","transport_scope":"imported-axios-client-instance","enforcement_default":"enabled","escape_hatch":"configured-address-allowlist","filter_library_version":"3.2.0","helper_line":47,"entry_line":6}}
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
-  "schema_version": 39,
-  "generated_at": "2026-08-21T16:51:16.814331+00:00",
+  "schema_version": 40,
+  "generated_at": "2026-08-21T17:22:44.228017+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -16,11 +16,11 @@
     "zero_source_repositories": [
       "daytonaio/daytona"
     ],
-    "files_scanned": 10750,
-    "dependency_files_materialized": 155,
-    "repositories_with_dependency_expansion": 15,
+    "files_scanned": 10751,
+    "dependency_files_materialized": 156,
+    "repositories_with_dependency_expansion": 16,
     "config_files_scanned": 155,
-    "relationships": 1479,
+    "relationships": 1481,
     "symbolized_components": 8743,
     "identified_symbol_endpoints": 1936,
     "resolved_symbol_endpoints": 1934,
@@ -30,15 +30,16 @@
       "lexical-single-definition": 325,
       "module-single-definition": 14
     },
-    "relationship_endpoints": 2958,
+    "relationship_endpoints": 2962,
     "bom_endpoint_resolutions": {
-      "ambiguous": 32,
-      "evidence-location": 475,
+      "ambiguous": 33,
+      "evidence-location": 477,
       "symbol-id": 1934,
-      "unique-display-name": 18,
+      "unique-display-name": 19,
       "unresolved": 499
     },
     "bom_ambiguous_endpoints_by_side_kind": {
+      "source:protocol": 1,
       "target:control": 2,
       "target:tool": 30
     },
@@ -127,6 +128,13 @@
       "configured_allowlist_and_loopback_exemption": 10,
       "no_escape_hatch": 2
     },
+    "typescript_axios_instance_network": {
+      "capabilities": 0,
+      "dynamic_origins": 0,
+      "absolute_override_allowed": 0,
+      "absolute_override_disabled": 0,
+      "capability_edges": 0
+    },
     "typescript_network_origin_controls": {
       "total": 1,
       "configured_optional": 1,
@@ -134,24 +142,28 @@
       "dns_unresolved": 1
     },
     "typescript_secure_network_controls": {
-      "total": 4,
-      "enabled_default": 3,
+      "total": 5,
+      "enabled_default": 4,
       "disabled_default": 1,
       "configured_opt_in": 1,
       "configured_opt_out": 2,
       "bounded_redirect_hooks": 1,
       "redirects_validated": 2,
       "redirects_disabled": 1,
+      "redirects_direct_connection_filtered": 1,
       "secure_lookup_configured": 1,
       "dns_connection_pinned_unless_proxied": 1,
       "dns_connection_pinned": 1,
       "dns_preflight_only_rebinding_residual": 1,
+      "dns_connection_time_filtered_unless_proxied": 1,
       "proxy_unresolved": 2,
-      "proxy_environment_dependent": 1,
+      "proxy_environment_dependent": 2,
       "proxy_pinned_agent": 1,
       "fixed_caller_config": 1,
       "caller_agent_overridden": 1,
       "global_fetch_unpinned": 1,
+      "imported_axios_client_instance": 1,
+      "configured_address_allowlist": 1,
       "ipv4_mapped_ipv6_normalized": 3,
       "domain_hitl_independent": 1,
       "no_escape_hatch": 1
@@ -274,7 +286,7 @@
         "fixed-tool-binding": 6,
         "human-approval": 3,
         "network-origin-policy": 1,
-        "network-ssrf-policy": 6,
+        "network-ssrf-policy": 7,
         "path-boundary": 4,
         "path-prefix-check": 1,
         "tool-allowlist": 1,
@@ -422,7 +434,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 135.454
+    "elapsed_seconds": 144.1254
   },
   "repositories": [
     {
@@ -536,6 +548,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -551,16 +570,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -612,7 +635,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1659
+      "elapsed_seconds": 2.4423
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -732,6 +755,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -747,16 +777,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -813,7 +847,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9961
+      "elapsed_seconds": 3.0342
     },
     {
       "repository": "langchain-ai/langchain",
@@ -930,6 +964,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -945,16 +986,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -1004,7 +1049,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.902
+      "elapsed_seconds": 0.9101
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -1125,6 +1170,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1140,16 +1192,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -1207,7 +1263,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.8773
+      "elapsed_seconds": 3.9918
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -1333,6 +1389,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1348,16 +1411,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -1411,7 +1478,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1847
+      "elapsed_seconds": 0.1919
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -1541,6 +1608,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1556,16 +1630,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -1632,7 +1710,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.4427
+      "elapsed_seconds": 4.609
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -1764,6 +1842,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1779,16 +1864,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -1860,7 +1949,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8249
+      "elapsed_seconds": 2.849
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -1987,6 +2076,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2002,16 +2098,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -2075,7 +2175,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2556
+      "elapsed_seconds": 0.2582
     },
     {
       "repository": "microsoft/autogen",
@@ -2198,6 +2298,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2213,16 +2320,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -2281,7 +2392,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6704
+      "elapsed_seconds": 0.6737
     },
     {
       "repository": "microsoft/agent-framework",
@@ -2388,6 +2499,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2403,16 +2521,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -2462,7 +2584,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.04
+      "elapsed_seconds": 0.0406
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -2583,6 +2705,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2598,16 +2727,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -2666,7 +2799,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1069
+      "elapsed_seconds": 0.1067
     },
     {
       "repository": "openai/openai-agents-python",
@@ -2807,6 +2940,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2822,16 +2962,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -2900,7 +3044,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.1486
+      "elapsed_seconds": 5.2012
     },
     {
       "repository": "openai/openai-agents-js",
@@ -3038,6 +3182,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3053,16 +3204,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -3118,7 +3273,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7577
+      "elapsed_seconds": 0.8417
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -3245,6 +3400,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3260,16 +3422,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -3332,7 +3498,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.3284
+      "elapsed_seconds": 11.4574
     },
     {
       "repository": "google/adk-python",
@@ -3458,6 +3624,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3473,16 +3646,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -3542,7 +3719,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3453
+      "elapsed_seconds": 3.3873
     },
     {
       "repository": "google/adk-js",
@@ -3663,6 +3840,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3678,16 +3862,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 1,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 1,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 1,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 1,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 1,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 1
@@ -3744,7 +3932,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6821
+      "elapsed_seconds": 3.0475
     },
     {
       "repository": "huggingface/smolagents",
@@ -3869,6 +4057,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3884,16 +4079,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -3959,7 +4158,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2881
+      "elapsed_seconds": 1.3251
     },
     {
       "repository": "agno-agi/agno",
@@ -4076,6 +4275,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4091,16 +4297,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -4160,7 +4370,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2997
+      "elapsed_seconds": 0.3029
     },
     {
       "repository": "camel-ai/camel",
@@ -4287,6 +4497,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4302,16 +4519,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -4378,7 +4599,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.646
+      "elapsed_seconds": 2.6892
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -4493,6 +4714,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4508,16 +4736,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -4570,7 +4802,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1781
+      "elapsed_seconds": 0.1786
     },
     {
       "repository": "run-llama/llama_index",
@@ -4691,6 +4923,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4706,16 +4945,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -4765,7 +5008,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7346
+      "elapsed_seconds": 0.7462
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -4891,6 +5134,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4906,16 +5156,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -4982,7 +5236,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3761
+      "elapsed_seconds": 1.4249
     },
     {
       "repository": "InternLM/lagent",
@@ -5107,6 +5361,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5122,16 +5383,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -5194,7 +5459,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6501
+      "elapsed_seconds": 0.6544
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -5312,6 +5577,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5327,16 +5599,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -5401,7 +5677,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0662
+      "elapsed_seconds": 1.0994
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -5524,6 +5800,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5539,16 +5822,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -5615,7 +5902,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5281
+      "elapsed_seconds": 1.5493
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -5734,6 +6021,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5749,16 +6043,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -5822,7 +6120,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9366
+      "elapsed_seconds": 0.9523
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -5944,6 +6242,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5959,16 +6264,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -6028,7 +6337,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1756
+      "elapsed_seconds": 3.2013
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -6145,6 +6454,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6160,16 +6476,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -6228,7 +6548,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1501
+      "elapsed_seconds": 1.2167
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -6347,6 +6667,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6362,16 +6689,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -6421,7 +6752,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7515
+      "elapsed_seconds": 0.8386
     },
     {
       "repository": "letta-ai/letta-code",
@@ -6534,6 +6865,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6549,16 +6887,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -6608,7 +6950,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.469
+      "elapsed_seconds": 4.0344
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -6734,6 +7076,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6749,16 +7098,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -6822,7 +7175,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.943
+      "elapsed_seconds": 0.9585
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -6940,6 +7293,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6955,16 +7315,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -7029,7 +7393,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0503
+      "elapsed_seconds": 1.9752
     },
     {
       "repository": "mastra-ai/mastra",
@@ -7153,6 +7517,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7168,16 +7539,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -7233,7 +7608,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0471
+      "elapsed_seconds": 2.2886
     },
     {
       "repository": "vercel/ai",
@@ -7352,6 +7727,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7367,16 +7749,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -7431,7 +7817,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1751
+      "elapsed_seconds": 2.4777
     },
     {
       "repository": "cline/cline",
@@ -7554,6 +7940,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7569,16 +7962,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -7634,7 +8031,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0226
+      "elapsed_seconds": 3.4519
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -7750,6 +8147,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7765,16 +8169,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -7824,7 +8232,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2887
+      "elapsed_seconds": 3.738
     },
     {
       "repository": "continuedev/continue",
@@ -7938,6 +8346,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7953,16 +8368,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -8012,7 +8431,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.032
+      "elapsed_seconds": 2.3032
     },
     {
       "repository": "Aider-AI/aider",
@@ -8125,6 +8544,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8140,16 +8566,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -8214,7 +8644,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3596
+      "elapsed_seconds": 2.4614
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -8326,6 +8756,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8341,16 +8778,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -8408,7 +8849,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 0.7793
+      "elapsed_seconds": 0.7947
     },
     {
       "repository": "plandex-ai/plandex",
@@ -8507,6 +8948,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8522,16 +8970,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -8581,7 +9033,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0366
+      "elapsed_seconds": 0.0382
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -8694,6 +9146,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8709,16 +9168,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -8774,7 +9237,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1071
+      "elapsed_seconds": 1.1438
     },
     {
       "repository": "stitionai/devika",
@@ -8892,6 +9355,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8907,16 +9377,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -8970,7 +9444,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2978
+      "elapsed_seconds": 0.3123
     },
     {
       "repository": "block/goose",
@@ -9084,6 +9558,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9099,16 +9580,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -9167,7 +9652,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 3.8088
+      "elapsed_seconds": 4.4298
     },
     {
       "repository": "bytedance/trae-agent",
@@ -9294,6 +9779,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9309,16 +9801,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -9385,7 +9881,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6342
+      "elapsed_seconds": 0.6446
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -9502,6 +9998,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9517,16 +10020,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -9582,7 +10089,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.884
+      "elapsed_seconds": 5.4933
     },
     {
       "repository": "openai/codex",
@@ -9688,6 +10195,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9703,16 +10217,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -9768,7 +10286,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5699
+      "elapsed_seconds": 0.5729
     },
     {
       "repository": "browser-use/browser-use",
@@ -9897,6 +10415,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9912,16 +10437,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -9989,7 +10518,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3541
+      "elapsed_seconds": 3.3842
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -10124,6 +10653,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10139,16 +10675,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -10214,7 +10754,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.3779
+      "elapsed_seconds": 6.7018
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -10335,6 +10875,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10350,16 +10897,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -10420,7 +10971,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6663
+      "elapsed_seconds": 0.6946
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -10536,6 +11087,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10551,16 +11109,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -10612,7 +11174,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0498
+      "elapsed_seconds": 1.178
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -10731,6 +11293,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 1,
         "configured_optional": 1,
@@ -10746,16 +11315,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -10815,7 +11388,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0695
+      "elapsed_seconds": 1.1947
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -10941,6 +11514,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10956,16 +11536,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -11024,7 +11608,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.98
+      "elapsed_seconds": 2.01
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -11143,6 +11727,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11158,16 +11749,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -11222,7 +11817,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.06
+      "elapsed_seconds": 3.5415
     },
     {
       "repository": "github/github-mcp-server",
@@ -11331,6 +11926,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11346,16 +11948,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -11405,7 +12011,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0367
+      "elapsed_seconds": 0.0444
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -11515,6 +12121,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11530,16 +12143,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -11589,7 +12206,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0875
+      "elapsed_seconds": 0.101
     },
     {
       "repository": "awslabs/mcp",
@@ -11706,6 +12323,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11721,16 +12345,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -11788,7 +12416,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.787
+      "elapsed_seconds": 1.8182
     },
     {
       "repository": "docker/mcp-gateway",
@@ -11898,6 +12526,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11913,16 +12548,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -11974,7 +12613,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0291
+      "elapsed_seconds": 0.0344
     },
     {
       "repository": "jlowin/fastmcp",
@@ -12092,6 +12731,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12107,16 +12753,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -12178,7 +12828,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1322
+      "elapsed_seconds": 2.1915
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -12277,6 +12927,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12292,16 +12949,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -12351,7 +13012,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0261
+      "elapsed_seconds": 0.0295
     },
     {
       "repository": "langflow-ai/langflow",
@@ -12478,6 +13139,13 @@
         "configured_allowlist_and_loopback_exemption": 10,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12493,16 +13161,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -12560,7 +13232,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.5694
+      "elapsed_seconds": 2.744
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -12677,6 +13349,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12692,16 +13371,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 2,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 1,
         "dns_connection_pinned": 1,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 1,
         "proxy_pinned_agent": 1,
         "fixed_caller_config": 1,
         "caller_agent_overridden": 1,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 2,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -12759,7 +13442,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.892
+      "elapsed_seconds": 3.3342
     },
     {
       "repository": "langgenius/dify",
@@ -12861,6 +13544,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12876,16 +13566,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -12935,7 +13629,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3919
+      "elapsed_seconds": 1.4211
     },
     {
       "repository": "n8n-io/n8n",
@@ -13060,6 +13754,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13075,16 +13776,20 @@
         "bounded_redirect_hooks": 1,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 1,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 1,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 1,
         "no_escape_hatch": 0
@@ -13142,19 +13847,20 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1008
+      "elapsed_seconds": 2.4025
     },
     {
       "repository": "activepieces/activepieces",
       "category": "workflow-platform",
       "status": "ok",
-      "files_scanned": 165,
-      "dependency_files_materialized": 0,
+      "files_scanned": 166,
+      "dependency_files_materialized": 1,
       "config_files_scanned": 17,
       "components": {
-        "capability": 57,
+        "capability": 58,
+        "control": 1,
         "mcp": 4,
-        "protocol": 9,
+        "protocol": 10,
         "provider": 5,
         "sandbox-boundary": 2,
         "tool": 6
@@ -13167,6 +13873,9 @@
           "network",
           "shell-execution"
         ],
+        "control": [
+          "network-ssrf-policy"
+        ],
         "protocol": [
           "MCP"
         ],
@@ -13178,7 +13887,7 @@
           "privileged-container"
         ]
       },
-      "relationships": 0,
+      "relationships": 2,
       "symbolized_components": 6,
       "identified_symbol_endpoints": 0,
       "resolved_symbol_endpoints": 0,
@@ -13266,6 +13975,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13273,24 +13989,28 @@
         "dns_unresolved": 0
       },
       "typescript_secure_network_controls": {
-        "total": 0,
-        "enabled_default": 0,
+        "total": 1,
+        "enabled_default": 1,
         "disabled_default": 0,
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 1,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 1,
         "proxy_unresolved": 0,
-        "proxy_environment_dependent": 0,
+        "proxy_environment_dependent": 1,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 1,
+        "configured_address_allowlist": 1,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -13334,8 +14054,14 @@
         "python": 0,
         "typescript": 0
       },
-      "bom_endpoint_resolutions": {},
-      "bom_ambiguous_endpoints_by_side_kind": {},
+      "bom_endpoint_resolutions": {
+        "ambiguous": 1,
+        "evidence-location": 2,
+        "unique-display-name": 1
+      },
+      "bom_ambiguous_endpoints_by_side_kind": {
+        "source:protocol": 1
+      },
       "findings": {
         "AV-EXEC001": 4,
         "AV-MCP002": 1,
@@ -13344,7 +14070,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3862
+      "elapsed_seconds": 1.551
     },
     {
       "repository": "simstudioai/sim",
@@ -13452,6 +14178,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13467,16 +14200,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -13526,7 +14263,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.981
+      "elapsed_seconds": 4.5752
     },
     {
       "repository": "composiohq/composio",
@@ -13660,6 +14397,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 2
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13675,16 +14419,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -13740,7 +14488,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4095
+      "elapsed_seconds": 1.5553
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -13870,6 +14618,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13885,16 +14640,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -13962,7 +14721,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1576
+      "elapsed_seconds": 2.2086
     },
     {
       "repository": "e2b-dev/E2B",
@@ -14069,6 +14828,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14084,16 +14850,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -14143,7 +14913,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7942
+      "elapsed_seconds": 1.9545
     },
     {
       "repository": "daytonaio/daytona",
@@ -14242,6 +15012,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14257,16 +15034,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -14441,6 +15222,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14456,16 +15244,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -14521,7 +15313,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1609
+      "elapsed_seconds": 1.1671
     },
     {
       "repository": "traceloop/openllmetry",
@@ -14651,6 +15443,13 @@
         "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14666,16 +15465,20 @@
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
         "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
         "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
         "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0,
         "no_escape_hatch": 0
@@ -14735,7 +15538,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9349
+      "elapsed_seconds": 1.9441
     }
   ]
 }

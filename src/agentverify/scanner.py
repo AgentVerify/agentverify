@@ -5170,6 +5170,24 @@ class TypeScriptNetworkHelperSummary:
 
 
 @dataclass(frozen=True)
+class TypeScriptAxiosInstance:
+    name: str
+    line: int
+    base_url_scope: str
+    allow_absolute_urls: bool
+
+
+@dataclass(frozen=True)
+class TypeScriptNetworkCall:
+    api: str
+    url_expression: str
+    summary: str | None = None
+    receiver: str | None = None
+    base_url_scope: str | None = None
+    absolute_url_override: str | None = None
+
+
+@dataclass(frozen=True)
 class TypeScriptNetworkOriginHelper:
     name: str
     evidence: Evidence
@@ -5503,6 +5521,92 @@ def typescript_named_import_bindings(text: str, module_prefix: str) -> dict[str,
     return bindings
 
 
+def typescript_axios_default_bindings(text: str) -> set[str]:
+    """Return immutable default/CommonJS bindings proven to come from Axios."""
+    code = typescript_code_mask(text)
+    bindings: set[str] = set()
+    patterns = (
+        re.compile(
+            r"\bimport\s+([A-Za-z_$][\w$]*)\s*"
+            r"(?:,\s*\{[^}]*\})?\s+from\s*['\"]axios['\"]",
+            re.DOTALL,
+        ),
+        re.compile(
+            r"\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*"
+            r"require\s*\(\s*['\"]axios['\"]\s*\)",
+        ),
+    )
+    for pattern in patterns:
+        for match in pattern.finditer(text):
+            structural = code[match.start() : match.start(1)]
+            if not structural.strip():
+                continue
+            name = match.group(1)
+            assignment_count = len(
+                re.findall(rf"(?<![\w$.]){re.escape(name)}\s*=", code)
+            )
+            expected = 1 if structural.lstrip().startswith("const") else 0
+            if assignment_count == expected:
+                bindings.add(name)
+    return bindings
+
+
+def typescript_axios_instances(
+    text: str,
+    axios_bindings: set[str],
+) -> dict[str, TypeScriptAxiosInstance]:
+    """Resolve immutable same-file instances created from an import-proven Axios binding."""
+    if not axios_bindings:
+        return {}
+    code = typescript_code_mask(text)
+    aliases = "|".join(re.escape(name) for name in sorted(axios_bindings, key=len, reverse=True))
+    pattern = re.compile(
+        rf"\bconst\s+([A-Za-z_$][\w$]*)\s*(?:\:\s*[^=;]+)?=\s*"
+        rf"(?:{aliases})\.create\s*\("
+    )
+    candidates: dict[str, list[TypeScriptAxiosInstance]] = defaultdict(list)
+    literal_bindings = typescript_literal_string_bindings(text)
+    for match in pattern.finditer(code):
+        opening = code.find("(", match.start(), match.end())
+        end = typescript_balanced_end(code, opening, "(", ")")
+        if end is None:
+            continue
+        arguments = typescript_call_arguments(text[opening + 1 : end - 1])
+        config = arguments[0][0] if arguments else "{}"
+        if not typescript_code_mask(config).lstrip().startswith("{"):
+            continue
+        base_url = typescript_object_property_expression(config, "baseURL")
+        allow_absolute = typescript_object_property_expression(config, "allowAbsoluteUrls")
+        if allow_absolute is not None and allow_absolute not in {"true", "false"}:
+            continue
+        if base_url is None:
+            base_url_scope = "absent"
+        elif re.match(
+            r"^https?://[^/?#]+",
+            typescript_static_url_prefix(base_url, literal_bindings),
+            re.IGNORECASE,
+        ):
+            base_url_scope = "fixed-origin"
+        else:
+            base_url_scope = "configured"
+        candidates[match.group(1)].append(
+            TypeScriptAxiosInstance(
+                match.group(1),
+                line_at(text, match.start()),
+                base_url_scope,
+                allow_absolute != "false",
+            )
+        )
+    instances = {}
+    for name, values in candidates.items():
+        if len(values) != 1:
+            continue
+        assignments = len(re.findall(rf"(?<![\w$.]){re.escape(name)}\s*=", code))
+        if assignments == 1:
+            instances[name] = values[0]
+    return instances
+
+
 def typescript_literal_string_bindings(text: str) -> dict[str, str]:
     """Resolve direct module-local const/let string bindings outside comments and strings."""
     code = typescript_code_mask(text)
@@ -5666,11 +5770,32 @@ def typescript_apply_destructuring_assignments(
             dynamic_names.update(names)
 
 
-def typescript_network_calls(text: str) -> dict[int, list[tuple[str, str]]]:
-    """Return recognized global fetch/Axios calls with their first URL argument."""
+def typescript_network_calls(
+    text: str,
+    axios_bindings: set[str] | None = None,
+    axios_instances: dict[str, TypeScriptAxiosInstance] | None = None,
+) -> dict[int, list[TypeScriptNetworkCall]]:
+    """Return recognized global fetch and import-proven Axios calls."""
     code = typescript_code_mask(text)
-    pattern = re.compile(r"(?<![\w$.])fetch\s*\(|\baxios\.(get|post|put|patch|delete)\s*\(")
-    calls: dict[int, list[tuple[str, str]]] = defaultdict(list)
+    axios_bindings = axios_bindings or {"axios"}
+    axios_instances = axios_instances or {}
+    direct_names = "|".join(
+        re.escape(name) for name in sorted(axios_bindings, key=len, reverse=True)
+    )
+    instance_names = "|".join(
+        re.escape(name) for name in sorted(axios_instances, key=len, reverse=True)
+    )
+    alternatives = [r"(?<![\w$.])fetch\s*\("]
+    if direct_names:
+        alternatives.append(
+            rf"(?<![\w$.])(?:{direct_names})\.(get|post|put|patch|delete)\s*\("
+        )
+    if instance_names:
+        alternatives.append(
+            rf"(?<![\w$.])({instance_names})\.(request|get|post|put|patch|delete)\s*\("
+        )
+    pattern = re.compile("|".join(alternatives))
+    calls: dict[int, list[TypeScriptNetworkCall]] = defaultdict(list)
     for match in pattern.finditer(code):
         opening = code.find("(", match.start(), match.end())
         end = typescript_balanced_end(code, opening, "(", ")")
@@ -5679,8 +5804,49 @@ def typescript_network_calls(text: str) -> dict[int, list[tuple[str, str]]]:
         arguments = typescript_call_arguments(text[opening + 1 : end - 1])
         if not arguments:
             continue
-        api = f"axios.{match.group(1)}" if match.group(1) else "fetch"
-        calls[line_at(text, match.start())].append((api, arguments[0][0]))
+        matched_code = code[match.start() : opening]
+        instance_match = re.search(
+            r"([A-Za-z_$][\w$]*)\.(request|get|post|put|patch|delete)\s*$",
+            matched_code,
+        )
+        if instance_match and instance_match.group(1) in axios_instances:
+            receiver, method = instance_match.groups()
+            url_expression = arguments[0][0]
+            if method == "request":
+                request_object = url_expression
+                url_expression = (
+                    typescript_object_property_expression(request_object, "url") or ""
+                )
+                if not url_expression:
+                    shorthand_urls = [
+                        item.strip()
+                        for item, _ in typescript_object_items(request_object)
+                        if typescript_code_mask(item).strip() == "url"
+                    ]
+                    if len(shorthand_urls) == 1:
+                        url_expression = shorthand_urls[0]
+                if not url_expression:
+                    continue
+            instance = axios_instances[receiver]
+            calls[line_at(text, match.start())].append(
+                TypeScriptNetworkCall(
+                    f"axios.instance.{method}",
+                    url_expression,
+                    "same-file-axios-instance",
+                    receiver,
+                    instance.base_url_scope,
+                    "allowed" if instance.allow_absolute_urls else "disabled",
+                )
+            )
+            continue
+        direct_method = re.search(
+            r"\.(get|post|put|patch|delete)\s*$",
+            matched_code,
+        )
+        api = f"axios.{direct_method.group(1)}" if direct_method else "fetch"
+        calls[line_at(text, match.start())].append(
+            TypeScriptNetworkCall(api, arguments[0][0])
+        )
     return calls
 
 
@@ -5755,7 +5921,9 @@ def typescript_function_definitions(
 
 
 def typescript_network_helper_summaries(
-    text: str, literal_bindings: dict[str, str]
+    text: str,
+    literal_bindings: dict[str, str],
+    axios_bindings: set[str] | None = None,
 ) -> dict[str, TypeScriptNetworkHelperSummary]:
     definitions = typescript_function_definitions(text)
     name_counts = Counter(name for name, _, _, _ in definitions)
@@ -5763,7 +5931,7 @@ def typescript_network_helper_summaries(
     for name, line, parameters, body in definitions:
         if name_counts[name] != 1:
             continue
-        calls = typescript_network_calls(body)
+        calls = typescript_network_calls(body, axios_bindings)
         if not calls:
             continue
         destructuring_assignments = typescript_multiline_destructuring_assignments(body)
@@ -5776,8 +5944,10 @@ def typescript_network_helper_summaries(
                 )
                 typescript_update_dynamic_names(body_line, dynamic_names, literal_bindings)
                 if any(
-                    typescript_http_origin_is_dynamic(expression, dynamic_names, literal_bindings)
-                    for _, expression in calls.get(body_line_number, [])
+                    typescript_http_origin_is_dynamic(
+                        call.url_expression, dynamic_names, literal_bindings
+                    )
+                    for call in calls.get(body_line_number, [])
                 ):
                     controlled_names.add(parameter.local_name)
         summaries[name] = TypeScriptNetworkHelperSummary(
@@ -7085,9 +7255,13 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
     ] = defaultdict(dict)
     network_callback_depth_by_tool: dict[str, int] = {}
     literal_bindings = typescript_literal_string_bindings(text)
-    network_calls = typescript_network_calls(text)
+    axios_bindings = typescript_axios_default_bindings(text)
+    axios_instances = typescript_axios_instances(text, axios_bindings)
+    network_calls = typescript_network_calls(text, axios_bindings, axios_instances)
     if tool_by_line and network_calls:
-        network_helper_summaries = typescript_network_helper_summaries(text, literal_bindings)
+        network_helper_summaries = typescript_network_helper_summaries(
+            text, literal_bindings, axios_bindings
+        )
         network_helper_calls = typescript_helper_calls(text, network_helper_summaries)
         network_origin_helpers = typescript_network_origin_helpers(relative, text, lines)
         multiline_destructuring_assignments = typescript_multiline_destructuring_assignments(text)
@@ -7262,13 +7436,23 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
             )
             if guard is not None:
                 add_typescript_path_boundary_control(ir, ev, guard)
-        for api, url_expression in network_calls.get(line_number, []):
+        for network_call in network_calls.get(line_number, []):
+            api = network_call.api
+            url_expression = network_call.url_expression
             origin_policies = {
                 guarded_network_names[name]
                 for name in typescript_expression_names(url_expression)
                 if name in guarded_network_names
             }
             origin_policy = next(iter(origin_policies)) if len(origin_policies) == 1 else None
+            dynamic_origin = typescript_http_origin_is_dynamic(
+                url_expression, dynamic_names, literal_bindings
+            )
+            if (
+                network_call.absolute_url_override == "disabled"
+                and network_call.base_url_scope != "absent"
+            ):
+                dynamic_origin = False
             add_typescript_capability(
                 ir,
                 relative,
@@ -7278,8 +7462,16 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                 "network",
                 {
                     "api": api,
-                    "dynamic_origin": typescript_http_origin_is_dynamic(
-                        url_expression, dynamic_names, literal_bindings
+                    "dynamic_origin": dynamic_origin,
+                    **(
+                        {
+                            "summary": network_call.summary,
+                            "receiver": network_call.receiver,
+                            "base_url_scope": network_call.base_url_scope,
+                            "absolute_url_override": network_call.absolute_url_override,
+                        }
+                        if network_call.summary is not None
+                        else {}
                     ),
                     **(
                         {
@@ -11369,6 +11561,312 @@ def add_typescript_google_adk_load_web_page_composition(
     )
 
 
+def add_typescript_activepieces_safe_http_composition(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve Activepieces' MCP request through its imported filtering Axios instance."""
+    sources: dict[str, tuple[str, str]] = {}
+    for path in paths:
+        if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        sources[relative] = (text, typescript_code_mask(text))
+
+    def unique_source(*markers: str) -> tuple[str, str, str] | None:
+        matches = [
+            (relative, text, code)
+            for relative, (text, code) in sources.items()
+            if all(marker in code for marker in markers)
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    safe_source = unique_source(
+        "function buildAgents(",
+        "new RequestFilteringHttpAgent(",
+        "new RequestFilteringHttpsAgent(",
+        "function createAxios(",
+        "axios.create(",
+        "export const safeHttp =",
+    )
+    transport_source = unique_source(
+        "function createSafeMcpFetch(",
+        "safeHttp.axios.request<",
+        "function createSafeMcpTransport(",
+        "new SSEClientTransport(",
+        "new StreamableHTTPClientTransport(",
+    )
+    entry_source = unique_source(
+        "validateAgentMcpTool(",
+        "mcpTransport.createTransport(",
+        "serverUrl: tool.serverUrl",
+        "client.connect(transport)",
+    )
+    if safe_source is None or transport_source is None or entry_source is None:
+        return
+    safe_path, safe_text, safe_code = safe_source
+    transport_path, transport_text, transport_code = transport_source
+    entry_path, entry_text, entry_code = entry_source
+
+    manifest_matches: list[tuple[int, str]] = []
+    safe_source_path = Path(safe_path)
+    for path in paths:
+        if path.name != "package.json" or not path.is_file():
+            continue
+        try:
+            value = json.loads(path.read_text(encoding="utf-8-sig"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        dependencies = {
+            **value.get("dependencies", {}),
+            **value.get("devDependencies", {}),
+        }
+        relative_manifest = path.relative_to(root)
+        if (
+            dependencies.get("request-filtering-agent") == "3.2.0"
+            and relative_manifest.parent in safe_source_path.parents
+        ):
+            manifest_matches.append(
+                (len(relative_manifest.parent.parts), relative_manifest.as_posix())
+            )
+    if not manifest_matches:
+        return
+    deepest_manifest = max(depth for depth, _ in manifest_matches)
+    deepest_manifests = [
+        path for depth, path in manifest_matches if depth == deepest_manifest
+    ]
+    if len(deepest_manifests) != 1:
+        return
+    manifest_path = deepest_manifests[0]
+
+    axios_bindings = typescript_axios_default_bindings(safe_text)
+    filtering_imports = typescript_named_import_bindings(
+        safe_text, "request-filtering-agent"
+    )
+    if not (
+        axios_bindings == {"axios"}
+        and filtering_imports.get("RequestFilteringHttpAgent")
+        == "RequestFilteringHttpAgent"
+        and filtering_imports.get("RequestFilteringHttpsAgent")
+        == "RequestFilteringHttpsAgent"
+        and typescript_named_import_reaches_path(
+            root,
+            root / transport_path,
+            transport_text,
+            "safeHttp",
+            "safeHttp",
+            safe_path,
+            set(sources),
+        )
+    ):
+        return
+
+    required_safe_text = (
+        "process.env['AP_SSRF_ALLOW_LIST']",
+        "return raw.split(',').map((s) => s.trim()).filter(Boolean)",
+        "allowPrivateIPAddress: false",
+        "allowLoopbackIPAddress: false",
+        "allowMetaIPAddress: false",
+        "allowIPAddressList: allowList",
+        "httpAgent: new RequestFilteringHttpAgent(filteringOptions)",
+        "httpsAgent: new RequestFilteringHttpsAgent({ ...filteringOptions, ...httpsAgentOptions })",
+        "const { httpAgent, httpsAgent } = buildAgents(",
+        "allowList: parseAllowListFromEnv()",
+        "return attachSsrfErrorInterceptor(axios.create({",
+        "...config",
+        "httpAgent",
+        "httpsAgent",
+        "lazyDefaultAxios ??= createAxios()",
+    )
+    if not all(marker in safe_text for marker in required_safe_text):
+        return
+    if not (
+        re.search(
+            r"const\s+filteringOptions\s*=\s*\{"
+            r"[\s\S]{0,500}allowPrivateIPAddress\s*:\s*false"
+            r"[\s\S]{0,500}allowLoopbackIPAddress\s*:\s*false"
+            r"[\s\S]{0,500}allowMetaIPAddress\s*:\s*false"
+            r"[\s\S]{0,500}allowIPAddressList\s*:\s*allowList"
+            r"[\s\S]{0,300}\}",
+            safe_code,
+        )
+        and re.search(
+            r"return\s+\{\s*httpAgent\s*:\s*new\s+RequestFilteringHttpAgent"
+            r"\s*\(\s*filteringOptions\s*\)\s*,\s*httpsAgent\s*:\s*new\s+"
+            r"RequestFilteringHttpsAgent\s*\(\s*\{\s*\.\.\.filteringOptions\s*,"
+            r"\s*\.\.\.httpsAgentOptions\s*\}\s*\)",
+            safe_code,
+        )
+        and re.search(
+            r"axios\.create\s*\(\s*\{\s*\.\.\.config\s*,\s*httpAgent\s*,"
+            r"\s*httpsAgent\s*,?\s*\}\s*\)",
+            safe_code,
+        )
+        and not re.search(
+            r"(?:allowPrivateIPAddress|allowMetaIPAddress)\s*:\s*true",
+            safe_code,
+        )
+    ):
+        return
+
+    request_match = re.search(
+        r"safeHttp\.axios\.request(?:\s*<[^;{}]+>)?\s*\(\s*\{",
+        transport_code,
+    )
+    create_fetch_match = re.search(r"\bfunction\s+createSafeMcpFetch\b", transport_code)
+    create_transport_match = re.search(
+        r"\bfunction\s+createSafeMcpTransport\b", transport_code
+    )
+    control_match = re.search(r"\bfunction\s+createAxios\b", safe_code)
+    entry_match = re.search(r"\bvalidateAgentMcpTool\s*\(", entry_code)
+    if None in {
+        request_match,
+        create_fetch_match,
+        create_transport_match,
+        control_match,
+        entry_match,
+    }:
+        return
+    assert request_match is not None
+    assert create_fetch_match is not None
+    assert create_transport_match is not None
+    assert control_match is not None
+    assert entry_match is not None
+    request_opening = transport_code.find("{", request_match.start(), request_match.end())
+    request_end = typescript_balanced_end(transport_code, request_opening, "{", "}")
+    if request_end is None:
+        return
+    request_object = transport_text[request_opening:request_end]
+    request_url = typescript_object_property_expression(request_object, "url")
+    request_has_url_shorthand = any(
+        typescript_code_mask(item).strip() == "url"
+        for item, _ in typescript_object_items(request_object)
+    )
+    if (
+        request_url not in {None, "url"}
+        or (request_url is None and not request_has_url_shorthand)
+        or "httpAgent" in typescript_code_mask(request_object)
+        or "httpsAgent" in typescript_code_mask(request_object)
+        or "proxy" in typescript_code_mask(request_object)
+        or not re.search(
+            r"const\s+url\s*=\s*input\s+instanceof\s+URL\s*\?"
+            r"[\s\S]{0,300}typeof\s+input\s*===\s*['\"]string['\"]"
+            r"[\s\S]{0,200}input\.url",
+            transport_text,
+        )
+        or not re.search(
+            r"const\s+fetch\s*=\s*createSafeMcpFetch\s*\("
+            r"[\s\S]{0,500}new\s+SSEClientTransport\s*\(\s*url\s*,"
+            r"[\s\S]{0,300}\bfetch\b"
+            r"[\s\S]{0,500}new\s+StreamableHTTPClientTransport\s*\(\s*url\s*,"
+            r"[\s\S]{0,300}\bfetch\b",
+            transport_code,
+        )
+        or not re.search(
+            r"mcpTransport\.createTransport\s*\(\s*\{"
+            r"[\s\S]{0,500}serverUrl\s*:\s*tool\.serverUrl",
+            entry_code,
+        )
+    ):
+        return
+
+    request_line = line_at(transport_text, request_match.start())
+    control_line = line_at(safe_text, control_match.start())
+    entry_line = line_at(entry_text, entry_match.start())
+    transport_line = line_at(transport_text, create_transport_match.start())
+    evidence = Evidence(
+        transport_path,
+        request_line,
+        excerpt(transport_text.splitlines(), request_line),
+    )
+    control_evidence = Evidence(
+        safe_path,
+        control_line,
+        excerpt(safe_text.splitlines(), control_line),
+    )
+    attributes = {
+        "scope": source_scope(transport_path),
+        "policy_effect": "filters-connected-addresses-unless-proxied",
+        "frontend": "typescript",
+        "analysis": "typescript-imported-filtering-axios-instance",
+        "initial_origin_scope": "http-https-with-connected-address-filter",
+        "redirect_scope": "each-direct-connection-filtered",
+        "dns_scope": "connection-time-filtered-unless-proxied",
+        "proxy_scope": "environment-dependent",
+        "transport_scope": "imported-axios-client-instance",
+        "enforcement_default": "enabled",
+        "escape_hatch": "configured-address-allowlist",
+        "enforcement_mode": "always-on-with-configured-exceptions",
+        "allowlist_environment": "AP_SSRF_ALLOW_LIST",
+        "allowlist_scope": "ip-or-cidr",
+        "filter_library": "request-filtering-agent",
+        "filter_library_version": "3.2.0",
+        "manifest_path": manifest_path,
+        "helper_path": safe_path,
+        "helper_line": control_line,
+        "transport_path": transport_path,
+        "transport_line": transport_line,
+        "entry_path": entry_path,
+        "entry_line": entry_line,
+    }
+    ir.add_component(
+        Component(
+            "capability",
+            "network",
+            evidence,
+            {
+                "scope": source_scope(transport_path),
+                "api": "safeHttp.axios.request",
+                "dynamic_origin": False,
+                "origin_authority": "configured-mcp-server",
+                "summary": "imported-axios-client-instance",
+                "request_url_property": "url",
+                "helper_path": safe_path,
+                "helper_line": control_line,
+            },
+        )
+    )
+    ir.add_component(
+        Component(
+            "protocol",
+            "MCP",
+            Evidence(
+                entry_path,
+                entry_line,
+                excerpt(entry_text.splitlines(), entry_line),
+            ),
+            {"transport": "http-or-sse", "endpoint_authority": "configuration"},
+        )
+    )
+    ir.add_component(Component("control", "network-ssrf-policy", control_evidence, attributes))
+    ir.add_relationship(
+        Relationship(
+            "protocol",
+            "MCP",
+            "uses",
+            "capability",
+            "network",
+            evidence,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "capability",
+            "network",
+            "governed-by",
+            "control",
+            "network-ssrf-policy",
+            evidence,
+            attributes,
+        )
+    )
+
+
 def add_typescript_a2a_card_endpoint_composition(
     ir: RepositoryIR,
     root: Path,
@@ -11891,6 +12389,7 @@ def scan_repository(
     add_typescript_flowise_secure_request_composition(ir, root, registry_paths)
     add_typescript_flowise_secure_fetch_composition(ir, root, registry_paths)
     add_typescript_google_adk_load_web_page_composition(ir, root, registry_paths)
+    add_typescript_activepieces_safe_http_composition(ir, root, registry_paths)
     add_typescript_a2a_card_endpoint_composition(ir, root, registry_paths)
     add_python_adk_a2a_card_endpoint_policy(ir, root, registry_paths)
     propagate_python_class_network_helpers(
