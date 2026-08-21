@@ -429,6 +429,169 @@ def python_function_local_bindings(
     return bindings
 
 
+def python_browser_receiver_proofs(
+    node: ast.FunctionDef | ast.AsyncFunctionDef,
+    browser_type_names: set[str],
+    browser_page_factories: set[str],
+) -> dict[int, str]:
+    """Prove direct browser-page evaluate receivers without semantic name matching."""
+    parents = {
+        id(child): parent
+        for parent in ast.walk(node)
+        for child in ast.iter_child_nodes(parent)
+    }
+
+    def belongs_to_function(candidate: ast.AST) -> bool:
+        parent = parents.get(id(candidate))
+        while parent is not None:
+            if isinstance(parent, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
+                return parent is node
+            parent = parents.get(id(parent))
+        return False
+
+    def annotation_is_browser_type(annotation: ast.AST | None) -> bool:
+        if annotation is None:
+            return False
+        if dotted_name(annotation) in browser_type_names:
+            return True
+        if isinstance(annotation, ast.BinOp) and isinstance(annotation.op, ast.BitOr):
+            pairs = ((annotation.left, annotation.right), (annotation.right, annotation.left))
+            return any(
+                annotation_is_browser_type(candidate)
+                and isinstance(nullable, ast.Constant)
+                and nullable.value is None
+                for candidate, nullable in pairs
+            )
+        if not isinstance(annotation, ast.Subscript):
+            return False
+        wrapper = dotted_name(annotation.value).rsplit(".", 1)[-1]
+        elements = (
+            annotation.slice.elts
+            if isinstance(annotation.slice, ast.Tuple)
+            else [annotation.slice]
+        )
+        if wrapper in {"Annotated", "Optional"}:
+            return bool(elements) and annotation_is_browser_type(elements[0])
+        if wrapper == "Union":
+            browser_elements = [item for item in elements if annotation_is_browser_type(item)]
+            nullable_elements = [
+                item
+                for item in elements
+                if isinstance(item, ast.Constant) and item.value is None
+            ]
+            return len(browser_elements) == 1 and len(browser_elements) + len(
+                nullable_elements
+            ) == len(elements)
+        return False
+
+    bindings = {
+        argument.arg: "parameter-annotation"
+        for argument in (*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs)
+        if annotation_is_browser_type(argument.annotation)
+    }
+    binding_lines = {name: 0 for name in bindings}
+    mutation_counts: Counter[str] = Counter()
+    for candidate in ast.walk(node):
+        if not belongs_to_function(candidate):
+            continue
+        targets: list[ast.AST] = []
+        if isinstance(candidate, ast.Assign):
+            targets.extend(candidate.targets)
+        elif isinstance(
+            candidate,
+            (ast.AnnAssign, ast.AugAssign, ast.NamedExpr, ast.For, ast.AsyncFor),
+        ):
+            targets.append(candidate.target)
+        elif isinstance(candidate, ast.Delete):
+            targets.extend(candidate.targets)
+        elif isinstance(candidate, (ast.With, ast.AsyncWith)):
+            targets.extend(
+                item.optional_vars
+                for item in candidate.items
+                if item.optional_vars is not None
+            )
+        for target in targets:
+            mutation_counts.update(python_assigned_names(target))
+
+    bindings = {
+        name: proof for name, proof in bindings.items() if mutation_counts[name] == 0
+    }
+    binding_lines = {name: binding_lines[name] for name in bindings}
+
+    def assignment_dominates_continuation(candidate: ast.Assign) -> bool:
+        child: ast.AST = candidate
+        parent = parents.get(id(child))
+        while parent is not None and parent is not node:
+            if isinstance(parent, (ast.With, ast.AsyncWith)):
+                child = parent
+                parent = parents.get(id(parent))
+                continue
+            if isinstance(parent, ast.Try):
+                if child not in parent.body or not parent.handlers or not all(
+                    python_block_always_terminates(handler.body)
+                    for handler in parent.handlers
+                ):
+                    return False
+                child = parent
+                parent = parents.get(id(parent))
+                continue
+            if isinstance(
+                parent,
+                (ast.If, ast.For, ast.AsyncFor, ast.While, ast.Match, ast.TryStar),
+            ):
+                return False
+            child = parent
+            parent = parents.get(id(parent))
+        return parent is node
+
+    for candidate in sorted(ast.walk(node), key=lambda item: getattr(item, "lineno", 0)):
+        if not (
+            belongs_to_function(candidate)
+            and isinstance(candidate, ast.Assign)
+            and assignment_dominates_continuation(candidate)
+        ):
+            continue
+        value = candidate.value.value if isinstance(candidate.value, ast.Await) else candidate.value
+        factory_call = (
+            value
+            if isinstance(value, ast.Call) and dotted_name(value.func) in browser_page_factories
+            else None
+        )
+        for target in candidate.targets:
+            if (
+                isinstance(target, ast.Name)
+                and mutation_counts[target.id] == 1
+                and isinstance(value, ast.Name)
+                and value.id in bindings
+            ):
+                bindings[target.id] = "typed-parameter-alias"
+                binding_lines[target.id] = candidate.lineno
+            elif (
+                factory_call is not None
+                and isinstance(target, (ast.Tuple, ast.List))
+                and target.elts
+                and isinstance(target.elts[0], ast.Name)
+                and mutation_counts[target.elts[0].id] == 1
+            ):
+                bindings[target.elts[0].id] = "imported-browser-factory"
+                binding_lines[target.elts[0].id] = candidate.lineno
+
+    proofs: dict[int, str] = {}
+    for candidate in ast.walk(node):
+        if not (
+            belongs_to_function(candidate)
+            and isinstance(candidate, ast.Call)
+            and isinstance(candidate.func, ast.Attribute)
+            and candidate.func.attr == "evaluate"
+            and isinstance(candidate.func.value, ast.Name)
+        ):
+            continue
+        receiver = candidate.func.value.id
+        if (proof := bindings.get(receiver)) and binding_lines[receiver] < candidate.lineno:
+            proofs[id(candidate)] = proof
+    return proofs
+
+
 def canonical_python_filesystem_api(
     call_name: str, aliases: dict[str, str]
 ) -> str | None:
@@ -1767,6 +1930,8 @@ class PythonVisitor(ast.NodeVisitor):
         filesystem_api_aliases: dict[str, str],
         urllib_openers: set[str],
         urllib_request_constructors: set[str],
+        browser_type_names: set[str],
+        browser_page_factories: set[str],
     ) -> None:
         self.ir = ir
         self.root = root
@@ -1797,8 +1962,11 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_filesystem_callable_calls: list[dict[int, str]] = []
         self.function_path_bindings: list[dict[str, str]] = []
         self.function_path_constructors: list[set[str]] = []
+        self.function_browser_receiver_proofs: list[dict[int, str]] = []
         self.urllib_openers = urllib_openers
         self.urllib_request_constructors = urllib_request_constructors
+        self.browser_type_names = browser_type_names
+        self.browser_page_factories = browser_page_factories
         self.function_stack: list[str] = []
         self.function_depth = 0
         self.imported_symbol_paths: dict[str, str] = {}
@@ -2221,6 +2389,25 @@ class PythonVisitor(ast.NodeVisitor):
             for constructor in self.urllib_request_constructors
             if constructor.split(".", 1)[0] not in local_bindings
         }
+        function_browser_types = {
+            type_name
+            for type_name in self.browser_type_names
+            if type_name.split(".", 1)[0] not in local_bindings
+        }
+        function_browser_factories = {
+            factory
+            for factory in self.browser_page_factories
+            if factory.split(".", 1)[0] not in local_bindings
+        }
+        self.function_browser_receiver_proofs.append(
+            python_browser_receiver_proofs(
+                node,
+                function_browser_types,
+                function_browser_factories,
+            )
+            if self.has_browser_import
+            else {}
+        )
         function_path_constructors = {
             constructor
             for constructor in self.path_constructors
@@ -2406,6 +2593,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_filesystem_callable_calls.pop()
         self.function_path_bindings.pop()
         self.function_path_constructors.pop()
+        self.function_browser_receiver_proofs.pop()
         self.approval_environment_flags = previous_approval_environment_flags
         self.static_http_prefixes = previous_static_http_prefixes
         self.network_helper_bindings = previous_network_helper_bindings
@@ -3645,6 +3833,11 @@ class PythonVisitor(ast.NodeVisitor):
             and short_name == "evaluate"
             and "." in call_name
         )
+        browser_receiver_proof = (
+            self.function_browser_receiver_proofs[-1].get(id(node))
+            if browser_evaluate and self.function_browser_receiver_proofs
+            else None
+        )
         if call_name in {"eval", "exec"} or browser_evaluate:
             argument = node.args[0] if node.args else None
             dynamic_input = argument is not None and not isinstance(
@@ -3656,6 +3849,8 @@ class PythonVisitor(ast.NodeVisitor):
                     and python_expression_names(argument)
                     & self.dynamic_tool_input_names
                 )
+            if browser_evaluate and dynamic_input and browser_receiver_proof is None:
+                return self.generic_visit(node)
             self.ir.add_component(
                 Component(
                     "capability",
@@ -3667,6 +3862,14 @@ class PythonVisitor(ast.NodeVisitor):
                             "browser-page" if browser_evaluate else "python-process"
                         ),
                         "dynamic_input": dynamic_input,
+                        **(
+                            {
+                                "receiver_proof": browser_receiver_proof
+                                or "unresolved-browser-import-context"
+                            }
+                            if browser_evaluate
+                            else {}
+                        ),
                         "scope": source_scope(self.path),
                     },
                 )
@@ -4020,6 +4223,55 @@ def scan_python(
         for constructor in path_constructors
         if constructor.split(".", 1)[0] not in module_rebound_names
     }
+    browser_receiver_type_exports = {
+        "ElementHandle",
+        "Frame",
+        "JSHandle",
+        "Locator",
+        "Page",
+    }
+    browser_type_names = {
+        alias.asname or alias.name
+        for statement in tree.body
+        if isinstance(statement, ast.ImportFrom)
+        and statement.module is not None
+        and statement.module.startswith("playwright.")
+        for alias in statement.names
+        if alias.name in browser_receiver_type_exports
+    } | {
+        f"{alias.asname or alias.name}.{export}"
+        for statement in tree.body
+        if isinstance(statement, ast.Import)
+        for alias in statement.names
+        if alias.name.startswith("playwright.")
+        for export in browser_receiver_type_exports
+    }
+    browser_type_names = {
+        type_name
+        for type_name in browser_type_names
+        if type_name.split(".", 1)[0] not in module_rebound_names
+    }
+    browser_page_factories: set[str] = set()
+    for statement in tree.body:
+        if not isinstance(statement, ast.ImportFrom):
+            continue
+        for alias in statement.names:
+            if alias.name != "get_page":
+                continue
+            target_path = resolve_python_import_path(
+                root,
+                relative,
+                statement,
+                alias.name,
+                module_paths,
+            )
+            if target_path and target_path.endswith("skyvern/cli/mcp_tools/_session.py"):
+                browser_page_factories.add(alias.asname or alias.name)
+    browser_page_factories = {
+        factory
+        for factory in browser_page_factories
+        if factory.split(".", 1)[0] not in module_rebound_names
+    }
     filesystem_api_aliases = {
         alias.asname or alias.name: alias.name
         for statement in tree.body
@@ -4346,6 +4598,8 @@ def scan_python(
         filesystem_api_aliases=filesystem_api_aliases,
         urllib_openers=urllib_openers,
         urllib_request_constructors=urllib_request_constructors,
+        browser_type_names=browser_type_names,
+        browser_page_factories=browser_page_factories,
     ).visit(tree)
 
 

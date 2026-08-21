@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T12:57:15.531735+00:00",
-  "labels": 291,
-  "passed": 291,
+  "generated_at": "2026-08-21T13:18:07.702010+00:00",
+  "labels": 296,
+  "passed": 296,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 14,
@@ -29,9 +29,9 @@
       "recall": 1.0
     },
     "AV-EXEC002": {
-      "tp": 20,
+      "tp": 21,
       "fp": 0,
-      "tn": 11,
+      "tn": 15,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -2276,6 +2276,51 @@
     },
     {
       "id": "exec-code-ordinary-evaluate-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-typed-alias-local-positive",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-reassigned-page-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-late-alias-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-branch-alias-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-container-annotation-local-negative",
       "rule_id": "AV-EXEC002",
       "expected": false,
       "observed": false,

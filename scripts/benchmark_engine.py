@@ -369,6 +369,19 @@ def main() -> int:
                     item.attributes.get("dynamic_input") is True
                     for item in python_browser_evaluations
                 ),
+                "receiver_proven": sum(
+                    item.attributes.get("receiver_proof")
+                    not in {None, "unresolved-browser-import-context"}
+                    for item in python_browser_evaluations
+                ),
+                "receiver_proofs": dict(
+                    sorted(
+                        Counter(
+                            str(item.attributes.get("receiver_proof", "unresolved"))
+                            for item in python_browser_evaluations
+                        ).items()
+                    )
+                ),
             },
             "python_imported_network_helpers": {
                 "capabilities": len(python_imported_network_helpers),
@@ -530,7 +543,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 28,
+        "schema_version": 29,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -654,8 +667,19 @@ def main() -> int:
             },
             "python_browser_evaluate": {
                 name: sum(result["python_browser_evaluate"][name] for result in successful)
-                for name in ("total", "dynamic")
+                for name in ("total", "dynamic", "receiver_proven")
             },
+            "python_browser_receiver_proofs": dict(
+                sorted(
+                    sum(
+                        (
+                            Counter(result["python_browser_evaluate"]["receiver_proofs"])
+                            for result in successful
+                        ),
+                        Counter(),
+                    ).items()
+                )
+            ),
             "python_imported_network_helpers": {
                 name: sum(result["python_imported_network_helpers"][name] for result in successful)
                 for name in ("capabilities", "dynamic_origins", "helpers", "capability_edges")

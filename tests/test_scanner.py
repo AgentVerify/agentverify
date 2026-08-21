@@ -1440,14 +1440,23 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
             item.attributes["api"],
             item.attributes["execution_context"],
             item.attributes["dynamic_input"],
+            item.attributes["receiver_proof"],
         )
         for item in ir.components
         if item.kind == "capability" and item.name == "code-execution"
     ]
     assert executions == [
-        ("agent.py", 9, "page.evaluate", "browser-page", True),
-        ("agent.py", 14, "page.evaluate", "browser-page", False),
-        ("agent.py", 20, "page.evaluate", "browser-page", True),
+        ("agent.py", 9, "page.evaluate", "browser-page", True, "parameter-annotation"),
+        ("agent.py", 14, "page.evaluate", "browser-page", False, "parameter-annotation"),
+        ("agent.py", 20, "page.evaluate", "browser-page", True, "parameter-annotation"),
+        (
+            "agent.py",
+            26,
+            "browser_page.evaluate",
+            "browser-page",
+            True,
+            "typed-parameter-alias",
+        ),
     ]
     assert [
         (edge.source_name, edge.evidence.line)
@@ -1457,6 +1466,7 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
         ("dynamic_evaluate", 9),
         ("literal_evaluate", 14),
         ("aliased_evaluate", 20),
+        ("aliased_page", 26),
     ]
     assert [
         (finding.rule_id, finding.evidence.path, finding.evidence.line)
@@ -1464,6 +1474,7 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
     ] == [
         ("AV-EXEC002", "agent.py", 9),
         ("AV-EXEC002", "agent.py", 20),
+        ("AV-EXEC002", "agent.py", 26),
     ]
 
 

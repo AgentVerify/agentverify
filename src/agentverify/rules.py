@@ -90,6 +90,11 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
             component.kind == "capability"
             and component.name == "code-execution"
             and component.attributes.get("dynamic_input")
+            and (
+                component.attributes.get("execution_context") != "browser-page"
+                or component.attributes.get("receiver_proof")
+                not in {None, "unresolved-browser-import-context"}
+            )
         ):
             api = component.attributes.get("api", "dynamic evaluator")
             ir.findings.append(

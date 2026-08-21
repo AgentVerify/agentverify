@@ -17,6 +17,8 @@ never imported or executed.
   `Request` objects, fixed-origin inventory, and shadowed/rebound opener negatives.
 - `sandbox_boundary`: Compose and Kubernetes host/privilege boundaries plus explicit safe negatives.
 - `constant_eval`: constant Python evaluation negative case.
+- `python_browser_evaluate`: exact Playwright `Page` annotations and immutable aliases prove dynamic
+  receivers; ordinary same-module `.evaluate(...)` methods and reassigned pages remain negative.
 - `approval_safe`: disabled auto-approval negative case.
 - `test_scope`: findings are suppressed by default and enabled with `--include-tests`.
 - `symbol_collision`: same-named cross-file tools cannot leak agents or controls into a finding.

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T12:57:47.360759+00:00",
-  "labels": 172,
-  "passed": 172,
+  "generated_at": "2026-08-21T13:18:40.262113+00:00",
+  "labels": 180,
+  "passed": 180,
   "metrics": {
     "IR-APPROVAL-CONTROL": {
       "tp": 3,
@@ -72,6 +72,14 @@
       "tp": 2,
       "fp": 0,
       "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-BROWSER-RECEIVER": {
+      "tp": 3,
+      "fp": 0,
+      "tn": 5,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -1732,6 +1740,78 @@
     {
       "id": "python-urllib-qwen-hour-fixed-real",
       "check_id": "IR-PY-URLLIB-NETWORK",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-annotated-local",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-alias-local",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-ordinary-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-reassigned-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-late-alias-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branch-alias-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-container-annotation-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-skyvern-factory-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

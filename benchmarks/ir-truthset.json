@@ -2266,7 +2266,7 @@
       "target": {"kind": "local", "path": "cases/python_browser_evaluate"},
       "check_id": "IR-PY-BROWSER-EVALUATE",
       "path": "ordinary.py",
-      "line": 7,
+      "line": 15,
       "expected": false,
       "source_contains": "calculator.evaluate(expression)",
       "relationship": {"source_kind":"tool","relation":"uses","target_kind":"capability","target_name":"code-execution"}
@@ -2609,6 +2609,67 @@
       "check_id": "IR-PY-URLLIB-NETWORK",
       "path": "examples/qwen2vl_assistant_tooluse.py", "line": 201, "expected": true,
       "relationship": {"source_kind":"tool","source_name":"weather_hour24","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-browser-receiver-annotated-local",
+      "target": {"kind":"local","path":"cases/python_browser_evaluate"},
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "path": "agent.py", "line": 9, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"dynamic_evaluate","relation":"uses","target_kind":"capability","target_name":"code-execution"}
+    },
+    {
+      "id": "python-browser-receiver-alias-local",
+      "target": {"kind":"local","path":"cases/python_browser_evaluate"},
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "path": "agent.py", "line": 26, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"aliased_page","relation":"uses","target_kind":"capability","target_name":"code-execution"}
+    },
+    {
+      "id": "python-browser-receiver-ordinary-local-negative",
+      "target": {"kind":"local","path":"cases/python_browser_evaluate"},
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "path": "ordinary.py", "line": 15, "expected": false,
+      "source_contains": "calculator.evaluate(expression)",
+      "relationship": {"source_kind":"tool","source_name":"ordinary_evaluate","relation":"uses","target_kind":"capability","target_name":"code-execution"}
+    },
+    {
+      "id": "python-browser-receiver-reassigned-local-negative",
+      "target": {"kind":"local","path":"cases/python_browser_evaluate"},
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "path": "ordinary.py", "line": 21, "expected": false,
+      "source_contains": "page.evaluate(script)",
+      "relationship": {"source_kind":"tool","source_name":"shadowed_page","relation":"uses","target_kind":"capability","target_name":"code-execution"}
+    },
+    {
+      "id": "python-browser-receiver-late-alias-local-negative",
+      "target": {"kind":"local","path":"cases/python_browser_evaluate"},
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "path": "ordinary.py", "line": 26, "expected": false,
+      "source_contains": "browser_page.evaluate(script)",
+      "relationship": {"source_kind":"tool","source_name":"late_page_alias","relation":"uses","target_kind":"capability","target_name":"code-execution"}
+    },
+    {
+      "id": "python-browser-receiver-branch-alias-local-negative",
+      "target": {"kind":"local","path":"cases/python_browser_evaluate"},
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "path": "ordinary.py", "line": 35, "expected": false,
+      "source_contains": "browser_page.evaluate(script)",
+      "relationship": {"source_kind":"tool","source_name":"branch_page_alias","relation":"uses","target_kind":"capability","target_name":"code-execution"}
+    },
+    {
+      "id": "python-browser-receiver-container-annotation-local-negative",
+      "target": {"kind":"local","path":"cases/python_browser_evaluate"},
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "path": "ordinary.py", "line": 40, "expected": false,
+      "source_contains": "pages.evaluate(script)",
+      "relationship": {"source_kind":"tool","source_name":"container_page","relation":"uses","target_kind":"capability","target_name":"code-execution"}
+    },
+    {
+      "id": "python-browser-receiver-skyvern-factory-real",
+      "target": {"kind":"repository","repository":"Skyvern-AI/skyvern","commit":"486c8975e9864a53037d4701b781f8619e698c40"},
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "path": "skyvern/cli/mcp_tools/browser.py", "line": 2458, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"skyvern_evaluate","relation":"uses","target_kind":"capability","target_name":"code-execution"}
     }
   ]
 }

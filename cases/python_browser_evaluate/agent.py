@@ -18,3 +18,9 @@ async def literal_evaluate(page: Page):
 async def aliased_evaluate(page: Page, suffix: str):
     script = "https://fixed.example/" + suffix
     return await page.evaluate(script)
+
+
+@agent.tool
+async def aliased_page(page: Page, script: str):
+    browser_page = page
+    return await browser_page.evaluate(script)
