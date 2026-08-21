@@ -107,6 +107,34 @@ def dotted_name(node: ast.AST) -> str:
     return ""
 
 
+def python_expression_names(node: ast.AST | None) -> set[str]:
+    if node is None:
+        return set()
+    return {candidate.id for candidate in ast.walk(node) if isinstance(candidate, ast.Name)}
+
+
+def python_static_url_prefix(node: ast.AST | None) -> str:
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+    if isinstance(node, ast.JoinedStr):
+        prefix = []
+        for value in node.values:
+            if not isinstance(value, ast.Constant) or not isinstance(value.value, str):
+                break
+            prefix.append(value.value)
+        return "".join(prefix)
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+        return python_static_url_prefix(node.left)
+    return ""
+
+
+def python_http_origin_is_dynamic(node: ast.AST | None, dynamic_names: set[str]) -> bool:
+    if not python_expression_names(node) & dynamic_names:
+        return False
+    prefix = python_static_url_prefix(node)
+    return re.match(r"^https?://[^/?#]+", prefix, re.IGNORECASE) is None
+
+
 def component_from_import(ir: RepositoryIR, module: str, evidence: Evidence) -> None:
     for kind, signatures in IMPORT_SIGNATURES.items():
         for name, prefixes in signatures.items():
@@ -190,6 +218,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.lines = lines
         self.current_tool: str | None = None
         self.current_tool_id: str | None = None
+        self.dynamic_http_origin_names: set[str] = set()
         self.class_stack: list[str] = []
         self.active_audit_controls: list[Evidence] = []
         self.http_client_names: set[str] = set()
@@ -329,6 +358,17 @@ class PythonVisitor(ast.NodeVisitor):
             component_from_import(self.ir, node.module or "", self.ev(node))
 
     def visit_Assign(self, node: ast.Assign) -> None:
+        if self.current_tool:
+            dynamic_origin = python_http_origin_is_dynamic(
+                node.value, self.dynamic_http_origin_names
+            )
+            for target in node.targets:
+                if not isinstance(target, ast.Name):
+                    continue
+                if dynamic_origin:
+                    self.dynamic_http_origin_names.add(target.id)
+                else:
+                    self.dynamic_http_origin_names.discard(target.id)
         if isinstance(node.value, ast.Call):
             constructor = dotted_name(node.value.func)
             if constructor in {
@@ -491,11 +531,26 @@ class PythonVisitor(ast.NodeVisitor):
                 )
             previous_tool = self.current_tool
             previous_tool_id = self.current_tool_id
+            previous_dynamic_http_origin_names = self.dynamic_http_origin_names
             self.current_tool = node.name
             self.current_tool_id = tool_id
+            self.dynamic_http_origin_names = {
+                argument.arg
+                for argument in (
+                    *node.args.posonlyargs,
+                    *node.args.args,
+                    *node.args.kwonlyargs,
+                )
+                if argument.arg not in {"self", "cls"}
+            }
+            if node.args.vararg:
+                self.dynamic_http_origin_names.add(node.args.vararg.arg)
+            if node.args.kwarg:
+                self.dynamic_http_origin_names.add(node.args.kwarg.arg)
             self.visit_function_statements(node)
             self.current_tool = previous_tool
             self.current_tool_id = previous_tool_id
+            self.dynamic_http_origin_names = previous_dynamic_http_origin_names
         else:
             self.visit_function_statements(node)
         self.allowlisted_names = previous_allowlisted_names
@@ -1069,10 +1124,29 @@ class PythonVisitor(ast.NodeVisitor):
             )
         root_name = call_name.split(".", 1)[0]
         http_method = short_name.lower() in {"get", "post", "put", "patch", "delete", "request"}
-        if root_name in {"requests", "httpx", "aiohttp"} or (
-            self.has_http_import and root_name in self.http_client_names and http_method
+        if http_method and (
+            root_name in {"requests", "httpx", "aiohttp"}
+            or (self.has_http_import and root_name in self.http_client_names)
         ):
-            self.add_capability("network", node, {"api": call_name})
+            url_expression = None
+            if short_name.lower() == "request":
+                if len(node.args) > 1:
+                    url_expression = node.args[1]
+            elif node.args:
+                url_expression = node.args[0]
+            for keyword in node.keywords:
+                if keyword.arg == "url":
+                    url_expression = keyword.value
+            self.add_capability(
+                "network",
+                node,
+                {
+                    "api": call_name,
+                    "dynamic_origin": python_http_origin_is_dynamic(
+                        url_expression, self.dynamic_http_origin_names
+                    ),
+                },
+            )
             if short_name.lower() in {"post", "put", "patch", "delete"}:
                 self.add_capability("external-action", node, {"api": call_name})
         if self.has_browser_import and short_name in {

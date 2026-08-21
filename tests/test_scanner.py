@@ -515,6 +515,56 @@ def test_browser_and_external_action_capabilities_are_linked() -> None:
     assert not ir.findings
 
 
+def test_parameter_controlled_http_origin_is_reported_but_fixed_host_is_not() -> None:
+    ir = scan_repository(ROOT / "cases/network_dynamic_origin")
+
+    network = {
+        item.evidence.line: item.attributes
+        for item in ir.components
+        if item.kind == "capability" and item.name == "network"
+    }
+    assert network[7]["dynamic_origin"] is True
+    assert network[12]["dynamic_origin"] is False
+    assert network[17]["dynamic_origin"] is False
+    assert [(finding.rule_id, finding.evidence.line) for finding in ir.findings] == [
+        ("AV-NET001", 7)
+    ]
+    finding = ir.findings[0]
+    assert finding.result_kind == "review"
+    assert finding.ir_path == (
+        "agent:networker",
+        "tool:fetch_url",
+        "capability:network",
+    )
+
+
+def test_dynamic_http_origin_tracks_aliases_and_keyword_url(tmp_path: Path) -> None:
+    (tmp_path / "agent.py").write_text(
+        """import requests
+from agents import function_tool
+
+@function_tool
+def fetch(target: str) -> str:
+    alias = target
+    return requests.request(method="GET", url=alias).text
+
+class ConfiguredClient:
+    @function_tool
+    def fetch_configured(self) -> str:
+        return requests.get(self.endpoint).text
+""",
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    findings = [finding for finding in ir.findings if finding.rule_id == "AV-NET001"]
+    assert len(findings) == 1
+    finding = findings[0]
+    assert finding.evidence.line == 7
+    assert finding.analysis["tool"] == "fetch"
+
+
 def test_typescript_dynamic_eval_is_linked_and_reported() -> None:
     ir = scan_repository(ROOT / "cases/typescript_eval")
 

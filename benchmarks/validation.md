@@ -36,31 +36,31 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,594 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,354 relationships, and completed in 39.80 seconds on the development machine. Three parse warnings were isolated and
+resolved 1,348 relationships, and completed in 39.34 seconds on the development machine. Three parse warnings were isolated and
 reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
 
-Engine benchmark schema v6 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v7 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, and TypeScript graph precision measures. It intentionally
 excludes arbitrary agent/tool display names from the summary. The resulting
 framework/provider/protocol/capability coverage and unsupported syntax are published in
 `docs/frontend-coverage.md`; presence counts are discovery observations, not recall measurements.
 
 The benchmark now also measures identity coverage: 8,204 agent/tool component observations carry
-module-qualified IDs. Of 2,708 relationship endpoints, 1,863 carry symbol IDs and 1,861 resolve to an
-observed component (1,627 Python and 234 TypeScript). Schema v6 records 325 same-scope and 14
+module-qualified IDs. Of 2,696 relationship endpoints, 1,858 carry symbol IDs and 1,856 resolve to an
+observed component (1,622 Python and 234 TypeScript). Schema v7 records 325 same-scope and 14
 module-scope targets resolved from a single direct definition that appears before the Agent
 constructor. It also records 23 repeated-binding targets still withheld because the scope contains
 multiple definitions. The two unmatched IDs are explicit Python re-export targets; capability,
 control, and taxonomy endpoints intentionally remain evidence observations.
 
-Schema-v6 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
-resolves 1,861 endpoints by symbol ID, 300 by exact evidence location, and 17 by a unique display
+Schema-v7 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
+resolves 1,856 endpoints by symbol ID, 293 by exact evidence location, and 17 by a unique display
 name; 30 remain ambiguous and 500 unresolved. Before evidence-local and occurrence-qualified
-resolution, 1,299 were ambiguous. Exact locations resolve 295 capability/control endpoints. Unique
-occurrence IDs then resolve all 688 formerly ambiguous source agent/tool endpoints; 141 unsafe target
-IDs become explicitly unresolved. Conservative lexical resolution removes another 145 target
+resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
+capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
+and mark unsafe targets explicitly unresolved. Conservative lexical resolution removes further target
 ambiguities. All 30 remaining ambiguities are tool targets without a unique local definition, so the
 resolver does not use a nearby source location to invent an identity.
 
@@ -199,6 +199,22 @@ repositories. A hand-reviewed case is ArcadeAI's
 which resolves a caller-provided path before writing. No workspace-root constraint is visible in the
 tool function, but the result remains `review` because enclosing server policy is unresolved.
 
+## AV-NET001 — parameter-controlled HTTP origin
+
+The Python rule requires a recognized HTTP client call inside a tool where a function parameter (or
+its direct assignment alias) determines the URL origin. A literal URL and an f-string/concatenation
+whose literal prefix already contains a complete HTTP scheme and host remain inventory-only. The full
+benchmark reports two reviews across two repositories:
+
+- [Goose's Wikipedia MCP tool](https://github.com/block/goose/blob/48d480f91163bbcdc0f69f01befa3841a93a1d3e/examples/mcp-wiki/src/mcp_wiki/server.py#L29)
+  checks only that the URL begins with HTTP before requesting it.
+- [AgentOps' webpage tool](https://github.com/AgentOps-AI/agentops/blob/f8e907b92dabe47232978023fdcb01e2a7d4b752/examples/smolagents/multi_smolagents_system.py#L73)
+  sends the tool's URL parameter directly to `requests.get`.
+
+The pinned negative is a [fixed Devpost origin](https://github.com/microsoft/ai-agents-for-beginners/blob/01777b05e8afeba6bf5a6dbe74cc2293372d3693/11-agentic-protocols/code_samples/github-mcp/app.py#L118)
+with a parameterized query. Results remain `review`: URL validation, redirects, DNS rebinding,
+proxies, and runtime egress policy are not yet resolved. TypeScript parameter flow is not implemented.
+
 ## AV-SANDBOX001 — container/host boundary
 
 The rule found 19 default-scope boundary crossings across nine repositories. It reports development
@@ -224,12 +240,12 @@ and a literal `privileged=True` keyword.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 151 exact labels across all seven enabled rules: 87 positives and 64
+`benchmarks/truthset.json` contains 157 exact labels across all eight enabled rules: 90 positives and 67
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
-Compose/Kubernetes/Docker SDK settings. All 151 currently pass; each rule's seed precision and recall
+Compose/Kubernetes/Docker SDK settings. All 157 currently pass; each rule's seed precision and recall
 are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified source
 text at the exact pinned line, preventing a missing or drifting location from passing silently.
 
@@ -253,5 +269,5 @@ SDK SessionGroup edge. Three import labels cover a resolved relative fixture, a 
 CrewAI-LangGraph draft-tool edge. Seven approval labels cover enabled, disabled, callback, and
 automatic-handler policies plus pinned Python and TypeScript OpenAI shell edges. Four TypeScript graph
 labels cover inline and assigned agent adapters, the Cline tool path, and a nested-token negative. All
-18 IR labels pass: three approval positives/four negatives, two audit positives/two negatives, two
+21 IR labels pass: three approval positives/four negatives, two audit positives/two negatives, two
 import positives/one negative, and three TypeScript graph positives/one negative.

@@ -39,6 +39,14 @@ escalation, arbitrary `hostPath` mounts, and literal privileged Docker SDK calls
 Compose. Next resolve network policy, Linux capabilities, device passthrough, and credential-volume
 semantics. Model containment as a control attached to the exact code/shell capability.
 
+## P1 — network destination policy
+
+`AV-NET001` now reports Python tool parameters and their direct aliases when they determine the HTTP
+origin. Literal URLs and formatted URLs with a fixed scheme and host remain inventory-only. Next
+resolve URL parsing/normalization guards, hostname allowlists, DNS rebinding defenses, proxy policy,
+and egress controls before treating a review as a demonstrated SSRF path. Add equivalent
+parameter-aware TypeScript analysis without marking arbitrary configuration variables as model input.
+
 ## P1 — consequential-action audit coverage
 
 Lexically scoped OpenTelemetry spans now create action-level control edges, without treating imports
@@ -48,8 +56,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 151 pinned positive/negative locations, with 21 separately
-scored IR relationship labels. Schema-v6 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 157 pinned positive/negative locations, with 21 separately
+scored IR relationship labels. Schema-v7 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

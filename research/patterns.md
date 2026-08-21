@@ -30,6 +30,13 @@ Code and shell tools run directly, in local containers, or in remote sandboxes. 
 not binary evidence of safety: mounts, network access, credentials, host sockets, and workspace scope
 determine containment quality.
 
+## Tool-controlled network destinations
+
+Agent tools often accept search terms, resource identifiers, or complete URLs. A fixed origin with a
+dynamic query is materially different from allowing the tool parameter to choose the scheme and
+host. Destination analysis must preserve that distinction and eventually combine hostname policy,
+DNS resolution, redirects, proxies, and runtime egress controls.
+
 ## Approval gates and bypasses
 
 Approval may apply per tool, per argument pattern, per session, or only to destructive operations.

@@ -11,7 +11,8 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
 | 4 | Approval coverage and bypass paths | 5 | 4 | 3 | 60 | 52 approval-positive; 18 auto-approval candidates |
 | 5 | Filesystem scope and destructive writes | 5 | 4 | 3 | 60 | 59 writable-filesystem repos |
 | 6 | Sandbox boundary quality | 5 | 4 | 3 | 60 | 64 sandbox-positive; mounts/network/credentials determine quality |
-| 7 | Consequential-action audit coverage | 4 | 4 | 2 | 32 | 57 tracing-positive, but action-level coverage needs data flow |
+| 7 | Parameter-controlled network origins | 5 | 2 | 4 | 40 | Direct tool-parameter origins in 2 pinned repositories; fixed-host templates are common negatives |
+| 8 | Consequential-action audit coverage | 4 | 4 | 2 | 32 | 57 tracing-positive, but action-level coverage needs data flow |
 
 ## Milestone 1 — explainable discovery
 
@@ -28,6 +29,7 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
 - Detect auto-approval/skip-confirmation configuration.
 - Detect broad filesystem roots, host mounts, Docker socket exposure, and unscoped file tools.
 - Detect MCP tool pass-throughs and enumerate statically registered server capabilities.
+- Detect tool parameters used as HTTP origins while preserving fixed-host URL templates as negatives.
 
 ## Milestone 3 — graph and control analysis
 

@@ -155,8 +155,11 @@ def main() -> int:
         results.append(result)
         print(f"[{index:>2}/{len(repositories)}] {repository}: {ir.files_scanned} files")
     successful = [result for result in results if result["status"] == "ok"]
+    finding_rule_ids = sorted(
+        {rule_id for result in successful for rule_id in result["findings"]}
+    )
     payload = {
-        "schema_version": 6,
+        "schema_version": 7,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "summary": {
@@ -243,6 +246,10 @@ def main() -> int:
                     sum((Counter(result["findings"]) for result in successful), Counter()).items()
                 )
             ),
+            "finding_repositories": {
+                rule_id: sum(bool(result["findings"].get(rule_id)) for result in successful)
+                for rule_id in finding_rule_ids
+            },
             "observed_component_names": {
                 kind: dict(
                     sorted(
@@ -280,6 +287,11 @@ def main() -> int:
         "bom_endpoint_resolutions"
     ].get("ambiguous", 0):
         raise RuntimeError("AI BOM ambiguous endpoint breakdown does not match its total")
+    if summary["finding_repositories"].keys() != summary["findings"].keys() or any(
+        summary["finding_repositories"][rule_id] > count
+        for rule_id, count in summary["findings"].items()
+    ):
+        raise RuntimeError("finding repository counts do not match finding totals")
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(payload["summary"], indent=2))

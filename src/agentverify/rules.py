@@ -155,6 +155,25 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                 )
         if (
             component.kind == "capability"
+            and component.name == "network"
+            and component.attributes.get("dynamic_origin")
+        ):
+            _, context = component_context(ir, component)
+            if context.get("tool"):
+                ir.findings.append(
+                    make_finding(
+                        ir,
+                        component,
+                        "AV-NET001",
+                        "high",
+                        "medium",
+                        "An agent tool can send an HTTP request to a parameter-controlled origin",
+                        "Allowlist schemes and hosts, block local and reserved destinations, re-check resolved addresses, and restrict tool egress.",
+                        "review",
+                    )
+                )
+        if (
+            component.kind == "capability"
             and component.name == "shell-execution"
             and component.attributes.get("builtin_tool")
             and component.attributes.get("execution_environment") == "local"

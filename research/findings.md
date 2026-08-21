@@ -91,8 +91,17 @@ benchmark schema v5 recorded all 289 target references whose duplicated raw bind
 Schema v6 resolves only single direct definitions that appear earlier in the same Python lexical or
 module scope: 325 same-scope and 14 module-scope edges. The final export has 30 ambiguous endpoints,
 all tool targets, and 500 unresolved endpoints. A governance export that collapses those references
-by name would
-silently attach controls or risks to the wrong asset.
+by name would silently attach controls or risks to the wrong asset.
+
+## 8. Dynamic network origin is rarer but high impact
+
+Only two default-scope tool paths in the bounded corpus pass a tool parameter directly to an HTTP
+origin: [Goose's Wikipedia MCP tool](https://github.com/block/goose/blob/48d480f91163bbcdc0f69f01befa3841a93a1d3e/examples/mcp-wiki/src/mcp_wiki/server.py#L29)
+and [AgentOps' smolagents webpage tool](https://github.com/AgentOps-AI/agentops/blob/f8e907b92dabe47232978023fdcb01e2a7d4b752/examples/smolagents/multi_smolagents_system.py#L73).
+Both accept arbitrary HTTP destinations; Goose checks the scheme but does not constrain the host. A
+[fixed Devpost origin with a dynamic search query](https://github.com/microsoft/ai-agents-for-beginners/blob/01777b05e8afeba6bf5a6dbe74cc2293372d3693/11-agentic-protocols/code_samples/github-mcp/app.py#L118)
+is a real negative. This small but high-impact set supports a narrow review rule, not a claim that
+every variable URL is SSRF.
 
 ## Limitations
 
