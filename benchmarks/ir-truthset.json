@@ -2890,6 +2890,51 @@
         "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
         "attributes":{"control_line":146,"redirect_scope":"each-hop-validated","dns_scope":"connection-pinned-unless-proxied","proxy_scope":"environment-or-caller-dependent","enforcement_default":"enabled","escape_hatch":"none"}
       }
+    },
+    {
+      "id": "python-configurable-pinned-network-sync-local",
+      "target": {"kind":"local","path":"cases/python_configurable_network_helper"},
+      "check_id": "IR-PY-CONFIGURABLE-PINNED-NETWORK-HELPER",
+      "path": "app.py", "line": 6, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
+        "attributes":{"control_line":56,"redirect_scope":"disabled-default-each-hop-validated-when-enabled","dns_scope":"connection-pinned-when-enforced","proxy_scope":"disabled-when-enforced","enforcement_default":"enabled","escape_hatch":"configured-opt-out"}
+      }
+    },
+    {
+      "id": "python-configurable-pinned-network-async-local",
+      "target": {"kind":"local","path":"cases/python_configurable_network_helper"},
+      "check_id": "IR-PY-CONFIGURABLE-PINNED-NETWORK-HELPER",
+      "path": "app.py", "line": 10, "expected": true,
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy"}
+    },
+    {
+      "id": "python-configurable-pinned-network-raw-local-negative",
+      "target": {"kind":"local","path":"cases/python_configurable_network_helper"},
+      "check_id": "IR-PY-CONFIGURABLE-PINNED-NETWORK-HELPER",
+      "path": "app.py", "line": 14, "expected": false,
+      "source_contains": "httpx.get(url)",
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy"}
+    },
+    {
+      "id": "python-configurable-pinned-network-langflow-deepseek-real",
+      "target": {"kind":"repository","repository":"langflow-ai/langflow","commit":"09ef6b2b7119e35a6787fc249f916f8b47b28615"},
+      "check_id": "IR-PY-CONFIGURABLE-PINNED-NETWORK-HELPER",
+      "path": "src/bundles/lfx-bundles/src/lfx_bundles/deepseek/deepseek.py", "line": 87, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
+        "attributes":{"control_line":161,"redirect_scope":"disabled-default-each-hop-validated-when-enabled","dns_scope":"connection-pinned-when-enforced","proxy_scope":"disabled-when-enforced","enforcement_default":"enabled","escape_hatch":"configured-opt-out"}
+      }
+    },
+    {
+      "id": "python-configurable-pinned-network-langflow-glean-real",
+      "target": {"kind":"repository","repository":"langflow-ai/langflow","commit":"09ef6b2b7119e35a6787fc249f916f8b47b28615"},
+      "check_id": "IR-PY-CONFIGURABLE-PINNED-NETWORK-HELPER",
+      "path": "src/bundles/lfx-bundles/src/lfx_bundles/glean/glean_search_api.py", "line": 84, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
+        "attributes":{"control_line":207,"redirect_scope":"disabled","dns_scope":"connection-pinned-when-enforced","proxy_scope":"disabled-when-enforced","enforcement_default":"enabled","escape_hatch":"configured-opt-out"}
+      }
     }
   ]
 }

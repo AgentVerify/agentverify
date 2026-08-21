@@ -1,6 +1,6 @@
 {
-  "schema_version": 33,
-  "generated_at": "2026-08-21T14:42:01.234857+00:00",
+  "schema_version": 34,
+  "generated_at": "2026-08-21T15:08:12.037192+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -16,11 +16,11 @@
     "zero_source_repositories": [
       "daytonaio/daytona"
     ],
-    "files_scanned": 10730,
-    "dependency_files_materialized": 135,
-    "repositories_with_dependency_expansion": 11,
+    "files_scanned": 10742,
+    "dependency_files_materialized": 147,
+    "repositories_with_dependency_expansion": 12,
     "config_files_scanned": 155,
-    "relationships": 1455,
+    "relationships": 1465,
     "symbolized_components": 8733,
     "identified_symbol_endpoints": 1928,
     "resolved_symbol_endpoints": 1926,
@@ -30,10 +30,10 @@
       "lexical-single-definition": 325,
       "module-single-definition": 14
     },
-    "relationship_endpoints": 2910,
+    "relationship_endpoints": 2930,
     "bom_endpoint_resolutions": {
       "ambiguous": 30,
-      "evidence-location": 438,
+      "evidence-location": 458,
       "symbol-id": 1926,
       "unique-display-name": 17,
       "unresolved": 499
@@ -111,15 +111,19 @@
       "dns_unresolved": 0
     },
     "python_secure_network_controls": {
-      "total": 4,
-      "enabled_default": 4,
-      "configured_opt_out": 2,
+      "total": 14,
+      "enabled_default": 14,
+      "configured_opt_out": 12,
       "redirects_validated": 3,
-      "redirects_disabled": 1,
+      "redirects_disabled": 6,
       "dns_connection_pinned": 2,
       "dns_connection_pinned_unless_proxied": 2,
+      "dns_connection_pinned_when_enforced": 10,
       "proxies_disabled": 2,
       "proxies_environment_or_caller_dependent": 2,
+      "proxies_disabled_when_enforced": 10,
+      "redirects_disabled_default_validated_when_enabled": 5,
+      "configured_allowlist_and_loopback_exemption": 10,
       "no_escape_hatch": 2
     },
     "typescript_network_origin_controls": {
@@ -141,15 +145,15 @@
       "weak_string_prefix": 4
     },
     "python_filesystem_mutations": {
-      "total": 448,
+      "total": 449,
       "callable_aliases": 1,
       "pathlib_methods": 20,
-      "dynamic_paths": 433,
+      "dynamic_paths": 434,
       "guarded": 0,
       "operations": {
         "copy": 46,
         "create": 179,
-        "delete": 190,
+        "delete": 191,
         "move": 33
       },
       "apis": {
@@ -167,7 +171,7 @@
         "shutil.copytree": 14,
         "shutil.copy|shutil.copy2": 1,
         "shutil.move": 7,
-        "shutil.rmtree": 90
+        "shutil.rmtree": 91
       }
     },
     "mcp_forwarding_controls": {
@@ -232,7 +236,7 @@
         "fixed-tool-binding": 6,
         "human-approval": 3,
         "network-origin-policy": 1,
-        "network-ssrf-policy": 2,
+        "network-ssrf-policy": 3,
         "path-boundary": 4,
         "path-prefix-check": 1,
         "tool-allowlist": 1,
@@ -256,7 +260,7 @@
       "provider": {
         "Anthropic": 17,
         "Azure OpenAI": 11,
-        "OpenAI": 40
+        "OpenAI": 41
       },
       "sandbox-boundary": {
         "docker-socket": 3,
@@ -358,7 +362,7 @@
         "repositories": 4,
         "source_bearing": 4,
         "with_framework": 1,
-        "with_provider": 0,
+        "with_provider": 1,
         "with_protocol": 1,
         "with_capability": 3
       },
@@ -379,7 +383,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 117.1253
+    "elapsed_seconds": 127.547
   },
   "repositories": [
     {
@@ -485,8 +489,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -532,7 +540,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4484
+      "elapsed_seconds": 1.5152
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -644,8 +652,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -696,7 +708,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9833
+      "elapsed_seconds": 3.1484
     },
     {
       "repository": "langchain-ai/langchain",
@@ -805,8 +817,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -850,7 +866,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8871
+      "elapsed_seconds": 0.9523
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -963,8 +979,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -1016,7 +1036,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.8842
+      "elapsed_seconds": 4.1152
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -1134,8 +1154,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -1183,7 +1207,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1843
+      "elapsed_seconds": 0.1947
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -1305,8 +1329,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -1367,7 +1395,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.466
+      "elapsed_seconds": 4.7556
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -1491,8 +1519,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 2,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 2,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -1558,7 +1590,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8469
+      "elapsed_seconds": 3.0707
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -1677,8 +1709,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -1736,7 +1772,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2502
+      "elapsed_seconds": 0.2947
     },
     {
       "repository": "microsoft/autogen",
@@ -1851,8 +1887,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -1905,7 +1945,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.67
+      "elapsed_seconds": 0.7341
     },
     {
       "repository": "microsoft/agent-framework",
@@ -2004,8 +2044,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -2049,7 +2093,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0344
+      "elapsed_seconds": 0.0475
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -2162,8 +2206,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -2216,7 +2264,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1059
+      "elapsed_seconds": 0.116
     },
     {
       "repository": "openai/openai-agents-python",
@@ -2349,8 +2397,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -2413,7 +2465,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.1492
+      "elapsed_seconds": 6.872
     },
     {
       "repository": "openai/openai-agents-js",
@@ -2543,8 +2595,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -2594,7 +2650,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5247
+      "elapsed_seconds": 0.624
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -2713,8 +2769,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -2771,7 +2831,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.3821
+      "elapsed_seconds": 13.5262
     },
     {
       "repository": "google/adk-python",
@@ -2882,8 +2942,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -2936,7 +3000,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3156
+      "elapsed_seconds": 3.9179
     },
     {
       "repository": "google/adk-js",
@@ -3042,8 +3106,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -3087,7 +3155,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8556
+      "elapsed_seconds": 2.0504
     },
     {
       "repository": "huggingface/smolagents",
@@ -3204,8 +3272,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -3265,7 +3337,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3041
+      "elapsed_seconds": 1.3886
     },
     {
       "repository": "agno-agi/agno",
@@ -3374,8 +3446,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -3429,7 +3505,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2942
+      "elapsed_seconds": 0.3423
     },
     {
       "repository": "camel-ai/camel",
@@ -3548,8 +3624,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -3610,7 +3690,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6574
+      "elapsed_seconds": 2.909
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -3717,8 +3797,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -3765,7 +3849,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1706
+      "elapsed_seconds": 0.1814
     },
     {
       "repository": "run-llama/llama_index",
@@ -3878,8 +3962,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -3923,7 +4011,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7385
+      "elapsed_seconds": 0.8255
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -4041,8 +4129,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -4103,7 +4195,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3632
+      "elapsed_seconds": 1.5734
     },
     {
       "repository": "InternLM/lagent",
@@ -4220,8 +4312,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -4278,7 +4374,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6303
+      "elapsed_seconds": 0.7422
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -4388,8 +4484,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -4448,7 +4548,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0759
+      "elapsed_seconds": 1.2666
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -4563,8 +4663,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -4625,7 +4729,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4654
+      "elapsed_seconds": 1.5882
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -4736,8 +4840,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -4795,7 +4903,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9402
+      "elapsed_seconds": 1.0553
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -4909,8 +5017,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -4964,7 +5076,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1007
+      "elapsed_seconds": 3.4363
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -5073,8 +5185,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -5127,7 +5243,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0266
+      "elapsed_seconds": 1.1026
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -5238,8 +5354,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -5283,7 +5403,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.544
+      "elapsed_seconds": 0.5977
     },
     {
       "repository": "letta-ai/letta-code",
@@ -5388,8 +5508,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -5433,7 +5557,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.293
+      "elapsed_seconds": 2.7217
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -5551,8 +5675,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -5610,7 +5738,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9284
+      "elapsed_seconds": 1.0205
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -5720,8 +5848,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -5780,7 +5912,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9269
+      "elapsed_seconds": 2.0872
     },
     {
       "repository": "mastra-ai/mastra",
@@ -5896,8 +6028,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -5947,7 +6083,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4101
+      "elapsed_seconds": 1.4655
     },
     {
       "repository": "vercel/ai",
@@ -6058,8 +6194,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -6108,7 +6248,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4591
+      "elapsed_seconds": 1.5264
     },
     {
       "repository": "cline/cline",
@@ -6223,8 +6363,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -6274,7 +6418,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9994
+      "elapsed_seconds": 2.0852
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -6382,8 +6526,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -6427,7 +6575,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1756
+      "elapsed_seconds": 2.2838
     },
     {
       "repository": "continuedev/continue",
@@ -6533,8 +6681,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -6578,7 +6730,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3788
+      "elapsed_seconds": 1.4545
     },
     {
       "repository": "Aider-AI/aider",
@@ -6683,8 +6835,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -6743,7 +6899,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2486
+      "elapsed_seconds": 2.3263
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -6847,8 +7003,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -6900,7 +7060,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 0.7684
+      "elapsed_seconds": 0.8081
     },
     {
       "repository": "plandex-ai/plandex",
@@ -6991,8 +7151,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -7036,7 +7200,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.028
+      "elapsed_seconds": 0.0365
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -7141,8 +7305,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -7192,7 +7360,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0753
+      "elapsed_seconds": 1.1273
     },
     {
       "repository": "stitionai/devika",
@@ -7302,8 +7470,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -7351,7 +7523,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2743
+      "elapsed_seconds": 0.2851
     },
     {
       "repository": "block/goose",
@@ -7457,8 +7629,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -7511,7 +7687,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 1.159
+      "elapsed_seconds": 1.2116
     },
     {
       "repository": "bytedance/trae-agent",
@@ -7630,8 +7806,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -7692,7 +7872,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6425
+      "elapsed_seconds": 0.6513
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -7799,8 +7979,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -7846,7 +8030,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2752
+      "elapsed_seconds": 3.4369
     },
     {
       "repository": "openai/codex",
@@ -7944,8 +8128,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -7995,7 +8183,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5751
+      "elapsed_seconds": 0.5982
     },
     {
       "repository": "browser-use/browser-use",
@@ -8116,8 +8304,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -8179,7 +8371,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3567
+      "elapsed_seconds": 3.6211
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -8306,8 +8498,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -8367,7 +8563,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.5873
+      "elapsed_seconds": 6.7614
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -8480,8 +8676,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -8536,7 +8736,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6216
+      "elapsed_seconds": 0.6537
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -8644,8 +8844,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -8691,7 +8895,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7167
+      "elapsed_seconds": 0.7453
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -8802,8 +9006,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -8857,7 +9065,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7938
+      "elapsed_seconds": 0.8075
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -8975,8 +9183,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -9029,7 +9241,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0225
+      "elapsed_seconds": 2.0341
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -9140,8 +9352,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -9190,7 +9406,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.089
+      "elapsed_seconds": 2.1423
     },
     {
       "repository": "github/github-mcp-server",
@@ -9291,8 +9507,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -9336,7 +9556,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0267
+      "elapsed_seconds": 0.0333
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -9438,8 +9658,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -9483,7 +9707,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.057
+      "elapsed_seconds": 0.0582
     },
     {
       "repository": "awslabs/mcp",
@@ -9592,8 +9816,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -9645,7 +9873,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8232
+      "elapsed_seconds": 1.8509
     },
     {
       "repository": "docker/mcp-gateway",
@@ -9747,8 +9975,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -9794,7 +10026,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.024
+      "elapsed_seconds": 0.0324
     },
     {
       "repository": "jlowin/fastmcp",
@@ -9904,8 +10136,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -9961,7 +10197,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1436
+      "elapsed_seconds": 2.2134
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -10052,8 +10288,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -10097,19 +10337,21 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0197
+      "elapsed_seconds": 0.0277
     },
     {
       "repository": "langflow-ai/langflow",
       "category": "visual-platform",
       "status": "ok",
-      "files_scanned": 179,
-      "dependency_files_materialized": 0,
+      "files_scanned": 191,
+      "dependency_files_materialized": 12,
       "config_files_scanned": 8,
       "components": {
-        "capability": 81,
+        "capability": 96,
+        "control": 3,
         "mcp": 3,
         "protocol": 4,
+        "provider": 4,
         "sandbox-boundary": 1,
         "tool": 52
       },
@@ -10121,14 +10363,20 @@
           "network",
           "shell-execution"
         ],
+        "control": [
+          "network-ssrf-policy"
+        ],
         "protocol": [
           "MCP"
+        ],
+        "provider": [
+          "OpenAI"
         ],
         "sandbox-boundary": [
           "docker-socket"
         ]
       },
-      "relationships": 0,
+      "relationships": 10,
       "symbolized_components": 52,
       "identified_symbol_endpoints": 0,
       "resolved_symbol_endpoints": 0,
@@ -10201,15 +10449,19 @@
         "dns_unresolved": 0
       },
       "python_secure_network_controls": {
-        "total": 0,
-        "enabled_default": 0,
-        "configured_opt_out": 0,
+        "total": 10,
+        "enabled_default": 10,
+        "configured_opt_out": 10,
         "redirects_validated": 0,
-        "redirects_disabled": 0,
+        "redirects_disabled": 5,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 10,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 10,
+        "redirects_disabled_default_validated_when_enabled": 5,
+        "configured_allowlist_and_loopback_exemption": 10,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -10231,13 +10483,17 @@
         "weak_string_prefix": 0
       },
       "python_filesystem_mutations": {
-        "total": 0,
+        "total": 1,
         "callable_aliases": 0,
         "pathlib_methods": 0,
-        "dynamic_paths": 0,
+        "dynamic_paths": 1,
         "guarded": 0,
-        "operations": {},
-        "apis": {}
+        "operations": {
+          "delete": 1
+        },
+        "apis": {
+          "shutil.rmtree": 1
+        }
       },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
@@ -10247,7 +10503,9 @@
         "python": 0,
         "typescript": 0
       },
-      "bom_endpoint_resolutions": {},
+      "bom_endpoint_resolutions": {
+        "evidence-location": 20
+      },
       "bom_ambiguous_endpoints_by_side_kind": {},
       "findings": {
         "AV-SANDBOX001": 1
@@ -10255,7 +10513,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9795
+      "elapsed_seconds": 2.2454
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -10359,8 +10617,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -10404,7 +10666,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8712
+      "elapsed_seconds": 1.8971
     },
     {
       "repository": "langgenius/dify",
@@ -10498,8 +10760,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -10543,7 +10809,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3842
+      "elapsed_seconds": 1.4055
     },
     {
       "repository": "n8n-io/n8n",
@@ -10656,8 +10922,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -10705,7 +10975,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3268
+      "elapsed_seconds": 1.3624
     },
     {
       "repository": "activepieces/activepieces",
@@ -10821,8 +11091,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -10870,7 +11144,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9562
+      "elapsed_seconds": 1.0004
     },
     {
       "repository": "simstudioai/sim",
@@ -10970,8 +11244,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -11015,7 +11293,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6134
+      "elapsed_seconds": 2.6838
     },
     {
       "repository": "composiohq/composio",
@@ -11141,8 +11419,12 @@
         "redirects_disabled": 1,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 2,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 2,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 2
       },
       "typescript_network_origin_controls": {
@@ -11192,7 +11474,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1267
+      "elapsed_seconds": 1.1465
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -11314,8 +11596,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -11377,7 +11663,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1632
+      "elapsed_seconds": 2.1931
     },
     {
       "repository": "e2b-dev/E2B",
@@ -11476,8 +11762,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -11521,7 +11811,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4538
+      "elapsed_seconds": 1.4588
     },
     {
       "repository": "daytonaio/daytona",
@@ -11612,8 +11902,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -11657,7 +11951,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0002
+      "elapsed_seconds": 0.0005
     },
     {
       "repository": "AgentOps-AI/agentops",
@@ -11774,8 +12068,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -11825,7 +12123,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1417
+      "elapsed_seconds": 1.1347
     },
     {
       "repository": "traceloop/openllmetry",
@@ -11947,8 +12245,12 @@
         "redirects_disabled": 0,
         "dns_connection_pinned": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
         "proxies_disabled": 0,
         "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
         "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
@@ -12002,7 +12304,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9064
+      "elapsed_seconds": 1.9635
     }
   ]
 }

@@ -285,8 +285,10 @@ class PythonSecureNetworkPolicy:
     enforcement_default: str
     escape_hatch: str
     policy_effect: str = "restricts-http-origin-and-peer"
+    initial_origin_scope: str = "public-addresses"
     bypass_environment: str | None = None
     force_safe_environment: str | None = None
+    bypass_environments: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -2399,7 +2401,7 @@ class PythonVisitor(ast.NodeVisitor):
             "helper": summary.name,
             "helper_path": summary.path,
             "schemes": list(policy.schemes),
-            "initial_origin_scope": "public-addresses",
+            "initial_origin_scope": policy.initial_origin_scope,
             "redirect_scope": policy.redirect_scope,
             "dns_scope": policy.dns_scope,
             "proxy_scope": policy.proxy_scope,
@@ -2410,6 +2412,8 @@ class PythonVisitor(ast.NodeVisitor):
             attributes["bypass_environment"] = policy.bypass_environment
         if policy.force_safe_environment is not None:
             attributes["force_safe_environment"] = policy.force_safe_environment
+        if policy.bypass_environments:
+            attributes["bypass_environments"] = list(policy.bypass_environments)
         self.ir.add_component(
             Component("control", "network-ssrf-policy", policy.evidence, attributes)
         )
@@ -2428,6 +2432,7 @@ class PythonVisitor(ast.NodeVisitor):
                 },
             )
         )
+
     def ev(self, node: ast.AST) -> Evidence:
         line = getattr(node, "lineno", 1)
         return Evidence(self.path, line, excerpt(self.lines, line))
@@ -4501,7 +4506,7 @@ class PythonVisitor(ast.NodeVisitor):
                     **(
                         {
                             "network_origin_policy": True,
-                            "initial_origin_scope": "public-addresses",
+                            "initial_origin_scope": secure_policy.initial_origin_scope,
                             "redirect_scope": secure_policy.redirect_scope,
                             "dns_scope": secure_policy.dns_scope,
                             "proxy_scope": secure_policy.proxy_scope,
@@ -7527,9 +7532,11 @@ def build_python_module_index(root: Path, paths: list[Path]) -> dict[str, str]:
         if parts and parts[-1] == "__init__":
             parts.pop()
         module_parts = [parts]
-        for source_root in ("src", "python"):
-            if source_root in parts:
-                module_parts.append(parts[parts.index(source_root) + 1 :])
+        module_parts.extend(
+            parts[index + 1 :]
+            for index, part in enumerate(parts)
+            if part in {"src", "python"}
+        )
         for candidate_parts in module_parts:
             if candidate_parts:
                 module = ".".join(candidate_parts)
@@ -8888,6 +8895,383 @@ def build_python_proxy_conditional_secure_network_helper_summaries(
     return summaries
 
 
+def build_python_configurable_pinned_network_helper_summaries(
+    root: Path,
+    paths: list[Path],
+    module_paths: dict[str, str],
+) -> dict[tuple[str, str], PythonNetworkHelperSummary]:
+    """Index default-on connector guards whose disabled state is an explicit no-op."""
+    selected = {path.relative_to(root).as_posix(): path for path in paths if path.is_file()}
+    parsed: dict[str, tuple[str, ast.Module]] = {}
+
+    def parse(relative: str) -> tuple[str, ast.Module] | None:
+        if relative not in selected:
+            return None
+        if relative in parsed:
+            return parsed[relative]
+        try:
+            text = selected[relative].read_text(encoding="utf-8-sig", errors="ignore")
+            tree = ast.parse(text, filename=relative)
+        except (OSError, SyntaxError):
+            return None
+        parsed[relative] = (text, tree)
+        return parsed[relative]
+
+    def unique_function(
+        tree: ast.Module, name: str
+    ) -> ast.FunctionDef | ast.AsyncFunctionDef | None:
+        matches = [
+            node
+            for node in tree.body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and node.name == name
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    def short_name(call: ast.Call) -> str:
+        return dotted_name(call.func).rsplit(".", 1)[-1]
+
+    def calls(node: ast.AST) -> list[ast.Call]:
+        return [child for child in ast.walk(node) if isinstance(child, ast.Call)]
+
+    def call_names(node: ast.AST) -> set[str]:
+        return {short_name(call) for call in calls(node)}
+
+    def string_constants(node: ast.AST) -> set[str]:
+        return {
+            child.value
+            for child in ast.walk(node)
+            if isinstance(child, ast.Constant) and isinstance(child.value, str)
+        }
+
+    def has_empty_ip_return(node: ast.AST) -> bool:
+        return any(
+            isinstance(child, ast.Return)
+            and isinstance(child.value, ast.Tuple)
+            and len(child.value.elts) == 2
+            and isinstance(child.value.elts[1], ast.List)
+            and not child.value.elts[1].elts
+            for child in ast.walk(node)
+        )
+
+    def imported_path(relative: str, tree: ast.Module, local_name: str) -> str | None:
+        matches = []
+        for statement in tree.body:
+            if not isinstance(statement, ast.ImportFrom):
+                continue
+            for alias in statement.names:
+                if (alias.asname or alias.name) != local_name:
+                    continue
+                target = resolve_python_import_path(
+                    root, relative, statement, alias.name, module_paths
+                )
+                if target is not None:
+                    matches.append(target)
+        return matches[0] if len(matches) == 1 else None
+
+    settings_defaults = False
+    for relative in selected:
+        if not relative.endswith("/settings/groups/security.py"):
+            continue
+        source = parse(relative)
+        if source is None:
+            continue
+        _, settings_tree = source
+        defaults = {
+            node.target.id
+            for node in ast.walk(settings_tree)
+            if isinstance(node, ast.AnnAssign)
+            and isinstance(node.target, ast.Name)
+            and isinstance(node.value, ast.Constant)
+            and node.value.value is True
+        }
+        settings_defaults = {
+            "ssrf_protection_enabled",
+            "connector_ssrf_validation_enabled",
+            "connector_ssrf_allow_loopback",
+        } <= defaults
+        if settings_defaults:
+            break
+    if not settings_defaults:
+        return {}
+
+    summaries: dict[tuple[str, str], PythonNetworkHelperSummary] = {}
+    for relative in sorted(selected):
+        source = parse(relative)
+        if source is None:
+            continue
+        text, tree = source
+        if not all(
+            marker in text
+            for marker in (
+                "validate_and_resolve_connector_url",
+                "_async_client_for_url",
+                "_sync_client_for_url",
+                "ssrf_safe_httpx_get",
+            )
+        ):
+            continue
+        protection_path = imported_path(
+            relative, tree, "validate_and_resolve_connector_url"
+        )
+        async_transport_path = imported_path(relative, tree, "SSRFProtectedTransport")
+        sync_transport_path = imported_path(relative, tree, "SSRFProtectedSyncTransport")
+        if (
+            protection_path is None
+            or async_transport_path is None
+            or sync_transport_path is None
+            or async_transport_path != sync_transport_path
+        ):
+            continue
+        protection_source = parse(protection_path)
+        transport_source = parse(async_transport_path)
+        if protection_source is None or transport_source is None:
+            continue
+        _, protection_tree = protection_source
+        _, transport_tree = transport_source
+
+        global_gate = unique_function(protection_tree, "is_ssrf_protection_enabled")
+        connector_gate = unique_function(
+            protection_tree, "is_connector_ssrf_validation_enabled"
+        )
+        loopback_gate = unique_function(
+            protection_tree, "is_connector_loopback_allowed"
+        )
+        loopback_exemption = unique_function(
+            protection_tree, "_connector_url_has_loopback_exemption"
+        )
+        allowed_hosts = unique_function(protection_tree, "get_allowed_hosts")
+        host_allowed = unique_function(protection_tree, "is_host_allowed")
+        connector_validator = unique_function(
+            protection_tree, "validate_and_resolve_connector_url"
+        )
+        core_validator = unique_function(protection_tree, "validate_and_resolve_url")
+        if None in {
+            global_gate,
+            connector_gate,
+            loopback_gate,
+            loopback_exemption,
+            allowed_hosts,
+            host_allowed,
+            connector_validator,
+            core_validator,
+        }:
+            continue
+        assert global_gate is not None
+        assert connector_gate is not None
+        assert loopback_gate is not None
+        assert loopback_exemption is not None
+        assert allowed_hosts is not None
+        assert host_allowed is not None
+        assert connector_validator is not None
+        assert core_validator is not None
+        gate_policy = (
+            "LANGFLOW_SSRF_PROTECTION_ENABLED" in string_constants(global_gate)
+            and "getenv" in call_names(global_gate)
+            and "get_settings_service" in call_names(global_gate)
+            and "LANGFLOW_CONNECTOR_SSRF_VALIDATION_ENABLED"
+            in string_constants(connector_gate)
+            and "getenv" in call_names(connector_gate)
+            and "get_settings_service" in call_names(connector_gate)
+        )
+        loopback_policy = (
+            "LANGFLOW_CONNECTOR_SSRF_ALLOW_LOOPBACK" in string_constants(loopback_gate)
+            and "getenv" in call_names(loopback_gate)
+            and "get_settings_service" in call_names(loopback_gate)
+            and {
+                "is_ssrf_protection_enabled",
+                "_validate_raw_url_authority",
+                "urlparse",
+                "is_connector_loopback_allowed",
+                "_is_loopback_host",
+            }
+            <= call_names(loopback_exemption)
+            and any(isinstance(node, ast.Raise) for node in ast.walk(loopback_exemption))
+        )
+        allowlist_policy = (
+            "LANGFLOW_SSRF_ALLOWED_HOSTS" in string_constants(allowed_hosts)
+            and "getenv" in call_names(allowed_hosts)
+            and "get_settings_service" in call_names(allowed_hosts)
+            and "get_allowed_hosts" in call_names(host_allowed)
+        )
+        connector_policy = {
+            "is_connector_ssrf_validation_enabled",
+            "_connector_url_has_loopback_exemption",
+            "validate_and_resolve_url",
+        } <= call_names(connector_validator) and has_empty_ip_return(connector_validator)
+        core_names = call_names(core_validator)
+        core_policy = (
+            {
+                "is_ssrf_protection_enabled",
+                "urlparse",
+                "_validate_url_scheme",
+                "_validate_hostname_exists",
+                "is_host_allowed",
+                "resolve_hostname",
+                "is_ip_blocked",
+            }
+            <= core_names
+            and has_empty_ip_return(core_validator)
+            and any(isinstance(node, ast.Raise) for node in ast.walk(core_validator))
+            and any(
+                isinstance(node, ast.Return)
+                and isinstance(node.value, ast.Tuple)
+                and any(
+                    isinstance(child, ast.Name) and child.id == "resolved_ips"
+                    for child in node.value.elts
+                )
+                for node in ast.walk(core_validator)
+            )
+        )
+
+        classes = {
+            node.name: node for node in transport_tree.body if isinstance(node, ast.ClassDef)
+        }
+        backend_policy = True
+        for class_name in ("DNSPinningNetworkBackend", "DNSPinningSyncNetworkBackend"):
+            backend = classes.get(class_name)
+            if backend is None or not any(
+                isinstance(call.func, ast.Attribute)
+                and call.func.attr == "connect_tcp"
+                and any(
+                    keyword.arg == "host"
+                    and isinstance(keyword.value, ast.Name)
+                    and keyword.value.id == "pinned_ip"
+                    for keyword in call.keywords
+                )
+                for call in calls(backend)
+            ):
+                backend_policy = False
+        transport_policy = backend_policy
+        for class_name in ("SSRFProtectedTransport", "SSRFProtectedSyncTransport"):
+            transport = classes.get(class_name)
+            if transport is None:
+                transport_policy = False
+                continue
+            transport_calls = calls(transport)
+            transport_policy = transport_policy and (
+                any(short_name(call) in {"ConnectionPool", "AsyncConnectionPool"} for call in transport_calls)
+                and any(
+                    keyword.arg == "network_backend"
+                    and isinstance(keyword.value, ast.Name)
+                    and keyword.value.id == "network_backend"
+                    for call in transport_calls
+                    for keyword in call.keywords
+                )
+                and any(
+                    isinstance(node, ast.Raise)
+                    and isinstance(node.exc, ast.Call)
+                    and short_name(node.exc) == "NotImplementedError"
+                    for node in ast.walk(transport)
+                )
+            )
+        creators_proven = all(
+            (creator := unique_function(transport_tree, name)) is not None
+            and expected in call_names(creator)
+            and transport_name in call_names(creator)
+            for name, expected, transport_name in (
+                ("create_ssrf_protected_client", "AsyncClient", "SSRFProtectedTransport"),
+                ("create_ssrf_protected_sync_client", "Client", "SSRFProtectedSyncTransport"),
+            )
+        )
+        async_factory = unique_function(tree, "_async_client_for_url")
+        sync_factory = unique_function(tree, "_sync_client_for_url")
+        factories_proven = all(
+            factory is not None
+            and "is_ssrf_protection_enabled" in call_names(factory)
+            and protected in call_names(factory)
+            and fallback in call_names(factory)
+            for factory, protected, fallback in (
+                (async_factory, "create_ssrf_protected_client", "AsyncClient"),
+                (sync_factory, "create_ssrf_protected_sync_client", "Client"),
+            )
+        )
+        if not (
+            gate_policy
+            and loopback_policy
+            and allowlist_policy
+            and connector_policy
+            and core_policy
+            and transport_policy
+            and creators_proven
+            and factories_proven
+        ):
+            continue
+
+        helper_specs = {
+            "ssrf_safe_async_get": ("get", "disabled"),
+            "ssrf_safe_async_post": ("post", "disabled"),
+            "ssrf_safe_httpx_get": (
+                "get",
+                "disabled-default-each-hop-validated-when-enabled",
+            ),
+            "ssrf_safe_httpx_post": ("post", "disabled"),
+        }
+        for name, (method, redirect_scope) in helper_specs.items():
+            function = unique_function(tree, name)
+            if function is None:
+                continue
+            positional = (*function.args.posonlyargs, *function.args.args)
+            if not positional or "validate_and_resolve_connector_url" not in call_names(function):
+                continue
+            network_calls = [
+                call
+                for call in calls(function)
+                if isinstance(call.func, ast.Attribute)
+                and call.func.attr == method
+                and isinstance(call.func.value, ast.Name)
+                and call.func.value.id == "client"
+            ]
+            if len(network_calls) != 1:
+                continue
+            if name == "ssrf_safe_httpx_get":
+                bounded = any(
+                    isinstance(loop, ast.For)
+                    and isinstance(loop.iter, ast.Call)
+                    and short_name(loop.iter) == "range"
+                    and any(short_name(call) == "urljoin" for call in calls(loop))
+                    for loop in function.body
+                )
+                redirects_disabled = any(
+                    keyword.arg == "follow_redirects"
+                    and isinstance(keyword.value, ast.Constant)
+                    and keyword.value.value is False
+                    for keyword in network_calls[0].keywords
+                )
+                if not (bounded and redirects_disabled):
+                    continue
+            elif "_raise_if_following_redirects" not in call_names(function):
+                continue
+            policy = PythonSecureNetworkPolicy(
+                Evidence(relative, function.lineno, excerpt(text.splitlines(), function.lineno)),
+                ("http", "https"),
+                redirect_scope,
+                "connection-pinned-when-enforced",
+                "disabled-when-enforced",
+                "enabled",
+                "configured-opt-out",
+                policy_effect="restricts-http-origin-and-pins-peer-when-enforced",
+                initial_origin_scope=(
+                    "public-addresses-with-configured-allowlist-and-loopback-exemption"
+                ),
+                bypass_environments=(
+                    "LANGFLOW_SSRF_PROTECTION_ENABLED",
+                    "LANGFLOW_CONNECTOR_SSRF_VALIDATION_ENABLED",
+                ),
+            )
+            summaries[(relative, name)] = PythonNetworkHelperSummary(
+                relative,
+                name,
+                tuple(argument.arg for argument in positional),
+                tuple(argument.arg for argument in function.args.kwonlyargs),
+                (positional[0].arg,),
+                function.lineno,
+                (network_calls[0].lineno,),
+                policy,
+            )
+    return summaries
+
+
 def build_python_network_helper_summaries(
     root: Path,
     paths: list[Path],
@@ -10141,6 +10525,13 @@ def scan_repository(
         build_python_proxy_conditional_secure_network_helper_summaries(
             root,
             registry_paths,
+        )
+    )
+    network_helper_summaries.update(
+        build_python_configurable_pinned_network_helper_summaries(
+            root,
+            registry_paths,
+            module_paths,
         )
     )
     registered_tool_functions = build_python_tool_registrations(

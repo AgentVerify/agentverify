@@ -112,6 +112,17 @@ and force-safe names are retained when present, and proxy residuals are never pr
 pinning. Exact named imports and aliases apply the summary, while rebinding or any missing transport
 proof withholds it; helper names and docstrings alone do not contribute evidence.
 
+A third structural family models configurable connector protection without flattening its disabled
+state into unconditional safety. It requires versioned, selected evidence for default-on global and
+connector settings; both gate functions; configured allowlist and literal-loopback handling; the
+core public-address validator; async and sync backends that connect to validated addresses; protected
+transports that reject proxies; and factory fallbacks to ordinary clients. Resulting edges use
+`connection-pinned-when-enforced` and `disabled-when-enforced`, retain both opt-out environment names,
+and record the configured allowlist/default loopback exemption in the initial-origin scope. Helpers
+that reject redirects remain distinct from the bounded synchronous GET helper that disables them by
+default and revalidates each hop only when explicitly enabled. Any missing composition proof,
+disabled default, unpinned backend, non-exact import, or rebinding withholds the summary.
+
 A repository prepass builds bounded Python network summaries for unique top-level free functions in
 selected files. A summary records direct recognized HTTP calls and the formal parameters that can
 control their origins after fixed-prefix discrimination. At a tool call site, only an exact named

@@ -33,7 +33,8 @@ def main() -> None:
             "Selection prioritizes manifests and agent, tool, MCP, permission, approval, sandbox, "
             "executor, and security paths, then materializes "
             f"{sum(repository.get('dependency_files_materialized', 0) for repository in repositories):,} "
-            "bounded local Python dependencies reached from MCP forwarding roots."
+            "bounded local Python dependencies reached from MCP forwarding/URL-security roots or "
+            "listed as audited evidence paths in the versioned selection-hint manifest."
         ),
         "",
         (

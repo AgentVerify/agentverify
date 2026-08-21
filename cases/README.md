@@ -26,6 +26,9 @@ never imported or executed.
 - `python_proxy_conditional_network_helper`: source-proven direct and redirecting transports that
   pin direct sockets but preserve environment/caller proxy DNS as a residual; fixed validation,
   detached DNS, missing peer/proxy flow, unbounded redirects, and ordinary requests stay negative.
+- `python_configurable_network_helper`: default-on connector validation, configured allowlists and
+  loopback exemptions, enforcement-conditional DNS pinning/proxy rejection, and redirect policy;
+  disabled defaults, unpinned transports, and ordinary requests remain negative.
 - `sandbox_boundary`: Compose and Kubernetes host/privilege boundaries plus explicit safe negatives.
 - `constant_eval`: constant Python evaluation negative case.
 - `python_browser_evaluate`: exact Playwright `Page` annotations and immutable aliases prove dynamic

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T14:40:00.650238+00:00",
-  "labels": 207,
-  "passed": 207,
+  "generated_at": "2026-08-21T15:06:52.875633+00:00",
+  "labels": 212,
+  "passed": 212,
   "metrics": {
     "IR-APPROVAL-CONTROL": {
       "tp": 3,
@@ -80,6 +80,14 @@
       "tp": 3,
       "fp": 0,
       "tn": 5,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-CONFIGURABLE-PINNED-NETWORK-HELPER": {
+      "tp": 4,
+      "fp": 0,
+      "tn": 1,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -2087,6 +2095,51 @@
     {
       "id": "python-proxy-conditional-network-composio-upload-real",
       "check_id": "IR-PY-PROXY-CONDITIONAL-NETWORK-HELPER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-configurable-pinned-network-sync-local",
+      "check_id": "IR-PY-CONFIGURABLE-PINNED-NETWORK-HELPER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-configurable-pinned-network-async-local",
+      "check_id": "IR-PY-CONFIGURABLE-PINNED-NETWORK-HELPER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-configurable-pinned-network-raw-local-negative",
+      "check_id": "IR-PY-CONFIGURABLE-PINNED-NETWORK-HELPER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-configurable-pinned-network-langflow-deepseek-real",
+      "check_id": "IR-PY-CONFIGURABLE-PINNED-NETWORK-HELPER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-configurable-pinned-network-langflow-glean-real",
+      "check_id": "IR-PY-CONFIGURABLE-PINNED-NETWORK-HELPER",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

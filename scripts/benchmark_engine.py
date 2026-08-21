@@ -513,6 +513,10 @@ def main() -> int:
                     == "connection-pinned-unless-proxied"
                     for edge in python_secure_network_controls
                 ),
+                "dns_connection_pinned_when_enforced": sum(
+                    edge.attributes.get("dns_scope") == "connection-pinned-when-enforced"
+                    for edge in python_secure_network_controls
+                ),
                 "proxies_disabled": sum(
                     edge.attributes.get("proxy_scope") == "disabled"
                     for edge in python_secure_network_controls
@@ -520,6 +524,20 @@ def main() -> int:
                 "proxies_environment_or_caller_dependent": sum(
                     edge.attributes.get("proxy_scope")
                     == "environment-or-caller-dependent"
+                    for edge in python_secure_network_controls
+                ),
+                "proxies_disabled_when_enforced": sum(
+                    edge.attributes.get("proxy_scope") == "disabled-when-enforced"
+                    for edge in python_secure_network_controls
+                ),
+                "redirects_disabled_default_validated_when_enabled": sum(
+                    edge.attributes.get("redirect_scope")
+                    == "disabled-default-each-hop-validated-when-enabled"
+                    for edge in python_secure_network_controls
+                ),
+                "configured_allowlist_and_loopback_exemption": sum(
+                    edge.attributes.get("initial_origin_scope")
+                    == "public-addresses-with-configured-allowlist-and-loopback-exemption"
                     for edge in python_secure_network_controls
                 ),
                 "no_escape_hatch": sum(
@@ -644,7 +662,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 33,
+        "schema_version": 34,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -821,8 +839,12 @@ def main() -> int:
                     "redirects_disabled",
                     "dns_connection_pinned",
                     "dns_connection_pinned_unless_proxied",
+                    "dns_connection_pinned_when_enforced",
                     "proxies_disabled",
                     "proxies_environment_or_caller_dependent",
+                    "proxies_disabled_when_enforced",
+                    "redirects_disabled_default_validated_when_enabled",
+                    "configured_allowlist_and_loopback_exemption",
                     "no_escape_hatch",
                 )
             },

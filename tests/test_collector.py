@@ -6,6 +6,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "collect_repositories.py"
 SPEC = importlib.util.spec_from_file_location("agentverify_collect_repositories", SCRIPT)
 assert SPEC and SPEC.loader
@@ -13,9 +15,11 @@ COLLECTOR = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = COLLECTOR
 SPEC.loader.exec_module(COLLECTOR)
 ensure_clone = COLLECTOR.ensure_clone
+analysis_selection_hints = COLLECTOR.analysis_selection_hints
 expand_python_mcp_dependencies = COLLECTOR.expand_python_mcp_dependencies
 expand_python_analysis_dependencies = COLLECTOR.expand_python_analysis_dependencies
 locked_commits = COLLECTOR.locked_commits
+python_module_indexes = COLLECTOR.python_module_indexes
 select_files = COLLECTOR.select_files
 
 
@@ -64,6 +68,49 @@ def test_locked_commits_reads_only_successful_pinned_results(tmp_path: Path) -> 
 
     assert locked_commits(lock) == {"owner/good": "abc123"}
     assert locked_commits(tmp_path / "missing.json") == {}
+
+
+def test_analysis_selection_hints_are_versioned_and_exact(tmp_path: Path) -> None:
+    hints = tmp_path / "hints.json"
+    hints.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "repositories": {"owner/repo": ["src/caller.py", "src/settings.py"]},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    assert analysis_selection_hints(hints) == {
+        "owner/repo": ("src/caller.py", "src/settings.py")
+    }
+    assert analysis_selection_hints(tmp_path / "missing.json") == {}
+
+    hints.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "repositories": {"owner/repo": ["src/caller.py", "src/caller.py"]},
+            }
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="duplicate paths"):
+        analysis_selection_hints(hints)
+
+
+def test_python_module_indexes_include_every_nested_source_root() -> None:
+    modules, path_modules = python_module_indexes(
+        ["src/distribution/src/package/security/ssrf_http.py"]
+    )
+
+    assert modules["package.security.ssrf_http"] == (
+        "src/distribution/src/package/security/ssrf_http.py"
+    )
+    assert "package.security.ssrf_http" in path_modules[
+        "src/distribution/src/package/security/ssrf_http.py"
+    ]
 
 
 def test_manifest_selection_includes_kubernetes_but_not_ci_workflows() -> None:
@@ -201,6 +248,55 @@ def test_dependency_expansion_follows_called_url_security_helpers(tmp_path: Path
         "src/pkg/security/url_safety.py",
         "src/pkg/security/ssrf_peer.py",
     ]
+
+
+def test_analysis_hints_materialize_callers_within_dependency_budget(tmp_path: Path) -> None:
+    repository = tmp_path / "repo"
+    (repository / "src/pkg/security").mkdir(parents=True)
+    (repository / "src/pkg/client.py").write_text(
+        "from pkg.security.ssrf_http import safe_get\n\n"
+        "def fetch(url):\n"
+        "    return safe_get(url)\n",
+        encoding="utf-8",
+    )
+    (repository / "src/pkg/settings.py").write_text(
+        "SSRF_ENABLED = True\n",
+        encoding="utf-8",
+    )
+    (repository / "src/pkg/security/ssrf_http.py").write_text(
+        "def safe_get(url):\n    return url\n",
+        encoding="utf-8",
+    )
+    git(repository, "init", "-q")
+    git(repository, "config", "user.email", "test@example.invalid")
+    git(repository, "config", "user.name", "AgentVerify test")
+    git(repository, "add", ".")
+    git(repository, "commit", "-qm", "fixture")
+    tree_paths = git(repository, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
+
+    assert expand_python_analysis_dependencies(
+        repository,
+        tree_paths,
+        ["src/pkg/security/ssrf_http.py"],
+        max_dependency_files=2,
+        analysis_hints=("src/pkg/client.py", "src/pkg/settings.py"),
+    ) == ["src/pkg/client.py", "src/pkg/settings.py"]
+    with pytest.raises(ValueError, match="exceed"):
+        expand_python_analysis_dependencies(
+            repository,
+            tree_paths,
+            ["src/pkg/security/ssrf_http.py"],
+            max_dependency_files=1,
+            analysis_hints=("src/pkg/client.py", "src/pkg/settings.py"),
+        )
+    with pytest.raises(ValueError, match="absent"):
+        expand_python_analysis_dependencies(
+            repository,
+            tree_paths,
+            ["src/pkg/security/ssrf_http.py"],
+            max_dependency_files=2,
+            analysis_hints=("src/pkg/missing.py",),
+        )
 
 
 def test_security_dependency_expansion_requires_a_real_imported_call(tmp_path: Path) -> None:

@@ -11,9 +11,19 @@ from agentverify.analysis import component_context
 from agentverify.cli import main
 from agentverify.policy import evaluate_policy, normalize_policy
 from agentverify.report import render_bom, render_json, render_sarif, render_text
-from agentverify.scanner import scan_repository
+from agentverify.scanner import build_python_module_index, scan_repository
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_python_module_index_includes_every_nested_source_root(tmp_path: Path) -> None:
+    helper = tmp_path / "src/distribution/src/package/security/ssrf_http.py"
+    helper.parent.mkdir(parents=True)
+    helper.write_text("VALUE = 1\n", encoding="utf-8")
+
+    assert build_python_module_index(tmp_path, [helper])["package.security.ssrf_http"] == (
+        "src/distribution/src/package/security/ssrf_http.py"
+    )
 
 
 def test_python_agent_inventory_and_dynamic_shell_finding() -> None:
@@ -1388,6 +1398,77 @@ def test_python_proxy_conditional_network_helper_preserves_proxy_residual(
         for edge in unbounded_ir.relationships
         if edge.target_kind == "control" and edge.target_name == "network-ssrf-policy"
     ] == [6]
+
+
+def test_python_configurable_pinned_network_helper_preserves_noop_state(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/python_configurable_network_helper"
+    ir = scan_repository(root)
+    edges = [
+        edge
+        for edge in ir.relationships
+        if edge.target_kind == "control" and edge.target_name == "network-ssrf-policy"
+    ]
+    assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [
+        ("app.py", 6),
+        ("app.py", 10),
+    ]
+    assert [edge.attributes["redirect_scope"] for edge in edges] == [
+        "disabled-default-each-hop-validated-when-enabled",
+        "disabled",
+    ]
+    assert all(
+        edge.attributes["initial_origin_scope"]
+        == "public-addresses-with-configured-allowlist-and-loopback-exemption"
+        and edge.attributes["dns_scope"] == "connection-pinned-when-enforced"
+        and edge.attributes["proxy_scope"] == "disabled-when-enforced"
+        and edge.attributes["enforcement_default"] == "enabled"
+        and edge.attributes["bypass_environments"]
+        == [
+            "LANGFLOW_SSRF_PROTECTION_ENABLED",
+            "LANGFLOW_CONNECTOR_SSRF_VALIDATION_ENABLED",
+        ]
+        for edge in edges
+    )
+
+    for name, relative, before, after in (
+        (
+            "disabled-default",
+            "lfx/services/settings/groups/security.py",
+            "ssrf_protection_enabled: bool = True",
+            "ssrf_protection_enabled: bool = False",
+        ),
+        (
+            "unpinned-backend",
+            "lfx/utils/ssrf_transport.py",
+            "connect_tcp(host=pinned_ip)",
+            "connect_tcp(host='re-resolved.example')",
+        ),
+        (
+            "unproven-allowlist",
+            "lfx/utils/ssrf_protection.py",
+            "return hostname in get_allowed_hosts()",
+            "return False",
+        ),
+        (
+            "unproven-loopback-policy",
+            "lfx/utils/ssrf_protection.py",
+            'os.getenv("LANGFLOW_CONNECTOR_SSRF_ALLOW_LOOPBACK")',
+            'os.getenv("UNRELATED_LOOPBACK_FLAG")',
+        ),
+    ):
+        incomplete = tmp_path / name
+        shutil.copytree(root, incomplete)
+        source_path = incomplete / relative
+        source = source_path.read_text(encoding="utf-8")
+        assert before in source
+        source_path.write_text(source.replace(before, after), encoding="utf-8")
+        incomplete_ir = scan_repository(incomplete)
+        assert not any(
+            edge.target_kind == "control" and edge.target_name == "network-ssrf-policy"
+            for edge in incomplete_ir.relationships
+        )
 
 
 def test_typescript_network_helper_summaries_map_object_parameters_and_multiline_aliases(

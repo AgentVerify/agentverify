@@ -294,9 +294,11 @@ def python_module_indexes(
         if parts and parts[-1] == "__init__":
             parts.pop()
         module_parts = [parts]
-        for source_root in ("src", "python"):
-            if source_root in parts:
-                module_parts.append(parts[parts.index(source_root) + 1 :])
+        module_parts.extend(
+            parts[index + 1 :]
+            for index, part in enumerate(parts)
+            if part in {"src", "python"}
+        )
         for candidate_parts in module_parts:
             if not candidate_parts:
                 continue
@@ -447,10 +449,24 @@ def expand_python_analysis_dependencies(
     tree_paths: list[str],
     selected_paths: list[str],
     max_dependency_files: int,
+    analysis_hints: tuple[str, ...] = (),
 ) -> list[str]:
     """Add bounded local imports for MCP forwarding and URL-security call sites."""
     if max_dependency_files <= 0:
         return []
+    unknown_hints = sorted(set(analysis_hints) - set(tree_paths))
+    if unknown_hints:
+        raise ValueError(f"analysis hints are absent from the pinned tree: {unknown_hints}")
+    invalid_hints = sorted(
+        path
+        for path in analysis_hints
+        if Path(path).is_absolute()
+        or ".." in Path(path).parts
+        or Path(path).suffix.lower() not in SOURCE_SUFFIXES
+        or set(Path(path).parts) & SKIP_PARTS
+    )
+    if invalid_hints:
+        raise ValueError(f"invalid analysis hints: {invalid_hints}")
     module_paths, path_modules = python_module_indexes(tree_paths)
     selected = set(selected_paths)
 
@@ -467,8 +483,21 @@ def expand_python_analysis_dependencies(
         source_cache[path] = content
         return content
 
+    dependencies = sorted(
+        set(analysis_hints) - selected,
+        key=lambda path: (
+            bool(set(Path(path).parts) & {"test", "tests", "__tests__"}),
+            len(Path(path).parts),
+            path,
+        ),
+    )
+    if len(dependencies) > max_dependency_files:
+        raise ValueError(
+            f"analysis hints exceed the {max_dependency_files}-file dependency budget"
+        )
+    discovered = set(dependencies)
     seed_paths: list[tuple[int, str]] = []
-    for path in selected_paths:
+    for path in [*selected_paths, *dependencies]:
         if Path(path).suffix.lower() != ".py":
             continue
         content = source(path)
@@ -485,8 +514,6 @@ def expand_python_analysis_dependencies(
         )
     )
 
-    dependencies: list[str] = []
-    discovered: set[str] = set()
     per_seed_limit = 4
     for seed_kind, seed in seed_paths:
         if len(dependencies) >= max_dependency_files:
@@ -550,6 +577,27 @@ def expand_python_mcp_dependencies(
     )
 
 
+def analysis_selection_hints(path: Path) -> dict[str, tuple[str, ...]]:
+    """Load audited extra source paths used to reproduce pinned corpus evidence."""
+    if not path.is_file():
+        return {}
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if payload.get("schema_version") != 1 or not isinstance(
+        payload.get("repositories"), dict
+    ):
+        raise ValueError("selection hints must use schema_version 1 and a repositories object")
+    hints: dict[str, tuple[str, ...]] = {}
+    for repository, paths in payload["repositories"].items():
+        if not isinstance(repository, str) or not repository or not isinstance(paths, list):
+            raise ValueError("selection hint repository entries must map names to path arrays")
+        if not all(isinstance(value, str) and value for value in paths):
+            raise ValueError(f"selection hints for {repository} must be nonempty strings")
+        if len(paths) != len(set(paths)):
+            raise ValueError(f"selection hints for {repository} contain duplicate paths")
+        hints[repository] = tuple(paths)
+    return hints
+
+
 def compile_signatures() -> dict[str, dict[str, list[tuple[str, re.Pattern[str]]]]]:
     return {
         group: {
@@ -586,6 +634,7 @@ def collect_one(
     max_dependency_files: int,
     max_bytes: int,
     locked_commit: str | None = None,
+    analysis_hints: tuple[str, ...] = (),
 ) -> RepositoryResult:
     repository = row["repository"]
     result = RepositoryResult(
@@ -616,6 +665,7 @@ def collect_one(
             paths,
             selected_paths,
             max_dependency_files,
+            analysis_hints,
         )
         if dependency_paths:
             materialize_files(clone, [*selected_paths, *dependency_paths])
@@ -658,6 +708,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-dependency-files", type=int, default=20)
     parser.add_argument("--max-bytes", type=int, default=2_000_000)
     parser.add_argument(
+        "--selection-hints",
+        type=Path,
+        default=Path("research/repository-selection-hints.json"),
+        help="audited extra source paths charged against the dependency-file budget",
+    )
+    parser.add_argument(
         "--lock-file",
         type=Path,
         default=Path("research/repository-data.json"),
@@ -687,6 +743,7 @@ def main() -> int:
     with args.corpus.open(newline="", encoding="utf-8") as handle:
         rows = list(csv.DictReader(handle))
     commits = {} if args.refresh else locked_commits(args.lock_file)
+    selection_hints = analysis_selection_hints(args.selection_hints)
     args.cache_dir.mkdir(parents=True, exist_ok=True)
     results: list[RepositoryResult] = []
     with ThreadPoolExecutor(max_workers=args.workers) as executor:
@@ -699,6 +756,7 @@ def main() -> int:
                 args.max_dependency_files,
                 args.max_bytes,
                 commits.get(row["repository"]),
+                selection_hints.get(row["repository"], ()),
             ): row
             for row in rows
         }
@@ -710,7 +768,7 @@ def main() -> int:
             )
     results.sort(key=lambda item: item.repository.casefold())
     payload = {
-        "schema_version": 3,
+        "schema_version": 4,
         "generated_at": datetime.now(UTC).isoformat(),
         "method": {
             "collector": "scripts/collect_repositories.py",
@@ -719,11 +777,15 @@ def main() -> int:
             "max_bytes_per_repository": args.max_bytes,
             "lock_file": None if args.refresh else str(args.lock_file),
             "locked_repositories": sum(row["repository"] in commits for row in rows),
+            "selection_hints_file": str(args.selection_hints),
+            "hinted_repositories": sum(
+                row["repository"] in selection_hints for row in rows
+            ),
             "selection": (
                 "manifests, then explicit SSRF/URL-safety and general "
                 "security/agent/tool/MCP-related sources, then shallow paths; "
-                "plus a bounded local Python import closure for MCP forwarding and "
-                "URL-security helper call sites"
+                "plus audited evidence paths and a bounded local Python import closure "
+                "for MCP forwarding and URL-security helper call sites"
             ),
         },
         "repositories": [asdict(result) for result in results],

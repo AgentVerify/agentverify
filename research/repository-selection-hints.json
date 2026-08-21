@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "description": "Audited source paths needed to reproduce security evidence that falls outside the bounded lexical root selection. Every path is charged against the repository dependency-file cap.",
+  "repositories": {
+    "langflow-ai/langflow": [
+      "src/bundles/lfx-bundles/src/lfx_bundles/deepseek/deepseek.py",
+      "src/bundles/lfx-bundles/src/lfx_bundles/glean/glean_search_api.py",
+      "src/bundles/lfx-bundles/src/lfx_bundles/git/git.py",
+      "src/bundles/lfx-bundles/src/lfx_bundles/git/gitextractor.py",
+      "src/bundles/lfx-bundles/src/lfx_bundles/homeassistant/home_assistant_control.py",
+      "src/bundles/lfx-bundles/src/lfx_bundles/homeassistant/list_home_assistant_states.py",
+      "src/bundles/lfx-bundles/src/lfx_bundles/huggingface/huggingface_inference_api.py",
+      "src/bundles/lfx-bundles/src/lfx_bundles/litellm/litellm_proxy.py",
+      "src/bundles/lfx-bundles/src/lfx_bundles/lmstudio/lmstudioembeddings.py",
+      "src/bundles/lfx-bundles/src/lfx_bundles/lmstudio/lmstudiomodel.py",
+      "src/bundles/lfx-bundles/src/lfx_bundles/xai/xai.py",
+      "src/lfx/src/lfx/services/settings/groups/security.py"
+    ]
+  }
+}

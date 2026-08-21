@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v33
+framework, wrapper, or configuration path. Counts come from schema-v34
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -23,28 +23,28 @@ kind. Categories and signature kinds can overlap.
 | research-agent | 1 | 1 | 1 | 1 | 1 | 1 |
 | sandbox | 2 | 1 | 0 | 0 | 0 | 1 |
 | tool-platform | 2 | 2 | 2 | 2 | 2 | 2 |
-| visual-platform | 4 | 4 | 1 | 0 | 1 | 3 |
+| visual-platform | 4 | 4 | 1 | 1 | 1 | 3 |
 | workflow-agent | 3 | 3 | 1 | 3 | 1 | 3 |
 | workflow-platform | 2 | 2 | 0 | 1 | 2 | 2 |
-| **Total with observation** | **71** | **70** | **29** | **42** | **47** | **67** |
+| **Total with observation** | **71** | **70** | **29** | **43** | **47** | **67** |
 
 Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK (9), LangGraph
 (8), CrewAI (4), PydanticAI (3), AutoGen (1), and Cline SDK (1). Provider observations are OpenAI
-(40), Anthropic (17), and Azure OpenAI (11). These counts overlap and are lower than research-wide lexical signals
+(41), Anthropic (17), and Azure OpenAI (11). These counts overlap and are lower than research-wide lexical signals
 because the engine requires supported selected files and more specific syntax.
 
 Across the selected snapshot, 8,733 agent/tool observations have module-qualified symbol IDs. Of
-2,910 relationship endpoint observations, 1,928 carry IDs and 1,926 resolve to an observed component
+2,930 relationship endpoint observations, 1,928 carry IDs and 1,926 resolve to an observed component
 (1,675 Python and 251 TypeScript); the two unmatched IDs are explicit Python re-export targets.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
-edges resolve exactly. In Python files with repeated identities, schema v33 records 325 same-scope and
+edges resolve exactly. In Python files with repeated identities, schema v34 records 325 same-scope and
 14 module-scope single-definition resolutions, plus 23 `ambiguous-repeated-binding` references that
 remain withheld.
 Capability/control taxonomy endpoints intentionally lack
 source-symbol IDs, so the endpoint fraction is inventory coverage rather than an accuracy or recall
 metric.
 
-The native AI BOM 1.1 resolver independently classifies all 2,910 endpoints: 1,926 by symbol ID, 438
+The native AI BOM 1.1 resolver independently classifies all 2,930 endpoints: 1,926 by symbol ID, 458
 by exact relationship evidence, 17 by a unique display name, 30 as ambiguous, and 499 as unresolved.
 Evidence-local resolution removes capability/control ambiguities; occurrence-qualified bindings
 resolve repeated source agent/tool observations, and conservative lexical resolution removes further
@@ -109,7 +109,7 @@ fields as an inventory-only edge.
 
 Exact same-function Python scheme and hostname rejection can govern a direct network capability as
 `network-origin-allowlist`. The proof is statement-ordered and import-proven, and records explicit
-redirect disabling separately from unresolved DNS and redirect scope. The full schema-v33 corpus run
+redirect disabling separately from unresolved DNS and redirect scope. The full schema-v34 corpus run
 finds zero qualifying controls on the 13 AV-NET001 review paths; imported validators and runtime
 egress policy remain outside this bounded observation.
 
@@ -131,8 +131,20 @@ validator rejects non-HTTP(S) targets and non-public DNS results; direct connect
 adapter and verify the connected peer. The download helper disables redirects, while the upload
 helper validates every hop in its bounded manual loop. Environment or caller proxies intentionally
 bypass peer pinning, so these edges retain `dns_scope: connection-pinned-unless-proxied` and
-`proxy_scope: environment-or-caller-dependent`. Schema v33 therefore reports four enabled-default
+`proxy_scope: environment-or-caller-dependent`. Schema v34 therefore reports four enabled-default
 secure-network edges in total: two fully pinned/proxy-disabled and two proxy-conditional.
+
+Ten Langflow connector call sites form a third structural family. Versioned selection hints add the
+audited production callers and settings file within the same 20-file dependency cap; the selected
+validator and transport modules then resolve through exact imports across the nested `src/lfx/src/lfx`
+package root. The proof requires default-on global and connector settings, the corresponding opt-out
+gates, configured allowlist and default literal-loopback behavior, async and sync pinning backends,
+proxy-rejecting transports, and ordinary-client fallbacks. Five synchronous GET edges disable
+redirects by default and validate each bounded hop when enabled; five remaining GET/POST edges reject
+automatic redirects. All ten record `dns_scope: connection-pinned-when-enforced`,
+`proxy_scope: disabled-when-enforced`, and `escape_hatch: configured-opt-out` rather than claiming
+unconditional protection. Schema v34 therefore reports 14 enabled-default secure-network edges:
+two fully pinned, two proxy-conditional, and ten configurable/enforcement-conditional.
 
 Four additional Python edges record exact string-prefix checks at CrewAI Examples sinks. They target
 `path-prefix-check`, carry `weak-string-prefix-validation`, and never satisfy path-boundary policy.
@@ -140,14 +152,14 @@ Two checks govern both a parent-directory creation and its write/copy action. Th
 `AV-FS002` result explains the sibling-prefix weakness without duplicating `AV-FS001` at the same
 sink.
 
-Schema v33 records 14 exact MCP-forwarding control edges: one explicit allowlist, three discovery
+Schema v34 records 14 exact MCP-forwarding control edges: one explicit allowlist, three discovery
 registries, and ten fixed bindings. The fixed-binding edges split evenly between constructor-bound
 instance sources and escaping returned/registered closures. Same-operation retry closures do not
 qualify. The ten bindings and discovery registries retain their reviews; only the explicit allowlist
 satisfies AV-MCP002's name-policy requirement.
 
-The Python frontend inventories 448 canonical/import/callable-aliased and proven-`Path` mutations:
-179 creates, 190 deletes, 46 copies, and 33 moves. Of these, 433 use non-literal path expressions;
+The Python frontend inventories 449 canonical/import/callable-aliased and proven-`Path` mutations:
+179 creates, 191 deletes, 46 copies, and 33 moves. Of these, 434 use non-literal path expressions;
 one is reached through a statement-ordered local callable alias and 20 are `Path.rename`/`replace`
 methods with explicit or immutable receiver proof. That
 inventory count is intentionally broader than AV-FS001, which additionally requires an exact tool
@@ -213,14 +225,17 @@ subset.
   plus hostname rejection before the direct request. Late, partial, continuing, rebound, shadowed,
   normalized-expression, positive-branch, and imported-validator forms remain unresolved. The
   control covers the initial origin only; redirect disabling and unresolved redirect/DNS scope are
-  preserved separately. Schema v33 observes zero such controls on the 13 corpus reviews.
+  preserved separately. Schema v34 observes zero such controls on the 13 corpus reviews.
 - Python secure-network helper proof requires selected local source for the validator, transport,
-  and protected adapter. One structural family proves every redirect, disables proxies, and pins all
-  connections; another distinguishes redirect-disabled from bounded each-hop validation and pins
-  only direct connections because environment or caller proxies resolve remotely. Both require
-  exact named imports, public-address rejection, protected HTTP/HTTPS mounts, and a connected-peer
-  assertion. Other helper shapes, missing redirect/proxy/peer proof, module-object calls, package
-  reexports, and rebound imports remain unresolved; configured opt-out or proxy residuals never
+  adapter/backend, caller, and any defaults that affect enforcement. One structural family proves
+  every redirect, disables proxies, and pins all connections; another distinguishes redirect-disabled
+  from bounded each-hop validation and pins only direct connections because environment or caller
+  proxies resolve remotely. A third requires default-on global and connector gates, configured
+  allowlist/default literal-loopback behavior, DNS-pinning backends, proxy-rejecting transports, and
+  ordinary-client fallbacks, and consequently records pinning/proxy rejection only when enforcement
+  is active. All require exact named imports and public-address rejection. Other helper shapes,
+  missing redirect/proxy/peer/default/composition proof, module-object calls, package reexports, and
+  rebound imports remain unresolved; configured opt-outs, exemptions, or proxy residuals never
   become unconditional enforcement.
 - Imported class-network propagation is limited to unique registered classes with one entrypoint,
   exact named imports, direct constructor calls or immutable constructor-only `self` fields, and four
@@ -257,12 +272,13 @@ subset.
 - An OpenTelemetry span proves lexical instrumentation only. Exporter configuration, delivery,
   retention, actor attribution, and durable audit storage remain unresolved.
 - Selected-path scans parse only selected files. The research corpus adds at most 20 local Python
-  dependencies to each 220-file root sample; this refresh added 135 files across 11 repositories.
-  Unselected definitions and controls are not evidence of repository-wide coverage or absence.
+  dependencies to each 220-file root sample, including versioned audited evidence hints charged
+  against the same cap; this refresh added 147 files across 12 repositories. Unselected definitions
+  and controls are not evidence of repository-wide coverage or absence.
 
 ## Quality interpretation
 
-The 299-label rule truth set and 207-label IR relationship set are curated regression suites. They
+The 299-label rule truth set and 212-label IR relationship set are curated regression suites. They
 guard known positives and negatives; they are not an unbiased accuracy estimate. A future holdout
 must be sampled separately across the categories above, externally reviewed, and kept sealed while
 rules change. Until then, precision/recall values apply only to the published seed labels.
