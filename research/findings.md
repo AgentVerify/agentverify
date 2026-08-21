@@ -19,7 +19,7 @@ The initial matcher found `shell=True` in eight repositories. Reviewable example
 
 The links are locked corpus snapshots; only an explicit collector `--refresh` pins newer commits.
 
-Filesystem mutation is broader than `open()` and `write_text()`. Schema v34 resolves 449 Python
+Filesystem mutation is broader than `open()` and `write_text()`. Schema v35 resolves 449 Python
 filesystem mutations in selected files: 179 creates, 191 deletes, 46 copies, and 33 moves. The move
 inventory includes 20 `Path.rename`/`Path.replace` calls proven through explicit constructors or
 immutable Path-derived bindings, including ChatDev's
@@ -31,7 +31,7 @@ Examples. Newly exposed cases include ArcadeAI's
 and its [conditional `copy`/`copy2` callable](https://github.com/ArcadeAI/arcade-ai/blob/597debaa1593b54172061ce36a414cc29aa8fc6a/examples/mcp_servers/local_filesystem/src/local_filesystem/tools.py#L329-L331),
 and CrewAI Examples'
 [`copytree` destination](https://github.com/crewAIInc/crewAI-examples/blob/da94a91e691e1cf5b3151416bb15b5b62729bea8/crews/landing_page_generator/src/landing_page_generator/tools/template_tools.py#L86-L90).
-That copy and three sibling sinks rely on `str(resolved).startswith(str(root))`; schema v34 preserves
+That copy and three sibling sinks rely on `str(resolved).startswith(str(root))`; schema v35 preserves
 the checks as weak, non-suppressing control edges because string prefixes do not enforce path-component
 boundaries. AV-FS002 takes precedence at those sinks and recommends `Path.is_relative_to`,
 `Path.relative_to`, or `os.path.commonpath`.
@@ -46,7 +46,7 @@ The IR records the destination—not the source—as the governed path for two-p
 are resolved only when unshadowed; string `.replace()` calls and caller-shadowed `shutil` names are
 regression negatives.
 
-Browser-page evaluation is a separate execution boundary. Schema v34 inventories 80
+Browser-page evaluation is a separate execution boundary. Schema v35 inventories 80
 import-context `.evaluate(...)` calls across the corpus and proves seven receivers: two exact
 Playwright `Page` parameters in SWE-agent and five exact imported Skyvern page-factory results. The
 remaining 73 fixed-script observations retain explicit unresolved receiver state. Only one proven
@@ -94,7 +94,7 @@ name matching from inventing this control.
 Five more calls bind a tool source through an escaping callback: three browser-use actions are
 registered and two ArcadeAI wrappers are returned. Equivalent retry closures in the MCP Python SDK
 and FastMCP do not qualify because the public caller still selects the name for each operation.
-Schema v34 therefore reports five instance and five closure fixed-binding edges, without suppressing
+Schema v35 therefore reports five instance and five closure fixed-binding edges, without suppressing
 any review.
 
 FastMCP adds an interprocedural routing fact: its middleware recursion reaches a same-class callee
@@ -103,14 +103,14 @@ that resolves `get_tool(name)`, rejects a missing tool, and only then executes. 
 retained as a required edge argument. This becomes the second `tool-registry` edge. A default-tool
 fallback remains unresolved, demonstrating why semantic names are not enforcement evidence.
 
-The collector's bounded dependency closure and audited evidence hints add 147 local Python files
-across 12 repositories. It
+The collector's bounded dependency closure and audited evidence hints add 151 local source files
+across 13 repositories. It
 exposes the MCP Python SDK's `ToolManager` reexport and implementation: `MCPServer` binds one imported
 manager in its constructor, and that manager resolves `get_tool(name)` and rejects a miss before
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the 299-label truth set.
+rule observations are pinned in the 302-label truth set.
 
 ## 3. Approval exists, but bypass behavior recurs
 
@@ -144,7 +144,7 @@ repository-wide “filesystem safe” flag. Its configured root scope remains un
 is retained rather than treating the presence of validation as sufficient policy.
 ChatDev contributes the Python exception form: its local-tool creation route resolves a candidate,
 calls [`target_path.relative_to(tools_dir)`](https://github.com/OpenBMB/ChatDev/blob/4fb2db0ea90375ce1059f44fe03ffbd191a7a169/server/routes/tools.py#L58),
-and terminates the `ValueError` handler before writing. Schema v34 records this as a distinct
+and terminates the `ValueError` handler before writing. Schema v35 records this as a distinct
 `Path.relative_to` control edge with unresolved root scope; handlers that continue are not controls.
 OpenAI Agents Python demonstrates the interprocedural variant: its `_resolve()` helper returns the
 same checked Path to create, update, and delete callers. Three sink edges retain the helper's exact
@@ -169,13 +169,13 @@ framework-qualified factories, not a growing bag of identifier regexes.
 ## 7. Governance exports need evidence-local identity
 
 Display-name-only AI BOM resolution produced 1,299 ambiguous relationship endpoints in the pinned
-corpus. The current schema resolves 458 endpoints by exact relationship evidence. Reused Python
+corpus. The current schema resolves 461 endpoints by exact relationship evidence. Reused Python
 and TypeScript bindings were a second identity failure: one file-level ID could describe many
 constructor occurrences. Occurrence-qualified IDs resolve all 688 source agent/tool ambiguities, and
 141 unsafe target IDs become unresolved instead of pointing at multiple assets. Intermediate
 benchmark schema v5 recorded all 289 target references whose duplicated raw binding ID was withheld.
-Schema v34 resolves only single direct definitions that appear earlier in the same Python lexical or
-module scope: 325 same-scope and 14 module-scope edges. The final export resolves 1,926 endpoints by
+Schema v35 resolves only single direct definitions that appear earlier in the same Python lexical or
+module scope: 325 same-scope and 14 module-scope edges. The final export resolves 1,927 endpoints by
 symbol ID and 17 by unique display name; 30 remain ambiguous, all tool targets, and 499 unresolved.
 A governance export that collapses those references
 by name would silently attach controls or risks to the wrong asset.
@@ -197,16 +197,16 @@ Four additional Qwen paths propagate that proof through registered classes: thre
 newly summarized `DocParser` on the second graph iteration. The class pass requires a unique
 single-entrypoint tool and an exact imported constructor; fixed arguments remain inventory, and
 mutation, `setattr`, shadowing, module-qualified calls, and rebound constructors are pinned negatives.
-Schema v34 also inventories 22 exact `urllib.request.urlopen` calls. Two are reachable from Qwen's
+Schema v35 also inventories 22 exact `urllib.request.urlopen` calls. Two are reachable from Qwen's
 registered weather tools. Both wrap a fixed `https://ali-weather.showapi.com` URL with dynamic query
 data in `Request` objects, so preserving the constructor's original URL produces exact inventory
 edges without adding reviews. Module or named aliases are import-proven; local shadowing and rebound
 openers are withheld.
-Schema v34 separately models fail-closed Python scheme and hostname checks as
+Schema v35 separately models fail-closed Python scheme and hostname checks as
 `network-origin-allowlist` controls on the exact request. The proof requires an import-proven
 `urlparse`/`urlsplit`, immutable URL and parse-result bindings, static nonempty allowlists, and checks
 that terminate before the sink. It records explicit redirect disabling while leaving DNS scope and
-all other redirect behavior unresolved. None of the 13 corpus review paths carries this exact
+all other redirect behavior unresolved. None of the Python corpus review paths carries this exact
 same-function control. That zero is a bounded governance observation—not proof that no repository has
 an external validator or runtime egress policy. The 2-positive/7-negative IR fixture category pins
 late checks, scheme-only checks, continuing guards, rebound parse results, shadowed parsers, and
@@ -219,7 +219,7 @@ edge records `configured-optional` and `hostname_default: open`. DNS and redirec
 unresolved, and the AV-NET001 review remains. Two positive and five negative IR labels cover the real
 edge, a local equivalent, late and rebound validation, nested validator calls, scheme-only checks,
 and branch-only validation.
-Schema v34 additionally proves CrewAI's `safe_get` transport at two production loader calls. Unlike
+Schema v35 additionally proves CrewAI's `safe_get` transport at two production loader calls. Unlike
 an initial hostname check, the helper validates every redirect, disables environment proxies, rejects
 private/reserved resolution results, and verifies the connected peer before returning the socket.
 Both edges are enabled by default but preserve `CREWAI_TOOLS_ALLOW_UNSAFE_PATHS` as a configured
@@ -247,6 +247,18 @@ default literal-loopback exemption return no pinned addresses, and the ordinary 
 Four positive and one negative IR labels cover local sync/async applications, two pinned production
 calls, and an ordinary `httpx.get` near miss; mutations of the enabled default or pinned backend
 withhold the control edges.
+n8n contributes a TypeScript composition case rather than another always-on helper. Its AI Builder
+`web_fetch` tool accepts a model-controlled URL and calls an Axios helper. The CLI injects the real
+`SsrfProtectionService` only when `N8N_SSRF_PROTECTION_ENABLED` is true; the setting defaults false,
+and the other branch injects a passthrough whose validators succeed and whose lookup is ordinary DNS.
+When enabled, the service checks configured hostname/IP policy during preflight and returns a custom
+lookup used by Axios at resolution time. Redirects are capped at five; direct-IP targets are checked
+inside `beforeRedirect`, cross-host auto-follow is stopped, and the redirected URL is revalidated
+before a second fetch. The analyzer retains two residuals: selected source does not prove Axios proxy
+behavior, and domain HITL is independent of address enforcement. A default-on mutation changes the
+recorded state, while mutations of the composition branch, lookup, or redirect hook withhold the
+edge; the pinned edge and raw Axios near miss prevent default-off policy from becoming unconditional
+safety.
 The first four accept arbitrary HTTP destinations; Goose checks the scheme but does not constrain the
 host. MCP Servers has an optional environment-configured hostname allowlist, but its empty default
 permits arbitrary HTTP/HTTPS origins; size and timeout limits constrain impact rather than

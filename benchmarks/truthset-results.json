@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T15:07:40.242894+00:00",
-  "labels": 299,
-  "passed": 299,
+  "generated_at": "2026-08-21T15:29:43.484917+00:00",
+  "labels": 302,
+  "passed": 302,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 14,
@@ -61,9 +61,9 @@
       "recall": 1.0
     },
     "AV-NET001": {
-      "tp": 28,
+      "tp": 30,
       "fp": 0,
-      "tn": 29,
+      "tn": 30,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -1961,6 +1961,33 @@
     },
     {
       "id": "network-typescript-configured-policy-local-review",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "network-typescript-configurable-ssrf-local-review",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "network-typescript-configurable-ssrf-raw-local-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "network-n8n-web-fetch-real-review",
       "rule_id": "AV-NET001",
       "expected": true,
       "observed": true,

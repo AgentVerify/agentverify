@@ -123,6 +123,16 @@ that reject redirects remain distinct from the bounded synchronous GET helper th
 default and revalidates each hop only when explicitly enabled. Any missing composition proof,
 disabled default, unpinned backend, non-exact import, or rebinding withholds the summary.
 
+The TypeScript composition pass handles a different boundary: dependency injection can choose a real
+SSRF service or a no-op guard before the value crosses multiple constructors into a tool factory. The
+current proof requires a literal boolean config default, exact service/passthrough ternary, repeated immutable
+guard propagation, tool-input validation, a bounded Axios redirect configuration, custom lookup, and
+redirect hook to coexist in selected source. It adds the `web_fetch → network → network-ssrf-policy`
+path at the tool call while retaining the helper sink and composition/config locations as attributes.
+The custom lookup is recorded as configured rather than connection-pinned, and proxy scope stays
+unresolved because selected source does not prove how Axios routes proxied destinations. Missing any
+stage withholds both the tool capability and control edge.
+
 A repository prepass builds bounded Python network summaries for unique top-level free functions in
 selected files. A summary records direct recognized HTTP calls and the formal parameters that can
 control their origins after fixed-prefix discrimination. At a tool call site, only an exact named
@@ -292,8 +302,9 @@ unresolved: instrumentation is not proof that an attributable record reaches dur
 AgentVerify reads source and configuration as data. It never imports project modules, evaluates their
 code, installs their dependencies, or launches configured MCP servers. Repository traversal excludes
 and prunes dependency, build, VCS, cache, and virtual-environment directories. The research collector
-preserves its 220 root-file cap and may materialize up to 20 additional local Python imports reached
-from MCP forwarding roots. Selected-path scans reject absolute and parent-traversal paths; their
+preserves its 220 root-file cap and may materialize up to 20 additional local source dependencies
+reached from MCP forwarding/URL-security roots or listed as versioned audited evidence hints.
+Selected-path scans reject absolute and parent-traversal paths; their
 reports are explicitly marked partial.
 
 Configuration discovery includes Compose, devcontainers, and Kubernetes/Helm paths. Exact dangerous

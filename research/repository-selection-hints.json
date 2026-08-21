@@ -15,6 +15,12 @@
       "src/bundles/lfx-bundles/src/lfx_bundles/lmstudio/lmstudiomodel.py",
       "src/bundles/lfx-bundles/src/lfx_bundles/xai/xai.py",
       "src/lfx/src/lfx/services/settings/groups/security.py"
+    ],
+    "n8n-io/n8n": [
+      "packages/@n8n/ai-workflow-builder.ee/src/subgraphs/discovery.subgraph.ts",
+      "packages/@n8n/ai-workflow-builder.ee/src/tools/utils/web-fetch.utils.ts",
+      "packages/@n8n/ai-workflow-builder.ee/src/tools/web-fetch.tool.ts",
+      "packages/cli/src/services/ai-workflow-builder.service.ts"
     ]
   }
 }

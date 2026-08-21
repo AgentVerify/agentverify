@@ -206,6 +206,18 @@ def main() -> int:
             and edge.target_kind == "control"
             and edge.target_name == "network-ssrf-policy"
             and edge.attributes.get("scope") == "production"
+            and edge.attributes.get("frontend") == "python"
+        ]
+        typescript_secure_network_controls = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "capability"
+            and edge.source_name == "network"
+            and edge.relation == "governed-by"
+            and edge.target_kind == "control"
+            and edge.target_name == "network-ssrf-policy"
+            and edge.attributes.get("scope") == "production"
+            and edge.attributes.get("frontend") == "typescript"
         ]
         typescript_network_origin_controls = [
             edge
@@ -560,6 +572,43 @@ def main() -> int:
                     for edge in typescript_network_origin_controls
                 ),
             },
+            "typescript_secure_network_controls": {
+                "total": len(typescript_secure_network_controls),
+                "enabled_default": sum(
+                    edge.attributes.get("enforcement_default") == "enabled"
+                    for edge in typescript_secure_network_controls
+                ),
+                "disabled_default": sum(
+                    edge.attributes.get("enforcement_default") == "disabled"
+                    for edge in typescript_secure_network_controls
+                ),
+                "configured_opt_in": sum(
+                    edge.attributes.get("enforcement_mode") == "configured-opt-in"
+                    for edge in typescript_secure_network_controls
+                ),
+                "configured_opt_out": sum(
+                    edge.attributes.get("enforcement_mode") == "configured-opt-out"
+                    for edge in typescript_secure_network_controls
+                ),
+                "bounded_redirect_hooks": sum(
+                    edge.attributes.get("redirect_scope")
+                    == "bounded-each-hop-hooks-when-enforced"
+                    for edge in typescript_secure_network_controls
+                ),
+                "secure_lookup_configured": sum(
+                    edge.attributes.get("dns_scope")
+                    == "secure-lookup-configured-when-enforced"
+                    for edge in typescript_secure_network_controls
+                ),
+                "proxy_unresolved": sum(
+                    edge.attributes.get("proxy_scope") == "unresolved"
+                    for edge in typescript_secure_network_controls
+                ),
+                "domain_hitl_independent": sum(
+                    edge.attributes.get("approval_scope") == "domain-hitl-independent"
+                    for edge in typescript_secure_network_controls
+                ),
+            },
             "path_boundary_controls": {
                 "python": len(python_path_boundary_edges),
                 "typescript": len(typescript_path_boundary_edges),
@@ -662,7 +711,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 34,
+        "schema_version": 35,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -858,6 +907,23 @@ def main() -> int:
                     "configured_optional",
                     "default_open",
                     "dns_unresolved",
+                )
+            },
+            "typescript_secure_network_controls": {
+                name: sum(
+                    result["typescript_secure_network_controls"][name]
+                    for result in successful
+                )
+                for name in (
+                    "total",
+                    "enabled_default",
+                    "disabled_default",
+                    "configured_opt_in",
+                    "configured_opt_out",
+                    "bounded_redirect_hooks",
+                    "secure_lookup_configured",
+                    "proxy_unresolved",
+                    "domain_hitl_independent",
                 )
             },
             "path_boundary_controls": {

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T15:06:52.875633+00:00",
-  "labels": 212,
-  "passed": 212,
+  "generated_at": "2026-08-21T15:28:59.231424+00:00",
+  "labels": 215,
+  "passed": 215,
   "metrics": {
     "IR-APPROVAL-CONTROL": {
       "tp": 3,
@@ -192,6 +192,14 @@
       "tp": 5,
       "fp": 0,
       "tn": 2,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-CONFIGURABLE-SSRF-COMPOSITION": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 1,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -2140,6 +2148,33 @@
     {
       "id": "python-configurable-pinned-network-langflow-glean-real",
       "check_id": "IR-PY-CONFIGURABLE-PINNED-NETWORK-HELPER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-configurable-ssrf-local",
+      "check_id": "IR-TS-CONFIGURABLE-SSRF-COMPOSITION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-configurable-ssrf-raw-local-negative",
+      "check_id": "IR-TS-CONFIGURABLE-SSRF-COMPOSITION",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-configurable-ssrf-n8n-real",
+      "check_id": "IR-TS-CONFIGURABLE-SSRF-COMPOSITION",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

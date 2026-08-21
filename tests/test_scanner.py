@@ -1471,6 +1471,109 @@ def test_python_configurable_pinned_network_helper_preserves_noop_state(
         )
 
 
+def test_typescript_configurable_ssrf_composition_preserves_disabled_default(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/typescript_configurable_ssrf_composition"
+    ir = scan_repository(root)
+    edges = [
+        edge
+        for edge in ir.relationships
+        if edge.attributes.get("analysis")
+        == "typescript-configurable-ssrf-composition"
+    ]
+    assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [
+        ("web-fetch.tool.ts", 18)
+    ]
+    assert edges[0].attributes == {
+        "control_path": "composition.ts",
+        "control_line": 14,
+        "scope": "production",
+        "policy_effect": "validates-url-and-resolved-host-when-enforced",
+        "frontend": "typescript",
+        "analysis": "typescript-configurable-ssrf-composition",
+        "initial_origin_scope": "configured-address-policy-when-enforced",
+        "redirect_scope": "bounded-each-hop-hooks-when-enforced",
+        "dns_scope": "secure-lookup-configured-when-enforced",
+        "proxy_scope": "unresolved",
+        "enforcement_default": "disabled",
+        "escape_hatch": "default-disabled",
+        "enforcement_mode": "configured-opt-in",
+        "enable_environment": "N8N_SSRF_PROTECTION_ENABLED",
+        "config_path": "config.ts",
+        "config_line": 4,
+        "service_path": "service.ts",
+        "passthrough_path": "ssrf-guard.ts",
+        "discovery_path": "discovery.ts",
+        "helper_path": "web-fetch.utils.ts",
+        "helper_line": 14,
+        "approval_scope": "domain-hitl-independent",
+    }
+    assert [
+        (finding.rule_id, finding.evidence.path, finding.evidence.line)
+        for finding in ir.findings
+        if finding.rule_id == "AV-NET001"
+    ] == [("AV-NET001", "web-fetch.tool.ts", 18)]
+    assert not any(
+        finding.rule_id == "AV-NET001"
+        and finding.evidence.path == "raw.ts"
+        for finding in ir.findings
+    )
+
+    enabled = tmp_path / "enabled-default"
+    shutil.copytree(root, enabled)
+    config_path = enabled / "config.ts"
+    config_source = config_path.read_text(encoding="utf-8")
+    config_path.write_text(
+        config_source.replace("enabled: boolean = false", "enabled: boolean = true"),
+        encoding="utf-8",
+    )
+    enabled_ir = scan_repository(enabled)
+    enabled_edges = [
+        edge
+        for edge in enabled_ir.relationships
+        if edge.attributes.get("analysis")
+        == "typescript-configurable-ssrf-composition"
+    ]
+    assert len(enabled_edges) == 1
+    assert enabled_edges[0].attributes["enforcement_default"] == "enabled"
+    assert enabled_edges[0].attributes["escape_hatch"] == "configured-opt-out"
+    assert enabled_edges[0].attributes["enforcement_mode"] == "configured-opt-out"
+
+    for name, relative, before, after in (
+        (
+            "passthrough-composition",
+            "composition.ts",
+            "? this.ssrfProtectionService",
+            "? createPassthroughSsrfGuard()",
+        ),
+        (
+            "ordinary-lookup",
+            "web-fetch.utils.ts",
+            "lookup: ssrf.createSecureLookup()",
+            "lookup: ordinaryLookup",
+        ),
+        (
+            "unchecked-redirect",
+            "web-fetch.utils.ts",
+            "ssrf.validateRedirectSync(opts.href)",
+            "observeRedirect(opts.href)",
+        ),
+    ):
+        incomplete = tmp_path / name
+        shutil.copytree(root, incomplete)
+        source_path = incomplete / relative
+        source = source_path.read_text(encoding="utf-8")
+        assert before in source
+        source_path.write_text(source.replace(before, after), encoding="utf-8")
+        incomplete_ir = scan_repository(incomplete)
+        assert not any(
+            edge.attributes.get("analysis")
+            == "typescript-configurable-ssrf-composition"
+            for edge in incomplete_ir.relationships
+        )
+
+
 def test_typescript_network_helper_summaries_map_object_parameters_and_multiline_aliases(
     tmp_path: Path,
 ) -> None:

@@ -1,6 +1,6 @@
 {
-  "schema_version": 34,
-  "generated_at": "2026-08-21T15:08:12.037192+00:00",
+  "schema_version": 35,
+  "generated_at": "2026-08-21T15:26:29.362386+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -16,25 +16,25 @@
     "zero_source_repositories": [
       "daytonaio/daytona"
     ],
-    "files_scanned": 10742,
-    "dependency_files_materialized": 147,
-    "repositories_with_dependency_expansion": 12,
+    "files_scanned": 10746,
+    "dependency_files_materialized": 151,
+    "repositories_with_dependency_expansion": 13,
     "config_files_scanned": 155,
-    "relationships": 1465,
-    "symbolized_components": 8733,
-    "identified_symbol_endpoints": 1928,
-    "resolved_symbol_endpoints": 1926,
+    "relationships": 1467,
+    "symbolized_components": 8737,
+    "identified_symbol_endpoints": 1929,
+    "resolved_symbol_endpoints": 1927,
     "unmatched_identified_symbol_endpoints": 2,
     "ambiguous_repeated_binding_targets": 23,
     "resolved_binding_targets_by_basis": {
       "lexical-single-definition": 325,
       "module-single-definition": 14
     },
-    "relationship_endpoints": 2930,
+    "relationship_endpoints": 2934,
     "bom_endpoint_resolutions": {
       "ambiguous": 30,
-      "evidence-location": 458,
-      "symbol-id": 1926,
+      "evidence-location": 461,
+      "symbol-id": 1927,
       "unique-display-name": 17,
       "unresolved": 499
     },
@@ -43,7 +43,7 @@
     },
     "resolved_symbol_endpoints_by_frontend": {
       "py": 1675,
-      "ts": 251
+      "ts": 252
     },
     "typescript_graph": {
       "agent_edges": 95,
@@ -132,6 +132,17 @@
       "default_open": 1,
       "dns_unresolved": 1
     },
+    "typescript_secure_network_controls": {
+      "total": 1,
+      "enabled_default": 0,
+      "disabled_default": 1,
+      "configured_opt_in": 1,
+      "configured_opt_out": 0,
+      "bounded_redirect_hooks": 1,
+      "secure_lookup_configured": 1,
+      "proxy_unresolved": 1,
+      "domain_hitl_independent": 1
+    },
     "path_boundary_controls": {
       "python": 5,
       "typescript": 1,
@@ -203,7 +214,7 @@
       "AV-FS001": 26,
       "AV-FS002": 4,
       "AV-MCP002": 49,
-      "AV-NET001": 13,
+      "AV-NET001": 14,
       "AV-SANDBOX001": 19
     },
     "finding_repositories": {
@@ -214,7 +225,7 @@
       "AV-FS001": 9,
       "AV-FS002": 1,
       "AV-MCP002": 23,
-      "AV-NET001": 7,
+      "AV-NET001": 8,
       "AV-SANDBOX001": 9
     },
     "observed_component_names": {
@@ -236,7 +247,7 @@
         "fixed-tool-binding": 6,
         "human-approval": 3,
         "network-origin-policy": 1,
-        "network-ssrf-policy": 3,
+        "network-ssrf-policy": 4,
         "path-boundary": 4,
         "path-prefix-check": 1,
         "tool-allowlist": 1,
@@ -383,7 +394,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 127.547
+    "elapsed_seconds": 122.9363
   },
   "repositories": [
     {
@@ -503,6 +514,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -540,7 +562,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5152
+      "elapsed_seconds": 1.6218
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -666,6 +688,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -708,7 +741,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1484
+      "elapsed_seconds": 3.0706
     },
     {
       "repository": "langchain-ai/langchain",
@@ -831,6 +864,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -866,7 +910,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9523
+      "elapsed_seconds": 0.9243
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -993,6 +1037,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -1036,7 +1091,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.1152
+      "elapsed_seconds": 4.0342
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -1168,6 +1223,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -1207,7 +1273,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1947
+      "elapsed_seconds": 0.1879
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -1343,6 +1409,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -1395,7 +1472,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.7556
+      "elapsed_seconds": 4.5773
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -1533,6 +1610,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -1590,7 +1678,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0707
+      "elapsed_seconds": 2.9426
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -1723,6 +1811,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -1772,7 +1871,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2947
+      "elapsed_seconds": 0.2608
     },
     {
       "repository": "microsoft/autogen",
@@ -1901,6 +2000,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -1945,7 +2055,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7341
+      "elapsed_seconds": 0.7122
     },
     {
       "repository": "microsoft/agent-framework",
@@ -2058,6 +2168,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -2093,7 +2214,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0475
+      "elapsed_seconds": 0.0414
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -2220,6 +2341,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -2264,7 +2396,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.116
+      "elapsed_seconds": 0.1127
     },
     {
       "repository": "openai/openai-agents-python",
@@ -2411,6 +2543,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 3,
         "typescript": 0,
@@ -2465,7 +2608,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.872
+      "elapsed_seconds": 5.3468
     },
     {
       "repository": "openai/openai-agents-js",
@@ -2609,6 +2752,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -2650,7 +2804,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.624
+      "elapsed_seconds": 0.5819
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -2783,6 +2937,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -2831,7 +2996,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 13.5262
+      "elapsed_seconds": 11.9726
     },
     {
       "repository": "google/adk-python",
@@ -2956,6 +3121,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -3000,7 +3176,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.9179
+      "elapsed_seconds": 3.4544
     },
     {
       "repository": "google/adk-js",
@@ -3120,6 +3296,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -3155,7 +3342,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0504
+      "elapsed_seconds": 2.0879
     },
     {
       "repository": "huggingface/smolagents",
@@ -3286,6 +3473,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -3337,7 +3535,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3886
+      "elapsed_seconds": 1.3394
     },
     {
       "repository": "agno-agi/agno",
@@ -3460,6 +3658,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -3505,7 +3714,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3423
+      "elapsed_seconds": 0.3007
     },
     {
       "repository": "camel-ai/camel",
@@ -3638,6 +3847,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -3690,7 +3910,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.909
+      "elapsed_seconds": 2.7368
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -3811,6 +4031,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -3849,7 +4080,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1814
+      "elapsed_seconds": 0.1846
     },
     {
       "repository": "run-llama/llama_index",
@@ -3976,6 +4207,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -4011,7 +4253,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8255
+      "elapsed_seconds": 0.7478
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -4143,6 +4385,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -4195,7 +4448,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5734
+      "elapsed_seconds": 1.3486
     },
     {
       "repository": "InternLM/lagent",
@@ -4326,6 +4579,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -4374,7 +4638,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7422
+      "elapsed_seconds": 0.6464
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -4498,6 +4762,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -4548,7 +4823,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2666
+      "elapsed_seconds": 1.0836
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -4677,6 +4952,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 1,
         "typescript": 0,
@@ -4729,7 +5015,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5882
+      "elapsed_seconds": 1.4853
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -4854,6 +5140,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -4903,7 +5200,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0553
+      "elapsed_seconds": 0.9342
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -5031,6 +5328,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -5076,7 +5384,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4363
+      "elapsed_seconds": 3.1296
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -5199,6 +5507,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -5243,7 +5562,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1026
+      "elapsed_seconds": 1.0397
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -5368,6 +5687,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -5403,7 +5733,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5977
+      "elapsed_seconds": 0.5901
     },
     {
       "repository": "letta-ai/letta-code",
@@ -5522,6 +5852,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -5557,7 +5898,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7217
+      "elapsed_seconds": 2.531
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -5689,6 +6030,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -5738,7 +6090,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0205
+      "elapsed_seconds": 0.9502
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -5862,6 +6214,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -5912,7 +6275,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0872
+      "elapsed_seconds": 1.9583
     },
     {
       "repository": "mastra-ai/mastra",
@@ -6042,6 +6405,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -6083,7 +6457,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4655
+      "elapsed_seconds": 1.554
     },
     {
       "repository": "vercel/ai",
@@ -6208,6 +6582,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -6248,7 +6633,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5264
+      "elapsed_seconds": 1.6137
     },
     {
       "repository": "cline/cline",
@@ -6377,6 +6762,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -6418,7 +6814,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0852
+      "elapsed_seconds": 2.2125
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -6540,6 +6936,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -6575,7 +6982,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2838
+      "elapsed_seconds": 2.4361
     },
     {
       "repository": "continuedev/continue",
@@ -6695,6 +7102,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -6730,7 +7148,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4545
+      "elapsed_seconds": 1.5293
     },
     {
       "repository": "Aider-AI/aider",
@@ -6849,6 +7267,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -6899,7 +7328,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3263
+      "elapsed_seconds": 2.2632
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -7017,6 +7446,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -7060,7 +7500,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 0.8081
+      "elapsed_seconds": 0.7728
     },
     {
       "repository": "plandex-ai/plandex",
@@ -7165,6 +7605,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -7200,7 +7651,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0365
+      "elapsed_seconds": 0.034
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -7319,6 +7770,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -7360,7 +7822,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1273
+      "elapsed_seconds": 1.0789
     },
     {
       "repository": "stitionai/devika",
@@ -7484,6 +7946,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -7523,7 +7996,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2851
+      "elapsed_seconds": 0.2819
     },
     {
       "repository": "block/goose",
@@ -7643,6 +8116,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -7687,7 +8171,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 1.2116
+      "elapsed_seconds": 1.6917
     },
     {
       "repository": "bytedance/trae-agent",
@@ -7820,6 +8304,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -7872,7 +8367,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6513
+      "elapsed_seconds": 0.6293
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -7993,6 +8488,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -8030,7 +8536,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4369
+      "elapsed_seconds": 3.6037
     },
     {
       "repository": "openai/codex",
@@ -8142,6 +8648,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -8183,7 +8700,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5982
+      "elapsed_seconds": 0.5729
     },
     {
       "repository": "browser-use/browser-use",
@@ -8318,6 +8835,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -8371,7 +8899,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.6211
+      "elapsed_seconds": 3.3333
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -8512,6 +9040,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -8563,7 +9102,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.7614
+      "elapsed_seconds": 6.447
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -8690,6 +9229,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -8736,7 +9286,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6537
+      "elapsed_seconds": 0.6273
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -8858,6 +9408,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -8895,7 +9456,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7453
+      "elapsed_seconds": 0.7931
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -9020,6 +9581,17 @@
         "default_open": 1,
         "dns_unresolved": 1
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 1,
@@ -9065,7 +9637,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8075
+      "elapsed_seconds": 0.8503
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -9197,6 +9769,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -9241,7 +9824,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0341
+      "elapsed_seconds": 2.0543
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -9366,6 +9949,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -9406,7 +10000,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1423
+      "elapsed_seconds": 2.3391
     },
     {
       "repository": "github/github-mcp-server",
@@ -9521,6 +10115,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -9556,7 +10161,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0333
+      "elapsed_seconds": 0.033
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -9672,6 +10277,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -9707,7 +10323,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0582
+      "elapsed_seconds": 0.0651
     },
     {
       "repository": "awslabs/mcp",
@@ -9830,6 +10446,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -9873,7 +10500,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8509
+      "elapsed_seconds": 1.7836
     },
     {
       "repository": "docker/mcp-gateway",
@@ -9989,6 +10616,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -10026,7 +10664,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0324
+      "elapsed_seconds": 0.0282
     },
     {
       "repository": "jlowin/fastmcp",
@@ -10150,6 +10788,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 1,
         "typescript": 0,
@@ -10197,7 +10846,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2134
+      "elapsed_seconds": 2.1361
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -10302,6 +10951,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -10337,7 +10997,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0277
+      "elapsed_seconds": 0.0242
     },
     {
       "repository": "langflow-ai/langflow",
@@ -10470,6 +11130,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -10513,7 +11184,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2454
+      "elapsed_seconds": 2.2693
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -10631,6 +11302,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -10666,7 +11348,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8971
+      "elapsed_seconds": 2.069
     },
     {
       "repository": "langgenius/dify",
@@ -10774,6 +11456,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -10809,23 +11502,24 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4055
+      "elapsed_seconds": 1.3813
     },
     {
       "repository": "n8n-io/n8n",
       "category": "workflow-platform",
       "status": "ok",
-      "files_scanned": 165,
-      "dependency_files_materialized": 0,
+      "files_scanned": 169,
+      "dependency_files_materialized": 4,
       "config_files_scanned": 3,
       "components": {
-        "agent": 22,
-        "capability": 27,
+        "agent": 23,
+        "capability": 28,
+        "control": 1,
         "mcp": 2,
         "model": 3,
         "protocol": 5,
         "sandbox-boundary": 1,
-        "tool": 1
+        "tool": 4
       },
       "component_names": {
         "capability": [
@@ -10835,6 +11529,9 @@
           "network",
           "shell-execution"
         ],
+        "control": [
+          "network-ssrf-policy"
+        ],
         "protocol": [
           "MCP"
         ],
@@ -10842,16 +11539,16 @@
           "privileged-container"
         ]
       },
-      "relationships": 0,
-      "symbolized_components": 23,
-      "identified_symbol_endpoints": 0,
-      "resolved_symbol_endpoints": 0,
+      "relationships": 2,
+      "symbolized_components": 27,
+      "identified_symbol_endpoints": 1,
+      "resolved_symbol_endpoints": 1,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
         "py": 0,
-        "ts": 0
+        "ts": 1
       },
       "typescript_graph": {
         "agent_edges": 0,
@@ -10936,6 +11633,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 1,
+        "enabled_default": 0,
+        "disabled_default": 1,
+        "configured_opt_in": 1,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 1,
+        "secure_lookup_configured": 1,
+        "proxy_unresolved": 1,
+        "domain_hitl_independent": 1
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -10965,17 +11673,21 @@
         "python": 0,
         "typescript": 0
       },
-      "bom_endpoint_resolutions": {},
+      "bom_endpoint_resolutions": {
+        "evidence-location": 3,
+        "symbol-id": 1
+      },
       "bom_ambiguous_endpoints_by_side_kind": {},
       "findings": {
         "AV-EXEC001": 1,
         "AV-EXEC002": 3,
+        "AV-NET001": 1,
         "AV-SANDBOX001": 1
       },
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3624
+      "elapsed_seconds": 1.5547
     },
     {
       "repository": "activepieces/activepieces",
@@ -11105,6 +11817,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -11144,7 +11867,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0004
+      "elapsed_seconds": 1.0433
     },
     {
       "repository": "simstudioai/sim",
@@ -11258,6 +11981,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -11293,7 +12027,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6838
+      "elapsed_seconds": 2.8944
     },
     {
       "repository": "composiohq/composio",
@@ -11433,6 +12167,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -11474,7 +12219,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1465
+      "elapsed_seconds": 1.1903
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -11610,6 +12355,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -11663,7 +12419,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1931
+      "elapsed_seconds": 2.1732
     },
     {
       "repository": "e2b-dev/E2B",
@@ -11776,6 +12532,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -11811,7 +12578,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4588
+      "elapsed_seconds": 1.5185
     },
     {
       "repository": "daytonaio/daytona",
@@ -11916,6 +12683,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -11951,7 +12729,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0005
+      "elapsed_seconds": 0.0002
     },
     {
       "repository": "AgentOps-AI/agentops",
@@ -12082,6 +12860,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -12123,7 +12912,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1347
+      "elapsed_seconds": 1.1574
     },
     {
       "repository": "traceloop/openllmetry",
@@ -12259,6 +13048,17 @@
         "default_open": 0,
         "dns_unresolved": 0
       },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "bounded_redirect_hooks": 0,
+        "secure_lookup_configured": 0,
+        "proxy_unresolved": 0,
+        "domain_hitl_independent": 0
+      },
       "path_boundary_controls": {
         "python": 0,
         "typescript": 0,
@@ -12304,7 +13104,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9635
+      "elapsed_seconds": 1.9571
     }
   ]
 }

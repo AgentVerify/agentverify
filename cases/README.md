@@ -29,6 +29,10 @@ never imported or executed.
 - `python_configurable_network_helper`: default-on connector validation, configured allowlists and
   loopback exemptions, enforcement-conditional DNS pinning/proxy rejection, and redirect policy;
   disabled defaults, unpinned transports, and ordinary requests remain negative.
+- `typescript_configurable_ssrf_composition`: default-off service-versus-passthrough composition
+  propagated into an Axios-backed tool with bounded redirect hooks and a custom lookup; composition,
+  lookup, redirect, and raw-Axios near misses remain negative, while a literal default-on mutation
+  changes the recorded enforcement state.
 - `sandbox_boundary`: Compose and Kubernetes host/privilege boundaries plus explicit safe negatives.
 - `constant_eval`: constant Python evaluation negative case.
 - `python_browser_evaluate`: exact Playwright `Page` annotations and immutable aliases prove dynamic

@@ -10456,6 +10456,214 @@ def propagate_python_class_network_helpers(
             break
 
 
+def add_typescript_configurable_ssrf_composition(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve a default-off SSRF bridge from composition root to an Axios-backed tool."""
+    sources: dict[str, tuple[str, str]] = {}
+    for path in paths:
+        if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        sources[relative] = (text, typescript_code_mask(text))
+
+    def unique_source(*markers: str) -> tuple[str, str, str] | None:
+        matches = [
+            (relative, text, code)
+            for relative, (text, code) in sources.items()
+            if all(marker in code for marker in markers)
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    config = unique_source("class SsrfProtectionConfig", "enabled: boolean =")
+    service = unique_source(
+        "class SsrfProtectionService",
+        "createSecureLookup()",
+        "lookupAndValidate(",
+        "validateIp(",
+        "allowedIps.check(",
+        "blockedIps.check(",
+        "dnsResolver.lookup(",
+    )
+    passthrough = unique_source(
+        "function createPassthroughSsrfGuard(",
+        "validateUrl: async () => createResultOk(undefined)",
+        "createSecureLookup: () => dns.lookup",
+    )
+    composition = unique_source(
+        "const webFetchSsrfGuard = this.ssrfConfig.enabled",
+        "this.ssrfProtectionService",
+        "createPassthroughSsrfGuard()",
+        "new AiWorkflowBuilderService(",
+    )
+    discovery = unique_source(
+        "config.ssrf ?? createPassthroughSsrfGuard()",
+        "createWebFetchTool(discoverySecurityFactory, ssrf)",
+        "createWebFetchTool(plannerSecurityFactory, ssrf)",
+    )
+    tool_source = unique_source(
+        "function createWebFetchTool(",
+        "webFetchSchema.parse(input)",
+        "ssrf.validateUrl(url)",
+        "fetchUrl(url, ssrf)",
+        "fetchUrl(fetchResult.finalUrl, ssrf)",
+        "requestDomainApproval(",
+    )
+    sink_source = unique_source(
+        "function fetchUrl(",
+        "ssrf.validateUrl(url)",
+        "lookup: ssrf.createSecureLookup()",
+        "ssrf.validateRedirectSync(opts.href)",
+        "maxRedirects: WEB_FETCH_MAX_REDIRECTS",
+        "axios.get<Readable>(url, config)",
+    )
+    if None in {
+        config,
+        service,
+        passthrough,
+        composition,
+        discovery,
+        tool_source,
+        sink_source,
+    }:
+        return
+    assert config is not None
+    assert service is not None
+    assert passthrough is not None
+    assert composition is not None
+    assert discovery is not None
+    assert tool_source is not None
+    assert sink_source is not None
+
+    config_path, config_text, config_code = config
+    service_path, _, _ = service
+    passthrough_path, _, _ = passthrough
+    composition_path, composition_text, composition_code = composition
+    discovery_path, _, _ = discovery
+    tool_path, tool_text, tool_code = tool_source
+    sink_path, sink_text, sink_code = sink_source
+    if not (
+        "blockedIpRanges: string[] = [...SSRF_DEFAULT_BLOCKED_IP_RANGES]" in config_code
+        and "allowedIpRanges:" in config_code
+        and "allowedHostnames:" in config_code
+        and re.search(
+            r"webFetchSsrfGuard\s*=\s*this\.ssrfConfig\.enabled\s*"
+            r"\?\s*this\.ssrfProtectionService\s*:\s*createPassthroughSsrfGuard\(\)",
+            composition_code,
+        )
+        and re.search(
+            r"new\s+AiWorkflowBuilderService\([\s\S]{0,2500}webFetchSsrfGuard",
+            composition_code,
+        )
+        and sum(code.count("private readonly ssrf?: SsrfGuard") for _, code in sources.values())
+        >= 1
+        and sum(code.count("ssrf: this.ssrf") for _, code in sources.values()) >= 2
+    ):
+        return
+
+    tool_call = re.search(r"\bfetchUrl\s*\(\s*url\s*,\s*ssrf\s*\)", tool_code)
+    sink_call = re.search(r"\baxios\.get\s*<Readable>\s*\(\s*url\s*,\s*config\s*\)", sink_code)
+    control_match = re.search(r"\bconst\s+webFetchSsrfGuard\b", composition_code)
+    config_match = re.search(r"\benabled\s*:\s*boolean\s*=\s*(true|false)\b", config_code)
+    tool_definition = re.search(r"\bfunction\s+createWebFetchTool\b", tool_code)
+    if None in {tool_call, sink_call, control_match, config_match, tool_definition}:
+        return
+    assert tool_call is not None
+    assert sink_call is not None
+    assert control_match is not None
+    assert config_match is not None
+    assert tool_definition is not None
+
+    call_line = line_at(tool_text, tool_call.start())
+    sink_line = line_at(sink_text, sink_call.start())
+    control_line = line_at(composition_text, control_match.start())
+    config_line = line_at(config_text, config_match.start())
+    tool_line = line_at(tool_text, tool_definition.start())
+    enabled_default = config_match.group(1) == "true"
+    call_evidence = Evidence(tool_path, call_line, excerpt(tool_text.splitlines(), call_line))
+    control_evidence = Evidence(
+        composition_path,
+        control_line,
+        excerpt(composition_text.splitlines(), control_line),
+    )
+    tool_id = f"ts:{tool_path}#tool:web_fetch"
+    attributes = {
+        "scope": source_scope(tool_path),
+        "policy_effect": "validates-url-and-resolved-host-when-enforced",
+        "frontend": "typescript",
+        "analysis": "typescript-configurable-ssrf-composition",
+        "initial_origin_scope": "configured-address-policy-when-enforced",
+        "redirect_scope": "bounded-each-hop-hooks-when-enforced",
+        "dns_scope": "secure-lookup-configured-when-enforced",
+        "proxy_scope": "unresolved",
+        "enforcement_default": "enabled" if enabled_default else "disabled",
+        "escape_hatch": "configured-opt-out" if enabled_default else "default-disabled",
+        "enforcement_mode": "configured-opt-out" if enabled_default else "configured-opt-in",
+        "enable_environment": "N8N_SSRF_PROTECTION_ENABLED",
+        "config_path": config_path,
+        "config_line": config_line,
+        "service_path": service_path,
+        "passthrough_path": passthrough_path,
+        "discovery_path": discovery_path,
+        "helper_path": sink_path,
+        "helper_line": sink_line,
+        "approval_scope": "domain-hitl-independent",
+    }
+    ir.add_component(
+        Component(
+            "tool",
+            "web_fetch",
+            Evidence(tool_path, tool_line, excerpt(tool_text.splitlines(), tool_line)),
+            {"constructor": "tool", "domain_approval": "conditional-independent"},
+            tool_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "capability",
+            "network",
+            call_evidence,
+            {
+                "scope": source_scope(tool_path),
+                "api": "axios.get",
+                "dynamic_origin": True,
+                "summary": "configured-ssrf-composition",
+                "helper_path": sink_path,
+                "helper_line": sink_line,
+            },
+        )
+    )
+    ir.add_component(Component("control", "network-ssrf-policy", control_evidence, attributes))
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            "web_fetch",
+            "uses",
+            "capability",
+            "network",
+            call_evidence,
+            source_id=tool_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "capability",
+            "network",
+            "governed-by",
+            "control",
+            "network-ssrf-policy",
+            call_evidence,
+            {"control_path": composition_path, "control_line": control_line, **attributes},
+        )
+    )
+
+
 def repository_files(root: Path) -> list[Path]:
     paths = []
     for directory, directory_names, file_names in os.walk(root, followlinks=False):
@@ -10595,6 +10803,7 @@ def scan_repository(
             )
         else:
             scan_typescript(ir, root, path, text)
+    add_typescript_configurable_ssrf_composition(ir, root, registry_paths)
     propagate_python_class_network_helpers(
         ir,
         root,

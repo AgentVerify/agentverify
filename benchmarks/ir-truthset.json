@@ -2935,6 +2935,34 @@
         "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
         "attributes":{"control_line":207,"redirect_scope":"disabled","dns_scope":"connection-pinned-when-enforced","proxy_scope":"disabled-when-enforced","enforcement_default":"enabled","escape_hatch":"configured-opt-out"}
       }
+    },
+    {
+      "id": "typescript-configurable-ssrf-local",
+      "target": {"kind":"local","path":"cases/typescript_configurable_ssrf_composition"},
+      "check_id": "IR-TS-CONFIGURABLE-SSRF-COMPOSITION",
+      "path": "web-fetch.tool.ts", "line": 18, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
+        "attributes":{"control_line":14,"redirect_scope":"bounded-each-hop-hooks-when-enforced","dns_scope":"secure-lookup-configured-when-enforced","proxy_scope":"unresolved","enforcement_default":"disabled","escape_hatch":"default-disabled","enforcement_mode":"configured-opt-in"}
+      }
+    },
+    {
+      "id": "typescript-configurable-ssrf-raw-local-negative",
+      "target": {"kind":"local","path":"cases/typescript_configurable_ssrf_composition"},
+      "check_id": "IR-TS-CONFIGURABLE-SSRF-COMPOSITION",
+      "path": "raw.ts", "line": 4, "expected": false,
+      "source_contains": "axios.get(url)",
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy"}
+    },
+    {
+      "id": "typescript-configurable-ssrf-n8n-real",
+      "target": {"kind":"repository","repository":"n8n-io/n8n","commit":"258d4cbf23ab85840f3ae9e20b2948039af157e6"},
+      "check_id": "IR-TS-CONFIGURABLE-SSRF-COMPOSITION",
+      "path": "packages/@n8n/ai-workflow-builder.ee/src/tools/web-fetch.tool.ts", "line": 156, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
+        "attributes":{"control_line":161,"redirect_scope":"bounded-each-hop-hooks-when-enforced","dns_scope":"secure-lookup-configured-when-enforced","proxy_scope":"unresolved","enforcement_default":"disabled","escape_hatch":"default-disabled","enforcement_mode":"configured-opt-in"}
+      }
     }
   ]
 }
