@@ -10,8 +10,9 @@ methods, built-in tools, tool namespaces, and Cline/OpenAI inline factories. The
 TypeScript tools-array reader resolves all 81 observed agent-to-tool edges and 14 agent-as-tool
 delegations in the pinned sample without treating nested tokens as tools. Repeated constructor and
 decorated-tool bindings now receive occurrence-qualified IDs for exact source edges; repeated target
-references remain unresolved. Next add assignment-sensitive dataflow, then resolve Python/TS package
-re-exports, wildcard imports, unrecognized wrapper factories, and type-driven symbols.
+references resolve only for a single direct, earlier definition in the same Python lexical/module
+scope. Next add branch- and reassignment-sensitive dataflow, then resolve Python/TS package re-exports,
+wildcard imports, unrecognized wrapper factories, and type-driven symbols.
 Preserve unresolved state for ambiguity and validate on larger real monorepository graphs.
 
 ## P0 — configuration and policy resolution
@@ -48,7 +49,7 @@ records can be distinguished from instrumentation alone.
 ## P1 — benchmark truth set
 
 The curated regression set has reached 151 pinned positive/negative locations, with 21 separately
-scored IR relationship labels. Schema-v5 engine results and `docs/frontend-coverage.md` publish
+scored IR relationship labels. Schema-v6 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

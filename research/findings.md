@@ -86,11 +86,13 @@ Display-name-only AI BOM resolution produced 1,299 ambiguous relationship endpoi
 corpus. Exact relationship locations safely resolve 295 capability/control endpoints. Reused Python
 and TypeScript bindings were a second identity failure: one file-level ID could describe many
 constructor occurrences. Occurrence-qualified IDs resolve all 688 source agent/tool ambiguities, and
-141 unsafe target IDs become unresolved instead of pointing at multiple assets. Benchmark schema v5
-also records all 289 target references whose duplicated raw binding ID was withheld. The final export
-has 175 ambiguous endpoints, all targets (38 agent and 137 tool), and 621 unresolved endpoints. A
-governance export that collapses those references by name would silently attach controls or risks to
-the wrong asset.
+141 unsafe target IDs become unresolved instead of pointing at multiple assets. Intermediate
+benchmark schema v5 recorded all 289 target references whose duplicated raw binding ID was withheld.
+Schema v6 resolves only single direct definitions that appear earlier in the same Python lexical or
+module scope: 325 same-scope and 14 module-scope edges. The final export has 30 ambiguous endpoints,
+all tool targets, and 500 unresolved endpoints. A governance export that collapses those references
+by name would
+silently attach controls or risks to the wrong asset.
 
 ## Limitations
 

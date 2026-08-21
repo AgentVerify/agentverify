@@ -69,9 +69,11 @@ when their target is missing or duplicated. The same principle applies to
 
 Repeated Python and TypeScript constructor bindings receive occurrence-qualified symbol IDs such as
 `#agent:agent@42` for their direct source edges. A later reference to a repeated binding does not pick
-an occurrence by name; its relationship attributes record
-`target_identity: ambiguous-repeated-binding`, and without assignment-sensitive evidence that target
-stays ambiguous or unresolved.
+an occurrence by name. In files with repeated identities, Python references resolve when one direct
+definition in the same lexical or module scope appears earlier, recording
+`target_identity: lexical-single-definition` or
+`module-single-definition`. Reassignments record `ambiguous-repeated-binding`; forward and otherwise
+unproven references remain ambiguous or unresolved.
 
 Selected-path scans remain partial. Their metadata records `scan_scope: selected-paths` and the exact
 filters; baseline output does not claim that omitted fingerprints are resolved.

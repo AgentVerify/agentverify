@@ -91,9 +91,11 @@ CycloneDX or SPDX conformance.
 
 Source-symbol IDs are module-qualified. When a Python or TypeScript file constructs multiple
 agents/tools through the same binding, each definition receives an `@line` occurrence suffix so its
-own outgoing edges stay exact. References to a repeated binding do not inherit one arbitrary
-occurrence; they carry `target_identity: ambiguous-repeated-binding` and remain unresolved until
-assignment-sensitive dataflow is implemented.
+own outgoing edges stay exact. When a file-level identity is repeated, Python target references
+resolve only when one direct definition in the same lexical or module scope appears earlier; the edge
+records `target_identity: lexical-single-definition` or `module-single-definition`. Reassignments and
+unproven references do not inherit an arbitrary occurrence; repeated ones carry
+`target_identity: ambiguous-repeated-binding` and remain unresolved.
 
 Policy evaluation is a post-baseline reporting stage, not a rule filter. Gates count matching
 fingerprints by rule, result kind, and minimum severity; findings remain in every output. JSON, text,

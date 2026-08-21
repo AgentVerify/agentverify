@@ -68,6 +68,18 @@ def main() -> int:
             raise RuntimeError(
                 f"{repository}: ambiguous repeated-binding target carries a symbol ID"
             )
+        resolved_binding_targets = Counter(
+            edge.attributes["target_identity"]
+            for edge in ir.relationships
+            if edge.attributes.get("target_identity")
+            in {"lexical-single-definition", "module-single-definition"}
+        )
+        if any(
+            edge.target_id is None
+            for edge in ir.relationships
+            if edge.attributes.get("target_identity") in resolved_binding_targets
+        ):
+            raise RuntimeError(f"{repository}: resolved binding target lacks a symbol ID")
         component_symbol_ids = {item.symbol_id for item in ir.components if item.symbol_id}
         relationship_symbol_ids = [
             symbol_id
@@ -106,6 +118,7 @@ def main() -> int:
                 symbol_id not in component_symbol_ids for symbol_id in relationship_symbol_ids
             ),
             "ambiguous_repeated_binding_targets": len(repeated_binding_targets),
+            "resolved_binding_targets_by_basis": dict(sorted(resolved_binding_targets.items())),
             "resolved_symbol_endpoints_by_frontend": {
                 frontend: sum(
                     symbol_id.startswith(f"{frontend}:") and symbol_id in component_symbol_ids
@@ -143,7 +156,7 @@ def main() -> int:
         print(f"[{index:>2}/{len(repositories)}] {repository}: {ir.files_scanned} files")
     successful = [result for result in results if result["status"] == "ok"]
     payload = {
-        "schema_version": 5,
+        "schema_version": 6,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "summary": {
@@ -168,6 +181,17 @@ def main() -> int:
             ),
             "ambiguous_repeated_binding_targets": sum(
                 result["ambiguous_repeated_binding_targets"] for result in successful
+            ),
+            "resolved_binding_targets_by_basis": dict(
+                sorted(
+                    sum(
+                        (
+                            Counter(result["resolved_binding_targets_by_basis"])
+                            for result in successful
+                        ),
+                        Counter(),
+                    ).items()
+                )
             ),
             "relationship_endpoints": 2 * sum(result["relationships"] for result in successful),
             "bom_endpoint_resolutions": dict(

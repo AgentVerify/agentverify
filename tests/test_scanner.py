@@ -215,9 +215,12 @@ def second():
         "py:agent.py#agent:agent@10",
     }
     assert {edge.source_id for edge in edges} == {component.symbol_id for component in agents}
-    assert all(edge.target_id is None for edge in edges)
+    assert {edge.target_id for edge in edges} == {
+        "py:agent.py#tool:shell@4",
+        "py:agent.py#tool:shell@9",
+    }
     assert all(
-        edge.attributes["target_identity"] == "ambiguous-repeated-binding"
+        edge.attributes["target_identity"] == "lexical-single-definition"
         for edge in edges
     )
 
@@ -235,7 +238,45 @@ def second():
         for relationship in bom["relationships"]
         if relationship["source"]["kind"] == "agent"
     ]
-    assert all(endpoint["resolution"] == "unresolved" for endpoint in target_endpoints)
+    assert all(endpoint["resolution"] == "symbol-id" for endpoint in target_endpoints)
+
+
+def test_python_scoped_resolution_rejects_reassignment_and_forward_reference(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "agent.py").write_text(
+        """from agents import Agent, ShellTool
+
+def reassigned():
+    shell = ShellTool(executor=object())
+    shell = ShellTool(executor=object())
+    return Agent(name="reassigned", tools=[shell])
+
+def forward():
+    agent = Agent(name="forward", tools=[later])
+    later = ShellTool(executor=object())
+    return agent
+
+def module_forward():
+    return Agent(name="module-forward", tools=[global_later])
+
+global_later = ShellTool(executor=object())
+""",
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+    edges = [edge for edge in ir.relationships if edge.source_kind == "agent"]
+    assert {edge.source_name for edge in edges} == {
+        "forward",
+        "module-forward",
+        "reassigned",
+    }
+    assert all(edge.target_id is None for edge in edges)
+    reassigned = next(edge for edge in edges if edge.source_name == "reassigned")
+    assert reassigned.attributes["target_identity"] == "ambiguous-repeated-binding"
+    forward = next(edge for edge in edges if edge.source_name == "forward")
+    assert "target_identity" not in forward.attributes
 
 
 def test_repeated_python_tool_definitions_get_occurrence_qualified_ids(tmp_path: Path) -> None:

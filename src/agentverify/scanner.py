@@ -179,6 +179,8 @@ class PythonVisitor(ast.NodeVisitor):
         module_paths: dict[str, str],
         local_symbol_ids: dict[tuple[str, str], str],
         ambiguous_local_symbols: set[tuple[str, str]],
+        scoped_symbol_ids: dict[tuple[tuple[str, ...], str, str], tuple[int, str]],
+        node_scopes: dict[int, tuple[str, ...]],
         call_symbol_ids: dict[int, str],
         definition_symbol_ids: dict[int, str],
     ) -> None:
@@ -204,6 +206,8 @@ class PythonVisitor(ast.NodeVisitor):
         self.module_paths = module_paths
         self.local_symbol_ids = local_symbol_ids
         self.ambiguous_local_symbols = ambiguous_local_symbols
+        self.scoped_symbol_ids = scoped_symbol_ids
+        self.node_scopes = node_scopes
         self.call_symbol_ids = call_symbol_ids
         self.definition_symbol_ids = definition_symbol_ids
         self.has_mcp_import = any(
@@ -261,6 +265,24 @@ class PythonVisitor(ast.NodeVisitor):
     def ev(self, node: ast.AST) -> Evidence:
         line = getattr(node, "lineno", 1)
         return Evidence(self.path, line, excerpt(self.lines, line))
+
+    def resolve_local_symbol(
+        self, kind: str, name: str, node: ast.AST
+    ) -> tuple[str | None, str | None]:
+        scope = self.node_scopes.get(id(node), ())
+        if scoped := self.scoped_symbol_ids.get((scope, kind, name)):
+            definition_line, symbol_id = scoped
+            if definition_line < getattr(node, "lineno", 1):
+                return symbol_id, "lexical-single-definition"
+        if scope and (module_symbol := self.scoped_symbol_ids.get(((), kind, name))):
+            definition_line, symbol_id = module_symbol
+            if definition_line < getattr(node, "lineno", 1):
+                return symbol_id, "module-single-definition"
+        if self.node_scopes:
+            return None, None
+        if (kind, name) not in self.ambiguous_local_symbols:
+            return self.local_symbol_ids.get((kind, name)), None
+        return None, None
 
     def visit_Import(self, node: ast.Import) -> None:
         for alias in node.names:
@@ -833,12 +855,16 @@ class PythonVisitor(ast.NodeVisitor):
                     target_kind = "tool" if keyword.arg == "tools" else "agent"
                     relation = "uses" if target_kind == "tool" else "delegates-to"
                     target_name = dotted_name(value)
-                    target_id = self.local_symbol_ids.get((target_kind, target_name))
+                    target_id, target_identity = self.resolve_local_symbol(
+                        target_kind, target_name, node
+                    )
                     if isinstance(value, ast.Call) and dotted_name(value.func).endswith(".as_tool"):
                         target_name = dotted_name(value.func).removesuffix(".as_tool")
                         target_kind = "agent"
                         relation = "delegates-to"
-                        target_id = self.local_symbol_ids.get(("agent", target_name))
+                        target_id, target_identity = self.resolve_local_symbol(
+                            "agent", target_name, node
+                        )
                     elif (
                         self.has_openai_agents_import
                         and isinstance(value, ast.Call)
@@ -862,6 +888,8 @@ class PythonVisitor(ast.NodeVisitor):
                             target_id = source_symbol(
                                 "py", imported_path, target_kind, resolved_name
                             )
+                        elif target_id is not None and target_identity:
+                            attributes["target_identity"] = target_identity
                         elif target_id is None and (
                             target_kind,
                             target_name,
@@ -1146,6 +1174,64 @@ def scan_python(
     ambiguous_local_symbols = {
         key for key, candidates in symbol_candidates.items() if len(candidates) > 1
     }
+    scoped_symbol_candidates: dict[
+        tuple[tuple[str, ...], str, str], list[tuple[int, str]]
+    ] = {}
+    node_scopes: dict[int, tuple[str, ...]] = {}
+    if ambiguous_local_symbols:
+        parent_by_id = {
+            id(child): parent for parent in nodes for child in ast.iter_child_nodes(parent)
+        }
+        scope_cache: dict[int, tuple[str, ...]] = {id(tree): ()}
+
+        def lexical_scope(node: ast.AST) -> tuple[str, ...]:
+            node_id = id(node)
+            if node_id in scope_cache:
+                return scope_cache[node_id]
+            parent = parent_by_id.get(node_id)
+            if parent is None:
+                scope = ()
+            else:
+                scope = lexical_scope(parent)
+                if isinstance(parent, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+                    scope = (*scope, parent.name)
+            scope_cache[node_id] = scope
+            return scope
+
+        scope_nodes = [
+            node
+            for node in nodes
+            if isinstance(node, (ast.Assign, ast.FunctionDef, ast.AsyncFunctionDef))
+            or (
+                isinstance(node, ast.Call)
+                and dotted_name(node.func).rsplit(".", 1)[-1] in AGENT_CALLS
+            )
+        ]
+        node_scopes = {id(node): lexical_scope(node) for node in scope_nodes}
+        for node, qualified_name in decorated_tools:
+            if not isinstance(
+                parent_by_id.get(id(node)),
+                (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef),
+            ):
+                continue
+            for name in {qualified_name, node.name}:
+                scoped_symbol_candidates.setdefault(
+                    (node_scopes[id(node)], "tool", name), []
+                ).append((node.lineno, definition_symbol_ids[id(node)]))
+        for node, kind, binding in assigned_constructors:
+            if not isinstance(
+                parent_by_id.get(id(node)),
+                (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef),
+            ):
+                continue
+            scoped_symbol_candidates.setdefault(
+                (node_scopes[id(node)], kind, binding), []
+            ).append((node.lineno, call_symbol_ids[id(node.value)]))
+    scoped_symbol_ids = {
+        key: candidates[0]
+        for key, candidates in scoped_symbol_candidates.items()
+        if len(candidates) == 1
+    }
     PythonVisitor(
         ir,
         root,
@@ -1155,6 +1241,8 @@ def scan_python(
         module_paths=module_paths,
         local_symbol_ids=local_symbol_ids,
         ambiguous_local_symbols=ambiguous_local_symbols,
+        scoped_symbol_ids=scoped_symbol_ids,
+        node_scopes=node_scopes,
         call_symbol_ids=call_symbol_ids,
         definition_symbol_ids=definition_symbol_ids,
     ).visit(tree)
