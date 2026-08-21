@@ -4,11 +4,14 @@ AgentVerify can emit a deterministic, evidence-first inventory of an agent appli
 
 ```console
 agentverify scan . --format bom > agentverify.bom.json
+agentverify schema bom > agentverify-ai-bom.schema.json
 ```
 
 The format is defined by
 [`agentverify-ai-bom-v1.schema.json`](../src/agentverify/schemas/agentverify-ai-bom-v1.schema.json).
 It is native to AgentVerify and does not claim CycloneDX or SPDX conformance.
+The `schema` command reads the copy bundled in the installed wheel, so validators do not need a
+source checkout.
 
 ## Why a native format
 

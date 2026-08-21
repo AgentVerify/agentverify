@@ -18,6 +18,7 @@ agentverify scan ./project
 agentverify scan ./project --format json
 agentverify scan ./project --format bom
 agentverify scan ./project --format sarif
+agentverify schema bom > agentverify-ai-bom.schema.json
 agentverify scan ./project --fail-on high
 agentverify scan ./project --fail-on high --fail-on-kind any
 agentverify scan ./project --include-tests

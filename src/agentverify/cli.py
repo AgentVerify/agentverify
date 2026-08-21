@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 from . import __version__
-from .report import render_bom, render_json, render_sarif, render_text
+from .report import render_bom, render_bom_schema, render_json, render_sarif, render_text
 from .scanner import scan_repository
 
 
@@ -46,6 +46,8 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="keep inline-suppressed findings unless the directive has an active ISO expiry date",
     )
+    schema = subparsers.add_parser("schema", help="print a bundled machine-readable schema")
+    schema.add_argument("name", choices=("bom",))
     return parser
 
 
@@ -78,6 +80,12 @@ def baseline_fingerprints(path: Path) -> set[str]:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.command == "schema":
+        try:
+            print(render_bom_schema(), end="")
+        except BrokenPipeError:
+            return 0
+        return 0
     if not args.path.is_dir():
         print(f"agentverify: not a directory: {args.path}", file=sys.stderr)
         return 2

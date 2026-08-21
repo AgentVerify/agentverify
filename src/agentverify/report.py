@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from collections import Counter
 from hashlib import sha256
+from importlib.resources import files
 
 from . import __version__
 from .ir import Component, Evidence, Relationship, RepositoryIR
@@ -12,6 +13,11 @@ from .ir import Component, Evidence, Relationship, RepositoryIR
 
 def render_json(ir: RepositoryIR) -> str:
     return json.dumps(ir.to_dict(), indent=2, sort_keys=True) + "\n"
+
+
+def render_bom_schema() -> str:
+    schema = files("agentverify").joinpath("schemas/agentverify-ai-bom-v1.schema.json")
+    return schema.read_text(encoding="utf-8")
 
 
 def _stable_id(prefix: str, values: tuple[object, ...]) -> str:
@@ -232,7 +238,6 @@ def render_sarif(ir: RepositoryIR) -> str:
                 "tool": {
                     "driver": {
                         "name": "AgentVerify",
-                        "informationUri": "https://github.com/agentverify/agentverify",
                         "rules": [rules[key] for key in sorted(rules)],
                     }
                 },

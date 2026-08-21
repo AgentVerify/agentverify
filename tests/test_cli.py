@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from jsonschema import Draft202012Validator
 
 from agentverify import cli
 from agentverify.report import render_bom, render_json
@@ -95,6 +96,14 @@ def test_cli_emits_native_ai_bom(capsys) -> None:
     assert payload["bom_format"] == "AgentVerify AI BOM"
     assert payload["metadata"]["generator"] == {"name": "AgentVerify", "version": "0.1.0"}
     assert any(asset["kind"] == "agent" for asset in payload["assets"])
+
+
+def test_cli_prints_bundled_bom_schema(capsys) -> None:
+    assert cli.main(["schema", "bom"]) == 0
+
+    schema = __import__("json").loads(capsys.readouterr().out)
+    Draft202012Validator.check_schema(schema)
+    assert schema["title"] == "AgentVerify AI BOM 1.0"
 
 
 def test_paths_from_scans_only_selected_repository_paths(tmp_path: Path, capsys) -> None:
