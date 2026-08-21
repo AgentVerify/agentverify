@@ -387,20 +387,44 @@ class PythonVisitor(ast.NodeVisitor):
         short_name = call_name.rsplit(".", 1)[-1]
         if self.has_openai_agents_import and short_name in BUILTIN_TOOL_CAPABILITIES:
             tool_name = f"{short_name}@{node.lineno}"
-            approval_state = "unresolved"
+            approval_state = "disabled-default"
+            approval_source = "sdk-default"
             approval_handler = "none"
+            execution_environment = (
+                "local" if short_name == "ShellTool" and node.args else "unresolved"
+            )
             approval_evidence = self.ev(node)
             for keyword in node.keywords:
                 if keyword.arg in {"needs_approval", "require_approval"}:
                     approval_evidence = self.ev(keyword.value)
                     if isinstance(keyword.value, ast.Constant) and keyword.value.value is True:
                         approval_state = "enabled"
+                        approval_source = "literal"
                     elif isinstance(keyword.value, ast.Constant) and keyword.value.value is False:
-                        approval_state = "disabled"
+                        approval_state = "disabled-explicit"
+                        approval_source = "literal"
+                    else:
+                        approval_state = "unresolved"
+                        approval_source = "callback-or-expression"
                 elif keyword.arg == "on_approval" and not (
                     isinstance(keyword.value, ast.Constant) and keyword.value.value is None
                 ):
                     approval_handler = "configured"
+                elif short_name == "ShellTool" and keyword.arg == "executor":
+                    execution_environment = "local"
+                elif (
+                    short_name == "ShellTool"
+                    and keyword.arg == "environment"
+                    and isinstance(keyword.value, ast.Dict)
+                ):
+                    for key, value in zip(keyword.value.keys, keyword.value.values, strict=True):
+                        if (
+                            isinstance(key, ast.Constant)
+                            and key.value == "type"
+                            and isinstance(value, ast.Constant)
+                            and isinstance(value.value, str)
+                        ):
+                            execution_environment = "local" if value.value == "local" else "hosted"
             if approval_state == "enabled" and approval_handler == "configured":
                 approval_state = "unresolved-handler"
             self.ir.add_component(
@@ -412,6 +436,8 @@ class PythonVisitor(ast.NodeVisitor):
                         "constructor": call_name,
                         "approval_handler": approval_handler,
                         "approval_policy": approval_state,
+                        "approval_source": approval_source,
+                        "execution_environment": execution_environment,
                         "scope": source_scope(self.path),
                     },
                 )
@@ -423,7 +449,13 @@ class PythonVisitor(ast.NodeVisitor):
                     "scope": source_scope(self.path),
                 }
                 if capability == "shell-execution":
-                    attributes.update({"shell": False, "dynamic_command": False})
+                    attributes.update(
+                        {
+                            "shell": False,
+                            "dynamic_command": False,
+                            "execution_environment": execution_environment,
+                        }
+                    )
                 self.ir.add_component(
                     Component("capability", capability, self.ev(node), attributes)
                 )

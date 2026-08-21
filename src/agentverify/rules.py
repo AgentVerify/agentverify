@@ -153,3 +153,42 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                         "review",
                     )
                 )
+        if (
+            component.kind == "capability"
+            and component.name == "shell-execution"
+            and component.attributes.get("builtin_tool")
+            and component.attributes.get("execution_environment") == "local"
+        ):
+            _, context = component_context(ir, component)
+            tool_name = context.get("tool")
+            tool = next(
+                (
+                    candidate
+                    for candidate in ir.components
+                    if candidate.kind == "tool"
+                    and candidate.name == tool_name
+                    and candidate.evidence.path == component.evidence.path
+                    and candidate.evidence.line == component.evidence.line
+                ),
+                None,
+            )
+            if (
+                tool
+                and context.get("direct_agents")
+                and tool.attributes.get("approval_policy")
+                in {"disabled-default", "disabled-explicit"}
+            ):
+                policy = tool.attributes["approval_policy"]
+                qualifier = "by default" if policy == "disabled-default" else "explicitly"
+                ir.findings.append(
+                    make_finding(
+                        ir,
+                        component,
+                        "AV-APPROVAL002",
+                        "high",
+                        "high",
+                        f"A reachable local ShellTool has SDK approval disabled {qualifier}",
+                        "Set needs_approval=True and handle interruptions, or document and enforce an equivalent approval control inside the executor.",
+                        "review",
+                    )
+                )

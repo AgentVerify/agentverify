@@ -13,7 +13,7 @@ coverage to justify them.
 | AV-EXEC001 | finding | high | Dynamic command executed through a system shell | 20 default-scope engine matches after literal-command resolution |
 | AV-EXEC002 | finding | high | Dynamic input reaches an evaluator/interpreter | 43 repositories have code-execution signals |
 | AV-APPROVAL001 | review | high | Enabled auto-approve or skip-confirmation path | 7 default-scope engine candidates after semantic-name filtering |
-| AV-APPROVAL002 | finding | high | Reachable destructive action has no governing approval edge | Requires graph/config resolution |
+| AV-APPROVAL002 | review | high | Reachable local OpenAI Agents `ShellTool` uses the SDK's disabled approval policy | 2 default-scope matches in the pinned SDK examples |
 | AV-FS001 | review | high | Agent tool writes to a dynamic filesystem path | 16 default-scope matches across 6 repositories |
 | AV-MCP002 | review | high | Dynamic MCP tool name and arguments are forwarded to a server | 43 default-scope matches across 22 repositories after policy resolution |
 | AV-SANDBOX001 | review | high | Container/Kubernetes workload or Docker SDK call exposes a host, privilege, or service-account boundary | 19 matches across 9 repositories |

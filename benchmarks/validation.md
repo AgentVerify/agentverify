@@ -31,7 +31,7 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,594 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,874 relationships, and completed in 25.13 seconds on the development machine. Three parse warnings were isolated and
+resolved 1,874 relationships, and completed in 25.23 seconds on the development machine. Three parse warnings were isolated and
 reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -63,12 +63,26 @@ depends on invocation arguments.
 
 For Python, files importing the OpenAI Agents SDK now inventory `ShellTool`, `ApplyPatchTool`, and
 `CustomTool` instances with line-scoped identities. A literal `needs_approval=True` with no automatic
-handler creates an exact tool-to-control edge, while `False`, omitted values, callbacks, and a
-configured `on_approval` handler retain disabled or unresolved state. The pinned SDK's
+handler creates an exact tool-to-control edge; literal false and the SDK default are recorded as
+disabled, while callbacks and a configured `on_approval` handler remain unresolved. The pinned SDK's
 [shell HITL example](https://github.com/openai/openai-agents-python/blob/17ba331bb0ad1622a4ff4ecdc914c77118075dad/examples/tools/shell_human_in_the_loop.py#L117)
 is the real positive: `ShellTool@117` is governed by the literal policy at line 119. Requiring an
 `agents` import prevents unrelated application classes with the same constructor names from being
 promoted into Agent IR.
+
+## AV-APPROVAL002 — reachable local shell with SDK approval disabled
+
+The enabled rule is intentionally narrower than a general “missing approval” claim. It requires a
+local OpenAI Agents `ShellTool`, a direct resolved Agent-to-tool edge, and an explicit false or the
+SDK's documented false default. It reports a high-confidence `review`, not a finding, because a custom
+executor may still implement an equivalent internal approval control. Hosted shell environments,
+callback policies, automatic handlers, unresolved environments, and test paths are excluded.
+
+The full benchmark reports two sites, both in the pinned SDK's
+[local shell skill example](https://github.com/openai/openai-agents-python/blob/17ba331bb0ad1622a4ff4ecdc914c77118075dad/examples/tools/local_shell_skill.py#L29).
+The paired real negative is the
+[HITL shell example](https://github.com/openai/openai-agents-python/blob/17ba331bb0ad1622a4ff4ecdc914c77118075dad/examples/tools/shell_human_in_the_loop.py#L117),
+which creates a resolved human-approval edge. The rule has two positive and two negative exact labels.
 
 During validation, import-aware shell resolution reduced Cline's TypeScript dynamic-shell candidates
 from 16 to zero after proving the matches were `RegExp.exec()`, not `child_process.exec()`. Truthy
@@ -137,11 +151,11 @@ and a literal `privileged=True` keyword.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 121 exact labels across all six enabled rules: 69 positives and 52
+`benchmarks/truthset.json` contains 125 exact labels across all seven enabled rules: 71 positives and 54
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, non-approval skip flags, disabled
-auto-approval, late MCP guards, and safe Compose/Kubernetes/Docker SDK settings. All 121 currently pass; each rule's seed precision and
+auto-approval, late MCP guards, and safe Compose/Kubernetes/Docker SDK settings. All 125 currently pass; each rule's seed precision and
 recall are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified
 source text at the exact pinned line, preventing a missing or drifting location from passing silently.
 

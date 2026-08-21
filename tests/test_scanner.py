@@ -101,9 +101,10 @@ def test_builtin_tool_constructor_approval_is_instance_scoped() -> None:
     }
     assert tools == {
         "ShellTool@11": "enabled",
-        "ApplyPatchTool@12": "disabled",
+        "ApplyPatchTool@12": "disabled-explicit",
         "CustomTool@13": "unresolved",
         "ShellTool@16": "unresolved-handler",
+        "ShellTool@17": "disabled-explicit",
     }
     controls = {
         edge.source_name
@@ -136,6 +137,10 @@ def test_builtin_tool_constructor_approval_is_instance_scoped() -> None:
         if component.kind == "tool" and component.name == "ShellTool@16"
     )
     assert handled_shell.attributes["approval_handler"] == "configured"
+    assert [finding.rule_id for finding in ir.findings] == ["AV-APPROVAL002"]
+    assert ir.findings[0].evidence.line == 17
+    assert ir.findings[0].result_kind == "review"
+    assert ir.findings[0].analysis["approval_coverage"] == "unresolved"
 
 
 def test_builtin_tool_names_require_openai_agents_import(tmp_path: Path) -> None:
@@ -153,6 +158,34 @@ def test_builtin_tool_names_require_openai_agents_import(tmp_path: Path) -> None
         edge.target_kind == "control" and edge.target_name == "human-approval"
         for edge in ir.relationships
     )
+
+
+def test_default_disabled_local_shell_is_reviewed_but_hosted_shell_is_not(tmp_path: Path) -> None:
+    (tmp_path / "agent.py").write_text(
+        """from agents import Agent, ShellTool
+
+local = Agent(name="local", tools=[ShellTool(executor=object())])
+hosted = Agent(
+    name="hosted",
+    tools=[ShellTool(environment={"type": "container_auto"})],
+)
+""",
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    approval_reviews = [finding for finding in ir.findings if finding.rule_id == "AV-APPROVAL002"]
+    assert len(approval_reviews) == 1
+    assert approval_reviews[0].evidence.line == 3
+    assert approval_reviews[0].result_kind == "review"
+    assert "disabled by default" in approval_reviews[0].message
+    environments = {
+        component.evidence.line: component.attributes["execution_environment"]
+        for component in ir.components
+        if component.kind == "tool"
+    }
+    assert environments == {3: "local", 6: "hosted"}
 
 
 def test_non_approval_skip_and_status_flags_are_not_bypasses(tmp_path: Path) -> None:

@@ -20,11 +20,11 @@ unresolved distinct from absent.
 
 ## P0 — approval coverage rule
 
-Promote `AV-APPROVAL002` only when a destructive agent path is fully resolved and no approval edge
-governs it. Literal OpenAI Agents JavaScript function-tool and Python built-in-tool approval policies
-now form exact controls; callbacks and automatic handlers remain unresolved. Add real
-destructive-path positives, approved negatives, auto-approved bypasses, and delegated-agent cases
-before enabling the rule.
+`AV-APPROVAL002` now reports the narrow provable subset where an Agent directly reaches a local
+OpenAI Agents `ShellTool` and its SDK approval is explicitly or default-disabled. It remains a review:
+an executor may enforce an equivalent internal control. Promote absence to a finding only when the
+complete destructive path and executor policy are resolved. Extend coverage to delegated agents and
+other frameworks without treating callbacks or automatic handlers as absent controls.
 
 ## P1 — sandbox containment quality
 
@@ -42,7 +42,7 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 121 pinned positive/negative locations, with 12 separately
+The curated regression set has reached 125 pinned positive/negative locations, with 12 separately
 scored IR relationship labels. Schema-v2 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery

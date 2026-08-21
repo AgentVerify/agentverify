@@ -14,5 +14,6 @@ agent = Agent(
             "custom", "Run an external action", object(), needs_approval=conditional_approval
         ),
         ShellTool(object(), needs_approval=True, on_approval=conditional_approval),
+        ShellTool(executor=object(), needs_approval=False),
     ],
 )

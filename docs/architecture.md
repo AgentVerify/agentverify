@@ -50,8 +50,8 @@ before forwarding. It also resolves an OpenAI Agents TypeScript function tool's 
 `needsApproval: true` setting. For Python files importing the OpenAI Agents SDK, literal
 `needs_approval=True` on `ShellTool`, `ApplyPatchTool`, and `CustomTool` creates an instance-scoped
 tool-to-control edge when no automatic approval handler is configured; literal false is recorded as
-disabled. Callback, omitted, handler-controlled, and other non-literal approval policies remain
-unresolved.
+explicitly disabled. An omitted value records the SDK's documented disabled default. Callback,
+handler-controlled, and other non-literal approval policies remain unresolved.
 
 For audit modeling, a tool capability lexically inside an OpenTelemetry
 `start_as_current_span(...)` block receives an exact capability-to-`action-trace` control edge. A

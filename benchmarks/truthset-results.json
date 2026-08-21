@@ -1,13 +1,21 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T04:35:35.639083+00:00",
-  "labels": 121,
-  "passed": 121,
+  "generated_at": "2026-08-21T04:45:28.015858+00:00",
+  "labels": 125,
+  "passed": 125,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 4,
       "fp": 0,
       "tn": 6,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "AV-APPROVAL002": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 2,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -543,6 +551,42 @@
     {
       "id": "approval-composio-ts-version-negative",
       "rule_id": "AV-APPROVAL001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-coverage-local-disabled",
+      "rule_id": "AV-APPROVAL002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-coverage-local-enabled-negative",
+      "rule_id": "AV-APPROVAL002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-coverage-openai-local-shell-real",
+      "rule_id": "AV-APPROVAL002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-coverage-openai-hitl-negative",
+      "rule_id": "AV-APPROVAL002",
       "expected": false,
       "observed": false,
       "anchor_ok": true,

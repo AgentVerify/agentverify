@@ -68,7 +68,7 @@ because the engine requires supported selected files and more specific syntax.
 
 ## Quality interpretation
 
-The 121-label rule truth set and 12-label IR relationship set are curated regression suites. They
+The 125-label rule truth set and 12-label IR relationship set are curated regression suites. They
 guard known positives and negatives; they are not an unbiased accuracy estimate. A future holdout
 must be sampled separately across the categories above, externally reviewed, and kept sealed while
 rules change. Until then, precision/recall values apply only to the published seed labels.
