@@ -2043,6 +2043,115 @@
           "summary_path": "src/mcp/server/mcpserver/tools/tool_manager.py"
         }
       }
+    },
+    {
+      "id": "python-post-registration-imported-tool-local",
+      "target": {"kind": "local", "path": "cases/python_post_registration"},
+      "check_id": "IR-PY-POST-REGISTRATION",
+      "path": "app/tools.py",
+      "line": 5,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "imported_write",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-post-registration-local-tool-local",
+      "target": {"kind": "local", "path": "cases/python_post_registration"},
+      "check_id": "IR-PY-POST-REGISTRATION",
+      "path": "app/server.py",
+      "line": 14,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "local_write",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-post-registration-approval-local",
+      "target": {"kind": "local", "path": "cases/python_post_registration"},
+      "check_id": "IR-PY-POST-REGISTRATION",
+      "path": "app/server.py",
+      "line": 22,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "imported_write",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "human-approval"
+      }
+    },
+    {
+      "id": "python-post-registration-rebound-local-negative",
+      "target": {"kind": "local", "path": "cases/python_post_registration"},
+      "check_id": "IR-PY-POST-REGISTRATION",
+      "path": "app/tools.py",
+      "line": 9,
+      "expected": false,
+      "source_contains": "Path(path).write_text",
+      "relationship": {
+        "source_kind": "tool",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-post-registration-nested-local-negative",
+      "target": {"kind": "local", "path": "cases/python_post_registration"},
+      "check_id": "IR-PY-POST-REGISTRATION",
+      "path": "app/tools.py",
+      "line": 13,
+      "expected": false,
+      "source_contains": "Path(path).write_text",
+      "relationship": {
+        "source_kind": "tool",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-post-registration-wrapped-local-negative",
+      "target": {"kind": "local", "path": "cases/python_post_registration"},
+      "check_id": "IR-PY-POST-REGISTRATION",
+      "path": "app/tools.py",
+      "line": 17,
+      "expected": false,
+      "source_contains": "Path(path).write_text",
+      "relationship": {
+        "source_kind": "tool",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-post-registration-skyvern-real",
+      "target": {
+        "kind": "repository",
+        "repository": "Skyvern-AI/skyvern",
+        "commit": "486c8975e9864a53037d4701b781f8619e698c40"
+      },
+      "check_id": "IR-PY-POST-REGISTRATION",
+      "path": "skyvern/cli/mcp_tools/state.py",
+      "line": 89,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "skyvern_state_save",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
     }
   ]
 }

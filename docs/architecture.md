@@ -43,6 +43,15 @@ built-ins, inline/assigned agent adapters, and Cline inline tools without treati
 symbols. Package re-exports, wildcard imports, dynamic lookups, conditional tool expressions, and
 unrecognized wrapper-factory forms remain unresolved.
 
+A repository prepass also resolves direct module-level Python
+`server.tool(...)(function)` decorator applications. The registrar must be a uniquely bound
+FastMCP instance, and the target must be one uniquely bound same-module definition or one exact
+relative import leading to a unique module-level definition. The resulting tool keeps definition
+evidence and a module-qualified ID while recording registration path, line, registrar, resolution
+basis, and literal approval metadata. Exact IDs allow registration-site controls to govern a
+cross-file tool body. Wrapper expressions, nested registrations, rebound bindings, wildcard imports,
+duplicate registrations, and unrelated `.tool` factories remain unresolved.
+
 Within decorated Python tools and structurally resolved TypeScript execution callbacks, tool
 parameters begin as potential dynamic HTTP origins. Direct assignment aliases preserve that state,
 while reassignment to a literal or a URL expression whose literal prefix contains a complete HTTP

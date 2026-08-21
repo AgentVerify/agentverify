@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T10:54:47.941310+00:00",
-  "labels": 230,
-  "passed": 230,
+  "generated_at": "2026-08-21T11:16:18.491145+00:00",
+  "labels": 236,
+  "passed": 236,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 14,
@@ -37,9 +37,9 @@
       "recall": 1.0
     },
     "AV-FS001": {
-      "tp": 38,
+      "tp": 41,
       "fp": 0,
-      "tn": 33,
+      "tn": 36,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -1584,6 +1584,60 @@
     {
       "id": "filesystem-crewai-prefix-copytree-real",
       "rule_id": "AV-FS002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-post-registration-imported-positive",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-post-registration-local-positive",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-post-registration-rebound-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-post-registration-nested-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-post-registration-wrapped-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-skyvern-post-registration-parent-real",
+      "rule_id": "AV-FS001",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

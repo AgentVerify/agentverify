@@ -15,6 +15,11 @@ scope. Next add branch- and reassignment-sensitive dataflow, then resolve Python
 wildcard imports, unrecognized wrapper factories, and type-driven symbols.
 Preserve unresolved state for ambiguity and validate on larger real monorepository graphs.
 
+Exact module-level Python `mcp.tool(...)(function)` applications now resolve through unique local or
+relative-imported definitions when both registrar and target bindings are immutable. The pinned
+Skyvern module contributes 93 recovered tools and 15 capability edges. Next support bounded,
+transparent wrapper combinators and package reexports without falling back to display-name matching.
+
 ## P0 — configuration and policy resolution
 
 Resolve environment defaults, config objects, CLI flags, MCP allowlists, tool policies, and approval
@@ -90,8 +95,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 230 pinned positive/negative locations, with 110 separately
-scored IR relationship labels. Schema-v21 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 236 pinned positive/negative locations, with 117 separately
+scored IR relationship labels. Schema-v22 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

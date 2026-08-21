@@ -39,12 +39,15 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
   returned closure bindings, plus mutable/rebound negatives remain distinct.
 - `cases/mcp_imported_manager`: package reexports and immutable constructor bindings resolve an
   imported registry guard; mutable fields, fallback managers, and rebound imports remain negative.
+- `cases/python_post_registration`: exact FastMCP decorator applications resolve same-module and
+  relative-imported functions; wrappers, nested calls, rebound bindings, duplicate registrars, and
+  unrelated factories remain negative.
 
 ## Full-corpus engine benchmark
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,729 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,394 relationships, and completed in 90.53 seconds on the development machine. Three parse
+resolved 1,409 relationships, and completed in 92.38 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -53,25 +56,25 @@ The locked collector preserves the original 220-file root selection and adds at 
 imports reached from MCP forwarding files. This refresh materialized 135 dependency files across 11
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v2 records the dependency count per
-repository; engine schema v21 carries both the 135-file total and the 11-repository coverage.
+repository; engine schema v22 carries both the 135-file total and the 11-repository coverage.
 
-Engine benchmark schema v21 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v22 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It intentionally
 excludes arbitrary agent/tool display names from the summary. The resulting
 framework/provider/protocol/capability coverage and unsupported syntax are published in
 `docs/frontend-coverage.md`; presence counts are discovery observations, not recall measurements.
 
-The benchmark now also measures identity coverage: 8,566 agent/tool component observations carry
-module-qualified IDs. Of 2,788 relationship endpoints, 1,882 carry symbol IDs and 1,880 resolve to an
-observed component (1,629 Python and 251 TypeScript). Schema v21 records 325 same-scope and 14
+The benchmark now also measures identity coverage: 8,659 agent/tool component observations carry
+module-qualified IDs. Of 2,818 relationship endpoints, 1,897 carry symbol IDs and 1,895 resolve to an
+observed component (1,644 Python and 251 TypeScript). Schema v22 records 325 same-scope and 14
 module-scope targets resolved from a single direct definition that appears before the Agent
 constructor. It also records 23 repeated-binding targets still withheld because the scope contains
 multiple definitions. The two unmatched IDs are explicit Python re-export targets; capability,
 control, and taxonomy endpoints intentionally remain evidence observations.
 
-Schema-v21 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
-resolves 1,880 endpoints by symbol ID, 361 by exact evidence location, and 17 by a unique display
+Schema-v22 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
+resolves 1,895 endpoints by symbol ID, 376 by exact evidence location, and 17 by a unique display
 name; 30 remain ambiguous and 500 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
@@ -95,13 +98,22 @@ The import truth labels verify both target paths and target IDs, including CrewA
 The same-name collision fixture proves that the approved and dangerous `run_command` definitions do
 not share reachability or control coverage.
 
+Python post-definition registration recovery resolves 93 pinned Skyvern tools through direct
+module-level `mcp.tool(...)(function)` applications. Each target has one immutable relative import
+and one unique module-level definition. These tools yield 15 exact capability edges—14 browser and
+one filesystem—rather than 93 findings. The filesystem edge exposes
+[`resolved.parent.mkdir(...)`](https://github.com/Skyvern-AI/skyvern/blob/486c8975e9864a53037d4701b781f8619e698c40/skyvern/cli/mcp_tools/state.py#L89)
+inside `skyvern_state_save`; equality with an allowed root does not prove that its parent remains
+inside the root. Wrapper expressions, nested registrations, rebound imports or registrars, wildcard
+imports, and unrelated `.tool` methods remain unresolved.
+
 The TypeScript frontend now reads only balanced top-level entries from literal Agent tool arrays. It
 resolves OpenAI `tool`, `toolNamespace`, built-in tool factories, inline/assigned `asTool` adapters,
 and Cline `createTool`. Import-aware discovery now also resolves generic/Mastra object-property
-tools plus MCP `registerTool` names and callback spans. Schema v21 records 27 Mastra factory tools,
+tools plus MCP `registerTool` names and callback spans. Schema v22 records 27 Mastra factory tools,
 264 MCP registrations, 70 object-property tools (the factory/property categories overlap), and ten
 exact registration-to-capability edges. Four of those edges come from bounded same-file network
-helper summaries: three Mastra static methods and one MCP Servers free function. Schema v21 also
+helper summaries: three Mastra static methods and one MCP Servers free function. Schema v22 also
 records one imported TypeScript path-boundary control edge. The full sample
 contains 95 structure-backed agent edges: 14 delegations and 81 tool edges, all with targets that
 resolve to observed components. The prior token heuristic could
@@ -231,7 +243,7 @@ three wrappers through its action registry, while ArcadeAI returns two LangChain
 carry `binding_scope: closure` and `policy_effect: binds-tool-source-per-closure`. Merely nesting a
 function does not qualify: the MCP Python SDK and FastMCP retry helpers are invoked within the same
 caller-selected operation, so their names remain uncontrolled. A rebound parameter is likewise
-unresolved. Schema v21 publishes the resulting fixed-binding split as five instance edges and five
+unresolved. Schema v22 publishes the resulting fixed-binding split as five instance edges and five
 closure edges; all ten remain AV-MCP002 reviews.
 
 FastMCP contributes a second `tool-registry` edge through a same-class method summary. Its middleware
@@ -245,7 +257,7 @@ The bounded dependency closure now selects the MCP Python SDK's `tools` package 
 `ToolManager` body. `MCPServer.__init__` binds `self._tool_manager` once to that imported class;
 `ToolManager.call_tool` resolves `get_tool(name)` and raises before execution when absent. This adds
 the third `tool-registry` edge with `summary: imported-class-method`. Local negatives cover a mutable
-manager attribute, a fallback manager, and a rebound imported constructor. Schema v21 distinguishes
+manager attribute, a fallback manager, and a rebound imported constructor. Schema v22 distinguishes
 one same-function lookup, one same-class method summary, and one imported-class summary; all three
 retain their AV-MCP002 reviews as routing-only discovery controls rather than authorization
 allowlists.
@@ -253,7 +265,7 @@ allowlists.
 ## AV-FS001 — dynamic writable tool path
 
 The rule requires a writable dynamic path inside a resolved tool; ordinary application writes and
-fixed tool paths do not trigger it. The full benchmark reports 21 default-scope sites across seven
+fixed tool paths do not trigger it. The full benchmark reports 22 default-scope sites across eight
 repositories. A hand-reviewed case is ArcadeAI's
 [local-filesystem MCP `write_file`](https://github.com/ArcadeAI/arcade-ai/blob/597debaa1593b54172061ce36a414cc29aa8fc6a/examples/mcp_servers/local_filesystem/src/local_filesystem/tools.py#L154),
 which resolves a caller-provided path before writing. No workspace-root constraint is visible in the
@@ -269,6 +281,12 @@ roots are not statically known and could be broad. A literal narrow-root fixture
 suppressible case. A helper name alone, missing imports, or a check after the write remain
 unresolved. Exact string-prefix checks are classified separately by AV-FS002 and never satisfy this
 boundary.
+
+Post-definition registration recovery adds Skyvern's
+[`skyvern_state_save`](https://github.com/Skyvern-AI/skyvern/blob/486c8975e9864a53037d4701b781f8619e698c40/skyvern/cli/mcp_tools/state.py#L71)
+to exact tool reachability. Its line-89 parent-directory creation remains a review because
+`_validate_state_path` permits the resolved candidate to equal an allowed root; that does not prove
+the candidate's parent remains within the boundary.
 
 The Python frontend adds a second pinned `path-boundary` edge at FastMCP's
 [`download_skill` directory creation](https://github.com/jlowin/fastmcp/blob/609f79b8a118cd6c4bb58a5341bafd76e42e5a2b/fastmcp_slim/fastmcp/utilities/skills.py#L166-L184).
@@ -290,7 +308,7 @@ rebound methods, async/generator helpers, opaque path transforms, continuing han
 reassigned returns, try `else`/`finally` mutation, conditional construction preludes, caller
 reassignment, and parent writes remain unresolved.
 
-Schema v21 therefore records five Python and one TypeScript boundary edges, all with unresolved root
+Schema v22 therefore records five Python and one TypeScript boundary edges, all with unresolved root
 scope in the pinned corpus. Four Python edges use `Path.relative_to`; three are same-class return
 summaries. The helper distinction and summary provenance are explicit.
 
@@ -306,7 +324,7 @@ calls before assignment, conditional rebinding to an unknown wrapper, and copy/d
 negative. A fixed destination and two boundary-guarded copies are local negatives; shadowed imports
 and string `.replace()` remain explicit near misses.
 
-Schema v21 additionally resolves 20 `Path.rename`/`Path.replace` moves: two renames and 18 replaces.
+Schema v22 additionally resolves 20 `Path.rename`/`Path.replace` moves: two renames and 18 replaces.
 Receivers require an explicit unshadowed constructor, an exact Path annotation, or a single immutable
 local derived from one. DeepAgents contributes 18 real atomic replacement calls; these are inventory,
 not AV-FS001 reviews, because they are not reached from resolved tools. Conditional, reassigned,
@@ -389,12 +407,12 @@ and a literal `privileged=True` keyword.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 230 exact labels across all nine enabled rules: 132 positives and 98
+`benchmarks/truthset.json` contains 236 exact labels across all nine enabled rules: 135 positives and 101
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
-Compose/Kubernetes/Docker SDK settings. All 230 currently pass; each rule's seed precision and recall
+Compose/Kubernetes/Docker SDK settings. All 236 currently pass; each rule's seed precision and recall
 are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified source
 text at the exact pinned line, preventing a missing or drifting location from passing silently.
 
@@ -434,7 +452,9 @@ resolved callee, a fallback negative, and FastMCP's real summary. Five imported-
 a local resolved manager, mutable/fallback/rebound negatives, and the pinned MCP Python SDK manager.
 Eleven same-class path-helper labels cover the local exact-return edge, seven adversarial negatives,
 and OpenAI's three real sinks. Eight path-prefix labels cover two local and four real positive sinks,
-plus post-write and separator-aware negatives. All 110 IR labels pass: three approval positives/four negatives,
+plus post-write and separator-aware negatives. Seven Python post-registration labels cover two local
+tool edges, one cross-file approval edge, three adversarial negatives, and Skyvern's real filesystem
+edge. All 117 IR labels pass: three approval positives/four negatives,
 two audit positives/two negatives, two import positives/one negative, three TypeScript graph
 positives/one negative, eight registration positives/one negative, five helper-summary positives/one
 negative, 11 path-boundary positives/nine negatives, four path-helper positives/seven negatives,

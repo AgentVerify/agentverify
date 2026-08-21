@@ -291,6 +291,14 @@ class PythonPathHelperSummary:
     helper: str
 
 
+@dataclass(frozen=True)
+class PythonToolRegistration:
+    evidence: Evidence
+    registrar: str
+    resolution: str
+    needs_approval: bool
+
+
 @dataclass
 class PythonPathState:
     dynamic_names: set[str]
@@ -1672,6 +1680,7 @@ class PythonVisitor(ast.NodeVisitor):
         call_symbol_ids: dict[int, str],
         definition_symbol_ids: dict[int, str],
         registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
+        registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
         module_rebound_names: set[str],
         path_constructors: set[str],
         filesystem_api_aliases: dict[str, str],
@@ -1716,6 +1725,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.call_symbol_ids = call_symbol_ids
         self.definition_symbol_ids = definition_symbol_ids
         self.registry_class_exports = registry_class_exports
+        self.registered_tool_functions = registered_tool_functions
         self.module_rebound_names = module_rebound_names
         self.path_constructors = path_constructors
         self.filesystem_api_aliases = filesystem_api_aliases
@@ -2075,14 +2085,23 @@ class PythonVisitor(ast.NodeVisitor):
             else dotted_name(decorator)
             for decorator in node.decorator_list
         }
-        if decorators & TOOL_DECORATORS or any(name.endswith(".tool") for name in decorators):
+        registration = (
+            self.registered_tool_functions.get((self.path, node.name))
+            if self.function_depth == 1 and not self.class_stack
+            else None
+        )
+        if (
+            decorators & TOOL_DECORATORS
+            or any(name.endswith(".tool") for name in decorators)
+            or registration is not None
+        ):
             qualified_name = ".".join([*self.class_stack, node.name])
             tool_id = (
                 self.definition_symbol_ids.get(id(node))
                 or self.local_symbol_ids.get(("tool", qualified_name))
                 or source_symbol("py", self.path, "tool", qualified_name)
             )
-            needs_approval = False
+            needs_approval = registration.needs_approval if registration else False
             for decorator in node.decorator_list:
                 if isinstance(decorator, ast.Call):
                     needs_approval = needs_approval or any(
@@ -2091,17 +2110,34 @@ class PythonVisitor(ast.NodeVisitor):
                         and keyword.value.value is True
                         for keyword in decorator.keywords
                     )
+            attributes: dict[str, object] = {
+                "decorators": sorted(decorators),
+                "needs_approval": needs_approval,
+            }
+            if registration:
+                attributes.update(
+                    {
+                        "registration": "post-definition",
+                        "registration_path": registration.evidence.path,
+                        "registration_line": registration.evidence.line,
+                        "registrar": registration.registrar,
+                        "resolution": registration.resolution,
+                    }
+                )
             self.ir.add_component(
                 Component(
                     "tool",
                     node.name,
                     self.ev(node),
-                    {"decorators": sorted(decorators), "needs_approval": needs_approval},
+                    attributes,
                     tool_id,
                 )
             )
             if needs_approval:
-                self.ir.add_component(Component("control", "human-approval", self.ev(node)))
+                approval_evidence = registration.evidence if registration else self.ev(node)
+                self.ir.add_component(
+                    Component("control", "human-approval", approval_evidence)
+                )
                 self.ir.add_relationship(
                     Relationship(
                         "tool",
@@ -2109,7 +2145,7 @@ class PythonVisitor(ast.NodeVisitor):
                         "governed-by",
                         "control",
                         "human-approval",
-                        self.ev(node),
+                        approval_evidence,
                         source_id=tool_id,
                     )
                 )
@@ -3482,6 +3518,7 @@ def scan_python(
     text: str,
     module_paths: dict[str, str],
     registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
+    registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
 ) -> None:
     relative = path.relative_to(root).as_posix()
     try:
@@ -3572,10 +3609,19 @@ def scan_python(
     definition_symbol_ids: dict[int, str] = {}
     decorated_tools: list[tuple[ast.FunctionDef | ast.AsyncFunctionDef, str]] = []
 
-    def collect_definitions(statements: list[ast.stmt], class_stack: tuple[str, ...] = ()) -> None:
+    def collect_definitions(
+        statements: list[ast.stmt],
+        class_stack: tuple[str, ...] = (),
+        *,
+        module_scope: bool = True,
+    ) -> None:
         for node in statements:
             if isinstance(node, ast.ClassDef):
-                collect_definitions(node.body, (*class_stack, node.name))
+                collect_definitions(
+                    node.body,
+                    (*class_stack, node.name),
+                    module_scope=False,
+                )
                 continue
             if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 continue
@@ -3585,10 +3631,17 @@ def scan_python(
                 else dotted_name(decorator)
                 for decorator in node.decorator_list
             }
-            if decorators & TOOL_DECORATORS or any(name.endswith(".tool") for name in decorators):
+            if (
+                decorators & TOOL_DECORATORS
+                or any(name.endswith(".tool") for name in decorators)
+                or (
+                    module_scope
+                    and (relative, node.name) in registered_tool_functions
+                )
+            ):
                 qualified_name = ".".join([*class_stack, node.name])
                 decorated_tools.append((node, qualified_name))
-            collect_definitions(node.body, class_stack)
+            collect_definitions(node.body, class_stack, module_scope=False)
 
     collect_definitions(tree.body)
     definition_counts = Counter(qualified_name for _, qualified_name in decorated_tools)
@@ -3705,6 +3758,7 @@ def scan_python(
         call_symbol_ids=call_symbol_ids,
         definition_symbol_ids=definition_symbol_ids,
         registry_class_exports=registry_class_exports,
+        registered_tool_functions=registered_tool_functions,
         module_rebound_names=module_rebound_names,
         path_constructors=path_constructors,
         filesystem_api_aliases=filesystem_api_aliases,
@@ -5893,6 +5947,265 @@ def build_python_registry_class_exports(
     return exports
 
 
+def build_python_tool_registrations(
+    root: Path,
+    paths: list[Path],
+    module_paths: dict[str, str],
+) -> dict[tuple[str, str], PythonToolRegistration]:
+    """Resolve exact module-level ``server.tool(...)(function)`` registrations.
+
+    This intentionally models only direct, immutable bindings. Wrapper expressions,
+    nested registrations, wildcard imports, reassignments, and ambiguous targets are
+    left unresolved instead of being guessed by name.
+    """
+    parsed: dict[str, tuple[ast.Module, list[str]]] = {}
+    binding_counts: dict[str, Counter[str]] = {}
+
+    def collect_bindings(tree: ast.Module) -> Counter[str]:
+        counts: Counter[str] = Counter()
+
+        def collect(candidate: ast.AST) -> None:
+            if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                counts[candidate.name] += 1
+                return
+            if isinstance(candidate, ast.Lambda):
+                return
+            if isinstance(candidate, (ast.Import, ast.ImportFrom)):
+                counts.update(
+                    alias.asname or alias.name.split(".", 1)[0]
+                    for alias in candidate.names
+                    if alias.name != "*"
+                )
+                return
+            if isinstance(candidate, ast.Name) and isinstance(
+                candidate.ctx, (ast.Store, ast.Del)
+            ):
+                counts[candidate.id] += 1
+            for child in ast.iter_child_nodes(candidate):
+                collect(child)
+
+        for statement in tree.body:
+            collect(statement)
+        return counts
+
+    def module_imports(tree: ast.Module) -> list[ast.Import | ast.ImportFrom]:
+        imports: list[ast.Import | ast.ImportFrom] = []
+
+        def collect(candidate: ast.AST) -> None:
+            if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
+                return
+            if isinstance(candidate, (ast.Import, ast.ImportFrom)):
+                imports.append(candidate)
+                return
+            for child in ast.iter_child_nodes(candidate):
+                collect(child)
+
+        for statement in tree.body:
+            collect(statement)
+        return imports
+
+    selected_python_paths = {
+        path.relative_to(root).as_posix(): path
+        for path in paths
+        if not path.is_symlink()
+        and path.is_file()
+        and path.suffix.lower() == ".py"
+        and not (set(path.relative_to(root).parts) & SKIP_DIRECTORIES)
+    }
+
+    def parse_selected(path: Path, *, require_registration_signal: bool) -> None:
+        if (
+            path.is_symlink()
+            or not path.is_file()
+            or path.suffix.lower() != ".py"
+            or set(path.relative_to(root).parts) & SKIP_DIRECTORIES
+        ):
+            return
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                return
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            return
+        if require_registration_signal and not (
+            "FastMCP" in text and ".tool" in text
+        ):
+            return
+        relative = path.relative_to(root).as_posix()
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", SyntaxWarning)
+                tree = ast.parse(text, filename=relative)
+        except SyntaxError:
+            return
+        parsed[relative] = (tree, text.splitlines())
+        binding_counts[relative] = collect_bindings(tree)
+
+    for path in selected_python_paths.values():
+        parse_selected(path, require_registration_signal=True)
+
+    referenced_paths: set[str] = set()
+    for registrar_path, (tree, _) in list(parsed.items()):
+        for node in module_imports(tree):
+            if not isinstance(node, ast.ImportFrom):
+                continue
+            for alias in node.names:
+                if alias.name == "*":
+                    continue
+                if target_path := resolve_python_import_path(
+                    root,
+                    registrar_path,
+                    node,
+                    alias.name,
+                    module_paths,
+                ):
+                    referenced_paths.add(target_path)
+    for referenced_path in referenced_paths:
+        if referenced_path not in parsed and (
+            path := selected_python_paths.get(referenced_path)
+        ):
+            parse_selected(path, require_registration_signal=False)
+
+    definitions: dict[tuple[str, str], ast.FunctionDef | ast.AsyncFunctionDef] = {}
+    for path, (tree, _) in parsed.items():
+        for statement in tree.body:
+            if (
+                isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef))
+                and binding_counts[path][statement.name] == 1
+            ):
+                definitions[(path, statement.name)] = statement
+
+    proposals: dict[tuple[str, str], list[PythonToolRegistration]] = defaultdict(list)
+    for path, (tree, lines) in parsed.items():
+        imports = module_imports(tree)
+        direct_imports = [
+            statement for statement in tree.body if isinstance(statement, ast.ImportFrom)
+        ]
+        constructor_aliases = {
+            alias.asname or alias.name
+            for node in imports
+            if isinstance(node, ast.ImportFrom)
+            and node.module
+            and (
+                node.module in {"fastmcp", "mcp"}
+                or node.module.startswith(("fastmcp.", "mcp."))
+            )
+            for alias in node.names
+            if alias.name == "FastMCP"
+        }
+        module_aliases = {
+            alias.asname or alias.name.split(".", 1)[0]
+            for node in imports
+            if isinstance(node, ast.Import)
+            for alias in node.names
+            if alias.name in {"fastmcp", "mcp"}
+            or alias.name.startswith(("fastmcp.", "mcp."))
+        }
+        if not constructor_aliases and not module_aliases:
+            continue
+
+        imported_targets: dict[str, list[tuple[str, str, int]]] = defaultdict(list)
+        for node in direct_imports:
+            for alias in node.names:
+                if alias.name == "*":
+                    continue
+                local_name = alias.asname or alias.name
+                if binding_counts[path][local_name] != 1:
+                    continue
+                target_path = resolve_python_import_path(
+                    root,
+                    path,
+                    node,
+                    alias.name,
+                    module_paths,
+                )
+                if target_path:
+                    imported_targets[local_name].append(
+                        (target_path, alias.name, node.lineno)
+                    )
+
+        servers: dict[str, int] = {}
+        for statement in tree.body:
+            if not (
+                isinstance(statement, (ast.Assign, ast.AnnAssign))
+                and isinstance(statement.value, ast.Call)
+            ):
+                continue
+            targets = (
+                statement.targets
+                if isinstance(statement, ast.Assign)
+                else [statement.target]
+            )
+            if len(targets) != 1 or not isinstance(targets[0], ast.Name):
+                continue
+            binding = targets[0].id
+            constructor = dotted_name(statement.value.func)
+            module_root = constructor.split(".", 1)[0]
+            if not (
+                constructor in constructor_aliases
+                or (
+                    constructor.endswith(".FastMCP")
+                    and module_root in module_aliases
+                )
+            ):
+                continue
+            if binding_counts[path][binding] == 1:
+                servers[binding] = statement.lineno
+
+        for statement in tree.body:
+            if not isinstance(statement, ast.Expr) or not isinstance(statement.value, ast.Call):
+                continue
+            outer = statement.value
+            if len(outer.args) != 1 or outer.keywords or not isinstance(outer.args[0], ast.Name):
+                continue
+            if not isinstance(outer.func, ast.Call):
+                continue
+            decorator = outer.func
+            if not (
+                isinstance(decorator.func, ast.Attribute)
+                and decorator.func.attr == "tool"
+                and isinstance(decorator.func.value, ast.Name)
+            ):
+                continue
+            registrar = decorator.func.value.id
+            if registrar not in servers or servers[registrar] >= statement.lineno:
+                continue
+            local_name = outer.args[0].id
+            target: tuple[str, str] | None = None
+            resolution = "same-module-single-definition"
+            imported = imported_targets.get(local_name, [])
+            if len(imported) == 1 and imported[0][2] < statement.lineno:
+                target = (imported[0][0], imported[0][1])
+                resolution = "relative-import-single-definition"
+            elif (
+                (path, local_name) in definitions
+                and definitions[(path, local_name)].lineno < statement.lineno
+            ):
+                target = (path, local_name)
+            if target not in definitions:
+                continue
+            needs_approval = any(
+                keyword.arg in {"needs_approval", "require_approval"}
+                and isinstance(keyword.value, ast.Constant)
+                and keyword.value.value is True
+                for keyword in decorator.keywords
+            )
+            proposals[target].append(
+                PythonToolRegistration(
+                    Evidence(path, statement.lineno, excerpt(lines, statement.lineno)),
+                    f"{registrar}.tool",
+                    resolution,
+                    needs_approval,
+                )
+            )
+
+    return {
+        target: registrations[0]
+        for target, registrations in proposals.items()
+        if len(registrations) == 1
+    }
+
+
 def repository_files(root: Path) -> list[Path]:
     paths = []
     for directory, directory_names, file_names in os.walk(root, followlinks=False):
@@ -5943,6 +6256,11 @@ def scan_repository(
         )
     ]
     registry_class_exports = build_python_registry_class_exports(
+        root,
+        registry_paths,
+        module_paths,
+    )
+    registered_tool_functions = build_python_tool_registrations(
         root,
         registry_paths,
         module_paths,
@@ -5998,6 +6316,7 @@ def scan_repository(
                 text,
                 module_paths,
                 registry_class_exports,
+                registered_tool_functions,
             )
         else:
             scan_typescript(ir, root, path, text)

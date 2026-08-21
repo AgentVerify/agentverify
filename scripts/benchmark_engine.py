@@ -129,6 +129,16 @@ def main() -> int:
             for item in (*typescript_registered_tools, *typescript_object_property_tools)
             if item.symbol_id
         }
+        python_post_registered_tools = [
+            item
+            for item in ir.components
+            if item.kind == "tool"
+            and item.evidence.path.endswith(".py")
+            and item.attributes.get("registration") == "post-definition"
+        ]
+        python_post_registered_tool_ids = {
+            item.symbol_id for item in python_post_registered_tools if item.symbol_id
+        }
         typescript_network_helper_capabilities = [
             item
             for item in ir.components
@@ -246,6 +256,28 @@ def main() -> int:
                 "network_helper_edges": len(typescript_network_helper_capabilities),
                 "path_boundary_edges": len(typescript_path_boundary_edges),
             },
+            "python_tool_registrations": {
+                "post_definition": len(python_post_registered_tools),
+                "relative_import": sum(
+                    item.attributes.get("resolution")
+                    == "relative-import-single-definition"
+                    for item in python_post_registered_tools
+                ),
+                "same_module": sum(
+                    item.attributes.get("resolution")
+                    == "same-module-single-definition"
+                    for item in python_post_registered_tools
+                ),
+                "approval_enabled": sum(
+                    item.attributes.get("needs_approval") is True
+                    for item in python_post_registered_tools
+                ),
+                "capability_edges": sum(
+                    edge.source_id in python_post_registered_tool_ids
+                    and edge.target_kind == "capability"
+                    for edge in ir.relationships
+                ),
+            },
             "path_boundary_controls": {
                 "python": len(python_path_boundary_edges),
                 "typescript": len(typescript_path_boundary_edges),
@@ -348,7 +380,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 21,
+        "schema_version": 22,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -444,6 +476,16 @@ def main() -> int:
                     "capability_edges",
                     "network_helper_edges",
                     "path_boundary_edges",
+                )
+            },
+            "python_tool_registrations": {
+                name: sum(result["python_tool_registrations"][name] for result in successful)
+                for name in (
+                    "post_definition",
+                    "relative_import",
+                    "same_module",
+                    "approval_enabled",
+                    "capability_edges",
                 )
             },
             "path_boundary_controls": {

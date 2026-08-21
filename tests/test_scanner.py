@@ -1329,6 +1329,47 @@ def test_python_path_helper_summary_is_return_exact_and_class_local() -> None:
     ]
 
 
+def test_python_post_definition_tool_registration_is_exact_and_cross_file() -> None:
+    ir = scan_repository(ROOT / "cases/python_post_registration")
+
+    tools = {item.name: item for item in ir.components if item.kind == "tool"}
+    assert set(tools) == {"imported_write", "local_write"}
+    assert tools["imported_write"].attributes == {
+        "decorators": [],
+        "needs_approval": True,
+        "registration": "post-definition",
+        "registration_path": "app/server.py",
+        "registration_line": 22,
+        "registrar": "mcp.tool",
+        "resolution": "relative-import-single-definition",
+    }
+    assert tools["imported_write"].symbol_id == "py:app/tools.py#tool:imported_write"
+    assert tools["local_write"].attributes["resolution"] == (
+        "same-module-single-definition"
+    )
+    assert {
+        (edge.source_name, edge.relation, edge.target_name, edge.evidence.path, edge.evidence.line)
+        for edge in ir.relationships
+    } == {
+        ("imported_write", "governed-by", "human-approval", "app/server.py", 22),
+        ("imported_write", "uses", "filesystem", "app/tools.py", 5),
+        ("local_write", "uses", "filesystem", "app/server.py", 14),
+    }
+    assert [
+        (
+            finding.rule_id,
+            finding.evidence.path,
+            finding.evidence.line,
+            finding.analysis["tool"],
+            finding.analysis["approval_coverage"],
+        )
+        for finding in ir.findings
+    ] == [
+        ("AV-FS001", "app/server.py", 14, "local_write", "unresolved"),
+        ("AV-FS001", "app/tools.py", 5, "imported_write", "present"),
+    ]
+
+
 def test_python_filesystem_mutations_resolve_destinations_aliases_and_guards() -> None:
     ir = scan_repository(ROOT / "cases/filesystem_mutations")
 

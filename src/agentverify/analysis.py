@@ -86,9 +86,11 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
                 and edge.source_name == tool_name
                 and (
                     (tool_id is not None and edge.source_id == tool_id)
-                    or (tool_id is None or edge.source_id is None)
+                    or (
+                        (tool_id is None or edge.source_id is None)
+                        and edge.evidence.path == component.evidence.path
+                    )
                 )
-                and edge.evidence.path == component.evidence.path
             )
             or (
                 edge.source_kind == "capability"

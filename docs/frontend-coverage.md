@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v19
+framework, wrapper, or configuration path. Counts come from schema-v22
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -33,18 +33,18 @@ Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK
 (40), Anthropic (17), and Azure OpenAI (11). These counts overlap and are lower than research-wide lexical signals
 because the engine requires supported selected files and more specific syntax.
 
-Across the selected snapshot, 8,566 agent/tool observations have module-qualified symbol IDs. Of
-2,788 relationship endpoint observations, 1,882 carry IDs and 1,880 resolve to an observed component
-(1,629 Python and 251 TypeScript); the two unmatched IDs are explicit Python re-export targets.
+Across the selected snapshot, 8,659 agent/tool observations have module-qualified symbol IDs. Of
+2,818 relationship endpoint observations, 1,897 carry IDs and 1,895 resolve to an observed component
+(1,644 Python and 251 TypeScript); the two unmatched IDs are explicit Python re-export targets.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
-edges resolve exactly. In Python files with repeated identities, schema v21 records 325 same-scope and
+edges resolve exactly. In Python files with repeated identities, schema v22 records 325 same-scope and
 14 module-scope single-definition resolutions, plus 23 `ambiguous-repeated-binding` references that
 remain withheld.
 Capability/control taxonomy endpoints intentionally lack
 source-symbol IDs, so the endpoint fraction is inventory coverage rather than an accuracy or recall
 metric.
 
-The native AI BOM 1.1 resolver independently classifies all 2,788 endpoints: 1,880 by symbol ID, 361
+The native AI BOM 1.1 resolver independently classifies all 2,818 endpoints: 1,895 by symbol ID, 376
 by exact relationship evidence, 17 by a unique display name, 30 as ambiguous, and 500 as unresolved.
 Evidence-local resolution removes capability/control ambiguities; occurrence-qualified bindings
 resolve repeated source agent/tool observations, and conservative lexical resolution removes further
@@ -67,13 +67,20 @@ terminating `ValueError` handler. The OpenAI helper's checked return is consumed
 unlink. All six pinned roots are dynamically configured, so their scope remains explicit and
 unresolved and none suppresses a review.
 
+The Python frontend also resolves 93 Skyvern tools registered after definition through exact
+`mcp.tool(...)(function)` applications. Every target is reached through one immutable relative
+import and one unique module-level function definition. Those tools create only 15 exact capability
+edges—14 browser actions and one filesystem mutation—so inventory expansion is kept separate from
+finding volume. Wrapper expressions, nested calls, rebound imports or registrars, wildcard imports,
+and non-FastMCP factories remain unresolved.
+
 Four additional Python edges record exact string-prefix checks at CrewAI Examples sinks. They target
 `path-prefix-check`, carry `weak-string-prefix-validation`, and never satisfy path-boundary policy.
 Two checks govern both a parent-directory creation and its write/copy action. The specialized
 `AV-FS002` result explains the sibling-prefix weakness without duplicating `AV-FS001` at the same
 sink.
 
-Schema v21 records 14 exact MCP-forwarding control edges: one explicit allowlist, three discovery
+Schema v22 records 14 exact MCP-forwarding control edges: one explicit allowlist, three discovery
 registries, and ten fixed bindings. The fixed-binding edges split evenly between constructor-bound
 instance sources and escaping returned/registered closures. Same-operation retry closures do not
 qualify. The ten bindings and discovery registries retain their reviews; only the explicit allowlist
@@ -84,9 +91,11 @@ The Python frontend inventories 448 canonical/import/callable-aliased and proven
 one is reached through a statement-ordered local callable alias and 20 are `Path.rename`/`replace`
 methods with explicit or immutable receiver proof. That
 inventory count is intentionally broader than AV-FS001, which additionally requires an exact tool
-edge. Expanded sinks add seven tool reviews—six in ArcadeAI and one in CrewAI Examples—raising
-the combined filesystem queue to 25 sites across eight repositories. Four CrewAI Examples sinks are
-specialized as AV-FS002, leaving 21 AV-FS001 sites across seven repositories. No pinned mutation
+edge. Expanded sinks and post-definition registration recovery raise the combined filesystem queue
+to 26 sites across nine repositories. Four CrewAI Examples sinks are specialized as AV-FS002,
+leaving 22 AV-FS001 sites across eight repositories. The added Skyvern review is
+`resolved.parent.mkdir(...)` in its registered state-save tool: the validator admits equality with an
+allowed root, so the parent mutation is not proven to remain inside that root. No pinned mutation
 destination has a statically narrow guard, so the corpus records zero guarded calls in this API
 subset.
 
@@ -148,7 +157,7 @@ subset.
 
 ## Quality interpretation
 
-The 230-label rule truth set and 110-label IR relationship set are curated regression suites. They
+The 236-label rule truth set and 117-label IR relationship set are curated regression suites. They
 guard known positives and negatives; they are not an unbiased accuracy estimate. A future holdout
 must be sampled separately across the categories above, externally reviewed, and kept sealed while
 rules change. Until then, precision/recall values apply only to the published seed labels.
