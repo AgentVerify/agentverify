@@ -135,11 +135,12 @@ def render_text(ir: RepositoryIR) -> str:
             lines.append(f"    Audit coverage: {finding.analysis['audit_coverage']}")
         lines.append(f"    Remediation: {finding.remediation}")
     if ir.suppressions:
-        lines += ["", "Inline suppressions:"]
+        lines += ["", "Inline suppression directives:"]
         for suppression in ir.suppressions:
+            expiry = f" until {suppression.expires_on}" if suppression.expires_on else ""
             lines.append(
                 f"  {suppression.rule_id} at {suppression.finding.path}:"
-                f"{suppression.finding.line} -- {suppression.reason}"
+                f"{suppression.finding.line} [{suppression.status}{expiry}] -- {suppression.reason}"
             )
     if ir.errors:
         lines += ["", f"Parse warnings: {len(ir.errors)}"]

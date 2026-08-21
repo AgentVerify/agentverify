@@ -7,6 +7,7 @@ import json
 import os
 import re
 import warnings
+from datetime import UTC, date, datetime
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
 
@@ -688,7 +689,8 @@ TS_FILESYSTEM_WRITE = re.compile(
 TS_DYNAMIC_EVAL = re.compile(r"(?<![\w$.])eval\s*\(|\bnew\s+Function\s*\(")
 CONTAINER_CONFIG_SUFFIXES = {".yml", ".yaml"}
 INLINE_SUPPRESSION = re.compile(
-    r"^\s*(?:#|//)\s*agentverify:\s*ignore\s+(AV-[A-Z0-9]+)\s+--\s+(\S(?:.*\S)?)\s*$"
+    r"^\s*(?:#|//)\s*agentverify:\s*ignore\s+(AV-[A-Z0-9]+)"
+    r"(?:\s+until\s+(\S+))?\s+--\s+(\S(?:.*\S)?)\s*$"
 )
 
 
@@ -1158,7 +1160,13 @@ def scan_container_config(ir: RepositoryIR, root: Path, path: Path) -> None:
             )
 
 
-def apply_inline_suppressions(ir: RepositoryIR, source_lines: dict[str, list[str]]) -> None:
+def apply_inline_suppressions(
+    ir: RepositoryIR,
+    source_lines: dict[str, list[str]],
+    *,
+    require_expiry: bool = False,
+    current_date: date | None = None,
+) -> None:
     """Apply rule-scoped suppressions from a reason-bearing comment on the previous line."""
     retained = []
     for finding in ir.findings:
@@ -1169,14 +1177,30 @@ def apply_inline_suppressions(ir: RepositoryIR, source_lines: dict[str, list[str
         if not match or match.group(1) != finding.rule_id:
             retained.append(finding)
             continue
+        expires_on = match.group(2)
+        status = "active"
+        if expires_on:
+            try:
+                expiry_date = date.fromisoformat(expires_on)
+            except ValueError:
+                status = "invalid-expiry"
+            else:
+                if expiry_date < (current_date or datetime.now(UTC).date()):
+                    status = "expired"
+        elif require_expiry:
+            status = "missing-expiry"
         ir.suppressions.append(
             Suppression(
                 finding.rule_id,
-                match.group(2).strip(),
+                match.group(3).strip(),
                 finding.evidence,
                 Evidence(finding.evidence.path, directive_line, directive.strip()[:240]),
+                expires_on,
+                status,
             )
         )
+        if status != "active":
+            retained.append(finding)
     ir.suppressed_findings += len(ir.findings) - len(retained)
     ir.findings = retained
 
@@ -1228,6 +1252,8 @@ def scan_repository(
     *,
     include_tests: bool = False,
     selected_paths: list[str] | set[str] | tuple[str, ...] | None = None,
+    require_suppression_expiry: bool = False,
+    current_date: date | None = None,
 ) -> RepositoryIR:
     root = root.resolve()
     ir = RepositoryIR(str(root))
@@ -1314,6 +1340,11 @@ def scan_repository(
         )
     )
     run_rules(ir, include_tests=include_tests)
-    apply_inline_suppressions(ir, source_lines)
+    apply_inline_suppressions(
+        ir,
+        source_lines,
+        require_expiry=require_suppression_expiry,
+        current_date=current_date,
+    )
     ir.findings.sort(key=lambda item: (item.evidence.path, item.evidence.line, item.rule_id))
     return ir

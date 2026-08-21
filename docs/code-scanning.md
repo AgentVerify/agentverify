@@ -69,3 +69,8 @@ The repository-wide module index is still available for resolving selected files
 unselected source files are not parsed. A changed-file result therefore cannot prove repository-wide
 control coverage or absence. Keep the scheduled full scan as the authoritative audit and use partial
 scans only for rapid feedback.
+
+To prevent permanent exceptions in an enforcement job, add `--require-suppression-expiry`. An inline
+directive then suppresses only when it carries a valid, non-expired `until YYYY-MM-DD` date. Expired,
+invalid, and missing-expiry directives remain in JSON/text audit data while their findings are
+restored and can fail the severity threshold.

@@ -22,18 +22,22 @@ agentverify scan ./project --fail-on high --fail-on-kind any
 agentverify scan ./project --include-tests
 agentverify scan ./project --baseline previous-agentverify.json
 agentverify scan ./project --paths-from changed-files.txt
+agentverify scan ./project --require-suppression-expiry --fail-on high
 ```
 
 Reviewed exceptions can be suppressed only for the immediately following line, with a rule ID and
 required reason:
 
 ```python
-# agentverify: ignore AV-EXEC001 -- command is selected from the fixed deployment allowlist
+# agentverify: ignore AV-EXEC001 until 2026-12-31 -- command is selected from the fixed deployment allowlist
 subprocess.run(command, shell=True)
 ```
 
 JSON and text reports retain the suppression's rule, reason, directive location, and finding location.
-Broad file-level or reason-free inline ignores are intentionally unsupported.
+They also retain expiry and status. Expired or malformed dates never suppress a finding;
+`--require-suppression-expiry` also restores reason-only exceptions. Broad file-level or reason-free
+inline ignores are intentionally unsupported. Expiry dates are evaluated in UTC and remain active
+through the stated date.
 When `--baseline` is used, reports separate new and unchanged fingerprints and count fingerprints no
 longer reported by a full scan. Partial selected-path scans leave that last count unavailable.
 

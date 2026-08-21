@@ -109,3 +109,20 @@ def test_empty_paths_from_scans_nothing_but_dot_selects_root(tmp_path: Path, cap
     selected = __import__("json").loads(capsys.readouterr().out)
     assert selected["files_scanned"] == 1
     assert selected["path_filters"] == ["."]
+
+
+def test_cli_can_require_suppression_expiry(tmp_path: Path, capsys) -> None:
+    (tmp_path / "agent.py").write_text(
+        """import subprocess
+# agentverify: ignore AV-EXEC001 -- temporary exception
+subprocess.run(command, shell=True)
+""",
+        encoding="utf-8",
+    )
+
+    assert cli.main(
+        ["scan", str(tmp_path), "--require-suppression-expiry", "--fail-on", "high"]
+    ) == 1
+    output = capsys.readouterr().out
+    assert "AV-EXEC001" in output
+    assert "missing-expiry" in output

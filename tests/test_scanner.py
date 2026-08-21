@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from datetime import date
 from pathlib import Path
 
 from agentverify.analysis import component_context
@@ -443,7 +444,40 @@ subprocess.run(third_command, shell=True)
     assert ir.suppressions[0].reason == "reviewed wrapper; input is allowlisted upstream"
     report = json.loads(render_json(ir))
     assert report["suppressions"][0]["finding"]["line"] == 4
-    assert "Inline suppressions:" in render_text(ir)
+    assert ir.suppressions[0].expires_on is None
+    assert ir.suppressions[0].status == "active"
+    assert "Inline suppression directives:" in render_text(ir)
+
+
+def test_suppression_expiry_restores_expired_or_noncompliant_findings(tmp_path: Path) -> None:
+    (tmp_path / "agent.py").write_text(
+        """import subprocess
+# agentverify: ignore AV-EXEC001 until 2025-01-01 -- expired exception
+subprocess.run(expired, shell=True)
+# agentverify: ignore AV-EXEC001 until 2027-01-01 -- active exception
+subprocess.run(active, shell=True)
+# agentverify: ignore AV-EXEC001 -- missing expiry
+subprocess.run(no_expiry, shell=True)
+# agentverify: ignore AV-EXEC001 until tomorrow -- malformed expiry
+subprocess.run(invalid, shell=True)
+""",
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(
+        tmp_path,
+        require_suppression_expiry=True,
+        current_date=date(2026, 8, 21),
+    )
+
+    assert [finding.evidence.line for finding in ir.findings] == [3, 7, 9]
+    assert ir.suppressed_findings == 1
+    assert [suppression.status for suppression in ir.suppressions] == [
+        "expired",
+        "active",
+        "missing-expiry",
+        "invalid-expiry",
+    ]
 
 
 def test_typescript_and_compose_inline_suppressions(tmp_path: Path) -> None:

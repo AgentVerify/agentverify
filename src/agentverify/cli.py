@@ -41,6 +41,11 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="scan only repository-relative files/directories listed one per line",
     )
+    scan.add_argument(
+        "--require-suppression-expiry",
+        action="store_true",
+        help="keep inline-suppressed findings unless the directive has an active ISO expiry date",
+    )
     return parser
 
 
@@ -82,6 +87,7 @@ def main(argv: list[str] | None = None) -> int:
             args.path,
             include_tests=args.include_tests,
             selected_paths=selected_paths,
+            require_suppression_expiry=args.require_suppression_expiry,
         )
     except ValueError as error:
         print(f"agentverify: invalid path list: {error}", file=sys.stderr)

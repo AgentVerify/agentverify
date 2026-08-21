@@ -44,5 +44,8 @@ Tests and fixtures are inventoried but excluded from findings by default. Use `-
 auditing framework test suites or validating rule behavior.
 
 Inline suppression uses a standalone comment immediately before the finding:
-`# agentverify: ignore AV-RULE -- reviewed reason` (or `//` in TypeScript). Suppressions are exact-rule,
-single-line, and reason-bearing; reports preserve their source and rationale for auditability.
+`# agentverify: ignore AV-RULE until 2026-12-31 -- reviewed reason` (or `//` in TypeScript).
+Suppressions are exact-rule, single-line, and reason-bearing; reports preserve their source,
+rationale, optional ISO expiry, and active/expired/invalid status. Expired and malformed dates never
+suppress. CI can require dates with `--require-suppression-expiry`; UTC dates remain active through the
+stated day.

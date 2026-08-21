@@ -53,6 +53,8 @@ class Suppression:
     reason: str
     finding: Evidence
     directive: Evidence
+    expires_on: str | None = None
+    status: str = "active"
 
 
 @dataclass
