@@ -72,6 +72,7 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                 "service-account-token": "A workload automatically mounts a Kubernetes service-account token",
                 "privilege-escalation": "A container explicitly allows privilege escalation",
                 "root-host-mount": "A container mounts the host filesystem root",
+                "host-path-mount": "A Kubernetes workload mounts a host path",
             }
             ir.findings.append(
                 make_finding(

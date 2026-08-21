@@ -28,7 +28,7 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,594 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,734 relationships, and completed in 26.12 seconds on the development machine. Three parse warnings were isolated and
+resolved 1,734 relationships, and completed in 25.97 seconds on the development machine. Three parse warnings were isolated and
 reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -91,7 +91,7 @@ tool function, but the result remains `review` because enclosing server policy i
 
 ## AV-SANDBOX001 — container/host boundary
 
-The rule found nine default-scope boundary crossings across seven repositories. It reports development
+The rule found 19 default-scope boundary crossings across nine repositories. It reports development
 and production configuration alike but retains their source path so policy can distinguish them.
 Hand-reviewed examples include:
 
@@ -101,19 +101,24 @@ Hand-reviewed examples include:
 - [Bytebot Helm privileged default](https://github.com/bytebot-ai/bytebot/blob/3d37894ce07ef8d8b40adc7fd309ad96c2a71313/helm/charts/bytebot-desktop/values.yaml#L40)
 - [OpenHands service-account token default](https://github.com/OpenHands/OpenHands/blob/4a8cabc5fdc81bb6d899785f33ea7449387beb4c/helm/agent-canvas/values.yaml#L45)
 - [AutoGPT read-only Docker socket mount](https://github.com/Significant-Gravitas/AutoGPT/blob/601093ddfe23a3d58a9c8f4a208bd49b203ee612/autogpt_platform/db/docker/docker-compose.yml#L471)
+- [trae-agent privileged Docker SDK call](https://github.com/bytedance/trae-agent/blob/e839e559ac61bdd0e057c375dd1dee391fee797d/evaluation/patch_selection/trae_selector/sandbox.py#L33)
+- [Skyvern host-mounted credentials directory](https://github.com/Skyvern-AI/skyvern/blob/486c8975e9864a53037d4701b781f8619e698c40/kubernetes-deployment/backend/backend-deployment.yaml#L63)
 
 A read-only Docker socket mount is still reported because the Docker API can create privileged
 workloads even when the socket file itself is mounted read-only. A mounted service-account token does
 not by itself prove useful Kubernetes privileges; the result remains `review` until RBAC bindings and
-the rendered workload are resolved.
+the rendered workload are resolved. Likewise, a `hostPath` finding proves a node-filesystem boundary,
+not that its contents are sensitive; path-specific policy and pod scheduling remain unresolved. The
+Docker SDK frontend currently requires an imported `docker` module, a `.containers.run(...)` call,
+and a literal `privileged=True` keyword.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 114 exact labels across all six enabled rules: 64 positives and 50
+`benchmarks/truthset.json` contains 120 exact labels across all six enabled rules: 68 positives and 52
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, non-approval skip flags, disabled
-auto-approval, and safe Compose/Kubernetes settings. All 114 currently pass; each rule's seed precision and
+auto-approval, and safe Compose/Kubernetes/Docker SDK settings. All 120 currently pass; each rule's seed precision and
 recall are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified
 source text at the exact pinned line, preventing a missing or drifting location from passing silently.
 

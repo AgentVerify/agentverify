@@ -10,3 +10,7 @@ spec:
       securityContext:
         privileged: true
         allowPrivilegeEscalation: true
+  volumes:
+    - name: workspace
+      hostPath:
+        path: /srv/agent-workspace

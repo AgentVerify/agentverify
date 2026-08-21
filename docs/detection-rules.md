@@ -16,7 +16,7 @@ coverage to justify them.
 | AV-APPROVAL002 | finding | high | Reachable destructive action has no governing approval edge | Requires graph/config resolution |
 | AV-FS001 | review | high | Agent tool writes to a dynamic filesystem path | 16 default-scope matches across 6 repositories |
 | AV-MCP002 | review | high | Dynamic MCP tool name and arguments are forwarded to a server | 43 default-scope matches across 22 repositories after policy resolution |
-| AV-SANDBOX001 | review | high | Container/Kubernetes workload exposes a host, privilege, or service-account boundary | 9 matches across 7 repositories |
+| AV-SANDBOX001 | review | high | Container/Kubernetes workload or Docker SDK call exposes a host, privilege, or service-account boundary | 19 matches across 9 repositories |
 | AV-AUDIT001 | warning | medium | Consequential action has no attributable durable audit edge | Requires action-level data flow |
 
 ## Rule contract

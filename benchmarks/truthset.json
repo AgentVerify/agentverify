@@ -119,6 +119,12 @@
     {"id":"sandbox-k8s-privileged-safe-negative","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"kubernetes.safe.yaml","line":11,"expected":false,"source_contains":"privileged: false"},
     {"id":"sandbox-k8s-escalation-safe-negative","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"kubernetes.safe.yaml","line":12,"expected":false,"source_contains":"allowPrivilegeEscalation: false"},
     {"id":"sandbox-openhands-token-real","target":{"kind":"repository","repository":"OpenHands/OpenHands","commit":"4a8cabc5fdc81bb6d899785f33ea7449387beb4c"},"rule_id":"AV-SANDBOX001","path":"helm/agent-canvas/values.yaml","line":45,"expected":true},
-    {"id":"sandbox-bytebot-helm-real","target":{"kind":"repository","repository":"bytebot-ai/bytebot","commit":"3d37894ce07ef8d8b40adc7fd309ad96c2a71313"},"rule_id":"AV-SANDBOX001","path":"helm/charts/bytebot-desktop/values.yaml","line":40,"expected":true}
+    {"id":"sandbox-bytebot-helm-real","target":{"kind":"repository","repository":"bytebot-ai/bytebot","commit":"3d37894ce07ef8d8b40adc7fd309ad96c2a71313"},"rule_id":"AV-SANDBOX001","path":"helm/charts/bytebot-desktop/values.yaml","line":40,"expected":true},
+    {"id":"sandbox-hostpath-positive","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"kubernetes.yaml","line":16,"expected":true},
+    {"id":"sandbox-emptydir-negative","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"kubernetes.safe.yaml","line":15,"expected":false,"source_contains":"emptyDir: {}"},
+    {"id":"sandbox-docker-sdk-positive","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"docker_sdk.py","line":4,"expected":true},
+    {"id":"sandbox-docker-sdk-false-negative","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"docker_sdk.py","line":5,"expected":false,"source_contains":"privileged=False"},
+    {"id":"sandbox-trae-sdk-real","target":{"kind":"repository","repository":"bytedance/trae-agent","commit":"e839e559ac61bdd0e057c375dd1dee391fee797d"},"rule_id":"AV-SANDBOX001","path":"evaluation/patch_selection/trae_selector/sandbox.py","line":33,"expected":true},
+    {"id":"sandbox-skyvern-hostpath-real","target":{"kind":"repository","repository":"Skyvern-AI/skyvern","commit":"486c8975e9864a53037d4701b781f8619e698c40"},"rule_id":"AV-SANDBOX001","path":"kubernetes-deployment/backend/backend-deployment.yaml","line":63,"expected":true}
   ]
 }

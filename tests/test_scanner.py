@@ -197,10 +197,23 @@ def test_container_host_boundaries_but_not_safe_compose_are_reviewed() -> None:
         "A workload automatically mounts a Kubernetes service-account token",
         "A container explicitly allows privilege escalation",
         "A container mounts the host filesystem root",
+        "A Kubernetes workload mounts a host path",
     }
-    assert len(findings) == 10
+    assert len(findings) == 12
     assert ir.config_files_scanned == 4
     assert all(finding.result_kind == "review" for finding in findings)
+    host_path = next(
+        component
+        for component in ir.components
+        if component.kind == "sandbox-boundary" and component.name == "host-path-mount"
+    )
+    assert host_path.attributes["host_path"] == "/srv/agent-workspace"
+    assert any(
+        component.kind == "sandbox-boundary"
+        and component.name == "privileged-container"
+        and component.attributes.get("api") == "client.containers.run"
+        for component in ir.components
+    )
 
 
 def test_delegation_expands_transitive_capability_path() -> None:

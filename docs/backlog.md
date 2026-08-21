@@ -22,10 +22,10 @@ governs it. Add real positive, approved negative, auto-approved bypass, and dele
 
 ## P1 — sandbox containment quality
 
-Kubernetes privileged mode, host network/PID/IPC, service-account token mounts, and explicit privilege
-escalation are now covered alongside Compose. Next add Docker SDK calls, arbitrary hostPath mounts,
-network policy, Linux capabilities, device passthrough, and credential volumes. Model containment as
-a control attached to the exact code/shell capability.
+Kubernetes privileged mode, host network/PID/IPC, service-account token mounts, explicit privilege
+escalation, arbitrary `hostPath` mounts, and literal privileged Docker SDK calls are covered alongside
+Compose. Next resolve network policy, Linux capabilities, device passthrough, and credential-volume
+semantics. Model containment as a control attached to the exact code/shell capability.
 
 ## P1 — consequential-action audit coverage
 

@@ -135,6 +135,9 @@ class PythonVisitor(ast.NodeVisitor):
             module.startswith(("playwright", "selenium", "puppeteer"))
             for module in imported_modules
         )
+        self.has_docker_import = any(
+            module == "docker" or module.startswith("docker.") for module in imported_modules
+        )
 
     def add_capability(self, name: str, node: ast.AST, attributes: dict | None = None) -> None:
         values = {"scope": source_scope(self.path), **(attributes or {})}
@@ -248,6 +251,21 @@ class PythonVisitor(ast.NodeVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         call_name = dotted_name(node.func)
         short_name = call_name.rsplit(".", 1)[-1]
+        if self.has_docker_import and call_name.endswith(".containers.run"):
+            for keyword in node.keywords:
+                if (
+                    keyword.arg == "privileged"
+                    and isinstance(keyword.value, ast.Constant)
+                    and keyword.value.value is True
+                ):
+                    self.ir.add_component(
+                        Component(
+                            "sandbox-boundary",
+                            "privileged-container",
+                            self.ev(keyword.value),
+                            {"scope": source_scope(self.path), "api": call_name},
+                        )
+                    )
         constructor_provider = next(
             (
                 provider
@@ -971,6 +989,7 @@ def scan_container_config(ir: RepositoryIR, root: Path, path: Path) -> None:
             host_path_pending = False
             continue
         boundary = None
+        attributes = {"scope": source_scope(relative)}
         if "/var/run/docker.sock" in stripped:
             boundary = "docker-socket"
         elif re.match(r"^privileged\s*:\s*true\s*(?:#.*)?$", stripped, re.IGNORECASE):
@@ -995,10 +1014,16 @@ def scan_container_config(ir: RepositoryIR, root: Path, path: Path) -> None:
             re.IGNORECASE,
         ):
             boundary = "privilege-escalation"
-        elif re.match(r"^-\s*['\"]?/\s*:", stripped) or (
-            host_path_pending and re.match(r"^path\s*:\s*['\"]?/['\"]?\s*(?:#.*)?$", stripped)
-        ):
+        elif re.match(r"^-\s*['\"]?/\s*:", stripped):
             boundary = "root-host-mount"
+        elif host_path_pending and (
+            host_path_match := re.match(
+                r"^path\s*:\s*['\"]?(/[^'\"#\s]*)['\"]?\s*(?:#.*)?$", stripped
+            )
+        ):
+            host_path = host_path_match.group(1)
+            boundary = "root-host-mount" if host_path == "/" else "host-path-mount"
+            attributes["host_path"] = host_path
         host_path_pending = bool(re.match(r"^hostPath\s*:\s*$", stripped))
         if boundary:
             ir.add_component(
@@ -1006,7 +1031,7 @@ def scan_container_config(ir: RepositoryIR, root: Path, path: Path) -> None:
                     "sandbox-boundary",
                     boundary,
                     Evidence(relative, line_number, stripped[:240]),
-                    {"scope": source_scope(relative)},
+                    attributes,
                 )
             )
 

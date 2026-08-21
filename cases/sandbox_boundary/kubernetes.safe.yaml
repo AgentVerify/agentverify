@@ -10,3 +10,7 @@ spec:
       securityContext:
         privileged: false
         allowPrivilegeEscalation: false
+  volumes:
+    - name: workspace
+      emptyDir: {}
+    # hostPath: examples in comments are not active mounts
