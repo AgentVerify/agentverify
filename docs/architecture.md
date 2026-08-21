@@ -63,6 +63,17 @@ otherwise it carries `validates-filesystem-path` with unresolved boundary scope.
 suppresses only the former. Names such as `validatePath`, prefix-only comparisons, broad/dynamic
 roots, and checks after the action do not establish sufficient coverage.
 
+For Python filesystem writes, the AST frontend proves only same-function `pathlib.Path` flows. A
+tool parameter must feed a candidate constructed under an explicitly resolved root, the candidate
+must itself be resolved, and `candidate.is_relative_to(root)` must dominate the exact write. Both a
+fail-closed rejecting branch and the positive branch of the predicate can govern a write; the latter
+does not escape its branch. A `.parent` directory write additionally requires proof that the
+candidate is not equal to the root. Reassigning either binding invalidates the proof. Literal absolute,
+non-filesystem roots carry `restricts-filesystem-path`; parameter/configured roots carry
+`validates-filesystem-path` with unresolved scope and retain `AV-FS001`. String-prefix checks,
+unresolved candidates, shadowed `Path` imports, and `relative_to()` exception patterns are not
+treated as equivalent controls.
+
 ## Result kinds and uncertainty
 
 - `inventory`: observed architecture facts without a risk judgment.

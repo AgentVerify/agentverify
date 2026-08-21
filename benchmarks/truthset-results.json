@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T09:11:04.925979+00:00",
-  "labels": 177,
-  "passed": 177,
+  "generated_at": "2026-08-21T09:29:28.081543+00:00",
+  "labels": 185,
+  "passed": 185,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 14,
@@ -37,9 +37,9 @@
       "recall": 1.0
     },
     "AV-FS001": {
-      "tp": 14,
+      "tp": 20,
       "fp": 0,
-      "tn": 12,
+      "tn": 14,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -1098,6 +1098,78 @@
     },
     {
       "id": "filesystem-typescript-reassigned-path-guard-local-positive",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-rejecting-path-boundary-local-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-positive-branch-local-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-branch-proof-escape-local-positive",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-prefix-check-local-positive",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-reassigned-candidate-local-positive",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-configured-root-local-positive",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-unresolved-candidate-local-positive",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-reassigned-root-local-positive",
       "rule_id": "AV-FS001",
       "expected": true,
       "observed": true,

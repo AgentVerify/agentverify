@@ -1,6 +1,6 @@
 {
-  "schema_version": 14,
-  "generated_at": "2026-08-21T09:07:44.178503+00:00",
+  "schema_version": 15,
+  "generated_at": "2026-08-21T09:23:09.389462+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -20,7 +20,7 @@
     "dependency_files_materialized": 135,
     "repositories_with_dependency_expansion": 11,
     "config_files_scanned": 155,
-    "relationships": 1378,
+    "relationships": 1379,
     "symbolized_components": 8566,
     "identified_symbol_endpoints": 1875,
     "resolved_symbol_endpoints": 1873,
@@ -30,10 +30,10 @@
       "lexical-single-definition": 325,
       "module-single-definition": 14
     },
-    "relationship_endpoints": 2756,
+    "relationship_endpoints": 2758,
     "bom_endpoint_resolutions": {
       "ambiguous": 30,
-      "evidence-location": 336,
+      "evidence-location": 338,
       "symbol-id": 1873,
       "unique-display-name": 17,
       "unresolved": 500
@@ -58,6 +58,12 @@
       "capability_edges": 10,
       "network_helper_edges": 4,
       "path_boundary_edges": 1
+    },
+    "path_boundary_controls": {
+      "python": 1,
+      "typescript": 1,
+      "constrained": 0,
+      "unresolved": 2
     },
     "mcp_forwarding_controls": {
       "fixed-tool-binding": 10,
@@ -118,7 +124,7 @@
         "action-trace": 1,
         "fixed-tool-binding": 6,
         "human-approval": 3,
-        "path-boundary": 1,
+        "path-boundary": 2,
         "tool-allowlist": 1,
         "tool-registry": 2
       },
@@ -263,7 +269,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 71.2717
+    "elapsed_seconds": 74.0279
   },
   "repositories": [
     {
@@ -314,6 +320,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -330,7 +342,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2846
+      "elapsed_seconds": 1.263
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -387,6 +399,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -401,7 +419,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3896
+      "elapsed_seconds": 1.5755
     },
     {
       "repository": "langchain-ai/langchain",
@@ -455,6 +473,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -469,7 +493,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4821
+      "elapsed_seconds": 0.4836
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -527,6 +551,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -541,7 +571,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0607
+      "elapsed_seconds": 2.1114
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -604,6 +634,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -618,7 +654,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0894
+      "elapsed_seconds": 0.0871
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -685,6 +721,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -706,7 +748,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9715
+      "elapsed_seconds": 2.2321
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -774,6 +816,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {
         "fixed-tool-binding": 1
       },
@@ -799,7 +847,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5285
+      "elapsed_seconds": 1.608
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -859,6 +907,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -879,7 +933,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1351
+      "elapsed_seconds": 0.1365
     },
     {
       "repository": "microsoft/autogen",
@@ -939,6 +993,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -958,7 +1018,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3828
+      "elapsed_seconds": 0.4176
     },
     {
       "repository": "microsoft/agent-framework",
@@ -1002,6 +1062,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1016,7 +1082,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0193
+      "elapsed_seconds": 0.0197
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -1074,6 +1140,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1093,7 +1165,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.053
+      "elapsed_seconds": 0.0566
     },
     {
       "repository": "openai/openai-agents-python",
@@ -1168,6 +1240,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1194,7 +1272,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.621
+      "elapsed_seconds": 2.8817
     },
     {
       "repository": "openai/openai-agents-js",
@@ -1269,6 +1347,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1289,7 +1373,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4621
+      "elapsed_seconds": 0.4742
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -1353,6 +1437,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1376,7 +1466,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.9802
+      "elapsed_seconds": 6.3683
     },
     {
       "repository": "google/adk-python",
@@ -1432,6 +1522,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1449,7 +1545,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6948
+      "elapsed_seconds": 1.7824
     },
     {
       "repository": "google/adk-js",
@@ -1500,6 +1596,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1514,7 +1616,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6863
+      "elapsed_seconds": 1.6789
     },
     {
       "repository": "huggingface/smolagents",
@@ -1576,6 +1678,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1595,7 +1703,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6826
+      "elapsed_seconds": 0.6965
     },
     {
       "repository": "agno-agi/agno",
@@ -1649,6 +1757,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1666,7 +1780,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1569
+      "elapsed_seconds": 0.1642
     },
     {
       "repository": "camel-ai/camel",
@@ -1728,6 +1842,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {
         "tool-allowlist": 1
       },
@@ -1749,7 +1869,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2677
+      "elapsed_seconds": 1.3586
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -1801,6 +1921,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1818,7 +1944,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0952
+      "elapsed_seconds": 0.0975
     },
     {
       "repository": "run-llama/llama_index",
@@ -1876,6 +2002,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1890,7 +2022,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.394
+      "elapsed_seconds": 0.4021
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -1952,6 +2084,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1969,7 +2107,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6781
+      "elapsed_seconds": 0.706
     },
     {
       "repository": "InternLM/lagent",
@@ -2031,6 +2169,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {
         "fixed-tool-binding": 1
       },
@@ -2054,7 +2198,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.343
+      "elapsed_seconds": 0.3474
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -2106,6 +2250,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2123,7 +2273,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5238
+      "elapsed_seconds": 0.5753
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -2179,6 +2329,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2196,7 +2352,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7789
+      "elapsed_seconds": 0.8214
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -2252,6 +2408,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2268,7 +2430,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5092
+      "elapsed_seconds": 0.51
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -2327,6 +2489,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2344,7 +2512,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6311
+      "elapsed_seconds": 1.6476
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -2398,6 +2566,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2414,7 +2588,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6141
+      "elapsed_seconds": 0.6163
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -2470,6 +2644,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2484,7 +2664,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4381
+      "elapsed_seconds": 0.4396
     },
     {
       "repository": "letta-ai/letta-code",
@@ -2534,6 +2714,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2548,7 +2734,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0381
+      "elapsed_seconds": 2.0625
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -2611,6 +2797,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2633,7 +2825,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5201
+      "elapsed_seconds": 0.4899
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -2688,6 +2880,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {
         "fixed-tool-binding": 2
       },
@@ -2710,7 +2908,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0715
+      "elapsed_seconds": 1.1135
     },
     {
       "repository": "mastra-ai/mastra",
@@ -2771,6 +2969,12 @@
         "network_helper_edges": 3,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2791,7 +2995,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2171
+      "elapsed_seconds": 1.271
     },
     {
       "repository": "vercel/ai",
@@ -2847,6 +3051,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2866,7 +3076,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2931
+      "elapsed_seconds": 1.3242
     },
     {
       "repository": "cline/cline",
@@ -2926,6 +3136,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2946,7 +3162,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.735
+      "elapsed_seconds": 1.8113
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -2999,6 +3215,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3013,7 +3235,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9532
+      "elapsed_seconds": 1.964
     },
     {
       "repository": "continuedev/continue",
@@ -3064,6 +3286,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3078,7 +3306,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2308
+      "elapsed_seconds": 1.2621
     },
     {
       "repository": "Aider-AI/aider",
@@ -3125,6 +3353,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3141,7 +3375,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1983
+      "elapsed_seconds": 1.3202
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -3187,6 +3421,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3205,7 +3445,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 0.3777
+      "elapsed_seconds": 0.4232
     },
     {
       "repository": "plandex-ai/plandex",
@@ -3241,6 +3481,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3255,7 +3501,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0203
+      "elapsed_seconds": 0.0205
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -3305,6 +3551,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3319,7 +3571,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6094
+      "elapsed_seconds": 0.6077
     },
     {
       "repository": "stitionai/devika",
@@ -3371,6 +3623,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3385,7 +3643,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1555
+      "elapsed_seconds": 0.1566
     },
     {
       "repository": "block/goose",
@@ -3436,6 +3694,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3460,7 +3724,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 1.0107
+      "elapsed_seconds": 1.0181
     },
     {
       "repository": "bytedance/trae-agent",
@@ -3524,6 +3788,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {
         "fixed-tool-binding": 1
       },
@@ -3548,7 +3818,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3292
+      "elapsed_seconds": 0.364
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -3600,6 +3870,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3616,7 +3892,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9237
+      "elapsed_seconds": 2.918
     },
     {
       "repository": "openai/codex",
@@ -3659,6 +3935,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3673,7 +3955,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2563
+      "elapsed_seconds": 0.3017
     },
     {
       "repository": "browser-use/browser-use",
@@ -3737,6 +4019,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {
         "fixed-tool-binding": 3
       },
@@ -3760,7 +4048,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5273
+      "elapsed_seconds": 1.7306
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -3829,6 +4117,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3846,7 +4140,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6441
+      "elapsed_seconds": 2.7714
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -3902,6 +4196,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3918,7 +4218,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3471
+      "elapsed_seconds": 0.356
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -3971,6 +4271,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3987,7 +4293,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6395
+      "elapsed_seconds": 0.6411
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -4042,6 +4348,12 @@
         "network_helper_edges": 1,
         "path_boundary_edges": 1
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 1,
+        "constrained": 0,
+        "unresolved": 1
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4062,7 +4374,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6472
+      "elapsed_seconds": 0.6673
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -4125,6 +4437,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {
         "tool-registry": 2
       },
@@ -4148,7 +4466,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0356
+      "elapsed_seconds": 1.043
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -4204,6 +4522,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4223,7 +4547,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8157
+      "elapsed_seconds": 1.8578
     },
     {
       "repository": "github/github-mcp-server",
@@ -4269,6 +4593,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4283,7 +4613,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0225
+      "elapsed_seconds": 0.0216
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -4330,6 +4660,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4344,7 +4680,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0508
+      "elapsed_seconds": 0.0514
     },
     {
       "repository": "awslabs/mcp",
@@ -4398,6 +4734,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4414,7 +4756,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9903
+      "elapsed_seconds": 1.0106
     },
     {
       "repository": "docker/mcp-gateway",
@@ -4461,6 +4803,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4477,7 +4825,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0172
+      "elapsed_seconds": 0.0166
     },
     {
       "repository": "jlowin/fastmcp",
@@ -4488,7 +4836,7 @@
       "config_files_scanned": 1,
       "components": {
         "capability": 76,
-        "control": 1,
+        "control": 2,
         "mcp": 225,
         "protocol": 117,
         "tool": 190
@@ -4500,13 +4848,14 @@
           "shell-execution"
         ],
         "control": [
+          "path-boundary",
           "tool-registry"
         ],
         "protocol": [
           "MCP"
         ]
       },
-      "relationships": 1,
+      "relationships": 2,
       "symbolized_components": 190,
       "identified_symbol_endpoints": 0,
       "resolved_symbol_endpoints": 0,
@@ -4531,6 +4880,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 1,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 1
+      },
       "mcp_forwarding_controls": {
         "tool-registry": 1
       },
@@ -4544,7 +4899,7 @@
         "typescript": 0
       },
       "bom_endpoint_resolutions": {
-        "evidence-location": 2
+        "evidence-location": 4
       },
       "bom_ambiguous_endpoints_by_side_kind": {},
       "findings": {
@@ -4553,7 +4908,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0161
+      "elapsed_seconds": 1.0954
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -4589,6 +4944,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4603,7 +4964,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0147
+      "elapsed_seconds": 0.015
     },
     {
       "repository": "langflow-ai/langflow",
@@ -4659,6 +5020,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4675,7 +5042,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2689
+      "elapsed_seconds": 1.3074
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -4724,6 +5091,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4738,7 +5111,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6678
+      "elapsed_seconds": 1.6616
     },
     {
       "repository": "langgenius/dify",
@@ -4777,6 +5150,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4791,7 +5170,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.784
+      "elapsed_seconds": 0.7689
     },
     {
       "repository": "n8n-io/n8n",
@@ -4849,6 +5228,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4867,7 +5252,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1892
+      "elapsed_seconds": 1.1944
     },
     {
       "repository": "activepieces/activepieces",
@@ -4928,6 +5313,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4946,7 +5337,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8636
+      "elapsed_seconds": 0.8681
     },
     {
       "repository": "simstudioai/sim",
@@ -4991,6 +5382,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -5005,7 +5402,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.29
+      "elapsed_seconds": 2.3225
     },
     {
       "repository": "composiohq/composio",
@@ -5072,6 +5469,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -5092,7 +5495,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7874
+      "elapsed_seconds": 0.812
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -5159,6 +5562,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {
         "fixed-tool-binding": 2
       },
@@ -5183,7 +5592,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1529
+      "elapsed_seconds": 1.1803
     },
     {
       "repository": "e2b-dev/E2B",
@@ -5227,6 +5636,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -5241,7 +5656,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0163
+      "elapsed_seconds": 1.0285
     },
     {
       "repository": "daytonaio/daytona",
@@ -5276,6 +5691,12 @@
         "capability_edges": 0,
         "network_helper_edges": 0,
         "path_boundary_edges": 0
+      },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
       },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
@@ -5353,6 +5774,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -5373,7 +5800,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6031
+      "elapsed_seconds": 0.6125
     },
     {
       "repository": "traceloop/openllmetry",
@@ -5440,6 +5867,12 @@
         "network_helper_edges": 0,
         "path_boundary_edges": 0
       },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -5464,7 +5897,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9828
+      "elapsed_seconds": 1.0016
     }
   ]
 }

@@ -136,7 +136,7 @@ def main() -> int:
             and item.name == "network"
             and item.attributes.get("summary") == "same-file-helper"
         ]
-        typescript_path_boundary_edges = [
+        path_boundary_edges = [
             edge
             for edge in ir.relationships
             if edge.source_kind == "capability"
@@ -144,6 +144,14 @@ def main() -> int:
             and edge.relation == "governed-by"
             and edge.target_kind == "control"
             and edge.target_name == "path-boundary"
+        ]
+        typescript_path_boundary_edges = [
+            edge
+            for edge in path_boundary_edges
+            if edge.evidence.path.endswith((".ts", ".tsx", ".js", ".jsx"))
+        ]
+        python_path_boundary_edges = [
+            edge for edge in path_boundary_edges if edge.evidence.path.endswith(".py")
         ]
         mcp_forwarding_control_edges = [
             edge
@@ -159,9 +167,7 @@ def main() -> int:
             if edge.target_name == "fixed-tool-binding"
         ]
         mcp_registry_control_edges = [
-            edge
-            for edge in mcp_forwarding_control_edges
-            if edge.target_name == "tool-registry"
+            edge for edge in mcp_forwarding_control_edges if edge.target_name == "tool-registry"
         ]
         result = {
             "repository": repository,
@@ -222,6 +228,18 @@ def main() -> int:
                 "network_helper_edges": len(typescript_network_helper_capabilities),
                 "path_boundary_edges": len(typescript_path_boundary_edges),
             },
+            "path_boundary_controls": {
+                "python": len(python_path_boundary_edges),
+                "typescript": len(typescript_path_boundary_edges),
+                "constrained": sum(
+                    edge.attributes.get("boundary_scope") == "constrained"
+                    for edge in path_boundary_edges
+                ),
+                "unresolved": sum(
+                    edge.attributes.get("boundary_scope") != "constrained"
+                    for edge in path_boundary_edges
+                ),
+            },
             "mcp_forwarding_controls": dict(
                 sorted(Counter(edge.target_name for edge in mcp_forwarding_control_edges).items())
             ),
@@ -260,11 +278,9 @@ def main() -> int:
         results.append(result)
         print(f"[{index:>2}/{len(repositories)}] {repository}: {ir.files_scanned} files")
     successful = [result for result in results if result["status"] == "ok"]
-    finding_rule_ids = sorted(
-        {rule_id for result in successful for rule_id in result["findings"]}
-    )
+    finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 14,
+        "schema_version": 15,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -352,9 +368,7 @@ def main() -> int:
                 )
             },
             "typescript_tool_registrations": {
-                name: sum(
-                    result["typescript_tool_registrations"][name] for result in successful
-                )
+                name: sum(result["typescript_tool_registrations"][name] for result in successful)
                 for name in (
                     "mastra_create_tool",
                     "mcp_register_tool",
@@ -364,13 +378,14 @@ def main() -> int:
                     "path_boundary_edges",
                 )
             },
+            "path_boundary_controls": {
+                name: sum(result["path_boundary_controls"][name] for result in successful)
+                for name in ("python", "typescript", "constrained", "unresolved")
+            },
             "mcp_forwarding_controls": dict(
                 sorted(
                     sum(
-                        (
-                            Counter(result["mcp_forwarding_controls"])
-                            for result in successful
-                        ),
+                        (Counter(result["mcp_forwarding_controls"]) for result in successful),
                         Counter(),
                     ).items()
                 )
@@ -378,10 +393,7 @@ def main() -> int:
             "mcp_fixed_binding_scopes": dict(
                 sorted(
                     sum(
-                        (
-                            Counter(result["mcp_fixed_binding_scopes"])
-                            for result in successful
-                        ),
+                        (Counter(result["mcp_fixed_binding_scopes"]) for result in successful),
                         Counter(),
                     ).items()
                 )
@@ -389,10 +401,7 @@ def main() -> int:
             "mcp_registry_control_sources": dict(
                 sorted(
                     sum(
-                        (
-                            Counter(result["mcp_registry_control_sources"])
-                            for result in successful
-                        ),
+                        (Counter(result["mcp_registry_control_sources"]) for result in successful),
                         Counter(),
                     ).items()
                 )

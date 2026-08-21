@@ -243,6 +243,454 @@ def resolve_python_import_path(
     return resolved[0].as_posix() if len(resolved) == 1 else None
 
 
+@dataclass(frozen=True)
+class PythonPathBoundaryProof:
+    evidence: Evidence
+    boundary_scope: str
+    candidate_name: str
+    root_name: str
+    strict_descendant: bool
+
+
+@dataclass
+class PythonPathState:
+    dynamic_names: set[str]
+    roots: dict[str, str]
+    candidates: dict[str, str]
+    guards: dict[str, PythonPathBoundaryProof]
+
+    def clone(self) -> PythonPathState:
+        return PythonPathState(
+            set(self.dynamic_names),
+            dict(self.roots),
+            dict(self.candidates),
+            dict(self.guards),
+        )
+
+
+def python_assigned_names(target: ast.AST) -> set[str]:
+    if isinstance(target, ast.Name):
+        return {target.id}
+    if isinstance(target, (ast.Tuple, ast.List)):
+        return {name for element in target.elts for name in python_assigned_names(element)}
+    return set()
+
+
+def python_resolved_path_expression(expression: ast.AST) -> ast.AST | None:
+    """Return the receiver of an explicit zero-argument Path.resolve() call."""
+    if not isinstance(expression, ast.Call) or expression.args or expression.keywords:
+        return None
+    if not isinstance(expression.func, ast.Attribute) or expression.func.attr != "resolve":
+        return None
+    return expression.func.value
+
+
+def python_path_root_scope(expression: ast.AST, path_constructors: set[str]) -> str | None:
+    """Classify an explicitly resolved Path root without trusting relative literals."""
+    receiver = python_resolved_path_expression(expression)
+    if receiver is None:
+        return None
+    if (
+        isinstance(receiver, ast.Call)
+        and not receiver.args
+        and not receiver.keywords
+        and isinstance(receiver.func, ast.Attribute)
+        and receiver.func.attr == "expanduser"
+    ):
+        receiver = receiver.func.value
+    if not isinstance(receiver, ast.Call) or dotted_name(receiver.func) not in path_constructors:
+        return None
+    if not receiver.args and not receiver.keywords:
+        return "unresolved"
+    if len(receiver.args) != 1 or receiver.keywords:
+        return None
+    value = receiver.args[0]
+    if not isinstance(value, ast.Constant) or not isinstance(value.value, str):
+        return "unresolved"
+    root = value.value
+    absolute = root.startswith("/") or bool(re.match(r"^[A-Za-z]:[\\/]", root))
+    filesystem_root = root in {"/", "\\"} or bool(re.fullmatch(r"[A-Za-z]:[\\/]*", root))
+    return "constrained" if absolute and not filesystem_root else "unresolved"
+
+
+def python_candidate_root(
+    expression: ast.AST,
+    state: PythonPathState,
+    path_constructors: set[str],
+) -> str | None:
+    """Resolve `(root / dynamic_input).resolve()` to its proven root binding."""
+    receiver = python_resolved_path_expression(expression)
+    if receiver is None:
+        return None
+    if isinstance(receiver, ast.BinOp) and isinstance(receiver.op, ast.Div):
+        left_names = python_expression_names(receiver.left)
+        roots = left_names & state.roots.keys()
+        if len(roots) != 1:
+            return None
+        root = next(iter(roots))
+        if not (python_expression_names(receiver.right) & state.dynamic_names):
+            return None
+        return root
+    if isinstance(receiver, ast.Call) and dotted_name(receiver.func) in path_constructors:
+        if len(receiver.args) < 2:
+            return None
+        root_names = python_expression_names(receiver.args[0]) & state.roots.keys()
+        if len(root_names) != 1:
+            return None
+        if not any(
+            python_expression_names(argument) & state.dynamic_names
+            for argument in receiver.args[1:]
+        ):
+            return None
+        return next(iter(root_names))
+    return None
+
+
+def python_boundary_predicate(
+    expression: ast.AST, state: PythonPathState
+) -> tuple[str, str, bool, bool] | None:
+    """Return candidate, root, truth polarity, and strict-descendant proof."""
+
+    def boundary_call(term: ast.AST) -> ast.Call | None:
+        if (
+            isinstance(term, ast.Call)
+            and isinstance(term.func, ast.Attribute)
+            and term.func.attr == "is_relative_to"
+            and len(term.args) == 1
+            and not term.keywords
+        ):
+            return term
+        return None
+
+    positive = True
+    strict_terms: list[ast.AST] = []
+    call: ast.Call | None = None
+    if direct := boundary_call(expression):
+        call = direct
+    elif isinstance(expression, ast.UnaryOp) and isinstance(expression.op, ast.Not):
+        operand = expression.operand
+        if direct := boundary_call(operand):
+            call = direct
+            positive = False
+        elif isinstance(operand, ast.BoolOp) and isinstance(operand.op, ast.And):
+            calls = [item for term in operand.values if (item := boundary_call(term))]
+            if len(calls) == 1:
+                call = calls[0]
+                positive = False
+                strict_terms = list(operand.values)
+    elif isinstance(expression, ast.BoolOp) and isinstance(expression.op, ast.And):
+        calls = [item for term in expression.values if (item := boundary_call(term))]
+        if len(calls) == 1:
+            call = calls[0]
+            strict_terms = list(expression.values)
+    elif isinstance(expression, ast.BoolOp) and isinstance(expression.op, ast.Or):
+        negated_calls = [
+            item
+            for term in expression.values
+            if isinstance(term, ast.UnaryOp)
+            and isinstance(term.op, ast.Not)
+            and (item := boundary_call(term.operand))
+        ]
+        if len(negated_calls) == 1:
+            call = negated_calls[0]
+            positive = False
+            strict_terms = list(expression.values)
+    if call is None:
+        return None
+    if not isinstance(call.func.value, ast.Name) or not isinstance(call.args[0], ast.Name):
+        return None
+    candidate_name = call.func.value.id
+    root_name = call.args[0].id
+    if state.candidates.get(candidate_name) != root_name or root_name not in state.roots:
+        return None
+    strict_descendant = False
+    for term in strict_terms:
+        if not isinstance(term, ast.Compare) or len(term.ops) != 1 or len(term.comparators) != 1:
+            continue
+        names = {dotted_name(term.left), dotted_name(term.comparators[0])}
+        if names != {candidate_name, root_name}:
+            continue
+        strict_descendant = (
+            positive and isinstance(term.ops[0], (ast.NotEq, ast.IsNot))
+        ) or (not positive and isinstance(term.ops[0], (ast.Eq, ast.Is)))
+    return candidate_name, root_name, positive, strict_descendant
+
+
+def python_block_always_terminates(statements: list[ast.stmt]) -> bool:
+    if not statements:
+        return False
+    final = statements[-1]
+    if isinstance(final, (ast.Raise, ast.Return)):
+        return True
+    return (
+        isinstance(final, ast.If)
+        and python_block_always_terminates(final.body)
+        and python_block_always_terminates(final.orelse)
+    )
+
+
+def python_filesystem_path_name(node: ast.Call) -> tuple[str, int] | None:
+    call_name = dotted_name(node.func)
+    short_name = call_name.rsplit(".", 1)[-1]
+    expression: ast.AST | None = None
+    if short_name == "open" and node.args:
+        expression = node.args[0]
+    elif short_name in {"write_text", "write_bytes", "unlink", "rmdir", "mkdir"} and isinstance(
+        node.func, ast.Attribute
+    ):
+        expression = node.func.value
+    parent_depth = 0
+    while isinstance(expression, ast.Attribute) and expression.attr == "parent":
+        parent_depth += 1
+        expression = expression.value
+    return (expression.id, parent_depth) if isinstance(expression, ast.Name) else None
+
+
+def python_path_boundary_calls(
+    node: ast.FunctionDef | ast.AsyncFunctionDef,
+    path: str,
+    lines: list[str],
+    path_constructors: set[str],
+) -> dict[int, PythonPathBoundaryProof]:
+    """Prove same-function, statement-ordered Python filesystem boundaries."""
+    if not path_constructors:
+        return {}
+    parameters = {
+        argument.arg
+        for argument in (*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs)
+        if argument.arg not in {"self", "cls"}
+    }
+    if node.args.vararg:
+        parameters.add(node.args.vararg.arg)
+    if node.args.kwarg:
+        parameters.add(node.args.kwarg.arg)
+    local_bindings = set(parameters)
+
+    def collect_local_bindings(candidate: ast.AST) -> None:
+        if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
+            return
+        if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, ast.Store):
+            local_bindings.add(candidate.id)
+        for child in ast.iter_child_nodes(candidate):
+            collect_local_bindings(child)
+
+    for statement in node.body:
+        collect_local_bindings(statement)
+    path_constructors = {
+        constructor
+        for constructor in path_constructors
+        if constructor.split(".", 1)[0] not in local_bindings
+    }
+    if not path_constructors:
+        return {}
+    initial = PythonPathState(parameters, {}, {}, {})
+    proofs: dict[int, PythonPathBoundaryProof] = {}
+
+    def record_expression(expression: ast.AST | None, state: PythonPathState) -> None:
+        if expression is None:
+            return
+
+        def collect(candidate: ast.AST) -> None:
+            if isinstance(
+                candidate, (ast.Lambda, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
+            ):
+                return
+            if isinstance(candidate, ast.Call):
+                path_target = python_filesystem_path_name(candidate)
+                if (
+                    path_target
+                    and (proof := state.guards.get(path_target[0]))
+                    and (
+                        path_target[1] == 0
+                        or (path_target[1] == 1 and proof.strict_descendant)
+                    )
+                ):
+                    proofs[id(candidate)] = proof
+            for child in ast.iter_child_nodes(candidate):
+                collect(child)
+
+        collect(expression)
+
+    def invalidate(names: set[str], state: PythonPathState) -> None:
+        for name in names:
+            state.dynamic_names.discard(name)
+            state.roots.pop(name, None)
+            state.candidates.pop(name, None)
+            state.guards.pop(name, None)
+        invalid_roots = names
+        invalid_candidates = {
+            candidate
+            for candidate, root_name in state.candidates.items()
+            if root_name in invalid_roots
+        }
+        for candidate in invalid_candidates:
+            state.candidates.pop(candidate, None)
+            state.guards.pop(candidate, None)
+
+    def apply_assignment(target: ast.AST, value: ast.AST, state: PythonPathState) -> None:
+        names = python_assigned_names(target)
+        invalidate(names, state)
+        if len(names) != 1:
+            return
+        name = next(iter(names))
+        value_names = python_expression_names(value)
+        if value_names & state.dynamic_names:
+            state.dynamic_names.add(name)
+        if (scope := python_path_root_scope(value, path_constructors)) is not None:
+            state.roots[name] = scope
+        elif root_name := python_candidate_root(value, state, path_constructors):
+            state.candidates[name] = root_name
+
+    def analyze_block(statements: list[ast.stmt], state: PythonPathState) -> PythonPathState:
+        for statement in statements:
+            analyze_statement(statement, state)
+        return state
+
+    def merge_states(state: PythonPathState, branches: list[PythonPathState]) -> None:
+        """Retain facts that hold after every feasible compound-statement branch."""
+        if not branches:
+            return
+        state.dynamic_names = set().union(
+            *(branch.dynamic_names for branch in branches)
+        )
+        state.roots = {
+            name: scope
+            for name, scope in branches[0].roots.items()
+            if all(branch.roots.get(name) == scope for branch in branches[1:])
+        }
+        state.candidates = {
+            name: root_name
+            for name, root_name in branches[0].candidates.items()
+            if root_name in state.roots
+            and all(
+                branch.candidates.get(name) == root_name for branch in branches[1:]
+            )
+        }
+        state.guards = {
+            name: proof
+            for name, proof in branches[0].guards.items()
+            if name in state.candidates
+            and all(branch.guards.get(name) == proof for branch in branches[1:])
+        }
+
+    def analyze_statement(statement: ast.stmt, state: PythonPathState) -> None:
+        if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            return
+        if isinstance(statement, ast.Assign):
+            record_expression(statement.value, state)
+            for target in statement.targets:
+                apply_assignment(target, statement.value, state)
+            return
+        if isinstance(statement, ast.AnnAssign):
+            record_expression(statement.value, state)
+            if statement.value is not None:
+                apply_assignment(statement.target, statement.value, state)
+            else:
+                invalidate(python_assigned_names(statement.target), state)
+            return
+        if isinstance(statement, (ast.AugAssign, ast.NamedExpr)):
+            record_expression(statement.value, state)
+            invalidate(python_assigned_names(statement.target), state)
+            return
+        if isinstance(statement, ast.Delete):
+            for target in statement.targets:
+                invalidate(python_assigned_names(target), state)
+            return
+        if isinstance(statement, ast.If):
+            record_expression(statement.test, state)
+            predicate = python_boundary_predicate(statement.test, state)
+            body_state = state.clone()
+            else_state = state.clone()
+            if predicate is not None:
+                candidate, root_name, positive, strict_descendant = predicate
+                proof = PythonPathBoundaryProof(
+                    Evidence(path, statement.lineno, excerpt(lines, statement.lineno)),
+                    state.roots[root_name],
+                    candidate,
+                    root_name,
+                    strict_descendant,
+                )
+                (body_state if positive else else_state).guards[candidate] = proof
+            analyze_block(statement.body, body_state)
+            analyze_block(statement.orelse, else_state)
+            propagated_continuation = False
+            if predicate is not None:
+                candidate, root_name, positive, strict_descendant = predicate
+                rejecting = statement.orelse if positive else statement.body
+                if python_block_always_terminates(rejecting):
+                    continuing = body_state if positive else else_state
+                    if (
+                        continuing.candidates.get(candidate) == root_name
+                        and root_name in continuing.roots
+                    ):
+                        state.dynamic_names = continuing.dynamic_names
+                        state.roots = continuing.roots
+                        state.candidates = continuing.candidates
+                        state.guards = continuing.guards
+                        state.guards[candidate] = PythonPathBoundaryProof(
+                            Evidence(
+                                path,
+                                statement.lineno,
+                                excerpt(lines, statement.lineno),
+                            ),
+                            state.roots[root_name],
+                            candidate,
+                            root_name,
+                            strict_descendant,
+                        )
+                        propagated_continuation = True
+            if not propagated_continuation:
+                merge_states(state, [body_state, else_state])
+            return
+        if isinstance(statement, (ast.With, ast.AsyncWith)):
+            for item in statement.items:
+                record_expression(item.context_expr, state)
+                if item.optional_vars:
+                    invalidate(python_assigned_names(item.optional_vars), state)
+            analyze_block(statement.body, state)
+            return
+        if isinstance(statement, (ast.For, ast.AsyncFor, ast.While)):
+            if isinstance(statement, (ast.For, ast.AsyncFor)):
+                record_expression(statement.iter, state)
+                loop_state = state.clone()
+                invalidate(python_assigned_names(statement.target), loop_state)
+            else:
+                record_expression(statement.test, state)
+                loop_state = state.clone()
+            analyze_block(statement.body, loop_state)
+            else_state = state.clone()
+            analyze_block(statement.orelse, else_state)
+            merge_states(state, [state.clone(), loop_state, else_state])
+            return
+        if isinstance(statement, ast.Try):
+            branches = [state.clone()]
+            body_state = state.clone()
+            analyze_block(statement.body, body_state)
+            branches.append(body_state)
+            for handler in statement.handlers:
+                handler_state = state.clone()
+                if handler.name:
+                    invalidate({handler.name}, handler_state)
+                analyze_block(handler.body, handler_state)
+                branches.append(handler_state)
+            else_state = body_state.clone()
+            analyze_block(statement.orelse, else_state)
+            branches.append(else_state)
+            final_states = []
+            for branch in branches:
+                final_state = branch.clone()
+                analyze_block(statement.finalbody, final_state)
+                final_states.append(final_state)
+            merge_states(state, final_states)
+            return
+        for child in ast.iter_child_nodes(statement):
+            if isinstance(child, ast.expr):
+                record_expression(child, state)
+
+    analyze_block(node.body, initial)
+    return proofs
+
+
 class PythonVisitor(ast.NodeVisitor):
     def __init__(
         self,
@@ -261,6 +709,7 @@ class PythonVisitor(ast.NodeVisitor):
         definition_symbol_ids: dict[int, str],
         registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
         module_rebound_names: set[str],
+        path_constructors: set[str],
     ) -> None:
         self.ir = ir
         self.root = root
@@ -280,14 +729,11 @@ class PythonVisitor(ast.NodeVisitor):
         self.class_approval_environment_flags: list[dict[str, set[str]]] = []
         self.class_fixed_tool_bindings: list[dict[str, Evidence]] = []
         self.class_fixed_tool_accessors: list[dict[str, Evidence]] = []
-        self.class_registry_method_summaries: list[
-            dict[str, RegistryMethodSummary]
-        ] = []
-        self.class_registry_manager_bindings: list[
-            dict[str, RegistryClassTarget]
-        ] = []
+        self.class_registry_method_summaries: list[dict[str, RegistryMethodSummary]] = []
+        self.class_registry_manager_bindings: list[dict[str, RegistryClassTarget]] = []
         self.function_fixed_binding_sources: list[dict[str, Evidence]] = []
         self.function_escaping_children: list[set[str]] = []
+        self.function_path_boundary_calls: list[dict[int, PythonPathBoundaryProof]] = []
         self.function_stack: list[str] = []
         self.function_depth = 0
         self.imported_symbol_paths: dict[str, str] = {}
@@ -301,6 +747,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.definition_symbol_ids = definition_symbol_ids
         self.registry_class_exports = registry_class_exports
         self.module_rebound_names = module_rebound_names
+        self.path_constructors = path_constructors
         self.has_mcp_import = any(
             module == "mcp" or module.startswith("mcp.") or "modelcontextprotocol" in module
             for module in imported_modules
@@ -352,6 +799,49 @@ class PythonVisitor(ast.NodeVisitor):
                         },
                     )
                 )
+
+    def add_python_path_boundary_control(
+        self, capability_node: ast.AST, proof: PythonPathBoundaryProof
+    ) -> None:
+        policy_effect = (
+            "restricts-filesystem-path"
+            if proof.boundary_scope == "constrained"
+            else "validates-filesystem-path"
+        )
+        attributes = {
+            "scope": source_scope(self.path),
+            "policy_effect": policy_effect,
+            "frontend": "python",
+            "helper": "Path.is_relative_to",
+            "predicate_path": proof.evidence.path,
+            "boundary_scope": proof.boundary_scope,
+            "candidate": proof.candidate_name,
+            "root": proof.root_name,
+            "strict_descendant": proof.strict_descendant,
+        }
+        self.ir.add_component(Component("control", "path-boundary", proof.evidence, attributes))
+        self.ir.add_relationship(
+            Relationship(
+                "capability",
+                "filesystem",
+                "governed-by",
+                "control",
+                "path-boundary",
+                self.ev(capability_node),
+                {
+                    "control_path": proof.evidence.path,
+                    "control_line": proof.evidence.line,
+                    "policy_effect": policy_effect,
+                    "frontend": "python",
+                    "helper": "Path.is_relative_to",
+                    "predicate_path": proof.evidence.path,
+                    "boundary_scope": proof.boundary_scope,
+                    "candidate": proof.candidate_name,
+                    "root": proof.root_name,
+                    "strict_descendant": proof.strict_descendant,
+                },
+            )
+        )
 
     def ev(self, node: ast.AST) -> Evidence:
         line = getattr(node, "lineno", 1)
@@ -533,11 +1023,10 @@ class PythonVisitor(ast.NodeVisitor):
             self.approval_environment_flags = self.approval_environment_flags.copy()
         self.function_depth += 1
         self.function_stack.append(node.name)
-        self.function_fixed_binding_sources.append(
-            self.fixed_function_parameter_bindings(node)
-        )
-        self.function_escaping_children.append(
-            self.escaping_nested_function_names(node)
+        self.function_fixed_binding_sources.append(self.fixed_function_parameter_bindings(node))
+        self.function_escaping_children.append(self.escaping_nested_function_names(node))
+        self.function_path_boundary_calls.append(
+            python_path_boundary_calls(node, self.path, self.lines, self.path_constructors)
         )
         decorators = {
             dotted_name(decorator.func)
@@ -615,6 +1104,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_stack.pop()
         self.function_fixed_binding_sources.pop()
         self.function_escaping_children.pop()
+        self.function_path_boundary_calls.pop()
         self.approval_environment_flags = previous_approval_environment_flags
 
     visit_AsyncFunctionDef = visit_FunctionDef
@@ -633,9 +1123,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.class_registry_method_summaries.append(
             self.registry_method_summaries(node, self.path, self.lines)
         )
-        self.class_registry_manager_bindings.append(
-            self.registry_manager_bindings(node)
-        )
+        self.class_registry_manager_bindings.append(self.registry_manager_bindings(node))
         class_environment_flags: dict[str, set[str]] = {}
         for statement in node.body:
             if not isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -662,9 +1150,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.class_registry_method_summaries.pop()
         self.class_stack.pop()
 
-    def registry_manager_bindings(
-        self, node: ast.ClassDef
-    ) -> dict[str, RegistryClassTarget]:
+    def registry_manager_bindings(self, node: ast.ClassDef) -> dict[str, RegistryClassTarget]:
         """Resolve immutable constructor-bound attributes to imported registry classes."""
         assignments: dict[str, list[tuple[str, ast.AST | None]]] = defaultdict(list)
         for method in node.body:
@@ -690,9 +1176,7 @@ class PythonVisitor(ast.NodeVisitor):
                     and isinstance(candidate.args[1], ast.Constant)
                     and isinstance(candidate.args[1].value, str)
                 ):
-                    assignments[candidate.args[1].value].append(
-                        (method.name, None)
-                    )
+                    assignments[candidate.args[1].value].append((method.name, None))
                 for target in targets:
                     if (
                         isinstance(target, ast.Attribute)
@@ -825,9 +1309,7 @@ class PythonVisitor(ast.NodeVisitor):
         for statement in node.body:
             collect(statement)
         return {
-            name: self.ev(argument)
-            for name, argument in parameters.items()
-            if name not in mutated
+            name: self.ev(argument) for name, argument in parameters.items() if name not in mutated
         }
 
     @staticmethod
@@ -862,10 +1344,7 @@ class PythonVisitor(ast.NodeVisitor):
                     isinstance(child, ast.Return)
                     and (
                         child.value is None
-                        or (
-                            isinstance(child.value, ast.Constant)
-                            and child.value.value is None
-                        )
+                        or (isinstance(child.value, ast.Constant) and child.value.value is None)
                     )
                 )
                 for child in statement.body
@@ -883,14 +1362,12 @@ class PythonVisitor(ast.NodeVisitor):
                 value = candidate.value
             elif isinstance(candidate, ast.AnnAssign):
                 assigned = (
-                    isinstance(candidate.target, ast.Name)
-                    and candidate.target.id == local_name
+                    isinstance(candidate.target, ast.Name) and candidate.target.id == local_name
                 )
                 value = candidate.value
             elif isinstance(candidate, (ast.AugAssign, ast.NamedExpr)):
                 assigned = (
-                    isinstance(candidate.target, ast.Name)
-                    and candidate.target.id == local_name
+                    isinstance(candidate.target, ast.Name) and candidate.target.id == local_name
                 )
             if not assigned:
                 return None
@@ -937,12 +1414,10 @@ class PythonVisitor(ast.NodeVisitor):
                 if argument.arg not in {"self", "cls"}
             ]
             parameter_positions = {
-                argument.arg: index
-                for index, argument in enumerate(positional_parameters)
+                argument.arg: index for index, argument in enumerate(positional_parameters)
             }
             parameter_names = {
-                argument.arg
-                for argument in (*positional_parameters, *method.args.kwonlyargs)
+                argument.arg for argument in (*positional_parameters, *method.args.kwonlyargs)
             }
             scope_nodes = lexical_method_nodes(method)
             scope_node_ids = {id(candidate) for candidate in scope_nodes}
@@ -1015,8 +1490,7 @@ class PythonVisitor(ast.NodeVisitor):
                     for early_return in (
                         candidate
                         for candidate in scope_nodes
-                        if isinstance(candidate, ast.Return)
-                        and candidate.lineno < lookup_line
+                        if isinstance(candidate, ast.Return) and candidate.lineno < lookup_line
                     ):
                         child: ast.AST = early_return
                         parent = parent_by_id.get(id(early_return))
@@ -1124,9 +1598,7 @@ class PythonVisitor(ast.NodeVisitor):
                 )
             if isinstance(candidate, ast.Call):
                 function = (
-                    candidate.func.func
-                    if isinstance(candidate.func, ast.Call)
-                    else candidate.func
+                    candidate.func.func if isinstance(candidate.func, ast.Call) else candidate.func
                 )
                 registration_name = dotted_name(function).rsplit(".", 1)[-1].lower()
                 if registration_name in registration_names:
@@ -1142,9 +1614,7 @@ class PythonVisitor(ast.NodeVisitor):
             collect_escapes(statement)
         return escaping
 
-    def fixed_tool_binding(
-        self, expression: ast.AST
-    ) -> tuple[Evidence, str] | None:
+    def fixed_tool_binding(self, expression: ast.AST) -> tuple[Evidence, str] | None:
         """Resolve a class-instance or enclosing-closure MCP tool source."""
         if self.class_fixed_tool_bindings:
             fixed = self.class_fixed_tool_bindings[-1]
@@ -1523,10 +1993,14 @@ class PythonVisitor(ast.NodeVisitor):
                             )
                         elif target_id is not None and target_identity:
                             attributes["target_identity"] = target_identity
-                        elif target_id is None and (
-                            target_kind,
-                            target_name,
-                        ) in self.ambiguous_local_symbols:
+                        elif (
+                            target_id is None
+                            and (
+                                target_kind,
+                                target_name,
+                            )
+                            in self.ambiguous_local_symbols
+                        ):
                             attributes["target_identity"] = "ambiguous-repeated-binding"
                         self.ir.add_relationship(
                             Relationship(
@@ -1568,9 +2042,7 @@ class PythonVisitor(ast.NodeVisitor):
                 call_parts = call_name.split(".")
                 if not resolved_guard and len(call_parts) == 2 and call_parts[0] == "self":
                     if self.class_registry_method_summaries:
-                        method_summary = self.class_registry_method_summaries[-1].get(
-                            short_name
-                        )
+                        method_summary = self.class_registry_method_summaries[-1].get(short_name)
                     if method_summary:
                         guard_summary = "same-class-method"
                 elif (
@@ -1578,11 +2050,7 @@ class PythonVisitor(ast.NodeVisitor):
                     and len(call_parts) == 3
                     and call_parts[0] == "self"
                     and self.class_registry_manager_bindings
-                    and (
-                        guard_class := self.class_registry_manager_bindings[-1].get(
-                            call_parts[1]
-                        )
-                    )
+                    and (guard_class := self.class_registry_manager_bindings[-1].get(call_parts[1]))
                 ):
                     method_summary = guard_class.methods.get(short_name)
                     if method_summary:
@@ -1596,8 +2064,7 @@ class PythonVisitor(ast.NodeVisitor):
                     ) = method_summary
                     mapped_argument = (
                         node.args[parameter_index]
-                        if parameter_index is not None
-                        and parameter_index < len(node.args)
+                        if parameter_index is not None and parameter_index < len(node.args)
                         else next(
                             (
                                 keyword.value
@@ -1611,8 +2078,7 @@ class PythonVisitor(ast.NodeVisitor):
                     for required_name, required_index, required_value in required_literals:
                         required_argument = (
                             node.args[required_index]
-                            if required_index is not None
-                            and required_index < len(node.args)
+                            if required_index is not None and required_index < len(node.args)
                             else next(
                                 (
                                     keyword.value
@@ -1632,9 +2098,7 @@ class PythonVisitor(ast.NodeVisitor):
                         resolved_guard = True
                         guard_control = "tool-registry"
                         guard_evidence = method_evidence
-                        guard_conditions = {
-                            name: value for name, _, value in required_literals
-                        }
+                        guard_conditions = {name: value for name, _, value in required_literals}
                     else:
                         guard_summary = ""
                 allowlist_guard = resolved_guard and guard_control == "tool-allowlist"
@@ -1724,16 +2188,10 @@ class PythonVisitor(ast.NodeVisitor):
                     if guard_summary:
                         guard_relationship_attributes["summary"] = guard_summary
                         if guard_class:
-                            guard_relationship_attributes["summary_class"] = (
-                                guard_class.name
-                            )
-                            guard_relationship_attributes["summary_path"] = (
-                                guard_class.path
-                            )
+                            guard_relationship_attributes["summary_class"] = guard_class.name
+                            guard_relationship_attributes["summary_path"] = guard_class.path
                         if guard_conditions:
-                            guard_relationship_attributes["required_arguments"] = (
-                                guard_conditions
-                            )
+                            guard_relationship_attributes["required_arguments"] = guard_conditions
                     self.ir.add_component(
                         Component(
                             "control",
@@ -1826,6 +2284,11 @@ class PythonVisitor(ast.NodeVisitor):
             mode = str(mode_expression.value) if isinstance(mode_expression, ast.Constant) else "r"
             write_access = short_name != "open" or any(flag in mode for flag in "wax+")
             dynamic_path = short_name != "open" or not isinstance(path_expression, ast.Constant)
+            boundary = (
+                self.function_path_boundary_calls[-1].get(id(node))
+                if self.function_path_boundary_calls and write_access
+                else None
+            )
             self.add_capability(
                 "filesystem",
                 node,
@@ -1833,8 +2296,14 @@ class PythonVisitor(ast.NodeVisitor):
                     "api": call_name,
                     "write_access": write_access,
                     "dynamic_path": dynamic_path,
+                    "path_boundary_guard": boundary is not None,
+                    "path_boundary_scope": (
+                        boundary.boundary_scope if boundary is not None else "unresolved"
+                    ),
                 },
             )
+            if boundary is not None:
+                self.add_python_path_boundary_control(node, boundary)
         root_name = call_name.split(".", 1)[0]
         http_method = short_name.lower() in {"get", "post", "put", "patch", "delete", "request"}
         if http_method and (
@@ -1913,9 +2382,7 @@ def scan_python(
             return
         if isinstance(candidate, (ast.Import, ast.ImportFrom, ast.Lambda)):
             return
-        if isinstance(candidate, ast.Name) and isinstance(
-            candidate.ctx, (ast.Store, ast.Del)
-        ):
+        if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
             module_mutations.add(candidate.id)
         for child in ast.iter_child_nodes(candidate):
             collect_module_mutations(child)
@@ -1924,12 +2391,27 @@ def scan_python(
         if not isinstance(statement, (ast.Import, ast.ImportFrom)):
             collect_module_mutations(statement)
     module_mutations.update(
-        name
-        for candidate in nodes
-        if isinstance(candidate, ast.Global)
-        for name in candidate.names
+        name for candidate in nodes if isinstance(candidate, ast.Global) for name in candidate.names
     )
     module_rebound_names = imported_bindings & module_mutations
+    path_constructors = {
+        alias.asname or alias.name
+        for statement in tree.body
+        if isinstance(statement, ast.ImportFrom) and statement.module == "pathlib"
+        for alias in statement.names
+        if alias.name == "Path"
+    } | {
+        f"{alias.asname or alias.name}.Path"
+        for statement in tree.body
+        if isinstance(statement, ast.Import)
+        for alias in statement.names
+        if alias.name == "pathlib"
+    }
+    path_constructors = {
+        constructor
+        for constructor in path_constructors
+        if constructor.split(".", 1)[0] not in module_rebound_names
+    }
     symbol_candidates: dict[tuple[str, str], set[str]] = {}
     call_symbol_ids: dict[int, str] = {}
     definition_symbol_ids: dict[int, str] = {}
@@ -1986,11 +2468,7 @@ def scan_python(
                 assigned_constructors.append((node, kind, binding))
     assignment_counts = Counter((kind, binding) for _, kind, binding in assigned_constructors)
     for node, kind, binding in assigned_constructors:
-        identity = (
-            f"{binding}@{node.lineno}"
-            if assignment_counts[(kind, binding)] > 1
-            else binding
-        )
+        identity = f"{binding}@{node.lineno}" if assignment_counts[(kind, binding)] > 1 else binding
         symbol_id = source_symbol("py", relative, kind, identity)
         symbol_candidates.setdefault((kind, binding), set()).add(symbol_id)
         call_symbol_ids[id(node.value)] = symbol_id
@@ -2002,9 +2480,7 @@ def scan_python(
     ambiguous_local_symbols = {
         key for key, candidates in symbol_candidates.items() if len(candidates) > 1
     }
-    scoped_symbol_candidates: dict[
-        tuple[tuple[str, ...], str, str], list[tuple[int, str]]
-    ] = {}
+    scoped_symbol_candidates: dict[tuple[tuple[str, ...], str, str], list[tuple[int, str]]] = {}
     node_scopes: dict[int, tuple[str, ...]] = {}
     if ambiguous_local_symbols:
         parent_by_id = {
@@ -2052,9 +2528,9 @@ def scan_python(
                 (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef),
             ):
                 continue
-            scoped_symbol_candidates.setdefault(
-                (node_scopes[id(node)], kind, binding), []
-            ).append((node.lineno, call_symbol_ids[id(node.value)]))
+            scoped_symbol_candidates.setdefault((node_scopes[id(node)], kind, binding), []).append(
+                (node.lineno, call_symbol_ids[id(node.value)])
+            )
     scoped_symbol_ids = {
         key: candidates[0]
         for key, candidates in scoped_symbol_candidates.items()
@@ -2075,6 +2551,7 @@ def scan_python(
         definition_symbol_ids=definition_symbol_ids,
         registry_class_exports=registry_class_exports,
         module_rebound_names=module_rebound_names,
+        path_constructors=path_constructors,
     ).visit(tree)
 
 
@@ -2088,12 +2565,8 @@ TS_CHILD_PROCESS_IMPORT = re.compile(
     re.DOTALL,
 )
 TS_TOOL_ASSIGNMENT = re.compile(r"\b(?:const|let)\s+(\w+)\s*=\s*([A-Za-z_$][\w$]*)\s*\(")
-TS_TOOL_PROPERTY = re.compile(
-    r"\b([A-Za-z_$][\w$]*)\s*:\s*([A-Za-z_$][\w$]*)\s*\("
-)
-TS_MCP_TOOL_REGISTRATION = re.compile(
-    r"\b([A-Za-z_$][\w$]*)\.registerTool\s*\("
-)
+TS_TOOL_PROPERTY = re.compile(r"\b([A-Za-z_$][\w$]*)\s*:\s*([A-Za-z_$][\w$]*)\s*\(")
+TS_MCP_TOOL_REGISTRATION = re.compile(r"\b([A-Za-z_$][\w$]*)\.registerTool\s*\(")
 TS_AGENT_TOOL_ASSIGNMENT = re.compile(
     r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*"
     r"([A-Za-z_$][\w$]*)\.asTool\s*\("
@@ -2555,9 +3028,7 @@ def typescript_tool_parameter_names(call_body: str, constructor: str) -> set[str
     if constructor == "registerTool":
         arguments = typescript_call_arguments(call_body)
         return (
-            typescript_callback_parameter_names(arguments[2][0])
-            if len(arguments) >= 3
-            else set()
+            typescript_callback_parameter_names(arguments[2][0]) if len(arguments) >= 3 else set()
         )
     if execute := typescript_object_property_expression(call_body, "execute"):
         return typescript_callback_parameter_names(execute)
@@ -2566,15 +3037,11 @@ def typescript_tool_parameter_names(call_body: str, constructor: str) -> set[str
         opening = code.find("(", match.start(), match.end())
         end = typescript_balanced_end(code, opening, "(", ")")
         if end is not None:
-            return typescript_callback_parameter_names(
-                f"({call_body[opening + 1 : end - 1]}) =>"
-            )
+            return typescript_callback_parameter_names(f"({call_body[opening + 1 : end - 1]}) =>")
     return set()
 
 
-def typescript_static_url_prefix(
-    expression: str, literal_bindings: dict[str, str]
-) -> str:
+def typescript_static_url_prefix(expression: str, literal_bindings: dict[str, str]) -> str:
     value = expression.strip()
     if match := re.match(r"(['\"])(.*?)\1", value, re.DOTALL):
         return match.group(2)
@@ -2620,9 +3087,7 @@ def typescript_update_dynamic_names(
 ) -> None:
     """Apply one shallow TypeScript assignment to callback-local origin taint."""
     code_line = typescript_code_mask(line)
-    if destructuring := re.search(
-        r"\b(?:const|let)\s*\{([^}]*)\}\s*=\s*([^;]+)", code_line
-    ):
+    if destructuring := re.search(r"\b(?:const|let)\s*\{([^}]*)\}\s*=\s*([^;]+)", code_line):
         source_expression = line[destructuring.start(2) : destructuring.end(2)]
         if typescript_expression_names(source_expression) & dynamic_names:
             dynamic_names.update(
@@ -2649,15 +3114,11 @@ def typescript_multiline_destructuring_assignments(
     """Collect shallow destructuring assignments that span more than one line."""
     code = typescript_code_mask(text)
     assignments: dict[int, list[tuple[set[str], str]]] = defaultdict(list)
-    pattern = re.compile(
-        r"\b(?:const|let)\s*\{([^{}]*)\}\s*=\s*([^;]+)", re.DOTALL
-    )
+    pattern = re.compile(r"\b(?:const|let)\s*\{([^{}]*)\}\s*=\s*([^;]+)", re.DOTALL)
     for match in pattern.finditer(code):
         if "\n" not in text[match.start() : match.end()]:
             continue
-        names = typescript_destructured_names(
-            "{" + text[match.start(1) : match.end(1)] + "}"
-        )
+        names = typescript_destructured_names("{" + text[match.start(1) : match.end(1)] + "}")
         source_expression = text[match.start(2) : match.end(2)]
         assignments[line_at(text, match.start())].append((names, source_expression))
     return assignments
@@ -2674,9 +3135,7 @@ def typescript_apply_destructuring_assignments(
 def typescript_network_calls(text: str) -> dict[int, list[tuple[str, str]]]:
     """Return recognized global fetch/Axios calls with their first URL argument."""
     code = typescript_code_mask(text)
-    pattern = re.compile(
-        r"(?<![\w$.])fetch\s*\(|\baxios\.(get|post|put|patch|delete)\s*\("
-    )
+    pattern = re.compile(r"(?<![\w$.])fetch\s*\(|\baxios\.(get|post|put|patch|delete)\s*\(")
     calls: dict[int, list[tuple[str, str]]] = defaultdict(list)
     for match in pattern.finditer(code):
         opening = code.find("(", match.start(), match.end())
@@ -2728,9 +3187,7 @@ def typescript_function_definitions(
     """Return bounded free/static function bodies with structurally balanced signatures."""
     code = typescript_code_mask(text)
     patterns = (
-        re.compile(
-            r"\b(?:export\s+)?(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\("
-        ),
+        re.compile(r"\b(?:export\s+)?(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\("),
         re.compile(r"\bstatic\s+(?:async\s+)?([A-Za-z_$][\w$]*)\s*\("),
     )
     matches = sorted(
@@ -2785,9 +3242,7 @@ def typescript_network_helper_summaries(
                 )
                 typescript_update_dynamic_names(body_line, dynamic_names, literal_bindings)
                 if any(
-                    typescript_http_origin_is_dynamic(
-                        expression, dynamic_names, literal_bindings
-                    )
+                    typescript_http_origin_is_dynamic(expression, dynamic_names, literal_bindings)
                     for _, expression in calls.get(body_line_number, [])
                 ):
                     controlled_names.add(parameter.local_name)
@@ -2808,12 +3263,8 @@ def typescript_helper_calls(
         return {}
     code = typescript_code_mask(text)
     names = "|".join(re.escape(name) for name in sorted(summaries, key=len, reverse=True))
-    pattern = re.compile(
-        rf"(?<![\w$])(?:[A-Za-z_$][\w$]*\.)*({names})\s*\("
-    )
-    calls: dict[int, list[tuple[TypeScriptNetworkHelperSummary, list[str]]]] = defaultdict(
-        list
-    )
+    pattern = re.compile(rf"(?<![\w$])(?:[A-Za-z_$][\w$]*\.)*({names})\s*\(")
+    calls: dict[int, list[tuple[TypeScriptNetworkHelperSummary, list[str]]]] = defaultdict(list)
     for match in pattern.finditer(code):
         opening = code.find("(", match.start(), match.end())
         end = typescript_balanced_end(code, opening, "(", ")")
@@ -2942,13 +3393,8 @@ def typescript_is_path_boundary_guard(
             if assignment is None:
                 continue
             argument_text = body_line[assignment.start(2) : assignment.end(2)]
-            arguments = [
-                argument
-                for argument, _ in typescript_call_arguments(argument_text)
-            ]
-            if not arguments or not (
-                typescript_expression_names(arguments[0]) & dynamic_names
-            ):
+            arguments = [argument for argument, _ in typescript_call_arguments(argument_text)]
+            if not arguments or not (typescript_expression_names(arguments[0]) & dynamic_names):
                 continue
             predicate_path = root / target
             try:
@@ -2966,9 +3412,7 @@ def typescript_is_path_boundary_guard(
                 boundary_scope = (
                     "constrained"
                     if len(arguments) > 1
-                    and typescript_path_roots_are_statically_constrained(
-                        text, arguments[1]
-                    )
+                    and typescript_path_roots_are_statically_constrained(text, arguments[1])
                     else "unresolved"
                 )
                 return line, target, boundary_scope
@@ -2976,9 +3420,7 @@ def typescript_is_path_boundary_guard(
     return None
 
 
-def typescript_path_roots_are_statically_constrained(
-    text: str, expression: str
-) -> bool:
+def typescript_path_roots_are_statically_constrained(text: str, expression: str) -> bool:
     """Return true for a non-empty literal list of absolute, non-root directories."""
     value = expression.strip()
     if identifier := re.fullmatch(r"[A-Za-z_$][\w$]*", value):
@@ -3026,9 +3468,7 @@ def typescript_path_boundary_helpers(
             target_text = target_path.read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError):
             continue
-        proof = typescript_is_path_boundary_guard(
-            root, target_path, target_text, original
-        )
+        proof = typescript_is_path_boundary_guard(root, target_path, target_text, original)
         if proof is None:
             continue
         helper_line, predicate_path, boundary_scope = proof
@@ -3279,9 +3719,7 @@ def add_typescript_generic_tool(
     tool_input_names[tool_id] = typescript_tool_parameter_names(body, constructor)
     if approval_match:
         approval_line = line_at(text, body_offset + approval_match.start())
-        approval_evidence = Evidence(
-            relative, approval_line, excerpt(lines, approval_line)
-        )
+        approval_evidence = Evidence(relative, approval_line, excerpt(lines, approval_line))
         ir.add_component(Component("control", "human-approval", approval_evidence))
         ir.add_relationship(
             Relationship(
@@ -3358,9 +3796,7 @@ def typescript_graph(
             return literal
         return f"registerTool@{line_at(text, match.start())}"
 
-    registration_names = {
-        match.start(): registration_name(match) for match in registration_matches
-    }
+    registration_names = {match.start(): registration_name(match) for match in registration_matches}
     tool_identity_counts = Counter(
         [match.group(1) for match in tool_matches]
         + [match.group(1) for match, _ in property_matches]
@@ -3387,9 +3823,7 @@ def typescript_graph(
         end_line = line_at(text, end)
         body = text[opening + 1 : end - 1]
         tool_identity = (
-            f"{tool_name}@{start_line}"
-            if tool_identity_counts[tool_name] > 1
-            else tool_name
+            f"{tool_name}@{start_line}" if tool_identity_counts[tool_name] > 1 else tool_name
         )
         tool_id = source_symbol("ts", relative, "tool", tool_identity)
         if tool_assignment_counts[tool_name] == 1:
@@ -3433,9 +3867,7 @@ def typescript_graph(
         end = typescript_balanced_end(code, opening, "(", ")") or len(text)
         start_line = line_at(text, match.start())
         tool_identity = (
-            f"{tool_name}@{start_line}"
-            if tool_identity_counts[tool_name] > 1
-            else tool_name
+            f"{tool_name}@{start_line}" if tool_identity_counts[tool_name] > 1 else tool_name
         )
         tool_id = source_symbol("ts", relative, "tool", tool_identity)
         add_typescript_generic_tool(
@@ -3461,9 +3893,7 @@ def typescript_graph(
         end = typescript_balanced_end(code, opening, "(", ")") or len(text)
         start_line = line_at(text, match.start())
         tool_identity = (
-            f"{tool_name}@{start_line}"
-            if tool_identity_counts[tool_name] > 1
-            else tool_name
+            f"{tool_name}@{start_line}" if tool_identity_counts[tool_name] > 1 else tool_name
         )
         tool_id = source_symbol("ts", relative, "tool", tool_identity)
         add_typescript_generic_tool(
@@ -3589,9 +4019,7 @@ def typescript_graph(
             local_factory, call_body, relative_body_offset = call
             constructor = openai_imports.get(
                 local_factory,
-                cline_imports.get(
-                    local_factory, mastra_imports.get(local_factory, local_factory)
-                ),
+                cline_imports.get(local_factory, mastra_imports.get(local_factory, local_factory)),
             )
             call_line = line_at(text, item_offset)
             tool_name = f"{constructor}@{call_line}"
@@ -3774,32 +4202,22 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
     relative = path.relative_to(root).as_posix()
     lines = text.splitlines()
     imported_symbols = resolve_typescript_imports(root, path, text)
-    tool_by_line, tool_input_names = typescript_graph(
-        ir, relative, text, lines, imported_symbols
+    tool_by_line, tool_input_names = typescript_graph(ir, relative, text, lines, imported_symbols)
+    dynamic_names_by_tool = {tool_id: set(names) for tool_id, names in tool_input_names.items()}
+    guarded_path_names_by_tool: dict[str, dict[str, TypeScriptPathBoundaryHelper]] = defaultdict(
+        dict
     )
-    dynamic_names_by_tool = {
-        tool_id: set(names) for tool_id, names in tool_input_names.items()
-    }
-    guarded_path_names_by_tool: dict[
-        str, dict[str, TypeScriptPathBoundaryHelper]
-    ] = defaultdict(dict)
     literal_bindings = typescript_literal_string_bindings(text)
     network_calls = typescript_network_calls(text)
     if tool_by_line and network_calls:
-        network_helper_summaries = typescript_network_helper_summaries(
-            text, literal_bindings
-        )
+        network_helper_summaries = typescript_network_helper_summaries(text, literal_bindings)
         network_helper_calls = typescript_helper_calls(text, network_helper_summaries)
-        multiline_destructuring_assignments = (
-            typescript_multiline_destructuring_assignments(text)
-        )
+        multiline_destructuring_assignments = typescript_multiline_destructuring_assignments(text)
     else:
         network_helper_calls = {}
         multiline_destructuring_assignments = {}
     path_boundary_helpers = (
-        typescript_path_boundary_helpers(
-            root, path, imported_symbols
-        )
+        typescript_path_boundary_helpers(root, path, imported_symbols)
         if tool_by_line and TS_FILESYSTEM_WRITE.search(text)
         else {}
     )
@@ -4297,9 +4715,7 @@ def build_python_registry_class_exports(
                     )
 
     exports = dict(direct)
-    references_by_export: dict[tuple[str, str], list[tuple[str, str]]] = defaultdict(
-        list
-    )
+    references_by_export: dict[tuple[str, str], list[tuple[str, str]]] = defaultdict(list)
     for path, local_name, target_path, target_name in export_references:
         references_by_export[(path, local_name)].append((target_path, target_name))
     changed = True
@@ -4316,9 +4732,7 @@ def build_python_registry_class_exports(
             }
             if len(target_identities) != 1:
                 continue
-            exports[export_key] = next(
-                target for target in targets if target is not None
-            )
+            exports[export_key] = next(target for target in targets if target is not None)
             changed = True
     return exports
 
@@ -4368,8 +4782,7 @@ def scan_repository(
         for path in paths
         if selectors is None
         or any(
-            path.relative_to(root) == selector
-            or selector in path.relative_to(root).parents
+            path.relative_to(root) == selector or selector in path.relative_to(root).parents
             for selector in selectors
         )
     ]

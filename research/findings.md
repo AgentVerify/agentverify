@@ -47,7 +47,7 @@ name matching from inventing this control.
 Five more calls bind a tool source through an escaping callback: three browser-use actions are
 registered and two ArcadeAI wrappers are returned. Equivalent retry closures in the MCP Python SDK
 and FastMCP do not qualify because the public caller still selects the name for each operation.
-Schema v14 therefore reports five instance and five closure fixed-binding edges, without suppressing
+Schema v15 therefore reports five instance and five closure fixed-binding edges, without suppressing
 any review.
 
 FastMCP adds an interprocedural routing fact: its middleware recursion reaches a same-class callee
@@ -62,7 +62,7 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the 177-label truth set.
+rule observations are pinned in the 185-label truth set.
 
 ## 3. Approval exists, but bypass behavior recurs
 

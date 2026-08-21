@@ -219,10 +219,7 @@ def second():
         "py:agent.py#tool:shell@4",
         "py:agent.py#tool:shell@9",
     }
-    assert all(
-        edge.attributes["target_identity"] == "lexical-single-definition"
-        for edge in edges
-    )
+    assert all(edge.attributes["target_identity"] == "lexical-single-definition" for edge in edges)
 
     bom = json.loads(render_bom(ir))
     source_endpoints = [
@@ -300,9 +297,7 @@ def second():
 
     ir = scan_repository(tmp_path)
     tools = [component for component in ir.components if component.kind == "tool"]
-    approval_edges = [
-        edge for edge in ir.relationships if edge.relation == "governed-by"
-    ]
+    approval_edges = [edge for edge in ir.relationships if edge.relation == "governed-by"]
     assert {component.symbol_id for component in tools} == {
         "py:tools.py#tool:approval_tool@5",
         "py:tools.py#tool:approval_tool@11",
@@ -312,8 +307,7 @@ def second():
     }
     bom = json.loads(render_bom(ir))
     assert all(
-        relationship["source"]["resolution"] == "symbol-id"
-        for relationship in bom["relationships"]
+        relationship["source"]["resolution"] == "symbol-id" for relationship in bom["relationships"]
     )
 
 
@@ -648,7 +642,9 @@ class ReassignedFallbackServer:
 
     dynamic_line = line_of("self.call_tool(name, arguments, run_middleware=selected)")
     core_line = line_of("self.call_tool(name, arguments, run_middleware=False)")
-    fallback_line = line_of("return await self.call_tool(name, arguments)\n\n    async def call_tool")
+    fallback_line = line_of(
+        "return await self.call_tool(name, arguments)\n\n    async def call_tool"
+    )
     conditional_line = line_of(
         "return await self.call_tool(name, arguments)\n\n    async def call_tool(self, name: str, arguments: dict, enforce"
     )
@@ -872,14 +868,10 @@ function second() {
     }
     assert {edge.source_id for edge in edges} == {component.symbol_id for component in agents}
     assert all(edge.target_id is None for edge in edges)
-    assert all(
-        edge.attributes["target_identity"] == "ambiguous-repeated-binding"
-        for edge in edges
-    )
+    assert all(edge.attributes["target_identity"] == "ambiguous-repeated-binding" for edge in edges)
     bom = json.loads(render_bom(ir))
     assert all(
-        relationship["source"]["resolution"] == "symbol-id"
-        for relationship in bom["relationships"]
+        relationship["source"]["resolution"] == "symbol-id" for relationship in bom["relationships"]
     )
 
 
@@ -962,9 +954,7 @@ def test_typescript_mastra_properties_and_mcp_registrations_have_exact_tool_span
     dynamic_origins = {
         item.evidence.line: item.attributes["dynamic_origin"]
         for item in ir.components
-        if item.kind == "capability"
-        and item.name == "network"
-        and item.evidence.path == "tools.ts"
+        if item.kind == "capability" and item.name == "network" and item.evidence.path == "tools.ts"
     }
     assert dynamic_origins == {7: False, 14: True, 22: True, 26: False}
     assert [
@@ -974,11 +964,11 @@ def test_typescript_mastra_properties_and_mcp_registrations_have_exact_tool_span
         ("AV-NET001", 14, "requester"),
         ("AV-NET001", 22, "download"),
     ]
-    assert not any(item.kind == "tool" and item.evidence.path == "fake.ts" for item in ir.components)
     assert not any(
-        item.kind == "capability"
-        and item.name == "network"
-        and item.evidence.path == "fake.ts"
+        item.kind == "tool" and item.evidence.path == "fake.ts" for item in ir.components
+    )
+    assert not any(
+        item.kind == "capability" and item.name == "network" and item.evidence.path == "fake.ts"
         for item in ir.components
     )
 
@@ -1157,9 +1147,7 @@ def test_typescript_imported_path_boundary_suppresses_only_proven_guard() -> Non
         },
     }
     controls = [
-        item
-        for item in ir.components
-        if item.kind == "control" and item.name == "path-boundary"
+        item for item in ir.components if item.kind == "control" and item.name == "path-boundary"
     ]
     assert len(controls) == 1
     assert controls[0].evidence.path == "guard.ts"
@@ -1194,6 +1182,63 @@ def test_typescript_imported_path_boundary_suppresses_only_proven_guard() -> Non
     ] == [
         ("AV-FS001", 16, "unsafe-directory"),
         ("AV-FS001", 23, "reassigned-directory"),
+    ]
+
+
+def test_python_path_boundary_is_ordered_branch_local_and_scope_aware() -> None:
+    ir = scan_repository(ROOT / "cases/python_path_boundary")
+
+    filesystem = {
+        item.evidence.line: (
+            item.attributes["path_boundary_guard"],
+            item.attributes["path_boundary_scope"],
+        )
+        for item in ir.components
+        if item.kind == "capability" and item.name == "filesystem"
+    }
+    assert filesystem == {
+        12: (True, "constrained"),
+        13: (True, "constrained"),
+        22: (True, "constrained"),
+        23: (False, "unresolved"),
+        32: (False, "unresolved"),
+        42: (False, "unresolved"),
+        51: (True, "unresolved"),
+        59: (False, "unresolved"),
+        69: (False, "unresolved"),
+        80: (False, "unresolved"),
+        89: (False, "unresolved"),
+    }
+    assert [
+        (
+            edge.evidence.line,
+            edge.attributes["control_line"],
+            edge.attributes["policy_effect"],
+            edge.attributes["boundary_scope"],
+            edge.attributes["frontend"],
+        )
+        for edge in ir.relationships
+        if edge.source_kind == "capability"
+        and edge.relation == "governed-by"
+        and edge.target_name == "path-boundary"
+    ] == [
+        (12, 10, "restricts-filesystem-path", "constrained", "python"),
+        (13, 10, "restricts-filesystem-path", "constrained", "python"),
+        (22, 21, "restricts-filesystem-path", "constrained", "python"),
+        (51, 49, "validates-filesystem-path", "unresolved", "python"),
+    ]
+    assert [
+        (finding.rule_id, finding.evidence.line, finding.analysis["tool"])
+        for finding in ir.findings
+    ] == [
+        ("AV-FS001", 23, "positive_branch"),
+        ("AV-FS001", 32, "prefix_check"),
+        ("AV-FS001", 42, "reassigned_candidate"),
+        ("AV-FS001", 51, "configured_root"),
+        ("AV-FS001", 59, "unresolved_candidate"),
+        ("AV-FS001", 69, "reassigned_root"),
+        ("AV-FS001", 80, "conditionally_reassigned_candidate"),
+        ("AV-FS001", 89, "parent_without_strict_descendant"),
     ]
 
 

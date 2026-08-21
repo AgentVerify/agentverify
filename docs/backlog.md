@@ -23,8 +23,11 @@ the exact reachable path. Same-function MCP rejection guards and uncaught intern
 lookups are statement-ordered, so later checks cannot govern earlier calls. A bounded imported
 TypeScript path guard now suppresses `AV-FS001` only when a normalized, separator-aware roots
 predicate rejects before the write and its roots are a statically narrow literal set. MCP Servers'
-dynamic CLI/MCP roots retain a review plus an explicit unresolved-scope control edge. Next resolve
-positive branch-local guards, equivalent Python path boundaries, and other imported policy objects.
+dynamic CLI/MCP roots retain a review plus an explicit unresolved-scope control edge. Python now
+resolves statement-ordered `Path.resolve()` plus `is_relative_to()` boundaries, including positive
+branch-local and fail-closed guards. Literal narrow roots may suppress; configured roots retain the
+review, and prefix checks or reassignment remain unresolved. Next resolve imported policy objects,
+`relative_to()` exception guards, and bounded root constants without widening name-based inference.
 Constructor-only MCP wrapper fields, pure accessors, and unchanged parameters captured by
 returned/registered callbacks now produce fixed-binding edges. Mutable fields, rebound parameters,
 and same-operation retry closures remain unresolved. Same-class methods and immutable
@@ -70,8 +73,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 177 pinned positive/negative locations, with 56 separately
-scored IR relationship labels. Schema-v14 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 185 pinned positive/negative locations, with 62 separately
+scored IR relationship labels. Schema-v15 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

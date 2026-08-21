@@ -686,6 +686,124 @@
       }
     },
     {
+      "id": "python-rejecting-path-boundary-local",
+      "target": {"kind": "local", "path": "cases/python_path_boundary"},
+      "check_id": "IR-PY-PATH-BOUNDARY",
+      "path": "agent.py",
+      "line": 12,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary",
+        "attributes": {
+          "control_line": 10,
+          "policy_effect": "restricts-filesystem-path",
+          "frontend": "python",
+          "boundary_scope": "constrained"
+        }
+      }
+    },
+    {
+      "id": "python-positive-branch-path-boundary-local",
+      "target": {"kind": "local", "path": "cases/python_path_boundary"},
+      "check_id": "IR-PY-PATH-BOUNDARY",
+      "path": "agent.py",
+      "line": 22,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary",
+        "attributes": {
+          "control_line": 21,
+          "policy_effect": "restricts-filesystem-path",
+          "frontend": "python",
+          "boundary_scope": "constrained"
+        }
+      }
+    },
+    {
+      "id": "python-branch-proof-escape-local-negative",
+      "target": {"kind": "local", "path": "cases/python_path_boundary"},
+      "check_id": "IR-PY-PATH-BOUNDARY",
+      "path": "agent.py",
+      "line": 23,
+      "expected": false,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary"
+      }
+    },
+    {
+      "id": "python-prefix-path-boundary-local-negative",
+      "target": {"kind": "local", "path": "cases/python_path_boundary"},
+      "check_id": "IR-PY-PATH-BOUNDARY",
+      "path": "agent.py",
+      "line": 32,
+      "expected": false,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary"
+      }
+    },
+    {
+      "id": "python-configured-root-path-boundary-local",
+      "target": {"kind": "local", "path": "cases/python_path_boundary"},
+      "check_id": "IR-PY-PATH-BOUNDARY",
+      "path": "agent.py",
+      "line": 51,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary",
+        "attributes": {
+          "control_line": 49,
+          "policy_effect": "validates-filesystem-path",
+          "frontend": "python",
+          "boundary_scope": "unresolved"
+        }
+      }
+    },
+    {
+      "id": "python-path-boundary-fastmcp-real",
+      "target": {
+        "kind": "repository",
+        "repository": "jlowin/fastmcp",
+        "commit": "609f79b8a118cd6c4bb58a5341bafd76e42e5a2b"
+      },
+      "check_id": "IR-PY-PATH-BOUNDARY",
+      "path": "fastmcp_slim/fastmcp/utilities/skills.py",
+      "line": 184,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary",
+        "attributes": {
+          "control_line": 170,
+          "policy_effect": "validates-filesystem-path",
+          "frontend": "python",
+          "boundary_scope": "unresolved"
+        }
+      }
+    },
+    {
       "id": "mcp-registry-control-local",
       "target": {"kind": "local", "path": "cases/mcp_forwarder"},
       "check_id": "IR-MCP-REGISTRY",
