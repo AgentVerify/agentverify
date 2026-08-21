@@ -1,6 +1,6 @@
 {
-  "schema_version": 15,
-  "generated_at": "2026-08-21T09:23:09.389462+00:00",
+  "schema_version": 16,
+  "generated_at": "2026-08-21T09:44:38.411212+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -20,21 +20,21 @@
     "dependency_files_materialized": 135,
     "repositories_with_dependency_expansion": 11,
     "config_files_scanned": 155,
-    "relationships": 1379,
+    "relationships": 1385,
     "symbolized_components": 8566,
-    "identified_symbol_endpoints": 1875,
-    "resolved_symbol_endpoints": 1873,
+    "identified_symbol_endpoints": 1881,
+    "resolved_symbol_endpoints": 1879,
     "unmatched_identified_symbol_endpoints": 2,
     "ambiguous_repeated_binding_targets": 23,
     "resolved_binding_targets_by_basis": {
       "lexical-single-definition": 325,
       "module-single-definition": 14
     },
-    "relationship_endpoints": 2758,
+    "relationship_endpoints": 2770,
     "bom_endpoint_resolutions": {
       "ambiguous": 30,
-      "evidence-location": 338,
-      "symbol-id": 1873,
+      "evidence-location": 344,
+      "symbol-id": 1879,
       "unique-display-name": 17,
       "unresolved": 500
     },
@@ -42,7 +42,7 @@
       "target:tool": 30
     },
     "resolved_symbol_endpoints_by_frontend": {
-      "py": 1622,
+      "py": 1628,
       "ts": 251
     },
     "typescript_graph": {
@@ -64,6 +64,31 @@
       "typescript": 1,
       "constrained": 0,
       "unresolved": 2
+    },
+    "python_filesystem_mutations": {
+      "total": 427,
+      "dynamic_paths": 412,
+      "guarded": 0,
+      "operations": {
+        "copy": 45,
+        "create": 179,
+        "delete": 190,
+        "move": 13
+      },
+      "apis": {
+        "os.makedirs": 176,
+        "os.mkdir": 3,
+        "os.remove": 48,
+        "os.replace": 6,
+        "os.rmdir": 1,
+        "os.unlink": 51,
+        "shutil.copy": 11,
+        "shutil.copy2": 17,
+        "shutil.copyfile": 3,
+        "shutil.copytree": 14,
+        "shutil.move": 7,
+        "shutil.rmtree": 90
+      }
     },
     "mcp_forwarding_controls": {
       "fixed-tool-binding": 10,
@@ -91,7 +116,7 @@
       "AV-APPROVAL002": 2,
       "AV-EXEC001": 21,
       "AV-EXEC002": 50,
-      "AV-FS001": 18,
+      "AV-FS001": 24,
       "AV-MCP002": 49,
       "AV-NET001": 5,
       "AV-SANDBOX001": 19
@@ -269,7 +294,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 74.0279
+    "elapsed_seconds": 78.6334
   },
   "repositories": [
     {
@@ -326,6 +351,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -342,7 +374,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.263
+      "elapsed_seconds": 1.2661
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -353,7 +385,7 @@
       "config_files_scanned": 0,
       "components": {
         "agent": 125,
-        "capability": 623,
+        "capability": 627,
         "mcp": 1,
         "model": 2,
         "protocol": 2,
@@ -405,6 +437,20 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 4,
+        "dynamic_paths": 4,
+        "guarded": 0,
+        "operations": {
+          "create": 1,
+          "delete": 3
+        },
+        "apis": {
+          "os.makedirs": 1,
+          "os.remove": 1,
+          "shutil.rmtree": 2
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -419,7 +465,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5755
+      "elapsed_seconds": 1.7635
     },
     {
       "repository": "langchain-ai/langchain",
@@ -479,6 +525,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -493,7 +546,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4836
+      "elapsed_seconds": 0.5544
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -504,7 +557,7 @@
       "config_files_scanned": 1,
       "components": {
         "agent": 813,
-        "capability": 42,
+        "capability": 45,
         "framework": 559,
         "model": 6,
         "provider": 10,
@@ -557,6 +610,21 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 8,
+        "dynamic_paths": 8,
+        "guarded": 0,
+        "operations": {
+          "delete": 7,
+          "move": 1
+        },
+        "apis": {
+          "os.remove": 1,
+          "os.unlink": 5,
+          "shutil.move": 1,
+          "shutil.rmtree": 1
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -571,7 +639,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1114
+      "elapsed_seconds": 2.4267
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -582,7 +650,7 @@
       "config_files_scanned": 0,
       "components": {
         "agent": 7,
-        "capability": 10,
+        "capability": 11,
         "framework": 21,
         "mcp": 3,
         "model": 3,
@@ -640,6 +708,17 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 1,
+        "dynamic_paths": 1,
+        "guarded": 0,
+        "operations": {
+          "create": 1
+        },
+        "apis": {
+          "os.makedirs": 1
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -654,7 +733,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0871
+      "elapsed_seconds": 0.097
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -664,7 +743,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 1,
       "components": {
-        "capability": 223,
+        "capability": 236,
         "control-setting": 1,
         "framework": 131,
         "mcp": 3,
@@ -727,6 +806,22 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 13,
+        "dynamic_paths": 13,
+        "guarded": 0,
+        "operations": {
+          "copy": 8,
+          "delete": 4,
+          "move": 1
+        },
+        "apis": {
+          "os.replace": 1,
+          "shutil.copy2": 5,
+          "shutil.copytree": 3,
+          "shutil.rmtree": 4
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -748,7 +843,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2321
+      "elapsed_seconds": 2.5315
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -759,7 +854,7 @@
       "config_files_scanned": 0,
       "components": {
         "agent": 413,
-        "capability": 176,
+        "capability": 197,
         "control": 1,
         "framework": 885,
         "mcp": 12,
@@ -822,6 +917,24 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 37,
+        "dynamic_paths": 37,
+        "guarded": 0,
+        "operations": {
+          "copy": 3,
+          "create": 6,
+          "delete": 28
+        },
+        "apis": {
+          "os.makedirs": 6,
+          "os.rmdir": 1,
+          "os.unlink": 15,
+          "shutil.copy2": 2,
+          "shutil.copytree": 1,
+          "shutil.rmtree": 12
+        }
+      },
       "mcp_forwarding_controls": {
         "fixed-tool-binding": 1
       },
@@ -847,7 +960,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.608
+      "elapsed_seconds": 1.7403
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -858,7 +971,7 @@
       "config_files_scanned": 0,
       "components": {
         "agent": 102,
-        "capability": 29,
+        "capability": 31,
         "framework": 94,
         "model": 4,
         "provider": 6,
@@ -882,15 +995,15 @@
           "OpenAI"
         ]
       },
-      "relationships": 70,
+      "relationships": 71,
       "symbolized_components": 119,
-      "identified_symbol_endpoints": 78,
-      "resolved_symbol_endpoints": 78,
+      "identified_symbol_endpoints": 79,
+      "resolved_symbol_endpoints": 79,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
-        "py": 78,
+        "py": 79,
         "ts": 0
       },
       "typescript_graph": {
@@ -913,6 +1026,21 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 3,
+        "dynamic_paths": 1,
+        "guarded": 0,
+        "operations": {
+          "copy": 1,
+          "create": 1,
+          "delete": 1
+        },
+        "apis": {
+          "os.mkdir": 1,
+          "shutil.copytree": 1,
+          "shutil.rmtree": 1
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -922,18 +1050,18 @@
         "typescript": 0
       },
       "bom_endpoint_resolutions": {
-        "evidence-location": 9,
-        "symbol-id": 78,
+        "evidence-location": 10,
+        "symbol-id": 79,
         "unresolved": 53
       },
       "bom_ambiguous_endpoints_by_side_kind": {},
       "findings": {
-        "AV-FS001": 3
+        "AV-FS001": 4
       },
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1365
+      "elapsed_seconds": 0.1399
     },
     {
       "repository": "microsoft/autogen",
@@ -944,7 +1072,7 @@
       "config_files_scanned": 1,
       "components": {
         "agent": 225,
-        "capability": 22,
+        "capability": 23,
         "mcp": 1,
         "model": 12,
         "protocol": 9,
@@ -999,6 +1127,17 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 1,
+        "dynamic_paths": 1,
+        "guarded": 0,
+        "operations": {
+          "create": 1
+        },
+        "apis": {
+          "os.makedirs": 1
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1018,7 +1157,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4176
+      "elapsed_seconds": 0.4177
     },
     {
       "repository": "microsoft/agent-framework",
@@ -1068,6 +1207,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1082,7 +1228,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0197
+      "elapsed_seconds": 0.0163
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -1092,7 +1238,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 0,
       "components": {
-        "capability": 14,
+        "capability": 15,
         "framework": 1,
         "mcp": 2,
         "protocol": 18,
@@ -1146,6 +1292,17 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 1,
+        "dynamic_paths": 1,
+        "guarded": 0,
+        "operations": {
+          "delete": 1
+        },
+        "apis": {
+          "os.remove": 1
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1165,7 +1322,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0566
+      "elapsed_seconds": 0.0618
     },
     {
       "repository": "openai/openai-agents-python",
@@ -1176,7 +1333,7 @@
       "config_files_scanned": 0,
       "components": {
         "agent": 941,
-        "capability": 424,
+        "capability": 441,
         "control": 76,
         "control-setting": 2,
         "framework": 763,
@@ -1246,6 +1403,20 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 17,
+        "dynamic_paths": 17,
+        "guarded": 0,
+        "operations": {
+          "copy": 2,
+          "delete": 15
+        },
+        "apis": {
+          "shutil.copy2": 1,
+          "shutil.copytree": 1,
+          "shutil.rmtree": 15
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1272,7 +1443,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8817
+      "elapsed_seconds": 3.1487
     },
     {
       "repository": "openai/openai-agents-js",
@@ -1353,6 +1524,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1373,7 +1551,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4742
+      "elapsed_seconds": 0.4697
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -1384,7 +1562,7 @@
       "config_files_scanned": 1,
       "components": {
         "agent": 2276,
-        "capability": 198,
+        "capability": 199,
         "framework": 1502,
         "mcp": 9,
         "model": 4,
@@ -1443,6 +1621,17 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 1,
+        "dynamic_paths": 1,
+        "guarded": 0,
+        "operations": {
+          "copy": 1
+        },
+        "apis": {
+          "shutil.copy": 1
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1466,7 +1655,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.3683
+      "elapsed_seconds": 6.8965
     },
     {
       "repository": "google/adk-python",
@@ -1477,7 +1666,7 @@
       "config_files_scanned": 1,
       "components": {
         "agent": 439,
-        "capability": 96,
+        "capability": 100,
         "framework": 3,
         "model": 93,
         "protocol": 2
@@ -1528,6 +1717,19 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 4,
+        "dynamic_paths": 4,
+        "guarded": 0,
+        "operations": {
+          "create": 3,
+          "delete": 1
+        },
+        "apis": {
+          "os.makedirs": 3,
+          "shutil.rmtree": 1
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1545,7 +1747,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7824
+      "elapsed_seconds": 1.9589
     },
     {
       "repository": "google/adk-js",
@@ -1602,6 +1804,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1616,7 +1825,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6789
+      "elapsed_seconds": 1.6714
     },
     {
       "repository": "huggingface/smolagents",
@@ -1626,7 +1835,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 0,
       "components": {
-        "capability": 83,
+        "capability": 95,
         "framework": 5,
         "mcp": 8,
         "protocol": 4,
@@ -1684,6 +1893,23 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 15,
+        "dynamic_paths": 14,
+        "guarded": 0,
+        "operations": {
+          "copy": 2,
+          "create": 7,
+          "delete": 6
+        },
+        "apis": {
+          "os.makedirs": 7,
+          "os.remove": 1,
+          "os.unlink": 3,
+          "shutil.copy": 2,
+          "shutil.rmtree": 2
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1703,7 +1929,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6965
+      "elapsed_seconds": 0.7783
     },
     {
       "repository": "agno-agi/agno",
@@ -1714,7 +1940,7 @@
       "config_files_scanned": 1,
       "components": {
         "agent": 381,
-        "capability": 29,
+        "capability": 33,
         "mcp": 2,
         "protocol": 2,
         "provider": 1,
@@ -1763,6 +1989,20 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 4,
+        "dynamic_paths": 2,
+        "guarded": 0,
+        "operations": {
+          "create": 1,
+          "delete": 3
+        },
+        "apis": {
+          "os.makedirs": 1,
+          "os.remove": 2,
+          "shutil.rmtree": 1
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1780,7 +2020,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1642
+      "elapsed_seconds": 0.1596
     },
     {
       "repository": "camel-ai/camel",
@@ -1790,7 +2030,7 @@
       "dependency_files_materialized": 20,
       "config_files_scanned": 0,
       "components": {
-        "capability": 356,
+        "capability": 427,
         "control": 1,
         "mcp": 4,
         "protocol": 12,
@@ -1848,6 +2088,23 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 76,
+        "dynamic_paths": 75,
+        "guarded": 0,
+        "operations": {
+          "copy": 3,
+          "create": 56,
+          "delete": 17
+        },
+        "apis": {
+          "os.makedirs": 56,
+          "os.remove": 8,
+          "os.unlink": 5,
+          "shutil.copytree": 3,
+          "shutil.rmtree": 4
+        }
+      },
       "mcp_forwarding_controls": {
         "tool-allowlist": 1
       },
@@ -1869,7 +2126,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3586
+      "elapsed_seconds": 1.4926
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -1927,6 +2184,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -1944,7 +2208,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0975
+      "elapsed_seconds": 0.1035
     },
     {
       "repository": "run-llama/llama_index",
@@ -2008,6 +2272,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2022,7 +2293,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4021
+      "elapsed_seconds": 0.4304
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -2032,7 +2303,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 0,
       "components": {
-        "capability": 133,
+        "capability": 163,
         "framework": 1,
         "mcp": 4,
         "model": 47,
@@ -2090,6 +2361,22 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 30,
+        "dynamic_paths": 27,
+        "guarded": 0,
+        "operations": {
+          "copy": 2,
+          "create": 21,
+          "delete": 7
+        },
+        "apis": {
+          "os.makedirs": 21,
+          "os.remove": 4,
+          "shutil.copy": 2,
+          "shutil.rmtree": 3
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2107,7 +2394,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.706
+      "elapsed_seconds": 0.8613
     },
     {
       "repository": "InternLM/lagent",
@@ -2118,7 +2405,7 @@
       "config_files_scanned": 0,
       "components": {
         "agent": 1,
-        "capability": 65,
+        "capability": 67,
         "control": 1,
         "mcp": 18,
         "protocol": 4,
@@ -2175,6 +2462,17 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 2,
+        "dynamic_paths": 2,
+        "guarded": 0,
+        "operations": {
+          "create": 2
+        },
+        "apis": {
+          "os.makedirs": 2
+        }
+      },
       "mcp_forwarding_controls": {
         "fixed-tool-binding": 1
       },
@@ -2198,7 +2496,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3474
+      "elapsed_seconds": 0.4018
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -2208,7 +2506,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 0,
       "components": {
-        "capability": 137,
+        "capability": 146,
         "mcp": 7,
         "provider": 5
       },
@@ -2256,6 +2554,21 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 9,
+        "dynamic_paths": 9,
+        "guarded": 0,
+        "operations": {
+          "create": 1,
+          "delete": 5,
+          "move": 3
+        },
+        "apis": {
+          "os.makedirs": 1,
+          "shutil.move": 3,
+          "shutil.rmtree": 5
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2273,7 +2586,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5753
+      "elapsed_seconds": 0.6707
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -2283,7 +2596,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 0,
       "components": {
-        "capability": 124,
+        "capability": 139,
         "mcp": 1,
         "protocol": 1,
         "provider": 7,
@@ -2335,6 +2648,24 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 15,
+        "dynamic_paths": 15,
+        "guarded": 0,
+        "operations": {
+          "copy": 5,
+          "create": 3,
+          "delete": 6,
+          "move": 1
+        },
+        "apis": {
+          "os.makedirs": 3,
+          "shutil.copy2": 4,
+          "shutil.copytree": 1,
+          "shutil.move": 1,
+          "shutil.rmtree": 6
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2352,7 +2683,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8214
+      "elapsed_seconds": 0.9403
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -2362,7 +2693,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 0,
       "components": {
-        "capability": 74,
+        "capability": 98,
         "framework": 18,
         "provider": 19
       },
@@ -2414,6 +2745,25 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 26,
+        "dynamic_paths": 26,
+        "guarded": 0,
+        "operations": {
+          "copy": 4,
+          "create": 17,
+          "delete": 5
+        },
+        "apis": {
+          "os.makedirs": 15,
+          "os.mkdir": 2,
+          "os.remove": 2,
+          "shutil.copy": 2,
+          "shutil.copyfile": 1,
+          "shutil.copytree": 1,
+          "shutil.rmtree": 3
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2430,7 +2780,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.51
+      "elapsed_seconds": 0.5602
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -2441,7 +2791,7 @@
       "config_files_scanned": 4,
       "components": {
         "agent": 3,
-        "capability": 116,
+        "capability": 125,
         "protocol": 2,
         "provider": 14,
         "sandbox-boundary": 1
@@ -2495,6 +2845,20 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 13,
+        "dynamic_paths": 13,
+        "guarded": 0,
+        "operations": {
+          "create": 7,
+          "delete": 6
+        },
+        "apis": {
+          "os.makedirs": 7,
+          "os.unlink": 4,
+          "shutil.rmtree": 2
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2512,7 +2876,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6476
+      "elapsed_seconds": 1.8267
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -2523,7 +2887,7 @@
       "config_files_scanned": 1,
       "components": {
         "agent": 8,
-        "capability": 63,
+        "capability": 79,
         "framework": 2,
         "provider": 2
       },
@@ -2572,6 +2936,20 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 16,
+        "dynamic_paths": 12,
+        "guarded": 0,
+        "operations": {
+          "create": 9,
+          "delete": 7
+        },
+        "apis": {
+          "os.makedirs": 9,
+          "os.remove": 5,
+          "shutil.rmtree": 2
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2588,7 +2966,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6163
+      "elapsed_seconds": 0.6544
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -2650,6 +3028,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2664,7 +3049,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4396
+      "elapsed_seconds": 0.4466
     },
     {
       "repository": "letta-ai/letta-code",
@@ -2720,6 +3105,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2734,7 +3126,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0625
+      "elapsed_seconds": 2.0269
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -2745,7 +3137,7 @@
       "config_files_scanned": 0,
       "components": {
         "agent": 101,
-        "capability": 67,
+        "capability": 70,
         "framework": 95,
         "mcp": 3,
         "model": 9,
@@ -2803,6 +3195,19 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 4,
+        "dynamic_paths": 4,
+        "guarded": 0,
+        "operations": {
+          "create": 3,
+          "delete": 1
+        },
+        "apis": {
+          "os.makedirs": 3,
+          "os.unlink": 1
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2825,7 +3230,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4899
+      "elapsed_seconds": 0.5321
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -2836,7 +3241,7 @@
       "config_files_scanned": 0,
       "components": {
         "agent": 17,
-        "capability": 39,
+        "capability": 55,
         "control": 1,
         "mcp": 7,
         "protocol": 19
@@ -2886,6 +3291,20 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 16,
+        "dynamic_paths": 16,
+        "guarded": 0,
+        "operations": {
+          "create": 8,
+          "delete": 8
+        },
+        "apis": {
+          "os.makedirs": 8,
+          "os.remove": 5,
+          "shutil.rmtree": 3
+        }
+      },
       "mcp_forwarding_controls": {
         "fixed-tool-binding": 2
       },
@@ -2908,7 +3327,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1135
+      "elapsed_seconds": 1.1951
     },
     {
       "repository": "mastra-ai/mastra",
@@ -2975,6 +3394,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -2995,7 +3421,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.271
+      "elapsed_seconds": 1.2364
     },
     {
       "repository": "vercel/ai",
@@ -3057,6 +3483,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3076,7 +3509,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3242
+      "elapsed_seconds": 1.2981
     },
     {
       "repository": "cline/cline",
@@ -3142,6 +3575,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3162,7 +3602,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8113
+      "elapsed_seconds": 1.7778
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -3221,6 +3661,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3235,7 +3682,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.964
+      "elapsed_seconds": 2.0092
     },
     {
       "repository": "continuedev/continue",
@@ -3292,6 +3739,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3306,7 +3760,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2621
+      "elapsed_seconds": 1.2335
     },
     {
       "repository": "Aider-AI/aider",
@@ -3316,7 +3770,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 0,
       "components": {
-        "capability": 455,
+        "capability": 490,
         "model": 3
       },
       "component_names": {
@@ -3359,6 +3813,26 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 48,
+        "dynamic_paths": 48,
+        "guarded": 0,
+        "operations": {
+          "copy": 5,
+          "create": 11,
+          "delete": 31,
+          "move": 1
+        },
+        "apis": {
+          "os.makedirs": 11,
+          "os.remove": 10,
+          "os.replace": 1,
+          "os.unlink": 13,
+          "shutil.copy": 3,
+          "shutil.copytree": 2,
+          "shutil.rmtree": 8
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3375,7 +3849,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3202
+      "elapsed_seconds": 1.4547
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -3385,7 +3859,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 3,
       "components": {
-        "capability": 68
+        "capability": 70
       },
       "component_names": {
         "capability": [
@@ -3427,6 +3901,17 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 2,
+        "dynamic_paths": 2,
+        "guarded": 0,
+        "operations": {
+          "delete": 2
+        },
+        "apis": {
+          "shutil.rmtree": 2
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3445,7 +3930,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 0.4232
+      "elapsed_seconds": 0.465
     },
     {
       "repository": "plandex-ai/plandex",
@@ -3487,6 +3972,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3501,7 +3993,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0205
+      "elapsed_seconds": 0.0178
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -3511,7 +4003,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 0,
       "components": {
-        "capability": 56,
+        "capability": 64,
         "provider": 12
       },
       "component_names": {
@@ -3557,6 +4049,19 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 8,
+        "dynamic_paths": 8,
+        "guarded": 0,
+        "operations": {
+          "create": 5,
+          "delete": 3
+        },
+        "apis": {
+          "os.makedirs": 5,
+          "os.remove": 3
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3571,7 +4076,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6077
+      "elapsed_seconds": 0.6582
     },
     {
       "repository": "stitionai/devika",
@@ -3582,7 +4087,7 @@
       "config_files_scanned": 0,
       "components": {
         "agent": 1,
-        "capability": 56,
+        "capability": 64,
         "provider": 6
       },
       "component_names": {
@@ -3629,6 +4134,17 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 8,
+        "dynamic_paths": 8,
+        "guarded": 0,
+        "operations": {
+          "create": 8
+        },
+        "apis": {
+          "os.makedirs": 8
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3643,7 +4159,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1566
+      "elapsed_seconds": 0.1675
     },
     {
       "repository": "block/goose",
@@ -3700,6 +4216,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3724,7 +4247,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 1.0181
+      "elapsed_seconds": 1.0276
     },
     {
       "repository": "bytedance/trae-agent",
@@ -3735,7 +4258,7 @@
       "config_files_scanned": 0,
       "components": {
         "agent": 2,
-        "capability": 69,
+        "capability": 77,
         "control": 1,
         "mcp": 2,
         "protocol": 3,
@@ -3794,6 +4317,20 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 8,
+        "dynamic_paths": 8,
+        "guarded": 0,
+        "operations": {
+          "copy": 4,
+          "create": 4
+        },
+        "apis": {
+          "os.makedirs": 4,
+          "shutil.copy2": 2,
+          "shutil.copyfile": 2
+        }
+      },
       "mcp_forwarding_controls": {
         "fixed-tool-binding": 1
       },
@@ -3818,7 +4355,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.364
+      "elapsed_seconds": 0.3948
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -3876,6 +4413,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3892,7 +4436,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.918
+      "elapsed_seconds": 2.9252
     },
     {
       "repository": "openai/codex",
@@ -3902,7 +4446,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 0,
       "components": {
-        "capability": 84
+        "capability": 89
       },
       "component_names": {
         "capability": [
@@ -3941,6 +4485,19 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 5,
+        "dynamic_paths": 5,
+        "guarded": 0,
+        "operations": {
+          "copy": 1,
+          "delete": 4
+        },
+        "apis": {
+          "shutil.copy2": 1,
+          "shutil.rmtree": 4
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -3955,7 +4512,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3017
+      "elapsed_seconds": 0.3434
     },
     {
       "repository": "browser-use/browser-use",
@@ -3966,7 +4523,7 @@
       "config_files_scanned": 0,
       "components": {
         "agent": 247,
-        "capability": 143,
+        "capability": 152,
         "control": 2,
         "mcp": 7,
         "model": 55,
@@ -4025,6 +4582,22 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 9,
+        "dynamic_paths": 9,
+        "guarded": 0,
+        "operations": {
+          "create": 1,
+          "delete": 7,
+          "move": 1
+        },
+        "apis": {
+          "os.makedirs": 1,
+          "os.remove": 3,
+          "os.replace": 1,
+          "shutil.rmtree": 4
+        }
+      },
       "mcp_forwarding_controls": {
         "fixed-tool-binding": 3
       },
@@ -4048,7 +4621,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7306
+      "elapsed_seconds": 1.9196
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -4059,7 +4632,7 @@
       "config_files_scanned": 20,
       "components": {
         "agent": 2,
-        "capability": 138,
+        "capability": 140,
         "framework": 14,
         "mcp": 5,
         "protocol": 7,
@@ -4123,6 +4696,19 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 3,
+        "dynamic_paths": 3,
+        "guarded": 0,
+        "operations": {
+          "copy": 2,
+          "delete": 1
+        },
+        "apis": {
+          "os.unlink": 1,
+          "shutil.copy2": 2
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4140,7 +4726,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7714
+      "elapsed_seconds": 3.147
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -4150,7 +4736,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 0,
       "components": {
-        "capability": 56,
+        "capability": 64,
         "framework": 1,
         "provider": 5
       },
@@ -4202,6 +4788,22 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 8,
+        "dynamic_paths": 6,
+        "guarded": 0,
+        "operations": {
+          "copy": 1,
+          "create": 1,
+          "delete": 6
+        },
+        "apis": {
+          "os.makedirs": 1,
+          "os.remove": 2,
+          "shutil.copy": 1,
+          "shutil.rmtree": 4
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4218,7 +4820,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.356
+      "elapsed_seconds": 0.3741
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -4277,6 +4879,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4293,7 +4902,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6411
+      "elapsed_seconds": 0.6446
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -4303,7 +4912,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 0,
       "components": {
-        "capability": 117,
+        "capability": 118,
         "control": 1,
         "mcp": 6,
         "model": 1,
@@ -4354,6 +4963,17 @@
         "constrained": 0,
         "unresolved": 1
       },
+      "python_filesystem_mutations": {
+        "total": 1,
+        "dynamic_paths": 1,
+        "guarded": 0,
+        "operations": {
+          "delete": 1
+        },
+        "apis": {
+          "shutil.rmtree": 1
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4374,7 +4994,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6673
+      "elapsed_seconds": 0.6744
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -4443,6 +5063,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {
         "tool-registry": 2
       },
@@ -4466,7 +5093,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.043
+      "elapsed_seconds": 1.1472
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -4528,6 +5155,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4547,7 +5181,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8578
+      "elapsed_seconds": 1.8392
     },
     {
       "repository": "github/github-mcp-server",
@@ -4599,6 +5233,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4613,7 +5254,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0216
+      "elapsed_seconds": 0.0191
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -4666,6 +5307,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4680,7 +5328,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0514
+      "elapsed_seconds": 0.0504
     },
     {
       "repository": "awslabs/mcp",
@@ -4690,7 +5338,7 @@
       "dependency_files_materialized": 1,
       "config_files_scanned": 0,
       "components": {
-        "capability": 18,
+        "capability": 19,
         "framework": 1,
         "mcp": 3,
         "protocol": 7
@@ -4740,6 +5388,19 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 5,
+        "dynamic_paths": 5,
+        "guarded": 0,
+        "operations": {
+          "create": 1,
+          "delete": 4
+        },
+        "apis": {
+          "os.makedirs": 1,
+          "os.unlink": 4
+        }
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4756,7 +5417,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0106
+      "elapsed_seconds": 1.0983
     },
     {
       "repository": "docker/mcp-gateway",
@@ -4809,6 +5470,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4825,7 +5493,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0166
+      "elapsed_seconds": 0.0142
     },
     {
       "repository": "jlowin/fastmcp",
@@ -4835,7 +5503,7 @@
       "dependency_files_materialized": 8,
       "config_files_scanned": 1,
       "components": {
-        "capability": 76,
+        "capability": 77,
         "control": 2,
         "mcp": 225,
         "protocol": 117,
@@ -4886,6 +5554,17 @@
         "constrained": 0,
         "unresolved": 1
       },
+      "python_filesystem_mutations": {
+        "total": 1,
+        "dynamic_paths": 1,
+        "guarded": 0,
+        "operations": {
+          "move": 1
+        },
+        "apis": {
+          "os.replace": 1
+        }
+      },
       "mcp_forwarding_controls": {
         "tool-registry": 1
       },
@@ -4908,7 +5587,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0954
+      "elapsed_seconds": 1.2071
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -4950,6 +5629,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -4964,7 +5650,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.015
+      "elapsed_seconds": 0.0121
     },
     {
       "repository": "langflow-ai/langflow",
@@ -5026,6 +5712,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -5042,7 +5735,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3074
+      "elapsed_seconds": 1.3705
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -5097,6 +5790,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -5111,7 +5811,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6616
+      "elapsed_seconds": 1.6666
     },
     {
       "repository": "langgenius/dify",
@@ -5156,6 +5856,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -5170,7 +5877,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7689
+      "elapsed_seconds": 0.8257
     },
     {
       "repository": "n8n-io/n8n",
@@ -5234,6 +5941,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -5252,7 +5966,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1944
+      "elapsed_seconds": 1.1962
     },
     {
       "repository": "activepieces/activepieces",
@@ -5319,6 +6033,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -5337,7 +6058,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8681
+      "elapsed_seconds": 0.8698
     },
     {
       "repository": "simstudioai/sim",
@@ -5388,6 +6109,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -5402,7 +6130,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3225
+      "elapsed_seconds": 2.3301
     },
     {
       "repository": "composiohq/composio",
@@ -5475,6 +6203,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -5495,7 +6230,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.812
+      "elapsed_seconds": 0.8283
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -5505,7 +6240,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 5,
       "components": {
-        "capability": 96,
+        "capability": 101,
         "control": 8,
         "framework": 1,
         "mcp": 1,
@@ -5537,15 +6272,15 @@
           "OpenAI"
         ]
       },
-      "relationships": 32,
+      "relationships": 37,
       "symbolized_components": 291,
-      "identified_symbol_endpoints": 26,
-      "resolved_symbol_endpoints": 26,
+      "identified_symbol_endpoints": 31,
+      "resolved_symbol_endpoints": 31,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
-        "py": 26,
+        "py": 31,
         "ts": 0
       },
       "typescript_graph": {
@@ -5568,6 +6303,20 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 5,
+        "dynamic_paths": 5,
+        "guarded": 0,
+        "operations": {
+          "copy": 1,
+          "move": 4
+        },
+        "apis": {
+          "os.replace": 2,
+          "shutil.copytree": 1,
+          "shutil.move": 2
+        }
+      },
       "mcp_forwarding_controls": {
         "fixed-tool-binding": 2
       },
@@ -5581,18 +6330,18 @@
         "typescript": 0
       },
       "bom_endpoint_resolutions": {
-        "evidence-location": 38,
-        "symbol-id": 26
+        "evidence-location": 43,
+        "symbol-id": 31
       },
       "bom_ambiguous_endpoints_by_side_kind": {},
       "findings": {
-        "AV-FS001": 8,
+        "AV-FS001": 13,
         "AV-MCP002": 2
       },
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1803
+      "elapsed_seconds": 1.3029
     },
     {
       "repository": "e2b-dev/E2B",
@@ -5642,6 +6391,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -5656,7 +6412,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0285
+      "elapsed_seconds": 1.0518
     },
     {
       "repository": "daytonaio/daytona",
@@ -5698,6 +6454,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -5712,7 +6475,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.001
+      "elapsed_seconds": 0.0001
     },
     {
       "repository": "AgentOps-AI/agentops",
@@ -5780,6 +6543,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -5800,7 +6570,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6125
+      "elapsed_seconds": 0.665
     },
     {
       "repository": "traceloop/openllmetry",
@@ -5873,6 +6643,13 @@
         "constrained": 0,
         "unresolved": 0
       },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
       "mcp_forwarding_controls": {},
       "mcp_fixed_binding_scopes": {},
       "mcp_registry_control_sources": {},
@@ -5897,7 +6674,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0016
+      "elapsed_seconds": 1.1258
     }
   ]
 }

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T09:29:28.081543+00:00",
-  "labels": 185,
-  "passed": 185,
+  "generated_at": "2026-08-21T09:46:31.446555+00:00",
+  "labels": 196,
+  "passed": 196,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 14,
@@ -37,9 +37,9 @@
       "recall": 1.0
     },
     "AV-FS001": {
-      "tp": 20,
+      "tp": 27,
       "fp": 0,
-      "tn": 14,
+      "tn": 18,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -1170,6 +1170,105 @@
     },
     {
       "id": "filesystem-python-reassigned-root-local-positive",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-copytree-local-positive",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-delete-local-positive",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-fixed-copy-local-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-guarded-copy-local-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-prefix-copy-local-positive",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-shadowed-shutil-local-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-string-replace-local-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-arcade-replace-real",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-arcade-move-real",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-arcade-copytree-real",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-crewai-copytree-real",
       "rule_id": "AV-FS001",
       "expected": true,
       "observed": true,

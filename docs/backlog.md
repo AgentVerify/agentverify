@@ -28,6 +28,11 @@ resolves statement-ordered `Path.resolve()` plus `is_relative_to()` boundaries, 
 branch-local and fail-closed guards. Literal narrow roots may suppress; configured roots retain the
 review, and prefix checks or reassignment remain unresolved. Next resolve imported policy objects,
 `relative_to()` exception guards, and bounded root constants without widening name-based inference.
+Python filesystem inventory now models canonical and import-aliased `os`/`shutil` create, copy,
+move, replace, and delete calls, using the destination rather than the source for two-path APIs.
+Next resolve immutable local callable aliases (such as conditional `copy`/`copy2` bindings),
+proven-`Path` rename/replace methods, and imported filesystem wrappers without matching arbitrary
+same-named methods.
 Constructor-only MCP wrapper fields, pure accessors, and unchanged parameters captured by
 returned/registered callbacks now produce fixed-binding edges. Mutable fields, rebound parameters,
 and same-operation retry closures remain unresolved. Same-class methods and immutable
@@ -73,8 +78,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 185 pinned positive/negative locations, with 62 separately
-scored IR relationship labels. Schema-v15 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 196 pinned positive/negative locations, with 70 separately
+scored IR relationship labels. Schema-v16 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

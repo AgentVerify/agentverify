@@ -153,6 +153,14 @@ def main() -> int:
         python_path_boundary_edges = [
             edge for edge in path_boundary_edges if edge.evidence.path.endswith(".py")
         ]
+        python_filesystem_mutations = [
+            item
+            for item in ir.components
+            if item.kind == "capability"
+            and item.name == "filesystem"
+            and item.evidence.path.endswith(".py")
+            and item.attributes.get("canonical_api")
+        ]
         mcp_forwarding_control_edges = [
             edge
             for edge in ir.relationships
@@ -240,6 +248,33 @@ def main() -> int:
                     for edge in path_boundary_edges
                 ),
             },
+            "python_filesystem_mutations": {
+                "total": len(python_filesystem_mutations),
+                "dynamic_paths": sum(
+                    bool(item.attributes.get("dynamic_path"))
+                    for item in python_filesystem_mutations
+                ),
+                "guarded": sum(
+                    bool(item.attributes.get("path_boundary_guard"))
+                    for item in python_filesystem_mutations
+                ),
+                "operations": dict(
+                    sorted(
+                        Counter(
+                            str(item.attributes.get("operation", "unresolved"))
+                            for item in python_filesystem_mutations
+                        ).items()
+                    )
+                ),
+                "apis": dict(
+                    sorted(
+                        Counter(
+                            str(item.attributes["canonical_api"])
+                            for item in python_filesystem_mutations
+                        ).items()
+                    )
+                ),
+            },
             "mcp_forwarding_controls": dict(
                 sorted(Counter(edge.target_name for edge in mcp_forwarding_control_edges).items())
             ),
@@ -280,7 +315,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 15,
+        "schema_version": 16,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -381,6 +416,42 @@ def main() -> int:
             "path_boundary_controls": {
                 name: sum(result["path_boundary_controls"][name] for result in successful)
                 for name in ("python", "typescript", "constrained", "unresolved")
+            },
+            "python_filesystem_mutations": {
+                "total": sum(
+                    result["python_filesystem_mutations"]["total"]
+                    for result in successful
+                ),
+                "dynamic_paths": sum(
+                    result["python_filesystem_mutations"]["dynamic_paths"]
+                    for result in successful
+                ),
+                "guarded": sum(
+                    result["python_filesystem_mutations"]["guarded"]
+                    for result in successful
+                ),
+                "operations": dict(
+                    sorted(
+                        sum(
+                            (
+                                Counter(result["python_filesystem_mutations"]["operations"])
+                                for result in successful
+                            ),
+                            Counter(),
+                        ).items()
+                    )
+                ),
+                "apis": dict(
+                    sorted(
+                        sum(
+                            (
+                                Counter(result["python_filesystem_mutations"]["apis"])
+                                for result in successful
+                            ),
+                            Counter(),
+                        ).items()
+                    )
+                ),
             },
             "mcp_forwarding_controls": dict(
                 sorted(

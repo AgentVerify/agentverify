@@ -19,6 +19,17 @@ The initial matcher found `shell=True` in eight repositories. Reviewable example
 
 The links are locked corpus snapshots; only an explicit collector `--refresh` pins newer commits.
 
+Filesystem mutation is broader than `open()` and `write_text()`. Schema v16 resolves 427 direct or
+top-level import-aliased Python `os`/`shutil` mutations in selected files: 179 creates, 190 deletes,
+45 copies, and 13 moves. Exact tool reachability narrows this inventory to 24 AV-FS001 reviews across
+eight repositories. Newly exposed cases include ArcadeAI's
+[`os.replace`/`shutil.move` destination branches](https://github.com/ArcadeAI/arcade-ai/blob/597debaa1593b54172061ce36a414cc29aa8fc6a/examples/mcp_servers/local_filesystem/src/local_filesystem/tools.py#L287-L301)
+and CrewAI Examples'
+[`copytree` destination](https://github.com/crewAIInc/crewAI-examples/blob/da94a91e691e1cf5b3151416bb15b5b62729bea8/crews/landing_page_generator/src/landing_page_generator/tools/template_tools.py#L86-L90).
+The IR records the destination—not the source—as the governed path for two-path APIs. Import aliases
+are resolved only when unshadowed; string `.replace()` calls and caller-shadowed `shutil` names are
+regression negatives.
+
 ## 2. MCP creates a cross-process trust boundary
 
 MCP signals occur in 50 repositories. Seventeen contain generic tool-call forwarding shapes, and 17
@@ -47,7 +58,7 @@ name matching from inventing this control.
 Five more calls bind a tool source through an escaping callback: three browser-use actions are
 registered and two ArcadeAI wrappers are returned. Equivalent retry closures in the MCP Python SDK
 and FastMCP do not qualify because the public caller still selects the name for each operation.
-Schema v15 therefore reports five instance and five closure fixed-binding edges, without suppressing
+Schema v16 therefore reports five instance and five closure fixed-binding edges, without suppressing
 any review.
 
 FastMCP adds an interprocedural routing fact: its middleware recursion reaches a same-class callee
@@ -62,7 +73,7 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the 185-label truth set.
+rule observations are pinned in the 196-label truth set.
 
 ## 3. Approval exists, but bypass behavior recurs
 

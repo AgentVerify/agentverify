@@ -1242,6 +1242,50 @@ def test_python_path_boundary_is_ordered_branch_local_and_scope_aware() -> None:
     ]
 
 
+def test_python_filesystem_mutations_resolve_destinations_aliases_and_guards() -> None:
+    ir = scan_repository(ROOT / "cases/filesystem_mutations")
+
+    filesystem = {
+        item.evidence.line: (
+            item.attributes["canonical_api"],
+            item.attributes["operation"],
+            item.attributes["path_role"],
+            item.attributes["dynamic_path"],
+            item.attributes["path_boundary_scope"],
+        )
+        for item in ir.components
+        if item.kind == "capability" and item.name == "filesystem"
+    }
+    assert filesystem == {
+        13: ("shutil.copytree", "copy", "destination", True, "unresolved"),
+        18: ("shutil.move", "move", "destination", True, "unresolved"),
+        23: ("os.replace", "move", "destination", True, "unresolved"),
+        28: ("shutil.copy2", "copy", "destination", True, "unresolved"),
+        33: ("os.remove", "delete", "target", True, "unresolved"),
+        38: ("shutil.copy2", "copy", "destination", False, "unresolved"),
+        47: ("shutil.copy2", "copy", "destination", True, "constrained"),
+        56: ("shutil.copy2", "copy", "destination", True, "unresolved"),
+    }
+    assert [
+        (edge.evidence.line, edge.attributes["control_line"])
+        for edge in ir.relationships
+        if edge.source_kind == "capability"
+        and edge.relation == "governed-by"
+        and edge.target_name == "path-boundary"
+    ] == [(47, 45)]
+    assert [
+        (finding.rule_id, finding.evidence.line, finding.analysis["tool"])
+        for finding in ir.findings
+    ] == [
+        ("AV-FS001", 13, "copy_tree"),
+        ("AV-FS001", 18, "move_path"),
+        ("AV-FS001", 23, "replace_path"),
+        ("AV-FS001", 28, "copy_file"),
+        ("AV-FS001", 33, "delete_file"),
+        ("AV-FS001", 56, "weak_prefix_copy"),
+    ]
+
+
 def test_dynamic_writable_tool_path_but_not_fixed_path_is_reviewed() -> None:
     ir = scan_repository(ROOT / "cases/filesystem_scope")
 

@@ -76,6 +76,32 @@ APPROVAL_BYPASS_ENV_NAME = re.compile(
 APPROVAL_GATE_NAME = re.compile(r"approv|confirm|consent|permission", re.IGNORECASE)
 
 
+@dataclass(frozen=True)
+class PythonFilesystemWriteSpec:
+    path_index: int
+    path_keywords: tuple[str, ...]
+    operation: str
+    path_role: str
+
+
+PYTHON_FILESYSTEM_WRITE_FUNCTIONS = {
+    "os.mkdir": PythonFilesystemWriteSpec(0, ("path",), "create", "target"),
+    "os.makedirs": PythonFilesystemWriteSpec(0, ("name",), "create", "target"),
+    "os.remove": PythonFilesystemWriteSpec(0, ("path",), "delete", "target"),
+    "os.unlink": PythonFilesystemWriteSpec(0, ("path",), "delete", "target"),
+    "os.rmdir": PythonFilesystemWriteSpec(0, ("path",), "delete", "target"),
+    "os.removedirs": PythonFilesystemWriteSpec(0, ("name",), "delete", "target"),
+    "os.rename": PythonFilesystemWriteSpec(1, ("dst",), "move", "destination"),
+    "os.replace": PythonFilesystemWriteSpec(1, ("dst",), "move", "destination"),
+    "shutil.copy": PythonFilesystemWriteSpec(1, ("dst",), "copy", "destination"),
+    "shutil.copy2": PythonFilesystemWriteSpec(1, ("dst",), "copy", "destination"),
+    "shutil.copyfile": PythonFilesystemWriteSpec(1, ("dst",), "copy", "destination"),
+    "shutil.copytree": PythonFilesystemWriteSpec(1, ("dst",), "copy", "destination"),
+    "shutil.move": PythonFilesystemWriteSpec(1, ("dst",), "move", "destination"),
+    "shutil.rmtree": PythonFilesystemWriteSpec(0, ("path",), "delete", "target"),
+}
+
+
 def excerpt(lines: list[str], line: int) -> str:
     return lines[line - 1].strip()[:240] if 0 < line <= len(lines) else ""
 
@@ -276,6 +302,85 @@ def python_assigned_names(target: ast.AST) -> set[str]:
     return set()
 
 
+def python_function_local_bindings(
+    node: ast.FunctionDef | ast.AsyncFunctionDef,
+) -> set[str]:
+    bindings = {
+        argument.arg
+        for argument in (*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs)
+    }
+    if node.args.vararg:
+        bindings.add(node.args.vararg.arg)
+    if node.args.kwarg:
+        bindings.add(node.args.kwarg.arg)
+
+    def collect(candidate: ast.AST) -> None:
+        if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            bindings.add(candidate.name)
+            return
+        if isinstance(candidate, ast.Lambda):
+            return
+        if isinstance(candidate, (ast.Import, ast.ImportFrom)):
+            bindings.update(
+                alias.asname or alias.name.split(".", 1)[0]
+                for alias in candidate.names
+            )
+            return
+        if isinstance(candidate, ast.ExceptHandler) and candidate.name:
+            bindings.add(candidate.name)
+        if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
+            bindings.add(candidate.id)
+        for child in ast.iter_child_nodes(candidate):
+            collect(child)
+
+    for statement in node.body:
+        collect(statement)
+    return bindings
+
+
+def canonical_python_filesystem_api(
+    call_name: str, aliases: dict[str, str]
+) -> str | None:
+    if canonical := aliases.get(call_name):
+        return canonical if canonical in PYTHON_FILESYSTEM_WRITE_FUNCTIONS else None
+    if "." not in call_name:
+        return None
+    root, suffix = call_name.split(".", 1)
+    module = aliases.get(root)
+    if module not in {"os", "shutil"}:
+        return None
+    canonical = f"{module}.{suffix}"
+    return canonical if canonical in PYTHON_FILESYSTEM_WRITE_FUNCTIONS else None
+
+
+def python_call_argument(
+    node: ast.Call, index: int, keywords: tuple[str, ...]
+) -> ast.AST | None:
+    if len(node.args) > index:
+        return node.args[index]
+    return next(
+        (
+            keyword.value
+            for keyword in node.keywords
+            if keyword.arg is not None and keyword.arg in keywords
+        ),
+        None,
+    )
+
+
+def python_filesystem_function_write(
+    node: ast.Call, aliases: dict[str, str]
+) -> tuple[str, PythonFilesystemWriteSpec, ast.AST] | None:
+    canonical = canonical_python_filesystem_api(dotted_name(node.func), aliases)
+    if canonical is None:
+        return None
+    spec = PYTHON_FILESYSTEM_WRITE_FUNCTIONS[canonical]
+    path_expression = python_call_argument(node, spec.path_index, spec.path_keywords)
+    if path_expression is None:
+        return None
+    return canonical, spec, path_expression
+
+
 def python_resolved_path_expression(expression: ast.AST) -> ast.AST | None:
     """Return the receiver of an explicit zero-argument Path.resolve() call."""
     if not isinstance(expression, ast.Call) or expression.args or expression.keywords:
@@ -429,16 +534,27 @@ def python_block_always_terminates(statements: list[ast.stmt]) -> bool:
     )
 
 
-def python_filesystem_path_name(node: ast.Call) -> tuple[str, int] | None:
+def python_filesystem_path_name(
+    node: ast.Call, aliases: dict[str, str]
+) -> tuple[str, int] | None:
     call_name = dotted_name(node.func)
     short_name = call_name.rsplit(".", 1)[-1]
     expression: ast.AST | None = None
-    if short_name == "open" and node.args:
+    if function_write := python_filesystem_function_write(node, aliases):
+        expression = function_write[2]
+    elif short_name == "open" and node.args:
         expression = node.args[0]
     elif short_name in {"write_text", "write_bytes", "unlink", "rmdir", "mkdir"} and isinstance(
         node.func, ast.Attribute
     ):
         expression = node.func.value
+    if (
+        isinstance(expression, ast.Call)
+        and len(expression.args) == 1
+        and not expression.keywords
+        and dotted_name(expression.func) in {"str", "os.fspath"}
+    ):
+        expression = expression.args[0]
     parent_depth = 0
     while isinstance(expression, ast.Attribute) and expression.attr == "parent":
         parent_depth += 1
@@ -451,6 +567,7 @@ def python_path_boundary_calls(
     path: str,
     lines: list[str],
     path_constructors: set[str],
+    filesystem_api_aliases: dict[str, str],
 ) -> dict[int, PythonPathBoundaryProof]:
     """Prove same-function, statement-ordered Python filesystem boundaries."""
     if not path_constructors:
@@ -464,18 +581,7 @@ def python_path_boundary_calls(
         parameters.add(node.args.vararg.arg)
     if node.args.kwarg:
         parameters.add(node.args.kwarg.arg)
-    local_bindings = set(parameters)
-
-    def collect_local_bindings(candidate: ast.AST) -> None:
-        if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
-            return
-        if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, ast.Store):
-            local_bindings.add(candidate.id)
-        for child in ast.iter_child_nodes(candidate):
-            collect_local_bindings(child)
-
-    for statement in node.body:
-        collect_local_bindings(statement)
+    local_bindings = python_function_local_bindings(node)
     path_constructors = {
         constructor
         for constructor in path_constructors
@@ -483,6 +589,11 @@ def python_path_boundary_calls(
     }
     if not path_constructors:
         return {}
+    filesystem_api_aliases = {
+        alias: canonical
+        for alias, canonical in filesystem_api_aliases.items()
+        if alias.split(".", 1)[0] not in local_bindings
+    }
     initial = PythonPathState(parameters, {}, {}, {})
     proofs: dict[int, PythonPathBoundaryProof] = {}
 
@@ -496,7 +607,9 @@ def python_path_boundary_calls(
             ):
                 return
             if isinstance(candidate, ast.Call):
-                path_target = python_filesystem_path_name(candidate)
+                path_target = python_filesystem_path_name(
+                    candidate, filesystem_api_aliases
+                )
                 if (
                     path_target
                     and (proof := state.guards.get(path_target[0]))
@@ -710,6 +823,7 @@ class PythonVisitor(ast.NodeVisitor):
         registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
         module_rebound_names: set[str],
         path_constructors: set[str],
+        filesystem_api_aliases: dict[str, str],
     ) -> None:
         self.ir = ir
         self.root = root
@@ -734,6 +848,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_fixed_binding_sources: list[dict[str, Evidence]] = []
         self.function_escaping_children: list[set[str]] = []
         self.function_path_boundary_calls: list[dict[int, PythonPathBoundaryProof]] = []
+        self.function_filesystem_api_aliases: list[dict[str, str]] = []
         self.function_stack: list[str] = []
         self.function_depth = 0
         self.imported_symbol_paths: dict[str, str] = {}
@@ -748,6 +863,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.registry_class_exports = registry_class_exports
         self.module_rebound_names = module_rebound_names
         self.path_constructors = path_constructors
+        self.filesystem_api_aliases = filesystem_api_aliases
         self.has_mcp_import = any(
             module == "mcp" or module.startswith("mcp.") or "modelcontextprotocol" in module
             for module in imported_modules
@@ -1026,7 +1142,21 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_fixed_binding_sources.append(self.fixed_function_parameter_bindings(node))
         self.function_escaping_children.append(self.escaping_nested_function_names(node))
         self.function_path_boundary_calls.append(
-            python_path_boundary_calls(node, self.path, self.lines, self.path_constructors)
+            python_path_boundary_calls(
+                node,
+                self.path,
+                self.lines,
+                self.path_constructors,
+                self.filesystem_api_aliases,
+            )
+        )
+        local_bindings = python_function_local_bindings(node)
+        self.function_filesystem_api_aliases.append(
+            {
+                alias: canonical
+                for alias, canonical in self.filesystem_api_aliases.items()
+                if alias.split(".", 1)[0] not in local_bindings
+            }
         )
         decorators = {
             dotted_name(decorator.func)
@@ -1105,6 +1235,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_fixed_binding_sources.pop()
         self.function_escaping_children.pop()
         self.function_path_boundary_calls.pop()
+        self.function_filesystem_api_aliases.pop()
         self.approval_environment_flags = previous_approval_environment_flags
 
     visit_AsyncFunctionDef = visit_FunctionDef
@@ -2275,7 +2406,40 @@ class PythonVisitor(ast.NodeVisitor):
                         source_id=self.current_tool_id,
                     )
                 )
-        if short_name in {"open", "write_text", "write_bytes", "unlink", "rmdir", "mkdir"}:
+        filesystem_aliases = (
+            self.function_filesystem_api_aliases[-1]
+            if self.function_filesystem_api_aliases
+            else self.filesystem_api_aliases
+        )
+        filesystem_function = python_filesystem_function_write(
+            node, filesystem_aliases
+        )
+        if filesystem_function is not None:
+            canonical_api, filesystem_spec, path_expression = filesystem_function
+            boundary = (
+                self.function_path_boundary_calls[-1].get(id(node))
+                if self.function_path_boundary_calls
+                else None
+            )
+            self.add_capability(
+                "filesystem",
+                node,
+                {
+                    "api": call_name,
+                    "canonical_api": canonical_api,
+                    "write_access": True,
+                    "dynamic_path": not isinstance(path_expression, ast.Constant),
+                    "operation": filesystem_spec.operation,
+                    "path_role": filesystem_spec.path_role,
+                    "path_boundary_guard": boundary is not None,
+                    "path_boundary_scope": (
+                        boundary.boundary_scope if boundary is not None else "unresolved"
+                    ),
+                },
+            )
+            if boundary is not None:
+                self.add_python_path_boundary_control(node, boundary)
+        elif short_name in {"open", "write_text", "write_bytes", "unlink", "rmdir", "mkdir"}:
             path_expression = node.args[0] if short_name == "open" and node.args else None
             mode_expression = node.args[1] if short_name == "open" and len(node.args) > 1 else None
             for keyword in node.keywords:
@@ -2411,6 +2575,29 @@ def scan_python(
         constructor
         for constructor in path_constructors
         if constructor.split(".", 1)[0] not in module_rebound_names
+    }
+    filesystem_api_aliases = {
+        alias.asname or alias.name: alias.name
+        for statement in tree.body
+        if isinstance(statement, ast.Import)
+        for alias in statement.names
+        if alias.name in {"os", "shutil"}
+    }
+    filesystem_api_aliases.update(
+        {
+            alias.asname or alias.name: f"{statement.module}.{alias.name}"
+            for statement in tree.body
+            if isinstance(statement, ast.ImportFrom)
+            and statement.module in {"os", "shutil"}
+            for alias in statement.names
+            if f"{statement.module}.{alias.name}"
+            in PYTHON_FILESYSTEM_WRITE_FUNCTIONS
+        }
+    )
+    filesystem_api_aliases = {
+        alias: canonical
+        for alias, canonical in filesystem_api_aliases.items()
+        if alias.split(".", 1)[0] not in module_rebound_names
     }
     symbol_candidates: dict[tuple[str, str], set[str]] = {}
     call_symbol_ids: dict[int, str] = {}
@@ -2552,6 +2739,7 @@ def scan_python(
         registry_class_exports=registry_class_exports,
         module_rebound_names=module_rebound_names,
         path_constructors=path_constructors,
+        filesystem_api_aliases=filesystem_api_aliases,
     ).visit(tree)
 
 

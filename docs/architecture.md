@@ -74,6 +74,14 @@ non-filesystem roots carry `restricts-filesystem-path`; parameter/configured roo
 unresolved candidates, shadowed `Path` imports, and `relative_to()` exception patterns are not
 treated as equivalent controls.
 
+Python filesystem mutation calls preserve API semantics in Agent IR. Canonical and top-level
+import-aliased `os`/`shutil` functions resolve only while their bindings remain unshadowed. One-path
+create/delete APIs use their target argument; copy, move, rename, and replace APIs use the
+destination argument, so a fixed source cannot hide a dynamic write boundary. Components record the
+canonical API, `copy`/`move`/`create`/`delete` operation, and `target` or `destination` path role.
+Destination expressions can inherit the same `path-boundary` proof as `open()` and `Path` writes.
+Arbitrary `.replace()` methods and rebound import names are not promoted from their spelling alone.
+
 ## Result kinds and uncertainty
 
 - `inventory`: observed architecture facts without a risk judgment.
