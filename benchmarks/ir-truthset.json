@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "description": "Exact positive and negative labels for Agent IR control relationships; evaluated separately from finding-rule quality.",
+  "description": "Exact positive and negative labels for Agent IR control and import relationships; evaluated separately from finding-rule quality.",
   "labels": [
     {
       "id": "audit-local-traced-action",
@@ -70,6 +70,61 @@
         "relation": "governed-by",
         "target_kind": "control",
         "target_name": "action-trace"
+      }
+    },
+    {
+      "id": "import-relative-local-resolved",
+      "target": {"kind": "local", "path": "cases/imported_relative_tool"},
+      "check_id": "IR-IMPORT-RESOLUTION",
+      "path": "pkg/agent.py",
+      "line": 5,
+      "expected": true,
+      "relationship": {
+        "source_kind": "agent",
+        "source_name": "operator",
+        "relation": "uses",
+        "target_kind": "tool",
+        "target_name": "run_command",
+        "attributes": {"target_path": "pkg/tools.py"}
+      }
+    },
+    {
+      "id": "import-relative-local-missing-unresolved",
+      "target": {"kind": "local", "path": "cases/imported_relative_tool"},
+      "check_id": "IR-IMPORT-RESOLUTION",
+      "path": "pkg/missing_agent.py",
+      "line": 5,
+      "expected": false,
+      "source_contains": "Agent(name=\"unresolved\"",
+      "relationship": {
+        "source_kind": "agent",
+        "source_name": "unresolved",
+        "relation": "uses",
+        "target_kind": "tool",
+        "target_name": "missing_tool",
+        "attributes": {"target_path": "pkg/missing.py"}
+      }
+    },
+    {
+      "id": "import-relative-crewai-example-real",
+      "target": {
+        "kind": "repository",
+        "repository": "crewAIInc/crewAI-examples",
+        "commit": "da94a91e691e1cf5b3151416bb15b5b62729bea8"
+      },
+      "check_id": "IR-IMPORT-RESOLUTION",
+      "path": "integrations/CrewAI-LangGraph/src/crew/agents.py",
+      "line": 44,
+      "expected": true,
+      "relationship": {
+        "source_kind": "agent",
+        "source_name": "Agent",
+        "relation": "uses",
+        "target_kind": "tool",
+        "target_name": "CreateDraftTool.create_draft",
+        "attributes": {
+          "target_path": "integrations/CrewAI-LangGraph/src/crew/tools.py"
+        }
       }
     }
   ]

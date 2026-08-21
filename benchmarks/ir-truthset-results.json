@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T04:10:11.437390+00:00",
-  "labels": 4,
-  "passed": 4,
+  "generated_at": "2026-08-21T04:13:31.647117+00:00",
+  "labels": 7,
+  "passed": 7,
   "metrics": {
     "IR-AUDIT-CONTROL": {
       "tp": 2,
@@ -11,44 +11,79 @@
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
+    },
+    "IR-IMPORT-RESOLUTION": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
     }
   },
   "outcomes": [
     {
       "id": "audit-local-traced-action",
+      "check_id": "IR-AUDIT-CONTROL",
       "expected": true,
       "observed": true,
       "anchor_ok": true,
       "source_ok": true,
-      "passed": true,
-      "check_id": "IR-AUDIT-CONTROL"
+      "passed": true
     },
     {
       "id": "audit-local-untraced-action",
+      "check_id": "IR-AUDIT-CONTROL",
       "expected": false,
       "observed": false,
       "anchor_ok": true,
       "source_ok": true,
-      "passed": true,
-      "check_id": "IR-AUDIT-CONTROL"
+      "passed": true
     },
     {
       "id": "audit-arcade-traced-send-real",
+      "check_id": "IR-AUDIT-CONTROL",
       "expected": true,
       "observed": true,
       "anchor_ok": true,
       "source_ok": true,
-      "passed": true,
-      "check_id": "IR-AUDIT-CONTROL"
+      "passed": true
     },
     {
       "id": "audit-arcade-auth-span-does-not-cover-send-real",
+      "check_id": "IR-AUDIT-CONTROL",
       "expected": false,
       "observed": false,
       "anchor_ok": true,
       "source_ok": true,
-      "passed": true,
-      "check_id": "IR-AUDIT-CONTROL"
+      "passed": true
+    },
+    {
+      "id": "import-relative-local-resolved",
+      "check_id": "IR-IMPORT-RESOLUTION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "import-relative-local-missing-unresolved",
+      "check_id": "IR-IMPORT-RESOLUTION",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "import-relative-crewai-example-real",
+      "check_id": "IR-IMPORT-RESOLUTION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
     }
   ]
 }

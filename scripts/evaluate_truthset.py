@@ -58,7 +58,14 @@ def main() -> int:
             observed = any(
                 edge.evidence.path == label["path"]
                 and edge.evidence.line == label["line"]
-                and all(getattr(edge, key) == value for key, value in relationship.items())
+                and all(
+                    (
+                        all(edge.attributes.get(name) == expected for name, expected in value.items())
+                        if key == "attributes"
+                        else getattr(edge, key) == value
+                    )
+                    for key, value in relationship.items()
+                )
                 for edge in ir.relationships
             )
         else:

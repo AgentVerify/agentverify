@@ -290,6 +290,25 @@ def test_same_named_cross_file_edges_do_not_leak_into_context() -> None:
     assert finding.analysis["governing_controls"] == []
 
 
+def test_relative_python_tool_import_resolves_only_existing_sibling_module() -> None:
+    ir = scan_repository(ROOT / "cases/imported_relative_tool")
+
+    operator_edge = next(
+        edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent"
+        and edge.source_name == "operator"
+        and edge.target_name == "run_command"
+    )
+    assert operator_edge.attributes == {"target_path": "pkg/tools.py"}
+    unresolved_edge = next(
+        edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent" and edge.source_name == "unresolved"
+    )
+    assert unresolved_edge.attributes == {}
+
+
 def test_local_import_resolves_cross_file_agent_tool_path() -> None:
     ir = scan_repository(ROOT / "cases/imported_tool")
 

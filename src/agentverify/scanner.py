@@ -179,11 +179,30 @@ class PythonVisitor(ast.NodeVisitor):
             component_from_import(self.ir, alias.name, self.ev(node))
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
-        if node.level == 0 and node.module:
-            target = self.module_paths.get(node.module)
+        for alias in node.names:
+            target = None
+            if node.level == 0 and node.module:
+                target = self.module_paths.get(node.module)
+            elif node.level:
+                base = Path(self.path).parent
+                if node.level - 1 < len(base.parts):
+                    for _ in range(node.level - 1):
+                        base = base.parent
+                    module_parts = (node.module or alias.name).split(".")
+                    module_path = base.joinpath(*module_parts)
+                    candidates = [module_path.with_suffix(".py"), module_path / "__init__.py"]
+                    resolved = [
+                        candidate
+                        for candidate in candidates
+                        if not candidate.is_absolute()
+                        and ".." not in candidate.parts
+                        and (self.root / candidate).is_file()
+                        and not (self.root / candidate).is_symlink()
+                    ]
+                    if len(resolved) == 1:
+                        target = resolved[0].as_posix()
             if target:
-                for alias in node.names:
-                    self.imported_symbol_paths[alias.asname or alias.name] = target
+                self.imported_symbol_paths[alias.asname or alias.name] = target
         if node.module == "openai":
             imported = {alias.name for alias in node.names}
             if any(name.startswith("Azure") for name in imported):
@@ -446,7 +465,10 @@ class PythonVisitor(ast.NodeVisitor):
                         relation = "delegates-to"
                     if target_name:
                         attributes = {}
-                        if imported_path := self.imported_symbol_paths.get(target_name):
+                        imported_path = self.imported_symbol_paths.get(
+                            target_name
+                        ) or self.imported_symbol_paths.get(target_name.split(".", 1)[0])
+                        if imported_path:
                             attributes["target_path"] = imported_path
                         self.ir.add_relationship(
                             Relationship(

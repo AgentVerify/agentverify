@@ -28,16 +28,20 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,594 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,754 relationships, and completed in 25.63 seconds on the development machine. Three parse warnings were isolated and
+resolved 1,754 relationships, and completed in 26.14 seconds on the development machine. Three parse warnings were isolated and
 reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
 
-The Python module index resolves unambiguous absolute imports rooted at the repository, `src/`, or
-`python/`. It found three imported agent-to-tool edges across two pinned repositories, including
+The Python frontend resolves unambiguous absolute imports rooted at the repository, `src/`, or
+`python/`, plus relative modules that map to exactly one sibling package file. It found five imported
+agent-to-tool edges across two pinned repositories, including
 CrewAI Examples' [markdown validator tool](https://github.com/crewAIInc/crewAI-examples/blob/da94a91e691e1cf5b3151416bb15b5b62729bea8/crews/markdown_validator/src/markdown_validator/crew.py#L3).
-Relative Python imports and duplicate module names remain unresolved rather than falling back to
-name-only inference.
+Two are newly resolved relative imports: the
+[email flow draft tool](https://github.com/crewAIInc/crewAI-examples/blob/da94a91e691e1cf5b3151416bb15b5b62729bea8/flows/email_auto_responder_flow/src/email_auto_responder_flow/crews/email_filter_crew/email_filter_crew.py#L46)
+and [CrewAI-LangGraph draft tool](https://github.com/crewAIInc/crewAI-examples/blob/da94a91e691e1cf5b3151416bb15b5b62729bea8/integrations/CrewAI-LangGraph/src/crew/agents.py#L44).
+Missing files, path escapes, and duplicate absolute module names remain unresolved rather than
+falling back to name-only inference.
 
 The TypeScript resolver applies the same conservative rule to relative named imports, including the
 common `.js`-specifier-to-`.ts` source mapping and aliases. The selected corpus snapshot currently has
@@ -128,11 +132,15 @@ coverage; its labels must not drive rule implementation before evaluation.
 
 ## Agent IR control-edge checks
 
-Control-edge inference is scored separately from finding rules in `benchmarks/ir-truthset.json`.
-The initial four labels pair a traced and untraced local external action with ArcadeAI's pinned
+IR relationship inference is scored separately from finding rules in `benchmarks/ir-truthset.json`.
+Four audit labels pair a traced and untraced local external action with ArcadeAI's pinned
 [Gmail send span](https://github.com/ArcadeAI/arcade-ai/blob/597debaa1593b54172061ce36a414cc29aa8fc6a/examples/mcp_servers/telemetry_passback/src/telemetry_passback/server.py#L234)
 and its sibling authentication span. Only the `httpx` send at line 241 is governed by the send span;
 the authentication span at line 223 does not claim action coverage. All four labels pass. Exporter
 configuration and durable storage remain unresolved, so this inventory edge does not suppress a
 finding or enable `AV-AUDIT001`. The full corpus scan observed seven action-trace controls and five
 lexically governed HTTP capability edges, all in that ArcadeAI telemetry example.
+
+Three import labels cover a resolved relative fixture, a missing-module negative, and the pinned
+CrewAI-LangGraph draft-tool edge. All seven IR labels pass: two audit positives/two negatives and two
+import positives/one negative.
