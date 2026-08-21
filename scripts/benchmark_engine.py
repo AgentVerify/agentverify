@@ -254,6 +254,10 @@ def main() -> int:
                     bool(item.attributes.get("callable_alias"))
                     for item in python_filesystem_mutations
                 ),
+                "pathlib_methods": sum(
+                    bool(item.attributes.get("receiver_proof"))
+                    for item in python_filesystem_mutations
+                ),
                 "dynamic_paths": sum(
                     bool(item.attributes.get("dynamic_path"))
                     for item in python_filesystem_mutations
@@ -319,7 +323,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 17,
+        "schema_version": 18,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -428,6 +432,10 @@ def main() -> int:
                 ),
                 "callable_aliases": sum(
                     result["python_filesystem_mutations"]["callable_aliases"]
+                    for result in successful
+                ),
+                "pathlib_methods": sum(
+                    result["python_filesystem_mutations"]["pathlib_methods"]
                     for result in successful
                 ),
                 "dynamic_paths": sum(

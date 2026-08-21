@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T09:58:06.636024+00:00",
-  "labels": 203,
-  "passed": 203,
+  "generated_at": "2026-08-21T10:10:56.952653+00:00",
+  "labels": 211,
+  "passed": 211,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 14,
@@ -37,9 +37,9 @@
       "recall": 1.0
     },
     "AV-FS001": {
-      "tp": 30,
+      "tp": 32,
       "fp": 0,
-      "tn": 22,
+      "tn": 28,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -1323,6 +1323,78 @@
     },
     {
       "id": "filesystem-python-incompatible-choice-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-direct-path-replace-positive",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-immutable-path-rename-positive",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-guarded-path-rename-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-rebound-path-replace-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-conditional-path-binding-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-shadowed-path-constructor-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-deepagents-path-replace-real-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-chatdev-path-rename-real-negative",
       "rule_id": "AV-FS001",
       "expected": false,
       "observed": false,

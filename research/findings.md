@@ -19,9 +19,12 @@ The initial matcher found `shell=True` in eight repositories. Reviewable example
 
 The links are locked corpus snapshots; only an explicit collector `--refresh` pins newer commits.
 
-Filesystem mutation is broader than `open()` and `write_text()`. Schema v17 resolves 428 direct,
-top-level import-aliased, or local callable-aliased Python `os`/`shutil` mutations in selected files:
-179 creates, 190 deletes, 46 copies, and 13 moves. Exact tool reachability narrows this inventory to 25 AV-FS001 reviews across
+Filesystem mutation is broader than `open()` and `write_text()`. Schema v18 resolves 448 Python
+filesystem mutations in selected files: 179 creates, 190 deletes, 46 copies, and 33 moves. The move
+inventory includes 20 `Path.rename`/`Path.replace` calls proven through explicit constructors or
+immutable Path-derived bindings, including ChatDev's
+[`source_path.rename(target_path)`](https://github.com/OpenBMB/ChatDev/blob/4fb2db0ea90375ce1059f44fe03ffbd191a7a169/server/services/workflow_storage.py#L137).
+Exact tool reachability narrows this inventory to 25 AV-FS001 reviews across
 eight repositories. Newly exposed cases include ArcadeAI's
 [`os.replace`/`shutil.move` destination branches](https://github.com/ArcadeAI/arcade-ai/blob/597debaa1593b54172061ce36a414cc29aa8fc6a/examples/mcp_servers/local_filesystem/src/local_filesystem/tools.py#L287-L301)
 and its [conditional `copy`/`copy2` callable](https://github.com/ArcadeAI/arcade-ai/blob/597debaa1593b54172061ce36a414cc29aa8fc6a/examples/mcp_servers/local_filesystem/src/local_filesystem/tools.py#L329-L331),
@@ -59,7 +62,7 @@ name matching from inventing this control.
 Five more calls bind a tool source through an escaping callback: three browser-use actions are
 registered and two ArcadeAI wrappers are returned. Equivalent retry closures in the MCP Python SDK
 and FastMCP do not qualify because the public caller still selects the name for each operation.
-Schema v17 therefore reports five instance and five closure fixed-binding edges, without suppressing
+Schema v18 therefore reports five instance and five closure fixed-binding edges, without suppressing
 any review.
 
 FastMCP adds an interprocedural routing fact: its middleware recursion reaches a same-class callee
@@ -74,7 +77,7 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the 203-label truth set.
+rule observations are pinned in the 211-label truth set.
 
 ## 3. Approval exists, but bypass behavior recurs
 

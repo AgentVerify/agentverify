@@ -1036,6 +1036,120 @@
       }
     },
     {
+      "id": "python-filesystem-direct-path-replace-local",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-FILESYSTEM-MUTATION",
+      "path": "agent.py",
+      "line": 132,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "direct_path_replace",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-filesystem-immutable-path-rename-local",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-FILESYSTEM-MUTATION",
+      "path": "agent.py",
+      "line": 138,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "immutable_path_rename",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-filesystem-guarded-path-rename-local",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-FILESYSTEM-MUTATION",
+      "path": "agent.py",
+      "line": 147,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "guarded_path_rename",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-filesystem-rebound-path-replace-local-negative",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-FILESYSTEM-MUTATION",
+      "path": "agent.py",
+      "line": 154,
+      "expected": false,
+      "source_contains": "source_path.replace(destination)",
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "rebound_path_replace",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-filesystem-conditional-path-binding-local-negative",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-FILESYSTEM-MUTATION",
+      "path": "agent.py",
+      "line": 163,
+      "expected": false,
+      "source_contains": "source_path.rename(destination)",
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "conditional_path_binding",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-filesystem-shadowed-path-constructor-local-negative",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-FILESYSTEM-MUTATION",
+      "path": "agent.py",
+      "line": 170,
+      "expected": false,
+      "source_contains": "Path(source).replace(destination)",
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "shadowed_path_constructor",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-filesystem-guarded-path-rename-path-boundary-local",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-PATH-BOUNDARY",
+      "path": "agent.py",
+      "line": 147,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary",
+        "attributes": {
+          "control_line": 145,
+          "policy_effect": "restricts-filesystem-path",
+          "frontend": "python",
+          "boundary_scope": "constrained"
+        }
+      }
+    },
+    {
       "id": "python-filesystem-guarded-copy-path-boundary-local",
       "target": {"kind": "local", "path": "cases/filesystem_mutations"},
       "check_id": "IR-PY-PATH-BOUNDARY",

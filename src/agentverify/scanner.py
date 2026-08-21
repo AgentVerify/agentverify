@@ -544,6 +544,154 @@ def python_filesystem_callable_calls(
     return resolved_calls
 
 
+PYTHON_PATH_DERIVING_ATTRIBUTES = {"parent"}
+PYTHON_PATH_DERIVING_METHODS = {
+    "absolute",
+    "expanduser",
+    "joinpath",
+    "resolve",
+    "with_name",
+    "with_suffix",
+}
+
+
+def python_path_annotation(
+    annotation: ast.AST | None, path_constructors: set[str]
+) -> bool:
+    if annotation is None:
+        return False
+    if dotted_name(annotation) in path_constructors:
+        return True
+    if (
+        isinstance(annotation, ast.Subscript)
+        and dotted_name(annotation.value) in {"Annotated", "typing.Annotated"}
+    ):
+        elements = (
+            annotation.slice.elts
+            if isinstance(annotation.slice, ast.Tuple)
+            else (annotation.slice,)
+        )
+        return bool(elements) and python_path_annotation(elements[0], path_constructors)
+    return False
+
+
+def python_path_expression_proof(
+    expression: ast.AST,
+    path_constructors: set[str],
+    bindings: dict[str, str],
+) -> str | None:
+    if isinstance(expression, ast.Name):
+        return bindings.get(expression.id)
+    if isinstance(expression, ast.Call):
+        if dotted_name(expression.func) in path_constructors:
+            return "explicit-constructor"
+        if (
+            isinstance(expression.func, ast.Attribute)
+            and expression.func.attr in PYTHON_PATH_DERIVING_METHODS
+        ):
+            return python_path_expression_proof(
+                expression.func.value, path_constructors, bindings
+            )
+    if (
+        isinstance(expression, ast.Attribute)
+        and expression.attr in PYTHON_PATH_DERIVING_ATTRIBUTES
+    ):
+        return python_path_expression_proof(expression.value, path_constructors, bindings)
+    if isinstance(expression, ast.BinOp) and isinstance(expression.op, ast.Div):
+        return python_path_expression_proof(expression.left, path_constructors, bindings)
+    return None
+
+
+def python_immutable_path_bindings(
+    node: ast.FunctionDef | ast.AsyncFunctionDef,
+    path_constructors: set[str],
+) -> dict[str, str]:
+    """Return parameter or top-level local names proven to remain pathlib Paths."""
+    binding_counts: Counter[str] = Counter()
+
+    def count_bindings(candidate: ast.AST) -> None:
+        if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            binding_counts[candidate.name] += 1
+            return
+        if isinstance(candidate, ast.Lambda):
+            return
+        if isinstance(candidate, (ast.Import, ast.ImportFrom)):
+            binding_counts.update(
+                alias.asname or alias.name.split(".", 1)[0]
+                for alias in candidate.names
+            )
+            return
+        if isinstance(candidate, ast.ExceptHandler) and candidate.name:
+            binding_counts[candidate.name] += 1
+        if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
+            binding_counts[candidate.id] += 1
+        for child in ast.iter_child_nodes(candidate):
+            count_bindings(child)
+
+    for statement in node.body:
+        count_bindings(statement)
+
+    bindings = {
+        argument.arg: "parameter-annotation"
+        for argument in (*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs)
+        if binding_counts[argument.arg] == 0
+        and python_path_annotation(argument.annotation, path_constructors)
+    }
+    for statement in node.body:
+        target: ast.Name | None = None
+        value: ast.AST | None = None
+        annotation: ast.AST | None = None
+        if (
+            isinstance(statement, ast.Assign)
+            and len(statement.targets) == 1
+            and isinstance(statement.targets[0], ast.Name)
+        ):
+            target = statement.targets[0]
+            value = statement.value
+        elif isinstance(statement, ast.AnnAssign) and isinstance(statement.target, ast.Name):
+            target = statement.target
+            value = statement.value
+            annotation = statement.annotation
+        if target is None or binding_counts[target.id] != 1:
+            continue
+        proof = (
+            "local-annotation"
+            if python_path_annotation(annotation, path_constructors)
+            else python_path_expression_proof(value, path_constructors, bindings)
+            if value is not None
+            else None
+        )
+        if proof is not None:
+            bindings[target.id] = (
+                "local-annotation" if proof == "local-annotation" else "immutable-local"
+            )
+    return bindings
+
+
+def python_path_method_write(
+    node: ast.Call,
+    path_constructors: set[str],
+    path_bindings: dict[str, str],
+) -> tuple[str, PythonFilesystemWriteSpec, ast.AST, str] | None:
+    if not isinstance(node.func, ast.Attribute) or node.func.attr not in {"rename", "replace"}:
+        return None
+    receiver_proof = python_path_expression_proof(
+        node.func.value, path_constructors, path_bindings
+    )
+    if receiver_proof is None:
+        return None
+    destination = python_call_argument(node, 0, ("target",))
+    if destination is None:
+        return None
+    canonical_api = f"pathlib.Path.{node.func.attr}"
+    return (
+        canonical_api,
+        PythonFilesystemWriteSpec(0, ("target",), "move", "destination"),
+        destination,
+        receiver_proof,
+    )
+
+
 def python_call_argument(
     node: ast.Call, index: int, keywords: tuple[str, ...]
 ) -> ast.AST | None:
@@ -735,6 +883,8 @@ def python_filesystem_path_name(
     node: ast.Call,
     aliases: dict[str, str],
     local_callable: str | None = None,
+    path_constructors: set[str] | None = None,
+    path_bindings: dict[str, str] | None = None,
 ) -> tuple[str, int] | None:
     call_name = dotted_name(node.func)
     short_name = call_name.rsplit(".", 1)[-1]
@@ -743,6 +893,10 @@ def python_filesystem_path_name(
         node, aliases, local_callable
     ):
         expression = function_write[2]
+    elif path_write := python_path_method_write(
+        node, path_constructors or set(), path_bindings or {}
+    ):
+        expression = path_write[2]
     elif short_name == "open" and node.args:
         expression = node.args[0]
     elif short_name in {"write_text", "write_bytes", "unlink", "rmdir", "mkdir"} and isinstance(
@@ -770,6 +924,7 @@ def python_path_boundary_calls(
     path_constructors: set[str],
     filesystem_api_aliases: dict[str, str],
     filesystem_callable_calls: dict[int, str],
+    path_bindings: dict[str, str],
 ) -> dict[int, PythonPathBoundaryProof]:
     """Prove same-function, statement-ordered Python filesystem boundaries."""
     if not path_constructors:
@@ -813,6 +968,8 @@ def python_path_boundary_calls(
                     candidate,
                     filesystem_api_aliases,
                     filesystem_callable_calls.get(id(candidate)),
+                    path_constructors,
+                    path_bindings,
                 )
                 if (
                     path_target
@@ -1054,6 +1211,8 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_path_boundary_calls: list[dict[int, PythonPathBoundaryProof]] = []
         self.function_filesystem_api_aliases: list[dict[str, str]] = []
         self.function_filesystem_callable_calls: list[dict[int, str]] = []
+        self.function_path_bindings: list[dict[str, str]] = []
+        self.function_path_constructors: list[set[str]] = []
         self.function_stack: list[str] = []
         self.function_depth = 0
         self.imported_symbol_paths: dict[str, str] = {}
@@ -1347,6 +1506,14 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_fixed_binding_sources.append(self.fixed_function_parameter_bindings(node))
         self.function_escaping_children.append(self.escaping_nested_function_names(node))
         local_bindings = python_function_local_bindings(node)
+        function_path_constructors = {
+            constructor
+            for constructor in self.path_constructors
+            if constructor.split(".", 1)[0] not in local_bindings
+        }
+        function_path_bindings = python_immutable_path_bindings(
+            node, function_path_constructors
+        )
         function_filesystem_aliases = {
             alias: canonical
             for alias, canonical in self.filesystem_api_aliases.items()
@@ -1357,6 +1524,8 @@ class PythonVisitor(ast.NodeVisitor):
         )
         self.function_filesystem_api_aliases.append(function_filesystem_aliases)
         self.function_filesystem_callable_calls.append(filesystem_callable_calls)
+        self.function_path_bindings.append(function_path_bindings)
+        self.function_path_constructors.append(function_path_constructors)
         self.function_path_boundary_calls.append(
             python_path_boundary_calls(
                 node,
@@ -1365,6 +1534,7 @@ class PythonVisitor(ast.NodeVisitor):
                 self.path_constructors,
                 self.filesystem_api_aliases,
                 filesystem_callable_calls,
+                function_path_bindings,
             )
         )
         decorators = {
@@ -1446,6 +1616,8 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_path_boundary_calls.pop()
         self.function_filesystem_api_aliases.pop()
         self.function_filesystem_callable_calls.pop()
+        self.function_path_bindings.pop()
+        self.function_path_constructors.pop()
         self.approval_environment_flags = previous_approval_environment_flags
 
     visit_AsyncFunctionDef = visit_FunctionDef
@@ -2629,8 +2801,22 @@ class PythonVisitor(ast.NodeVisitor):
         filesystem_function = python_filesystem_function_write(
             node, filesystem_aliases, local_filesystem_callable
         )
-        if filesystem_function is not None:
-            canonical_api, filesystem_spec, path_expression = filesystem_function
+        path_method = python_path_method_write(
+            node,
+            (
+                self.function_path_constructors[-1]
+                if self.function_path_constructors
+                else self.path_constructors
+            ),
+            self.function_path_bindings[-1] if self.function_path_bindings else {},
+        )
+        if filesystem_function is not None or path_method is not None:
+            receiver_proof = None
+            if filesystem_function is not None:
+                canonical_api, filesystem_spec, path_expression = filesystem_function
+            else:
+                assert path_method is not None
+                canonical_api, filesystem_spec, path_expression, receiver_proof = path_method
             boundary = (
                 self.function_path_boundary_calls[-1].get(id(node))
                 if self.function_path_boundary_calls
@@ -2644,6 +2830,7 @@ class PythonVisitor(ast.NodeVisitor):
                     "canonical_api": canonical_api,
                     "possible_apis": canonical_api.split("|"),
                     "callable_alias": local_filesystem_callable is not None,
+                    "receiver_proof": receiver_proof,
                     "write_access": True,
                     "dynamic_path": not isinstance(path_expression, ast.Constant),
                     "operation": filesystem_spec.operation,

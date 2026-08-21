@@ -1286,6 +1286,27 @@ def test_python_filesystem_mutations_resolve_destinations_aliases_and_guards() -
             True,
             "constrained",
         ),
+        132: (
+            "pathlib.Path.replace",
+            "move",
+            "destination",
+            True,
+            "unresolved",
+        ),
+        138: (
+            "pathlib.Path.rename",
+            "move",
+            "destination",
+            True,
+            "unresolved",
+        ),
+        147: (
+            "pathlib.Path.rename",
+            "move",
+            "destination",
+            True,
+            "constrained",
+        ),
     }
     callable_aliases = {
         item.evidence.line: item.attributes["possible_apis"]
@@ -1299,13 +1320,25 @@ def test_python_filesystem_mutations_resolve_destinations_aliases_and_guards() -
         85: ["shutil.copy", "shutil.copy2"],
         97: ["shutil.copy", "shutil.copy2"],
     }
+    path_receivers = {
+        item.evidence.line: item.attributes["receiver_proof"]
+        for item in ir.components
+        if item.kind == "capability"
+        and item.name == "filesystem"
+        and item.attributes.get("receiver_proof") is not None
+    }
+    assert path_receivers == {
+        132: "explicit-constructor",
+        138: "immutable-local",
+        147: "explicit-constructor",
+    }
     assert [
         (edge.evidence.line, edge.attributes["control_line"])
         for edge in ir.relationships
         if edge.source_kind == "capability"
         and edge.relation == "governed-by"
         and edge.target_name == "path-boundary"
-    ] == [(47, 45), (97, 94)]
+    ] == [(47, 45), (97, 94), (147, 145)]
     assert [
         (finding.rule_id, finding.evidence.line, finding.analysis["tool"])
         for finding in ir.findings
@@ -1318,6 +1351,8 @@ def test_python_filesystem_mutations_resolve_destinations_aliases_and_guards() -
         ("AV-FS001", 56, "weak_prefix_copy"),
         ("AV-FS001", 74, "local_copy_choice"),
         ("AV-FS001", 85, "branch_copy_choice"),
+        ("AV-FS001", 132, "direct_path_replace"),
+        ("AV-FS001", 138, "immutable_path_rename"),
     ]
 
 

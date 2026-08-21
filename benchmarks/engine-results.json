@@ -1,6 +1,6 @@
 {
-  "schema_version": 17,
-  "generated_at": "2026-08-21T09:55:34.599285+00:00",
+  "schema_version": 18,
+  "generated_at": "2026-08-21T10:07:33.156595+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -66,15 +66,16 @@
       "unresolved": 2
     },
     "python_filesystem_mutations": {
-      "total": 428,
+      "total": 448,
       "callable_aliases": 1,
-      "dynamic_paths": 413,
+      "pathlib_methods": 20,
+      "dynamic_paths": 433,
       "guarded": 0,
       "operations": {
         "copy": 46,
         "create": 179,
         "delete": 190,
-        "move": 13
+        "move": 33
       },
       "apis": {
         "os.makedirs": 176,
@@ -83,6 +84,8 @@
         "os.replace": 6,
         "os.rmdir": 1,
         "os.unlink": 51,
+        "pathlib.Path.rename": 2,
+        "pathlib.Path.replace": 18,
         "shutil.copy": 11,
         "shutil.copy2": 17,
         "shutil.copyfile": 3,
@@ -296,7 +299,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 82.5699
+    "elapsed_seconds": 87.3708
   },
   "repositories": [
     {
@@ -356,6 +359,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -377,7 +381,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2603
+      "elapsed_seconds": 1.2873
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -443,6 +447,7 @@
       "python_filesystem_mutations": {
         "total": 4,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 4,
         "guarded": 0,
         "operations": {
@@ -469,7 +474,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9316
+      "elapsed_seconds": 2.0965
     },
     {
       "repository": "langchain-ai/langchain",
@@ -532,6 +537,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -551,7 +557,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5636
+      "elapsed_seconds": 0.6114
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -618,6 +624,7 @@
       "python_filesystem_mutations": {
         "total": 8,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 8,
         "guarded": 0,
         "operations": {
@@ -645,7 +652,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6122
+      "elapsed_seconds": 2.8414
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -717,6 +724,7 @@
       "python_filesystem_mutations": {
         "total": 1,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 1,
         "guarded": 0,
         "operations": {
@@ -740,7 +748,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1086
+      "elapsed_seconds": 0.1199
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -750,7 +758,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 1,
       "components": {
-        "capability": 236,
+        "capability": 254,
         "control-setting": 1,
         "framework": 131,
         "mcp": 3,
@@ -814,17 +822,19 @@
         "unresolved": 0
       },
       "python_filesystem_mutations": {
-        "total": 13,
+        "total": 31,
         "callable_aliases": 0,
-        "dynamic_paths": 13,
+        "pathlib_methods": 18,
+        "dynamic_paths": 31,
         "guarded": 0,
         "operations": {
           "copy": 8,
           "delete": 4,
-          "move": 1
+          "move": 19
         },
         "apis": {
           "os.replace": 1,
+          "pathlib.Path.replace": 18,
           "shutil.copy2": 5,
           "shutil.copytree": 3,
           "shutil.rmtree": 4
@@ -851,7 +861,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7226
+      "elapsed_seconds": 2.9629
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -928,6 +938,7 @@
       "python_filesystem_mutations": {
         "total": 37,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 37,
         "guarded": 0,
         "operations": {
@@ -969,7 +980,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8901
+      "elapsed_seconds": 2.0234
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -1038,6 +1049,7 @@
       "python_filesystem_mutations": {
         "total": 3,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 1,
         "guarded": 0,
         "operations": {
@@ -1071,7 +1083,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1478
+      "elapsed_seconds": 0.1613
     },
     {
       "repository": "microsoft/autogen",
@@ -1140,6 +1152,7 @@
       "python_filesystem_mutations": {
         "total": 1,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 1,
         "guarded": 0,
         "operations": {
@@ -1168,7 +1181,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4608
+      "elapsed_seconds": 0.5033
     },
     {
       "repository": "microsoft/agent-framework",
@@ -1221,6 +1234,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -1240,7 +1254,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.02
+      "elapsed_seconds": 0.0191
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -1307,6 +1321,7 @@
       "python_filesystem_mutations": {
         "total": 1,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 1,
         "guarded": 0,
         "operations": {
@@ -1335,7 +1350,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0674
+      "elapsed_seconds": 0.0745
     },
     {
       "repository": "openai/openai-agents-python",
@@ -1419,6 +1434,7 @@
       "python_filesystem_mutations": {
         "total": 17,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 17,
         "guarded": 0,
         "operations": {
@@ -1457,7 +1473,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4277
+      "elapsed_seconds": 3.7359
     },
     {
       "repository": "openai/openai-agents-js",
@@ -1541,6 +1557,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -1566,7 +1583,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4613
+      "elapsed_seconds": 0.4831
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -1639,6 +1656,7 @@
       "python_filesystem_mutations": {
         "total": 1,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 1,
         "guarded": 0,
         "operations": {
@@ -1671,7 +1689,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.3659
+      "elapsed_seconds": 7.8888
     },
     {
       "repository": "google/adk-python",
@@ -1736,6 +1754,7 @@
       "python_filesystem_mutations": {
         "total": 4,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 4,
         "guarded": 0,
         "operations": {
@@ -1764,7 +1783,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1271
+      "elapsed_seconds": 2.3295
     },
     {
       "repository": "google/adk-js",
@@ -1824,6 +1843,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -1843,7 +1863,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6756
+      "elapsed_seconds": 1.7363
     },
     {
       "repository": "huggingface/smolagents",
@@ -1914,6 +1934,7 @@
       "python_filesystem_mutations": {
         "total": 15,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 14,
         "guarded": 0,
         "operations": {
@@ -1948,7 +1969,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8487
+      "elapsed_seconds": 0.9085
     },
     {
       "repository": "agno-agi/agno",
@@ -2011,6 +2032,7 @@
       "python_filesystem_mutations": {
         "total": 4,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 2,
         "guarded": 0,
         "operations": {
@@ -2040,7 +2062,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1767
+      "elapsed_seconds": 0.1683
     },
     {
       "repository": "camel-ai/camel",
@@ -2111,6 +2133,7 @@
       "python_filesystem_mutations": {
         "total": 76,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 75,
         "guarded": 0,
         "operations": {
@@ -2147,7 +2170,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6016
+      "elapsed_seconds": 1.8241
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -2208,6 +2231,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -2230,7 +2254,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1122
+      "elapsed_seconds": 0.1198
     },
     {
       "repository": "run-llama/llama_index",
@@ -2297,6 +2321,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -2316,7 +2341,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4806
+      "elapsed_seconds": 0.5272
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -2387,6 +2412,7 @@
       "python_filesystem_mutations": {
         "total": 30,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 27,
         "guarded": 0,
         "operations": {
@@ -2418,7 +2444,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8315
+      "elapsed_seconds": 0.9084
     },
     {
       "repository": "InternLM/lagent",
@@ -2489,6 +2515,7 @@
       "python_filesystem_mutations": {
         "total": 2,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 2,
         "guarded": 0,
         "operations": {
@@ -2521,7 +2548,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4079
+      "elapsed_seconds": 0.4332
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -2582,6 +2609,7 @@
       "python_filesystem_mutations": {
         "total": 9,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 9,
         "guarded": 0,
         "operations": {
@@ -2612,7 +2640,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6834
+      "elapsed_seconds": 0.7305
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -2622,7 +2650,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 0,
       "components": {
-        "capability": 139,
+        "capability": 140,
         "mcp": 1,
         "protocol": 1,
         "provider": 7,
@@ -2675,18 +2703,20 @@
         "unresolved": 0
       },
       "python_filesystem_mutations": {
-        "total": 15,
+        "total": 16,
         "callable_aliases": 0,
-        "dynamic_paths": 15,
+        "pathlib_methods": 1,
+        "dynamic_paths": 16,
         "guarded": 0,
         "operations": {
           "copy": 5,
           "create": 3,
           "delete": 6,
-          "move": 1
+          "move": 2
         },
         "apis": {
           "os.makedirs": 3,
+          "pathlib.Path.rename": 1,
           "shutil.copy2": 4,
           "shutil.copytree": 1,
           "shutil.move": 1,
@@ -2710,7 +2740,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9728
+      "elapsed_seconds": 1.0465
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -2775,6 +2805,7 @@
       "python_filesystem_mutations": {
         "total": 26,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 26,
         "guarded": 0,
         "operations": {
@@ -2808,7 +2839,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6019
+      "elapsed_seconds": 0.6507
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -2876,6 +2907,7 @@
       "python_filesystem_mutations": {
         "total": 13,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 13,
         "guarded": 0,
         "operations": {
@@ -2905,7 +2937,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9998
+      "elapsed_seconds": 2.1915
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -2968,6 +3000,7 @@
       "python_filesystem_mutations": {
         "total": 16,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 12,
         "guarded": 0,
         "operations": {
@@ -2996,7 +3029,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6992
+      "elapsed_seconds": 0.7386
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -3061,6 +3094,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -3080,7 +3114,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4493
+      "elapsed_seconds": 0.4945
     },
     {
       "repository": "letta-ai/letta-code",
@@ -3139,6 +3173,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -3158,7 +3193,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0312
+      "elapsed_seconds": 2.0652
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -3230,6 +3265,7 @@
       "python_filesystem_mutations": {
         "total": 4,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 4,
         "guarded": 0,
         "operations": {
@@ -3263,7 +3299,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5991
+      "elapsed_seconds": 0.6498
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -3327,6 +3363,7 @@
       "python_filesystem_mutations": {
         "total": 16,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 16,
         "guarded": 0,
         "operations": {
@@ -3361,7 +3398,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2828
+      "elapsed_seconds": 1.384
     },
     {
       "repository": "mastra-ai/mastra",
@@ -3431,6 +3468,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -3456,7 +3494,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2431
+      "elapsed_seconds": 1.2419
     },
     {
       "repository": "vercel/ai",
@@ -3521,6 +3559,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -3545,7 +3584,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3
+      "elapsed_seconds": 1.2906
     },
     {
       "repository": "cline/cline",
@@ -3614,6 +3653,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -3639,7 +3679,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7783
+      "elapsed_seconds": 1.7824
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -3701,6 +3741,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -3720,7 +3761,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9617
+      "elapsed_seconds": 1.9542
     },
     {
       "repository": "continuedev/continue",
@@ -3780,6 +3821,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -3799,7 +3841,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2461
+      "elapsed_seconds": 1.2383
     },
     {
       "repository": "Aider-AI/aider",
@@ -3855,6 +3897,7 @@
       "python_filesystem_mutations": {
         "total": 48,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 48,
         "guarded": 0,
         "operations": {
@@ -3889,7 +3932,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5583
+      "elapsed_seconds": 1.6533
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -3944,6 +3987,7 @@
       "python_filesystem_mutations": {
         "total": 2,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 2,
         "guarded": 0,
         "operations": {
@@ -3971,7 +4015,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 0.5035
+      "elapsed_seconds": 0.5468
     },
     {
       "repository": "plandex-ai/plandex",
@@ -4016,6 +4060,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -4035,7 +4080,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0202
+      "elapsed_seconds": 0.0209
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -4094,6 +4139,7 @@
       "python_filesystem_mutations": {
         "total": 8,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 8,
         "guarded": 0,
         "operations": {
@@ -4119,7 +4165,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7015
+      "elapsed_seconds": 0.765
     },
     {
       "repository": "stitionai/devika",
@@ -4180,6 +4226,7 @@
       "python_filesystem_mutations": {
         "total": 8,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 8,
         "guarded": 0,
         "operations": {
@@ -4203,7 +4250,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1786
+      "elapsed_seconds": 0.19
     },
     {
       "repository": "block/goose",
@@ -4263,6 +4310,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -4292,7 +4340,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 1.0424
+      "elapsed_seconds": 1.0251
     },
     {
       "repository": "bytedance/trae-agent",
@@ -4365,6 +4413,7 @@
       "python_filesystem_mutations": {
         "total": 8,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 8,
         "guarded": 0,
         "operations": {
@@ -4401,7 +4450,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4265
+      "elapsed_seconds": 0.4576
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -4462,6 +4511,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -4483,7 +4533,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9436
+      "elapsed_seconds": 3.0102
     },
     {
       "repository": "openai/codex",
@@ -4535,6 +4585,7 @@
       "python_filesystem_mutations": {
         "total": 5,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 5,
         "guarded": 0,
         "operations": {
@@ -4560,7 +4611,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3769
+      "elapsed_seconds": 0.4303
     },
     {
       "repository": "browser-use/browser-use",
@@ -4633,6 +4684,7 @@
       "python_filesystem_mutations": {
         "total": 9,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 9,
         "guarded": 0,
         "operations": {
@@ -4670,7 +4722,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0922
+      "elapsed_seconds": 2.2982
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -4681,7 +4733,7 @@
       "config_files_scanned": 20,
       "components": {
         "agent": 2,
-        "capability": 140,
+        "capability": 141,
         "framework": 14,
         "mcp": 5,
         "protocol": 7,
@@ -4746,16 +4798,19 @@
         "unresolved": 0
       },
       "python_filesystem_mutations": {
-        "total": 3,
+        "total": 4,
         "callable_aliases": 0,
-        "dynamic_paths": 3,
+        "pathlib_methods": 1,
+        "dynamic_paths": 4,
         "guarded": 0,
         "operations": {
           "copy": 2,
-          "delete": 1
+          "delete": 1,
+          "move": 1
         },
         "apis": {
           "os.unlink": 1,
+          "pathlib.Path.rename": 1,
           "shutil.copy2": 2
         }
       },
@@ -4776,7 +4831,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4985
+      "elapsed_seconds": 3.8057
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -4841,6 +4896,7 @@
       "python_filesystem_mutations": {
         "total": 8,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 6,
         "guarded": 0,
         "operations": {
@@ -4871,7 +4927,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3926
+      "elapsed_seconds": 0.4189
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -4933,6 +4989,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -4954,7 +5011,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6419
+      "elapsed_seconds": 0.6409
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -5018,6 +5075,7 @@
       "python_filesystem_mutations": {
         "total": 1,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 1,
         "guarded": 0,
         "operations": {
@@ -5047,7 +5105,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6901
+      "elapsed_seconds": 0.6839
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -5119,6 +5177,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -5147,7 +5206,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2404
+      "elapsed_seconds": 1.3087
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -5212,6 +5271,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -5236,7 +5296,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8412
+      "elapsed_seconds": 1.8675
     },
     {
       "repository": "github/github-mcp-server",
@@ -5291,6 +5351,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -5310,7 +5371,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0226
+      "elapsed_seconds": 0.0223
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -5366,6 +5427,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -5385,7 +5447,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0506
+      "elapsed_seconds": 0.0515
     },
     {
       "repository": "awslabs/mcp",
@@ -5448,6 +5510,7 @@
       "python_filesystem_mutations": {
         "total": 5,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 5,
         "guarded": 0,
         "operations": {
@@ -5475,7 +5538,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1939
+      "elapsed_seconds": 1.2893
     },
     {
       "repository": "docker/mcp-gateway",
@@ -5531,6 +5594,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -5552,7 +5616,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0167
+      "elapsed_seconds": 0.0174
     },
     {
       "repository": "jlowin/fastmcp",
@@ -5616,6 +5680,7 @@
       "python_filesystem_mutations": {
         "total": 1,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 1,
         "guarded": 0,
         "operations": {
@@ -5647,7 +5712,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3078
+      "elapsed_seconds": 1.4038
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -5692,6 +5757,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -5711,7 +5777,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0142
+      "elapsed_seconds": 0.0145
     },
     {
       "repository": "langflow-ai/langflow",
@@ -5776,6 +5842,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -5797,7 +5864,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4269
+      "elapsed_seconds": 1.5151
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -5855,6 +5922,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -5874,7 +5942,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6644
+      "elapsed_seconds": 1.6626
     },
     {
       "repository": "langgenius/dify",
@@ -5922,6 +5990,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -5941,7 +6010,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8842
+      "elapsed_seconds": 0.952
     },
     {
       "repository": "n8n-io/n8n",
@@ -6008,6 +6077,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -6031,7 +6101,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2021
+      "elapsed_seconds": 1.1985
     },
     {
       "repository": "activepieces/activepieces",
@@ -6101,6 +6171,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -6124,7 +6195,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8667
+      "elapsed_seconds": 0.8747
     },
     {
       "repository": "simstudioai/sim",
@@ -6178,6 +6249,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -6197,7 +6269,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3181
+      "elapsed_seconds": 2.3324
     },
     {
       "repository": "composiohq/composio",
@@ -6273,6 +6345,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -6298,7 +6371,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8492
+      "elapsed_seconds": 0.9012
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -6374,6 +6447,7 @@
       "python_filesystem_mutations": {
         "total": 6,
         "callable_aliases": 1,
+        "pathlib_methods": 0,
         "dynamic_paths": 6,
         "guarded": 0,
         "operations": {
@@ -6411,7 +6485,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3843
+      "elapsed_seconds": 1.4993
     },
     {
       "repository": "e2b-dev/E2B",
@@ -6464,6 +6538,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -6483,7 +6558,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0981
+      "elapsed_seconds": 1.1275
     },
     {
       "repository": "daytonaio/daytona",
@@ -6528,6 +6603,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -6547,7 +6623,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0011
+      "elapsed_seconds": 0.001
     },
     {
       "repository": "AgentOps-AI/agentops",
@@ -6618,6 +6694,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -6643,7 +6720,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7251
+      "elapsed_seconds": 0.785
     },
     {
       "repository": "traceloop/openllmetry",
@@ -6719,6 +6796,7 @@
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
+        "pathlib_methods": 0,
         "dynamic_paths": 0,
         "guarded": 0,
         "operations": {},
@@ -6748,7 +6826,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2415
+      "elapsed_seconds": 1.3727
     }
   ]
 }

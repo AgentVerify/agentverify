@@ -125,3 +125,46 @@ def incompatible_choice(
 ) -> None:
     mutate = shutil.copy2 if copy_mode else delete_path
     mutate(source, destination)
+
+
+@tool
+def direct_path_replace(source: str, destination: str) -> None:
+    Path(source).replace(destination)
+
+
+@tool
+def immutable_path_rename(source: str, destination: str) -> None:
+    source_path = Path(source)
+    source_path.rename(target=destination)
+
+
+@tool
+def guarded_path_rename(source: str, requested_path: str) -> None:
+    root = Path("/srv/agent-output").resolve()
+    candidate = (root / requested_path).resolve()
+    if not candidate.is_relative_to(root):
+        raise ValueError("outside output root")
+    Path(source).rename(candidate)
+
+
+@tool
+def rebound_path_replace(source: str, destination: str) -> None:
+    source_path = Path(source)
+    source_path = source
+    source_path.replace(destination)
+
+
+@tool
+def conditional_path_binding(
+    source: str, destination: str, enabled: bool
+) -> None:
+    if enabled:
+        source_path = Path(source)
+    source_path.rename(destination)
+
+
+@tool
+def shadowed_path_constructor(
+    source: str, destination: str, Path: object
+) -> None:
+    Path(source).replace(destination)

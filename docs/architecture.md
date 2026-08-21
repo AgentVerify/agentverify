@@ -84,7 +84,10 @@ Within a function, direct and conditional local callable assignments are resolve
 order. Branches merge only when every path leaves an alias bound to filesystem APIs with identical
 path semantics; the component retains every possible API. Calls before assignment, conditional
 rebinding to an unknown wrapper, and copy/delete choices are withheld. Arbitrary `.replace()`
-methods and rebound import names are not promoted from their spelling alone.
+methods and rebound import names are not promoted from their spelling alone. `Path.rename()` and
+`Path.replace()` require an explicit unshadowed `pathlib.Path` constructor, an exact Path parameter
+annotation, or a single immutable local derived from either. Conditional and reassigned bindings are
+withheld; the destination argument remains the governed path and can inherit a boundary proof.
 
 ## Result kinds and uncertainty
 
