@@ -110,13 +110,23 @@ def provider_for_model(model: str) -> str:
 
 class PythonVisitor(ast.NodeVisitor):
     def __init__(
-        self, ir: RepositoryIR, path: str, lines: list[str], *, imported_modules: set[str]
+        self,
+        ir: RepositoryIR,
+        root: Path,
+        path: str,
+        lines: list[str],
+        *,
+        imported_modules: set[str],
+        module_paths: dict[str, str],
     ) -> None:
         self.ir = ir
+        self.root = root
         self.path = path
         self.lines = lines
         self.current_tool: str | None = None
         self.allowlisted_names: set[str] = set()
+        self.imported_symbol_paths: dict[str, str] = {}
+        self.module_paths = module_paths
         self.has_mcp_import = any(
             module == "mcp" or module.startswith("mcp.") or "modelcontextprotocol" in module
             for module in imported_modules
@@ -143,6 +153,11 @@ class PythonVisitor(ast.NodeVisitor):
             component_from_import(self.ir, alias.name, self.ev(node))
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
+        if node.level == 0 and node.module:
+            target = self.module_paths.get(node.module)
+            if target:
+                for alias in node.names:
+                    self.imported_symbol_paths[alias.asname or alias.name] = target
         if node.module == "openai":
             imported = {alias.name for alias in node.names}
             if any(name.startswith("Azure") for name in imported):
@@ -316,9 +331,18 @@ class PythonVisitor(ast.NodeVisitor):
                         target_kind = "agent"
                         relation = "delegates-to"
                     if target_name:
+                        attributes = {}
+                        if imported_path := self.imported_symbol_paths.get(target_name):
+                            attributes["target_path"] = imported_path
                         self.ir.add_relationship(
                             Relationship(
-                                "agent", name, relation, target_kind, target_name, self.ev(node)
+                                "agent",
+                                name,
+                                relation,
+                                target_kind,
+                                target_name,
+                                self.ev(node),
+                                attributes,
                             )
                         )
         if short_name in {"FastMCP", "ClientSession", "StdioServerParameters"}:
@@ -465,7 +489,9 @@ class PythonVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
-def scan_python(ir: RepositoryIR, root: Path, path: Path, text: str) -> None:
+def scan_python(
+    ir: RepositoryIR, root: Path, path: Path, text: str, module_paths: dict[str, str]
+) -> None:
     relative = path.relative_to(root).as_posix()
     try:
         with warnings.catch_warnings():
@@ -480,7 +506,14 @@ def scan_python(ir: RepositoryIR, root: Path, path: Path, text: str) -> None:
         if isinstance(node, ast.Import)
         for alias in node.names
     } | {node.module or "" for node in ast.walk(tree) if isinstance(node, ast.ImportFrom)}
-    PythonVisitor(ir, relative, text.splitlines(), imported_modules=imported_modules).visit(tree)
+    PythonVisitor(
+        ir,
+        root,
+        relative,
+        text.splitlines(),
+        imported_modules=imported_modules,
+        module_paths=module_paths,
+    ).visit(tree)
 
 
 TS_IMPORT = re.compile(r"(?:from\s+|require\s*\(\s*)['\"]([^'\"]+)['\"]")
@@ -933,11 +966,42 @@ def apply_inline_suppressions(ir: RepositoryIR, source_lines: dict[str, list[str
     ir.findings = retained
 
 
+def build_python_module_index(root: Path, paths: list[Path]) -> dict[str, str]:
+    candidates: dict[str, set[str]] = {}
+    for path in paths:
+        if (
+            path.is_symlink()
+            or not path.is_file()
+            or path.suffix.lower() != ".py"
+            or set(path.relative_to(root).parts) & SKIP_DIRECTORIES
+        ):
+            continue
+        relative = path.relative_to(root)
+        parts = list(relative.with_suffix("").parts)
+        if parts and parts[-1] == "__init__":
+            parts.pop()
+        module_parts = [parts]
+        for source_root in ("src", "python"):
+            if source_root in parts:
+                module_parts.append(parts[parts.index(source_root) + 1 :])
+        for candidate_parts in module_parts:
+            if candidate_parts:
+                module = ".".join(candidate_parts)
+                candidates.setdefault(module, set()).add(relative.as_posix())
+    return {
+        module: next(iter(locations))
+        for module, locations in candidates.items()
+        if len(locations) == 1
+    }
+
+
 def scan_repository(root: Path, *, include_tests: bool = False) -> RepositoryIR:
     root = root.resolve()
     ir = RepositoryIR(str(root))
     source_lines: dict[str, list[str]] = {}
-    for path in sorted(root.rglob("*")):
+    paths = sorted(root.rglob("*"))
+    module_paths = build_python_module_index(root, paths)
+    for path in paths:
         if (
             path.is_symlink()
             or not path.is_file()
@@ -980,7 +1044,7 @@ def scan_repository(root: Path, *, include_tests: bool = False) -> RepositoryIR:
         ir.files_scanned += 1
         source_lines[path.relative_to(root).as_posix()] = text.splitlines()
         if path.suffix.lower() == ".py":
-            scan_python(ir, root, path, text)
+            scan_python(ir, root, path, text, module_paths)
         else:
             scan_typescript(ir, root, path, text)
     ir.components.sort(

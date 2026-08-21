@@ -33,6 +33,12 @@ reported without aborting the run. Tests and fixtures are inventoried but exclud
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
 
+The Python module index resolves unambiguous absolute imports rooted at the repository, `src/`, or
+`python/`. It found three imported agent-to-tool edges across two pinned repositories, including
+CrewAI Examples' [markdown validator tool](https://github.com/crewAIInc/crewAI-examples/blob/da94a91e691e1cf5b3151416bb15b5b62729bea8/crews/markdown_validator/src/markdown_validator/crew.py#L3).
+Relative imports, duplicate module names, and TypeScript imports remain unresolved rather than
+falling back to name-only inference.
+
 The approval-policy resolver found a literal `needsApproval: true` in the pinned OpenAI Agents JS
 [human-in-the-loop example](https://github.com/openai/openai-agents-js/blob/0b944370c6fe019ac5b08364ca013826cd7d0668/examples/docs/human-in-the-loop/toolApprovalDefinition.ts#L11)
 and attached a tool-to-control edge. The adjacent callback form remains unresolved because its result

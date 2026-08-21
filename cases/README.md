@@ -18,4 +18,5 @@ never imported or executed.
 - `approval_safe`: disabled auto-approval negative case.
 - `test_scope`: findings are suppressed by default and enabled with `--include-tests`.
 - `symbol_collision`: same-named cross-file tools cannot leak agents or controls into a finding.
+- `imported_tool`: a local Python import resolves an agent to a tool defined in another module.
 - `../examples/safe_agent`: near-miss showing fixed argv is inventory-only.

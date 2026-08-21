@@ -29,8 +29,9 @@ Names are intentionally not treated as globally unique. Capability-to-tool resol
 relationship and capability observation to share a source location; name-only cross-file inference
 would overstate certainty. Agent-to-tool and tool-to-control context is likewise restricted to the
 capability's source file, preventing same-named definitions in separate modules from leaking
-reachability or control coverage. Future symbol tables will add module-qualified identities and
-resolve explicit imports across files.
+reachability or control coverage. Absolute Python `from local_module import tool` references resolve
+to an exact repository file and can safely form cross-file agent paths. Future symbol tables will add
+module-qualified identities for relative Python imports and TypeScript imports.
 
 ## Result kinds and uncertainty
 

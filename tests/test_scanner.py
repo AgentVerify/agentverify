@@ -225,6 +225,25 @@ def test_same_named_cross_file_edges_do_not_leak_into_context() -> None:
     assert finding.analysis["governing_controls"] == []
 
 
+def test_local_import_resolves_cross_file_agent_tool_path() -> None:
+    ir = scan_repository(ROOT / "cases/imported_tool")
+
+    finding = next(finding for finding in ir.findings if finding.rule_id == "AV-EXEC001")
+    assert finding.ir_path == (
+        "agent:operator",
+        "tool:run_command",
+        "capability:shell-execution",
+    )
+    assert finding.analysis["direct_agents"] == ["operator"]
+    assert finding.analysis["approval_coverage"] == "present"
+    agent_edge = next(
+        edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent" and edge.target_name == "run_command"
+    )
+    assert agent_edge.attributes["target_path"] == "tools.py"
+
+
 def test_test_scope_findings_are_opt_in() -> None:
     default_ir = scan_repository(ROOT / "cases/test_scope")
     complete_ir = scan_repository(ROOT / "cases/test_scope", include_tests=True)
