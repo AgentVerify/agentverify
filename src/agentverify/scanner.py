@@ -71,6 +71,7 @@ APPROVAL_BYPASS_ENV_NAME = re.compile(
     r"dangerously_?skip_?(?:permissions?|confirmation|approval))(?:$|[._])",
     re.IGNORECASE,
 )
+APPROVAL_GATE_NAME = re.compile(r"approv|confirm|consent|permission", re.IGNORECASE)
 
 
 def excerpt(lines: list[str], line: int) -> str:
@@ -190,6 +191,8 @@ class PythonVisitor(ast.NodeVisitor):
         self.allowlisted_names: set[str] = set()
         self.approval_environment_flags: dict[str, set[str]] = {}
         self.module_approval_environment_flags: dict[str, set[str]] = {}
+        self.class_approval_environment_flags: list[dict[str, set[str]]] = []
+        self.function_stack: list[str] = []
         self.function_depth = 0
         self.imported_symbol_paths: dict[str, str] = {}
         self.imported_symbol_names: dict[str, str] = {}
@@ -326,6 +329,8 @@ class PythonVisitor(ast.NodeVisitor):
                 self.approval_environment_flags[name] = environment_names
                 if self.function_depth == 0:
                     self.module_approval_environment_flags[name] = environment_names
+                if name.startswith("self.") and self.class_approval_environment_flags:
+                    self.class_approval_environment_flags[-1][name] = environment_names
         self.generic_visit(node)
 
     def visit_If(self, node: ast.If) -> None:
@@ -336,13 +341,46 @@ class PythonVisitor(ast.NodeVisitor):
             if isinstance(candidate, (ast.Name, ast.Attribute))
             and (name := dotted_name(candidate)) in self.approval_environment_flags
         }
+        class_flags = (
+            self.class_approval_environment_flags[-1]
+            if self.class_approval_environment_flags
+            else {}
+        )
+        referenced_class_flags = {
+            name
+            for candidate in ast.walk(node.test)
+            if isinstance(candidate, ast.Attribute)
+            and (name := dotted_name(candidate)) in class_flags
+        }
+        all_environment_names = (
+            environment_names
+            | {
+                environment_name
+                for flag in referenced_flags
+                for environment_name in self.approval_environment_flags[flag]
+            }
+            | {
+                environment_name
+                for flag in referenced_class_flags
+                for environment_name in class_flags[flag]
+            }
+        )
         direct_approval_return = bool(
             node.body
             and isinstance(node.body[0], ast.Return)
             and isinstance(node.body[0].value, ast.Constant)
             and node.body[0].value.value is True
         )
-        if direct_approval_return and (environment_names or referenced_flags):
+        approval_short_circuit = bool(
+            all_environment_names
+            and self.function_stack
+            and APPROVAL_GATE_NAME.search(self.function_stack[-1])
+            and node.body
+            and isinstance(node.body[-1], ast.Return)
+            and node.body[-1].value is None
+            and all(isinstance(statement, ast.Expr) for statement in node.body[:-1])
+        )
+        if (direct_approval_return and all_environment_names) or approval_short_circuit:
             self.ir.add_component(
                 Component(
                     "control-setting",
@@ -350,15 +388,12 @@ class PythonVisitor(ast.NodeVisitor):
                     self.ev(node),
                     {
                         "enabled": True,
-                        "source": "environment-guard",
-                        "environment_names": sorted(
-                            environment_names
-                            | {
-                                environment_name
-                                for flag in referenced_flags
-                                for environment_name in self.approval_environment_flags[flag]
-                            }
+                        "source": (
+                            "environment-approval-short-circuit"
+                            if approval_short_circuit
+                            else "environment-guard"
                         ),
+                        "environment_names": sorted(all_environment_names),
                         "scope": source_scope(self.path),
                     },
                 )
@@ -376,6 +411,7 @@ class PythonVisitor(ast.NodeVisitor):
         else:
             self.approval_environment_flags = self.approval_environment_flags.copy()
         self.function_depth += 1
+        self.function_stack.append(node.name)
         decorators = {
             dotted_name(decorator.func)
             if isinstance(decorator, ast.Call)
@@ -430,6 +466,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.allowlisted_names = previous_allowlisted_names
         self.http_client_names = previous_http_client_names
         self.function_depth -= 1
+        self.function_stack.pop()
         self.approval_environment_flags = previous_approval_environment_flags
 
     visit_AsyncFunctionDef = visit_FunctionDef
@@ -442,8 +479,26 @@ class PythonVisitor(ast.NodeVisitor):
         for keyword in node.keywords:
             self.visit(keyword.value)
         self.class_stack.append(node.name)
+        class_environment_flags: dict[str, set[str]] = {}
+        for statement in node.body:
+            if not isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                continue
+            for candidate in ast.walk(statement):
+                if not isinstance(candidate, ast.Assign):
+                    continue
+                environment_names = python_approval_environment_names(candidate.value)
+                for target in candidate.targets:
+                    name = dotted_name(target)
+                    if (
+                        name.startswith("self.")
+                        and APPROVAL_BYPASS_ENV_NAME.search(name)
+                        and environment_names
+                    ):
+                        class_environment_flags[name] = environment_names
+        self.class_approval_environment_flags.append(class_environment_flags)
         for statement in node.body:
             self.visit(statement)
+        self.class_approval_environment_flags.pop()
         self.class_stack.pop()
 
     def visit_function_statements(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> None:

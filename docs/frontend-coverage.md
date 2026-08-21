@@ -48,7 +48,7 @@ spurious tool edges.
 
 | Frontend | Implemented observations and resolution |
 |---|---|
-| Python AST | Imports; known agent/model constructors; tool decorators; literal tool/handoff lists; module- and class-qualified agent/tool IDs; shell, eval, filesystem, HTTP, browser, MCP, and Docker SDK calls; absolute and filesystem-relative tool imports; literal approval decorators; OpenAI Agents `ShellTool`/`ApplyPatchTool`/`CustomTool` approval constructors; env-backed auto-approval flags with direct true-return branches; statement-ordered MCP rejection guards; lexically scoped OpenTelemetry spans. |
+| Python AST | Imports; known agent/model constructors; tool decorators; literal tool/handoff lists; module- and class-qualified agent/tool IDs; shell, eval, filesystem, HTTP, browser, MCP, and Docker SDK calls; absolute and filesystem-relative tool imports; literal approval decorators; OpenAI Agents `ShellTool`/`ApplyPatchTool`/`CustomTool` approval constructors; env-backed auto-approval flags with direct true-return branches and same-class approval short circuits; statement-ordered MCP rejection guards; lexically scoped OpenTelemetry spans. |
 | TypeScript/JavaScript structural lexical | Known imports/providers; balanced top-level `new Agent({tools: [...]})` entries; `tool(...)`, `functionTool(...)`, `toolNamespace(...)`, OpenAI built-ins, Cline `createTool(...)`, and assigned/inline `asTool(...)`; module-qualified agent/tool IDs; named relative imports and aliases; child-process and Bun `sh -c` calls with literal/dynamic distinction; direct eval; filesystem calls; MCP forwarding object shapes; literal tool approval settings; inline and module-flag env-backed auto-approval branches. Comments and string contents are masked before policy matching. |
 | MCP JSON | Common `mcpServers` configuration, transport/command/URL, redacted arguments, and environment-variable names. Configuration is read as data; servers are never launched. |
 | Container configuration | Compose/devcontainer Docker socket, privileged/host network/root mounts; Kubernetes/Helm privileged, host namespace, privilege escalation, service-account token, and `hostPath`; literal privileged Python Docker SDK calls. |
@@ -63,7 +63,7 @@ spurious tool edges.
 - Google, Bedrock, and other model providers are not yet promoted from research signals into the
   engine's provider taxonomy.
 - Python package re-exports, wildcard imports, dynamically selected symbols, alias constructors,
-  imported policy objects, callback approval results, and branch-local allowlist proofs remain
+  imported policy objects, callback approval results, cross-class approval-attribute flows, and branch-local allowlist proofs remain
   unresolved. Framework/provider/capability names remain taxonomies rather than source symbols.
 - The TypeScript frontend is not an AST/type-checker. Computed property names, conditional tool
   expressions, object-composed Agent options, unrecognized wrapper factories, CommonJS alias flows,
@@ -80,7 +80,7 @@ spurious tool edges.
 
 ## Quality interpretation
 
-The 141-label rule truth set and 18-label IR relationship set are curated regression suites. They
+The 147-label rule truth set and 18-label IR relationship set are curated regression suites. They
 guard known positives and negatives; they are not an unbiased accuracy estimate. A future holdout
 must be sampled separately across the categories above, externally reviewed, and kept sealed while
 rules change. Until then, precision/recall values apply only to the published seed labels.

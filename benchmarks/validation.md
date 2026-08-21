@@ -101,9 +101,10 @@ value, and the governed branch must return true directly without an intervening 
 tracks module flags into functions and keeps local flags lexically scoped. TypeScript supports inline
 `process.env` comparisons and module-level flag assignments; comments and strings remain masked.
 
-The full benchmark now reports 14 default-scope reviews. Seven newly resolved paths are official SDK
+The full benchmark now reports 15 default-scope reviews. Eight newly resolved paths are official SDK
 examples: OpenAI Agents Python's
 [shell prompt bypass](https://github.com/openai/openai-agents-python/blob/17ba331bb0ad1622a4ff4ecdc914c77118075dad/examples/tools/shell.py#L80),
+its [apply-patch approval short circuit](https://github.com/openai/openai-agents-python/blob/17ba331bb0ad1622a4ff4ecdc914c77118075dad/examples/tools/apply_patch.py#L83),
 and OpenAI Agents JS examples for
 [hosted MCP approval](https://github.com/openai/openai-agents-js/blob/0b944370c6fe019ac5b08364ca013826cd7d0668/examples/mcp/hosted-mcp-on-approval.ts#L6),
 [computer use](https://github.com/openai/openai-agents-js/blob/0b944370c6fe019ac5b08364ca013826cd7d0668/examples/tools/computer-use-hitl.ts#L62),
@@ -112,11 +113,11 @@ and [apply patch](https://github.com/openai/openai-agents-js/blob/0b944370c6fe01
 plus two sibling HITL examples using the same flag. These are intentional examples, not vulnerability
 claims; `review` communicates that deployments should decide whether the bypass is acceptable.
 
-Regression negatives reject status variables such as `AUTO_APPROVED_WARNING`, disabled values, and
-branches that add a second safety condition before returning true. The Python apply-patch example's
-environment value flows through an instance attribute and a prompt-skipping early return, so it
-remains unresolved rather than being inferred by this direct-boolean-return pass. The rule has 12
-positive and 10 negative exact labels.
+Regression negatives reject status variables such as `AUTO_APPROVED_WARNING`, disabled values,
+non-approval methods, and branches that add a second safety condition before returning. Same-class
+Python attributes are resolved only when an approval-specific method has an unconditional early
+return; inheritance, helper-object propagation, and callback results remain unresolved. The rule has
+14 positive and 14 negative exact labels.
 
 ## AV-APPROVAL002 — reachable local shell with SDK approval disabled
 
@@ -145,7 +146,7 @@ Expanding the truth set exposed two additional false-positive families. Literal 
 were incorrectly classified as dynamic; resolving complete string literals removed five corpus
 findings while preserving interpolated templates. Broad approval-name matching confused warning-state
 and version-check flags with human approval; requiring approval-specific names removed six review
-candidates. Corpus totals are now 21 `AV-EXEC001` findings and 14 `AV-APPROVAL001` reviews.
+candidates. Corpus totals are now 21 `AV-EXEC001` findings and 15 `AV-APPROVAL001` reviews.
 
 ## AV-MCP002 — dynamic MCP forwarding
 
@@ -202,12 +203,12 @@ and a literal `privileged=True` keyword.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 141 exact labels across all seven enabled rules: 81 positives and 60
+`benchmarks/truthset.json` contains 147 exact labels across all seven enabled rules: 83 positives and 64
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
-Compose/Kubernetes/Docker SDK settings. All 141 currently pass; each rule's seed precision and recall
+Compose/Kubernetes/Docker SDK settings. All 147 currently pass; each rule's seed precision and recall
 are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified source
 text at the exact pinned line, preventing a missing or drifting location from passing silently.
 

@@ -245,6 +245,7 @@ def test_environment_auto_approval_requires_a_direct_true_return() -> None:
     approval_findings = [finding for finding in ir.findings if finding.rule_id == "AV-APPROVAL001"]
     assert [(finding.evidence.path, finding.evidence.line) for finding in approval_findings] == [
         ("approval.py", 8),
+        ("approval.py", 42),
         ("approval.ts", 4),
         ("approval.ts", 12),
     ]
@@ -254,9 +255,42 @@ def test_environment_auto_approval_requires_a_direct_true_return() -> None:
         if component.kind == "control-setting" and component.name == "auto-approval"
     }
     assert controls[("approval.py", 8)]["environment_names"] == ["SHELL_AUTO_APPROVE"]
+    assert controls[("approval.py", 42)] == {
+        "enabled": True,
+        "source": "environment-approval-short-circuit",
+        "environment_names": ["PATCH_AUTO_APPROVE"],
+        "scope": "production",
+    }
     assert controls[("approval.ts", 4)]["environment_names"] == ["AUTO_APPROVE_HITL"]
     assert controls[("approval.ts", 12)]["environment_names"] == ["SHELL_AUTO_APPROVE"]
-    assert all(attributes["source"] == "environment-guard" for attributes in controls.values())
+    assert all(
+        attributes["source"] == "environment-guard"
+        for location, attributes in controls.items()
+        if location != ("approval.py", 42)
+    )
+
+
+def test_environment_approval_attribute_is_independent_of_method_order(tmp_path: Path) -> None:
+    (tmp_path / "gate.py").write_text(
+        """import os
+
+class Gate:
+    def require_confirmation(self) -> None:
+        if self.auto_approve:
+            return
+        self.prompt()
+
+    def __init__(self) -> None:
+        self.auto_approve = os.environ["AUTO_APPROVE_ACTIONS"] == "1"
+""",
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    assert [
+        (finding.rule_id, finding.evidence.path, finding.evidence.line) for finding in ir.findings
+    ] == [("AV-APPROVAL001", "gate.py", 5)]
 
 
 def test_anthropic_and_azure_model_providers() -> None:

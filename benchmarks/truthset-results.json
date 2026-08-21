@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T05:43:34.210694+00:00",
-  "labels": 141,
-  "passed": 141,
+  "generated_at": "2026-08-21T05:52:39.440892+00:00",
+  "labels": 147,
+  "passed": 147,
   "metrics": {
     "AV-APPROVAL001": {
-      "tp": 12,
+      "tp": 14,
       "fp": 0,
-      "tn": 10,
+      "tn": 14,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -670,6 +670,60 @@
       "rule_id": "AV-APPROVAL001",
       "expected": true,
       "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-env-python-attribute-short-circuit-positive",
+      "rule_id": "AV-APPROVAL001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-env-python-attribute-conditional-negative",
+      "rule_id": "AV-APPROVAL001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-env-python-attribute-nongate-negative",
+      "rule_id": "AV-APPROVAL001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-env-openai-python-patch-short-circuit-real",
+      "rule_id": "AV-APPROVAL001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-env-semantic-kernel-default-false-real-negative",
+      "rule_id": "AV-APPROVAL001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-env-deepagents-yolo-mirror-real-negative",
+      "rule_id": "AV-APPROVAL001",
+      "expected": false,
+      "observed": false,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

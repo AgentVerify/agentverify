@@ -32,3 +32,47 @@ def unrelated_parameter(local_auto_approve: bool) -> bool:
     if local_auto_approve:
         return True
     return False
+
+
+class WorkspaceEditor:
+    def __init__(self) -> None:
+        self._auto_approve = os.getenv("PATCH_AUTO_APPROVE") == "1"
+
+    def require_approval(self, already_approved: bool) -> None:
+        if self._auto_approve or already_approved:
+            self.remember_approval()
+            return
+        self.prompt_for_approval()
+
+    def remember_approval(self) -> None:
+        pass
+
+    def prompt_for_approval(self) -> None:
+        pass
+
+
+class ConditionalEditor:
+    def __init__(self) -> None:
+        self._auto_approve = os.getenv("PATCH_AUTO_APPROVE") == "1"
+
+    def require_approval(self, low_risk: bool) -> None:
+        if self._auto_approve:
+            if low_risk:
+                return
+        self.prompt_for_approval()
+
+    def prompt_for_approval(self) -> None:
+        pass
+
+
+class StatusTracker:
+    def __init__(self) -> None:
+        self._auto_approve = os.getenv("PATCH_AUTO_APPROVE") == "1"
+
+    def update_status(self) -> None:
+        if self._auto_approve:
+            self.record_status()
+            return
+
+    def record_status(self) -> None:
+        pass

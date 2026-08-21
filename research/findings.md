@@ -38,8 +38,8 @@ vocabulary appears in 18. Some matches are deliberately safe tests or demonstrat
 production configuration. A useful analyzer must model approval scope and bypass paths rather than
 only checking whether an approval API exists.
 
-The structure-aware engine reports 14 default-scope approval-bypass reviews. Seven are explicit
-environment-enabled true-return branches in pinned OpenAI Agents Python/JavaScript examples; the
+The structure-aware engine reports 15 default-scope approval-bypass reviews. Eight are explicit
+environment-enabled approval short circuits in pinned OpenAI Agents Python/JavaScript examples; the
 remaining seven are enabled configuration candidates found previously. Examples are not treated as
 vulnerabilities, but they prove that deployment-time approval overrides recur in real agent code and
 need auditable policy. Status flags and branches with an additional safety condition are regression
