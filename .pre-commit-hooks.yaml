@@ -1,0 +1,8 @@
+- id: agentverify
+  name: AgentVerify agent security scan
+  description: Scan AI agent code and fail on high-severity demonstrated findings.
+  entry: agentverify scan . --fail-on high --fail-on-kind finding
+  language: python
+  pass_filenames: false
+  always_run: true
+  stages: [pre-commit]

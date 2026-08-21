@@ -47,5 +47,6 @@ sampling metrics separate from detection-quality metrics.
 The repository now includes a GitHub code-scanning workflow and copy-ready SARIF upload guidance
 with a stable category, an auditable `--paths-from` mode for changed-file scans, and baseline diff
 counts that avoid false resolution claims on partial scans. Inline suppressions now retain optional
-expiry status, and CI can require an active ISO date. Next add an official pre-commit hook and richer
-policy-as-code configuration.
+expiry status, and CI can require an active ISO date. A distributable pre-commit manifest and local
+setup are included; publishing its remote form waits for an approved repository URL and release tag.
+Next add richer policy-as-code configuration.

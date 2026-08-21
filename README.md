@@ -62,6 +62,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`docs/detection-rules.md`](docs/detection-rules.md) — rule contracts and validation gates
 - [`docs/architecture.md`](docs/architecture.md) — Agent IR, graph analysis, and uncertainty model
 - [`docs/code-scanning.md`](docs/code-scanning.md) — copy-ready GitHub SARIF integration
+- [`docs/pre-commit.md`](docs/pre-commit.md) — local and tagged-release hook setup
 - [`docs/backlog.md`](docs/backlog.md) — prioritized issue-ready future work
 - [`benchmarks/engine-results.json`](benchmarks/engine-results.json) — full-corpus engine metrics
 - [`benchmarks/truthset.json`](benchmarks/truthset.json) — exact hand-labeled positives and negatives
@@ -74,6 +75,9 @@ and resolved/unresolved control context for code-scanning integrations.
 The included [GitHub code-scanning workflow](.github/workflows/code-scanning.yml) uploads results on
 pushes, pull requests, and a weekly schedule. It uses a job-scoped token and a stable SARIF category;
 see the integration guide before adding an enforcement threshold.
+
+The bundled [pre-commit hook manifest](.pre-commit-hooks.yaml) supports repository-wide local scans;
+the setup guide avoids assuming a public URL or release tag that does not yet exist.
 
 Reproduce the corpus analysis:
 
