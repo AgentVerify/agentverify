@@ -385,9 +385,9 @@ billable/recordable tool dispatch into the round callback and then through `crea
 SQLAlchemy commit on the `actions` table. It preserves organization/workflow/task/step/action
 correlation and completed/failed status, but does not upgrade the record to a fully attributable
 audit because `created_by` is nullable and unset and persistence exceptions are contained.
-`AV-AUDIT001` consumes that explicit relationship state: it reports only when a durable action-record
-edge carries unresolved actor attribution. It does not treat missing tracing, missing audit edges, or
-repository-level logging vocabulary as proof of an audit failure.
+`AV-AUDIT001` consumes that explicit relationship state: it reports only when a production-scope
+durable action-record edge carries unresolved actor attribution. It does not treat missing tracing,
+missing audit edges, or repository-level logging vocabulary as proof of an audit failure.
 
 ## Safety boundary
 

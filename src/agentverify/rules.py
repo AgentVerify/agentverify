@@ -205,6 +205,7 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                 and edge.target_name == "durable-action-record"
                 and edge.evidence.path == component.evidence.path
                 and edge.evidence.line == component.evidence.line
+                and edge.attributes.get("scope") == "production"
                 and edge.attributes.get("durability")
                 in {"durable-relational-database", "durable-remote-database"}
                 and str(edge.attributes.get("actor_attribution", "")).startswith(
