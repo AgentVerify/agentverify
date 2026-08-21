@@ -19,7 +19,7 @@ The initial matcher found `shell=True` in eight repositories. Reviewable example
 
 The links are locked corpus snapshots; only an explicit collector `--refresh` pins newer commits.
 
-Filesystem mutation is broader than `open()` and `write_text()`. Schema v18 resolves 448 Python
+Filesystem mutation is broader than `open()` and `write_text()`. Schema v19 resolves 448 Python
 filesystem mutations in selected files: 179 creates, 190 deletes, 46 copies, and 33 moves. The move
 inventory includes 20 `Path.rename`/`Path.replace` calls proven through explicit constructors or
 immutable Path-derived bindings, including ChatDev's
@@ -62,7 +62,7 @@ name matching from inventing this control.
 Five more calls bind a tool source through an escaping callback: three browser-use actions are
 registered and two ArcadeAI wrappers are returned. Equivalent retry closures in the MCP Python SDK
 and FastMCP do not qualify because the public caller still selects the name for each operation.
-Schema v18 therefore reports five instance and five closure fixed-binding edges, without suppressing
+Schema v19 therefore reports five instance and five closure fixed-binding edges, without suppressing
 any review.
 
 FastMCP adds an interprocedural routing fact: its middleware recursion reaches a same-class callee
@@ -77,7 +77,7 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the 211-label truth set.
+rule observations are pinned in the 217-label truth set.
 
 ## 3. Approval exists, but bypass behavior recurs
 
@@ -109,6 +109,10 @@ edges matter: its imported validator normalizes candidate and root paths, reject
 boundary failures before `mkdir`, and is represented as a `path-boundary` control rather than a
 repository-wide “filesystem safe” flag. Its configured root scope remains unresolved, so the review
 is retained rather than treating the presence of validation as sufficient policy.
+ChatDev contributes the Python exception form: its local-tool creation route resolves a candidate,
+calls [`target_path.relative_to(tools_dir)`](https://github.com/OpenBMB/ChatDev/blob/4fb2db0ea90375ce1059f44fe03ffbd191a7a169/server/routes/tools.py#L58),
+and terminates the `ValueError` handler before writing. Schema v19 records this as a distinct
+`Path.relative_to` control edge with unresolved root scope; handlers that continue are not controls.
 
 ## 6. Tool configuration needs structure, not token matching
 

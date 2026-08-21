@@ -1208,6 +1208,11 @@ def test_python_path_boundary_is_ordered_branch_local_and_scope_aware() -> None:
         69: (False, "unresolved"),
         80: (False, "unresolved"),
         89: (False, "unresolved"),
+        100: (True, "constrained"),
+        111: (False, "unresolved"),
+        123: (False, "unresolved"),
+        134: (False, "unresolved"),
+        145: (False, "unresolved"),
     }
     assert [
         (
@@ -1216,16 +1221,18 @@ def test_python_path_boundary_is_ordered_branch_local_and_scope_aware() -> None:
             edge.attributes["policy_effect"],
             edge.attributes["boundary_scope"],
             edge.attributes["frontend"],
+            edge.attributes["helper"],
         )
         for edge in ir.relationships
         if edge.source_kind == "capability"
         and edge.relation == "governed-by"
         and edge.target_name == "path-boundary"
     ] == [
-        (12, 10, "restricts-filesystem-path", "constrained", "python"),
-        (13, 10, "restricts-filesystem-path", "constrained", "python"),
-        (22, 21, "restricts-filesystem-path", "constrained", "python"),
-        (51, 49, "validates-filesystem-path", "unresolved", "python"),
+        (12, 10, "restricts-filesystem-path", "constrained", "python", "Path.is_relative_to"),
+        (13, 10, "restricts-filesystem-path", "constrained", "python", "Path.is_relative_to"),
+        (22, 21, "restricts-filesystem-path", "constrained", "python", "Path.is_relative_to"),
+        (51, 49, "validates-filesystem-path", "unresolved", "python", "Path.is_relative_to"),
+        (100, 97, "restricts-filesystem-path", "constrained", "python", "Path.relative_to"),
     ]
     assert [
         (finding.rule_id, finding.evidence.line, finding.analysis["tool"])
@@ -1239,6 +1246,10 @@ def test_python_path_boundary_is_ordered_branch_local_and_scope_aware() -> None:
         ("AV-FS001", 69, "reassigned_root"),
         ("AV-FS001", 80, "conditionally_reassigned_candidate"),
         ("AV-FS001", 89, "parent_without_strict_descendant"),
+        ("AV-FS001", 111, "relative_to_continuing_handler"),
+        ("AV-FS001", 123, "relative_to_nonexclusive_try"),
+        ("AV-FS001", 134, "relative_to_parent_without_strict_descendant"),
+        ("AV-FS001", 145, "relative_to_rebinds_candidate"),
     ]
 
 

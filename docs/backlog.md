@@ -27,7 +27,9 @@ dynamic CLI/MCP roots retain a review plus an explicit unresolved-scope control 
 resolves statement-ordered `Path.resolve()` plus `is_relative_to()` boundaries, including positive
 branch-local and fail-closed guards. Literal narrow roots may suppress; configured roots retain the
 review, and prefix checks or reassignment remain unresolved. Next resolve imported policy objects,
-`relative_to()` exception guards, and bounded root constants without widening name-based inference.
+and bounded root constants without widening name-based inference. Fail-closed `relative_to()`
+exception guards now require an exclusive check plus a terminating ValueError handler; continuing
+handlers, mixed try bodies, and parent writes remain negative.
 Python filesystem inventory now models canonical and import-aliased `os`/`shutil` create, copy,
 move, replace, and delete calls, using the destination rather than the source for two-path APIs.
 Statement-ordered local callable aliases now cover direct assignments, conditional expressions, and
@@ -81,8 +83,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 211 pinned positive/negative locations, with 85 separately
-scored IR relationship labels. Schema-v18 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 217 pinned positive/negative locations, with 91 separately
+scored IR relationship labels. Schema-v19 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

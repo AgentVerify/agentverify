@@ -276,6 +276,7 @@ class PythonPathBoundaryProof:
     candidate_name: str
     root_name: str
     strict_descendant: bool
+    helper: str
 
 
 @dataclass
@@ -879,6 +880,60 @@ def python_block_always_terminates(statements: list[ast.stmt]) -> bool:
     )
 
 
+def python_relative_to_try_guard(
+    statement: ast.Try, state: PythonPathState
+) -> tuple[ast.Call, str, str] | None:
+    """Return a fail-closed relative_to call whose success is the only continuation."""
+    if len(statement.body) != 1:
+        return None
+    check = statement.body[0]
+    expression: ast.AST | None = None
+    if isinstance(check, (ast.Expr, ast.Assign, ast.AnnAssign)):
+        expression = check.value
+    if not (
+        isinstance(expression, ast.Call)
+        and isinstance(expression.func, ast.Attribute)
+        and expression.func.attr == "relative_to"
+        and len(expression.args) == 1
+        and not expression.keywords
+        and isinstance(expression.func.value, ast.Name)
+        and isinstance(expression.args[0], ast.Name)
+    ):
+        return None
+    candidate = expression.func.value.id
+    root_name = expression.args[0].id
+    if state.candidates.get(candidate) != root_name or root_name not in state.roots:
+        return None
+    if isinstance(check, ast.Assign):
+        assigned_names = {
+            name for target in check.targets for name in python_assigned_names(target)
+        }
+    elif isinstance(check, ast.AnnAssign):
+        assigned_names = python_assigned_names(check.target)
+    else:
+        assigned_names = set()
+    if assigned_names & {candidate, root_name}:
+        return None
+
+    def catches_value_error(handler: ast.ExceptHandler) -> bool:
+        if handler.type is None:
+            return True
+        types = handler.type.elts if isinstance(handler.type, ast.Tuple) else (handler.type,)
+        return any(
+            dotted_name(exception_type) in {"ValueError", "Exception", "BaseException"}
+            for exception_type in types
+        )
+
+    matching_handler = next(
+        (handler for handler in statement.handlers if catches_value_error(handler)), None
+    )
+    if matching_handler is None or not python_block_always_terminates(
+        matching_handler.body
+    ):
+        return None
+    return expression, candidate, root_name
+
+
 def python_filesystem_path_name(
     node: ast.Call,
     aliases: dict[str, str],
@@ -1083,6 +1138,7 @@ def python_path_boundary_calls(
                     candidate,
                     root_name,
                     strict_descendant,
+                    "Path.is_relative_to",
                 )
                 (body_state if positive else else_state).guards[candidate] = proof
             analyze_block(statement.body, body_state)
@@ -1111,6 +1167,7 @@ def python_path_boundary_calls(
                             candidate,
                             root_name,
                             strict_descendant,
+                            "Path.is_relative_to",
                         )
                         propagated_continuation = True
             if not propagated_continuation:
@@ -1137,6 +1194,25 @@ def python_path_boundary_calls(
             merge_states(state, [state.clone(), loop_state, else_state])
             return
         if isinstance(statement, ast.Try):
+            if guard := python_relative_to_try_guard(statement, state):
+                check, candidate, root_name = guard
+                record_expression(check, state)
+                continuing = state.clone()
+                continuing.guards[candidate] = PythonPathBoundaryProof(
+                    Evidence(path, check.lineno, excerpt(lines, check.lineno)),
+                    continuing.roots[root_name],
+                    candidate,
+                    root_name,
+                    False,
+                    "Path.relative_to",
+                )
+                analyze_block(statement.orelse, continuing)
+                analyze_block(statement.finalbody, continuing)
+                state.dynamic_names = continuing.dynamic_names
+                state.roots = continuing.roots
+                state.candidates = continuing.candidates
+                state.guards = continuing.guards
+                return
             branches = [state.clone()]
             body_state = state.clone()
             analyze_block(statement.body, body_state)
@@ -1292,7 +1368,7 @@ class PythonVisitor(ast.NodeVisitor):
             "scope": source_scope(self.path),
             "policy_effect": policy_effect,
             "frontend": "python",
-            "helper": "Path.is_relative_to",
+            "helper": proof.helper,
             "predicate_path": proof.evidence.path,
             "boundary_scope": proof.boundary_scope,
             "candidate": proof.candidate_name,
@@ -1313,7 +1389,7 @@ class PythonVisitor(ast.NodeVisitor):
                     "control_line": proof.evidence.line,
                     "policy_effect": policy_effect,
                     "frontend": "python",
-                    "helper": "Path.is_relative_to",
+                    "helper": proof.helper,
                     "predicate_path": proof.evidence.path,
                     "boundary_scope": proof.boundary_scope,
                     "candidate": proof.candidate_name,

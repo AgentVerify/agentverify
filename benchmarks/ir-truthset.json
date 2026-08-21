@@ -804,6 +804,115 @@
       }
     },
     {
+      "id": "python-relative-to-exception-path-boundary-local",
+      "target": {"kind": "local", "path": "cases/python_path_boundary"},
+      "check_id": "IR-PY-PATH-BOUNDARY",
+      "path": "agent.py",
+      "line": 100,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary",
+        "attributes": {
+          "control_line": 97,
+          "policy_effect": "restricts-filesystem-path",
+          "frontend": "python",
+          "helper": "Path.relative_to",
+          "boundary_scope": "constrained"
+        }
+      }
+    },
+    {
+      "id": "python-relative-to-continuing-path-boundary-local-negative",
+      "target": {"kind": "local", "path": "cases/python_path_boundary"},
+      "check_id": "IR-PY-PATH-BOUNDARY",
+      "path": "agent.py",
+      "line": 111,
+      "expected": false,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary"
+      }
+    },
+    {
+      "id": "python-relative-to-nonexclusive-path-boundary-local-negative",
+      "target": {"kind": "local", "path": "cases/python_path_boundary"},
+      "check_id": "IR-PY-PATH-BOUNDARY",
+      "path": "agent.py",
+      "line": 123,
+      "expected": false,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary"
+      }
+    },
+    {
+      "id": "python-relative-to-parent-path-boundary-local-negative",
+      "target": {"kind": "local", "path": "cases/python_path_boundary"},
+      "check_id": "IR-PY-PATH-BOUNDARY",
+      "path": "agent.py",
+      "line": 134,
+      "expected": false,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary"
+      }
+    },
+    {
+      "id": "python-relative-to-chatdev-real",
+      "target": {
+        "kind": "repository",
+        "repository": "OpenBMB/ChatDev",
+        "commit": "4fb2db0ea90375ce1059f44fe03ffbd191a7a169"
+      },
+      "check_id": "IR-PY-PATH-BOUNDARY",
+      "path": "server/routes/tools.py",
+      "line": 65,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary",
+        "attributes": {
+          "control_line": 58,
+          "policy_effect": "validates-filesystem-path",
+          "frontend": "python",
+          "helper": "Path.relative_to",
+          "boundary_scope": "unresolved"
+        }
+      }
+    },
+    {
+      "id": "python-relative-to-rebind-path-boundary-local-negative",
+      "target": {"kind": "local", "path": "cases/python_path_boundary"},
+      "check_id": "IR-PY-PATH-BOUNDARY",
+      "path": "agent.py",
+      "line": 145,
+      "expected": false,
+      "source_contains": "candidate.write_text",
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary"
+      }
+    },
+    {
       "id": "python-filesystem-move-alias-local",
       "target": {"kind": "local", "path": "cases/filesystem_mutations"},
       "check_id": "IR-PY-FILESYSTEM-MUTATION",

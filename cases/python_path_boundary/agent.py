@@ -87,3 +87,59 @@ def parent_without_strict_descendant(requested_path: str) -> None:
     if not candidate.is_relative_to(root):
         return
     candidate.parent.mkdir(parents=True, exist_ok=True)
+
+
+@tool
+def relative_to_exception_guard(requested_path: str) -> None:
+    root = Path("/srv/agent-workspace").resolve()
+    candidate = (root / requested_path).resolve()
+    try:
+        candidate.relative_to(root)
+    except ValueError:
+        raise ValueError("outside workspace") from None
+    candidate.write_text("safe", encoding="utf-8")
+
+
+@tool
+def relative_to_continuing_handler(requested_path: str) -> None:
+    root = Path("/srv/agent-workspace").resolve()
+    candidate = (root / requested_path).resolve()
+    try:
+        candidate.relative_to(root)
+    except ValueError:
+        pass
+    candidate.write_text("handler continued", encoding="utf-8")
+
+
+@tool
+def relative_to_nonexclusive_try(requested_path: str) -> None:
+    root = Path("/srv/agent-workspace").resolve()
+    candidate = (root / requested_path).resolve()
+    try:
+        candidate.relative_to(root)
+        candidate = Path(requested_path).resolve()
+    except ValueError:
+        raise ValueError("outside workspace") from None
+    candidate.write_text("try also replaced candidate", encoding="utf-8")
+
+
+@tool
+def relative_to_parent_without_strict_descendant(requested_path: str) -> None:
+    root = Path("/srv/agent-workspace").resolve()
+    candidate = (root / requested_path).resolve()
+    try:
+        candidate.relative_to(root)
+    except ValueError:
+        return
+    candidate.parent.mkdir(parents=True, exist_ok=True)
+
+
+@tool
+def relative_to_rebinds_candidate(requested_path: str) -> None:
+    root = Path("/srv/agent-workspace").resolve()
+    candidate = (root / requested_path).resolve()
+    try:
+        candidate = candidate.relative_to(root)
+    except ValueError:
+        raise ValueError("outside workspace") from None
+    candidate.write_text("candidate became relative", encoding="utf-8")

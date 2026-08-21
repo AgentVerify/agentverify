@@ -239,6 +239,10 @@ def main() -> int:
             "path_boundary_controls": {
                 "python": len(python_path_boundary_edges),
                 "typescript": len(typescript_path_boundary_edges),
+                "python_relative_to": sum(
+                    edge.attributes.get("helper") == "Path.relative_to"
+                    for edge in python_path_boundary_edges
+                ),
                 "constrained": sum(
                     edge.attributes.get("boundary_scope") == "constrained"
                     for edge in path_boundary_edges
@@ -323,7 +327,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 18,
+        "schema_version": 19,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -423,7 +427,13 @@ def main() -> int:
             },
             "path_boundary_controls": {
                 name: sum(result["path_boundary_controls"][name] for result in successful)
-                for name in ("python", "typescript", "constrained", "unresolved")
+                for name in (
+                    "python",
+                    "typescript",
+                    "python_relative_to",
+                    "constrained",
+                    "unresolved",
+                )
             },
             "python_filesystem_mutations": {
                 "total": sum(

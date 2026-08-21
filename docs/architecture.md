@@ -74,6 +74,13 @@ non-filesystem roots carry `restricts-filesystem-path`; parameter/configured roo
 unresolved candidates, shadowed `Path` imports, and `relative_to()` exception patterns are not
 treated as equivalent controls.
 
+A fail-closed `candidate.relative_to(root)` exception check can establish the same Python boundary
+fact. The try body must contain only that check, the first handler capable of catching `ValueError`
+must always terminate, and the candidate/root bindings must already be resolved and unchanged.
+Continuing handlers, mixed mutation/check blocks, and parent writes without strict-descendant proof
+remain unresolved. IR preserves `Path.relative_to` separately from `Path.is_relative_to` as the
+control helper.
+
 Python filesystem mutation calls preserve API semantics in Agent IR. Canonical and top-level
 import-aliased `os`/`shutil` functions resolve only while their bindings remain unshadowed. One-path
 create/delete APIs use their target argument; copy, move, rename, and replace APIs use the
