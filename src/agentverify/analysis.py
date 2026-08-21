@@ -34,6 +34,7 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
             and edge.relation == "uses"
             and edge.target_kind == "tool"
             and edge.target_name == tool_name
+            and edge.evidence.path == component.evidence.path
         }
     )
     controls = sorted(
@@ -44,6 +45,7 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
             and edge.source_name == tool_name
             and edge.relation == "governed-by"
             and edge.target_kind == "control"
+            and edge.evidence.path == component.evidence.path
         }
     )
     delegation_parents: dict[str, set[str]] = {}

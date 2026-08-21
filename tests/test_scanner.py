@@ -186,6 +186,20 @@ def test_delegation_expands_transitive_capability_path() -> None:
     assert ir.findings[0].analysis["reachable_agents"] == ["coordinator", "worker"]
 
 
+def test_same_named_cross_file_edges_do_not_leak_into_context() -> None:
+    ir = scan_repository(ROOT / "cases/symbol_collision")
+
+    finding = next(finding for finding in ir.findings if finding.rule_id == "AV-EXEC001")
+    assert finding.ir_path == (
+        "agent:operator",
+        "tool:run_command",
+        "capability:shell-execution",
+    )
+    assert finding.analysis["direct_agents"] == ["operator"]
+    assert finding.analysis["approval_coverage"] == "unresolved"
+    assert finding.analysis["governing_controls"] == []
+
+
 def test_test_scope_findings_are_opt_in() -> None:
     default_ir = scan_repository(ROOT / "cases/test_scope")
     complete_ir = scan_repository(ROOT / "cases/test_scope", include_tests=True)

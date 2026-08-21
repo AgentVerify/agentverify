@@ -17,4 +17,5 @@ never imported or executed.
 - `constant_eval`: constant Python evaluation negative case.
 - `approval_safe`: disabled auto-approval negative case.
 - `test_scope`: findings are suppressed by default and enabled with `--include-tests`.
+- `symbol_collision`: same-named cross-file tools cannot leak agents or controls into a finding.
 - `../examples/safe_agent`: near-miss showing fixed argv is inventory-only.

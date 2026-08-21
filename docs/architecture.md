@@ -27,7 +27,10 @@ Every object carries source path, line, and excerpt evidence.
 
 Names are intentionally not treated as globally unique. Capability-to-tool resolution requires the
 relationship and capability observation to share a source location; name-only cross-file inference
-would overstate certainty. Future symbol tables will add module-qualified identities.
+would overstate certainty. Agent-to-tool and tool-to-control context is likewise restricted to the
+capability's source file, preventing same-named definitions in separate modules from leaking
+reachability or control coverage. Future symbol tables will add module-qualified identities and
+resolve explicit imports across files.
 
 ## Result kinds and uncertainty
 
