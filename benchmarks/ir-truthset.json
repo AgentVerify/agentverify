@@ -130,6 +130,115 @@
       }
     },
     {
+      "id": "import-contextual-class-tool-local-resolved",
+      "target": {
+        "kind": "local",
+        "path": "cases/python_contextual_class_tool"
+      },
+      "check_id": "IR-IMPORT-RESOLUTION",
+      "path": "project_a/agent.py",
+      "line": 4,
+      "expected": true,
+      "relationship": {
+        "source_kind": "agent",
+        "source_name": "Agent",
+        "relation": "uses",
+        "target_kind": "tool",
+        "target_name": "WebTools.browse",
+        "target_id": "py:project_a/tools/browser.py#tool:BrowserTools.browse",
+        "attributes": {
+          "target_path": "project_a/tools/browser.py",
+          "target_identity": "contextual-absolute-import-single-export"
+        }
+      }
+    },
+    {
+      "id": "import-contextual-class-tool-missing-export-local-negative",
+      "target": {
+        "kind": "local",
+        "path": "cases/python_contextual_class_tool"
+      },
+      "check_id": "IR-IMPORT-RESOLUTION",
+      "path": "project_a/missing.py",
+      "line": 4,
+      "expected": false,
+      "source_contains": "BrowserTools.not_exported",
+      "relationship": {
+        "source_kind": "agent",
+        "relation": "uses",
+        "target_kind": "tool",
+        "target_name": "BrowserTools.not_exported",
+        "target_id": "py:project_a/tools/browser.py#tool:BrowserTools.not_exported"
+      }
+    },
+    {
+      "id": "import-contextual-class-tool-ambiguous-ancestor-local-negative",
+      "target": {
+        "kind": "local",
+        "path": "cases/python_contextual_class_tool"
+      },
+      "check_id": "IR-IMPORT-RESOLUTION",
+      "path": "ambiguous/nested/agent.py",
+      "line": 4,
+      "expected": false,
+      "source_contains": "BrowserTools.browse",
+      "relationship": {
+        "source_kind": "agent",
+        "relation": "uses",
+        "target_kind": "tool",
+        "target_name": "BrowserTools.browse",
+        "target_id": "py:ambiguous/nested/tools/browser.py#tool:BrowserTools.browse"
+      }
+    },
+    {
+      "id": "import-contextual-instagram-browser-real",
+      "target": {
+        "kind": "repository",
+        "repository": "crewAIInc/crewAI-examples",
+        "commit": "da94a91e691e1cf5b3151416bb15b5b62729bea8"
+      },
+      "check_id": "IR-IMPORT-RESOLUTION",
+      "path": "crews/instagram_post/agents.py",
+      "line": 15,
+      "expected": true,
+      "relationship": {
+        "source_kind": "agent",
+        "source_name": "Agent",
+        "relation": "uses",
+        "target_kind": "tool",
+        "target_name": "BrowserTools.scrape_and_summarize_website",
+        "target_id": "py:crews/instagram_post/tools/browser_tools.py#tool:BrowserTools.scrape_and_summarize_website",
+        "attributes": {
+          "target_path": "crews/instagram_post/tools/browser_tools.py",
+          "target_identity": "contextual-absolute-import-single-export"
+        }
+      }
+    },
+    {
+      "id": "import-contextual-trip-calculator-real",
+      "target": {
+        "kind": "repository",
+        "repository": "crewAIInc/crewAI-examples",
+        "commit": "da94a91e691e1cf5b3151416bb15b5b62729bea8"
+      },
+      "check_id": "IR-IMPORT-RESOLUTION",
+      "path": "crews/trip_planner/trip_agents.py",
+      "line": 36,
+      "expected": true,
+      "relationship": {
+        "source_kind": "agent",
+        "source_name": "Agent",
+        "relation": "uses",
+        "target_kind": "tool",
+        "target_name": "CalculatorTools.calculate",
+        "target_id": "py:crews/trip_planner/tools/calculator_tools.py#tool:CalculatorTools.calculate",
+        "attributes": {
+          "target_path": "crews/trip_planner/tools/calculator_tools.py",
+          "target_identity": "contextual-absolute-import-single-export"
+        }
+      }
+    },
+    {
       "id": "approval-builtin-local-enabled",
       "target": {"kind": "local", "path": "cases/builtin_tool_approval"},
       "check_id": "IR-APPROVAL-CONTROL",
@@ -3777,6 +3886,27 @@
       "target":{"kind":"local","path":"cases/python_typed_tool_parameter"},
       "check_id":"IR-PY-TYPED-TOOL-PARAMETER","path":"app.py","line":145,"expected":true,
       "relationship":{"source_kind":"agent","source_name":"nested-shadow-constructor","relation":"uses","target_kind":"tool","target_name":"tool","target_id":null,"attributes":{"target_identity":"ambiguous-repeated-binding"}}
+    },
+    {
+      "id":"python-contextual-network-google-adk-issue-real",
+      "target":{"kind":"repository","repository":"google/adk-python","commit":"775c1bd36e205eec65e207ad29fdc4cf2184e47e"},
+      "check_id":"IR-PY-CONTEXTUAL-IMPORT","path":"contributing/samples/adk_team/adk_issue_formatting_agent/agent.py","line":85,"expected":true,
+      "anchor":{"kind":"capability","name":"network","attributes":{"summary":"imported-function","dynamic_origin":true,"import_resolution":"contextual-absolute-import-single-path","helper_path":"contributing/samples/adk_team/adk_issue_formatting_agent/utils.py"}},
+      "relationship":{"source_kind":"tool","source_name":"get_issue","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id":"python-contextual-network-google-adk-fixed-real",
+      "target":{"kind":"repository","repository":"google/adk-python","commit":"775c1bd36e205eec65e207ad29fdc4cf2184e47e"},
+      "check_id":"IR-PY-CONTEXTUAL-IMPORT","path":"contributing/samples/adk_team/adk_issue_formatting_agent/agent.py","line":67,"expected":true,
+      "anchor":{"kind":"capability","name":"network","attributes":{"summary":"imported-function","dynamic_origin":false,"import_resolution":"contextual-absolute-import-single-path","helper_path":"contributing/samples/adk_team/adk_issue_formatting_agent/utils.py"}},
+      "relationship":{"source_kind":"tool","source_name":"list_open_issues","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id":"python-contextual-network-google-adk-pr-real",
+      "target":{"kind":"repository","repository":"google/adk-python","commit":"775c1bd36e205eec65e207ad29fdc4cf2184e47e"},
+      "check_id":"IR-PY-CONTEXTUAL-IMPORT","path":"contributing/samples/adk_team/adk_pr_triaging_agent/agent.py","line":148,"expected":true,
+      "anchor":{"kind":"capability","name":"network","attributes":{"summary":"imported-function","dynamic_origin":true,"import_resolution":"contextual-absolute-import-single-path","helper_path":"contributing/samples/adk_team/adk_pr_triaging_agent/utils.py"}},
+      "relationship":{"source_kind":"tool","source_name":"get_pull_request_details","relation":"uses","target_kind":"capability","target_name":"network"}
     }
   ]
 }

@@ -315,16 +315,45 @@ class PythonClassNetworkSummary:
     network_lines: tuple[int, ...]
 
 
-def resolve_python_import_path(
+@dataclass(frozen=True)
+class PythonImportResolution:
+    path: str
+    basis: str
+
+
+def resolve_python_import(
     root: Path,
     current_path: str,
     node: ast.ImportFrom,
     alias_name: str,
     module_paths: dict[str, str],
-) -> str | None:
+) -> PythonImportResolution | None:
     """Resolve one absolute or relative Python import to a selected local file."""
     if node.level == 0 and node.module:
-        return module_paths.get(node.module)
+        if target := module_paths.get(node.module):
+            return PythonImportResolution(target, "repository-module-single-path")
+        module_parts = node.module.split(".")
+        base = Path(current_path).parent
+        candidates: set[str] = set()
+        while True:
+            module_path = base.joinpath(*module_parts)
+            for candidate in (module_path.with_suffix(".py"), module_path / "__init__.py"):
+                if (
+                    not candidate.is_absolute()
+                    and ".." not in candidate.parts
+                    and (root / candidate).is_file()
+                    and not (root / candidate).is_symlink()
+                ):
+                    candidates.add(candidate.as_posix())
+            if base == Path("."):
+                break
+            base = base.parent
+        if len(candidates) == 1:
+            return PythonImportResolution(
+                next(iter(candidates)),
+                "contextual-absolute-import-single-path",
+            )
+        return None
     if not node.level:
         return None
     base = Path(current_path).parent
@@ -343,7 +372,24 @@ def resolve_python_import_path(
         and (root / candidate).is_file()
         and not (root / candidate).is_symlink()
     ]
-    return resolved[0].as_posix() if len(resolved) == 1 else None
+    if len(resolved) == 1:
+        return PythonImportResolution(
+            resolved[0].as_posix(),
+            "filesystem-relative-import-single-path",
+        )
+    return None
+
+
+def resolve_python_import_path(
+    root: Path,
+    current_path: str,
+    node: ast.ImportFrom,
+    alias_name: str,
+    module_paths: dict[str, str],
+) -> str | None:
+    """Return only the selected path for callers that do not need provenance."""
+    resolution = resolve_python_import(root, current_path, node, alias_name, module_paths)
+    return resolution.path if resolution is not None else None
 
 
 @dataclass(frozen=True)
@@ -2153,6 +2199,7 @@ class PythonVisitor(ast.NodeVisitor):
         definition_symbol_ids: dict[int, str],
         referenced_tool_functions: dict[int, ast.Call],
         wrapped_tool_functions: dict[int, PythonFunctionToolWrapper],
+        decorated_tool_exports: dict[tuple[str, str], str],
         registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
         network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
         registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
@@ -2210,6 +2257,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_depth = 0
         self.imported_symbol_paths: dict[str, str] = {}
         self.imported_symbol_names: dict[str, str] = {}
+        self.imported_symbol_resolutions: dict[str, str] = {}
         self.network_helper_bindings: dict[str, PythonNetworkHelperSummary] = {}
         self.module_paths = module_paths
         self.local_symbol_ids = local_symbol_ids
@@ -2222,6 +2270,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.definition_symbol_ids = definition_symbol_ids
         self.referenced_tool_functions = referenced_tool_functions
         self.wrapped_tool_functions = wrapped_tool_functions
+        self.decorated_tool_exports = decorated_tool_exports
         self.registry_class_exports = registry_class_exports
         self.network_helper_summaries = network_helper_summaries
         self.registered_tool_functions = registered_tool_functions
@@ -2493,6 +2542,7 @@ class PythonVisitor(ast.NodeVisitor):
     def invalidate_imported_symbol(self, name: str) -> None:
         self.imported_symbol_paths.pop(name, None)
         self.imported_symbol_names.pop(name, None)
+        self.imported_symbol_resolutions.pop(name, None)
 
     def visit_Import(self, node: ast.Import) -> None:
         for alias in node.names:
@@ -2507,19 +2557,22 @@ class PythonVisitor(ast.NodeVisitor):
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
         for alias in node.names:
             local_name = alias.asname or alias.name
+            self.invalidate_imported_symbol(local_name)
             helper_import_scope = not self.class_stack or self.function_depth > 0
             if helper_import_scope:
                 self.network_helper_bindings.pop(local_name, None)
-            target = resolve_python_import_path(
+            resolution = resolve_python_import(
                 self.root,
                 self.path,
                 node,
                 alias.name,
                 self.module_paths,
             )
-            if target:
+            if resolution:
+                target = resolution.path
                 self.imported_symbol_paths[local_name] = target
                 self.imported_symbol_names[local_name] = alias.name
+                self.imported_symbol_resolutions[local_name] = resolution.basis
                 if helper_import_scope and (
                     summary := self.network_helper_summaries.get((target, alias.name))
                 ):
@@ -2745,6 +2798,7 @@ class PythonVisitor(ast.NodeVisitor):
         local_bindings = python_function_local_bindings(node)
         previous_imported_symbol_paths = self.imported_symbol_paths
         previous_imported_symbol_names = self.imported_symbol_names
+        previous_imported_symbol_resolutions = self.imported_symbol_resolutions
         self.imported_symbol_paths = {
             name: target
             for name, target in self.imported_symbol_paths.items()
@@ -2753,6 +2807,11 @@ class PythonVisitor(ast.NodeVisitor):
         self.imported_symbol_names = {
             name: original
             for name, original in self.imported_symbol_names.items()
+            if name not in local_bindings
+        }
+        self.imported_symbol_resolutions = {
+            name: basis
+            for name, basis in self.imported_symbol_resolutions.items()
             if name not in local_bindings
         }
         previous_urllib_openers = self.urllib_openers
@@ -3044,6 +3103,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.network_helper_bindings = previous_network_helper_bindings
         self.imported_symbol_paths = previous_imported_symbol_paths
         self.imported_symbol_names = previous_imported_symbol_names
+        self.imported_symbol_resolutions = previous_imported_symbol_resolutions
         self.urllib_openers = previous_urllib_openers
         self.urllib_request_constructors = previous_urllib_request_constructors
 
@@ -3764,7 +3824,7 @@ class PythonVisitor(ast.NodeVisitor):
 
     def imported_network_helper(
         self, node: ast.Call
-    ) -> tuple[PythonNetworkHelperSummary, list[ast.AST]] | None:
+    ) -> tuple[PythonNetworkHelperSummary, list[ast.AST], str | None] | None:
         if not isinstance(node.func, ast.Name):
             return None
         local_name = node.func.id
@@ -3783,7 +3843,7 @@ class PythonVisitor(ast.NodeVisitor):
                     argument = node.args[index]
             if argument is not None:
                 arguments.append(argument)
-        return summary, arguments
+        return summary, arguments, self.imported_symbol_resolutions.get(local_name)
 
     def visit_Call(self, node: ast.Call) -> None:
         call_name = dotted_name(node.func)
@@ -4035,12 +4095,29 @@ class PythonVisitor(ast.NodeVisitor):
                             target_name
                         ) or self.imported_symbol_paths.get(root_name)
                         if imported_path:
-                            attributes["target_path"] = imported_path
                             original = self.imported_symbol_names.get(root_name, root_name)
                             resolved_name = f"{original}.{suffix}" if separator else original
-                            target_id = source_symbol(
-                                "py", imported_path, target_kind, resolved_name
+                            import_basis = self.imported_symbol_resolutions.get(root_name)
+                            contextual_export_id = self.decorated_tool_exports.get(
+                                (imported_path, resolved_name)
                             )
+                            if import_basis != "contextual-absolute-import-single-path":
+                                attributes["target_path"] = imported_path
+                                target_id = source_symbol(
+                                    "py", imported_path, target_kind, resolved_name
+                                )
+                            elif target_kind == "tool" and contextual_export_id is not None:
+                                attributes.update(
+                                    {
+                                        "target_path": imported_path,
+                                        "target_identity": (
+                                            "contextual-absolute-import-single-export"
+                                        ),
+                                    }
+                                )
+                                target_id = contextual_export_id
+                            else:
+                                target_id = None
                         elif target_id is not None and target_identity:
                             attributes["target_identity"] = target_identity
                         elif (
@@ -4608,7 +4685,7 @@ class PythonVisitor(ast.NodeVisitor):
             if origin_guard is not None:
                 self.add_python_network_origin_control(node, origin_guard)
         if helper := self.imported_network_helper(node):
-            summary, arguments = helper
+            summary, arguments, import_resolution = helper
             secure_policy = summary.secure_policy
             self.add_capability(
                 "network",
@@ -4643,6 +4720,12 @@ class PythonVisitor(ast.NodeVisitor):
                     "helper_line": summary.line,
                     "helper_network_lines": list(summary.network_lines),
                     **(
+                        {"import_resolution": import_resolution}
+                        if import_resolution
+                        == "contextual-absolute-import-single-path"
+                        else {}
+                    ),
+                    **(
                         {
                             "network_origin_policy": True,
                             "initial_origin_scope": secure_policy.initial_origin_scope,
@@ -4676,6 +4759,7 @@ def scan_python(
     path: Path,
     text: str,
     module_paths: dict[str, str],
+    decorated_tool_exports: dict[tuple[str, str], str],
     registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
     network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
     registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
@@ -5917,6 +6001,7 @@ def scan_python(
         definition_symbol_ids=definition_symbol_ids,
         referenced_tool_functions=referenced_tool_functions,
         wrapped_tool_functions=wrapped_tool_functions,
+        decorated_tool_exports=decorated_tool_exports,
         registry_class_exports=registry_class_exports,
         network_helper_summaries=network_helper_summaries,
         registered_tool_functions=registered_tool_functions,
@@ -8631,6 +8716,62 @@ def build_python_module_index(root: Path, paths: list[Path]) -> dict[str, str]:
         module: next(iter(locations))
         for module, locations in candidates.items()
         if len(locations) == 1
+    }
+
+
+def build_python_decorated_tool_exports(
+    root: Path,
+    paths: list[Path],
+) -> dict[tuple[str, str], str]:
+    """Index exact importable Python functions recognized as decorated tools."""
+    exports: dict[tuple[str, str], list[ast.FunctionDef | ast.AsyncFunctionDef]] = defaultdict(list)
+    for path in paths:
+        if (
+            path.is_symlink()
+            or not path.is_file()
+            or path.suffix.lower() != ".py"
+            or set(path.relative_to(root).parts) & SKIP_DIRECTORIES
+        ):
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            tree = ast.parse(
+                path.read_text(encoding="utf-8-sig", errors="ignore"),
+                filename=path.relative_to(root).as_posix(),
+            )
+        except (OSError, SyntaxError):
+            continue
+        relative = path.relative_to(root).as_posix()
+
+        def collect(
+            statements: list[ast.stmt],
+            class_stack: tuple[str, ...] = (),
+            source_path: str = relative,
+        ) -> None:
+            for statement in statements:
+                if isinstance(statement, ast.ClassDef):
+                    collect(statement.body, (*class_stack, statement.name))
+                    continue
+                if not isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    continue
+                decorators = {
+                    dotted_name(decorator.func)
+                    if isinstance(decorator, ast.Call)
+                    else dotted_name(decorator)
+                    for decorator in statement.decorator_list
+                }
+                if decorators & TOOL_DECORATORS or any(
+                    name.endswith(".tool") for name in decorators
+                ):
+                    qualified_name = ".".join([*class_stack, statement.name])
+                    exports[(source_path, qualified_name)].append(statement)
+
+        collect(tree.body)
+    return {
+        key: source_symbol("py", key[0], "tool", key[1])
+        for key, definitions in exports.items()
+        if len(definitions) == 1
     }
 
 
@@ -14983,6 +15124,7 @@ def scan_repository(
             for selector in selectors
         )
     ]
+    decorated_tool_exports = build_python_decorated_tool_exports(root, registry_paths)
     registry_class_exports = build_python_registry_class_exports(
         root,
         registry_paths,
@@ -15067,6 +15209,7 @@ def scan_repository(
                 path,
                 text,
                 module_paths,
+                decorated_tool_exports,
                 registry_class_exports,
                 network_helper_summaries,
                 registered_tool_functions,

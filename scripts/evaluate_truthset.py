@@ -85,6 +85,10 @@ def main() -> int:
                 and component.name == anchor["name"]
                 and component.evidence.path == label["path"]
                 and component.evidence.line == label["line"]
+                and all(
+                    component.attributes.get(name) == expected
+                    for name, expected in anchor.get("attributes", {}).items()
+                )
                 for component in ir.components
             )
         source_ok = True

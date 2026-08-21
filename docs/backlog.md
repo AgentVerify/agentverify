@@ -13,10 +13,10 @@ decorated-tool bindings now receive occurrence-qualified IDs for exact source ed
 references are scope-aware for unique and repeated names; repeated targets resolve for a single
 direct, earlier definition in the same lexical/module scope, plus an exact single-mutation definition
 that dominates use in the same branch/with body.
-Schema v54 additionally inventories 15 import-proven OpenAI Agents Python `ComputerTool` instances
+Schema v55 additionally inventories 15 import-proven OpenAI Agents Python `ComputerTool` instances
 and resolves ten agent links to them, including three formerly ambiguous repeated bindings. Literal
 Python Agent tool lists now recover 150 exact same-block callable definitions and 162 Agent links,
-including the PydanticAI direct-function target; 83 definitions are outside test paths and seven
+including the PydanticAI direct-function target; 83 definitions are outside test paths and 16
 capability edges become reachable. Before wrapper recovery, six corpus targets in parameter,
 helper-return, wrapper-factory, or tuple-unpack forms remained unresolved. Import-proven OpenAI
 `function_tool(function)` assignments now recover 12 exact wrapper tools and Agent edges, including
@@ -31,6 +31,9 @@ cross-branch, forward, inconsistent/untyped parameters, conditional/transformed 
 receivers, shadowed factories, lambdas, and reassigned fixture cases stay withheld. Next add broader
 branch/reassignment dataflow and resolve Python/TS package re-exports, wildcard imports, other
 wrapper factories, and type-driven symbols.
+Contextual absolute-import proof additionally resolves 25 project-local CrewAI Agent-to-class-tool
+edges across eight exact decorated method targets and nine Google ADK imported-helper network call
+sites. Multiple ancestor candidates and missing or undecorated exports stay unresolved.
 Preserve unresolved state for ambiguity and validate on larger real monorepository graphs.
 
 Exact module-level Python `mcp.tool(...)(function)` applications now resolve through unique local or
@@ -155,7 +158,7 @@ backend that validates every redirect and pins an Undici dispatcher unless a cal
 is configured. Its edge backend fails closed for caller URL uploads but deliberately leaves three
 `WhereSupported` API-response transfers unguarded. The CLI's separate tool-file pipeline now proves
 an actionable gap: schema-marked `params.arguments` recursively reach raw global fetch for URL file
-inputs, producing the eighteenth AV-NET001 review. Google ADK's generated OpenAPI tools provide the
+inputs, producing one AV-NET001 review. Google ADK's generated OpenAPI tools provide the
 configured-origin counterexample: model path values are segment-encoded with dot segments rejected,
 server variables come only from declared defaults/enums, and credential application changes headers
 or query parameters without replacing the origin. Next resolve general imported clients,
@@ -189,8 +192,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 342 pinned positive/negative locations, with 340 separately
-scored IR relationship labels. Schema-v54 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 345 pinned positive/negative locations, with 348 separately
+scored IR relationship labels. Schema-v55 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

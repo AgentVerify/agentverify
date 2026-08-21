@@ -3828,6 +3828,48 @@ def test_relative_python_tool_import_resolves_only_existing_sibling_module() -> 
     assert unresolved_edge.target_id is None
 
 
+def test_contextual_absolute_class_tool_import_requires_one_path_and_exact_export() -> None:
+    ir = scan_repository(ROOT / "cases/python_contextual_class_tool")
+
+    positive = next(
+        edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent" and edge.evidence.path == "project_a/agent.py"
+    )
+    assert positive.target_name == "WebTools.browse"
+    assert positive.attributes == {
+        "target_path": "project_a/tools/browser.py",
+        "target_identity": "contextual-absolute-import-single-export",
+    }
+    assert positive.target_id == (
+        "py:project_a/tools/browser.py#tool:BrowserTools.browse"
+    )
+    assert any(
+        finding.rule_id == "AV-NET001"
+        and finding.ir_path
+        == (
+            "agent:Agent",
+            "tool:browse",
+            "capability:network",
+        )
+        for finding in ir.findings
+    )
+
+    unresolved = {
+        edge.evidence.path: edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent" and edge.evidence.path != "project_a/agent.py"
+    }
+    assert set(unresolved) == {
+        "ambiguous/nested/agent.py",
+        "project_a/missing.py",
+        "project_a/reimported.py",
+        "project_a/shadowed.py",
+    }
+    assert all(edge.attributes == {} for edge in unresolved.values())
+    assert all(edge.target_id is None for edge in unresolved.values())
+
+
 def test_local_import_resolves_cross_file_agent_tool_path() -> None:
     ir = scan_repository(ROOT / "cases/imported_tool")
 

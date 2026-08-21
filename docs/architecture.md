@@ -33,7 +33,13 @@ requires the relationship and capability observation to share a source location,
 same-named definitions in separate modules from leaking reachability or control coverage.
 Unambiguous absolute Python
 `from local_module import tool` references and filesystem-resolved relative imports point to an exact
-repository file and can safely form cross-file agent paths. Function parameters and local
+repository file and can safely form cross-file agent paths. Script-root-style absolute imports in a
+monorepository can also resolve by walking only the importer's ancestor directories and requiring
+one filesystem candidate. An Agent-to-tool ID additionally requires that candidate to export the
+exact decorated function or class-qualified method; aliases preserve the original export name. The
+edge records `target_identity: contextual-absolute-import-single-export`. The same single-path proof
+can apply an exact imported network-helper summary. Multiple ancestor candidates, missing members,
+undecorated members, and local rebinding remain unresolved. Function parameters and local
 assignments/imports are scope-isolated: a same-named local binding cannot inherit a module import's
 target ID, and an explicit function-local import is restored only within that function. TypeScript
 named imports resolve when a

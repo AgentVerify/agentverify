@@ -103,7 +103,7 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-22 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,763 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,527 relationships, and completed in 183.99 seconds on the development machine. Three parse
+resolved 1,536 relationships, and completed in 199.10 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -114,10 +114,10 @@ versioned audited evidence hints plus Python imports reached from MCP forwarding
 URL-security call sites, all charged against the same cap. This refresh materialized 168 dependency files across 18
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v54 carries both the 168-file total and the
+dependency count per repository; engine schema v55 carries both the 168-file total and the
 18-repository coverage.
 
-Engine benchmark schema v54 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v55 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It also publishes Python and TypeScript initial-origin control coverage
 plus source-proven Python and TypeScript secure transports, with redirect, DNS, proxy, configured
@@ -126,13 +126,13 @@ excludes arbitrary agent/tool display names from the summary. The resulting
 framework/provider/protocol/capability coverage and unsupported syntax are published in
 `docs/frontend-coverage.md`; presence counts are discovery observations, not recall measurements.
 
-Schema v54 retains A2A endpoint provenance as a separate authority class: four exact client-construction
+Schema v55 retains A2A endpoint provenance as a separate authority class: four exact client-construction
 paths comprise two unconstrained remote-card-selected TypeScript origins and two same-origin-
 constrained ADK Python paths. The guarded paths validate every advertised interface; the Gemini path
 also records its Undici agent/proxy transport. These metrics do not count configured card URLs as
 model-controlled AV-NET001 origins.
 
-Schema v54 also publishes immutable same-file Axios-instance metrics and the sixth TypeScript
+Schema v55 also publishes immutable same-file Axios-instance metrics and the sixth TypeScript
 secure-network composition. The corpus-level generic instance counters are zero; those syntax paths
 are fixture-validated. The selected Activepieces path contributes one imported-client capability and
 one address-filtering control with configured allowlist and environment-proxy residual metrics. Four
@@ -140,16 +140,17 @@ Composio edges separately count configured-route pinning residuals, one edge-run
 and three edge-runtime unguarded fallbacks.
 
 The benchmark now also measures identity coverage: 8,928 agent/tool component observations carry
-module-qualified IDs. Of 3,054 relationship endpoints, all 2,175 identified symbol endpoints resolve
-to an observed component (1,916 Python and 259 TypeScript). Schema v54 records 311
-`lexical-single-definition` targets, 20 exact same-block dominating definitions, and three exact
-same-class helper-return edges to two Agent source definitions. One import-proven typed tool
+module-qualified IDs. Of 3,072 relationship endpoints, all 2,209 identified symbol endpoints resolve
+to an observed component (1,950 Python and 259 TypeScript). Schema v55 records 311
+`lexical-single-definition` targets, 20 exact same-block dominating definitions, 25 contextual
+absolute-import targets, and three exact same-class helper-return edges to two Agent source
+definitions. One import-proven typed tool
 parameter resolves through ten unanimous same-module `ApplyPatchTool` constructor call sites. Its
 occurrence-qualified parameter component records all ten concrete target IDs without selecting one
 runtime instance or propagating instance-specific approval policy. Fifteen
 import-proven OpenAI Agents Python `ComputerTool` instances add ten exact agent links, including
 three formerly ambiguous repeated bindings. Literal Agent tool lists add 150 direct callable tools,
-83 outside tests, with seven capability edges and 162 exact Agent edges. Import-proven OpenAI
+83 outside tests, with 16 capability edges and 162 exact Agent edges. Import-proven OpenAI
 `function_tool(function)` assignments add 12 wrapper tools and 12 exact Agent edges; three explicitly
 enable approval, all occur under tests, and none of their selected bodies contains a recognized
 capability. No `ambiguous-repeated-binding` target remains in the pinned corpus; cross-branch,
@@ -159,9 +160,9 @@ were false package-import identities attached after a same-named function parame
 import; their IDs remain withheld.
 Capability, control, and taxonomy endpoints intentionally remain evidence observations.
 
-Schema-v54 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
-resolves 2,175 endpoints by symbol ID, 521 by exact evidence location, and 15 by a unique display
-name; 29 remain ambiguous and 314 unresolved. Before evidence-local and occurrence-qualified
+Schema-v55 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
+resolves 2,209 endpoints by symbol ID, 530 by exact evidence location, and 15 by a unique display
+name; 29 remain ambiguous and 289 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
 and mark unsafe targets explicitly unresolved. Conservative lexical resolution removes further target
@@ -169,13 +170,17 @@ ambiguities. The 29 remaining ambiguities are control or tool targets without a 
 resolver does not use a nearby source location to invent an identity.
 
 The Python frontend resolves unambiguous absolute imports rooted at the repository, `src/`, or
-`python/`, plus relative modules that map to exactly one sibling package file. It found five imported
-agent-to-tool edges across two pinned repositories, including
+`python/`, plus relative modules that map to exactly one sibling package file. Schema v55 records 28
+imported agent-to-tool edges. Twenty-five are new project-local CrewAI edges: a script-root-style
+absolute import must map to exactly one file along the importer's ancestor chain, and that file must
+export the exact decorated function or class-qualified method. The eight exact targets span the
+Instagram, trip-planner, and landing-page projects. Existing exact paths include
 CrewAI Examples' [markdown validator tool](https://github.com/crewAIInc/crewAI-examples/blob/da94a91e691e1cf5b3151416bb15b5b62729bea8/crews/markdown_validator/src/markdown_validator/crew.py#L3).
 Two are newly resolved relative imports: the
 [email flow draft tool](https://github.com/crewAIInc/crewAI-examples/blob/da94a91e691e1cf5b3151416bb15b5b62729bea8/flows/email_auto_responder_flow/src/email_auto_responder_flow/crews/email_filter_crew/email_filter_crew.py#L46)
 and [CrewAI-LangGraph draft tool](https://github.com/crewAIInc/crewAI-examples/blob/da94a91e691e1cf5b3151416bb15b5b62729bea8/integrations/CrewAI-LangGraph/src/crew/agents.py#L44).
-Missing files, path escapes, and duplicate absolute module names remain unresolved rather than
+Missing members, undecorated members, local rebinding, path escapes, and multiple ancestor
+candidates remain unresolved rather than
 falling back to name-only inference.
 
 Resolved agent/tool components and relationships now carry frontend-and-module-qualified symbol IDs.
@@ -215,13 +220,17 @@ review, and arbitrary object `.open(...)` methods are not filesystem capabilitie
 URLs remain inventory-only when a dynamic path or query is concatenated to a proven module constant
 or formatted through an immutable `self` URL field.
 
-Python imported network summaries add exactly two corpus capabilities, both dynamic, each from a
-different unique top-level helper and each with an exact tool edge. Qwen's `simple_doc_parser`
+Python imported network summaries add 11 corpus capabilities across nine unique top-level helpers;
+all have exact tool edges and seven are dynamic. Qwen's `simple_doc_parser`
 passes its tool-controlled URL to the imported `save_url_to_local_work_dir`, whose corresponding
 formal reaches `requests.get`. Smolagents' `visualizer` performs a function-local self-import of
-`encode_image`; its image-path parameter reaches another `requests.get`. The edge is attached at the
+`encode_image`; its image-path parameter reaches another `requests.get`. Google ADK contributes nine
+call sites across its issue-formatting and PR-triaging sample packages. Their package-qualified
+absolute imports each have one importer-ancestor candidate; five caller-built GitHub URLs remain
+dynamic and produce AV-NET001 reviews, while four fixed-origin calls remain inventory. The edge is attached at the
 tool call site and retains the helper path, definition line, and network sink lines. Exact named
 imports, unique top-level definitions, direct formal flow, and recognized clients are required;
+multiple ancestor candidates are rejected;
 module-object calls, nested helpers, reexports, transitive calls, local aliases, and any relevant
 binding or client rebinding remain unresolved.
 
@@ -302,7 +311,7 @@ local OpenAI Agents Python `ShellTool` or TypeScript `shellTool`, a direct resol
 and an explicit false or the SDK's documented false default. It reports a high-confidence `review`,
 not a finding, because a custom executor may still implement an equivalent internal approval control.
 
-Schema v54 separately inventories OpenAI Agents Python's MCP approval default without widening the
+Schema v55 separately inventories OpenAI Agents Python's MCP approval default without widening the
 rule. In the pinned sandbox-agent example, omitted `MCPServerStdio.require_approval` flows through the
 SDK's `None → False` normalization and missing-name false fallback into each generated
 `FunctionTool`, and the exact server binding reaches `SandboxAgent.mcp_servers`. The IR emits one
@@ -733,7 +742,7 @@ and a literal `privileged=True` keyword.
 
 ## AV-AUDIT001 — durable action record lacks actor attribution
 
-Schema v54 reports one medium-severity, high-confidence production review in Skyvern Task v3. The
+Schema v55 reports one medium-severity, high-confidence production review in Skyvern Task v3. The
 exact path executes a billable/recordable [tool handler](https://github.com/Skyvern-AI/skyvern/blob/486c8975e9864a53037d4701b781f8619e698c40/skyvern/forge/taskv3/loop.py#L559),
 passes its completed or failed result to the configured callback, and commits an action row. However,
 the Task v3 constructor does not populate `created_by`, and the
@@ -750,13 +759,13 @@ and surfacing failed writes through metrics or alerts.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 342 exact labels across all eleven enabled rules: 186 positives and 156
+`benchmarks/truthset.json` contains 345 exact labels across all eleven enabled rules: 188 positives and 157
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
-Compose/Kubernetes/Docker SDK settings. All 342 currently pass; each rule's seed precision and recall
+Compose/Kubernetes/Docker SDK settings. All 345 currently pass; each rule's seed precision and recall
 are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified source
 text at the exact pinned line, preventing a missing or drifting location from passing silently.
 
@@ -779,7 +788,7 @@ Four additional audit labels exercise Google ADK Python's BigQuery Agent Analyti
 enabled external action and explicit-disabled counterexample, the pinned Storage Write API edge, and
 a pinned `InMemoryRunner` plugin composition. The resolver requires the exact enabled/default plugin,
 `Runner` propagation, `PluginManager` callback dispatch, before/after/error tool flow, and
-`append_rows` sink. Schema v54 records one available durable control, one audit-storage capability,
+`append_rows` sink. Schema v55 records one available durable control, one audit-storage capability,
 two test deployments, two agent-control edges, one storage edge, and zero production deployments or
 production external-action control edges. Records are attributable by event, agent, user, session,
 invocation, and tool, but delivery is best-effort with drop accounting. This attributable control is
@@ -789,20 +798,21 @@ Five Skyvern Task v3 labels add a local governed action, an unrelated untracked 
 production action, storage, and agent-control edges. The exact path begins after model-selected
 `spec.handler(args)` dispatch, retains billable/recordable completed or failed actions, invokes the
 configured round callback, constructs an action with organization/workflow/task/step/order identity,
-and commits an `ActionModel` to the SQLAlchemy `actions` table. Schema v54 records one production
+and commits an `ActionModel` to the SQLAlchemy `actions` table. Schema v55 records one production
 deployment, one governed external-action edge, and one storage edge. It remains a
 `durable-action-record`, not a fully attributable audit: `created_by` is nullable and unset in this
 path, persistence happens after the action, and callback/database failures are contained.
-Schema v54 raises one medium-severity, high-confidence `AV-AUDIT001` review at this exact production
+Schema v55 raises one medium-severity, high-confidence `AV-AUDIT001` review at this exact production
 action edge. The rule requires a durable-action-record relationship whose actor-attribution state is
 explicitly unresolved; it does not infer findings from generic untraced or unrecorded actions. Two
 positive and two negative rule labels pin the Skyvern, ADK, and unrelated-action boundaries.
 
 Three MCP registry labels cover the local control edge, a caller-owned-map negative, and the pinned
 SDK SessionGroup edge. Four fixed-instance labels cover a local constructor-only binding, a mutable
-negative, AgentScope's pinned wrapper, and Trae's pure-getter path. Three import labels cover a
-resolved relative fixture, a missing-module
-negative, and the pinned CrewAI-LangGraph draft-tool edge. Seven approval labels cover enabled,
+negative, AgentScope's pinned wrapper, and Trae's pure-getter path. Eight import labels cover relative
+and contextual positives, missing-export and multiple-ancestor negatives, and three pinned CrewAI
+Examples edges. Three contextual network-import labels cover dynamic and fixed Google ADK helper
+calls with exact helper-path evidence. Seven approval labels cover enabled,
 disabled, callback, and automatic-handler policies plus pinned Python and TypeScript OpenAI shell
 edges. Four TypeScript graph
 labels cover inline and assigned agent adapters, the Cline tool path, and a nested-token negative.
@@ -860,9 +870,10 @@ OpenAI Agent edges. Eleven Agent-helper labels cover direct and tuple local prop
 reassigned, transformed, cross-branch and external-receiver negatives, and all three pinned CrewAI
 edges. Eighteen typed-tool-parameter labels cover exact assigned and inline-only local plus pinned
 parameter edges, the non-collapsing concrete-ID negative, and mismatched, reassigned, uncalled,
-rebound, class/nested-scope shadowed, union-typed, and wrong-annotation cases. All 340 IR labels pass:
+rebound, class/nested-scope shadowed, union-typed, and wrong-annotation cases. All 348 IR labels pass:
 three approval positives/four negatives,
-nine audit/action-record positives/four negatives, two import positives/one negative,
+nine audit/action-record positives/four negatives, five import positives/three negatives, three
+contextual network-import positives,
 four import-shadow positives/one negative, eight block-dominance positives/three negatives, ten
 Agent-helper-return positives/one negative, 16 typed-tool-parameter positives/two negatives, seven
 Python ComputerTool positives/one negative, eight

@@ -92,6 +92,7 @@ def main() -> int:
                 "module-single-definition",
                 "same-class-helper-return",
                 "typed-parameter-callsite-consensus",
+                "contextual-absolute-import-single-export",
             }
         )
         if any(
@@ -148,6 +149,26 @@ def main() -> int:
                 f"{repository}: typed tool parameter edge lacks a parameter component"
             )
         component_symbol_ids = {item.symbol_id for item in ir.components if item.symbol_id}
+        python_contextual_tool_import_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.attributes.get("target_identity")
+            == "contextual-absolute-import-single-export"
+        ]
+        if any(
+            edge.source_kind != "agent"
+            or edge.target_kind != "tool"
+            or edge.source_id not in component_symbol_ids
+            or edge.target_id not in component_symbol_ids
+            or not edge.attributes.get("target_path")
+            for edge in python_contextual_tool_import_edges
+        ):
+            raise RuntimeError(
+                f"{repository}: contextual Python tool import lacks an exact graph edge"
+            )
+        python_contextual_tool_target_ids = {
+            edge.target_id for edge in python_contextual_tool_import_edges
+        }
         typed_tool_concrete_ids = {
             target_id
             for component in python_typed_tool_parameters
@@ -316,6 +337,12 @@ def main() -> int:
             if item.kind == "capability"
             and item.name == "network"
             and item.attributes.get("summary") == "imported-function"
+        ]
+        python_contextual_network_helpers = [
+            item
+            for item in python_imported_network_helpers
+            if item.attributes.get("import_resolution")
+            == "contextual-absolute-import-single-path"
         ]
         python_imported_network_locations = {
             (item.evidence.path, item.evidence.line)
@@ -733,6 +760,30 @@ def main() -> int:
                     not edge.evidence.path.startswith("tests/")
                     and "/tests/" not in edge.evidence.path
                     for edge in python_typed_tool_parameter_edges
+                ),
+            },
+            "python_contextual_imports": {
+                "resolved_tool_edges": len(python_contextual_tool_import_edges),
+                "unique_tool_targets": len(python_contextual_tool_target_ids),
+                "tool_capability_targets": len(
+                    {
+                        edge.source_id
+                        for edge in ir.relationships
+                        if edge.source_id in python_contextual_tool_target_ids
+                        and edge.target_kind == "capability"
+                    }
+                ),
+                "non_test_tool_edges": sum(
+                    not edge.evidence.path.startswith("tests/")
+                    and "/tests/" not in edge.evidence.path
+                    for edge in python_contextual_tool_import_edges
+                ),
+                "network_helper_capabilities": len(
+                    python_contextual_network_helpers
+                ),
+                "dynamic_network_helper_capabilities": sum(
+                    bool(item.attributes.get("dynamic_origin"))
+                    for item in python_contextual_network_helpers
                 ),
             },
             "python_browser_evaluate": {
@@ -1374,7 +1425,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 54,
+        "schema_version": 55,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -1554,6 +1605,20 @@ def main() -> int:
                     "verified_call_sites",
                     "concrete_targets",
                     "non_test_edges",
+                )
+            },
+            "python_contextual_imports": {
+                name: sum(
+                    result["python_contextual_imports"][name]
+                    for result in successful
+                )
+                for name in (
+                    "resolved_tool_edges",
+                    "unique_tool_targets",
+                    "tool_capability_targets",
+                    "non_test_tool_edges",
+                    "network_helper_capabilities",
+                    "dynamic_network_helper_capabilities",
                 )
             },
             "python_browser_evaluate": {
