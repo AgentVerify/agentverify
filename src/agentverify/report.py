@@ -67,6 +67,7 @@ def render_sarif(ir: RepositoryIR) -> str:
                 "properties": {
                     "scanScope": ir.scan_scope,
                     "pathFilters": ir.path_filters,
+                    "baselineSummary": ir.baseline_summary,
                 },
                 "results": results,
             }
@@ -85,9 +86,20 @@ def render_text(ir: RepositoryIR) -> str:
         f"Files scanned: {ir.files_scanned}",
         f"Configuration files scanned: {ir.config_files_scanned}",
         f"Suppressed findings: {ir.suppressed_findings}",
-        "",
-        "AI Components:",
     ]
+    if ir.baseline_summary:
+        no_longer_reported = ir.baseline_summary["no_longer_reported"]
+        lines.append(
+            "Baseline: "
+            f"{ir.baseline_summary['new']} new, "
+            f"{ir.baseline_summary['unchanged']} unchanged, "
+            + (
+                f"{no_longer_reported} no longer reported"
+                if no_longer_reported is not None
+                else "no-longer-reported count unavailable for partial scan"
+            )
+        )
+    lines += ["", "AI Components:"]
     if not ir.components:
         lines.append("  None detected")
     for kind in sorted(component_counts):

@@ -35,7 +35,37 @@ def test_json_baseline_suppresses_known_fingerprint(tmp_path: Path, capsys) -> N
     assert cli.main(["scan", str(target), "--baseline", str(baseline)]) == 0
     output = capsys.readouterr().out
     assert "Suppressed findings: 1" in output
+    assert "Baseline: 0 new, 1 unchanged, 0 no longer reported" in output
     assert "No findings" in output
+
+
+def test_partial_baseline_does_not_claim_resolved_findings(tmp_path: Path, capsys) -> None:
+    baseline = tmp_path / "baseline.json"
+    baseline.write_text('["old-fingerprint"]', encoding="utf-8")
+    paths = tmp_path / "changed.txt"
+    paths.write_text("agent.py\n", encoding="utf-8")
+
+    target = ROOT / "examples/safe_agent"
+    assert cli.main(
+        [
+            "scan",
+            str(target),
+            "--baseline",
+            str(baseline),
+            "--paths-from",
+            str(paths),
+            "--format",
+            "json",
+        ]
+    ) == 0
+    payload = __import__("json").loads(capsys.readouterr().out)
+    assert payload["baseline_summary"] == {
+        "baseline_fingerprints": 1,
+        "current_fingerprints": 0,
+        "new": 0,
+        "unchanged": 0,
+        "no_longer_reported": None,
+    }
 
 
 def test_version(capsys) -> None:

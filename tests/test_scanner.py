@@ -539,6 +539,7 @@ def test_sarif_contains_location_fingerprint_and_ir_context() -> None:
     assert sarif["runs"][0]["properties"] == {
         "scanScope": "repository",
         "pathFilters": [],
+        "baselineSummary": {},
     }
     assert result["ruleId"] == "AV-EXEC001"
     assert result["locations"][0]["physicalLocation"]["region"]["startLine"] == 13

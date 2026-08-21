@@ -44,7 +44,9 @@ SARIF upload still runs. To enforce a policy in a separate step, add a second sc
 
 Keep policy enforcement separate from SARIF generation: a failing scan step otherwise prevents the
 upload step unless it uses `if: always()`. For an existing repository, `--baseline` can hide known
-fingerprints while new results remain visible; commit and review that baseline as policy data.
+fingerprints while new results remain visible; commit and review that baseline as policy data. JSON,
+text, and SARIF include counts for new, unchanged, and no-longer-reported fingerprints. The last count
+is deliberately unavailable for selected-path scans because unscanned findings are not proven fixed.
 
 The workflow deliberately grants `security-events: write` only to the scanning job. Do not pass a
 personal token to the upload action; its default is the job-scoped GitHub token.

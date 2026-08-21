@@ -45,6 +45,6 @@ sampling metrics separate from detection-quality metrics.
 ## P2 — CI adoption workflow
 
 The repository now includes a GitHub code-scanning workflow and copy-ready SARIF upload guidance
-with a stable category, plus an auditable `--paths-from` mode for changed-file scans. Next add baseline
-diff summaries, suppression expiry enforcement, and an official pre-commit hook. Rule-scoped inline
-suppressions with required reasons are supported.
+with a stable category, an auditable `--paths-from` mode for changed-file scans, and baseline diff
+counts that avoid false resolution claims on partial scans. Next add suppression expiry enforcement
+and an official pre-commit hook. Rule-scoped inline suppressions with required reasons are supported.

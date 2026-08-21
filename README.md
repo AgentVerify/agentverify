@@ -34,6 +34,8 @@ subprocess.run(command, shell=True)
 
 JSON and text reports retain the suppression's rule, reason, directive location, and finding location.
 Broad file-level or reason-free inline ignores are intentionally unsupported.
+When `--baseline` is used, reports separate new and unchanged fingerprints and count fingerprints no
+longer reported by a full scan. Partial selected-path scans leave that last count unavailable.
 
 Example finding:
 

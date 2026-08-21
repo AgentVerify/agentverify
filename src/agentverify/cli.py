@@ -92,9 +92,18 @@ def main(argv: list[str] | None = None) -> int:
         except (OSError, json.JSONDecodeError, TypeError, ValueError) as error:
             print(f"agentverify: invalid baseline: {error}", file=sys.stderr)
             return 2
-        original_count = len(ir.findings)
-        ir.findings = [finding for finding in ir.findings if finding.fingerprint not in known]
-        ir.suppressed_findings += original_count - len(ir.findings)
+        current = {finding.fingerprint for finding in ir.findings}
+        unchanged = current & known
+        new = current - known
+        ir.findings = [finding for finding in ir.findings if finding.fingerprint in new]
+        ir.suppressed_findings += len(unchanged)
+        ir.baseline_summary = {
+            "baseline_fingerprints": len(known),
+            "current_fingerprints": len(current),
+            "new": len(new),
+            "unchanged": len(unchanged),
+            "no_longer_reported": len(known - current) if ir.scan_scope == "repository" else None,
+        }
     try:
         report = {
             "json": render_json,
