@@ -20,8 +20,12 @@ Preserve unresolved state for ambiguity and validate on larger real monoreposito
 Resolve environment defaults, config objects, CLI flags, MCP allowlists, tool policies, and approval
 overrides into control edges. Suppress `AV-MCP002` and `AV-FS001` only when the resolved policy governs
 the exact reachable path. Same-function MCP rejection guards and uncaught internal tool-registry
-lookups are statement-ordered, so later checks cannot govern earlier calls. Next resolve positive
-branch-local guards and imported policy objects. Keep unresolved distinct from absent.
+lookups are statement-ordered, so later checks cannot govern earlier calls. A bounded imported
+TypeScript path guard now suppresses `AV-FS001` only when a normalized, separator-aware roots
+predicate rejects before the write and its roots are a statically narrow literal set. MCP Servers'
+dynamic CLI/MCP roots retain a review plus an explicit unresolved-scope control edge. Next resolve
+positive branch-local guards, equivalent Python path boundaries, and other imported policy objects.
+Keep unresolved distinct from absent.
 
 ## P0 — approval coverage rule
 
@@ -59,8 +63,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 172 pinned positive/negative locations, with 36 separately
-scored IR relationship labels. Schema-v9 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 175 pinned positive/negative locations, with 40 separately
+scored IR relationship labels. Schema-v10 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T07:44:36.114501+00:00",
-  "labels": 36,
-  "passed": 36,
+  "generated_at": "2026-08-21T08:03:13.280214+00:00",
+  "labels": 40,
+  "passed": 40,
   "metrics": {
     "IR-APPROVAL-CONTROL": {
       "tp": 3,
@@ -40,6 +40,14 @@
       "tp": 5,
       "fp": 0,
       "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-PATH-BOUNDARY": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 2,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -353,6 +361,42 @@
     {
       "id": "typescript-network-helper-mcp-servers-real",
       "check_id": "IR-TS-HELPER-SUMMARY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-path-boundary-local",
+      "check_id": "IR-TS-PATH-BOUNDARY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-weak-path-boundary-local-negative",
+      "check_id": "IR-TS-PATH-BOUNDARY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-reassigned-path-boundary-local-negative",
+      "check_id": "IR-TS-PATH-BOUNDARY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-path-boundary-mcp-servers-real",
+      "check_id": "IR-TS-PATH-BOUNDARY",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

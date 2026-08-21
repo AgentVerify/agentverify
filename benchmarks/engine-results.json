@@ -1,6 +1,6 @@
 {
-  "schema_version": 9,
-  "generated_at": "2026-08-21T07:43:16.621636+00:00",
+  "schema_version": 10,
+  "generated_at": "2026-08-21T08:02:19.362156+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -13,7 +13,7 @@
     ],
     "files_scanned": 10594,
     "config_files_scanned": 155,
-    "relationships": 1365,
+    "relationships": 1366,
     "symbolized_components": 8549,
     "identified_symbol_endpoints": 1875,
     "resolved_symbol_endpoints": 1873,
@@ -23,10 +23,10 @@
       "lexical-single-definition": 325,
       "module-single-definition": 14
     },
-    "relationship_endpoints": 2730,
+    "relationship_endpoints": 2732,
     "bom_endpoint_resolutions": {
       "ambiguous": 30,
-      "evidence-location": 310,
+      "evidence-location": 312,
       "symbol-id": 1873,
       "unique-display-name": 17,
       "unresolved": 500
@@ -49,7 +49,8 @@
       "mcp_register_tool": 264,
       "object_property_tools": 70,
       "capability_edges": 10,
-      "network_helper_edges": 4
+      "network_helper_edges": 4,
+      "path_boundary_edges": 1
     },
     "resolved_import_edges": 5,
     "resolved_import_edges_by_frontend": {
@@ -95,6 +96,7 @@
       "control": {
         "action-trace": 1,
         "human-approval": 3,
+        "path-boundary": 1,
         "tool-allowlist": 1,
         "tool-registry": 1
       },
@@ -239,7 +241,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 50.7354
+    "elapsed_seconds": 50.7615
   },
   "repositories": [
     {
@@ -286,7 +288,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -301,7 +304,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2719
+      "elapsed_seconds": 1.2643
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -354,7 +357,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -367,7 +371,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7625
+      "elapsed_seconds": 0.7543
     },
     {
       "repository": "langchain-ai/langchain",
@@ -417,7 +421,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -430,7 +435,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2609
+      "elapsed_seconds": 0.253
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -484,7 +489,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -497,7 +503,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1716
+      "elapsed_seconds": 1.1688
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -556,7 +562,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -569,7 +576,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0519
+      "elapsed_seconds": 0.0517
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -632,7 +639,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -652,7 +660,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9882
+      "elapsed_seconds": 0.9861
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -712,7 +720,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 2,
       "resolved_import_edges_by_frontend": {
@@ -731,7 +740,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7313
+      "elapsed_seconds": 0.7327
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -787,7 +796,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 3,
       "resolved_import_edges_by_frontend": {
@@ -806,7 +816,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0754
+      "elapsed_seconds": 0.075
     },
     {
       "repository": "microsoft/autogen",
@@ -862,7 +872,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -880,7 +891,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2181
+      "elapsed_seconds": 0.2172
     },
     {
       "repository": "microsoft/agent-framework",
@@ -920,7 +931,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -933,7 +945,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0128
+      "elapsed_seconds": 0.0124
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -987,7 +999,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1005,7 +1018,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0286
+      "elapsed_seconds": 0.0287
     },
     {
       "repository": "openai/openai-agents-python",
@@ -1075,7 +1088,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1099,7 +1113,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.532
+      "elapsed_seconds": 1.5229
     },
     {
       "repository": "openai/openai-agents-js",
@@ -1170,7 +1184,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1189,7 +1204,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4668
+      "elapsed_seconds": 0.4694
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -1249,7 +1264,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1271,7 +1287,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4517
+      "elapsed_seconds": 3.412
     },
     {
       "repository": "google/adk-python",
@@ -1323,7 +1339,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1339,7 +1356,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8828
+      "elapsed_seconds": 0.8678
     },
     {
       "repository": "google/adk-js",
@@ -1386,7 +1403,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1399,7 +1417,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6659
+      "elapsed_seconds": 1.6573
     },
     {
       "repository": "huggingface/smolagents",
@@ -1457,7 +1475,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1475,7 +1494,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.308
+      "elapsed_seconds": 0.3072
     },
     {
       "repository": "agno-agi/agno",
@@ -1525,7 +1544,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1541,7 +1561,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1169
+      "elapsed_seconds": 0.1166
     },
     {
       "repository": "camel-ai/camel",
@@ -1599,7 +1619,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1617,7 +1638,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5593
+      "elapsed_seconds": 0.5578
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -1665,7 +1686,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1735,7 +1757,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1748,7 +1771,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2016
+      "elapsed_seconds": 0.2033
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -1806,7 +1829,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1822,7 +1846,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3632
+      "elapsed_seconds": 0.3633
     },
     {
       "repository": "InternLM/lagent",
@@ -1876,7 +1900,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1940,7 +1965,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1956,7 +1982,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2639
+      "elapsed_seconds": 0.2623
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -2008,7 +2034,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2024,7 +2051,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3886
+      "elapsed_seconds": 0.389
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -2076,7 +2103,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2091,7 +2119,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.251
+      "elapsed_seconds": 0.2473
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -2146,7 +2174,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2162,7 +2191,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7918
+      "elapsed_seconds": 0.793
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -2212,7 +2241,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2227,7 +2257,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4261
+      "elapsed_seconds": 0.4224
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -2279,7 +2309,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2292,7 +2323,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4078
+      "elapsed_seconds": 0.4077
     },
     {
       "repository": "letta-ai/letta-code",
@@ -2338,7 +2369,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2351,7 +2383,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0412
+      "elapsed_seconds": 2.0342
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -2410,7 +2442,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2431,7 +2464,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2493
+      "elapsed_seconds": 0.2497
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -2478,7 +2511,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2493,7 +2527,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4776
+      "elapsed_seconds": 0.478
     },
     {
       "repository": "mastra-ai/mastra",
@@ -2550,7 +2584,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 15,
         "capability_edges": 4,
-        "network_helper_edges": 3
+        "network_helper_edges": 3,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2569,7 +2604,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2116
+      "elapsed_seconds": 1.2413
     },
     {
       "repository": "vercel/ai",
@@ -2621,7 +2656,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 48,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2639,7 +2675,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2927
+      "elapsed_seconds": 1.288
     },
     {
       "repository": "cline/cline",
@@ -2695,7 +2731,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 1,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2714,7 +2751,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.779
+      "elapsed_seconds": 1.7782
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -2763,7 +2800,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2776,7 +2814,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.949
+      "elapsed_seconds": 1.9516
     },
     {
       "repository": "continuedev/continue",
@@ -2823,7 +2861,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2836,7 +2875,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2383
+      "elapsed_seconds": 1.2271
     },
     {
       "repository": "Aider-AI/aider",
@@ -2879,7 +2918,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2894,7 +2934,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.687
+      "elapsed_seconds": 0.6903
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -2936,7 +2976,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2953,7 +2994,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 0.1887
+      "elapsed_seconds": 0.1883
     },
     {
       "repository": "plandex-ai/plandex",
@@ -2985,7 +3026,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2998,7 +3040,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0151
+      "elapsed_seconds": 0.018
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -3044,7 +3086,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3057,7 +3100,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3383
+      "elapsed_seconds": 0.3389
     },
     {
       "repository": "stitionai/devika",
@@ -3105,7 +3148,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3118,7 +3162,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0895
+      "elapsed_seconds": 0.0914
     },
     {
       "repository": "block/goose",
@@ -3165,7 +3209,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 7,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3188,7 +3233,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 1.0241
+      "elapsed_seconds": 1.0163
     },
     {
       "repository": "bytedance/trae-agent",
@@ -3244,7 +3289,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3261,7 +3307,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1547
+      "elapsed_seconds": 0.1559
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -3309,7 +3355,8 @@
         "mcp_register_tool": 1,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3324,7 +3371,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.943
+      "elapsed_seconds": 2.9206
     },
     {
       "repository": "openai/codex",
@@ -3363,7 +3410,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3376,7 +3424,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1288
+      "elapsed_seconds": 0.1284
     },
     {
       "repository": "browser-use/browser-use",
@@ -3432,7 +3480,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3448,7 +3497,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7548
+      "elapsed_seconds": 0.7437
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -3511,7 +3560,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3527,7 +3577,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3169
+      "elapsed_seconds": 1.3488
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -3579,7 +3629,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3594,7 +3645,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2196
+      "elapsed_seconds": 0.2227
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -3643,7 +3694,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3658,7 +3710,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6418
+      "elapsed_seconds": 0.6475
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -3668,6 +3720,7 @@
       "config_files_scanned": 0,
       "components": {
         "capability": 117,
+        "control": 1,
         "mcp": 6,
         "model": 1,
         "protocol": 95,
@@ -3679,11 +3732,14 @@
           "network",
           "shell-execution"
         ],
+        "control": [
+          "path-boundary"
+        ],
         "protocol": [
           "MCP"
         ]
       },
-      "relationships": 2,
+      "relationships": 3,
       "symbolized_components": 42,
       "identified_symbol_endpoints": 2,
       "resolved_symbol_endpoints": 2,
@@ -3705,7 +3761,8 @@
         "mcp_register_tool": 42,
         "object_property_tools": 0,
         "capability_edges": 2,
-        "network_helper_edges": 1
+        "network_helper_edges": 1,
+        "path_boundary_edges": 1
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3713,7 +3770,7 @@
         "typescript": 0
       },
       "bom_endpoint_resolutions": {
-        "evidence-location": 2,
+        "evidence-location": 4,
         "symbol-id": 2
       },
       "bom_ambiguous_endpoints_by_side_kind": {},
@@ -3724,7 +3781,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.579
+      "elapsed_seconds": 0.6776
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -3783,7 +3840,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3800,7 +3858,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4979
+      "elapsed_seconds": 0.4918
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -3852,7 +3910,8 @@
         "mcp_register_tool": 214,
         "object_property_tools": 0,
         "capability_edges": 3,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3870,7 +3929,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.816
+      "elapsed_seconds": 1.8428
     },
     {
       "repository": "github/github-mcp-server",
@@ -3912,7 +3971,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3925,7 +3985,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0178
+      "elapsed_seconds": 0.0179
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -3968,7 +4028,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3981,7 +4042,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0507
+      "elapsed_seconds": 0.0513
     },
     {
       "repository": "awslabs/mcp",
@@ -4031,7 +4092,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4046,7 +4108,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4335
+      "elapsed_seconds": 0.4362
     },
     {
       "repository": "docker/mcp-gateway",
@@ -4089,7 +4151,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4150,7 +4213,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4165,7 +4229,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5079
+      "elapsed_seconds": 0.508
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -4197,7 +4261,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4210,7 +4275,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0112
+      "elapsed_seconds": 0.0111
     },
     {
       "repository": "langflow-ai/langflow",
@@ -4262,7 +4327,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4277,7 +4343,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9758
+      "elapsed_seconds": 0.9757
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -4322,7 +4388,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4335,7 +4402,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6585
+      "elapsed_seconds": 1.6663
     },
     {
       "repository": "langgenius/dify",
@@ -4370,7 +4437,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4383,7 +4451,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3942
+      "elapsed_seconds": 0.3971
     },
     {
       "repository": "n8n-io/n8n",
@@ -4437,7 +4505,8 @@
         "mcp_register_tool": 1,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4454,7 +4523,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1801
+      "elapsed_seconds": 1.182
     },
     {
       "repository": "activepieces/activepieces",
@@ -4511,7 +4580,8 @@
         "mcp_register_tool": 6,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4528,7 +4598,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.861
+      "elapsed_seconds": 0.8588
     },
     {
       "repository": "simstudioai/sim",
@@ -4569,7 +4639,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4582,7 +4653,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3161
+      "elapsed_seconds": 2.3091
     },
     {
       "repository": "composiohq/composio",
@@ -4645,7 +4716,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4664,7 +4736,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6337
+      "elapsed_seconds": 0.6334
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -4726,7 +4798,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4745,7 +4818,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.529
+      "elapsed_seconds": 0.5309
     },
     {
       "repository": "e2b-dev/E2B",
@@ -4785,7 +4858,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4798,7 +4872,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8559
+      "elapsed_seconds": 0.8456
     },
     {
       "repository": "daytonaio/daytona",
@@ -4830,7 +4904,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4901,7 +4976,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4920,7 +4996,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.314
+      "elapsed_seconds": 0.3093
     },
     {
       "repository": "traceloop/openllmetry",
@@ -4983,7 +5059,8 @@
         "mcp_register_tool": 0,
         "object_property_tools": 0,
         "capability_edges": 0,
-        "network_helper_edges": 0
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -5006,7 +5083,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4944
+      "elapsed_seconds": 0.4976
     }
   ]
 }

@@ -900,6 +900,80 @@ const request = createTool({
     assert [finding.rule_id for finding in ir.findings] == ["AV-NET001"]
 
 
+def test_typescript_imported_path_boundary_suppresses_only_proven_guard() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_path_boundary")
+
+    filesystem = {
+        item.evidence.line: item.attributes
+        for item in ir.components
+        if item.kind == "capability"
+        and item.name == "filesystem"
+        and item.evidence.path == "tools.ts"
+    }
+    assert filesystem == {
+        10: {
+            "scope": "production",
+            "write_access": True,
+            "dynamic_path": True,
+            "path_boundary_guard": True,
+            "path_boundary_scope": "constrained",
+        },
+        16: {
+            "scope": "production",
+            "write_access": True,
+            "dynamic_path": True,
+            "path_boundary_guard": False,
+            "path_boundary_scope": "unresolved",
+        },
+        23: {
+            "scope": "production",
+            "write_access": True,
+            "dynamic_path": True,
+            "path_boundary_guard": False,
+            "path_boundary_scope": "unresolved",
+        },
+    }
+    controls = [
+        item
+        for item in ir.components
+        if item.kind == "control" and item.name == "path-boundary"
+    ]
+    assert len(controls) == 1
+    assert controls[0].evidence.path == "guard.ts"
+    assert controls[0].evidence.line == 6
+    assert controls[0].attributes["policy_effect"] == "restricts-filesystem-path"
+    assert controls[0].attributes["predicate_path"] == "path-check.ts"
+    assert controls[0].attributes["boundary_scope"] == "constrained"
+    assert [
+        (
+            edge.evidence.line,
+            edge.target_name,
+            edge.attributes.get("control_path"),
+            edge.attributes.get("policy_effect"),
+            edge.attributes.get("predicate_path"),
+            edge.attributes.get("boundary_scope"),
+        )
+        for edge in ir.relationships
+        if edge.source_kind == "capability" and edge.relation == "governed-by"
+    ] == [
+        (
+            10,
+            "path-boundary",
+            "guard.ts",
+            "restricts-filesystem-path",
+            "path-check.ts",
+            "constrained",
+        )
+    ]
+    assert [
+        (finding.rule_id, finding.evidence.line, finding.analysis["tool"])
+        for finding in ir.findings
+    ] == [
+        ("AV-FS001", 16, "unsafe-directory"),
+        ("AV-FS001", 23, "reassigned-directory"),
+    ]
+
+
 def test_dynamic_writable_tool_path_but_not_fixed_path_is_reviewed() -> None:
     ir = scan_repository(ROOT / "cases/filesystem_scope")
 

@@ -606,6 +606,86 @@
       }
     },
     {
+      "id": "typescript-path-boundary-local",
+      "target": {"kind": "local", "path": "cases/typescript_path_boundary"},
+      "check_id": "IR-TS-PATH-BOUNDARY",
+      "path": "tools.ts",
+      "line": 10,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary",
+        "attributes": {
+          "control_path": "guard.ts",
+          "control_line": 6,
+          "policy_effect": "restricts-filesystem-path",
+          "predicate_path": "path-check.ts",
+          "boundary_scope": "constrained"
+        }
+      }
+    },
+    {
+      "id": "typescript-weak-path-boundary-local-negative",
+      "target": {"kind": "local", "path": "cases/typescript_path_boundary"},
+      "check_id": "IR-TS-PATH-BOUNDARY",
+      "path": "tools.ts",
+      "line": 16,
+      "expected": false,
+      "source_contains": "fs.mkdir(uncheckedPath",
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary"
+      }
+    },
+    {
+      "id": "typescript-reassigned-path-boundary-local-negative",
+      "target": {"kind": "local", "path": "cases/typescript_path_boundary"},
+      "check_id": "IR-TS-PATH-BOUNDARY",
+      "path": "tools.ts",
+      "line": 23,
+      "expected": false,
+      "source_contains": "fs.mkdir(validPath",
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary"
+      }
+    },
+    {
+      "id": "typescript-path-boundary-mcp-servers-real",
+      "target": {
+        "kind": "repository",
+        "repository": "modelcontextprotocol/servers",
+        "commit": "599dafc1054550a6eeb87a6545c1e1b03b3ca827"
+      },
+      "check_id": "IR-TS-PATH-BOUNDARY",
+      "path": "src/filesystem/index.ts",
+      "line": 429,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary",
+        "attributes": {
+          "control_path": "src/filesystem/lib.ts",
+          "control_line": 99,
+          "policy_effect": "validates-filesystem-path",
+          "predicate_path": "src/filesystem/path-validation.ts",
+          "boundary_scope": "unresolved"
+        }
+      }
+    },
+    {
       "id": "mcp-registry-control-local",
       "target": {"kind": "local", "path": "cases/mcp_forwarder"},
       "check_id": "IR-MCP-REGISTRY",

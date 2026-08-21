@@ -63,7 +63,11 @@ materials should report providers and model configuration even when no security 
 Sandboxing vocabulary appears in 64 repositories, audit/tracing in 57, human approval in 52, and
 allowlisting in 39. These controls live in infrastructure, framework middleware, configuration, or
 individual tool wrappers. The Agent IR must preserve which control governs which action instead of
-producing repository-wide flags.
+producing repository-wide flags. One pinned MCP Servers write now demonstrates why exact control
+edges matter: its imported validator normalizes candidate and root paths, rejects separator-aware
+boundary failures before `mkdir`, and is represented as a `path-boundary` control rather than a
+repository-wide “filesystem safe” flag. Its configured root scope remains unresolved, so the review
+is retained rather than treating the presence of validation as sufficient policy.
 
 ## 6. Tool configuration needs structure, not token matching
 

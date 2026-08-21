@@ -122,6 +122,15 @@ def main() -> int:
             and item.name == "network"
             and item.attributes.get("summary") == "same-file-helper"
         ]
+        typescript_path_boundary_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "capability"
+            and edge.source_name == "filesystem"
+            and edge.relation == "governed-by"
+            and edge.target_kind == "control"
+            and edge.target_name == "path-boundary"
+        ]
         result = {
             "repository": repository,
             "category": row["category"],
@@ -178,6 +187,7 @@ def main() -> int:
                     for edge in ir.relationships
                 ),
                 "network_helper_edges": len(typescript_network_helper_capabilities),
+                "path_boundary_edges": len(typescript_path_boundary_edges),
             },
             "resolved_import_edges": len(imported_edges),
             "resolved_import_edges_by_frontend": {
@@ -202,7 +212,7 @@ def main() -> int:
         {rule_id for result in successful for rule_id in result["findings"]}
     )
     payload = {
-        "schema_version": 9,
+        "schema_version": 10,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "summary": {
@@ -285,6 +295,7 @@ def main() -> int:
                     "object_property_tools",
                     "capability_edges",
                     "network_helper_edges",
+                    "path_boundary_edges",
                 )
             },
             "resolved_import_edges": sum(result["resolved_import_edges"] for result in successful),

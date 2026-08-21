@@ -54,6 +54,15 @@ consumes only this origin-specific attribute; it does not equate a dynamic path 
 host with a dynamic destination. URL parsing guards, redirects, DNS, proxies, imported/transitive
 helpers, arrow functions, and request-object data flow remain unresolved.
 
+For TypeScript filesystem writes, a relative import can prove a `path-boundary` control only through
+an exact two-file chain: the guard must pass the tool-derived path into a uniquely resolved predicate,
+reject a false result before the write, and the predicate must normalize both candidate and roots and
+use separator-aware containment. The control edge retains both source paths and carries
+`policy_effect: restricts-filesystem-path` only when the roots are a statically narrow literal set;
+otherwise it carries `validates-filesystem-path` with unresolved boundary scope. `AV-FS001`
+suppresses only the former. Names such as `validatePath`, prefix-only comparisons, broad/dynamic
+roots, and checks after the action do not establish sufficient coverage.
+
 ## Result kinds and uncertainty
 
 - `inventory`: observed architecture facts without a risk judgment.

@@ -40,27 +40,27 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,594 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,365 relationships, and completed in 50.74 seconds on the development machine. Three parse
+resolved 1,366 relationships, and completed in 50.76 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
 
-Engine benchmark schema v9 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v10 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, and TypeScript graph precision measures. It intentionally
 excludes arbitrary agent/tool display names from the summary. The resulting
 framework/provider/protocol/capability coverage and unsupported syntax are published in
 `docs/frontend-coverage.md`; presence counts are discovery observations, not recall measurements.
 
 The benchmark now also measures identity coverage: 8,549 agent/tool component observations carry
-module-qualified IDs. Of 2,730 relationship endpoints, 1,875 carry symbol IDs and 1,873 resolve to an
-observed component (1,622 Python and 251 TypeScript). Schema v9 records 325 same-scope and 14
+module-qualified IDs. Of 2,732 relationship endpoints, 1,875 carry symbol IDs and 1,873 resolve to an
+observed component (1,622 Python and 251 TypeScript). Schema v10 records 325 same-scope and 14
 module-scope targets resolved from a single direct definition that appears before the Agent
 constructor. It also records 23 repeated-binding targets still withheld because the scope contains
 multiple definitions. The two unmatched IDs are explicit Python re-export targets; capability,
 control, and taxonomy endpoints intentionally remain evidence observations.
 
-Schema-v9 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
-resolves 1,873 endpoints by symbol ID, 310 by exact evidence location, and 17 by a unique display
+Schema-v10 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
+resolves 1,873 endpoints by symbol ID, 312 by exact evidence location, and 17 by a unique display
 name; 30 remain ambiguous and 500 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
@@ -87,10 +87,11 @@ not share reachability or control coverage.
 The TypeScript frontend now reads only balanced top-level entries from literal Agent tool arrays. It
 resolves OpenAI `tool`, `toolNamespace`, built-in tool factories, inline/assigned `asTool` adapters,
 and Cline `createTool`. Import-aware discovery now also resolves generic/Mastra object-property
-tools plus MCP `registerTool` names and callback spans. Schema v9 records 27 Mastra factory tools,
+tools plus MCP `registerTool` names and callback spans. Schema v10 records 27 Mastra factory tools,
 264 MCP registrations, 70 object-property tools (the factory/property categories overlap), and ten
 exact registration-to-capability edges. Four of those edges come from bounded same-file network
-helper summaries: three Mastra static methods and one MCP Servers free function. The full sample
+helper summaries: three Mastra static methods and one MCP Servers free function. Schema v10 also
+records one imported TypeScript path-boundary control edge. The full sample
 contains 95 structure-backed agent edges: 14 delegations and 81 tool edges, all with targets that
 resolve to observed components. The prior token heuristic could
 turn words inside callbacks, string literals, and nested options into spurious tool edges. Relative
@@ -211,8 +212,12 @@ New TypeScript registration edges expose Mastra's
 [`writeFile` tool adapter](https://github.com/mastra-ai/mastra/blob/1da5fb00e141b78c2148b21ee085ec24112cf2a5/packages/agent-builder/src/defaults.ts#L457-L475)
 and the MCP filesystem server's
 [`create_directory` callback](https://github.com/modelcontextprotocol/servers/blob/599dafc1054550a6eeb87a6545c1e1b03b3ca827/src/filesystem/index.ts#L412-L429).
-The latter calls a path-validation helper first; helper-policy resolution is deliberately left for a
-subsequent control-flow increment, so the result remains a review rather than a demonstrated escape.
+For the latter, an unambiguous import chain resolves `validatePath` to a normalized,
+separator-aware roots predicate; the callback rejects paths outside configured roots before `mkdir`.
+AgentVerify emits a `path-boundary` control edge, but retains the review because the CLI/MCP-provided
+roots are not statically known and could be broad. A literal narrow-root fixture demonstrates the
+suppressible case. A helper name alone, prefix-only checks, missing imports, or a check after the
+write remain unresolved.
 
 ## AV-NET001 — parameter-controlled HTTP origin
 
@@ -269,12 +274,12 @@ and a literal `privileged=True` keyword.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 172 exact labels across all eight enabled rules: 98 positives and 74
+`benchmarks/truthset.json` contains 175 exact labels across all eight enabled rules: 100 positives and 75
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
-Compose/Kubernetes/Docker SDK settings. All 172 currently pass; each rule's seed precision and recall
+Compose/Kubernetes/Docker SDK settings. All 175 currently pass; each rule's seed precision and recall
 are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified source
 text at the exact pinned line, preventing a missing or drifting location from passing silently.
 
@@ -294,14 +299,16 @@ finding or enable `AV-AUDIT001`. The full corpus scan observed seven action-trac
 lexically governed HTTP capability edges, all in that ArcadeAI telemetry example.
 
 Three MCP registry labels cover the local control edge, a caller-owned-map negative, and the pinned
-SDK SessionGroup edge. Three import labels cover a resolved relative fixture, a missing-module negative, and the pinned
-CrewAI-LangGraph draft-tool edge. Seven approval labels cover enabled, disabled, callback, and
-automatic-handler policies plus pinned Python and TypeScript OpenAI shell edges. Four TypeScript graph
+SDK SessionGroup edge. Three import labels cover a resolved relative fixture, a missing-module
+negative, and the pinned CrewAI-LangGraph draft-tool edge. Seven approval labels cover enabled,
+disabled, callback, and automatic-handler policies plus pinned Python and TypeScript OpenAI shell
+edges. Four TypeScript graph
 labels cover inline and assigned agent adapters, the Cline tool path, and a nested-token negative.
 Nine registration labels cover four local Mastra/MCP edges, an ordinary-registry negative, and four
 pinned Mastra/MCP capability edges. Six helper-summary labels cover two local edges, two pinned
-Mastra edges, the MCP Servers edge, and a regex-literal negative. All 36 IR labels pass: three
-approval positives/four negatives,
+Mastra edges, the MCP Servers edge, and a regex-literal negative. Four path-boundary labels cover a
+local proven guard, imported name-only and reassignment negatives, and MCP Servers' real control
+edge. All 40 IR labels pass: three approval positives/four negatives,
 two audit positives/two negatives, two import positives/one negative, three TypeScript graph
 positives/one negative, eight registration positives/one negative, five helper-summary positives/one
-negative, and two MCP-registry positives/one negative.
+negative, two path-boundary positives/two negatives, and two MCP-registry positives/one negative.

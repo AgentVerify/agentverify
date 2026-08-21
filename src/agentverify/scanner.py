@@ -1416,6 +1416,14 @@ class TypeScriptNetworkHelperSummary:
     network_calls: int
 
 
+@dataclass(frozen=True)
+class TypeScriptPathBoundaryHelper:
+    name: str
+    evidence: Evidence
+    predicate_path: str
+    boundary_scope: str
+
+
 def line_at(text: str, offset: int) -> int:
     return text.count("\n", 0, offset) + 1
 
@@ -2082,6 +2090,250 @@ def typescript_helper_argument_expression(
     return None
 
 
+def typescript_unique_function_definition(
+    text: str, name: str
+) -> tuple[int, tuple[TypeScriptHelperParameter, ...], str] | None:
+    definitions = [
+        (line, parameters, body)
+        for function_name, line, parameters, body in typescript_function_definitions(text)
+        if function_name == name
+    ]
+    return definitions[0] if len(definitions) == 1 else None
+
+
+def typescript_is_path_boundary_predicate(text: str, name: str) -> bool:
+    """Recognize a separator-aware normalized path-within-roots predicate."""
+    definition = typescript_unique_function_definition(text, name)
+    if definition is None:
+        return False
+    _, parameters, body = definition
+    ordinary_parameters = [item.local_name for item in parameters if item.property_name is None]
+    if len(ordinary_parameters) < 2:
+        return False
+    code = typescript_code_mask(body)
+    candidate = re.search(
+        r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)"
+        r"(?:\s*:[^=]+)?\s*=\s*path\.resolve\s*\(\s*"
+        r"path\.normalize\s*\(\s*([^()]*)\s*\)\s*\)",
+        code,
+    )
+    if candidate is None or ordinary_parameters[0] not in typescript_expression_names(
+        candidate.group(2)
+    ):
+        return False
+    roots_name = ordinary_parameters[1]
+    root_loop = re.search(
+        rf"\b{re.escape(roots_name)}\.some\s*\(\s*"
+        r"(?:\(\s*)?([A-Za-z_$][\w$]*)[^=]*=>",
+        code,
+    )
+    if root_loop is None:
+        return False
+    root_item = root_loop.group(1)
+    normalized_root = re.search(
+        r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)"
+        r"(?:\s*:[^=]+)?\s*=\s*path\.resolve\s*\(\s*"
+        rf"path\.normalize\s*\(\s*{re.escape(root_item)}\s*\)\s*\)",
+        code[root_loop.end() :],
+    )
+    if normalized_root is None:
+        return False
+    candidate_name = candidate.group(1)
+    root_name = normalized_root.group(1)
+    return bool(
+        re.search(
+            rf"\b{re.escape(candidate_name)}\s*===\s*{re.escape(root_name)}\b",
+            code,
+        )
+        and re.search(
+            rf"\b{re.escape(candidate_name)}\.startsWith\s*\(\s*"
+            rf"{re.escape(root_name)}\s*\+\s*path\.sep\s*\)",
+            code,
+        )
+        and re.search(r"\breturn\s+false\b", code)
+        and re.search(r"\breturn\s+true\b", code)
+    )
+
+
+def typescript_is_path_boundary_guard(
+    root: Path,
+    path: Path,
+    text: str,
+    name: str,
+) -> tuple[int, str, str] | None:
+    """Verify an imported guard that rejects paths outside a proven roots predicate."""
+    definition = typescript_unique_function_definition(text, name)
+    if definition is None:
+        return None
+    line, parameters, body = definition
+    ordinary_parameters = [item.local_name for item in parameters if item.property_name is None]
+    if not ordinary_parameters:
+        return None
+    imported_predicates = resolve_typescript_imports(root, path, text)
+    if not imported_predicates:
+        return None
+    dynamic_names = {ordinary_parameters[0]}
+    body_code = typescript_code_mask(body)
+    body_offset = 0
+    for body_line in body.splitlines(keepends=True):
+        typescript_update_dynamic_names(body_line, dynamic_names, {})
+        code_line = typescript_code_mask(body_line)
+        for local_name, (target, original) in imported_predicates.items():
+            assignment = re.search(
+                rf"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*"
+                rf"(?:await\s+)?{re.escape(local_name)}\s*\(([^;]*)\)",
+                code_line,
+            )
+            if assignment is None:
+                continue
+            argument_text = body_line[assignment.start(2) : assignment.end(2)]
+            arguments = [
+                argument
+                for argument, _ in typescript_call_arguments(argument_text)
+            ]
+            if not arguments or not (
+                typescript_expression_names(arguments[0]) & dynamic_names
+            ):
+                continue
+            predicate_path = root / target
+            try:
+                predicate_text = predicate_path.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError):
+                continue
+            if not typescript_is_path_boundary_predicate(predicate_text, original):
+                continue
+            result_name = assignment.group(1)
+            rejection = re.compile(
+                rf"\bif\s*\(\s*!\s*{re.escape(result_name)}\s*\)\s*"
+                rf"(?:\{{[\s\S]{{0,500}}?\bthrow\b|\bthrow\b)"
+            )
+            if rejection.search(body_code, body_offset + assignment.end()):
+                boundary_scope = (
+                    "constrained"
+                    if len(arguments) > 1
+                    and typescript_path_roots_are_statically_constrained(
+                        text, arguments[1]
+                    )
+                    else "unresolved"
+                )
+                return line, target, boundary_scope
+        body_offset += len(body_line)
+    return None
+
+
+def typescript_path_roots_are_statically_constrained(
+    text: str, expression: str
+) -> bool:
+    """Return true for a non-empty literal list of absolute, non-root directories."""
+    value = expression.strip()
+    if identifier := re.fullmatch(r"[A-Za-z_$][\w$]*", value):
+        code = typescript_code_mask(text)
+        pattern = re.compile(
+            rf"\b(?:const|let)\s+{re.escape(identifier.group(0))}"
+            rf"(?:\s*:[^=]+)?\s*=\s*\["
+        )
+        matches = list(pattern.finditer(code))
+        if len(matches) != 1:
+            return False
+        opening = code.find("[", matches[0].start(), matches[0].end())
+        end = typescript_balanced_end(code, opening, "[", "]")
+        if end is None:
+            return False
+        value = text[opening:end]
+    if not (value.startswith("[") and value.endswith("]")):
+        return False
+    roots = []
+    for item, _ in typescript_call_arguments(value[1:-1]):
+        literal = re.fullmatch(r"\s*(['\"])(.*?)\1\s*", item, re.DOTALL)
+        if literal is None:
+            return False
+        roots.append(literal.group(2))
+    if not roots:
+        return False
+    return all(
+        (root.startswith("/") or bool(re.match(r"^[A-Za-z]:[\\/]", root)))
+        and root not in {"/", "\\"}
+        and not re.fullmatch(r"[A-Za-z]:[\\/]*", root)
+        for root in roots
+    )
+
+
+def typescript_path_boundary_helpers(
+    root: Path,
+    path: Path,
+    imported_symbols: dict[str, tuple[str, str]],
+) -> dict[str, TypeScriptPathBoundaryHelper]:
+    """Resolve imported path guards only when their nested boundary predicate is proven."""
+    helpers = {}
+    for local_name, (target, original) in imported_symbols.items():
+        target_path = root / target
+        try:
+            target_text = target_path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        proof = typescript_is_path_boundary_guard(
+            root, target_path, target_text, original
+        )
+        if proof is None:
+            continue
+        helper_line, predicate_path, boundary_scope = proof
+        helper_evidence = Evidence(
+            target,
+            helper_line,
+            excerpt(target_text.splitlines(), helper_line),
+        )
+        helpers[local_name] = TypeScriptPathBoundaryHelper(
+            local_name,
+            helper_evidence,
+            predicate_path,
+            boundary_scope,
+        )
+    return helpers
+
+
+def typescript_path_boundary_assignment(
+    line: str,
+    helpers: dict[str, TypeScriptPathBoundaryHelper],
+    dynamic_names: set[str],
+) -> tuple[str, TypeScriptPathBoundaryHelper] | None:
+    code = typescript_code_mask(line)
+    for local_name, helper in helpers.items():
+        assignment = re.search(
+            rf"\b(?:const|let)\s+([A-Za-z_$][\w$]*)"
+            rf"(?:\s*:[^=]+)?\s*=\s*(?:await\s+)?"
+            rf"{re.escape(local_name)}\s*\(([^;]*)\)",
+            code,
+        )
+        if assignment is None:
+            continue
+        argument = line[assignment.start(2) : assignment.end(2)].split(",", 1)[0]
+        if typescript_expression_names(argument) & dynamic_names:
+            return assignment.group(1), helper
+    return None
+
+
+def typescript_update_guarded_path_names(
+    line: str,
+    guarded_names: dict[str, TypeScriptPathBoundaryHelper],
+) -> None:
+    """Propagate guarded aliases and clear a guard when its binding is reassigned."""
+    code = typescript_code_mask(line)
+    assignment = re.search(
+        r"(?:\b(?:const|let)\s+|(?<![\w$]))([A-Za-z_$][\w$]*)"
+        r"(?:\s*:[^=]+)?\s*=(?!=|>)",
+        code,
+    )
+    if assignment is None:
+        return
+    target = assignment.group(1)
+    source_names = typescript_expression_names(line[assignment.end() :])
+    sources = [guarded_names[name] for name in source_names if name in guarded_names]
+    if sources:
+        guarded_names[target] = sources[0]
+    else:
+        guarded_names.pop(target, None)
+
+
 def typescript_call_parts(expression: str) -> tuple[str, str, int] | None:
     """Return a simple call's callee, argument body, and body offset within the expression."""
     code = typescript_code_mask(expression)
@@ -2719,6 +2971,50 @@ def add_typescript_capability(
         )
 
 
+def add_typescript_path_boundary_control(
+    ir: RepositoryIR,
+    capability_evidence: Evidence,
+    helper: TypeScriptPathBoundaryHelper,
+) -> None:
+    policy_effect = (
+        "restricts-filesystem-path"
+        if helper.boundary_scope == "constrained"
+        else "validates-filesystem-path"
+    )
+    ir.add_component(
+        Component(
+            "control",
+            "path-boundary",
+            helper.evidence,
+            {
+                "scope": source_scope(helper.evidence.path),
+                "policy_effect": policy_effect,
+                "helper": helper.name,
+                "predicate_path": helper.predicate_path,
+                "boundary_scope": helper.boundary_scope,
+            },
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "capability",
+            "filesystem",
+            "governed-by",
+            "control",
+            "path-boundary",
+            capability_evidence,
+            {
+                "control_path": helper.evidence.path,
+                "control_line": helper.evidence.line,
+                "policy_effect": policy_effect,
+                "helper": helper.name,
+                "predicate_path": helper.predicate_path,
+                "boundary_scope": helper.boundary_scope,
+            },
+        )
+    )
+
+
 def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None:
     relative = path.relative_to(root).as_posix()
     lines = text.splitlines()
@@ -2729,6 +3025,9 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
     dynamic_names_by_tool = {
         tool_id: set(names) for tool_id, names in tool_input_names.items()
     }
+    guarded_path_names_by_tool: dict[
+        str, dict[str, TypeScriptPathBoundaryHelper]
+    ] = defaultdict(dict)
     literal_bindings = typescript_literal_string_bindings(text)
     network_calls = typescript_network_calls(text)
     if tool_by_line and network_calls:
@@ -2742,6 +3041,13 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
     else:
         network_helper_calls = {}
         multiline_destructuring_assignments = {}
+    path_boundary_helpers = (
+        typescript_path_boundary_helpers(
+            root, path, imported_symbols
+        )
+        if tool_by_line and TS_FILESYSTEM_WRITE.search(text)
+        else {}
+    )
     shell_bindings = child_process_bindings(text)
     has_mcp_import = "@modelcontextprotocol/" in text or re.search(
         r"from\s+['\"][^'\"]*mcp[^'\"]*['\"]", text, re.IGNORECASE
@@ -2773,12 +3079,19 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
         ev = Evidence(relative, line_number, line.strip()[:240])
         code_line = typescript_code_mask(line)
         dynamic_names: set[str] = set()
+        guarded_path_names: dict[str, TypeScriptPathBoundaryHelper] = {}
         if tool := tool_by_line.get(line_number):
             dynamic_names = dynamic_names_by_tool.setdefault(tool[1], set())
+            guarded_path_names = guarded_path_names_by_tool.setdefault(tool[1], {})
             typescript_apply_destructuring_assignments(
                 multiline_destructuring_assignments.get(line_number, []), dynamic_names
             )
             typescript_update_dynamic_names(line, dynamic_names, literal_bindings)
+            typescript_update_guarded_path_names(line, guarded_path_names)
+            if boundary_assignment := typescript_path_boundary_assignment(
+                line, path_boundary_helpers, dynamic_names
+            ):
+                guarded_path_names[boundary_assignment[0]] = boundary_assignment[1]
         for match in TS_IMPORT.finditer(line):
             component_from_import(ir, match.group(1), ev)
         for match in TS_MODEL_SETTING.finditer(line):
@@ -2849,6 +3162,14 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
             )
         if match := TS_FILESYSTEM_WRITE.search(code_line):
             path_argument = line[match.start(1) : match.end(1)].strip()
+            guard = next(
+                (
+                    helper
+                    for name, helper in guarded_path_names.items()
+                    if name in typescript_expression_names(path_argument)
+                ),
+                None,
+            )
             add_typescript_capability(
                 ir,
                 relative,
@@ -2859,8 +3180,14 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                 {
                     "write_access": True,
                     "dynamic_path": not path_argument.startswith(("'", '"', "`")),
+                    "path_boundary_guard": guard is not None,
+                    "path_boundary_scope": (
+                        guard.boundary_scope if guard is not None else "unresolved"
+                    ),
                 },
             )
+            if guard is not None:
+                add_typescript_path_boundary_control(ir, ev, guard)
         for api, url_expression in network_calls.get(line_number, []):
             add_typescript_capability(
                 ir,

@@ -138,6 +138,7 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
             and component.name == "filesystem"
             and component.attributes.get("write_access")
             and component.attributes.get("dynamic_path")
+            and component.attributes.get("path_boundary_scope") != "constrained"
         ):
             _, context = component_context(ir, component)
             if context.get("tool"):

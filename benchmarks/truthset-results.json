@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T07:44:27.524772+00:00",
-  "labels": 172,
-  "passed": 172,
+  "generated_at": "2026-08-21T08:03:04.593488+00:00",
+  "labels": 175,
+  "passed": 175,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 14,
@@ -37,9 +37,9 @@
       "recall": 1.0
     },
     "AV-FS001": {
-      "tp": 12,
+      "tp": 14,
       "fp": 0,
-      "tn": 11,
+      "tn": 12,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -1071,6 +1071,33 @@
     },
     {
       "id": "filesystem-typescript-mcp-registration-real",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-typescript-path-boundary-local-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-typescript-weak-path-guard-local-positive",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-typescript-reassigned-path-guard-local-positive",
       "rule_id": "AV-FS001",
       "expected": true,
       "observed": true,
