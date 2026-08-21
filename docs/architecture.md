@@ -52,10 +52,19 @@ function are each sole earlier same-block mutations, and the function is passed 
 positional argument. Literal approval on the wrapper is retained. This block-local proof takes
 precedence over a broader lexical candidate, while any local binding prevents fallback to a
 same-named module definition. Cross-branch definitions, reassignments, forward definitions,
-parameters, helper returns, lambdas, multiply wrapped functions, tuple unpacking, and shadowed
-factories remain unresolved.
+parameters, tool-helper returns, lambdas, multiply wrapped functions, wrapper tuple unpacking, and
+shadowed factories remain unresolved.
 Package re-exports, wildcard imports, dynamic lookups, conditional tool expressions, and other
 wrapper-factory forms
+remain unresolved.
+
+Same-class Agent factory summaries are deliberately narrower than general interprocedural dataflow.
+A uniquely named method must have one direct top-level return. That return may be an Agent
+constructor, one immutable local assigned from an Agent constructor, or a tuple/list containing that
+local. A caller on `self`, `cls`, or the exact class must bind every returned element directly, and
+the selected Agent binding must be the sole mutation before composition. The edge records
+`target_identity: same-class-helper-return`. Conditional or multiple returns, transformed or
+reassigned values, rebound helper/receiver names, external receivers, and cross-branch unpacking
 remain unresolved.
 
 A repository prepass also resolves direct module-level Python

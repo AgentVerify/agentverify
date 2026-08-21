@@ -90,6 +90,7 @@ def main() -> int:
                 "block-dominating-definition",
                 "lexical-single-definition",
                 "module-single-definition",
+                "same-class-helper-return",
             }
         )
         if any(
@@ -98,6 +99,20 @@ def main() -> int:
             if edge.attributes.get("target_identity") in resolved_binding_targets
         ):
             raise RuntimeError(f"{repository}: resolved binding target lacks a symbol ID")
+        python_agent_helper_return_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.attributes.get("target_identity") == "same-class-helper-return"
+        ]
+        if any(
+            edge.source_kind != "agent"
+            or edge.target_kind != "agent"
+            or edge.target_id is None
+            for edge in python_agent_helper_return_edges
+        ):
+            raise RuntimeError(
+                f"{repository}: same-class Agent helper return lacks an exact Agent edge"
+            )
         component_symbol_ids = {item.symbol_id for item in ir.components if item.symbol_id}
         relationship_symbol_ids = [
             symbol_id
@@ -643,6 +658,17 @@ def main() -> int:
                 ),
                 "capability_edges": len(python_function_tool_wrapper_capability_edges),
                 "resolved_agent_edges": len(python_function_tool_wrapper_agent_edges),
+            },
+            "python_agent_helper_returns": {
+                "resolved_edges": len(python_agent_helper_return_edges),
+                "unique_agent_targets": len(
+                    {edge.target_id for edge in python_agent_helper_return_edges}
+                ),
+                "non_test_edges": sum(
+                    not edge.evidence.path.startswith("tests/")
+                    and "/tests/" not in edge.evidence.path
+                    for edge in python_agent_helper_return_edges
+                ),
             },
             "python_browser_evaluate": {
                 "total": len(python_browser_evaluations),
@@ -1283,7 +1309,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 52,
+        "schema_version": 53,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -1439,6 +1465,17 @@ def main() -> int:
                     "approval_enabled",
                     "capability_edges",
                     "resolved_agent_edges",
+                )
+            },
+            "python_agent_helper_returns": {
+                name: sum(
+                    result["python_agent_helper_returns"][name]
+                    for result in successful
+                )
+                for name in (
+                    "resolved_edges",
+                    "unique_agent_targets",
+                    "non_test_edges",
                 )
             },
             "python_browser_evaluate": {

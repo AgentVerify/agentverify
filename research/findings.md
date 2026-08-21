@@ -19,7 +19,7 @@ The initial matcher found `shell=True` in eight repositories. Reviewable example
 
 The links are locked corpus snapshots; only an explicit collector `--refresh` pins newer commits.
 
-Filesystem mutation is broader than `open()` and `write_text()`. Schema v52 resolves 449 Python
+Filesystem mutation is broader than `open()` and `write_text()`. Schema v53 resolves 449 Python
 filesystem mutations in selected files: 179 creates, 191 deletes, 46 copies, and 33 moves. The move
 inventory includes 20 `Path.rename`/`Path.replace` calls proven through explicit constructors or
 immutable Path-derived bindings, including ChatDev's
@@ -31,7 +31,7 @@ Examples. Newly exposed cases include ArcadeAI's
 and its [conditional `copy`/`copy2` callable](https://github.com/ArcadeAI/arcade-ai/blob/597debaa1593b54172061ce36a414cc29aa8fc6a/examples/mcp_servers/local_filesystem/src/local_filesystem/tools.py#L329-L331),
 and CrewAI Examples'
 [`copytree` destination](https://github.com/crewAIInc/crewAI-examples/blob/da94a91e691e1cf5b3151416bb15b5b62729bea8/crews/landing_page_generator/src/landing_page_generator/tools/template_tools.py#L86-L90).
-That copy and three sibling sinks rely on `str(resolved).startswith(str(root))`; schema v52 preserves
+That copy and three sibling sinks rely on `str(resolved).startswith(str(root))`; schema v53 preserves
 the checks as weak, non-suppressing control edges because string prefixes do not enforce path-component
 boundaries. AV-FS002 takes precedence at those sinks and recommends `Path.is_relative_to`,
 `Path.relative_to`, or `os.path.commonpath`.
@@ -48,7 +48,7 @@ The IR records the destination—not the source—as the governed path for two-p
 are resolved only when unshadowed; string `.replace()` calls and caller-shadowed `shutil` names are
 regression negatives.
 
-Browser-page evaluation is a separate execution boundary. Schema v52 inventories 80
+Browser-page evaluation is a separate execution boundary. Schema v53 inventories 80
 import-context `.evaluate(...)` calls across the corpus and proves seven receivers: two exact
 Playwright `Page` parameters in SWE-agent and five exact imported Skyvern page-factory results. The
 remaining 73 fixed-script observations retain explicit unresolved receiver state. Only one proven
@@ -96,7 +96,7 @@ name matching from inventing this control.
 Five more calls bind a tool source through an escaping callback: three browser-use actions are
 registered and two ArcadeAI wrappers are returned. Equivalent retry closures in the MCP Python SDK
 and FastMCP do not qualify because the public caller still selects the name for each operation.
-Schema v52 therefore reports five instance and five closure fixed-binding edges, without suppressing
+Schema v53 therefore reports five instance and five closure fixed-binding edges, without suppressing
 any review.
 
 FastMCP adds an interprocedural routing fact: its middleware recursion reaches a same-class callee
@@ -153,7 +153,7 @@ repository-wide “filesystem safe” flag. Its configured root scope remains un
 is retained rather than treating the presence of validation as sufficient policy.
 ChatDev contributes the Python exception form: its local-tool creation route resolves a candidate,
 calls [`target_path.relative_to(tools_dir)`](https://github.com/OpenBMB/ChatDev/blob/4fb2db0ea90375ce1059f44fe03ffbd191a7a169/server/routes/tools.py#L58),
-and terminates the `ValueError` handler before writing. Schema v52 records this as a distinct
+and terminates the `ValueError` handler before writing. Schema v53 records this as a distinct
 `Path.relative_to` control edge with unresolved root scope; handlers that continue are not controls.
 OpenAI Agents Python demonstrates the interprocedural variant: its `_resolve()` helper returns the
 same checked Path to create, update, and delete callers. Three sink edges retain the helper's exact
@@ -164,15 +164,15 @@ Audit evidence has the same layering problem. Tracing vocabulary appears in 57 r
 generic span does not prove durable or attributable records. In pinned Google ADK Python source, the
 BigQuery Agent Analytics plugin receives tool start/completed/error callbacks through `Runner` and
 `PluginManager`, records event, agent, user, session, invocation, and tool identity, and writes through
-the BigQuery Storage Write API. Schema v52 therefore records one available durable audit control and
+the BigQuery Storage Write API. Schema v53 therefore records one available durable audit control and
 one storage edge. Both observed compositions are tests, however: production deployments and governed
 production external actions are zero, delivery is best-effort with drop accounting, and retention is
 unresolved. Skyvern supplies the production comparison: its Task v3 loop records each billable or
 recordable browser action after dispatch and commits an `ActionModel` row with organization,
-workflow, task, step, type, status, and ordering fields. Schema v52 records one production
+workflow, task, step, type, status, and ordering fields. Schema v53 records one production
 `durable-action-record`, one governed external action, and one SQL storage edge. The record is not a
 fully attributable audit because `created_by` is nullable and unset in this path, and callback/database
-failures are contained. Schema v52 raises one `AV-AUDIT001` review only on that explicit production
+failures are contained. Schema v53 raises one `AV-AUDIT001` review only on that explicit production
 actor gap. It does not infer a finding for generic unrecorded actions, OpenTelemetry instrumentation,
 or the attributable ADK control; two positive and two negative labels pin that narrow contract.
 
@@ -199,21 +199,23 @@ and TypeScript bindings were a second identity failure: one file-level ID could 
 constructor occurrences. Occurrence-qualified IDs resolve all 688 source agent/tool ambiguities, and
 141 unsafe target IDs become unresolved instead of pointing at multiple assets. Intermediate
 benchmark schema v5 recorded all 289 target references whose duplicated raw binding ID was withheld.
-Schema v52 resolves 311 repeated-name targets from one earlier lexical definition and 20 targets
-from a sole same-block assignment or callable definition. Import-proven OpenAI Agents Python
+Schema v53 resolves 311 repeated-name targets from one earlier lexical definition, 20 targets from a
+sole same-block assignment or callable definition, and three CrewAI composition edges from exact
+same-class direct/tuple Agent returns. Import-proven OpenAI Agents Python
 `ComputerTool` constructors add 15 computer-control assets and ten exact agent links; three of those
 links replace ambiguous repeated bindings. All 15 observed instances are local, two configure a
 safety-check callback, and only one is outside test paths. Literal Agent tool lists additionally
 recover 150 direct callable definitions and 162 Agent edges; 83 definitions are outside tests and
 seven capability edges become reachable. Import-proven OpenAI `function_tool(function)` assignments
 recover 12 wrapper tools and 12 exact Agent edges; three enable approval, all occur under tests, and
-their selected bodies add no capability edges. The final export resolves 2,171 endpoints by symbol
+their selected bodies add no capability edges. The final export resolves 2,174 endpoints by symbol
 ID, 521 by exact evidence location, and 15 by unique display name; 29 remain ambiguous control/tool
-targets, and 318 unresolved. Four corpus targets in parameter, helper-return, or tuple-unpack forms
-remain withheld; cross-branch, forward, parameter, shadowed-factory, lambda, and reassigned fixture
-cases also stay unresolved. Two apparent CrewAI re-export misses were false identities:
+targets, and 315 unresolved. The only ambiguous repeated corpus target is a typed `ApplyPatchTool`
+parameter; cross-branch, forward, parameter, conditional/transformed return, external-receiver,
+shadowed-factory, lambda, and reassigned fixture cases also stay unresolved. Two apparent CrewAI
+re-export misses were false identities:
 a function parameter and a local assignment shadowed the imported `tool` binding. Scope-isolating
-module and function imports now withhold those IDs, so all 2,171 identified endpoints resolve.
+module and function imports now withhold those IDs, so all 2,174 identified endpoints resolve.
 A governance export that collapses those references
 by name would silently attach controls or risks to the wrong asset.
 
@@ -374,7 +376,7 @@ is a distinct provenance boundary. In the pinned Google ADK JS path,
 unauthenticated-first card fetch; its SDK transports use an Undici agent or configured proxy, while
 the card-selected gRPC URL chooses secure versus insecure channel credentials. Neither exact
 TypeScript path proves that every advertised endpoint is HTTPS or bound to the configured card
-origin, so schema v52 emits two `AV-A2A001` reviews.
+origin, so schema v53 emits two `AV-A2A001` reviews.
 
 The pinned ADK Python client demonstrates the corresponding control. Both its per-invocation and
 cached construction paths call `_validate_agent_card` first. The validator enumerates every RPC URL,

@@ -3413,9 +3413,9 @@
       "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"agent","target_id":"py:lib/crewai/tests/agents/test_agent.py#agent:agent@1729","attributes":{"target_identity":"block-dominating-definition"}}
     },
     {
-      "id":"python-block-dominance-crewai-helper-real-unresolved",
+      "id":"python-block-dominance-crewai-helper-real-recovered-negative",
       "target":{"kind":"repository","repository":"crewAIInc/crewAI","commit":"456c67d7c27923ed3c3dca202c6f56651d8e6063"},
-      "check_id":"IR-PY-BLOCK-DOMINANCE","path":"lib/crewai/tests/tools/test_tool_failure.py","line":1186,"expected":true,
+      "check_id":"IR-PY-BLOCK-DOMINANCE","path":"lib/crewai/tests/tools/test_tool_failure.py","line":1186,"expected":false,
       "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"agent","target_id":null,"attributes":{"target_identity":"ambiguous-repeated-binding"}}
     },
     {
@@ -3603,6 +3603,72 @@
       "target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},
       "check_id":"IR-PY-FUNCTION-TOOL-WRAPPER","path":"tests/test_agent_runner.py","line":7443,"expected":true,
       "relationship":{"source_kind":"agent","source_name":"TestAgent","relation":"uses","target_kind":"tool","target_name":"second_tool","target_id":"py:tests/test_agent_runner.py#tool:second_tool","attributes":{"target_identity":"lexical-single-definition"}}
+    },
+    {
+      "id":"python-agent-helper-direct-local",
+      "target":{"kind":"local","path":"cases/python_agent_helper_return"},
+      "check_id":"IR-PY-AGENT-HELPER-RETURN","path":"app.py","line":11,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"agent","target_id":"py:app.py#agent:Agent@7","attributes":{"target_identity":"same-class-helper-return"}}
+    },
+    {
+      "id":"python-agent-helper-tuple-local",
+      "target":{"kind":"local","path":"cases/python_agent_helper_return"},
+      "check_id":"IR-PY-AGENT-HELPER-RETURN","path":"app.py","line":20,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"agent","target_id":"py:app.py#agent:agent@14","attributes":{"target_identity":"same-class-helper-return"}}
+    },
+    {
+      "id":"python-agent-helper-conditional-negative",
+      "target":{"kind":"local","path":"cases/python_agent_helper_return"},
+      "check_id":"IR-PY-AGENT-HELPER-RETURN","path":"app.py","line":29,"expected":false,"source_contains":"agents=[agent]",
+      "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"agent","target_id":"py:app.py#agent:Agent@24"}
+    },
+    {
+      "id":"python-agent-helper-conditional-unresolved",
+      "target":{"kind":"local","path":"cases/python_agent_helper_return"},
+      "check_id":"IR-PY-AGENT-HELPER-RETURN","path":"app.py","line":29,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"agent","target_id":null}
+    },
+    {
+      "id":"python-agent-helper-reassigned-unresolved",
+      "target":{"kind":"local","path":"cases/python_agent_helper_return"},
+      "check_id":"IR-PY-AGENT-HELPER-RETURN","path":"app.py","line":38,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"agent","target_id":null}
+    },
+    {
+      "id":"python-agent-helper-transformed-unresolved",
+      "target":{"kind":"local","path":"cases/python_agent_helper_return"},
+      "check_id":"IR-PY-AGENT-HELPER-RETURN","path":"app.py","line":46,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"agent","target_id":null}
+    },
+    {
+      "id":"python-agent-helper-cross-branch-unresolved",
+      "target":{"kind":"local","path":"cases/python_agent_helper_return"},
+      "check_id":"IR-PY-AGENT-HELPER-RETURN","path":"app.py","line":51,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"agent","target_id":null}
+    },
+    {
+      "id":"python-agent-helper-wrong-receiver-unresolved",
+      "target":{"kind":"local","path":"cases/python_agent_helper_return"},
+      "check_id":"IR-PY-AGENT-HELPER-RETURN","path":"app.py","line":67,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"agent","target_id":null}
+    },
+    {
+      "id":"python-agent-helper-crewai-direct-real",
+      "target":{"kind":"repository","repository":"crewAIInc/crewAI","commit":"456c67d7c27923ed3c3dca202c6f56651d8e6063"},
+      "check_id":"IR-PY-AGENT-HELPER-RETURN","path":"lib/crewai/tests/tools/test_tool_failure.py","line":1186,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"agent","target_id":"py:lib/crewai/tests/tools/test_tool_failure.py#agent:Agent@1174","attributes":{"target_identity":"same-class-helper-return"}}
+    },
+    {
+      "id":"python-agent-helper-crewai-tuple-thread-real",
+      "target":{"kind":"repository","repository":"crewAIInc/crewAI","commit":"456c67d7c27923ed3c3dca202c6f56651d8e6063"},
+      "check_id":"IR-PY-AGENT-HELPER-RETURN","path":"lib/crewai/tests/tools/test_tool_failure.py","line":1356,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"agent","target_id":"py:lib/crewai/tests/tools/test_tool_failure.py#agent:agent@1333","attributes":{"target_identity":"same-class-helper-return"}}
+    },
+    {
+      "id":"python-agent-helper-crewai-tuple-async-real",
+      "target":{"kind":"repository","repository":"crewAIInc/crewAI","commit":"456c67d7c27923ed3c3dca202c6f56651d8e6063"},
+      "check_id":"IR-PY-AGENT-HELPER-RETURN","path":"lib/crewai/tests/tools/test_tool_failure.py","line":1451,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"agent","target_id":"py:lib/crewai/tests/tools/test_tool_failure.py#agent:agent@1333","attributes":{"target_identity":"same-class-helper-return"}}
     }
   ]
 }

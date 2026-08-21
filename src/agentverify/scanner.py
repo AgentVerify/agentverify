@@ -5308,6 +5308,157 @@ def scan_python(
         call_symbol_ids[id(node.value)] = symbol_id
         if wrapper := wrapped_tool_assignments.get(id(node)):
             definition_symbol_ids[id(wrapper.function)] = symbol_id
+
+    def agent_call_symbol_id(call: ast.Call) -> str:
+        name = dotted_name(call.func).rsplit(".", 1)[-1]
+        for keyword in call.keywords:
+            if (
+                keyword.arg == "name"
+                and isinstance(keyword.value, ast.Constant)
+                and keyword.value.value is not None
+            ):
+                name = str(keyword.value.value)
+        return call_symbol_ids.get(id(call)) or source_symbol(
+            "py", relative, "agent", f"{name}@{call.lineno}"
+        )
+
+    def direct_method_returns(
+        method: ast.FunctionDef | ast.AsyncFunctionDef,
+    ) -> list[ast.Return]:
+        returns: list[ast.Return] = []
+
+        def collect(candidate: ast.AST) -> None:
+            if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                return
+            if isinstance(candidate, ast.Return):
+                returns.append(candidate)
+                return
+            for child in ast.iter_child_nodes(candidate):
+                collect(child)
+
+        for statement in method.body:
+            if isinstance(statement, ast.Return):
+                returns.append(statement)
+            else:
+                collect(statement)
+        return returns
+
+    def returned_agent_id(
+        method: ast.FunctionDef | ast.AsyncFunctionDef,
+        returned: ast.AST,
+        return_statement: ast.Return,
+    ) -> str | None:
+        if (
+            isinstance(returned, ast.Call)
+            and dotted_name(returned.func).rsplit(".", 1)[-1] in AGENT_CALLS
+        ):
+            return agent_call_symbol_id(returned)
+        if not isinstance(returned, ast.Name):
+            return None
+        try:
+            return_index = method.body.index(return_statement)
+        except ValueError:
+            return None
+        mutations = [
+            statement
+            for statement in method.body[:return_index]
+            if returned.id in statement_mutations(statement)
+        ]
+        if len(mutations) != 1:
+            return None
+        assignment = mutations[0]
+        if not (
+            isinstance(assignment, ast.Assign)
+            and len(assignment.targets) == 1
+            and isinstance(assignment.targets[0], ast.Name)
+            and assignment.targets[0].id == returned.id
+            and isinstance(assignment.value, ast.Call)
+            and dotted_name(assignment.value.func).rsplit(".", 1)[-1] in AGENT_CALLS
+        ):
+            return None
+        return agent_call_symbol_id(assignment.value)
+
+    agent_factory_returns: dict[tuple[int, str], tuple[str | None, ...]] = {}
+    for class_node in (node for node in nodes if isinstance(node, ast.ClassDef)):
+        methods = [
+            statement
+            for statement in class_node.body
+            if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef))
+        ]
+        method_counts = Counter(method.name for method in methods)
+        for method in methods:
+            if method_counts[method.name] != 1 or sum(
+                method.name in statement_mutations(statement)
+                for statement in class_node.body
+            ) != 1:
+                continue
+            returns = direct_method_returns(method)
+            if len(returns) != 1 or parent_by_id.get(id(returns[0])) is not method:
+                continue
+            return_statement = returns[0]
+            if return_statement.value is None:
+                continue
+            returned_values = (
+                tuple(return_statement.value.elts)
+                if isinstance(return_statement.value, (ast.Tuple, ast.List))
+                else (return_statement.value,)
+            )
+            returned_ids = tuple(
+                returned_agent_id(method, value, return_statement)
+                for value in returned_values
+            )
+            if any(returned_ids):
+                agent_factory_returns[(id(class_node), method.name)] = returned_ids
+
+    helper_agent_assignments: list[tuple[ast.Assign, str, str]] = []
+    for assignment in (node for node in nodes if isinstance(node, ast.Assign)):
+        if not (
+            isinstance(assignment.value, ast.Call)
+            and isinstance(assignment.value.func, ast.Attribute)
+            and isinstance(assignment.value.func.value, ast.Name)
+        ):
+            continue
+        method = parent_by_id.get(id(assignment))
+        while method is not None and not isinstance(
+            method, (ast.FunctionDef, ast.AsyncFunctionDef)
+        ):
+            method = parent_by_id.get(id(method))
+        if not isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        parent = parent_by_id.get(id(method))
+        if not isinstance(parent, ast.ClassDef):
+            continue
+        receiver = assignment.value.func.value.id
+        if receiver not in {"self", "cls", parent.name}:
+            continue
+        positional_arguments = (*method.args.posonlyargs, *method.args.args)
+        if receiver in {"self", "cls"}:
+            if not positional_arguments or positional_arguments[0].arg != receiver:
+                continue
+            if any(
+                receiver in statement_mutations(statement)
+                for statement in method.body
+            ):
+                continue
+        elif receiver in python_function_local_bindings(method):
+            continue
+        returned_ids = agent_factory_returns.get(
+            (id(parent), assignment.value.func.attr)
+        )
+        if returned_ids is None or len(assignment.targets) != 1:
+            continue
+        target = assignment.targets[0]
+        targets = tuple(target.elts) if isinstance(target, (ast.Tuple, ast.List)) else (target,)
+        if len(targets) != len(returned_ids):
+            continue
+        for target_item, returned_id in zip(targets, returned_ids, strict=True):
+            if isinstance(target_item, ast.Name) and returned_id is not None:
+                helper_agent_assignments.append(
+                    (assignment, target_item.id, returned_id)
+                )
+                symbol_candidates.setdefault(("agent", target_item.id), set()).add(
+                    returned_id
+                )
     local_symbol_ids = {
         key: next(iter(candidates))
         for key, candidates in symbol_candidates.items()
@@ -5389,13 +5540,28 @@ def scan_python(
             )
 
         definition_by_statement = {
-            id(node): (kind, binding, call_symbol_ids[id(node.value)])
+            (id(node), kind, binding): (
+                call_symbol_ids[id(node.value)],
+                "block-dominating-definition",
+            )
             for node, kind, binding in assigned_constructors
         }
         definition_by_statement.update(
             {
-                id(node): ("tool", node.name, definition_symbol_ids[id(node)])
+                (id(node), "tool", node.name): (
+                    definition_symbol_ids[id(node)],
+                    "block-dominating-definition",
+                )
                 for node, _qualified_name in decorated_tools
+            }
+        )
+        definition_by_statement.update(
+            {
+                (id(node), "agent", binding): (
+                    symbol_id,
+                    "same-class-helper-return",
+                )
+                for node, binding, symbol_id in helper_agent_assignments
             }
         )
         for call in (
@@ -5430,12 +5596,11 @@ def scan_python(
                 ]
                 if len(mutations) != 1:
                     continue
-                definition = definition_by_statement.get(id(mutations[0]))
-                if definition and definition[:2] == (kind, name):
-                    dominating_symbol_ids[(id(call), kind, name)] = (
-                        definition[2],
-                        "block-dominating-definition",
-                    )
+                definition = definition_by_statement.get(
+                    (id(mutations[0]), kind, name)
+                )
+                if definition:
+                    dominating_symbol_ids[(id(call), kind, name)] = definition
     scoped_symbol_ids = {
         key: candidates[0]
         for key, candidates in scoped_symbol_candidates.items()

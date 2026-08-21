@@ -4017,6 +4017,31 @@ def test_python_function_tool_wrappers_require_import_and_same_block_proof() -> 
     assert finding.analysis["approval_coverage"] == "present"
 
 
+def test_python_agent_helper_returns_require_exact_same_class_flow() -> None:
+    ir = scan_repository(ROOT / "cases/python_agent_helper_return")
+    edges = {
+        edge.evidence.line: edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent"
+        and edge.source_name == "Crew"
+        and edge.target_kind == "agent"
+    }
+
+    assert edges[11].target_id == "py:app.py#agent:Agent@7"
+    assert edges[11].attributes == {
+        "target_identity": "same-class-helper-return"
+    }
+    assert edges[20].target_id == "py:app.py#agent:agent@14"
+    assert edges[20].attributes == {
+        "target_identity": "same-class-helper-return"
+    }
+    for line in (29, 38, 46, 51, 56, 67, 82):
+        assert edges[line].target_id is None
+        assert edges[line].attributes == {
+            "target_identity": "ambiguous-repeated-binding"
+        }
+
+
 def test_relative_typescript_import_resolves_cross_file_tool_path() -> None:
     ir = scan_repository(ROOT / "cases/imported_ts_tool")
 

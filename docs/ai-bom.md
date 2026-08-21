@@ -83,9 +83,14 @@ import-proven OpenAI `function_tool(function)` assignment can instead use the wr
 identity while preserving the exact underlying body and literal approval policy. Both function and
 wrapper must be sole earlier mutations in the same block. This proof wins over a broader lexical
 candidate, and a locally bound name cannot fall back to a same-named module definition.
-Reassignments, cross-branch or forward definitions, parameters, helper returns, lambdas, multiply
-wrapped functions, shadowed factories, and otherwise unproven references record
+Reassignments, cross-branch or forward definitions, parameters, tool-helper returns, lambdas,
+multiply wrapped functions, shadowed factories, and otherwise unproven references record
 `ambiguous-repeated-binding` or remain unresolved.
+
+An Agent endpoint can additionally resolve as `same-class-helper-return` when a unique same-class
+method has one direct top-level return of an exact Agent constructor or immutable Agent local, the
+caller binds the direct/tuple result, and that binding solely dominates composition. The endpoint
+retains the constructor's source symbol rather than inventing an identity at the helper call.
 
 Selected-path scans remain partial. Their metadata records `scan_scope: selected-paths` and the exact
 filters; baseline output does not claim that omitted fingerprints are resolved.

@@ -13,17 +13,19 @@ decorated-tool bindings now receive occurrence-qualified IDs for exact source ed
 references are scope-aware for unique and repeated names; repeated targets resolve for a single
 direct, earlier definition in the same lexical/module scope, plus an exact single-mutation definition
 that dominates use in the same branch/with body.
-Schema v52 additionally inventories 15 import-proven OpenAI Agents Python `ComputerTool` instances
+Schema v53 additionally inventories 15 import-proven OpenAI Agents Python `ComputerTool` instances
 and resolves ten agent links to them, including three formerly ambiguous repeated bindings. Literal
 Python Agent tool lists now recover 150 exact same-block callable definitions and 162 Agent links,
 including the PydanticAI direct-function target; 83 definitions are outside test paths and seven
 capability edges become reachable. Before wrapper recovery, six corpus targets in parameter,
 helper-return, wrapper-factory, or tuple-unpack forms remained unresolved. Import-proven OpenAI
 `function_tool(function)` assignments now recover 12 exact wrapper tools and Agent edges, including
-the two repeated SDK targets; three enable approval and all occur under tests. Four corpus targets in
-parameter, helper-return, or tuple-unpack forms remain unresolved; cross-branch, forward, parameter,
-shadowed-factory, lambda, and reassigned fixture cases stay withheld. Next recover exact CrewAI
-helper-return/tuple-unpack identities and the typed `ApplyPatchTool` parameter, then add broader
+the two repeated SDK targets; three enable approval and all occur under tests. Exact same-class
+direct/tuple Agent-return summaries resolve three CrewAI composition edges to two source Agent
+definitions. The only ambiguous repeated corpus target is a typed `ApplyPatchTool` parameter;
+cross-branch, forward, parameter, conditional/transformed return, external-receiver,
+shadowed-factory, lambda, and reassigned fixture cases stay withheld. Next resolve that typed
+parameter only when the annotation and call-site argument identity agree, then add broader
 branch/reassignment
 dataflow and resolve Python/TS package re-exports, wildcard imports, other wrapper factories, and
 type-driven symbols.
@@ -185,8 +187,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 342 pinned positive/negative locations, with 311 separately
-scored IR relationship labels. Schema-v52 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 342 pinned positive/negative locations, with 322 separately
+scored IR relationship labels. Schema-v53 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

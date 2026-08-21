@@ -76,6 +76,9 @@ never imported or executed.
 - `python_function_tool_wrapper`: import-proven OpenAI `function_tool(function)` assignments retain
   the wrapped body, approval, and Agent identity; wrong/shadowed factories, reassigned bindings,
   cross-branch definitions, lambdas, and multiply wrapped functions remain unresolved.
+- `python_agent_helper_return`: exact same-class helpers propagate a direct or tuple-returned Agent
+  into Crew composition; conditional, reassigned, transformed, cross-branch, rebound-helper, and
+  external-receiver flows remain unresolved.
 - `typescript_a2a_card_endpoint`: ADK JS and Gemini compositions preserve remotely supplied
   AgentCard authority at SDK client construction; fixed/local cards, wrong imports, and unproven
   transports stay negative.
