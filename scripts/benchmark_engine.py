@@ -213,6 +213,38 @@ def main() -> int:
             raise RuntimeError(
                 f"{repository}: Agent-referenced Python callable lacks an exact Agent edge"
             )
+        python_function_tool_wrappers = [
+            item
+            for item in ir.components
+            if item.kind == "tool"
+            and item.attributes.get("registration") == "function-tool-wrapper"
+        ]
+        python_function_tool_wrapper_ids = {
+            item.symbol_id for item in python_function_tool_wrappers if item.symbol_id
+        }
+        if len(python_function_tool_wrapper_ids) != len(python_function_tool_wrappers):
+            raise RuntimeError(
+                f"{repository}: Python function-tool wrapper lacks a unique symbol ID"
+            )
+        python_function_tool_wrapper_capability_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_id in python_function_tool_wrapper_ids
+            and edge.target_kind == "capability"
+        ]
+        python_function_tool_wrapper_agent_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "agent"
+            and edge.target_id in python_function_tool_wrapper_ids
+        ]
+        function_tool_wrapper_agent_targets = {
+            edge.target_id for edge in python_function_tool_wrapper_agent_edges
+        }
+        if function_tool_wrapper_agent_targets != python_function_tool_wrapper_ids:
+            raise RuntimeError(
+                f"{repository}: Python function-tool wrapper lacks an exact Agent edge"
+            )
         python_browser_evaluations = [
             item
             for item in ir.components
@@ -597,6 +629,20 @@ def main() -> int:
                 ),
                 "capability_edges": len(python_agent_referenced_capability_edges),
                 "resolved_agent_edges": len(python_agent_referenced_agent_edges),
+            },
+            "python_function_tool_wrappers": {
+                "instances": len(python_function_tool_wrappers),
+                "non_test_instances": sum(
+                    not item.evidence.path.startswith("tests/")
+                    and "/tests/" not in item.evidence.path
+                    for item in python_function_tool_wrappers
+                ),
+                "approval_enabled": sum(
+                    item.attributes.get("needs_approval") is True
+                    for item in python_function_tool_wrappers
+                ),
+                "capability_edges": len(python_function_tool_wrapper_capability_edges),
+                "resolved_agent_edges": len(python_function_tool_wrapper_agent_edges),
             },
             "python_browser_evaluate": {
                 "total": len(python_browser_evaluations),
@@ -1237,7 +1283,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 51,
+        "schema_version": 52,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -1378,6 +1424,19 @@ def main() -> int:
                 for name in (
                     "instances",
                     "non_test_instances",
+                    "capability_edges",
+                    "resolved_agent_edges",
+                )
+            },
+            "python_function_tool_wrappers": {
+                name: sum(
+                    result["python_function_tool_wrappers"][name]
+                    for result in successful
+                )
+                for name in (
+                    "instances",
+                    "non_test_instances",
+                    "approval_enabled",
                     "capability_edges",
                     "resolved_agent_edges",
                 )

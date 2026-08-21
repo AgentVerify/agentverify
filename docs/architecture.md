@@ -46,11 +46,16 @@ built-ins, inline/assigned agent adapters, and Cline inline tools without treati
 symbols. Python constructor and callable bindings gain a target ID inside a `with`, branch, or other
 statement body only when one exact assignment or function definition is the sole same-block mutation
 before use. Literal Agent `tools=[name]` entries promote the exact preceding callable definition to a
-tool and record its registration site. This block-local proof takes precedence over a broader lexical
-candidate, while any local binding prevents fallback to a same-named module definition. Cross-branch
-definitions, reassignments, forward definitions, parameters, helper returns, and tuple unpacking
-remain unresolved. Package re-exports, wildcard imports, dynamic lookups, conditional tool
-expressions, and unrecognized wrapper-factory forms
+tool and record its registration site. A wrapper assignment can additionally preserve that body when
+the factory is an unshadowed `function_tool` import from `agents` or `agents.tool`, the wrapper and
+function are each sole earlier same-block mutations, and the function is passed as the wrapper's sole
+positional argument. Literal approval on the wrapper is retained. This block-local proof takes
+precedence over a broader lexical candidate, while any local binding prevents fallback to a
+same-named module definition. Cross-branch definitions, reassignments, forward definitions,
+parameters, helper returns, lambdas, multiply wrapped functions, tuple unpacking, and shadowed
+factories remain unresolved.
+Package re-exports, wildcard imports, dynamic lookups, conditional tool expressions, and other
+wrapper-factory forms
 remain unresolved.
 
 A repository prepass also resolves direct module-level Python

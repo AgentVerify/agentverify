@@ -73,6 +73,9 @@ never imported or executed.
 - `python_direct_callable_tool`: a sole same-block Python function passed through a literal Agent
   tools list becomes an analyzed tool asset; reassigned, cross-branch, forward, and parameter
   forms—including a parameter shadowing a unique module tool—remain unresolved.
+- `python_function_tool_wrapper`: import-proven OpenAI `function_tool(function)` assignments retain
+  the wrapped body, approval, and Agent identity; wrong/shadowed factories, reassigned bindings,
+  cross-branch definitions, lambdas, and multiply wrapped functions remain unresolved.
 - `typescript_a2a_card_endpoint`: ADK JS and Gemini compositions preserve remotely supplied
   AgentCard authority at SDK client construction; fixed/local cards, wrong imports, and unproven
   transports stay negative.

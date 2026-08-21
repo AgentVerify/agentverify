@@ -78,10 +78,13 @@ resolve when one direct definition in the same lexical or module scope appears e
 `module-single-definition`. A nested statement block can additionally record
 `block-dominating-definition` when one exact constructor assignment or callable definition is the
 binding's sole mutation before use in that block. Literal Agent tool lists can therefore promote an
-exact preceding local function to a tool while retaining the Agent registration location. This proof
-wins over a broader lexical candidate, and a locally bound name cannot fall back to a same-named
-module definition. Reassignments, cross-branch or forward definitions, parameters, helper returns,
-and otherwise unproven references record
+exact preceding local function to a tool while retaining the Agent registration location. An
+import-proven OpenAI `function_tool(function)` assignment can instead use the wrapper binding's
+identity while preserving the exact underlying body and literal approval policy. Both function and
+wrapper must be sole earlier mutations in the same block. This proof wins over a broader lexical
+candidate, and a locally bound name cannot fall back to a same-named module definition.
+Reassignments, cross-branch or forward definitions, parameters, helper returns, lambdas, multiply
+wrapped functions, shadowed factories, and otherwise unproven references record
 `ambiguous-repeated-binding` or remain unresolved.
 
 Selected-path scans remain partial. Their metadata records `scan_scope: selected-paths` and the exact

@@ -3948,6 +3948,75 @@ def test_python_direct_callable_tools_require_same_block_definition() -> None:
     assert finding.ir_path[:2] == ("agent:Agent", "tool:run_command")
 
 
+def test_python_function_tool_wrappers_require_import_and_same_block_proof() -> None:
+    ir = scan_repository(ROOT / "cases/python_function_tool_wrapper")
+    tools = {
+        component.symbol_id: component
+        for component in ir.components
+        if component.kind == "tool"
+        and component.attributes.get("registration") == "function-tool-wrapper"
+    }
+    assert set(tools) == {
+        "py:app.py#tool:wrapped@12",
+        "py:app.py#tool:wrapped@20",
+    }
+    approved = tools["py:app.py#tool:wrapped@12"]
+    assert approved.name == "wrapped"
+    assert approved.evidence.line == 12
+    assert approved.attributes == {
+        "decorators": [],
+        "needs_approval": True,
+        "registration": "function-tool-wrapper",
+        "registration_path": "app.py",
+        "registration_line": 13,
+        "wrapper_factory": "agents.function_tool",
+        "wrapper_line": 12,
+        "wrapped_function": "run_command",
+        "resolution": "same-block-single-definition",
+    }
+
+    edges = {
+        edge.evidence.line: edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent" and edge.target_kind == "tool"
+    }
+    assert edges[13].target_id == "py:app.py#tool:wrapped@12"
+    assert edges[21].target_id == "py:app.py#tool:wrapped@20"
+    for line in (29, 37, 46, 55, 64, 69):
+        assert edges[line].target_id is None
+    multiple_edges = [
+        edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent"
+        and edge.target_kind == "tool"
+        and edge.evidence.line == 78
+    ]
+    assert len(multiple_edges) == 2
+    assert all(edge.target_id is None for edge in multiple_edges)
+
+    capability = next(
+        edge
+        for edge in ir.relationships
+        if edge.source_id == "py:app.py#tool:wrapped@12"
+        and edge.target_name == "shell-execution"
+    )
+    assert capability.evidence.line == 10
+    approval = next(
+        edge
+        for edge in ir.relationships
+        if edge.source_id == "py:app.py#tool:wrapped@12"
+        and edge.target_name == "human-approval"
+    )
+    assert approval.evidence.line == 12
+    finding = next(
+        finding
+        for finding in ir.findings
+        if finding.rule_id == "AV-EXEC001" and finding.evidence.line == 10
+    )
+    assert finding.ir_path[:2] == ("agent:Agent", "tool:wrapped")
+    assert finding.analysis["approval_coverage"] == "present"
+
+
 def test_relative_typescript_import_resolves_cross_file_tool_path() -> None:
     ir = scan_repository(ROOT / "cases/imported_ts_tool")
 

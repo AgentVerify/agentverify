@@ -387,6 +387,16 @@ class PythonToolRegistration:
 
 
 @dataclass(frozen=True)
+class PythonFunctionToolWrapper:
+    binding: str
+    assignment: ast.Assign
+    call: ast.Call
+    function: ast.FunctionDef | ast.AsyncFunctionDef
+    agent_call: ast.Call
+    registrar: str
+
+
+@dataclass(frozen=True)
 class PythonRegistryTool:
     framework: str
     name: str
@@ -2142,6 +2152,7 @@ class PythonVisitor(ast.NodeVisitor):
         call_symbol_ids: dict[int, str],
         definition_symbol_ids: dict[int, str],
         referenced_tool_functions: dict[int, ast.Call],
+        wrapped_tool_functions: dict[int, PythonFunctionToolWrapper],
         registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
         network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
         registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
@@ -2210,6 +2221,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.call_symbol_ids = call_symbol_ids
         self.definition_symbol_ids = definition_symbol_ids
         self.referenced_tool_functions = referenced_tool_functions
+        self.wrapped_tool_functions = wrapped_tool_functions
         self.registry_class_exports = registry_class_exports
         self.network_helper_summaries = network_helper_summaries
         self.registered_tool_functions = registered_tool_functions
@@ -2836,12 +2848,14 @@ class PythonVisitor(ast.NodeVisitor):
         )
         registry_function = self.registry_function_tools.get(id(node))
         tool_reference = self.referenced_tool_functions.get(id(node))
+        wrapped_tool = self.wrapped_tool_functions.get(id(node))
         direct_tool = bool(
             decorators & TOOL_DECORATORS
             or any(name.endswith(".tool") for name in decorators)
             or registration is not None
             or registry_function is not None
             or tool_reference is not None
+            or wrapped_tool is not None
         )
         active_class_tool = (
             self.active_registry_class_tools[-1]
@@ -2858,6 +2872,8 @@ class PythonVisitor(ast.NodeVisitor):
                 if active_class_tool is not None
                 else registry_function.name
                 if registry_function is not None
+                else wrapped_tool.binding
+                if wrapped_tool is not None
                 else node.name
             )
             tool_id = (
@@ -2868,6 +2884,13 @@ class PythonVisitor(ast.NodeVisitor):
                 or source_symbol("py", self.path, "tool", qualified_name)
             )
             needs_approval = registration.needs_approval if registration else False
+            if wrapped_tool is not None:
+                needs_approval = needs_approval or any(
+                    keyword.arg in {"needs_approval", "require_approval"}
+                    and isinstance(keyword.value, ast.Constant)
+                    and keyword.value.value is True
+                    for keyword in wrapped_tool.call.keywords
+                )
             for decorator in node.decorator_list:
                 if isinstance(decorator, ast.Call):
                     needs_approval = needs_approval or any(
@@ -2906,12 +2929,25 @@ class PythonVisitor(ast.NodeVisitor):
                             "wrapper_summary": "metadata-preserving-forwarder",
                         }
                     )
+            if wrapped_tool is not None:
+                attributes.update(
+                    {
+                        "registration": "function-tool-wrapper",
+                        "registration_path": self.path,
+                        "registration_line": wrapped_tool.agent_call.lineno,
+                        "wrapper_factory": wrapped_tool.registrar,
+                        "wrapper_line": wrapped_tool.assignment.lineno,
+                        "wrapped_function": node.name,
+                        "resolution": "same-block-single-definition",
+                    }
+                )
             if (
                 tool_reference is not None
                 and not decorators & TOOL_DECORATORS
                 and not any(name.endswith(".tool") for name in decorators)
                 and registration is None
                 and registry_function is None
+                and wrapped_tool is None
             ):
                 attributes.update(
                     {
@@ -2926,13 +2962,19 @@ class PythonVisitor(ast.NodeVisitor):
                     Component(
                         "tool",
                         tool_name,
-                        self.ev(node),
+                        self.ev(wrapped_tool.assignment) if wrapped_tool else self.ev(node),
                         attributes,
                         tool_id,
                     )
                 )
             if needs_approval:
-                approval_evidence = registration.evidence if registration else self.ev(node)
+                approval_evidence = (
+                    registration.evidence
+                    if registration
+                    else self.ev(wrapped_tool.call)
+                    if wrapped_tool
+                    else self.ev(node)
+                )
                 self.ir.add_component(
                     Component("control", "human-approval", approval_evidence)
                 )
@@ -5028,7 +5070,59 @@ def scan_python(
         mutation_cache[id(statement)] = mutations
         return mutations
 
+    function_tool_factories: dict[str, str] = {}
+    for statement in tree.body:
+        if isinstance(statement, ast.ImportFrom) and statement.module in {
+            "agents",
+            "agents.tool",
+        }:
+            for alias in statement.names:
+                if alias.name == "function_tool":
+                    binding = alias.asname or alias.name
+                    function_tool_factories[binding] = (
+                        f"{statement.module}.function_tool"
+                    )
+        elif isinstance(statement, ast.Import):
+            for alias in statement.names:
+                if alias.name == "agents":
+                    binding = alias.asname or "agents"
+                    function_tool_factories[f"{binding}.function_tool"] = (
+                        "agents.function_tool"
+                    )
+                elif alias.name == "agents.tool":
+                    if alias.asname:
+                        function_tool_factories[f"{alias.asname}.function_tool"] = (
+                            "agents.tool.function_tool"
+                        )
+                    else:
+                        function_tool_factories["agents.tool.function_tool"] = (
+                            "agents.tool.function_tool"
+                        )
+    function_tool_factories = {
+        name: registrar
+        for name, registrar in function_tool_factories.items()
+        if name.split(".", 1)[0] not in module_rebound_names
+    }
+
+    def function_tool_registrar(call: ast.Call) -> str | None:
+        call_name = dotted_name(call.func)
+        registrar = function_tool_factories.get(call_name)
+        if registrar is None:
+            return None
+        root_name = call_name.split(".", 1)[0]
+        parent = parent_by_id.get(id(call))
+        while parent is not None and not isinstance(
+            parent, (ast.FunctionDef, ast.AsyncFunctionDef)
+        ):
+            parent = parent_by_id.get(id(parent))
+        if isinstance(parent, (ast.FunctionDef, ast.AsyncFunctionDef)) and (
+            root_name in python_function_local_bindings(parent)
+        ):
+            return None
+        return registrar
+
     referenced_tool_functions: dict[int, ast.Call] = {}
+    wrapper_candidates: dict[int, PythonFunctionToolWrapper] = {}
     for call in (
         candidate
         for candidate in nodes
@@ -5050,13 +5144,66 @@ def scan_python(
                     for statement in statements[:use_index]
                     if value.id in statement_mutations(statement)
                 ]
-                if len(mutations) != 1 or not isinstance(
-                    mutations[0], (ast.FunctionDef, ast.AsyncFunctionDef)
-                ):
+                if len(mutations) != 1:
                     continue
                 definition = mutations[0]
-                if definition.name == value.id:
+                if isinstance(definition, (ast.FunctionDef, ast.AsyncFunctionDef)) and (
+                    definition.name == value.id
+                ):
                     referenced_tool_functions.setdefault(id(definition), call)
+                    continue
+                if not (
+                    isinstance(definition, ast.Assign)
+                    and len(definition.targets) == 1
+                    and isinstance(definition.targets[0], ast.Name)
+                    and definition.targets[0].id == value.id
+                    and isinstance(definition.value, ast.Call)
+                    and len(definition.value.args) == 1
+                    and isinstance(definition.value.args[0], ast.Name)
+                ):
+                    continue
+                registrar = function_tool_registrar(definition.value)
+                if registrar is None:
+                    continue
+                wrapper_block = enclosing_statement_block(definition)
+                if wrapper_block is None:
+                    continue
+                wrapper_statements, wrapper_index = wrapper_block
+                function_name = definition.value.args[0].id
+                function_mutations = [
+                    statement
+                    for statement in wrapper_statements[:wrapper_index]
+                    if function_name in statement_mutations(statement)
+                ]
+                if len(function_mutations) != 1 or not isinstance(
+                    function_mutations[0], (ast.FunctionDef, ast.AsyncFunctionDef)
+                ):
+                    continue
+                function = function_mutations[0]
+                if function.name != function_name or function.decorator_list:
+                    continue
+                wrapper_candidates.setdefault(
+                    id(definition),
+                    PythonFunctionToolWrapper(
+                        value.id,
+                        definition,
+                        definition.value,
+                        function,
+                        call,
+                        registrar,
+                    ),
+                )
+    wrappers_by_function: dict[int, list[PythonFunctionToolWrapper]] = defaultdict(list)
+    for wrapper in wrapper_candidates.values():
+        wrappers_by_function[id(wrapper.function)].append(wrapper)
+    wrapped_tool_functions = {
+        function_id: wrappers[0]
+        for function_id, wrappers in wrappers_by_function.items()
+        if len(wrappers) == 1 and function_id not in referenced_tool_functions
+    }
+    wrapped_tool_assignments = {
+        id(wrapper.assignment): wrapper for wrapper in wrapped_tool_functions.values()
+    }
     symbol_candidates: dict[tuple[str, str], set[str]] = {}
     call_symbol_ids: dict[int, str] = {}
     definition_symbol_ids: dict[int, str] = {}
@@ -5148,6 +5295,7 @@ def scan_python(
                 if short_name in AGENT_CALLS
                 else "tool"
                 if short_name in BUILTIN_TOOL_CAPABILITIES
+                or id(node) in wrapped_tool_assignments
                 else None
             )
             if kind:
@@ -5158,6 +5306,8 @@ def scan_python(
         symbol_id = source_symbol("py", relative, kind, identity)
         symbol_candidates.setdefault((kind, binding), set()).add(symbol_id)
         call_symbol_ids[id(node.value)] = symbol_id
+        if wrapper := wrapped_tool_assignments.get(id(node)):
+            definition_symbol_ids[id(wrapper.function)] = symbol_id
     local_symbol_ids = {
         key: next(iter(candidates))
         for key, candidates in symbol_candidates.items()
@@ -5307,6 +5457,7 @@ def scan_python(
         call_symbol_ids=call_symbol_ids,
         definition_symbol_ids=definition_symbol_ids,
         referenced_tool_functions=referenced_tool_functions,
+        wrapped_tool_functions=wrapped_tool_functions,
         registry_class_exports=registry_class_exports,
         network_helper_summaries=network_helper_summaries,
         registered_tool_functions=registered_tool_functions,
