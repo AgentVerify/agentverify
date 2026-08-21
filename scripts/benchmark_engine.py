@@ -12,6 +12,16 @@ from pathlib import Path
 
 from agentverify.scanner import scan_repository
 
+PUBLISHED_NAME_KINDS = {
+    "capability",
+    "control",
+    "control-setting",
+    "framework",
+    "protocol",
+    "provider",
+    "sandbox-boundary",
+}
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
@@ -38,10 +48,16 @@ def main() -> int:
         imported_edges = [edge for edge in ir.relationships if edge.attributes.get("target_path")]
         result = {
             "repository": repository,
+            "category": row["category"],
             "status": "ok",
             "files_scanned": ir.files_scanned,
             "config_files_scanned": ir.config_files_scanned,
             "components": dict(sorted(Counter(item.kind for item in ir.components).items())),
+            "component_names": {
+                kind: sorted({item.name for item in ir.components if item.kind == kind})
+                for kind in sorted(PUBLISHED_NAME_KINDS)
+                if any(item.kind == kind for item in ir.components)
+            },
             "relationships": len(ir.relationships),
             "resolved_import_edges": len(imported_edges),
             "resolved_import_edges_by_frontend": {
@@ -61,7 +77,7 @@ def main() -> int:
         print(f"[{index:>2}/{len(repositories)}] {repository}: {ir.files_scanned} files")
     successful = [result for result in results if result["status"] == "ok"]
     payload = {
-        "schema_version": 1,
+        "schema_version": 2,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "summary": {
@@ -88,6 +104,38 @@ def main() -> int:
                     sum((Counter(result["findings"]) for result in successful), Counter()).items()
                 )
             ),
+            "observed_component_names": {
+                kind: dict(
+                    sorted(
+                        Counter(
+                            name
+                            for result in successful
+                            for name in result["component_names"].get(kind, [])
+                        ).items()
+                    )
+                )
+                for kind in sorted(
+                    {
+                        kind
+                        for result in successful
+                        for kind in result["component_names"]
+                    }
+                )
+            },
+            "category_coverage": {
+                category: {
+                    "repositories": len(rows),
+                    "source_bearing": sum(row["files_scanned"] > 0 for row in rows),
+                    **{
+                        f"with_{kind}": sum(bool(row["component_names"].get(kind)) for row in rows)
+                        for kind in ("framework", "provider", "protocol", "capability")
+                    },
+                }
+                for category in sorted({result["category"] for result in successful})
+                if (
+                    rows := [result for result in successful if result["category"] == category]
+                )
+            },
             "elapsed_seconds": round(time.perf_counter() - started, 4),
         },
         "repositories": results,

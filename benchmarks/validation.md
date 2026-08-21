@@ -28,10 +28,15 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,594 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,754 relationships, and completed in 25.19 seconds on the development machine. Three parse warnings were isolated and
+resolved 1,754 relationships, and completed in 25.28 seconds on the development machine. Three parse warnings were isolated and
 reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
+
+Engine benchmark schema v2 retains stable component-name taxonomies and category-level presence
+counts. It intentionally excludes arbitrary agent/tool display names from the summary. The resulting
+framework/provider/protocol/capability coverage and unsupported syntax are published in
+`docs/frontend-coverage.md`; presence counts are discovery observations, not recall measurements.
 
 The Python frontend resolves unambiguous absolute imports rooted at the repository, `src/`, or
 `python/`, plus relative modules that map to exactly one sibling package file. It found five imported

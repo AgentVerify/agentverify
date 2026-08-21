@@ -39,9 +39,10 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 100 pinned positive/negative locations. Next, create a
-separately sampled and externally reviewed holdout set, publish framework-stratified coverage and
-unsupported syntax, and keep holdout labels sealed until rule changes are complete. Keep discovery
+The curated regression set has reached 121 pinned positive/negative locations, with seven separately
+scored IR relationship labels. Schema-v2 engine results and `docs/frontend-coverage.md` publish
+category-stratified observations and unsupported syntax. Next create a separately sampled, externally
+reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.
 
 ## P2 — CI adoption workflow

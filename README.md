@@ -61,6 +61,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`docs/roadmap.md`](docs/roadmap.md) — impact × frequency × feasibility priorities
 - [`docs/detection-rules.md`](docs/detection-rules.md) — rule contracts and validation gates
 - [`docs/architecture.md`](docs/architecture.md) — Agent IR, graph analysis, and uncertainty model
+- [`docs/frontend-coverage.md`](docs/frontend-coverage.md) — supported syntax and empirical gaps
 - [`docs/code-scanning.md`](docs/code-scanning.md) — copy-ready GitHub SARIF integration
 - [`docs/pre-commit.md`](docs/pre-commit.md) — local and tagged-release hook setup
 - [`docs/backlog.md`](docs/backlog.md) — prioritized issue-ready future work
