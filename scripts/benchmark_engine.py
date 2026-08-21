@@ -197,6 +197,16 @@ def main() -> int:
             and edge.target_name == "network-origin-allowlist"
             and edge.evidence.path.endswith(".py")
         ]
+        typescript_network_origin_controls = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "capability"
+            and edge.source_name == "network"
+            and edge.relation == "governed-by"
+            and edge.target_kind == "control"
+            and edge.target_name == "network-origin-policy"
+            and edge.evidence.path.endswith((".ts", ".tsx", ".js", ".jsx"))
+        ]
         typescript_network_helper_capabilities = [
             item
             for item in ir.components
@@ -466,6 +476,21 @@ def main() -> int:
                     for edge in python_network_origin_controls
                 ),
             },
+            "typescript_network_origin_controls": {
+                "total": len(typescript_network_origin_controls),
+                "configured_optional": sum(
+                    edge.attributes.get("hostname_scope") == "configured-optional"
+                    for edge in typescript_network_origin_controls
+                ),
+                "default_open": sum(
+                    edge.attributes.get("hostname_default") == "open"
+                    for edge in typescript_network_origin_controls
+                ),
+                "dns_unresolved": sum(
+                    edge.attributes.get("dns_scope") == "unresolved"
+                    for edge in typescript_network_origin_controls
+                ),
+            },
             "path_boundary_controls": {
                 "python": len(python_path_boundary_edges),
                 "typescript": len(typescript_path_boundary_edges),
@@ -568,7 +593,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 30,
+        "schema_version": 31,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -729,6 +754,18 @@ def main() -> int:
                     "total",
                     "redirects_disabled",
                     "redirects_unresolved",
+                    "dns_unresolved",
+                )
+            },
+            "typescript_network_origin_controls": {
+                name: sum(
+                    result["typescript_network_origin_controls"][name]
+                    for result in successful
+                )
+                for name in (
+                    "total",
+                    "configured_optional",
+                    "default_open",
                     "dns_unresolved",
                 )
             },

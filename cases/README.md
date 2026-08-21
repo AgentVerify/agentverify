@@ -17,6 +17,9 @@ never imported or executed.
   `Request` objects, fixed-origin inventory, shadowed/rebound opener negatives, and exact fail-closed
   scheme/hostname controls versus late, partial, continuing, rebound, shadowed, mutable-policy, and
   rejection-branch-sink non-controls.
+- `typescript_network_origin_policy`: same-file URL validation with an always-on scheme set and an
+  optional environment-backed hostname list whose empty default remains open; late, rebound, nested,
+  scheme-only, and branch-only paths do not acquire the policy edge.
 - `sandbox_boundary`: Compose and Kubernetes host/privilege boundaries plus explicit safe negatives.
 - `constant_eval`: constant Python evaluation negative case.
 - `python_browser_evaluate`: exact Playwright `Page` annotations and immutable aliases prove dynamic

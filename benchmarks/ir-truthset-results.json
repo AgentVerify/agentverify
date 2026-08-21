@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T13:35:43.267833+00:00",
-  "labels": 189,
-  "passed": 189,
+  "generated_at": "2026-08-21T13:51:57.998460+00:00",
+  "labels": 196,
+  "passed": 196,
   "metrics": {
     "IR-APPROVAL-CONTROL": {
       "tp": 3,
@@ -176,6 +176,14 @@
       "tp": 5,
       "fp": 0,
       "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-NETWORK-ORIGIN-POLICY": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 5,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -472,6 +480,69 @@
       "check_id": "IR-TS-HELPER-SUMMARY",
       "expected": false,
       "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-network-origin-policy-local",
+      "check_id": "IR-TS-NETWORK-ORIGIN-POLICY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-network-origin-policy-late-local-negative",
+      "check_id": "IR-TS-NETWORK-ORIGIN-POLICY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-network-origin-policy-rebound-local-negative",
+      "check_id": "IR-TS-NETWORK-ORIGIN-POLICY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-network-origin-policy-nested-local-negative",
+      "check_id": "IR-TS-NETWORK-ORIGIN-POLICY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-network-origin-policy-scheme-only-local-negative",
+      "check_id": "IR-TS-NETWORK-ORIGIN-POLICY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-network-origin-policy-branch-local-negative",
+      "check_id": "IR-TS-NETWORK-ORIGIN-POLICY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-network-origin-policy-mcp-real",
+      "check_id": "IR-TS-NETWORK-ORIGIN-POLICY",
+      "expected": true,
+      "observed": true,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

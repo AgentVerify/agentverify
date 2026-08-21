@@ -1164,6 +1164,65 @@ def test_typescript_same_file_network_helpers_propagate_only_controlled_origins(
     ]
 
 
+def test_typescript_network_origin_policy_preserves_optional_open_hostname_scope() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_network_origin_policy")
+
+    network = {
+        item.evidence.line: item.attributes
+        for item in ir.components
+        if item.kind == "capability"
+        and item.name == "network"
+        and item.attributes.get("summary") == "same-file-helper"
+    }
+    assert sorted(network) == [35, 41, 51, 57, 72, 82]
+    assert network[35]["network_origin_policy"] is True
+    assert network[35]["scheme_scope"] == "allowlisted"
+    assert network[35]["hostname_scope"] == "configured-optional"
+    assert all(
+        "network_origin_policy" not in network[line]
+        for line in (41, 51, 57, 72, 82)
+    )
+    controls = [
+        item
+        for item in ir.components
+        if item.kind == "control" and item.name == "network-origin-policy"
+    ]
+    assert len(controls) == 1
+    assert controls[0].evidence.path == "policy.ts"
+    assert controls[0].evidence.line == 8
+    assert controls[0].attributes == {
+        "scope": "production",
+        "policy_effect": "validates-initial-http-origin",
+        "frontend": "typescript",
+        "helper": "validateTarget",
+        "schemes": ["http", "https"],
+        "scheme_scope": "allowlisted",
+        "hostname_scope": "configured-optional",
+        "hostname_default": "open",
+        "hostname_match": "exact-or-subdomain",
+        "environment_name": "ALLOWED_DOMAINS",
+        "redirect_scope": "unresolved",
+        "dns_scope": "unresolved",
+    }
+    edges = [
+        edge
+        for edge in ir.relationships
+        if edge.target_kind == "control" and edge.target_name == "network-origin-policy"
+    ]
+    assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [
+        ("policy.ts", 35)
+    ]
+    guarded_finding = next(
+        finding
+        for finding in ir.findings
+        if finding.rule_id == "AV-NET001" and finding.evidence.line == 35
+    )
+    assert guarded_finding.result_kind == "review"
+    assert guarded_finding.analysis["governing_control_effects"] == {
+        "network-origin-policy": ["validates-initial-http-origin"]
+    }
+
+
 def test_typescript_network_helper_summaries_map_object_parameters_and_multiline_aliases(
     tmp_path: Path,
 ) -> None:

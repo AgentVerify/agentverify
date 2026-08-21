@@ -5078,6 +5078,15 @@ class TypeScriptNetworkHelperSummary:
 
 
 @dataclass(frozen=True)
+class TypeScriptNetworkOriginHelper:
+    name: str
+    evidence: Evidence
+    schemes: tuple[str, ...]
+    environment_name: str
+    hostname_match: str
+
+
+@dataclass(frozen=True)
 class TypeScriptPathBoundaryHelper:
     name: str
     evidence: Evidence
@@ -5727,6 +5736,260 @@ def typescript_helper_argument_expression(
         if code.startswith("..."):
             return item[3:].strip()
     return None
+
+
+def typescript_if_blocks(text: str) -> list[tuple[str, str]]:
+    """Return structurally balanced TypeScript if conditions and braced bodies."""
+    code = typescript_code_mask(text)
+    blocks = []
+    for match in re.finditer(r"\bif\s*\(", code):
+        opening = code.find("(", match.start(), match.end())
+        condition_end = typescript_balanced_end(code, opening, "(", ")")
+        if condition_end is None:
+            continue
+        body_opening = condition_end
+        while body_opening < len(code) and code[body_opening].isspace():
+            body_opening += 1
+        if body_opening >= len(code) or code[body_opening] != "{":
+            continue
+        body_end = typescript_balanced_end(code, body_opening, "{", "}")
+        if body_end is None:
+            continue
+        blocks.append(
+            (
+                text[opening + 1 : condition_end - 1],
+                text[body_opening + 1 : body_end - 1],
+            )
+        )
+    return blocks
+
+
+def typescript_optional_domain_bindings(text: str) -> dict[str, str]:
+    """Resolve immutable normalized domain arrays whose environment default is open."""
+    code = typescript_code_mask(text)
+    pattern = re.compile(
+        r"\bconst\s+(?P<binding>[A-Za-z_$][\w$]*)\s*=\s*\(\s*"
+        r"process\.env\.(?P<environment>[A-Za-z_$][\w$]*)\s*\?\?\s*"
+        r"(?P<empty_quote>['\"])(?P=empty_quote)\s*\)\s*"
+        r"\.split\(\s*(?P<comma_quote>['\"]),(?P=comma_quote)\s*\)\s*"
+        r"\.map\(\s*\((?P<map_name>[A-Za-z_$][\w$]*)\)\s*=>\s*"
+        r"(?P=map_name)\.trim\(\)\.toLowerCase\(\)\s*\)\s*"
+        r"\.filter\(\s*\((?P<filter_name>[A-Za-z_$][\w$]*)\)\s*=>\s*"
+        r"(?P=filter_name)\.length\s*>\s*0\s*\)\s*;",
+        re.DOTALL,
+    )
+    candidates: dict[str, list[str]] = defaultdict(list)
+    for match in pattern.finditer(text):
+        if code[match.start() : match.start() + len("const")].strip() != "const":
+            continue
+        if code[: match.start()].count("{") != code[: match.start()].count("}"):
+            continue
+        binding = match.group("binding")
+        assignment = re.compile(
+            rf"(?<![\w$]){re.escape(binding)}\s*=(?!=|>)"
+        )
+        if len(list(assignment.finditer(code))) != 1:
+            continue
+        unexpected_use = any(
+            not (match.start() <= use.start() < match.end())
+            and not code[use.end() :].lstrip().startswith((".length", ".some"))
+            for use in re.finditer(rf"\b{re.escape(binding)}\b", code)
+        )
+        if unexpected_use:
+            continue
+        candidates[binding].append(match.group("environment"))
+    return {
+        binding: environments[0]
+        for binding, environments in candidates.items()
+        if len(environments) == 1
+    }
+
+
+def typescript_rejected_scheme_set(
+    condition: str, parsed_name: str
+) -> tuple[str, ...] | None:
+    parts = re.split(r"\s*&&\s*", condition.strip())
+    if not parts:
+        return None
+    schemes = []
+    for part in parts:
+        match = re.fullmatch(
+            rf"\s*{re.escape(parsed_name)}\.protocol\s*!==\s*(['\"])(.*?)\1\s*",
+            part,
+            re.DOTALL,
+        )
+        if match is None:
+            return None
+        scheme = match.group(2)
+        if scheme not in {"data:", "http:", "https:"}:
+            return None
+        schemes.append(scheme.removesuffix(":"))
+    normalized = tuple(sorted(set(schemes)))
+    return normalized if {"http", "https"} <= set(normalized) else None
+
+
+def typescript_configured_hostname_policy(
+    body: str,
+    parsed_name: str,
+    domain_bindings: dict[str, str],
+) -> tuple[str, str] | None:
+    matches: list[tuple[str, str]] = []
+    for condition, block in typescript_if_blocks(body):
+        condition_code = typescript_code_mask(condition)
+        block_code = typescript_code_mask(block)
+        for binding, environment_name in domain_bindings.items():
+            if not re.search(
+                rf"\b{re.escape(binding)}\.length\s*>\s*0\b",
+                condition_code,
+            ):
+                continue
+            protocol_matches = list(
+                re.finditer(
+                    rf"\b{re.escape(parsed_name)}\.protocol\s*===\s*(['\"])(.*?)\1",
+                    condition,
+                )
+            )
+            if len(protocol_matches) != len(
+                re.findall(
+                    rf"\b{re.escape(parsed_name)}\.protocol\s*===",
+                    condition_code,
+                )
+            ):
+                continue
+            protocol_values = {
+                match.group(2)
+                for match in protocol_matches
+            }
+            if protocol_values != {"http:", "https:"}:
+                continue
+            domain_assignment = re.search(
+                rf"\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*"
+                rf"{re.escape(parsed_name)}\.hostname\s*;",
+                block_code,
+            )
+            if domain_assignment is None:
+                continue
+            domain_name = domain_assignment.group(1)
+            some_call = re.search(
+                rf"\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*"
+                rf"{re.escape(binding)}\.some\(\s*"
+                rf"\(([A-Za-z_$][\w$]*)\)\s*=>\s*\{{([\s\S]*?)\}}\s*\)\s*;",
+                block_code,
+            )
+            if some_call is None:
+                continue
+            result_name, allowed_name = some_call.group(1), some_call.group(2)
+            callback = block[some_call.start(3) : some_call.end(3)]
+            exact_match = re.search(
+                rf"\breturn\s+{re.escape(domain_name)}\s*===\s*{re.escape(allowed_name)}\s*\|\|\s*"
+                rf"{re.escape(domain_name)}\.endsWith\(\s*`\.\$\{{{re.escape(allowed_name)}\}}`\s*\)\s*;",
+                callback,
+            )
+            if exact_match is None:
+                continue
+            rejected = next(
+                (
+                    rejected_block
+                    for rejected_condition, rejected_block in typescript_if_blocks(block)
+                    if re.fullmatch(
+                        rf"\s*!\s*{re.escape(result_name)}\s*",
+                        rejected_condition,
+                    )
+                    and re.match(r"\s*throw\b", typescript_code_mask(rejected_block))
+                ),
+                None,
+            )
+            if rejected is not None:
+                matches.append((binding, environment_name))
+    return matches[0] if len(matches) == 1 else None
+
+
+def typescript_network_origin_helpers(
+    relative: str, text: str, lines: list[str]
+) -> dict[str, TypeScriptNetworkOriginHelper]:
+    """Summarize same-file URL validators with an optional configured hostname policy."""
+    domain_bindings = typescript_optional_domain_bindings(text)
+    if not domain_bindings:
+        return {}
+    definitions = typescript_function_definitions(text)
+    name_counts = Counter(name for name, _, _, _ in definitions)
+    helpers = {}
+    for name, line, parameters, body in definitions:
+        if name_counts[name] != 1 or len(parameters) != 1:
+            continue
+        parameter = parameters[0]
+        if parameter.property_name is not None:
+            continue
+        parsed_assignment = re.search(
+            rf"\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*new\s+URL\s*\(\s*"
+            rf"{re.escape(parameter.local_name)}\s*\)\s*;",
+            typescript_code_mask(body),
+        )
+        if parsed_assignment is None:
+            continue
+        parsed_name = parsed_assignment.group(1)
+        scheme_sets = [
+            schemes
+            for condition, block in typescript_if_blocks(body)
+            if re.match(r"\s*throw\b", typescript_code_mask(block))
+            and (schemes := typescript_rejected_scheme_set(condition, parsed_name)) is not None
+        ]
+        hostname_policy = typescript_configured_hostname_policy(
+            body, parsed_name, domain_bindings
+        )
+        if len(scheme_sets) != 1 or hostname_policy is None:
+            continue
+        _, environment_name = hostname_policy
+        helpers[name] = TypeScriptNetworkOriginHelper(
+            name,
+            Evidence(relative, line, excerpt(lines, line)),
+            scheme_sets[0],
+            environment_name,
+            "exact-or-subdomain",
+        )
+    return helpers
+
+
+def typescript_network_origin_assignment(
+    line: str,
+    helpers: dict[str, TypeScriptNetworkOriginHelper],
+    dynamic_names: set[str],
+) -> tuple[str, TypeScriptNetworkOriginHelper] | None:
+    code = typescript_code_mask(line)
+    for local_name, helper in helpers.items():
+        assignment = re.search(
+            rf"\b(?:const|let)\s+([A-Za-z_$][\w$]*)"
+            rf"(?:\s*:[^=]+)?\s*=\s*{re.escape(local_name)}\s*\(([^;]*)\)\s*;",
+            code,
+        )
+        if assignment is None:
+            continue
+        argument = line[assignment.start(2) : assignment.end(2)].split(",", 1)[0]
+        if typescript_expression_names(argument) & dynamic_names:
+            return assignment.group(1), helper
+    return None
+
+
+def typescript_update_guarded_network_names(
+    line: str,
+    guarded_names: dict[str, TypeScriptNetworkOriginHelper],
+) -> None:
+    """Propagate direct aliases and invalidate transformed or rebound validated URLs."""
+    code = typescript_code_mask(line)
+    assignment = re.search(
+        r"(?:\b(?:const|let)\s+|(?<![\w$]))([A-Za-z_$][\w$]*)"
+        r"(?:\s*:[^=]+)?\s*=(?!=|>)",
+        code,
+    )
+    if assignment is None:
+        return
+    target = assignment.group(1)
+    value = code[assignment.end() :].strip().removesuffix(";").strip()
+    source = guarded_names.get(value)
+    if source is not None:
+        guarded_names[target] = source
+    else:
+        guarded_names.pop(target, None)
 
 
 def typescript_unique_function_definition(
@@ -6631,23 +6894,75 @@ def add_typescript_path_boundary_control(
     )
 
 
+def add_typescript_network_origin_control(
+    ir: RepositoryIR,
+    capability_evidence: Evidence,
+    helper: TypeScriptNetworkOriginHelper,
+) -> None:
+    attributes = {
+        "scope": source_scope(helper.evidence.path),
+        "policy_effect": "validates-initial-http-origin",
+        "frontend": "typescript",
+        "helper": helper.name,
+        "schemes": list(helper.schemes),
+        "scheme_scope": "allowlisted",
+        "hostname_scope": "configured-optional",
+        "hostname_default": "open",
+        "hostname_match": helper.hostname_match,
+        "environment_name": helper.environment_name,
+        "redirect_scope": "unresolved",
+        "dns_scope": "unresolved",
+    }
+    ir.add_component(
+        Component("control", "network-origin-policy", helper.evidence, attributes)
+    )
+    ir.add_relationship(
+        Relationship(
+            "capability",
+            "network",
+            "governed-by",
+            "control",
+            "network-origin-policy",
+            capability_evidence,
+            {
+                "control_path": helper.evidence.path,
+                "control_line": helper.evidence.line,
+                **attributes,
+            },
+        )
+    )
+
+
 def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None:
     relative = path.relative_to(root).as_posix()
     lines = text.splitlines()
+    masked_lines = typescript_code_mask(text).splitlines()
+    line_depths: dict[int, tuple[int, int]] = {}
+    brace_depth = 0
+    for line_number, masked_line in enumerate(masked_lines, start=1):
+        start_depth = brace_depth
+        brace_depth += masked_line.count("{") - masked_line.count("}")
+        line_depths[line_number] = (start_depth, brace_depth)
     imported_symbols = resolve_typescript_imports(root, path, text)
     tool_by_line, tool_input_names = typescript_graph(ir, relative, text, lines, imported_symbols)
     dynamic_names_by_tool = {tool_id: set(names) for tool_id, names in tool_input_names.items()}
     guarded_path_names_by_tool: dict[str, dict[str, TypeScriptPathBoundaryHelper]] = defaultdict(
         dict
     )
+    guarded_network_names_by_tool: dict[
+        str, dict[str, TypeScriptNetworkOriginHelper]
+    ] = defaultdict(dict)
+    network_callback_depth_by_tool: dict[str, int] = {}
     literal_bindings = typescript_literal_string_bindings(text)
     network_calls = typescript_network_calls(text)
     if tool_by_line and network_calls:
         network_helper_summaries = typescript_network_helper_summaries(text, literal_bindings)
         network_helper_calls = typescript_helper_calls(text, network_helper_summaries)
+        network_origin_helpers = typescript_network_origin_helpers(relative, text, lines)
         multiline_destructuring_assignments = typescript_multiline_destructuring_assignments(text)
     else:
         network_helper_calls = {}
+        network_origin_helpers = {}
         multiline_destructuring_assignments = {}
     path_boundary_helpers = (
         typescript_path_boundary_helpers(root, path, imported_symbols)
@@ -6686,18 +7001,40 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
         code_line = typescript_code_mask(line)
         dynamic_names: set[str] = set()
         guarded_path_names: dict[str, TypeScriptPathBoundaryHelper] = {}
+        guarded_network_names: dict[str, TypeScriptNetworkOriginHelper] = {}
         if tool := tool_by_line.get(line_number):
             dynamic_names = dynamic_names_by_tool.setdefault(tool[1], set())
             guarded_path_names = guarded_path_names_by_tool.setdefault(tool[1], {})
+            guarded_network_names = guarded_network_names_by_tool.setdefault(tool[1], {})
             typescript_apply_destructuring_assignments(
                 multiline_destructuring_assignments.get(line_number, []), dynamic_names
             )
             typescript_update_dynamic_names(line, dynamic_names, literal_bindings)
+            callback_opening = re.search(r"=>\s*\{", code_line)
+            if (
+                callback_opening is not None
+                and typescript_expression_names(code_line[: callback_opening.start()])
+                & dynamic_names
+            ):
+                network_callback_depth_by_tool.setdefault(
+                    tool[1], line_depths[line_number][1]
+                )
             typescript_update_guarded_path_names(line, guarded_path_names)
+            typescript_update_guarded_network_names(line, guarded_network_names)
             if boundary_assignment := typescript_path_boundary_assignment(
                 line, path_boundary_helpers, dynamic_names
             ):
                 guarded_path_names[boundary_assignment[0]] = boundary_assignment[1]
+            if (
+                line_depths[line_number][0]
+                == network_callback_depth_by_tool.get(tool[1])
+                and (
+                    origin_assignment := typescript_network_origin_assignment(
+                        line, network_origin_helpers, dynamic_names
+                    )
+                )
+            ):
+                guarded_network_names[origin_assignment[0]] = origin_assignment[1]
         for match in TS_IMPORT.finditer(line):
             component_from_import(ir, match.group(1), ev)
         for match in TS_MODEL_SETTING.finditer(line):
@@ -6795,6 +7132,12 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
             if guard is not None:
                 add_typescript_path_boundary_control(ir, ev, guard)
         for api, url_expression in network_calls.get(line_number, []):
+            origin_policies = {
+                guarded_network_names[name]
+                for name in typescript_expression_names(url_expression)
+                if name in guarded_network_names
+            }
+            origin_policy = next(iter(origin_policies)) if len(origin_policies) == 1 else None
             add_typescript_capability(
                 ir,
                 relative,
@@ -6807,11 +7150,23 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                     "dynamic_origin": typescript_http_origin_is_dynamic(
                         url_expression, dynamic_names, literal_bindings
                     ),
+                    **(
+                        {
+                            "network_origin_policy": True,
+                            "scheme_scope": "allowlisted",
+                            "hostname_scope": "configured-optional",
+                        }
+                        if origin_policy is not None
+                        else {}
+                    ),
                 },
             )
+            if origin_policy is not None:
+                add_typescript_network_origin_control(ir, ev, origin_policy)
         if line_number in tool_by_line:
             for summary, arguments in network_helper_calls.get(line_number, []):
                 dynamic_origin = False
+                origin_policies: set[TypeScriptNetworkOriginHelper] = set()
                 for parameter in summary.parameters:
                     if parameter.local_name not in summary.controlled_names:
                         continue
@@ -6820,7 +7175,15 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                         argument, dynamic_names, literal_bindings
                     ):
                         dynamic_origin = True
-                        break
+                    if argument:
+                        origin_policies.update(
+                            guarded_network_names[name]
+                            for name in typescript_expression_names(argument)
+                            if name in guarded_network_names
+                        )
+                origin_policy = (
+                    next(iter(origin_policies)) if len(origin_policies) == 1 else None
+                )
                 add_typescript_capability(
                     ir,
                     relative,
@@ -6834,8 +7197,19 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                         "summary": "same-file-helper",
                         "helper_line": summary.line,
                         "helper_network_calls": summary.network_calls,
+                        **(
+                            {
+                                "network_origin_policy": True,
+                                "scheme_scope": "allowlisted",
+                                "hostname_scope": "configured-optional",
+                            }
+                            if origin_policy is not None
+                            else {}
+                        ),
                     },
                 )
+                if origin_policy is not None:
+                    add_typescript_network_origin_control(ir, ev, origin_policy)
         if re.search(r"\baxios\.(?:post|put|patch|delete)\s*\(", code_line) or (
             re.search(r"\bmethod\s*:", code_line)
             and re.search(

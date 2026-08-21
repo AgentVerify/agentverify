@@ -11,7 +11,7 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
 | 4 | Approval coverage and bypass paths | 5 | 4 | 3 | 60 | 52 approval-positive; 18 auto-approval candidates |
 | 5 | Filesystem scope and destructive writes | 5 | 4 | 3 | 60 | 59 writable-filesystem repos |
 | 6 | Sandbox boundary quality | 5 | 4 | 3 | 60 | 64 sandbox-positive; mounts/network/credentials determine quality |
-| 7 | Parameter-controlled network origins | 5 | 2 | 4 | 40 | 13 reviews across 7 repositories; direct, helper, class, and urllib flows resolve, while schema v30 finds zero exact same-function scheme+hostname controls on those paths |
+| 7 | Parameter-controlled network origins | 5 | 2 | 4 | 40 | 13 reviews across 7 repositories; zero exact Python allowlists and one TypeScript configured-optional hostname policy with an open default |
 | 8 | Consequential-action audit coverage | 4 | 4 | 2 | 32 | 57 tracing-positive, but action-level coverage needs data flow |
 
 ## Milestone 1 — explainable discovery
@@ -35,6 +35,8 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
   `Request` objects as negatives.
 - Attach exact fail-closed Python scheme/hostname allowlists to their initial-origin capability while
   preserving redirect and DNS scope as unresolved rather than claiming full SSRF prevention.
+- Resolve same-file TypeScript URL validators while distinguishing always-on schemes from optional,
+  default-open hostname configuration.
 
 ## Milestone 3 — graph and control analysis
 

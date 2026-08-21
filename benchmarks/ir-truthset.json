@@ -546,6 +546,61 @@
       }
     },
     {
+      "id": "typescript-network-origin-policy-local",
+      "target": {"kind":"local","path":"cases/typescript_network_origin_policy"},
+      "check_id": "IR-TS-NETWORK-ORIGIN-POLICY",
+      "path": "policy.ts", "line": 35, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-policy",
+        "attributes":{"control_line":8,"scheme_scope":"allowlisted","hostname_scope":"configured-optional","hostname_default":"open"}
+      }
+    },
+    {
+      "id": "typescript-network-origin-policy-late-local-negative",
+      "target": {"kind":"local","path":"cases/typescript_network_origin_policy"},
+      "check_id": "IR-TS-NETWORK-ORIGIN-POLICY",
+      "path": "policy.ts", "line": 41, "expected": false,
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-policy"}
+    },
+    {
+      "id": "typescript-network-origin-policy-rebound-local-negative",
+      "target": {"kind":"local","path":"cases/typescript_network_origin_policy"},
+      "check_id": "IR-TS-NETWORK-ORIGIN-POLICY",
+      "path": "policy.ts", "line": 51, "expected": false,
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-policy"}
+    },
+    {
+      "id": "typescript-network-origin-policy-nested-local-negative",
+      "target": {"kind":"local","path":"cases/typescript_network_origin_policy"},
+      "check_id": "IR-TS-NETWORK-ORIGIN-POLICY",
+      "path": "policy.ts", "line": 57, "expected": false,
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-policy"}
+    },
+    {
+      "id": "typescript-network-origin-policy-scheme-only-local-negative",
+      "target": {"kind":"local","path":"cases/typescript_network_origin_policy"},
+      "check_id": "IR-TS-NETWORK-ORIGIN-POLICY",
+      "path": "policy.ts", "line": 72, "expected": false,
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-policy"}
+    },
+    {
+      "id": "typescript-network-origin-policy-branch-local-negative",
+      "target": {"kind":"local","path":"cases/typescript_network_origin_policy"},
+      "check_id": "IR-TS-NETWORK-ORIGIN-POLICY",
+      "path": "policy.ts", "line": 82, "expected": false,
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-policy"}
+    },
+    {
+      "id": "typescript-network-origin-policy-mcp-real",
+      "target": {"kind":"repository","repository":"modelcontextprotocol/servers","commit":"599dafc1054550a6eeb87a6545c1e1b03b3ca827"},
+      "check_id": "IR-TS-NETWORK-ORIGIN-POLICY",
+      "path": "src/everything/tools/gzip-file-as-resource.ts", "line": 85, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-policy",
+        "attributes":{"control_line":135,"scheme_scope":"allowlisted","hostname_scope":"configured-optional","hostname_default":"open","environment_name":"GZIP_ALLOWED_DOMAINS"}
+      }
+    },
+    {
       "id": "typescript-network-helper-mastra-real",
       "target": {
         "kind": "repository",

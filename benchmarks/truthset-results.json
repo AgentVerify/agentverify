@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T13:27:23.125751+00:00",
-  "labels": 298,
-  "passed": 298,
+  "generated_at": "2026-08-21T13:43:13.791434+00:00",
+  "labels": 299,
+  "passed": 299,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 14,
@@ -61,7 +61,7 @@
       "recall": 1.0
     },
     "AV-NET001": {
-      "tp": 27,
+      "tp": 28,
       "fp": 0,
       "tn": 29,
       "fn": 0,
@@ -1952,6 +1952,15 @@
     },
     {
       "id": "network-typescript-mcp-helper-real-positive",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "network-typescript-configured-policy-local-review",
       "rule_id": "AV-NET001",
       "expected": true,
       "observed": true,

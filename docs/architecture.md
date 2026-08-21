@@ -92,6 +92,14 @@ statement-ordered local assignment is unwrapped to its original URL before origi
 so a fixed scheme and host are not lost behind the request object. Custom openers, locally imported
 bindings, assigned opener aliases, and Request factories remain unresolved.
 
+The TypeScript frontend can attach one same-file validator policy through a direct validated-result
+assignment and immutable aliases to a direct or summarized network call. The validator proof requires
+`new URL(parameter)`, a fail-closed literal scheme set, and an exact/subdomain hostname predicate over
+an immutable normalized environment list. An empty environment default is represented as
+`hostname_scope: configured-optional` and `hostname_default: open`; it is validation evidence, not an
+allowlist that satisfies destination policy. Late validation, rebound results, nested validator calls,
+scheme-only helpers, DNS, and redirect behavior remain unresolved, and `AV-NET001` is not suppressed.
+
 A repository prepass builds bounded Python network summaries for unique top-level free functions in
 selected files. A summary records direct recognized HTTP calls and the formal parameters that can
 control their origins after fixed-prefix discrimination. At a tool call site, only an exact named
