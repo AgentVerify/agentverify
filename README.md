@@ -23,6 +23,17 @@ agentverify scan ./project --include-tests
 agentverify scan ./project --baseline previous-agentverify.json
 ```
 
+Reviewed exceptions can be suppressed only for the immediately following line, with a rule ID and
+required reason:
+
+```python
+# agentverify: ignore AV-EXEC001 -- command is selected from the fixed deployment allowlist
+subprocess.run(command, shell=True)
+```
+
+JSON and text reports retain the suppression's rule, reason, directive location, and finding location.
+Broad file-level or reason-free inline ignores are intentionally unsupported.
+
 Example finding:
 
 ```text

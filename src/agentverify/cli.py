@@ -74,7 +74,7 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         original_count = len(ir.findings)
         ir.findings = [finding for finding in ir.findings if finding.fingerprint not in known]
-        ir.suppressed_findings = original_count - len(ir.findings)
+        ir.suppressed_findings += original_count - len(ir.findings)
     try:
         report = {
             "json": render_json,

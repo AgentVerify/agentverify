@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from agentverify.cli import main
-from agentverify.report import render_json, render_sarif
+from agentverify.report import render_json, render_sarif, render_text
 from agentverify.scanner import scan_repository
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -272,6 +272,60 @@ execSync(command);
         True,
     ]
     assert [finding.evidence.line for finding in ir.findings] == [4, 5, 6]
+
+
+def test_inline_suppression_is_rule_scoped_and_requires_reason(tmp_path: Path) -> None:
+    (tmp_path / "agent.py").write_text(
+        """import subprocess
+
+# agentverify: ignore AV-EXEC001 -- reviewed wrapper; input is allowlisted upstream
+subprocess.run(command, shell=True)
+# agentverify: ignore AV-EXEC002 -- wrong rule
+subprocess.run(other_command, shell=True)
+# agentverify: ignore AV-EXEC001
+subprocess.run(third_command, shell=True)
+""",
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    assert ir.suppressed_findings == 1
+    assert [finding.evidence.line for finding in ir.findings] == [6, 8]
+    assert len(ir.suppressions) == 1
+    assert ir.suppressions[0].rule_id == "AV-EXEC001"
+    assert ir.suppressions[0].directive.line == 3
+    assert ir.suppressions[0].reason == "reviewed wrapper; input is allowlisted upstream"
+    report = json.loads(render_json(ir))
+    assert report["suppressions"][0]["finding"]["line"] == 4
+    assert "Inline suppressions:" in render_text(ir)
+
+
+def test_typescript_and_compose_inline_suppressions(tmp_path: Path) -> None:
+    (tmp_path / "agent.ts").write_text(
+        """import { exec } from "node:child_process";
+// agentverify: ignore AV-EXEC001 -- command policy is enforced by the caller
+exec(command);
+""",
+        encoding="utf-8",
+    )
+    (tmp_path / "docker-compose.yml").write_text(
+        """services:
+  agent:
+    # agentverify: ignore AV-SANDBOX001 -- dedicated isolated build host
+    privileged: true
+""",
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    assert not ir.findings
+    assert ir.suppressed_findings == 2
+    assert {suppression.rule_id for suppression in ir.suppressions} == {
+        "AV-EXEC001",
+        "AV-SANDBOX001",
+    }
 
 
 def test_oversized_source_is_skipped(tmp_path: Path) -> None:

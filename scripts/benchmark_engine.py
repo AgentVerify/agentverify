@@ -43,6 +43,7 @@ def main() -> int:
             "components": dict(sorted(Counter(item.kind for item in ir.components).items())),
             "relationships": len(ir.relationships),
             "findings": dict(sorted(Counter(item.rule_id for item in ir.findings).items())),
+            "suppressed_findings": ir.suppressed_findings,
             "parse_warnings": len(ir.errors),
             "parse_warning_details": ir.errors[:10],
             "elapsed_seconds": round(time.perf_counter() - repo_started, 4),
@@ -65,6 +66,7 @@ def main() -> int:
             "config_files_scanned": sum(result["config_files_scanned"] for result in successful),
             "relationships": sum(result["relationships"] for result in successful),
             "parse_warnings": sum(result["parse_warnings"] for result in successful),
+            "suppressed_findings": sum(result["suppressed_findings"] for result in successful),
             "findings": dict(
                 sorted(
                     sum((Counter(result["findings"]) for result in successful), Counter()).items()

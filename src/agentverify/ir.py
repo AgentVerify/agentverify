@@ -47,6 +47,14 @@ class Finding:
     analysis: dict[str, Any] = field(default_factory=dict)
 
 
+@dataclass(frozen=True)
+class Suppression:
+    rule_id: str
+    reason: str
+    finding: Evidence
+    directive: Evidence
+
+
 @dataclass
 class RepositoryIR:
     root: str
@@ -56,6 +64,7 @@ class RepositoryIR:
     components: list[Component] = field(default_factory=list)
     relationships: list[Relationship] = field(default_factory=list)
     findings: list[Finding] = field(default_factory=list)
+    suppressions: list[Suppression] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
 
     def add_component(self, component: Component) -> None:

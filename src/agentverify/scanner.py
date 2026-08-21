@@ -9,7 +9,7 @@ import warnings
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
 
-from .ir import Component, Evidence, Relationship, RepositoryIR
+from .ir import Component, Evidence, Relationship, RepositoryIR, Suppression
 from .rules import run_rules
 
 SOURCE_SUFFIXES = {".py", ".ts", ".tsx", ".js", ".jsx"}
@@ -513,6 +513,9 @@ TS_FILESYSTEM_WRITE = re.compile(
 )
 TS_DYNAMIC_EVAL = re.compile(r"(?<![\w$.])eval\s*\(|\bnew\s+Function\s*\(")
 CONTAINER_CONFIG_SUFFIXES = {".yml", ".yaml"}
+INLINE_SUPPRESSION = re.compile(
+    r"^\s*(?:#|//)\s*agentverify:\s*ignore\s+(AV-[A-Z0-9]+)\s+--\s+(\S(?:.*\S)?)\s*$"
+)
 
 
 def line_at(text: str, offset: int) -> int:
@@ -907,9 +910,33 @@ def scan_container_config(ir: RepositoryIR, root: Path, path: Path) -> None:
             )
 
 
+def apply_inline_suppressions(ir: RepositoryIR, source_lines: dict[str, list[str]]) -> None:
+    """Apply rule-scoped suppressions from a reason-bearing comment on the previous line."""
+    retained = []
+    for finding in ir.findings:
+        lines = source_lines.get(finding.evidence.path, [])
+        directive_line = finding.evidence.line - 1
+        directive = lines[directive_line - 1] if 0 < directive_line <= len(lines) else ""
+        match = INLINE_SUPPRESSION.match(directive)
+        if not match or match.group(1) != finding.rule_id:
+            retained.append(finding)
+            continue
+        ir.suppressions.append(
+            Suppression(
+                finding.rule_id,
+                match.group(2).strip(),
+                finding.evidence,
+                Evidence(finding.evidence.path, directive_line, directive.strip()[:240]),
+            )
+        )
+    ir.suppressed_findings += len(ir.findings) - len(retained)
+    ir.findings = retained
+
+
 def scan_repository(root: Path, *, include_tests: bool = False) -> RepositoryIR:
     root = root.resolve()
     ir = RepositoryIR(str(root))
+    source_lines: dict[str, list[str]] = {}
     for path in sorted(root.rglob("*")):
         if (
             path.is_symlink()
@@ -937,6 +964,12 @@ def scan_repository(root: Path, *, include_tests: bool = False) -> RepositoryIR:
         if is_container_config(path):
             scan_container_config(ir, root, path)
             ir.config_files_scanned += 1
+            try:
+                source_lines[path.relative_to(root).as_posix()] = path.read_text(
+                    encoding="utf-8-sig", errors="ignore"
+                ).splitlines()
+            except OSError:
+                pass
         if path.suffix.lower() not in SOURCE_SUFFIXES:
             continue
         try:
@@ -945,6 +978,7 @@ def scan_repository(root: Path, *, include_tests: bool = False) -> RepositoryIR:
             ir.errors.append(f"{path}: {error}")
             continue
         ir.files_scanned += 1
+        source_lines[path.relative_to(root).as_posix()] = text.splitlines()
         if path.suffix.lower() == ".py":
             scan_python(ir, root, path, text)
         else:
@@ -964,5 +998,6 @@ def scan_repository(root: Path, *, include_tests: bool = False) -> RepositoryIR:
         )
     )
     run_rules(ir, include_tests=include_tests)
+    apply_inline_suppressions(ir, source_lines)
     ir.findings.sort(key=lambda item: (item.evidence.path, item.evidence.line, item.rule_id))
     return ir

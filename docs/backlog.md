@@ -42,4 +42,5 @@ sampling metrics separate from detection-quality metrics.
 ## P2 — CI adoption workflow
 
 Add GitHub code-scanning upload documentation, SARIF category support, changed-files mode, baseline
-diff summaries, inline suppressions with reasons/expiry, and an official pre-commit hook.
+diff summaries, suppression expiry enforcement, and an official pre-commit hook. Rule-scoped inline
+suppressions with required reasons are now supported.

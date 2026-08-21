@@ -28,9 +28,10 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 8,840 selected Python/TypeScript/JavaScript files plus 40 configuration files,
-resolved 1,593 relationships, and completed in 19.44 seconds on the development machine. Two syntax warnings were isolated and
+resolved 1,593 relationships, and completed in 19.00 seconds on the development machine. Two syntax warnings were isolated and
 reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
-default; `--include-tests` enables them.
+default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
+so the benchmark records zero suppressed findings.
 
 The approval-policy resolver found a literal `needsApproval: true` in the pinned OpenAI Agents JS
 [human-in-the-loop example](https://github.com/openai/openai-agents-js/blob/0b944370c6fe019ac5b08364ca013826cd7d0668/examples/docs/human-in-the-loop/toolApprovalDefinition.ts#L11)

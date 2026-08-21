@@ -114,6 +114,13 @@ def render_text(ir: RepositoryIR) -> str:
         if finding.analysis.get("approval_coverage"):
             lines.append(f"    Approval coverage: {finding.analysis['approval_coverage']}")
         lines.append(f"    Remediation: {finding.remediation}")
+    if ir.suppressions:
+        lines += ["", "Inline suppressions:"]
+        for suppression in ir.suppressions:
+            lines.append(
+                f"  {suppression.rule_id} at {suppression.finding.path}:"
+                f"{suppression.finding.line} -- {suppression.reason}"
+            )
     if ir.errors:
         lines += ["", f"Parse warnings: {len(ir.errors)}"]
     return "\n".join(lines) + "\n"

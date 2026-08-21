@@ -42,3 +42,7 @@ A rule is not enabled by default until it has:
 
 Tests and fixtures are inventoried but excluded from findings by default. Use `--include-tests` when
 auditing framework test suites or validating rule behavior.
+
+Inline suppression uses a standalone comment immediately before the finding:
+`# agentverify: ignore AV-RULE -- reviewed reason` (or `//` in TypeScript). Suppressions are exact-rule,
+single-line, and reason-bearing; reports preserve their source and rationale for auditability.
