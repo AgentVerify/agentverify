@@ -609,6 +609,10 @@ def main() -> int:
                     == "connection-pinned-unless-proxied"
                     for edge in typescript_secure_network_controls
                 ),
+                "dns_connection_pinned": sum(
+                    edge.attributes.get("dns_scope") == "connection-pinned"
+                    for edge in typescript_secure_network_controls
+                ),
                 "proxy_unresolved": sum(
                     edge.attributes.get("proxy_scope") == "unresolved"
                     for edge in typescript_secure_network_controls
@@ -617,8 +621,16 @@ def main() -> int:
                     edge.attributes.get("proxy_scope") == "environment-dependent"
                     for edge in typescript_secure_network_controls
                 ),
+                "proxy_pinned_agent": sum(
+                    edge.attributes.get("proxy_scope") == "pinned-agent"
+                    for edge in typescript_secure_network_controls
+                ),
                 "fixed_caller_config": sum(
                     edge.attributes.get("transport_scope") == "fixed-caller-config"
+                    for edge in typescript_secure_network_controls
+                ),
+                "caller_agent_overridden": sum(
+                    edge.attributes.get("transport_scope") == "caller-agent-overridden"
                     for edge in typescript_secure_network_controls
                 ),
                 "ipv4_mapped_ipv6_normalized": sum(
@@ -732,7 +744,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 36,
+        "schema_version": 37,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -945,9 +957,12 @@ def main() -> int:
                     "redirects_validated",
                     "secure_lookup_configured",
                     "dns_connection_pinned_unless_proxied",
+                    "dns_connection_pinned",
                     "proxy_unresolved",
                     "proxy_environment_dependent",
+                    "proxy_pinned_agent",
                     "fixed_caller_config",
+                    "caller_agent_overridden",
                     "ipv4_mapped_ipv6_normalized",
                     "domain_hitl_independent",
                 )

@@ -79,3 +79,19 @@ function createPinnedAgent(target: any) {
     },
   })
 }
+
+export async function secureFetch(url: string, init: any = {}, maxRedirects: number = 5) {
+  let currentUrl = url
+  let redirectCount = 0
+  let currentInit = { ...init, redirect: 'manual' as const }
+  while (redirectCount <= maxRedirects) {
+    const resolved = await resolveAndValidate(currentUrl)
+    const agent = createPinnedAgent(resolved)
+    const response = await fetch(currentUrl, { ...currentInit, agent: () => agent })
+    const location = response.headers.get('location')
+    if (!location) return response
+    redirectCount++
+    currentUrl = new URL(location, currentUrl).toString()
+  }
+  throw new Error('Too many redirects')
+}

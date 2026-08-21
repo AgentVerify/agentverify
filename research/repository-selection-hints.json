@@ -23,7 +23,9 @@
       "packages/cli/src/services/ai-workflow-builder.service.ts"
     ],
     "FlowiseAI/Flowise": [
-      "packages/components/nodes/agentflow/HTTP/HTTP.ts"
+      "packages/components/nodes/agentflow/HTTP/HTTP.ts",
+      "packages/components/nodes/tools/WebScraperTool/WebScraperTool.ts",
+      "packages/components/src/index.ts"
     ]
   }
 }

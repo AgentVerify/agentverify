@@ -1,6 +1,6 @@
 {
-  "schema_version": 36,
-  "generated_at": "2026-08-21T15:44:46.900777+00:00",
+  "schema_version": 37,
+  "generated_at": "2026-08-21T16:16:18.153161+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -16,34 +16,35 @@
     "zero_source_repositories": [
       "daytonaio/daytona"
     ],
-    "files_scanned": 10747,
-    "dependency_files_materialized": 152,
+    "files_scanned": 10749,
+    "dependency_files_materialized": 154,
     "repositories_with_dependency_expansion": 14,
     "config_files_scanned": 155,
-    "relationships": 1469,
-    "symbolized_components": 8738,
-    "identified_symbol_endpoints": 1930,
-    "resolved_symbol_endpoints": 1928,
+    "relationships": 1471,
+    "symbolized_components": 8739,
+    "identified_symbol_endpoints": 1931,
+    "resolved_symbol_endpoints": 1929,
     "unmatched_identified_symbol_endpoints": 2,
     "ambiguous_repeated_binding_targets": 23,
     "resolved_binding_targets_by_basis": {
       "lexical-single-definition": 325,
       "module-single-definition": 14
     },
-    "relationship_endpoints": 2938,
+    "relationship_endpoints": 2942,
     "bom_endpoint_resolutions": {
-      "ambiguous": 30,
-      "evidence-location": 463,
-      "symbol-id": 1928,
-      "unique-display-name": 18,
+      "ambiguous": 32,
+      "evidence-location": 465,
+      "symbol-id": 1929,
+      "unique-display-name": 17,
       "unresolved": 499
     },
     "bom_ambiguous_endpoints_by_side_kind": {
+      "target:control": 2,
       "target:tool": 30
     },
     "resolved_symbol_endpoints_by_frontend": {
       "py": 1675,
-      "ts": 253
+      "ts": 254
     },
     "typescript_graph": {
       "agent_edges": 95,
@@ -133,19 +134,22 @@
       "dns_unresolved": 1
     },
     "typescript_secure_network_controls": {
-      "total": 2,
-      "enabled_default": 1,
+      "total": 3,
+      "enabled_default": 2,
       "disabled_default": 1,
       "configured_opt_in": 1,
-      "configured_opt_out": 1,
+      "configured_opt_out": 2,
       "bounded_redirect_hooks": 1,
-      "redirects_validated": 1,
+      "redirects_validated": 2,
       "secure_lookup_configured": 1,
       "dns_connection_pinned_unless_proxied": 1,
+      "dns_connection_pinned": 1,
       "proxy_unresolved": 1,
       "proxy_environment_dependent": 1,
+      "proxy_pinned_agent": 1,
       "fixed_caller_config": 1,
-      "ipv4_mapped_ipv6_normalized": 1,
+      "caller_agent_overridden": 1,
+      "ipv4_mapped_ipv6_normalized": 2,
       "domain_hitl_independent": 1
     },
     "path_boundary_controls": {
@@ -219,7 +223,7 @@
       "AV-FS001": 26,
       "AV-FS002": 4,
       "AV-MCP002": 49,
-      "AV-NET001": 15,
+      "AV-NET001": 16,
       "AV-SANDBOX001": 19
     },
     "finding_repositories": {
@@ -399,7 +403,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 123.3671
+    "elapsed_seconds": 126.9912
   },
   "repositories": [
     {
@@ -529,9 +533,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -572,7 +579,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6985
+      "elapsed_seconds": 1.8376
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -708,9 +715,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -756,7 +766,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9503
+      "elapsed_seconds": 2.9552
     },
     {
       "repository": "langchain-ai/langchain",
@@ -889,9 +899,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -930,7 +943,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.893
+      "elapsed_seconds": 0.8852
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -1067,9 +1080,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -1116,7 +1132,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.8888
+      "elapsed_seconds": 3.871
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -1258,9 +1274,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -1303,7 +1322,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1848
+      "elapsed_seconds": 0.1831
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -1449,9 +1468,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -1507,7 +1529,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.4501
+      "elapsed_seconds": 4.4585
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -1655,9 +1677,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -1718,7 +1743,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8219
+      "elapsed_seconds": 2.8317
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -1861,9 +1886,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -1916,7 +1944,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2506
+      "elapsed_seconds": 0.2493
     },
     {
       "repository": "microsoft/autogen",
@@ -2055,9 +2083,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -2105,7 +2136,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6673
+      "elapsed_seconds": 0.6682
     },
     {
       "repository": "microsoft/agent-framework",
@@ -2228,9 +2259,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -2269,7 +2303,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.04
+      "elapsed_seconds": 0.0386
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -2406,9 +2440,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -2456,7 +2493,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1051
+      "elapsed_seconds": 0.1071
     },
     {
       "repository": "openai/openai-agents-python",
@@ -2613,9 +2650,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -2673,7 +2713,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.1567
+      "elapsed_seconds": 5.1523
     },
     {
       "repository": "openai/openai-agents-js",
@@ -2827,9 +2867,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -2874,7 +2917,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6104
+      "elapsed_seconds": 0.6545
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -3017,9 +3060,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -3071,7 +3117,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.3037
+      "elapsed_seconds": 11.318
     },
     {
       "repository": "google/adk-python",
@@ -3206,9 +3252,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -3256,7 +3305,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3176
+      "elapsed_seconds": 3.2987
     },
     {
       "repository": "google/adk-js",
@@ -3386,9 +3435,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -3427,7 +3479,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1797
+      "elapsed_seconds": 2.3091
     },
     {
       "repository": "huggingface/smolagents",
@@ -3568,9 +3620,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -3625,7 +3680,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2832
+      "elapsed_seconds": 1.2833
     },
     {
       "repository": "agno-agi/agno",
@@ -3758,9 +3813,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -3809,7 +3867,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2999
+      "elapsed_seconds": 0.2869
     },
     {
       "repository": "camel-ai/camel",
@@ -3952,9 +4010,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -4010,7 +4071,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6409
+      "elapsed_seconds": 2.6397
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -4141,9 +4202,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -4185,7 +4249,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1743
+      "elapsed_seconds": 0.1715
     },
     {
       "repository": "run-llama/llama_index",
@@ -4322,9 +4386,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -4363,7 +4430,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7371
+      "elapsed_seconds": 0.724
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -4505,9 +4572,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -4563,7 +4633,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3776
+      "elapsed_seconds": 1.3665
     },
     {
       "repository": "InternLM/lagent",
@@ -4704,9 +4774,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -4758,7 +4831,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6236
+      "elapsed_seconds": 0.6224
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -4892,9 +4965,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -4948,7 +5024,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0634
+      "elapsed_seconds": 1.065
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -5087,9 +5163,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -5145,7 +5224,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4565
+      "elapsed_seconds": 1.4624
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -5280,9 +5359,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -5335,7 +5417,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9633
+      "elapsed_seconds": 0.9387
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -5473,9 +5555,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -5524,7 +5609,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0611
+      "elapsed_seconds": 3.0974
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -5657,9 +5742,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -5707,7 +5795,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0748
+      "elapsed_seconds": 1.0824
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -5842,9 +5930,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -5883,7 +5974,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.624
+      "elapsed_seconds": 0.6488
     },
     {
       "repository": "letta-ai/letta-code",
@@ -6012,9 +6103,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -6053,7 +6147,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7471
+      "elapsed_seconds": 2.9331
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -6195,9 +6289,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -6250,7 +6347,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9175
+      "elapsed_seconds": 0.9195
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -6384,9 +6481,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -6440,7 +6540,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9004
+      "elapsed_seconds": 1.9007
     },
     {
       "repository": "mastra-ai/mastra",
@@ -6580,9 +6680,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -6627,7 +6730,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6234
+      "elapsed_seconds": 1.7352
     },
     {
       "repository": "vercel/ai",
@@ -6762,9 +6865,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -6808,7 +6914,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7112
+      "elapsed_seconds": 1.8496
     },
     {
       "repository": "cline/cline",
@@ -6947,9 +7053,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -6994,7 +7103,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3706
+      "elapsed_seconds": 2.5432
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -7126,9 +7235,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -7167,7 +7279,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6012
+      "elapsed_seconds": 2.7644
     },
     {
       "repository": "continuedev/continue",
@@ -7297,9 +7409,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -7338,7 +7453,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6265
+      "elapsed_seconds": 1.7386
     },
     {
       "repository": "Aider-AI/aider",
@@ -7467,9 +7582,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -7523,7 +7641,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2934
+      "elapsed_seconds": 2.3206
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -7651,9 +7769,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -7700,7 +7821,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 0.7703
+      "elapsed_seconds": 0.7645
     },
     {
       "repository": "plandex-ai/plandex",
@@ -7815,9 +7936,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -7856,7 +7980,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0347
+      "elapsed_seconds": 0.0333
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -7985,9 +8109,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -8032,7 +8159,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0891
+      "elapsed_seconds": 1.09
     },
     {
       "repository": "stitionai/devika",
@@ -8166,9 +8293,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -8211,7 +8341,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2848
+      "elapsed_seconds": 0.2825
     },
     {
       "repository": "block/goose",
@@ -8341,9 +8471,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -8391,7 +8524,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 2.1968
+      "elapsed_seconds": 2.7223
     },
     {
       "repository": "bytedance/trae-agent",
@@ -8534,9 +8667,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -8592,7 +8728,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6212
+      "elapsed_seconds": 0.6331
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -8723,9 +8859,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -8766,7 +8905,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.8565
+      "elapsed_seconds": 4.1308
     },
     {
       "repository": "openai/codex",
@@ -8888,9 +9027,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -8935,7 +9077,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5594
+      "elapsed_seconds": 0.5756
     },
     {
       "repository": "browser-use/browser-use",
@@ -9080,9 +9222,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -9139,7 +9284,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3222
+      "elapsed_seconds": 3.3358
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -9290,9 +9435,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -9347,7 +9495,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.3886
+      "elapsed_seconds": 6.4877
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -9484,9 +9632,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -9536,7 +9687,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6234
+      "elapsed_seconds": 0.6367
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -9668,9 +9819,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -9711,7 +9865,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8319
+      "elapsed_seconds": 0.9138
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -9846,9 +10000,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -9897,7 +10054,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8851
+      "elapsed_seconds": 1.0001
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -10039,9 +10196,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -10089,7 +10249,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9606
+      "elapsed_seconds": 2.0261
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -10224,9 +10384,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -10270,7 +10433,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.4459
+      "elapsed_seconds": 2.6448
     },
     {
       "repository": "github/github-mcp-server",
@@ -10395,9 +10558,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -10436,7 +10602,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0343
+      "elapsed_seconds": 0.0326
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -10562,9 +10728,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -10603,7 +10772,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0692
+      "elapsed_seconds": 0.0722
     },
     {
       "repository": "awslabs/mcp",
@@ -10736,9 +10905,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -10785,7 +10957,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7785
+      "elapsed_seconds": 1.7938
     },
     {
       "repository": "docker/mcp-gateway",
@@ -10911,9 +11083,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -10954,7 +11129,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0285
+      "elapsed_seconds": 0.0266
     },
     {
       "repository": "jlowin/fastmcp",
@@ -11088,9 +11263,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -11141,7 +11319,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0932
+      "elapsed_seconds": 2.1167
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -11256,9 +11434,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -11297,7 +11478,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0249
+      "elapsed_seconds": 0.0241
     },
     {
       "repository": "langflow-ai/langflow",
@@ -11440,9 +11621,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -11489,22 +11673,22 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3099
+      "elapsed_seconds": 2.3976
     },
     {
       "repository": "FlowiseAI/Flowise",
       "category": "visual-platform",
       "status": "ok",
-      "files_scanned": 209,
-      "dependency_files_materialized": 1,
+      "files_scanned": 211,
+      "dependency_files_materialized": 3,
       "config_files_scanned": 2,
       "components": {
         "agent": 1,
-        "capability": 12,
-        "control": 1,
+        "capability": 13,
+        "control": 2,
         "framework": 1,
         "model": 18,
-        "tool": 1
+        "tool": 2
       },
       "component_names": {
         "capability": [
@@ -11518,16 +11702,16 @@
           "LangChain"
         ]
       },
-      "relationships": 2,
-      "symbolized_components": 2,
-      "identified_symbol_endpoints": 1,
-      "resolved_symbol_endpoints": 1,
+      "relationships": 4,
+      "symbolized_components": 3,
+      "identified_symbol_endpoints": 2,
+      "resolved_symbol_endpoints": 2,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
         "py": 0,
-        "ts": 1
+        "ts": 2
       },
       "typescript_graph": {
         "agent_edges": 0,
@@ -11613,19 +11797,22 @@
         "dns_unresolved": 0
       },
       "typescript_secure_network_controls": {
-        "total": 1,
-        "enabled_default": 1,
+        "total": 2,
+        "enabled_default": 2,
         "disabled_default": 0,
         "configured_opt_in": 0,
-        "configured_opt_out": 1,
+        "configured_opt_out": 2,
         "bounded_redirect_hooks": 0,
-        "redirects_validated": 1,
+        "redirects_validated": 2,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 1,
+        "dns_connection_pinned": 1,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 1,
+        "proxy_pinned_agent": 1,
         "fixed_caller_config": 1,
-        "ipv4_mapped_ipv6_normalized": 1,
+        "caller_agent_overridden": 1,
+        "ipv4_mapped_ipv6_normalized": 2,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -11658,18 +11845,20 @@
         "typescript": 0
       },
       "bom_endpoint_resolutions": {
-        "evidence-location": 2,
-        "symbol-id": 1,
-        "unique-display-name": 1
+        "ambiguous": 2,
+        "evidence-location": 4,
+        "symbol-id": 2
       },
-      "bom_ambiguous_endpoints_by_side_kind": {},
+      "bom_ambiguous_endpoints_by_side_kind": {
+        "target:control": 2
+      },
       "findings": {
-        "AV-NET001": 1
+        "AV-NET001": 2
       },
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2542
+      "elapsed_seconds": 2.4611
     },
     {
       "repository": "langgenius/dify",
@@ -11787,9 +11976,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -11828,7 +12020,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3627
+      "elapsed_seconds": 1.3879
     },
     {
       "repository": "n8n-io/n8n",
@@ -11969,9 +12161,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 1,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 1,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 1
       },
@@ -12018,7 +12213,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6525
+      "elapsed_seconds": 1.7947
     },
     {
       "repository": "activepieces/activepieces",
@@ -12158,9 +12353,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -12203,7 +12401,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1015
+      "elapsed_seconds": 1.1836
     },
     {
       "repository": "simstudioai/sim",
@@ -12327,9 +12525,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -12368,7 +12569,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1309
+      "elapsed_seconds": 3.3704
     },
     {
       "repository": "composiohq/composio",
@@ -12518,9 +12719,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -12565,7 +12769,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2117
+      "elapsed_seconds": 1.2679
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -12711,9 +12915,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -12770,7 +12977,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1526
+      "elapsed_seconds": 2.1504
     },
     {
       "repository": "e2b-dev/E2B",
@@ -12893,9 +13100,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -12934,7 +13144,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5857
+      "elapsed_seconds": 1.6303
     },
     {
       "repository": "daytonaio/daytona",
@@ -13049,9 +13259,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -13231,9 +13444,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -13278,7 +13494,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1165
+      "elapsed_seconds": 1.152
     },
     {
       "repository": "traceloop/openllmetry",
@@ -13424,9 +13640,12 @@
         "redirects_validated": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
         "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
@@ -13475,7 +13694,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8966
+      "elapsed_seconds": 1.9368
     }
   ]
 }

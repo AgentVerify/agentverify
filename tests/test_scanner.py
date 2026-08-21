@@ -1611,6 +1611,7 @@ def test_typescript_flowise_secure_request_composition_preserves_proxy_residual(
         (finding.rule_id, finding.evidence.path, finding.evidence.line)
         for finding in ir.findings
         if finding.rule_id == "AV-NET001"
+        and finding.evidence.path == "HTTP.ts"
     ] == [("AV-NET001", "HTTP.ts", 31)]
     assert not any(
         finding.rule_id == "AV-NET001" and finding.evidence.path == "raw.ts"
@@ -1665,6 +1666,117 @@ def test_typescript_flowise_secure_request_composition_preserves_proxy_residual(
         assert not any(
             edge.attributes.get("analysis")
             == "typescript-flowise-secure-request-composition"
+            for edge in incomplete_ir.relationships
+        )
+
+
+def test_typescript_flowise_secure_fetch_composition_overrides_caller_agent(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/typescript_flowise_secure_request"
+    ir = scan_repository(root)
+    edges = [
+        edge
+        for edge in ir.relationships
+        if edge.attributes.get("analysis")
+        == "typescript-flowise-secure-fetch-composition"
+    ]
+    assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [
+        ("WebScraperTool.ts", 9)
+    ]
+    assert edges[0].attributes == {
+        "scope": "production",
+        "policy_effect": "validates-and-pins-addresses",
+        "frontend": "typescript",
+        "analysis": "typescript-flowise-secure-fetch-composition",
+        "initial_origin_scope": "default-address-denylist-when-enforced",
+        "redirect_scope": "each-hop-validated",
+        "dns_scope": "connection-pinned",
+        "proxy_scope": "pinned-agent",
+        "transport_scope": "caller-agent-overridden",
+        "enforcement_default": "enabled",
+        "escape_hatch": "configured-opt-out",
+        "enforcement_mode": "configured-opt-out",
+        "disable_environment": "HTTP_SECURITY_CHECK",
+        "denylist_environment": "HTTP_DENY_LIST",
+        "ipv4_mapped_ipv6": "normalized",
+        "helper_path": "httpSecurity.ts",
+        "helper_line": 83,
+    }
+    assert [
+        (finding.rule_id, finding.evidence.path, finding.evidence.line)
+        for finding in ir.findings
+        if finding.rule_id == "AV-NET001"
+        and finding.evidence.path == "WebScraperTool.ts"
+    ] == [("AV-NET001", "WebScraperTool.ts", 9)]
+    assert not any(
+        finding.rule_id == "AV-NET001" and finding.evidence.path == "raw-fetch.ts"
+        for finding in ir.findings
+    )
+    without_barrel = scan_repository(
+        root,
+        selected_paths=["WebScraperTool.ts", "httpSecurity.ts"],
+    )
+    assert not any(
+        edge.attributes.get("analysis")
+        == "typescript-flowise-secure-fetch-composition"
+        for edge in without_barrel.relationships
+    )
+
+    for name, relative, before, after in (
+        (
+            "fetch-default-off",
+            "httpSecurity.ts",
+            "process.env.HTTP_SECURITY_CHECK !== 'false'",
+            "process.env.HTTP_SECURITY_CHECK === 'true'",
+        ),
+        (
+            "fetch-automatic-redirects",
+            "httpSecurity.ts",
+            "redirect: 'manual' as const",
+            "redirect: 'follow' as const",
+        ),
+        (
+            "fetch-unpinned-agent",
+            "httpSecurity.ts",
+            "agent: () => agent",
+            "agent: init.agent",
+        ),
+        (
+            "fetch-fixed-entrypoint",
+            "WebScraperTool.ts",
+            "this.scrapeRecursive(initialInput, 1)",
+            "this.scrapeRecursive('https://example.test', 1)",
+        ),
+        (
+            "fetch-broken-class-hop",
+            "WebScraperTool.ts",
+            "this.scrapeSingleUrl(url)",
+            "this.scrapeSingleUrl('https://example.test')",
+        ),
+        (
+            "fetch-wrong-import",
+            "WebScraperTool.ts",
+            "from './index'",
+            "from './raw-fetch'",
+        ),
+        (
+            "fetch-broken-barrel",
+            "index.ts",
+            "export * from './httpSecurity'",
+            "export * from './raw-fetch'",
+        ),
+    ):
+        incomplete = tmp_path / name
+        shutil.copytree(root, incomplete)
+        source_path = incomplete / relative
+        source = source_path.read_text(encoding="utf-8")
+        assert before in source
+        source_path.write_text(source.replace(before, after), encoding="utf-8")
+        incomplete_ir = scan_repository(incomplete)
+        assert not any(
+            edge.attributes.get("analysis")
+            == "typescript-flowise-secure-fetch-composition"
             for edge in incomplete_ir.relationships
         )
 

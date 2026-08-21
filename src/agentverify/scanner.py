@@ -6902,6 +6902,45 @@ def resolve_typescript_imports(root: Path, path: Path, text: str) -> dict[str, t
     return resolved
 
 
+def typescript_named_import_reaches_path(
+    root: Path,
+    caller_path: Path,
+    caller_text: str,
+    local_name: str,
+    original_name: str,
+    target_path: str,
+    selected_paths: set[str],
+) -> bool:
+    """Prove a named import reaches one selected file directly or through one star barrel."""
+    if target_path not in selected_paths:
+        return False
+    imported = resolve_typescript_imports(root, caller_path, caller_text).get(local_name)
+    if imported == (target_path, original_name):
+        return True
+    if imported is None or imported[1] != original_name or imported[0] not in selected_paths:
+        return False
+    barrel_path = root / imported[0]
+    try:
+        barrel_text = barrel_path.read_text(encoding="utf-8-sig", errors="ignore")
+    except OSError:
+        return False
+    matches = []
+    barrel_code = typescript_code_mask(barrel_text)
+    for match in re.finditer(r"\bexport\s*\*\s*from", barrel_code):
+        specifier_match = re.match(
+            r"[ \t]*(['\"])(\.{1,2}/[^'\"]+)\1",
+            barrel_text[match.end() :],
+        )
+        if specifier_match is None:
+            continue
+        specifier = specifier_match.group(2)
+        synthetic_import = f"import {{ {original_name} }} from '{specifier}'"
+        resolved = resolve_typescript_imports(root, barrel_path, synthetic_import).get(original_name)
+        if resolved == (target_path, original_name):
+            matches.append(resolved)
+    return len(matches) == 1
+
+
 def child_process_bindings(text: str) -> set[str]:
     bindings: set[str] = set()
     for match in TS_CHILD_PROCESS_IMPORT.finditer(text):
@@ -10709,7 +10748,16 @@ def add_typescript_flowise_secure_request_composition(
         return
     helper_path, helper_text, helper_code = helper
     caller_path, caller_text, caller_code = caller
-
+    if not typescript_named_import_reaches_path(
+        root,
+        root / caller_path,
+        caller_text,
+        "secureAxiosRequest",
+        "secureAxiosRequest",
+        helper_path,
+        set(sources),
+    ):
+        return
     required_helper_text = (
         "process.env.HTTP_SECURITY_CHECK !== 'false'",
         "return [...new Set([...DEFAULT_DENY_LIST, ...customList])]",
@@ -10905,6 +10953,225 @@ def add_typescript_flowise_secure_request_composition(
     )
 
 
+def add_typescript_flowise_secure_fetch_composition(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve a Flowise LangChain tool through its pinned node-fetch transport."""
+    sources: dict[str, tuple[str, str]] = {}
+    for path in paths:
+        if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        sources[relative] = (text, typescript_code_mask(text))
+
+    def unique_source(*markers: str) -> tuple[str, str, str] | None:
+        matches = [
+            (relative, text, code)
+            for relative, (text, code) in sources.items()
+            if all(marker in code for marker in markers)
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    helper = unique_source(
+        "function getHttpDenyList()",
+        "export async function secureFetch(",
+        "resolveAndValidate(currentUrl)",
+        "createPinnedAgent(resolved",
+        "fetch(currentUrl,",
+        "function createPinnedAgent(",
+    )
+    caller = unique_source(
+        "class WebScraperRecursiveTool extends Tool",
+        "async scrapeSingleUrl(url: string)",
+        "secureFetch(url,",
+        "async scrapeRecursive(url: string, currentDepth: number)",
+        "this.scrapeSingleUrl(url)",
+        "async _call(initialInput: string)",
+        "this.scrapeRecursive(initialInput, 1)",
+    )
+    if helper is None or caller is None:
+        return
+    helper_path, helper_text, helper_code = helper
+    caller_path, caller_text, caller_code = caller
+    if not typescript_named_import_reaches_path(
+        root,
+        root / caller_path,
+        caller_text,
+        "secureFetch",
+        "secureFetch",
+        helper_path,
+        set(sources),
+    ):
+        return
+
+    required_helper_text = (
+        "process.env.HTTP_SECURITY_CHECK !== 'false'",
+        "return [...new Set([...DEFAULT_DENY_LIST, ...customList])]",
+        "'10.0.0.0/8'",
+        "'127.0.0.0/8'",
+        "'169.254.169.254'",
+        "'::1'",
+        "const records = await dns.lookup(hostname, { all: true })",
+        "const chosen = records.find((r) => r.family === 4) ?? records[0]",
+        "lookup: (_host, _opts, cb) =>",
+        "cb(null, target.ip, target.family)",
+        "currentUrl = new URL(location, currentUrl).toString()",
+        "ipv6Addr.isIPv4MappedAddress()",
+        "parsedIp = ipv6Addr.toIPv4Address()",
+        "let currentInit = { ...init, redirect: 'manual' as const }",
+    )
+    if not all(marker in helper_text for marker in required_helper_text):
+        return
+    if not (
+        re.search(
+            r"(?:export\s+)?function\s+isDeniedIP\s*\([\s\S]{0,6000}"
+            r"ipaddr\.parse\s*\(\s*ip\s*\)[\s\S]{0,6000}"
+            r"isIPv4MappedAddress\s*\(\s*\)[\s\S]{0,1000}"
+            r"toIPv4Address\s*\(\s*\)[\s\S]{0,6000}"
+            r"ipaddr\.parseCIDR\s*\([\s\S]{0,2500}"
+            r"\.match\s*\([\s\S]{0,1200}Access to this host is denied by policy",
+            helper_text,
+        )
+        and re.search(
+            r"if\s*\(\s*ipaddr\.isValid\s*\(\s*hostname\s*\)\s*\)\s*\{"
+            r"[\s\S]{0,500}isDeniedIP\s*\(\s*hostname\s*,",
+            helper_code,
+        )
+        and re.search(
+            r"dns\.lookup\s*\(\s*hostname\s*,\s*\{\s*all\s*:\s*true\s*\}\s*\)"
+            r"[\s\S]{0,700}for\s*\([^)]*\s+of\s+records\s*\)\s*\{"
+            r"[\s\S]{0,300}isDeniedIP\s*\([^,]+\.address\s*,",
+            helper_code,
+        )
+        and re.search(
+            r"while\s*\(\s*redirectCount\s*<=\s*maxRedirects\s*\)"
+            r"[\s\S]{0,1200}resolveAndValidate\s*\(\s*currentUrl\s*\)"
+            r"[\s\S]{0,800}fetch\s*\(\s*currentUrl\s*,\s*\{"
+            r"[\s\S]{0,300}agent\s*:\s*\(\s*\)\s*=>\s*agent",
+            helper_code,
+        )
+        and re.search(
+            r"fetch\s*\(\s*currentUrl\s*,\s*\{\s*\.\.\.currentInit\s*,"
+            r"\s*agent\s*:\s*\(\s*\)\s*=>\s*agent\s*\}\s*\)",
+            helper_code,
+        )
+    ):
+        return
+
+    class_match = re.search(r"\bclass\s+WebScraperRecursiveTool\s+extends\s+Tool\b", caller_code)
+    call_match = re.search(r"\bsecureFetch\s*\(\s*url\s*,", caller_code)
+    helper_match = re.search(r"\bexport\s+async\s+function\s+secureFetch\b", helper_code)
+    if class_match is None or call_match is None or helper_match is None:
+        return
+    if not (
+        re.search(r"\bname\s*=\s*['\"]web_scraper_tool['\"]", caller_text)
+        and re.search(
+            r"(?:private\s+)?async\s+scrapeSingleUrl\s*\(\s*url\s*:\s*string\s*\)"
+            r"[\s\S]{0,800}secureFetch\s*\(\s*url\s*,",
+            caller_code,
+        )
+        and re.search(
+            r"(?:private\s+)?async\s+scrapeRecursive\s*\(\s*url\s*:\s*string\s*,"
+            r"[\s\S]{0,2200}this\.scrapeSingleUrl\s*\(\s*url\s*\)",
+            caller_code,
+        )
+        and re.search(
+            r"async\s+_call\s*\(\s*initialInput\s*:\s*string\s*\)"
+            r"[\s\S]{0,3500}this\.scrapeRecursive\s*\(\s*initialInput\s*,\s*1\s*\)",
+            caller_code,
+        )
+    ):
+        return
+
+    call_line = line_at(caller_text, call_match.start())
+    helper_line = line_at(helper_text, helper_match.start())
+    class_line = line_at(caller_text, class_match.start())
+    evidence = Evidence(caller_path, call_line, excerpt(caller_text.splitlines(), call_line))
+    helper_evidence = Evidence(
+        helper_path,
+        helper_line,
+        excerpt(helper_text.splitlines(), helper_line),
+    )
+    tool_id = f"ts:{caller_path}#tool:web_scraper_tool"
+    attributes = {
+        "scope": source_scope(caller_path),
+        "policy_effect": "validates-and-pins-addresses",
+        "frontend": "typescript",
+        "analysis": "typescript-flowise-secure-fetch-composition",
+        "initial_origin_scope": "default-address-denylist-when-enforced",
+        "redirect_scope": "each-hop-validated",
+        "dns_scope": "connection-pinned",
+        "proxy_scope": "pinned-agent",
+        "transport_scope": "caller-agent-overridden",
+        "enforcement_default": "enabled",
+        "escape_hatch": "configured-opt-out",
+        "enforcement_mode": "configured-opt-out",
+        "disable_environment": "HTTP_SECURITY_CHECK",
+        "denylist_environment": "HTTP_DENY_LIST",
+        "ipv4_mapped_ipv6": "normalized",
+        "helper_path": helper_path,
+        "helper_line": helper_line,
+    }
+    ir.add_component(
+        Component(
+            "tool",
+            "web_scraper_tool",
+            Evidence(caller_path, class_line, excerpt(caller_text.splitlines(), class_line)),
+            {
+                "constructor": "langchain-tool",
+                "framework": "langchain",
+                "entrypoint": "WebScraperRecursiveTool._call",
+                "url_input": "initialInput",
+            },
+            tool_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "capability",
+            "network",
+            evidence,
+            {
+                "scope": source_scope(caller_path),
+                "api": "secureFetch",
+                "dynamic_origin": True,
+                "summary": "same-class-imported-fetch-helper",
+                "helper_path": helper_path,
+                "helper_line": helper_line,
+            },
+        )
+    )
+    ir.add_component(Component("control", "network-ssrf-policy", helper_evidence, attributes))
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            "web_scraper_tool",
+            "uses",
+            "capability",
+            "network",
+            evidence,
+            source_id=tool_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "capability",
+            "network",
+            "governed-by",
+            "control",
+            "network-ssrf-policy",
+            evidence,
+            attributes,
+        )
+    )
+
+
 def repository_files(root: Path) -> list[Path]:
     paths = []
     for directory, directory_names, file_names in os.walk(root, followlinks=False):
@@ -11046,6 +11313,7 @@ def scan_repository(
             scan_typescript(ir, root, path, text)
     add_typescript_configurable_ssrf_composition(ir, root, registry_paths)
     add_typescript_flowise_secure_request_composition(ir, root, registry_paths)
+    add_typescript_flowise_secure_fetch_composition(ir, root, registry_paths)
     propagate_python_class_network_helpers(
         ir,
         root,

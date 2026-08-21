@@ -2991,6 +2991,34 @@
         "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
         "attributes":{"helper_line":156,"redirect_scope":"each-hop-validated","dns_scope":"connection-pinned-unless-proxied","proxy_scope":"environment-dependent","transport_scope":"fixed-caller-config","enforcement_default":"enabled","escape_hatch":"configured-opt-out","enforcement_mode":"configured-opt-out","ipv4_mapped_ipv6":"normalized"}
       }
+    },
+    {
+      "id": "typescript-flowise-secure-fetch-local",
+      "target": {"kind":"local","path":"cases/typescript_flowise_secure_request"},
+      "check_id": "IR-TS-FLOWISE-SECURE-FETCH",
+      "path": "WebScraperTool.ts", "line": 9, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
+        "attributes":{"helper_line":83,"redirect_scope":"each-hop-validated","dns_scope":"connection-pinned","proxy_scope":"pinned-agent","transport_scope":"caller-agent-overridden","enforcement_default":"enabled","escape_hatch":"configured-opt-out","enforcement_mode":"configured-opt-out","ipv4_mapped_ipv6":"normalized"}
+      }
+    },
+    {
+      "id": "typescript-flowise-secure-fetch-raw-local-negative",
+      "target": {"kind":"local","path":"cases/typescript_flowise_secure_request"},
+      "check_id": "IR-TS-FLOWISE-SECURE-FETCH",
+      "path": "raw-fetch.ts", "line": 2, "expected": false,
+      "source_contains": "secureFetch(url)",
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy"}
+    },
+    {
+      "id": "typescript-flowise-secure-fetch-real",
+      "target": {"kind":"repository","repository":"FlowiseAI/Flowise","commit":"9291856d1ea4a4ceea9f8fef8ce14f4f6c81e8eb"},
+      "check_id": "IR-TS-FLOWISE-SECURE-FETCH",
+      "path": "packages/components/nodes/tools/WebScraperTool/WebScraperTool.ts", "line": 62, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
+        "attributes":{"helper_line":235,"redirect_scope":"each-hop-validated","dns_scope":"connection-pinned","proxy_scope":"pinned-agent","transport_scope":"caller-agent-overridden","enforcement_default":"enabled","escape_hatch":"configured-opt-out","enforcement_mode":"configured-opt-out","ipv4_mapped_ipv6":"normalized"}
+      }
     }
   ]
 }

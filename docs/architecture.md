@@ -142,6 +142,15 @@ answer validation, and a pinned agent lookup. The resulting edge retains the con
 pinned lookup. Default-off settings, automatic redirects, caller transport fields, or incomplete
 address normalization withhold the proof.
 
+The same pass independently resolves Flowise's `node-fetch` Web Scraper path. It requires the exact
+`Tool` subclass identity, an import proven directly or through one star-export barrel,
+`_call(initialInput) → scrapeRecursive(url) → scrapeSingleUrl(url)`
+parameter chain, a default-on helper with the same address proof, a bounded manual redirect loop,
+and a pinned agent supplied after the caller-options spread. That ordering proves caller agent
+options cannot replace the pinned connection for this structural family. Its edge records
+`connection-pinned`, `pinned-agent`, and `caller-agent-overridden`; changing a hop to a fixed URL,
+restoring automatic redirects, or moving an untrusted agent after the pin withholds the proof.
+
 A repository prepass builds bounded Python network summaries for unique top-level free functions in
 selected files. A summary records direct recognized HTTP calls and the formal parameters that can
 control their origins after fixed-prefix discrimination. At a tool call site, only an exact named
