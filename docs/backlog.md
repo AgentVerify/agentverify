@@ -56,3 +56,10 @@ counts that avoid false resolution claims on partial scans. Inline suppressions 
 expiry status, and CI can require an active ISO date. A distributable pre-commit manifest and local
 setup are included; publishing its remote form waits for an approved repository URL and release tag.
 Next add richer policy-as-code configuration.
+
+## P2 — AI BOM standards adapters
+
+The native schema-backed AI BOM now preserves assets, relationships, evidence, governance summaries,
+risks, and ambiguous identities without information loss. Next design separately validated CycloneDX
+and SPDX AI-profile adapters. Map only concepts supported by the target specification and retain a
+link to the native evidence graph rather than presenting agent-specific extensions as standard fields.

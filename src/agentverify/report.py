@@ -4,12 +4,184 @@ from __future__ import annotations
 
 import json
 from collections import Counter
+from hashlib import sha256
 
-from .ir import RepositoryIR
+from . import __version__
+from .ir import Component, Evidence, Relationship, RepositoryIR
 
 
 def render_json(ir: RepositoryIR) -> str:
     return json.dumps(ir.to_dict(), indent=2, sort_keys=True) + "\n"
+
+
+def _stable_id(prefix: str, values: tuple[object, ...]) -> str:
+    encoded = json.dumps(values, ensure_ascii=False, separators=(",", ":"))
+    return f"{prefix}-{sha256(encoded.encode('utf-8')).hexdigest()[:20]}"
+
+
+def _evidence_dict(evidence: Evidence) -> dict[str, object]:
+    return {
+        "path": evidence.path,
+        "line": evidence.line,
+        "excerpt": evidence.excerpt,
+    }
+
+
+def _component_id(component: Component) -> str:
+    return _stable_id(
+        "avc",
+        (component.kind, component.name, component.evidence.path, component.evidence.line),
+    )
+
+
+def _relationship_id(relationship: Relationship) -> str:
+    return _stable_id(
+        "avr",
+        (
+            relationship.source_kind,
+            relationship.source_name,
+            relationship.relation,
+            relationship.target_kind,
+            relationship.target_name,
+            relationship.evidence.path,
+            relationship.evidence.line,
+        ),
+    )
+
+
+def render_bom(ir: RepositoryIR) -> str:
+    """Render AgentVerify's evidence-first native AI BOM.
+
+    This is deliberately not labelled CycloneDX or SPDX: those formats do not directly represent
+    every agent, capability, control, and uncertain identity in Agent IR.
+    """
+
+    ordered_components = sorted(
+        ir.components,
+        key=lambda item: (
+            item.kind,
+            item.name,
+            item.evidence.path,
+            item.evidence.line,
+        ),
+    )
+    assets = [
+        {
+            "id": _component_id(component),
+            "kind": component.kind,
+            "name": component.name,
+            "attributes": component.attributes,
+            "evidence": _evidence_dict(component.evidence),
+        }
+        for component in ordered_components
+    ]
+    assets_by_display_name: dict[tuple[str, str], list[str]] = {}
+    for component in ordered_components:
+        assets_by_display_name.setdefault((component.kind, component.name), []).append(
+            _component_id(component)
+        )
+
+    def endpoint(kind: str, name: str) -> dict[str, object]:
+        candidates = sorted(assets_by_display_name.get((kind, name), []))
+        value: dict[str, object] = {"kind": kind, "name": name}
+        if len(candidates) == 1:
+            value.update({"resolution": "unique-display-name", "asset_id": candidates[0]})
+        elif candidates:
+            value.update({"resolution": "ambiguous", "candidate_asset_ids": candidates})
+        else:
+            value["resolution"] = "unresolved"
+        return value
+
+    ordered_relationships = sorted(
+        ir.relationships,
+        key=lambda item: (
+            item.source_kind,
+            item.source_name,
+            item.relation,
+            item.target_kind,
+            item.target_name,
+            item.evidence.path,
+            item.evidence.line,
+        ),
+    )
+    relationships = [
+        {
+            "id": _relationship_id(relationship),
+            "source": endpoint(relationship.source_kind, relationship.source_name),
+            "relation": relationship.relation,
+            "target": endpoint(relationship.target_kind, relationship.target_name),
+            "attributes": relationship.attributes,
+            "evidence": _evidence_dict(relationship.evidence),
+        }
+        for relationship in ordered_relationships
+    ]
+
+    unresolved_policy_assets = sorted(
+        asset["id"]
+        for asset in assets
+        if any(
+            isinstance(value, str) and value.startswith("unresolved")
+            for value in asset["attributes"].values()
+        )
+    )
+    risks = [
+        {
+            "id": finding.fingerprint,
+            "rule_id": finding.rule_id,
+            "severity": finding.severity,
+            "confidence": finding.confidence,
+            "result_kind": finding.result_kind,
+            "message": finding.message,
+            "remediation": finding.remediation,
+            "evidence": _evidence_dict(finding.evidence),
+            "ir_path": list(finding.ir_path),
+            "analysis": finding.analysis,
+        }
+        for finding in sorted(
+            ir.findings,
+            key=lambda item: (
+                item.rule_id,
+                item.evidence.path,
+                item.evidence.line,
+                item.fingerprint,
+            ),
+        )
+    ]
+    payload = {
+        "bom_format": "AgentVerify AI BOM",
+        "spec_version": "1.0",
+        "metadata": {
+            "generator": {"name": "AgentVerify", "version": __version__},
+            "root": ".",
+            "scan_scope": ir.scan_scope,
+            "path_filters": ir.path_filters,
+            "files_scanned": ir.files_scanned,
+            "configuration_files_scanned": ir.config_files_scanned,
+            "parse_warnings": len(ir.errors),
+            "suppressed_findings": ir.suppressed_findings,
+            "baseline_summary": ir.baseline_summary,
+        },
+        "assets": assets,
+        "relationships": relationships,
+        "governance": {
+            "control_asset_ids": sorted(
+                asset["id"] for asset in assets if asset["kind"] in {"control", "control-setting"}
+            ),
+            "boundary_asset_ids": sorted(
+                asset["id"] for asset in assets if asset["kind"] == "sandbox-boundary"
+            ),
+            "unresolved_policy_asset_ids": unresolved_policy_assets,
+            "risk_summary": {
+                "by_rule": dict(sorted(Counter(risk["rule_id"] for risk in risks).items())),
+                "by_result_kind": dict(
+                    sorted(Counter(risk["result_kind"] for risk in risks).items())
+                ),
+                "by_severity": dict(sorted(Counter(risk["severity"] for risk in risks).items())),
+            },
+        },
+        "risks": risks,
+    }
+    return json.dumps(payload, indent=2, sort_keys=True) + "\n"
 
 
 def render_sarif(ir: RepositoryIR) -> str:

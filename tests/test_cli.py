@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from agentverify import cli
-from agentverify.report import render_json
+from agentverify.report import render_bom, render_json
 from agentverify.scanner import scan_repository
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -39,6 +39,17 @@ def test_json_baseline_suppresses_known_fingerprint(tmp_path: Path, capsys) -> N
     assert "No findings" in output
 
 
+def test_native_ai_bom_can_be_reused_as_baseline(tmp_path: Path, capsys) -> None:
+    target = ROOT / "cases/python_dangerous"
+    baseline = tmp_path / "baseline.bom.json"
+    baseline.write_text(render_bom(scan_repository(target)), encoding="utf-8")
+
+    assert cli.main(["scan", str(target), "--baseline", str(baseline), "--format", "bom"]) == 0
+    payload = __import__("json").loads(capsys.readouterr().out)
+    assert payload["risks"] == []
+    assert payload["metadata"]["baseline_summary"]["unchanged"] == 1
+
+
 def test_partial_baseline_does_not_claim_resolved_findings(tmp_path: Path, capsys) -> None:
     baseline = tmp_path / "baseline.json"
     baseline.write_text('["old-fingerprint"]', encoding="utf-8")
@@ -46,18 +57,21 @@ def test_partial_baseline_does_not_claim_resolved_findings(tmp_path: Path, capsy
     paths.write_text("agent.py\n", encoding="utf-8")
 
     target = ROOT / "examples/safe_agent"
-    assert cli.main(
-        [
-            "scan",
-            str(target),
-            "--baseline",
-            str(baseline),
-            "--paths-from",
-            str(paths),
-            "--format",
-            "json",
-        ]
-    ) == 0
+    assert (
+        cli.main(
+            [
+                "scan",
+                str(target),
+                "--baseline",
+                str(baseline),
+                "--paths-from",
+                str(paths),
+                "--format",
+                "json",
+            ]
+        )
+        == 0
+    )
     payload = __import__("json").loads(capsys.readouterr().out)
     assert payload["baseline_summary"] == {
         "baseline_fingerprints": 1,
@@ -72,6 +86,15 @@ def test_version(capsys) -> None:
     with pytest.raises(SystemExit, match="0"):
         cli.main(["--version"])
     assert capsys.readouterr().out.strip() == "agentverify 0.1.0"
+
+
+def test_cli_emits_native_ai_bom(capsys) -> None:
+    assert cli.main(["scan", str(ROOT / "examples/safe_agent"), "--format", "bom"]) == 0
+
+    payload = __import__("json").loads(capsys.readouterr().out)
+    assert payload["bom_format"] == "AgentVerify AI BOM"
+    assert payload["metadata"]["generator"] == {"name": "AgentVerify", "version": "0.1.0"}
+    assert any(asset["kind"] == "agent" for asset in payload["assets"])
 
 
 def test_paths_from_scans_only_selected_repository_paths(tmp_path: Path, capsys) -> None:
@@ -120,9 +143,9 @@ subprocess.run(command, shell=True)
         encoding="utf-8",
     )
 
-    assert cli.main(
-        ["scan", str(tmp_path), "--require-suppression-expiry", "--fail-on", "high"]
-    ) == 1
+    assert (
+        cli.main(["scan", str(tmp_path), "--require-suppression-expiry", "--fail-on", "high"]) == 1
+    )
     output = capsys.readouterr().out
     assert "AV-EXEC001" in output
     assert "missing-expiry" in output

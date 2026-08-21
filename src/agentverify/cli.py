@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 from . import __version__
-from .report import render_json, render_sarif, render_text
+from .report import render_bom, render_json, render_sarif, render_text
 from .scanner import scan_repository
 
 
@@ -20,7 +20,7 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
     scan = subparsers.add_parser("scan", help="scan a repository")
     scan.add_argument("path", type=Path)
-    scan.add_argument("--format", choices=("text", "json", "sarif"), default="text")
+    scan.add_argument("--format", choices=("text", "json", "bom", "sarif"), default="text")
     scan.add_argument("--fail-on", choices=("none", "medium", "high"), default="none")
     scan.add_argument(
         "--fail-on-kind",
@@ -34,7 +34,7 @@ def build_parser() -> argparse.ArgumentParser:
     scan.add_argument(
         "--baseline",
         type=Path,
-        help="suppress fingerprints present in a previous AgentVerify JSON or SARIF report",
+        help="suppress fingerprints in a previous AgentVerify JSON, AI BOM, or SARIF report",
     )
     scan.add_argument(
         "--paths-from",
@@ -60,6 +60,12 @@ def baseline_fingerprints(path: Path) -> set[str]:
             str(item["fingerprint"])
             for item in payload["findings"]
             if isinstance(item, dict) and item.get("fingerprint")
+        }
+    if payload.get("bom_format") == "AgentVerify AI BOM" and isinstance(payload.get("risks"), list):
+        return {
+            str(item["id"])
+            for item in payload["risks"]
+            if isinstance(item, dict) and item.get("id")
         }
     fingerprints = set()
     for run in payload.get("runs", []):
@@ -112,6 +118,7 @@ def main(argv: list[str] | None = None) -> int:
         }
     try:
         report = {
+            "bom": render_bom,
             "json": render_json,
             "sarif": render_sarif,
             "text": render_text,

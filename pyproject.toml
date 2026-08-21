@@ -17,6 +17,7 @@ agentverify = "agentverify.cli:main"
 
 [project.optional-dependencies]
 dev = [
+  "jsonschema>=4.23",
   "pytest>=8.3",
   "ruff>=0.9",
 ]

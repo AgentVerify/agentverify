@@ -16,7 +16,7 @@ Context analysis: reachability + governing controls + unresolved state
 Rule engine: inventory, review candidates, and findings
            │
            ▼
-Deterministic text / JSON / SARIF reports
+Deterministic text / JSON / native AI BOM / SARIF reports
 ```
 
 ## Agent IR
@@ -69,3 +69,7 @@ Configuration discovery includes Compose, devcontainers, and Kubernetes/Helm pat
 boolean settings are reported as review results; templates and values are not rendered or executed,
 and AgentVerify does not infer that a chart value governs a workload unless that relationship is
 explicitly resolved.
+
+The native AI BOM serializes the same evidence graph with stable observation IDs. Relationship
+endpoints expose unique-display-name, ambiguous, or unresolved identity instead of collapsing
+same-named assets. It is a lossless AgentVerify format, not a claim of CycloneDX or SPDX conformance.

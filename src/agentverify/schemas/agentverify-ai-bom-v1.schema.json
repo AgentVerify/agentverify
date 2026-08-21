@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AgentVerify AI BOM 1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "bom_format",
+    "spec_version",
+    "metadata",
+    "assets",
+    "relationships",
+    "governance",
+    "risks"
+  ],
+  "properties": {
+    "bom_format": {"const": "AgentVerify AI BOM"},
+    "spec_version": {"const": "1.0"},
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generator",
+        "root",
+        "scan_scope",
+        "path_filters",
+        "files_scanned",
+        "configuration_files_scanned",
+        "parse_warnings",
+        "suppressed_findings",
+        "baseline_summary"
+      ],
+      "properties": {
+        "generator": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "version"],
+          "properties": {
+            "name": {"const": "AgentVerify"},
+            "version": {"type": "string"}
+          }
+        },
+        "root": {"const": "."},
+        "scan_scope": {"enum": ["repository", "selected-paths"]},
+        "path_filters": {"type": "array", "items": {"type": "string"}},
+        "files_scanned": {"type": "integer", "minimum": 0},
+        "configuration_files_scanned": {"type": "integer", "minimum": 0},
+        "parse_warnings": {"type": "integer", "minimum": 0},
+        "suppressed_findings": {"type": "integer", "minimum": 0},
+        "baseline_summary": {"type": "object"}
+      }
+    },
+    "assets": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/asset"}
+    },
+    "relationships": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/relationship"}
+    },
+    "governance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "control_asset_ids",
+        "boundary_asset_ids",
+        "unresolved_policy_asset_ids",
+        "risk_summary"
+      ],
+      "properties": {
+        "control_asset_ids": {"$ref": "#/$defs/idList"},
+        "boundary_asset_ids": {"$ref": "#/$defs/idList"},
+        "unresolved_policy_asset_ids": {"$ref": "#/$defs/idList"},
+        "risk_summary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["by_rule", "by_result_kind", "by_severity"],
+          "properties": {
+            "by_rule": {"$ref": "#/$defs/countMap"},
+            "by_result_kind": {"$ref": "#/$defs/countMap"},
+            "by_severity": {"$ref": "#/$defs/countMap"}
+          }
+        }
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/risk"}
+    }
+  },
+  "$defs": {
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "line", "excerpt"],
+      "properties": {
+        "path": {"type": "string"},
+        "line": {"type": "integer", "minimum": 1},
+        "excerpt": {"type": "string"}
+      }
+    },
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "name", "attributes", "evidence"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^avc-[0-9a-f]{20}$"},
+        "kind": {"type": "string"},
+        "name": {"type": "string"},
+        "attributes": {"type": "object"},
+        "evidence": {"$ref": "#/$defs/evidence"}
+      }
+    },
+    "endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "name", "resolution"],
+      "properties": {
+        "kind": {"type": "string"},
+        "name": {"type": "string"},
+        "resolution": {"enum": ["unique-display-name", "ambiguous", "unresolved"]},
+        "asset_id": {"type": "string", "pattern": "^avc-[0-9a-f]{20}$"},
+        "candidate_asset_ids": {"$ref": "#/$defs/idList"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"resolution": {"const": "unique-display-name"}}},
+          "then": {
+            "required": ["asset_id"],
+            "not": {"required": ["candidate_asset_ids"]}
+          }
+        },
+        {
+          "if": {"properties": {"resolution": {"const": "ambiguous"}}},
+          "then": {
+            "required": ["candidate_asset_ids"],
+            "properties": {"candidate_asset_ids": {"minItems": 2}},
+            "not": {"required": ["asset_id"]}
+          }
+        },
+        {
+          "if": {"properties": {"resolution": {"const": "unresolved"}}},
+          "then": {
+            "not": {
+              "anyOf": [
+                {"required": ["asset_id"]},
+                {"required": ["candidate_asset_ids"]}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "relationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "source", "relation", "target", "attributes", "evidence"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^avr-[0-9a-f]{20}$"},
+        "source": {"$ref": "#/$defs/endpoint"},
+        "relation": {"type": "string"},
+        "target": {"$ref": "#/$defs/endpoint"},
+        "attributes": {"type": "object"},
+        "evidence": {"$ref": "#/$defs/evidence"}
+      }
+    },
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "rule_id",
+        "severity",
+        "confidence",
+        "result_kind",
+        "message",
+        "remediation",
+        "evidence",
+        "ir_path",
+        "analysis"
+      ],
+      "properties": {
+        "id": {"type": "string"},
+        "rule_id": {"type": "string"},
+        "severity": {"type": "string"},
+        "confidence": {"type": "string"},
+        "result_kind": {"enum": ["inventory", "review", "finding"]},
+        "message": {"type": "string"},
+        "remediation": {"type": "string"},
+        "evidence": {"$ref": "#/$defs/evidence"},
+        "ir_path": {"type": "array", "items": {"type": "string"}},
+        "analysis": {"type": "object"}
+      }
+    },
+    "idList": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^avc-[0-9a-f]{20}$"},
+      "uniqueItems": true
+    },
+    "countMap": {
+      "type": "object",
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    }
+  }
+}

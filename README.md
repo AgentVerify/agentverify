@@ -16,6 +16,7 @@ curated cross-rule regression set contains 121 pinned positive and negative labe
 pip install agentverify
 agentverify scan ./project
 agentverify scan ./project --format json
+agentverify scan ./project --format bom
 agentverify scan ./project --format sarif
 agentverify scan ./project --fail-on high
 agentverify scan ./project --fail-on high --fail-on-kind any
@@ -62,6 +63,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`docs/detection-rules.md`](docs/detection-rules.md) — rule contracts and validation gates
 - [`docs/architecture.md`](docs/architecture.md) — Agent IR, graph analysis, and uncertainty model
 - [`docs/frontend-coverage.md`](docs/frontend-coverage.md) — supported syntax and empirical gaps
+- [`docs/ai-bom.md`](docs/ai-bom.md) — native machine-readable asset and governance inventory
 - [`docs/code-scanning.md`](docs/code-scanning.md) — copy-ready GitHub SARIF integration
 - [`docs/pre-commit.md`](docs/pre-commit.md) — local and tagged-release hook setup
 - [`docs/backlog.md`](docs/backlog.md) — prioritized issue-ready future work

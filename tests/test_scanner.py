@@ -4,9 +4,11 @@ import json
 from datetime import date
 from pathlib import Path
 
+from jsonschema import Draft202012Validator
+
 from agentverify.analysis import component_context
 from agentverify.cli import main
-from agentverify.report import render_json, render_sarif, render_text
+from agentverify.report import render_bom, render_json, render_sarif, render_text
 from agentverify.scanner import scan_repository
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -645,3 +647,68 @@ def test_sarif_contains_location_fingerprint_and_ir_context() -> None:
     assert result["locations"][0]["physicalLocation"]["region"]["startLine"] == 13
     assert result["partialFingerprints"]["agentverify/v1"]
     assert result["properties"]["irPath"][0] == "agent:operator"
+
+
+def test_native_ai_bom_is_deterministic_evidence_first_and_schema_shaped() -> None:
+    ir = scan_repository(ROOT / "cases/python_dangerous")
+
+    rendered = render_bom(ir)
+    assert rendered == render_bom(ir)
+    bom = json.loads(rendered)
+    schema = json.loads(
+        (ROOT / "src/agentverify/schemas/agentverify-ai-bom-v1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    Draft202012Validator.check_schema(schema)
+    Draft202012Validator(schema).validate(bom)
+    assert set(bom) == set(schema["required"])
+    assert bom["bom_format"] == "AgentVerify AI BOM"
+    assert bom["spec_version"] == "1.0"
+    assert bom["metadata"]["root"] == "."
+    assert bom["metadata"]["scan_scope"] == "repository"
+    assert len({asset["id"] for asset in bom["assets"]}) == len(bom["assets"])
+    shell = next(
+        asset
+        for asset in bom["assets"]
+        if asset["kind"] == "capability" and asset["name"] == "shell-execution"
+    )
+    assert shell["evidence"] == {
+        "path": "agent.py",
+        "line": 13,
+        "excerpt": "return subprocess.run(command, shell=True, capture_output=True, text=True).stdout",
+    }
+    assert bom["governance"]["risk_summary"] == {
+        "by_result_kind": {"finding": 1},
+        "by_rule": {"AV-EXEC001": 1},
+        "by_severity": {"high": 1},
+    }
+    assert bom["risks"][0]["ir_path"][-1] == "capability:shell-execution"
+
+
+def test_native_ai_bom_does_not_hide_ambiguous_display_names() -> None:
+    bom = json.loads(render_bom(scan_repository(ROOT / "cases/symbol_collision")))
+
+    run_command_endpoints = [
+        endpoint
+        for relationship in bom["relationships"]
+        for endpoint in (relationship["source"], relationship["target"])
+        if endpoint["kind"] == "tool" and endpoint["name"] == "run_command"
+    ]
+    assert run_command_endpoints
+    assert all(endpoint["resolution"] == "ambiguous" for endpoint in run_command_endpoints)
+    assert all(len(endpoint["candidate_asset_ids"]) == 2 for endpoint in run_command_endpoints)
+
+
+def test_native_ai_bom_does_not_embed_checkout_path(tmp_path: Path) -> None:
+    source = (ROOT / "examples/safe_agent/agent.py").read_text(encoding="utf-8")
+    outputs = []
+    for directory_name in ("checkout-one", "checkout-two"):
+        checkout = tmp_path / directory_name
+        checkout.mkdir()
+        (checkout / "agent.py").write_text(source, encoding="utf-8")
+        outputs.append(render_bom(scan_repository(checkout)))
+
+    assert outputs[0] == outputs[1]
+    assert str(tmp_path) not in outputs[0]
