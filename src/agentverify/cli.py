@@ -36,6 +36,11 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="suppress fingerprints present in a previous AgentVerify JSON or SARIF report",
     )
+    scan.add_argument(
+        "--paths-from",
+        type=Path,
+        help="scan only repository-relative files/directories listed one per line",
+    )
     return parser
 
 
@@ -65,7 +70,22 @@ def main(argv: list[str] | None = None) -> int:
     if not args.path.is_dir():
         print(f"agentverify: not a directory: {args.path}", file=sys.stderr)
         return 2
-    ir = scan_repository(args.path, include_tests=args.include_tests)
+    selected_paths = None
+    if args.paths_from:
+        try:
+            selected_paths = args.paths_from.read_text(encoding="utf-8").splitlines()
+        except OSError as error:
+            print(f"agentverify: invalid path list: {error}", file=sys.stderr)
+            return 2
+    try:
+        ir = scan_repository(
+            args.path,
+            include_tests=args.include_tests,
+            selected_paths=selected_paths,
+        )
+    except ValueError as error:
+        print(f"agentverify: invalid path list: {error}", file=sys.stderr)
+        return 2
     if args.baseline:
         try:
             known = baseline_fingerprints(args.baseline)

@@ -48,3 +48,22 @@ fingerprints while new results remain visible; commit and review that baseline a
 
 The workflow deliberately grants `security-events: write` only to the scanning job. Do not pass a
 personal token to the upload action; its default is the job-scoped GitHub token.
+
+## Changed-file scans
+
+For a fast pull-request signal, write repository-relative changed paths one per line and pass the
+file to AgentVerify:
+
+```console
+git diff --name-only --diff-filter=ACMR "$BASE_SHA"...HEAD > changed-files.txt
+agentverify scan . --paths-from changed-files.txt --format sarif > agentverify.sarif
+```
+
+Absolute paths and paths containing `..` are rejected. Directory entries select their descendants;
+deleted or missing files produce no observations, and an empty list intentionally scans zero files.
+JSON, text, and SARIF reports identify `selected-paths` scope and retain the normalized filters.
+
+The repository-wide module index is still available for resolving selected files' imports, but
+unselected source files are not parsed. A changed-file result therefore cannot prove repository-wide
+control coverage or absence. Keep the scheduled full scan as the authoritative audit and use partial
+scans only for rapid feedback.

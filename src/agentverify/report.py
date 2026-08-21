@@ -64,6 +64,10 @@ def render_sarif(ir: RepositoryIR) -> str:
                         "rules": [rules[key] for key in sorted(rules)],
                     }
                 },
+                "properties": {
+                    "scanScope": ir.scan_scope,
+                    "pathFilters": ir.path_filters,
+                },
                 "results": results,
             }
         ],
@@ -76,6 +80,8 @@ def render_text(ir: RepositoryIR) -> str:
     lines = [
         "AgentVerify Report",
         f"Root: {ir.root}",
+        f"Scan scope: {ir.scan_scope}",
+        f"Path filters: {len(ir.path_filters)}",
         f"Files scanned: {ir.files_scanned}",
         f"Configuration files scanned: {ir.config_files_scanned}",
         f"Suppressed findings: {ir.suppressed_findings}",

@@ -58,7 +58,8 @@ unresolved: instrumentation is not proof that an attributable record reaches dur
 
 AgentVerify reads source and configuration as data. It never imports project modules, evaluates their
 code, installs their dependencies, or launches configured MCP servers. Repository traversal excludes
-dependency, build, VCS, cache, and virtual-environment directories.
+and prunes dependency, build, VCS, cache, and virtual-environment directories. Selected-path scans
+reject absolute and parent-traversal paths; their reports are explicitly marked partial.
 
 Configuration discovery includes Compose, devcontainers, and Kubernetes/Helm paths. Exact dangerous
 boolean settings are reported as review results; templates and values are not rendered or executed,

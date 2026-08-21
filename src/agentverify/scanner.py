@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ast
 import json
+import os
 import re
 import warnings
 from pathlib import Path
@@ -1209,17 +1210,54 @@ def build_python_module_index(root: Path, paths: list[Path]) -> dict[str, str]:
     }
 
 
-def scan_repository(root: Path, *, include_tests: bool = False) -> RepositoryIR:
+def repository_files(root: Path) -> list[Path]:
+    paths = []
+    for directory, directory_names, file_names in os.walk(root, followlinks=False):
+        directory_path = Path(directory)
+        directory_names[:] = sorted(
+            name
+            for name in directory_names
+            if name not in SKIP_DIRECTORIES and not (directory_path / name).is_symlink()
+        )
+        paths.extend(directory_path / name for name in sorted(file_names))
+    return paths
+
+
+def scan_repository(
+    root: Path,
+    *,
+    include_tests: bool = False,
+    selected_paths: list[str] | set[str] | tuple[str, ...] | None = None,
+) -> RepositoryIR:
     root = root.resolve()
     ir = RepositoryIR(str(root))
     source_lines: dict[str, list[str]] = {}
-    paths = sorted(root.rglob("*"))
+    paths = repository_files(root)
     module_paths = build_python_module_index(root, paths)
+    selectors: list[Path] | None = None
+    if selected_paths is not None:
+        selectors = []
+        for value in selected_paths:
+            if value == "":
+                continue
+            selector = Path(value)
+            if selector.is_absolute() or ".." in selector.parts:
+                raise ValueError(f"selected path must stay inside the scan root: {value}")
+            normalized = Path(*[part for part in selector.parts if part not in {"", "."}])
+            selectors.append(normalized)
+        selectors = sorted(set(selectors), key=lambda item: item.as_posix())
+        ir.scan_scope = "selected-paths"
+        ir.path_filters = [selector.as_posix() for selector in selectors]
     for path in paths:
+        relative_path = path.relative_to(root)
         if (
             path.is_symlink()
             or not path.is_file()
-            or set(path.relative_to(root).parts) & SKIP_DIRECTORIES
+            or set(relative_path.parts) & SKIP_DIRECTORIES
+        ):
+            continue
+        if selectors is not None and not any(
+            relative_path == selector or selector in relative_path.parents for selector in selectors
         ):
             continue
         try:
@@ -1230,7 +1268,7 @@ def scan_repository(root: Path, *, include_tests: bool = False) -> RepositoryIR:
                     "claude_desktop_config.json",
                 }:
                     ir.errors.append(
-                        f"{path.relative_to(root).as_posix()}: skipped file larger than {MAX_SOURCE_BYTES} bytes"
+                        f"{relative_path.as_posix()}: skipped file larger than {MAX_SOURCE_BYTES} bytes"
                     )
                 continue
         except OSError as error:
@@ -1243,7 +1281,7 @@ def scan_repository(root: Path, *, include_tests: bool = False) -> RepositoryIR:
             scan_container_config(ir, root, path)
             ir.config_files_scanned += 1
             try:
-                source_lines[path.relative_to(root).as_posix()] = path.read_text(
+                source_lines[relative_path.as_posix()] = path.read_text(
                     encoding="utf-8-sig", errors="ignore"
                 ).splitlines()
             except OSError:
@@ -1256,7 +1294,7 @@ def scan_repository(root: Path, *, include_tests: bool = False) -> RepositoryIR:
             ir.errors.append(f"{path}: {error}")
             continue
         ir.files_scanned += 1
-        source_lines[path.relative_to(root).as_posix()] = text.splitlines()
+        source_lines[relative_path.as_posix()] = text.splitlines()
         if path.suffix.lower() == ".py":
             scan_python(ir, root, path, text, module_paths)
         else:

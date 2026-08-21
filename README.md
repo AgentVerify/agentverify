@@ -21,6 +21,7 @@ agentverify scan ./project --fail-on high
 agentverify scan ./project --fail-on high --fail-on-kind any
 agentverify scan ./project --include-tests
 agentverify scan ./project --baseline previous-agentverify.json
+agentverify scan ./project --paths-from changed-files.txt
 ```
 
 Reviewed exceptions can be suppressed only for the immediately following line, with a rule ID and

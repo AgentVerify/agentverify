@@ -58,6 +58,8 @@ class Suppression:
 @dataclass
 class RepositoryIR:
     root: str
+    scan_scope: str = "repository"
+    path_filters: list[str] = field(default_factory=list)
     files_scanned: int = 0
     config_files_scanned: int = 0
     suppressed_findings: int = 0
