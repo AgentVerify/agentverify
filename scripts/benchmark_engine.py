@@ -152,6 +152,35 @@ def main() -> int:
         python_registry_tool_ids = {
             item.symbol_id for item in python_registry_tools if item.symbol_id
         }
+        python_computer_tools = [
+            item
+            for item in ir.components
+            if item.kind == "tool"
+            and item.evidence.path.endswith(".py")
+            and str(item.attributes.get("constructor", "")).rsplit(".", 1)[-1]
+            == "ComputerTool"
+        ]
+        python_computer_tool_ids = {
+            item.symbol_id for item in python_computer_tools if item.symbol_id
+        }
+        if len(python_computer_tool_ids) != len(python_computer_tools):
+            raise RuntimeError(f"{repository}: Python ComputerTool lacks a unique symbol ID")
+        python_computer_capability_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_id in python_computer_tool_ids
+            and edge.target_kind == "capability"
+            and edge.target_name == "computer-control"
+        ]
+        if len(python_computer_capability_edges) != len(python_computer_tools):
+            raise RuntimeError(
+                f"{repository}: Python ComputerTool lacks an exact computer-control edge"
+            )
+        python_computer_agent_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "agent" and edge.target_id in python_computer_tool_ids
+        ]
         python_browser_evaluations = [
             item
             for item in ir.components
@@ -508,6 +537,24 @@ def main() -> int:
                     and edge.target_kind == "capability"
                     for edge in ir.relationships
                 ),
+            },
+            "python_computer_tools": {
+                "instances": len(python_computer_tools),
+                "non_test_instances": sum(
+                    not item.evidence.path.startswith("tests/")
+                    and "/tests/" not in item.evidence.path
+                    for item in python_computer_tools
+                ),
+                "local_execution": sum(
+                    item.attributes.get("execution_environment") == "local"
+                    for item in python_computer_tools
+                ),
+                "safety_check_handlers_configured": sum(
+                    item.attributes.get("safety_check_handler") == "configured"
+                    for item in python_computer_tools
+                ),
+                "capability_edges": len(python_computer_capability_edges),
+                "resolved_agent_edges": len(python_computer_agent_edges),
             },
             "python_browser_evaluate": {
                 "total": len(python_browser_evaluations),
@@ -1148,7 +1195,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 49,
+        "schema_version": 50,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -1268,6 +1315,17 @@ def main() -> int:
                     "metagpt",
                     "qwen_agent",
                     "capability_edges",
+                )
+            },
+            "python_computer_tools": {
+                name: sum(result["python_computer_tools"][name] for result in successful)
+                for name in (
+                    "instances",
+                    "non_test_instances",
+                    "local_execution",
+                    "safety_check_handlers_configured",
+                    "capability_edges",
+                    "resolved_agent_edges",
                 )
             },
             "python_browser_evaluate": {

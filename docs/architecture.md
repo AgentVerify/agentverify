@@ -341,6 +341,9 @@ OpenAI Agents SDK, literal
 tool-to-control edge when no automatic approval handler is configured; literal false is recorded as
 explicitly disabled. An omitted value records the SDK's documented disabled default. Callback,
 handler-controlled, and other non-literal approval policies remain unresolved.
+Import-proven `ComputerTool` instances instead emit a local computer-control capability. Their
+optional `on_safety_check` callback is recorded as SDK safety-check state, not promoted to a generic
+human-approval control because it applies only when the model response carries safety checks.
 
 Control presence is not automatically policy satisfaction. An uncaught lookup in an internal MCP
 tool registry creates a `tool-registry` edge because it proves the name is routable and rejects

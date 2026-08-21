@@ -12,10 +12,13 @@ delegations in the pinned sample without treating nested tokens as tools. Repeat
 decorated-tool bindings now receive occurrence-qualified IDs for exact source edges. Repeated target
 references resolve for a single direct, earlier definition in the same Python lexical/module scope,
 plus an exact single-mutation constructor assignment that dominates use in the same branch/with body.
-Schema v49 resolves 13 additional CrewAI edges while leaving 10 parameter, helper-return, factory,
-tuple-unpack, cross-branch, and reassigned targets unresolved. Next add broader branch- and
-reassignment-sensitive dataflow, then resolve Python/TS package re-exports,
-wildcard imports, unrecognized wrapper factories, and type-driven symbols.
+Schema v50 additionally inventories 15 import-proven OpenAI Agents Python `ComputerTool` instances
+and resolves ten agent links to them, including three formerly ambiguous repeated bindings. Seven
+corpus targets in parameter, helper-return, direct-function, wrapper-factory, or tuple-unpack forms
+remain unresolved; cross-branch and reassigned fixture cases also stay withheld. Next recover direct
+local callable and import-proven wrapper-factory tool identities, then add broader branch/reassignment
+dataflow and resolve Python/TS package re-exports, wildcard imports, other wrapper factories, and
+type-driven symbols.
 Preserve unresolved state for ambiguity and validate on larger real monorepository graphs.
 
 Exact module-level Python `mcp.tool(...)(function)` applications now resolve through unique local or
@@ -174,8 +177,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 340 pinned positive/negative locations, with 280 separately
-scored IR relationship labels. Schema-v49 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 340 pinned positive/negative locations, with 288 separately
+scored IR relationship labels. Schema-v50 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

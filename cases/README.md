@@ -67,6 +67,9 @@ never imported or executed.
 - `python_block_dominance`: repeated agent bindings resolve only when an exact constructor assignment
   is the sole same-block mutation before use; local block definitions override broader lexical/module
   candidates, while cross-branch and reassigned bindings stay unresolved.
+- `python_computer_tool`: import-proven OpenAI Agents `ComputerTool` constructors produce
+  computer-control inventory and exact inline/repeated-binding agent edges; an unimported lookalike
+  stays ignored.
 - `typescript_a2a_card_endpoint`: ADK JS and Gemini compositions preserve remotely supplied
   AgentCard authority at SDK client construction; fixed/local cards, wrong imports, and unproven
   transports stay negative.

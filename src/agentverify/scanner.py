@@ -61,6 +61,7 @@ MODEL_CONSTRUCTORS = {
 BUILTIN_TOOL_CAPABILITIES = {
     "ShellTool": ("shell-execution",),
     "ApplyPatchTool": ("filesystem",),
+    "ComputerTool": ("computer-control",),
     "CustomTool": ("external-action",),
 }
 APPROVAL_BYPASS_NAME = re.compile(
@@ -3724,11 +3725,18 @@ class PythonVisitor(ast.NodeVisitor):
             tool_id = self.call_symbol_ids.get(id(node)) or source_symbol(
                 "py", self.path, "tool", tool_name
             )
-            approval_state = "disabled-default"
-            approval_source = "sdk-default"
+            approval_state = (
+                "not-applicable" if short_name == "ComputerTool" else "disabled-default"
+            )
+            approval_source = (
+                "sdk-computer-safety-check" if short_name == "ComputerTool" else "sdk-default"
+            )
             approval_handler = "none"
+            safety_check_handler = "none"
             execution_environment = (
-                "local" if short_name == "ShellTool" and node.args else "unresolved"
+                "local"
+                if short_name == "ComputerTool" or (short_name == "ShellTool" and node.args)
+                else "unresolved"
             )
             approval_evidence = self.ev(node)
             for keyword in node.keywords:
@@ -3747,6 +3755,14 @@ class PythonVisitor(ast.NodeVisitor):
                     isinstance(keyword.value, ast.Constant) and keyword.value.value is None
                 ):
                     approval_handler = "configured"
+                elif (
+                    short_name == "ComputerTool"
+                    and keyword.arg == "on_safety_check"
+                    and not (
+                        isinstance(keyword.value, ast.Constant) and keyword.value.value is None
+                    )
+                ):
+                    safety_check_handler = "configured"
                 elif short_name == "ShellTool" and keyword.arg == "executor":
                     execution_environment = "local"
                 elif (
@@ -3776,6 +3792,11 @@ class PythonVisitor(ast.NodeVisitor):
                         "approval_source": approval_source,
                         "execution_environment": execution_environment,
                         "scope": source_scope(self.path),
+                        **(
+                            {"safety_check_handler": safety_check_handler}
+                            if short_name == "ComputerTool"
+                            else {}
+                        ),
                     },
                     tool_id,
                 )
@@ -3794,6 +3815,8 @@ class PythonVisitor(ast.NodeVisitor):
                             "execution_environment": execution_environment,
                         }
                     )
+                elif capability == "computer-control":
+                    attributes["execution_environment"] = execution_environment
                 self.ir.add_component(
                     Component("capability", capability, self.ev(node), attributes)
                 )
