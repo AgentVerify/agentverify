@@ -91,6 +91,8 @@ def main() -> int:
                 "lexical-single-definition",
                 "module-single-definition",
                 "same-class-helper-return",
+                "imported-class-factory-return",
+                "contextual-imported-class-factory-return",
                 "typed-parameter-callsite-consensus",
                 "contextual-absolute-import-single-export",
             }
@@ -169,6 +171,26 @@ def main() -> int:
         python_contextual_tool_target_ids = {
             edge.target_id for edge in python_contextual_tool_import_edges
         }
+        python_imported_agent_factory_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.attributes.get("target_identity")
+            in {
+                "imported-class-factory-return",
+                "contextual-imported-class-factory-return",
+            }
+        ]
+        if any(
+            edge.source_kind != "agent"
+            or edge.target_kind != "agent"
+            or edge.source_id not in component_symbol_ids
+            or edge.target_id not in component_symbol_ids
+            or not edge.attributes.get("target_path")
+            for edge in python_imported_agent_factory_edges
+        ):
+            raise RuntimeError(
+                f"{repository}: imported Agent factory lacks an exact graph edge"
+            )
         typed_tool_concrete_ids = {
             target_id
             for component in python_typed_tool_parameters
@@ -1425,7 +1447,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 55,
+        "schema_version": 56,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {

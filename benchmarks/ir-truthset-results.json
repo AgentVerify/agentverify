@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T23:12:46.472720+00:00",
-  "labels": 348,
-  "passed": 348,
+  "generated_at": "2026-08-21T23:26:09.146763+00:00",
+  "labels": 355,
+  "passed": 355,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -168,6 +168,14 @@
       "tp": 4,
       "fp": 0,
       "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-IMPORTED-AGENT-FACTORY": {
+      "tp": 7,
+      "fp": 0,
+      "tn": 0,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -3343,6 +3351,69 @@
     {
       "id": "python-agent-helper-crewai-tuple-async-real",
       "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-agent-factory-local",
+      "check_id": "IR-PY-IMPORTED-AGENT-FACTORY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-agent-factory-ambiguous-unresolved",
+      "check_id": "IR-PY-IMPORTED-AGENT-FACTORY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-agent-factory-reimported-unresolved",
+      "check_id": "IR-PY-IMPORTED-AGENT-FACTORY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-agent-factory-instagram-real",
+      "check_id": "IR-PY-IMPORTED-AGENT-FACTORY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-agent-factory-meeting-real",
+      "check_id": "IR-PY-IMPORTED-AGENT-FACTORY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-agent-factory-trip-real",
+      "check_id": "IR-PY-IMPORTED-AGENT-FACTORY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-agent-factory-starter-real",
+      "check_id": "IR-PY-IMPORTED-AGENT-FACTORY",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

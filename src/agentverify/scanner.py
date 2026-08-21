@@ -277,6 +277,13 @@ class RegistryClassTarget:
 
 
 @dataclass(frozen=True)
+class PythonAgentFactoryClassTarget:
+    path: str
+    name: str
+    methods: dict[str, str]
+
+
+@dataclass(frozen=True)
 class PythonSecureNetworkPolicy:
     evidence: Evidence
     schemes: tuple[str, ...]
@@ -2200,6 +2207,7 @@ class PythonVisitor(ast.NodeVisitor):
         referenced_tool_functions: dict[int, ast.Call],
         wrapped_tool_functions: dict[int, PythonFunctionToolWrapper],
         decorated_tool_exports: dict[tuple[str, str], str],
+        imported_agent_factory_target_paths: dict[str, str],
         registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
         network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
         registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
@@ -2271,6 +2279,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.referenced_tool_functions = referenced_tool_functions
         self.wrapped_tool_functions = wrapped_tool_functions
         self.decorated_tool_exports = decorated_tool_exports
+        self.imported_agent_factory_target_paths = imported_agent_factory_target_paths
         self.registry_class_exports = registry_class_exports
         self.network_helper_summaries = network_helper_summaries
         self.registered_tool_functions = registered_tool_functions
@@ -2523,6 +2532,11 @@ class PythonVisitor(ast.NodeVisitor):
                 if repeated
                 or dominating[1]
                 in {"same-class-helper-return", "typed-parameter-callsite-consensus"}
+                or dominating[1]
+                in {
+                    "imported-class-factory-return",
+                    "contextual-imported-class-factory-return",
+                }
                 else (dominating[0], None)
             )
         if (
@@ -4120,6 +4134,10 @@ class PythonVisitor(ast.NodeVisitor):
                                 target_id = None
                         elif target_id is not None and target_identity:
                             attributes["target_identity"] = target_identity
+                            if target_path := self.imported_agent_factory_target_paths.get(
+                                target_id
+                            ):
+                                attributes["target_path"] = target_path
                         elif (
                             target_id is None
                             and (
@@ -4760,6 +4778,9 @@ def scan_python(
     text: str,
     module_paths: dict[str, str],
     decorated_tool_exports: dict[tuple[str, str], str],
+    agent_factory_class_exports: dict[
+        tuple[str, str], PythonAgentFactoryClassTarget
+    ],
     registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
     network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
     registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
@@ -5782,7 +5803,7 @@ def scan_python(
             if any(returned_ids):
                 agent_factory_returns[(id(class_node), method.name)] = returned_ids
 
-    helper_agent_assignments: list[tuple[ast.Assign, str, str]] = []
+    helper_agent_assignments: list[tuple[ast.Assign, str, str, str]] = []
     for assignment in (node for node in nodes if isinstance(node, ast.Assign)):
         if not (
             isinstance(assignment.value, ast.Call)
@@ -5826,11 +5847,118 @@ def scan_python(
         for target_item, returned_id in zip(targets, returned_ids, strict=True):
             if isinstance(target_item, ast.Name) and returned_id is not None:
                 helper_agent_assignments.append(
-                    (assignment, target_item.id, returned_id)
+                    (
+                        assignment,
+                        target_item.id,
+                        returned_id,
+                        "same-class-helper-return",
+                    )
                 )
                 symbol_candidates.setdefault(("agent", target_item.id), set()).add(
                     returned_id
                 )
+
+    imported_factory_classes: dict[
+        str, tuple[PythonAgentFactoryClassTarget, str, int]
+    ] = {}
+    imported_agent_factory_target_paths: dict[str, str] = {}
+    top_level_import_counts = Counter(
+        alias.asname or alias.name.split(".", 1)[0]
+        for statement in tree.body
+        if isinstance(statement, (ast.Import, ast.ImportFrom))
+        for alias in statement.names
+        if alias.name != "*"
+    )
+    imported_factory_candidates: dict[
+        str, list[tuple[PythonAgentFactoryClassTarget, str, int]]
+    ] = defaultdict(list)
+    for statement in tree.body:
+        if not isinstance(statement, ast.ImportFrom):
+            continue
+        for alias in statement.names:
+            local_name = alias.asname or alias.name
+            resolution = resolve_python_import(
+                root,
+                relative,
+                statement,
+                alias.name,
+                module_paths,
+            )
+            if resolution is None:
+                continue
+            target = agent_factory_class_exports.get(
+                (resolution.path, alias.name)
+            )
+            if target is not None:
+                imported_factory_candidates[local_name].append(
+                    (target, resolution.basis, statement.lineno)
+                )
+    for local_name, candidates in imported_factory_candidates.items():
+        if (
+            len(candidates) == 1
+            and top_level_import_counts[local_name] == 1
+            and local_name not in module_rebound_names
+        ):
+            imported_factory_classes[local_name] = candidates[0]
+
+    for assignment in (node for node in nodes if isinstance(node, ast.Assign)):
+        if not (
+            len(assignment.targets) == 1
+            and isinstance(assignment.targets[0], ast.Name)
+            and isinstance(assignment.value, ast.Call)
+            and isinstance(assignment.value.func, ast.Attribute)
+            and isinstance(assignment.value.func.value, ast.Name)
+        ):
+            continue
+        block = enclosing_statement_block(assignment)
+        if block is None:
+            continue
+        statements, assignment_index = block
+        receiver = assignment.value.func.value.id
+        receiver_mutations = [
+            statement
+            for statement in statements[:assignment_index]
+            if receiver in statement_mutations(statement)
+        ]
+        if len(receiver_mutations) != 1:
+            continue
+        constructor_assignment = receiver_mutations[0]
+        if not (
+            isinstance(constructor_assignment, ast.Assign)
+            and len(constructor_assignment.targets) == 1
+            and isinstance(constructor_assignment.targets[0], ast.Name)
+            and constructor_assignment.targets[0].id == receiver
+            and isinstance(constructor_assignment.value, ast.Call)
+            and isinstance(constructor_assignment.value.func, ast.Name)
+        ):
+            continue
+        constructor_name = constructor_assignment.value.func.id
+        imported_factory = imported_factory_classes.get(constructor_name)
+        if imported_factory is None:
+            continue
+        target, import_basis, import_line = imported_factory
+        if (
+            import_line >= constructor_assignment.lineno
+            or enclosed_by_lambda(constructor_assignment)
+            or shadowed_in_enclosing_functions(
+                constructor_assignment, constructor_name
+            )
+        ):
+            continue
+        returned_id = target.methods.get(assignment.value.func.attr)
+        if returned_id is None:
+            continue
+        binding = assignment.targets[0].id
+        target_identity = (
+            "contextual-imported-class-factory-return"
+            if import_basis == "contextual-absolute-import-single-path"
+            else "imported-class-factory-return"
+        )
+        helper_agent_assignments.append(
+            (assignment, binding, returned_id, target_identity)
+        )
+        imported_agent_factory_target_paths[returned_id] = target.path
+        symbol_candidates.setdefault(("agent", binding), set()).add(returned_id)
     local_symbol_ids = {
         key: next(iter(candidates))
         for key, candidates in symbol_candidates.items()
@@ -5937,9 +6065,9 @@ def scan_python(
             {
                 (id(node), "agent", binding): (
                     symbol_id,
-                    "same-class-helper-return",
+                    target_identity,
                 )
-                for node, binding, symbol_id in helper_agent_assignments
+                for node, binding, symbol_id, target_identity in helper_agent_assignments
             }
         )
         for call in (
@@ -6002,6 +6130,7 @@ def scan_python(
         referenced_tool_functions=referenced_tool_functions,
         wrapped_tool_functions=wrapped_tool_functions,
         decorated_tool_exports=decorated_tool_exports,
+        imported_agent_factory_target_paths=imported_agent_factory_target_paths,
         registry_class_exports=registry_class_exports,
         network_helper_summaries=network_helper_summaries,
         registered_tool_functions=registered_tool_functions,
@@ -8772,6 +8901,250 @@ def build_python_decorated_tool_exports(
         key: source_symbol("py", key[0], "tool", key[1])
         for key, definitions in exports.items()
         if len(definitions) == 1
+    }
+
+
+def build_python_agent_factory_class_exports(
+    root: Path,
+    paths: list[Path],
+) -> dict[tuple[str, str], PythonAgentFactoryClassTarget]:
+    """Index exact imported classes whose methods directly return one agent.
+
+    The summary intentionally excludes decorated/inherited classes, async or
+    indirect returns, local constructor shadowing, and rebound class or method
+    names. Call-site resolution applies additional same-block dominance checks.
+    """
+    exports: dict[
+        tuple[str, str], list[PythonAgentFactoryClassTarget]
+    ] = defaultdict(list)
+    framework_modules = tuple(
+        prefix
+        for prefixes in IMPORT_SIGNATURES["framework"].values()
+        for prefix in prefixes
+        if not prefix.startswith("@")
+    )
+
+    def module_binding_counts(tree: ast.Module) -> Counter[str]:
+        counts: Counter[str] = Counter()
+
+        def collect(candidate: ast.AST) -> None:
+            if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                counts[candidate.name] += 1
+                return
+            if isinstance(candidate, ast.Lambda):
+                return
+            if isinstance(candidate, (ast.Import, ast.ImportFrom)):
+                counts.update(
+                    alias.asname or alias.name.split(".", 1)[0]
+                    for alias in candidate.names
+                    if alias.name != "*"
+                )
+                return
+            if isinstance(candidate, ast.ExceptHandler) and candidate.name:
+                counts[candidate.name] += 1
+            if isinstance(candidate, ast.Name) and isinstance(
+                candidate.ctx, (ast.Store, ast.Del)
+            ):
+                counts[candidate.id] += 1
+            for child in ast.iter_child_nodes(candidate):
+                collect(child)
+
+        for statement in tree.body:
+            collect(statement)
+        return counts
+
+    def class_binding_counts(node: ast.ClassDef) -> Counter[str]:
+        counts: Counter[str] = Counter()
+        for statement in node.body:
+            if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                counts[statement.name] += 1
+                continue
+            if isinstance(statement, (ast.Import, ast.ImportFrom)):
+                counts.update(
+                    alias.asname or alias.name.split(".", 1)[0]
+                    for alias in statement.names
+                    if alias.name != "*"
+                )
+                continue
+            for candidate in ast.walk(statement):
+                if isinstance(candidate, ast.Name) and isinstance(
+                    candidate.ctx, (ast.Store, ast.Del)
+                ):
+                    counts[candidate.id] += 1
+        return counts
+
+    def method_instance_attribute_rebound(
+        class_node: ast.ClassDef,
+        method_name: str,
+    ) -> bool:
+        for method in class_node.body:
+            if not isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                continue
+            for candidate in ast.walk(method):
+                targets: tuple[ast.AST, ...] = ()
+                if isinstance(candidate, ast.Assign):
+                    targets = tuple(candidate.targets)
+                elif isinstance(candidate, (ast.AnnAssign, ast.AugAssign)):
+                    targets = (candidate.target,)
+                elif isinstance(candidate, ast.Delete):
+                    targets = tuple(candidate.targets)
+                if any(
+                    isinstance(target, ast.Attribute)
+                    and isinstance(target.value, ast.Name)
+                    and target.value.id == "self"
+                    and target.attr == method_name
+                    for target in targets
+                ):
+                    return True
+                if (
+                    isinstance(candidate, ast.Call)
+                    and dotted_name(candidate.func) in {"setattr", "delattr"}
+                    and len(candidate.args) >= 2
+                    and isinstance(candidate.args[0], ast.Name)
+                    and candidate.args[0].id == "self"
+                    and isinstance(candidate.args[1], ast.Constant)
+                    and candidate.args[1].value == method_name
+                ):
+                    return True
+        return False
+
+    def class_attribute_rebound(tree: ast.Module, class_name: str) -> bool:
+        def target_matches(target: ast.AST) -> bool:
+            return (
+                isinstance(target, ast.Attribute)
+                and isinstance(target.value, ast.Name)
+                and target.value.id == class_name
+            )
+
+        def statement_rebinds(candidate: ast.AST) -> bool:
+            if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                return False
+            targets: tuple[ast.AST, ...] = ()
+            if isinstance(candidate, ast.Assign):
+                targets = tuple(candidate.targets)
+            elif isinstance(candidate, (ast.AnnAssign, ast.AugAssign)):
+                targets = (candidate.target,)
+            elif isinstance(candidate, ast.Delete):
+                targets = tuple(candidate.targets)
+            if any(target_matches(target) for target in targets):
+                return True
+            if (
+                isinstance(candidate, ast.Call)
+                and dotted_name(candidate.func) in {"setattr", "delattr"}
+                and candidate.args
+                and isinstance(candidate.args[0], ast.Name)
+                and candidate.args[0].id == class_name
+            ):
+                return True
+            return any(statement_rebinds(child) for child in ast.iter_child_nodes(candidate))
+
+        return any(statement_rebinds(statement) for statement in tree.body)
+
+    for path in paths:
+        if (
+            path.is_symlink()
+            or not path.is_file()
+            or path.suffix.lower() != ".py"
+            or set(path.relative_to(root).parts) & SKIP_DIRECTORIES
+        ):
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+            if "return" not in text or not any(
+                f"{constructor}(" in text for constructor in AGENT_CALLS
+            ):
+                continue
+            tree = ast.parse(text, filename=path.relative_to(root).as_posix())
+        except (OSError, SyntaxError):
+            continue
+        relative = path.relative_to(root).as_posix()
+        binding_counts = module_binding_counts(tree)
+        agent_constructors = {
+            alias.name
+            for statement in tree.body
+            if isinstance(statement, ast.ImportFrom)
+            and statement.level == 0
+            and statement.module is not None
+            and any(
+                statement.module == prefix
+                or statement.module.startswith(f"{prefix}.")
+                for prefix in framework_modules
+            )
+            for alias in statement.names
+            if alias.asname is None
+            and alias.name in AGENT_CALLS
+            and binding_counts[alias.name] == 1
+        }
+        if not agent_constructors:
+            continue
+        for class_node in (
+            statement for statement in tree.body if isinstance(statement, ast.ClassDef)
+        ):
+            if (
+                binding_counts[class_node.name] != 1
+                or class_node.decorator_list
+                or class_node.bases
+                or class_node.keywords
+                or class_attribute_rebound(tree, class_node.name)
+            ):
+                continue
+            class_counts = class_binding_counts(class_node)
+            if class_counts["__getattr__"] or class_counts["__getattribute__"]:
+                continue
+            methods: dict[str, str] = {}
+            for method in class_node.body:
+                if not isinstance(method, ast.FunctionDef):
+                    continue
+                positional = (*method.args.posonlyargs, *method.args.args)
+                if (
+                    class_counts[method.name] != 1
+                    or method.decorator_list
+                    or not positional
+                    or positional[0].arg != "self"
+                    or method.name in {"__getattr__", "__getattribute__"}
+                    or method_instance_attribute_rebound(class_node, method.name)
+                ):
+                    continue
+                returns = [
+                    candidate
+                    for candidate in ast.walk(method)
+                    if isinstance(candidate, ast.Return)
+                ]
+                if (
+                    len(returns) != 1
+                    or returns[0] not in method.body
+                    or not isinstance(returns[0].value, ast.Call)
+                    or not isinstance(returns[0].value.func, ast.Name)
+                    or returns[0].value.func.id not in agent_constructors
+                    or returns[0].value.func.id in python_function_local_bindings(method)
+                ):
+                    continue
+                call = returns[0].value
+                agent_name = call.func.id
+                for keyword in call.keywords:
+                    if (
+                        keyword.arg == "name"
+                        and isinstance(keyword.value, ast.Constant)
+                        and keyword.value.value is not None
+                    ):
+                        agent_name = str(keyword.value.value)
+                methods[method.name] = source_symbol(
+                    "py", relative, "agent", f"{agent_name}@{call.lineno}"
+                )
+            if methods:
+                exports[(relative, class_node.name)].append(
+                    PythonAgentFactoryClassTarget(
+                        relative,
+                        class_node.name,
+                        methods,
+                    )
+                )
+    return {
+        key: targets[0]
+        for key, targets in exports.items()
+        if len(targets) == 1
     }
 
 
@@ -15125,6 +15498,10 @@ def scan_repository(
         )
     ]
     decorated_tool_exports = build_python_decorated_tool_exports(root, registry_paths)
+    agent_factory_class_exports = build_python_agent_factory_class_exports(
+        root,
+        registry_paths,
+    )
     registry_class_exports = build_python_registry_class_exports(
         root,
         registry_paths,
@@ -15210,6 +15587,7 @@ def scan_repository(
                 text,
                 module_paths,
                 decorated_tool_exports,
+                agent_factory_class_exports,
                 registry_class_exports,
                 network_helper_summaries,
                 registered_tool_functions,

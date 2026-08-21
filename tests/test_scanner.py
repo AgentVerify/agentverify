@@ -4084,6 +4084,44 @@ def test_python_agent_helper_returns_require_exact_same_class_flow() -> None:
         }
 
 
+def test_imported_agent_factory_requires_exact_class_and_same_block_flow() -> None:
+    ir = scan_repository(ROOT / "cases/python_imported_agent_factory")
+    edges = {
+        (edge.evidence.path, edge.evidence.line): edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent"
+        and edge.source_name == "Crew"
+        and edge.target_kind == "agent"
+    }
+
+    positive = edges[("project_a/main.py", 8)]
+    assert positive.target_id == (
+        "py:project_a/factory.py#agent:imported-worker@6"
+    )
+    assert positive.attributes == {
+        "target_identity": "contextual-imported-class-factory-return",
+        "target_path": "project_a/factory.py",
+    }
+
+    unresolved = {
+        ("ambiguous/nested/main.py", 8),
+        ("project_a/main.py", 12),
+        ("project_a/main.py", 19),
+        ("project_a/main.py", 25),
+        ("project_a/main.py", 32),
+        ("project_a/missing.py", 8),
+        ("project_a/reimported.py", 9),
+        ("project_a/unsupported.py", 14),
+        ("project_a/unsupported.py", 18),
+        ("project_a/unsupported.py", 22),
+        ("project_a/unsupported.py", 26),
+        ("project_a/unsupported.py", 30),
+    }
+    assert unresolved <= edges.keys()
+    assert all(edges[key].target_id is None for key in unresolved)
+    assert all(edges[key].attributes == {} for key in unresolved)
+
+
 def test_python_typed_tool_parameters_require_callsite_constructor_consensus() -> None:
     ir = scan_repository(ROOT / "cases/python_typed_tool_parameter")
     edges = {

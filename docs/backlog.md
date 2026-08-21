@@ -13,7 +13,7 @@ decorated-tool bindings now receive occurrence-qualified IDs for exact source ed
 references are scope-aware for unique and repeated names; repeated targets resolve for a single
 direct, earlier definition in the same lexical/module scope, plus an exact single-mutation definition
 that dominates use in the same branch/with body.
-Schema v55 additionally inventories 15 import-proven OpenAI Agents Python `ComputerTool` instances
+Schema v56 additionally inventories 15 import-proven OpenAI Agents Python `ComputerTool` instances
 and resolves ten agent links to them, including three formerly ambiguous repeated bindings. Literal
 Python Agent tool lists now recover 150 exact same-block callable definitions and 162 Agent links,
 including the PydanticAI direct-function target; 83 definitions are outside test paths and 16
@@ -22,7 +22,10 @@ helper-return, wrapper-factory, or tuple-unpack forms remained unresolved. Impor
 `function_tool(function)` assignments now recover 12 exact wrapper tools and Agent edges, including
 the two repeated SDK targets; three enable approval and all occur under tests. Exact same-class
 direct/tuple Agent-return summaries resolve three CrewAI composition edges to two source Agent
-definitions. The final repeated-binding miss now resolves through an occurrence-qualified typed
+definitions. Exact imported-class summaries additionally resolve 14 production CrewAI delegations
+across four example projects. Each proof requires one contextual import path, one exact class export,
+an immutable same-block instance, and a unique undecorated method that directly returns an Agent;
+the edge retains the imported Agent symbol and file. The final repeated-binding miss now resolves through an occurrence-qualified typed
 parameter only when its OpenAI built-in annotation is import-proven and every direct same-module
 call site supplies the same exact constructor type. The pinned `ApplyPatchTool` helper records ten
 verified call sites and ten concrete target IDs without selecting one runtime instance or inheriting
@@ -32,8 +35,9 @@ receivers, shadowed factories, lambdas, and reassigned fixture cases stay withhe
 branch/reassignment dataflow and resolve Python/TS package re-exports, wildcard imports, other
 wrapper factories, and type-driven symbols.
 Contextual absolute-import proof additionally resolves 25 project-local CrewAI Agent-to-class-tool
-edges across eight exact decorated method targets and nine Google ADK imported-helper network call
-sites. Multiple ancestor candidates and missing or undecorated exports stay unresolved.
+edges across eight exact decorated method targets, the 14 Agent-factory delegations, and nine Google
+ADK imported-helper network call sites. Multiple ancestor candidates, missing exports, reimports,
+indirect returns, inheritance, dynamic lookup, and any receiver/result rebinding stay unresolved.
 Preserve unresolved state for ambiguity and validate on larger real monorepository graphs.
 
 Exact module-level Python `mcp.tool(...)(function)` applications now resolve through unique local or
@@ -192,8 +196,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 345 pinned positive/negative locations, with 348 separately
-scored IR relationship labels. Schema-v55 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 345 pinned positive/negative locations, with 355 separately
+scored IR relationship labels. Schema-v56 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

@@ -73,6 +73,17 @@ the selected Agent binding must be the sole mutation before composition. The edg
 reassigned values, rebound helper/receiver names, external receivers, and cross-branch unpacking
 remain unresolved.
 
+Imported-class Agent factory summaries use a separate cross-file proof. The class import must resolve
+to one repository file and one exact module-level class export. That class must be undecorated and
+non-inherited, and the selected unique instance method must directly return one Agent whose
+constructor import is itself framework-proven. The caller must construct one local receiver through
+its sole same-block mutation, bind the method result directly, and preserve that result as the sole
+mutation before composition. The edge records the imported Agent symbol, `target_path`, and
+`target_identity: contextual-imported-class-factory-return` for script-root contextual imports.
+Ambiguous ancestor paths, missing or rebound exports, reimports, async/indirect/conditional returns,
+dynamic attribute lookup, instance method shadowing, and constructor, receiver, or result rebinding
+remain unresolved.
+
 Typed OpenAI built-in tool parameters use a separate call-site consensus proof. The helper must be a
 unique, undecorated top-level function; the annotation must resolve through an unshadowed `agents` or
 `agents.tool` import; the parameter cannot be reassigned; and every direct same-module positional or
