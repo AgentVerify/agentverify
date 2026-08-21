@@ -63,7 +63,7 @@ otherwise it carries `validates-filesystem-path` with unresolved boundary scope.
 suppresses only the former. Names such as `validatePath`, prefix-only comparisons, broad/dynamic
 roots, and checks after the action do not establish sufficient coverage.
 
-For Python filesystem writes, the AST frontend proves only same-function `pathlib.Path` flows. A
+For Python filesystem writes, the AST frontend first proves same-function `pathlib.Path` flows. A
 tool parameter must feed a candidate constructed under an explicitly resolved root, the candidate
 must itself be resolved, and `candidate.is_relative_to(root)` must dominate the exact write. Both a
 fail-closed rejecting branch and the positive branch of the predicate can govern a write; the latter
@@ -71,8 +71,7 @@ does not escape its branch. A `.parent` directory write additionally requires pr
 candidate is not equal to the root. Reassigning either binding invalidates the proof. Literal absolute,
 non-filesystem roots carry `restricts-filesystem-path`; parameter/configured roots carry
 `validates-filesystem-path` with unresolved scope and retain `AV-FS001`. String-prefix checks,
-unresolved candidates, shadowed `Path` imports, and `relative_to()` exception patterns are not
-treated as equivalent controls.
+unresolved candidates and shadowed `Path` imports are not treated as equivalent controls.
 
 A fail-closed `candidate.relative_to(root)` exception check can establish the same Python boundary
 fact. The try body must contain only that check, the first handler capable of catching `ValueError`
@@ -80,6 +79,17 @@ must always terminate, and the candidate/root bindings must already be resolved 
 Continuing handlers, mixed mutation/check blocks, and parent writes without strict-descendant proof
 remain unresolved. IR preserves `Path.relative_to` separately from `Path.is_relative_to` as the
 control helper.
+
+A unique same-class helper can propagate that `relative_to` fact to its caller. The helper must be a
+synchronous, undecorated method; map exactly one formal path parameter through restricted `Path`
+construction and an explicit zero-argument `resolve()`; perform one exclusive check with a
+terminating handler; and return the same unchanged name. The caller must invoke it through its
+unchanged `self`/`cls` receiver and consume the exact assigned return. Duplicate or explicitly
+rebound members, generators, opaque transforms, alternate returns, post-check reassignment, and
+caller reassignment invalidate the summary. Construction before the check is straight-line, and a
+try `else` or `finally` block disqualifies it. These edges carry `summary: same-class-return` and keep
+configured member roots unresolved, so the summary records validation without inventing a narrow
+policy or suppressing `AV-FS001`.
 
 Python filesystem mutation calls preserve API semantics in Agent IR. Canonical and top-level
 import-aliased `os`/`shutil` functions resolve only while their bindings remain unshadowed. One-path

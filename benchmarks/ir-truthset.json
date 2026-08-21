@@ -913,6 +913,207 @@
       }
     },
     {
+      "id": "python-same-class-path-helper-local",
+      "target": {"kind": "local", "path": "cases/python_path_helper"},
+      "check_id": "IR-PY-PATH-HELPER",
+      "path": "agent.py",
+      "line": 23,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary",
+        "attributes": {
+          "control_line": 15,
+          "policy_effect": "validates-filesystem-path",
+          "frontend": "python",
+          "helper": "Path.relative_to",
+          "boundary_scope": "unresolved",
+          "summary": "same-class-return"
+        }
+      }
+    },
+    {
+      "id": "python-same-class-path-helper-parent-local-negative",
+      "target": {"kind": "local", "path": "cases/python_path_helper"},
+      "check_id": "IR-PY-PATH-HELPER",
+      "path": "agent.py",
+      "line": 24,
+      "expected": false,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary"
+      }
+    },
+    {
+      "id": "python-same-class-path-helper-caller-reassigned-local-negative",
+      "target": {"kind": "local", "path": "cases/python_path_helper"},
+      "check_id": "IR-PY-PATH-HELPER",
+      "path": "agent.py",
+      "line": 30,
+      "expected": false,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary"
+      }
+    },
+    {
+      "id": "python-same-class-path-helper-continuing-local-negative",
+      "target": {"kind": "local", "path": "cases/python_path_helper"},
+      "check_id": "IR-PY-PATH-HELPER",
+      "path": "agent.py",
+      "line": 48,
+      "expected": false,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary"
+      }
+    },
+    {
+      "id": "python-same-class-path-helper-wrong-return-local-negative",
+      "target": {"kind": "local", "path": "cases/python_path_helper"},
+      "check_id": "IR-PY-PATH-HELPER",
+      "path": "agent.py",
+      "line": 67,
+      "expected": false,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary"
+      }
+    },
+    {
+      "id": "python-same-class-path-helper-return-reassigned-local-negative",
+      "target": {"kind": "local", "path": "cases/python_path_helper"},
+      "check_id": "IR-PY-PATH-HELPER",
+      "path": "agent.py",
+      "line": 86,
+      "expected": false,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary"
+      }
+    },
+    {
+      "id": "python-same-class-path-helper-transform-local-negative",
+      "target": {"kind": "local", "path": "cases/python_path_helper"},
+      "check_id": "IR-PY-PATH-HELPER",
+      "path": "agent.py",
+      "line": 104,
+      "expected": false,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary"
+      }
+    },
+    {
+      "id": "python-same-class-path-helper-duplicate-local-negative",
+      "target": {"kind": "local", "path": "cases/python_path_helper"},
+      "check_id": "IR-PY-PATH-HELPER",
+      "path": "agent.py",
+      "line": 125,
+      "expected": false,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary"
+      }
+    },
+    {
+      "id": "python-same-class-path-helper-openai-create-real",
+      "target": {
+        "kind": "repository",
+        "repository": "openai/openai-agents-python",
+        "commit": "17ba331bb0ad1622a4ff4ecdc914c77118075dad"
+      },
+      "check_id": "IR-PY-PATH-HELPER",
+      "path": "examples/tools/apply_patch.py",
+      "line": 45,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary",
+        "attributes": {
+          "control_line": 74,
+          "policy_effect": "validates-filesystem-path",
+          "frontend": "python",
+          "helper": "Path.relative_to",
+          "boundary_scope": "unresolved",
+          "summary": "same-class-return"
+        }
+      }
+    },
+    {
+      "id": "python-same-class-path-helper-openai-update-real",
+      "target": {
+        "kind": "repository",
+        "repository": "openai/openai-agents-python",
+        "commit": "17ba331bb0ad1622a4ff4ecdc914c77118075dad"
+      },
+      "check_id": "IR-PY-PATH-HELPER",
+      "path": "examples/tools/apply_patch.py",
+      "line": 55,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary",
+        "attributes": {
+          "control_line": 74,
+          "summary": "same-class-return"
+        }
+      }
+    },
+    {
+      "id": "python-same-class-path-helper-openai-delete-real",
+      "target": {
+        "kind": "repository",
+        "repository": "openai/openai-agents-python",
+        "commit": "17ba331bb0ad1622a4ff4ecdc914c77118075dad"
+      },
+      "check_id": "IR-PY-PATH-HELPER",
+      "path": "examples/tools/apply_patch.py",
+      "line": 62,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary",
+        "attributes": {
+          "control_line": 74,
+          "summary": "same-class-return"
+        }
+      }
+    },
+    {
       "id": "python-filesystem-move-alias-local",
       "target": {"kind": "local", "path": "cases/filesystem_mutations"},
       "check_id": "IR-PY-FILESYSTEM-MUTATION",

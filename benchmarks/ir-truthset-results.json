@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T10:22:44.155920+00:00",
-  "labels": 91,
-  "passed": 91,
+  "generated_at": "2026-08-21T10:41:38.505758+00:00",
+  "labels": 102,
+  "passed": 102,
   "metrics": {
     "IR-APPROVAL-CONTROL": {
       "tp": 3,
@@ -78,6 +78,14 @@
     },
     "IR-PY-PATH-BOUNDARY": {
       "tp": 9,
+      "fp": 0,
+      "tn": 7,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-PATH-HELPER": {
+      "tp": 4,
       "fp": 0,
       "tn": 7,
       "fn": 0,
@@ -555,6 +563,105 @@
       "check_id": "IR-PY-PATH-BOUNDARY",
       "expected": false,
       "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-same-class-path-helper-local",
+      "check_id": "IR-PY-PATH-HELPER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-same-class-path-helper-parent-local-negative",
+      "check_id": "IR-PY-PATH-HELPER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-same-class-path-helper-caller-reassigned-local-negative",
+      "check_id": "IR-PY-PATH-HELPER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-same-class-path-helper-continuing-local-negative",
+      "check_id": "IR-PY-PATH-HELPER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-same-class-path-helper-wrong-return-local-negative",
+      "check_id": "IR-PY-PATH-HELPER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-same-class-path-helper-return-reassigned-local-negative",
+      "check_id": "IR-PY-PATH-HELPER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-same-class-path-helper-transform-local-negative",
+      "check_id": "IR-PY-PATH-HELPER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-same-class-path-helper-duplicate-local-negative",
+      "check_id": "IR-PY-PATH-HELPER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-same-class-path-helper-openai-create-real",
+      "check_id": "IR-PY-PATH-HELPER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-same-class-path-helper-openai-update-real",
+      "check_id": "IR-PY-PATH-HELPER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-same-class-path-helper-openai-delete-real",
+      "check_id": "IR-PY-PATH-HELPER",
+      "expected": true,
+      "observed": true,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

@@ -277,6 +277,17 @@ class PythonPathBoundaryProof:
     root_name: str
     strict_descendant: bool
     helper: str
+    summary: str | None = None
+
+
+@dataclass(frozen=True)
+class PythonPathHelperSummary:
+    parameter_index: int
+    parameter_name: str
+    evidence: Evidence
+    boundary_scope: str
+    root_name: str
+    helper: str
 
 
 @dataclass
@@ -880,6 +891,16 @@ def python_block_always_terminates(statements: list[ast.stmt]) -> bool:
     )
 
 
+def python_handler_catches_value_error(handler: ast.ExceptHandler) -> bool:
+    if handler.type is None:
+        return True
+    types = handler.type.elts if isinstance(handler.type, ast.Tuple) else (handler.type,)
+    return any(
+        dotted_name(exception_type) in {"ValueError", "Exception", "BaseException"}
+        for exception_type in types
+    )
+
+
 def python_relative_to_try_guard(
     statement: ast.Try, state: PythonPathState
 ) -> tuple[ast.Call, str, str] | None:
@@ -915,23 +936,256 @@ def python_relative_to_try_guard(
     if assigned_names & {candidate, root_name}:
         return None
 
-    def catches_value_error(handler: ast.ExceptHandler) -> bool:
-        if handler.type is None:
-            return True
-        types = handler.type.elts if isinstance(handler.type, ast.Tuple) else (handler.type,)
-        return any(
-            dotted_name(exception_type) in {"ValueError", "Exception", "BaseException"}
-            for exception_type in types
-        )
-
     matching_handler = next(
-        (handler for handler in statement.handlers if catches_value_error(handler)), None
+        (
+            handler
+            for handler in statement.handlers
+            if python_handler_catches_value_error(handler)
+        ),
+        None,
     )
     if matching_handler is None or not python_block_always_terminates(
         matching_handler.body
     ):
         return None
     return expression, candidate, root_name
+
+
+def python_class_path_helper_summaries(
+    node: ast.ClassDef,
+    path: str,
+    lines: list[str],
+    path_constructors: set[str],
+) -> dict[str, PythonPathHelperSummary]:
+    """Summarize same-class helpers that return an exclusively bounded Path."""
+    summaries: dict[str, PythonPathHelperSummary] = {}
+    member_definitions: Counter[str] = Counter()
+    instance_rebindings: set[str] = set()
+    for statement in node.body:
+        if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            member_definitions[statement.name] += 1
+        elif isinstance(statement, ast.Assign):
+            for target in statement.targets:
+                member_definitions.update(python_assigned_names(target))
+        elif isinstance(statement, (ast.AnnAssign, ast.AugAssign)):
+            member_definitions.update(python_assigned_names(statement.target))
+    for method in node.body:
+        if not isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        for candidate in ast.walk(method):
+            targets: tuple[ast.AST, ...] = ()
+            if isinstance(candidate, ast.Assign):
+                targets = tuple(candidate.targets)
+            elif isinstance(candidate, (ast.AnnAssign, ast.AugAssign)):
+                targets = (candidate.target,)
+            elif isinstance(candidate, ast.Delete):
+                targets = tuple(candidate.targets)
+            instance_rebindings.update(
+                target.attr
+                for target in targets
+                if isinstance(target, ast.Attribute)
+                and isinstance(target.value, ast.Name)
+                and target.value.id in {"self", "cls"}
+            )
+    for method in node.body:
+        if not isinstance(method, ast.FunctionDef):
+            continue
+        if (
+            member_definitions[method.name] != 1
+            or method.name in instance_rebindings
+            or method.decorator_list
+            or any(isinstance(child, (ast.Yield, ast.YieldFrom)) for child in ast.walk(method))
+        ):
+            continue
+        positional = [*method.args.posonlyargs, *method.args.args]
+        if not positional or positional[0].arg not in {"self", "cls"}:
+            continue
+        call_parameters = positional[1:]
+        final = method.body[-1] if method.body else None
+        if not isinstance(final, ast.Return) or not isinstance(final.value, ast.Name):
+            continue
+        candidate = final.value.id
+        if any(
+            isinstance(return_node, ast.Return) and return_node is not final
+            for return_node in ast.walk(method)
+        ):
+            continue
+        guards = [
+            statement
+            for statement in method.body
+            if isinstance(statement, ast.Try)
+            and len(statement.body) == 1
+            and isinstance(statement.body[0], ast.Expr)
+            and isinstance(statement.body[0].value, ast.Call)
+            and isinstance(statement.body[0].value.func, ast.Attribute)
+            and statement.body[0].value.func.attr == "relative_to"
+            and len(statement.body[0].value.args) == 1
+            and not statement.body[0].value.keywords
+            and isinstance(statement.body[0].value.func.value, ast.Name)
+            and statement.body[0].value.func.value.id == candidate
+        ]
+        if len(guards) != 1:
+            continue
+        guard = guards[0]
+        check = guard.body[0].value
+        assert isinstance(check, ast.Call)
+        if guard.orelse or guard.finalbody:
+            continue
+        matching_handler = next(
+            (
+                handler
+                for handler in guard.handlers
+                if python_handler_catches_value_error(handler)
+            ),
+            None,
+        )
+        if matching_handler is None or not python_block_always_terminates(
+            matching_handler.body
+        ):
+            continue
+        root_expression = check.args[0]
+        root_name = dotted_name(root_expression)
+        if not root_name or guard.lineno >= final.lineno:
+            continue
+        if any(
+            not isinstance(statement, (ast.Assign, ast.AnnAssign))
+            and not (
+                isinstance(statement, ast.Expr)
+                and isinstance(statement.value, ast.Constant)
+                and isinstance(statement.value.value, str)
+            )
+            for statement in method.body
+            if statement.lineno < guard.lineno
+        ):
+            continue
+
+        assignments: dict[str, list[tuple[int, ast.AST]]] = defaultdict(list)
+        for statement in method.body:
+            if isinstance(statement, ast.Assign):
+                for target in statement.targets:
+                    if isinstance(target, ast.Name):
+                        assignments[target.id].append((statement.lineno, statement.value))
+            elif (
+                isinstance(statement, ast.AnnAssign)
+                and isinstance(statement.target, ast.Name)
+                and statement.value is not None
+            ):
+                assignments[statement.target.id].append(
+                    (statement.lineno, statement.value)
+                )
+
+        local_path_constructors = {
+            constructor
+            for constructor in path_constructors
+            if constructor.split(".", 1)[0]
+            not in python_function_local_bindings(method)
+        }
+        parameter_names = {argument.arg for argument in call_parameters}
+
+        def path_dependencies(
+            expression: ast.AST,
+            before_line: int,
+            seen: set[tuple[str, int]],
+            root: str = root_name,
+            parameters_in_scope: set[str] = parameter_names,
+            local_assignments: dict[str, list[tuple[int, ast.AST]]] = assignments,
+            constructors: set[str] = local_path_constructors,
+        ) -> set[str] | None:
+            if dotted_name(expression) == root:
+                return {"__root__"}
+            if isinstance(expression, ast.Name):
+                if expression.id in parameters_in_scope:
+                    return {f"parameter:{expression.id}"}
+                prior = [
+                    (line, value)
+                    for line, value in local_assignments.get(expression.id, [])
+                    if line < before_line
+                ]
+                if not prior:
+                    return set()
+                line, value = prior[-1]
+                key = (expression.id, line)
+                if key in seen:
+                    return None
+                return path_dependencies(value, line, seen | {key})
+            if (
+                isinstance(expression, ast.Call)
+                and dotted_name(expression.func) in constructors
+            ):
+                if len(expression.args) != 1 or expression.keywords:
+                    return None
+                values = path_dependencies(expression.args[0], before_line, seen)
+                return None if values is None else values | {"__path__"}
+            if (
+                isinstance(expression, ast.Call)
+                and not expression.args
+                and not expression.keywords
+                and isinstance(expression.func, ast.Attribute)
+                and expression.func.attr == "resolve"
+            ):
+                return path_dependencies(expression.func.value, before_line, seen)
+            if isinstance(expression, ast.BinOp) and isinstance(expression.op, ast.Div):
+                left = path_dependencies(expression.left, before_line, seen)
+                right = path_dependencies(expression.right, before_line, seen)
+                if left is None or right is None or "__path__" not in left | right:
+                    return None
+                return left | right
+            if isinstance(expression, ast.IfExp):
+                body = path_dependencies(expression.body, before_line, seen)
+                orelse = path_dependencies(expression.orelse, before_line, seen)
+                if (
+                    body is None
+                    or orelse is None
+                    or "__path__" not in body
+                    or "__path__" not in orelse
+                ):
+                    return None
+                return body | orelse
+            return None
+
+        prior_candidate_assignments = [
+            (line, value)
+            for line, value in assignments.get(candidate, [])
+            if line < guard.lineno
+        ]
+        if not prior_candidate_assignments:
+            continue
+        _, resolved_value = prior_candidate_assignments[-1]
+        if python_resolved_path_expression(resolved_value) is None:
+            continue
+        lineage = path_dependencies(resolved_value, guard.lineno, set())
+        if lineage is None:
+            continue
+        parameters = sorted(
+            dependency.removeprefix("parameter:")
+            for dependency in lineage
+            if dependency.startswith("parameter:")
+        )
+        if "__root__" not in lineage or "__path__" not in lineage or len(parameters) != 1:
+            continue
+        path_parameter = parameters[0]
+        if any(
+            isinstance(descendant, ast.Name)
+            and descendant.id == candidate
+            and isinstance(descendant.ctx, (ast.Store, ast.Del))
+            for statement in method.body
+            if guard.lineno < statement.lineno < final.lineno
+            for descendant in ast.walk(statement)
+        ):
+            continue
+        summaries[method.name] = PythonPathHelperSummary(
+            next(
+                index
+                for index, argument in enumerate(call_parameters)
+                if argument.arg == path_parameter
+            ),
+            path_parameter,
+            Evidence(path, check.lineno, excerpt(lines, check.lineno)),
+            "unresolved",
+            root_name,
+            "Path.relative_to",
+        )
+    return summaries
 
 
 def python_filesystem_path_name(
@@ -980,6 +1234,7 @@ def python_path_boundary_calls(
     filesystem_api_aliases: dict[str, str],
     filesystem_callable_calls: dict[int, str],
     path_bindings: dict[str, str],
+    path_helper_summaries: dict[str, PythonPathHelperSummary],
 ) -> dict[int, PythonPathBoundaryProof]:
     """Prove same-function, statement-ordered Python filesystem boundaries."""
     if not path_constructors:
@@ -994,6 +1249,18 @@ def python_path_boundary_calls(
     if node.args.kwarg:
         parameters.add(node.args.kwarg.arg)
     local_bindings = python_function_local_bindings(node)
+    positional_arguments = [*node.args.posonlyargs, *node.args.args]
+    helper_receivers: set[str] = set()
+    if positional_arguments and positional_arguments[0].arg in {"self", "cls"}:
+        helper_receivers.add(positional_arguments[0].arg)
+    if any(
+        isinstance(candidate, ast.Name)
+        and candidate.id in helper_receivers
+        and isinstance(candidate.ctx, (ast.Store, ast.Del))
+        for statement in node.body
+        for candidate in ast.walk(statement)
+    ):
+        helper_receivers.clear()
     path_constructors = {
         constructor
         for constructor in path_constructors
@@ -1069,6 +1336,28 @@ def python_path_boundary_calls(
             state.roots[name] = scope
         elif root_name := python_candidate_root(value, state, path_constructors):
             state.candidates[name] = root_name
+        if (
+            isinstance(value, ast.Call)
+            and isinstance(value.func, ast.Attribute)
+            and isinstance(value.func.value, ast.Name)
+            and value.func.value.id in helper_receivers
+            and (summary := path_helper_summaries.get(value.func.attr))
+            and python_call_argument(
+                value,
+                summary.parameter_index,
+                (summary.parameter_name,),
+            )
+            is not None
+        ):
+            state.guards[name] = PythonPathBoundaryProof(
+                summary.evidence,
+                summary.boundary_scope,
+                name,
+                summary.root_name,
+                False,
+                summary.helper,
+                "same-class-return",
+            )
 
     def analyze_block(statements: list[ast.stmt], state: PythonPathState) -> PythonPathState:
         for statement in statements:
@@ -1282,6 +1571,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.class_fixed_tool_accessors: list[dict[str, Evidence]] = []
         self.class_registry_method_summaries: list[dict[str, RegistryMethodSummary]] = []
         self.class_registry_manager_bindings: list[dict[str, RegistryClassTarget]] = []
+        self.class_path_helper_summaries: list[dict[str, PythonPathHelperSummary]] = []
         self.function_fixed_binding_sources: list[dict[str, Evidence]] = []
         self.function_escaping_children: list[set[str]] = []
         self.function_path_boundary_calls: list[dict[int, PythonPathBoundaryProof]] = []
@@ -1375,6 +1665,8 @@ class PythonVisitor(ast.NodeVisitor):
             "root": proof.root_name,
             "strict_descendant": proof.strict_descendant,
         }
+        if proof.summary is not None:
+            attributes["summary"] = proof.summary
         self.ir.add_component(Component("control", "path-boundary", proof.evidence, attributes))
         self.ir.add_relationship(
             Relationship(
@@ -1395,6 +1687,7 @@ class PythonVisitor(ast.NodeVisitor):
                     "candidate": proof.candidate_name,
                     "root": proof.root_name,
                     "strict_descendant": proof.strict_descendant,
+                    **({"summary": proof.summary} if proof.summary is not None else {}),
                 },
             )
         )
@@ -1611,6 +1904,11 @@ class PythonVisitor(ast.NodeVisitor):
                 self.filesystem_api_aliases,
                 filesystem_callable_calls,
                 function_path_bindings,
+                (
+                    self.class_path_helper_summaries[-1]
+                    if self.class_path_helper_summaries
+                    else {}
+                ),
             )
         )
         decorators = {
@@ -1713,6 +2011,11 @@ class PythonVisitor(ast.NodeVisitor):
             self.registry_method_summaries(node, self.path, self.lines)
         )
         self.class_registry_manager_bindings.append(self.registry_manager_bindings(node))
+        self.class_path_helper_summaries.append(
+            python_class_path_helper_summaries(
+                node, self.path, self.lines, self.path_constructors
+            )
+        )
         class_environment_flags: dict[str, set[str]] = {}
         for statement in node.body:
             if not isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -1737,6 +2040,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.class_fixed_tool_bindings.pop()
         self.class_registry_manager_bindings.pop()
         self.class_registry_method_summaries.pop()
+        self.class_path_helper_summaries.pop()
         self.class_stack.pop()
 
     def registry_manager_bindings(self, node: ast.ClassDef) -> dict[str, RegistryClassTarget]:

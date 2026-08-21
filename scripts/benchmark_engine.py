@@ -243,6 +243,10 @@ def main() -> int:
                     edge.attributes.get("helper") == "Path.relative_to"
                     for edge in python_path_boundary_edges
                 ),
+                "python_helper_returns": sum(
+                    edge.attributes.get("summary") == "same-class-return"
+                    for edge in python_path_boundary_edges
+                ),
                 "constrained": sum(
                     edge.attributes.get("boundary_scope") == "constrained"
                     for edge in path_boundary_edges
@@ -327,7 +331,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 19,
+        "schema_version": 20,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -431,6 +435,7 @@ def main() -> int:
                     "python",
                     "typescript",
                     "python_relative_to",
+                    "python_helper_returns",
                     "constrained",
                     "unresolved",
                 )

@@ -1253,6 +1253,59 @@ def test_python_path_boundary_is_ordered_branch_local_and_scope_aware() -> None:
     ]
 
 
+def test_python_path_helper_summary_is_return_exact_and_class_local() -> None:
+    ir = scan_repository(ROOT / "cases/python_path_helper")
+
+    filesystem = {
+        item.evidence.line: (
+            item.attributes["path_boundary_guard"],
+            item.attributes["path_boundary_scope"],
+        )
+        for item in ir.components
+        if item.kind == "capability" and item.name == "filesystem"
+    }
+    assert filesystem == {
+        23: (True, "unresolved"),
+        24: (False, "unresolved"),
+        30: (False, "unresolved"),
+        48: (False, "unresolved"),
+        67: (False, "unresolved"),
+        86: (False, "unresolved"),
+        104: (False, "unresolved"),
+        125: (False, "unresolved"),
+        145: (False, "unresolved"),
+        165: (False, "unresolved"),
+    }
+    assert [
+        (
+            edge.evidence.line,
+            edge.attributes["control_line"],
+            edge.attributes["helper"],
+            edge.attributes["summary"],
+            edge.attributes["boundary_scope"],
+        )
+        for edge in ir.relationships
+        if edge.source_kind == "capability"
+        and edge.relation == "governed-by"
+        and edge.target_name == "path-boundary"
+    ] == [(23, 15, "Path.relative_to", "same-class-return", "unresolved")]
+    assert [
+        (finding.rule_id, finding.evidence.line)
+        for finding in ir.findings
+    ] == [
+        ("AV-FS001", 23),
+        ("AV-FS001", 24),
+        ("AV-FS001", 30),
+        ("AV-FS001", 48),
+        ("AV-FS001", 67),
+        ("AV-FS001", 86),
+        ("AV-FS001", 104),
+        ("AV-FS001", 125),
+        ("AV-FS001", 145),
+        ("AV-FS001", 165),
+    ]
+
+
 def test_python_filesystem_mutations_resolve_destinations_aliases_and_guards() -> None:
     ir = scan_repository(ROOT / "cases/filesystem_mutations")
 

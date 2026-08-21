@@ -29,7 +29,10 @@ branch-local and fail-closed guards. Literal narrow roots may suppress; configur
 review, and prefix checks or reassignment remain unresolved. Next resolve imported policy objects,
 and bounded root constants without widening name-based inference. Fail-closed `relative_to()`
 exception guards now require an exclusive check plus a terminating ValueError handler; continuing
-handlers, mixed try bodies, and parent writes remain negative.
+handlers, mixed try bodies, and parent writes remain negative. Unique same-class helpers now
+propagate an exact checked-and-returned Path into callers while preserving unresolved root scope;
+duplicate/rebound methods, opaque transforms, and changed return values remain negative. Next add
+bounded imported helper summaries and root-scope resolution without trusting semantic names.
 Python filesystem inventory now models canonical and import-aliased `os`/`shutil` create, copy,
 move, replace, and delete calls, using the destination rather than the source for two-path APIs.
 Statement-ordered local callable aliases now cover direct assignments, conditional expressions, and
@@ -83,8 +86,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 217 pinned positive/negative locations, with 91 separately
-scored IR relationship labels. Schema-v19 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 228 pinned positive/negative locations, with 102 separately
+scored IR relationship labels. Schema-v20 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.
