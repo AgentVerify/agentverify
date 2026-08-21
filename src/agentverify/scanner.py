@@ -264,6 +264,17 @@ class PythonNetworkHelperSummary:
     network_lines: tuple[int, ...]
 
 
+@dataclass(frozen=True)
+class PythonClassNetworkSummary:
+    path: str
+    class_name: str
+    method: str
+    parameter: str
+    parameter_key: str | None
+    line: int
+    network_lines: tuple[int, ...]
+
+
 def resolve_python_import_path(
     root: Path,
     current_path: str,
@@ -2378,6 +2389,7 @@ class PythonVisitor(ast.NodeVisitor):
                         "needs_approval": False,
                         "registration": "registry-decorator",
                         "registration_target": "class",
+                        "class_name": node.name,
                         "registrar": registry_tool.registrar,
                         "framework": registry_tool.framework,
                         "entrypoints": list(registry_tool.entrypoints),
@@ -7007,6 +7019,498 @@ def build_python_tool_registrations(
     }
 
 
+def propagate_python_class_network_helpers(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+    module_paths: dict[str, str],
+) -> None:
+    """Propagate dynamic network behavior through exact registered-class calls."""
+    parsed: dict[str, tuple[ast.Module, list[str]]] = {}
+    for path in paths:
+        if (
+            path.is_symlink()
+            or not path.is_file()
+            or path.suffix.lower() != ".py"
+            or set(path.relative_to(root).parts) & SKIP_DIRECTORIES
+        ):
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", SyntaxWarning)
+                tree = ast.parse(text, filename=relative)
+        except SyntaxError:
+            continue
+        parsed[relative] = (tree, text.splitlines())
+
+    class_nodes: dict[tuple[str, str, int], ast.ClassDef] = {}
+    method_nodes: dict[tuple[str, str, str], ast.FunctionDef | ast.AsyncFunctionDef] = {}
+    module_imports: dict[str, dict[str, tuple[str, str]]] = {}
+    module_prefixes: dict[str, dict[str, str]] = {}
+    for relative, (tree, _) in parsed.items():
+        mutations = {
+            node.name
+            for node in tree.body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+        } | {
+            target.id
+            for statement in tree.body
+            if isinstance(statement, (ast.Assign, ast.AnnAssign, ast.AugAssign))
+            for target in (
+                statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+            )
+            if isinstance(target, ast.Name)
+        } | {
+            target.id
+            for statement in tree.body
+            if isinstance(statement, ast.Delete)
+            for target in statement.targets
+            if isinstance(target, ast.Name)
+        }
+        imports: dict[str, tuple[str, str]] = {}
+        for statement in tree.body:
+            if not isinstance(statement, ast.ImportFrom):
+                continue
+            for alias in statement.names:
+                local_name = alias.asname or alias.name
+                if local_name in mutations:
+                    continue
+                if target_path := resolve_python_import_path(
+                    root,
+                    relative,
+                    statement,
+                    alias.name,
+                    module_paths,
+                ):
+                    imports[local_name] = (target_path, alias.name)
+        module_imports[relative] = imports
+        assignment_counts = Counter(
+            target.id
+            for statement in tree.body
+            if isinstance(statement, (ast.Assign, ast.AnnAssign))
+            for target in (
+                statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+            )
+            if isinstance(target, ast.Name)
+        )
+        prefixes: dict[str, str] = {}
+        for statement in tree.body:
+            if not isinstance(statement, (ast.Assign, ast.AnnAssign)):
+                continue
+            targets = statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+            if len(targets) != 1 or not isinstance(targets[0], ast.Name):
+                continue
+            name = targets[0].id
+            if assignment_counts[name] == 1 and (
+                prefix := python_static_url_prefix(statement.value, prefixes)
+            ):
+                prefixes[name] = prefix
+        module_prefixes[relative] = prefixes
+        class_counts = Counter(
+            node.name for node in tree.body if isinstance(node, ast.ClassDef)
+        )
+        for node in tree.body:
+            if not isinstance(node, ast.ClassDef):
+                continue
+            if class_counts[node.name] != 1:
+                continue
+            class_nodes[(relative, node.name, node.lineno)] = node
+            for statement in node.body:
+                if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    method_nodes[(relative, node.name, statement.name)] = statement
+
+    def call_states(
+        method: ast.FunctionDef | ast.AsyncFunctionDef,
+    ) -> dict[int, set[str]]:
+        states: dict[int, set[str]] = {}
+        initial = {
+            argument.arg
+            for argument in (
+                *method.args.posonlyargs,
+                *method.args.args,
+                *method.args.kwonlyargs,
+            )
+            if argument.arg not in {"self", "cls"}
+        }
+        if method.args.vararg:
+            initial.add(method.args.vararg.arg)
+        if method.args.kwarg:
+            initial.add(method.args.kwarg.arg)
+
+        class CallRecorder(ast.NodeVisitor):
+            def __init__(self, dynamic: set[str]) -> None:
+                self.dynamic = dynamic
+
+            def visit_Call(self, node: ast.Call) -> None:
+                states[id(node)] = set(self.dynamic)
+                self.generic_visit(node)
+
+            def visit_Lambda(self, node: ast.Lambda) -> None:
+                return
+
+        def target_names(target: ast.AST) -> set[str]:
+            return {
+                candidate.id
+                for candidate in ast.walk(target)
+                if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, ast.Store)
+            }
+
+        def record(expression: ast.AST | None, dynamic: set[str]) -> None:
+            if expression is not None:
+                CallRecorder(dynamic).visit(expression)
+
+        def update_target(target: ast.AST, value: ast.AST | None, dynamic: set[str]) -> None:
+            names = target_names(target)
+            if python_expression_names(value) & dynamic:
+                dynamic.update(names)
+            else:
+                dynamic.difference_update(names)
+
+        def analyze_block(statements: list[ast.stmt], dynamic: set[str]) -> set[str]:
+            for statement in statements:
+                if isinstance(statement, ast.Assign):
+                    record(statement.value, dynamic)
+                    for target in statement.targets:
+                        update_target(target, statement.value, dynamic)
+                elif isinstance(statement, ast.AnnAssign):
+                    record(statement.value, dynamic)
+                    update_target(statement.target, statement.value, dynamic)
+                elif isinstance(statement, ast.AugAssign):
+                    record(statement.value, dynamic)
+                    if python_expression_names(statement.value) & dynamic:
+                        dynamic.update(target_names(statement.target))
+                elif isinstance(statement, (ast.For, ast.AsyncFor)):
+                    record(statement.iter, dynamic)
+                    loop_state = set(dynamic)
+                    update_target(statement.target, statement.iter, loop_state)
+                    analyze_block(statement.body, loop_state)
+                    else_state = analyze_block(statement.orelse, set(dynamic))
+                    dynamic.update(loop_state | else_state)
+                elif isinstance(statement, ast.If):
+                    record(statement.test, dynamic)
+                    body_state = analyze_block(statement.body, set(dynamic))
+                    else_state = analyze_block(statement.orelse, set(dynamic))
+                    dynamic.clear()
+                    dynamic.update(body_state | else_state)
+                elif isinstance(statement, (ast.With, ast.AsyncWith)):
+                    for item in statement.items:
+                        record(item.context_expr, dynamic)
+                    analyze_block(statement.body, dynamic)
+                elif isinstance(statement, ast.Try):
+                    branches = [analyze_block(statement.body, set(dynamic))]
+                    branches.extend(
+                        analyze_block(handler.body, set(dynamic)) for handler in statement.handlers
+                    )
+                    branches.append(analyze_block(statement.orelse, set(dynamic)))
+                    merged = set().union(*branches)
+                    analyze_block(statement.finalbody, merged)
+                    dynamic.clear()
+                    dynamic.update(merged)
+                elif isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                    dynamic.discard(statement.name)
+                else:
+                    for child in ast.iter_child_nodes(statement):
+                        if isinstance(child, ast.expr):
+                            record(child, dynamic)
+            return dynamic
+
+        analyze_block(method.body, set(initial))
+        return states
+
+    def class_bindings(
+        class_node: ast.ClassDef,
+        imports: dict[str, tuple[str, str]],
+    ) -> dict[str, tuple[str, str]]:
+        assignments: dict[str, list[tuple[str, ast.AST | None]]] = defaultdict(list)
+        parents = {
+            id(child): parent
+            for parent in ast.walk(class_node)
+            for child in ast.iter_child_nodes(parent)
+        }
+
+        def enclosing_function(candidate: ast.AST) -> ast.AST | None:
+            parent = parents.get(id(candidate))
+            while parent is not None:
+                if isinstance(parent, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
+                    return parent
+                parent = parents.get(id(parent))
+            return None
+
+        for method in class_node.body:
+            if not isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                continue
+            for candidate in ast.walk(method):
+                if enclosing_function(candidate) is not method:
+                    continue
+                targets: list[ast.AST] = []
+                value: ast.AST | None = None
+                if isinstance(candidate, ast.Assign):
+                    targets.extend(candidate.targets)
+                    value = candidate.value
+                elif isinstance(candidate, (ast.AnnAssign, ast.AugAssign)):
+                    targets.append(candidate.target)
+                    value = candidate.value
+                elif isinstance(candidate, ast.Delete):
+                    targets.extend(candidate.targets)
+                elif (
+                    isinstance(candidate, ast.Call)
+                    and dotted_name(candidate.func) == "setattr"
+                    and len(candidate.args) >= 2
+                    and isinstance(candidate.args[0], ast.Name)
+                    and candidate.args[0].id == "self"
+                    and isinstance(candidate.args[1], ast.Constant)
+                    and isinstance(candidate.args[1].value, str)
+                ):
+                    assignments[candidate.args[1].value].append((method.name, None))
+                for target in targets:
+                    if (
+                        isinstance(target, ast.Attribute)
+                        and isinstance(target.value, ast.Name)
+                        and target.value.id == "self"
+                    ):
+                        assignments[target.attr].append((method.name, value))
+        resolved: dict[str, tuple[str, str]] = {}
+        for attribute, observations in assignments.items():
+            if len(observations) != 1 or observations[0][0] != "__init__":
+                continue
+            value = observations[0][1]
+            if not (
+                isinstance(value, ast.Call)
+                and isinstance(value.func, ast.Name)
+                and value.func.id in imports
+            ):
+                continue
+            init_methods = [
+                method
+                for method in class_node.body
+                if isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef))
+                and method.name == "__init__"
+            ]
+            if len(init_methods) != 1 or value.func.id in python_function_local_bindings(
+                init_methods[0]
+            ):
+                continue
+            resolved[attribute] = imports[value.func.id]
+        return resolved
+
+    seen_calls: set[tuple[str, int, str]] = set()
+    for _ in range(4):
+        dynamic_network_components = [
+            component
+            for component in ir.components
+            if component.kind == "capability"
+            and component.name == "network"
+            and component.attributes.get("dynamic_origin")
+        ]
+        dynamic_network_locations = {
+            (component.evidence.path, component.evidence.line)
+            for component in dynamic_network_components
+        }
+        dynamic_network_by_location: dict[tuple[str, int], list[Component]] = defaultdict(list)
+        for component in dynamic_network_components:
+            dynamic_network_by_location[
+                (component.evidence.path, component.evidence.line)
+            ].append(component)
+        summaries: dict[tuple[str, str, str], PythonClassNetworkSummary] = {}
+        for tool in ir.components:
+            entrypoints = tool.attributes.get("entrypoints")
+            class_name = tool.attributes.get("class_name")
+            if not (
+                tool.kind == "tool"
+                and tool.attributes.get("registration_target") == "class"
+                and isinstance(class_name, str)
+                and isinstance(entrypoints, list)
+                and len(entrypoints) == 1
+                and tool.symbol_id
+            ):
+                continue
+            method_name = entrypoints[0]
+            method = method_nodes.get((tool.evidence.path, class_name, method_name))
+            if method is None:
+                continue
+            parameters = [
+                argument.arg
+                for argument in (*method.args.posonlyargs, *method.args.args)
+                if argument.arg not in {"self", "cls"}
+            ]
+            if not parameters:
+                continue
+            parameter = parameters[0]
+            network_lines = tuple(
+                sorted(
+                    edge.evidence.line
+                    for edge in ir.relationships
+                    if edge.source_id == tool.symbol_id
+                    and edge.target_kind == "capability"
+                    and edge.target_name == "network"
+                    and (edge.evidence.path, edge.evidence.line)
+                    in dynamic_network_locations
+                )
+            )
+            if network_lines:
+                direct_keys = {
+                    candidate.slice.value
+                    for candidate in ast.walk(method)
+                    if isinstance(candidate, ast.Subscript)
+                    and isinstance(candidate.value, ast.Name)
+                    and candidate.value.id == parameter
+                    and isinstance(candidate.slice, ast.Constant)
+                    and isinstance(candidate.slice.value, str)
+                } | {
+                    candidate.args[0].value
+                    for candidate in ast.walk(method)
+                    if isinstance(candidate, ast.Call)
+                    and isinstance(candidate.func, ast.Attribute)
+                    and candidate.func.attr == "get"
+                    and isinstance(candidate.func.value, ast.Name)
+                    and candidate.func.value.id == parameter
+                    and candidate.args
+                    and isinstance(candidate.args[0], ast.Constant)
+                    and isinstance(candidate.args[0].value, str)
+                }
+                propagated_keys = {
+                    component.attributes["callee_parameter_key"]
+                    for line in network_lines
+                    for component in dynamic_network_by_location.get(
+                        (tool.evidence.path, line), []
+                    )
+                    if isinstance(component.attributes.get("callee_parameter_key"), str)
+                }
+                parameter_key = (
+                    next(iter(direct_keys))
+                    if len(direct_keys) == 1
+                    else next(iter(propagated_keys))
+                    if not direct_keys and len(propagated_keys) == 1
+                    else None
+                )
+                summaries[(tool.evidence.path, class_name, method_name)] = (
+                    PythonClassNetworkSummary(
+                        tool.evidence.path,
+                        class_name,
+                        method_name,
+                        parameter,
+                        parameter_key,
+                        method.lineno,
+                        network_lines,
+                    )
+                )
+        added = 0
+        for tool in list(ir.components):
+            entrypoints = tool.attributes.get("entrypoints")
+            class_name = tool.attributes.get("class_name")
+            if not (
+                tool.kind == "tool"
+                and tool.attributes.get("registration_target") == "class"
+                and isinstance(class_name, str)
+                and isinstance(entrypoints, list)
+                and len(entrypoints) == 1
+                and tool.symbol_id
+            ):
+                continue
+            relative = tool.evidence.path
+            class_node = class_nodes.get((relative, class_name, tool.evidence.line))
+            method = method_nodes.get((relative, class_name, entrypoints[0]))
+            if class_node is None or method is None:
+                continue
+            imports = module_imports.get(relative, {})
+            bindings = class_bindings(class_node, imports)
+            local_bindings = python_function_local_bindings(method)
+            method_call_states = call_states(method)
+            for candidate in ast.walk(method):
+                if not isinstance(candidate, ast.Call) or id(candidate) not in method_call_states:
+                    continue
+                if not isinstance(candidate.func, ast.Attribute):
+                    continue
+                callee_identity: tuple[str, str] | None = None
+                receiver = candidate.func.value
+                if (
+                    isinstance(receiver, ast.Call)
+                    and isinstance(receiver.func, ast.Name)
+                    and receiver.func.id not in local_bindings
+                ):
+                    callee_identity = imports.get(receiver.func.id)
+                elif (
+                    isinstance(receiver, ast.Attribute)
+                    and isinstance(receiver.value, ast.Name)
+                    and receiver.value.id == "self"
+                ):
+                    callee_identity = bindings.get(receiver.attr)
+                if callee_identity is None:
+                    continue
+                summary = summaries.get((*callee_identity, candidate.func.attr))
+                if summary is None:
+                    continue
+                call_key = (relative, candidate.lineno, tool.symbol_id)
+                if call_key in seen_calls:
+                    continue
+                argument = next(
+                    (
+                        keyword.value
+                        for keyword in candidate.keywords
+                        if keyword.arg == summary.parameter
+                    ),
+                    candidate.args[0] if candidate.args else None,
+                )
+                origin_argument = argument
+                if isinstance(argument, ast.Dict):
+                    origin_argument = None
+                    if summary.parameter_key is not None:
+                        origin_argument = next(
+                            (
+                                value
+                                for key, value in zip(argument.keys, argument.values)
+                                if isinstance(key, ast.Constant)
+                                and key.value == summary.parameter_key
+                            ),
+                            None,
+                        )
+                dynamic_origin = python_http_origin_is_dynamic(
+                    origin_argument,
+                    method_call_states.get(id(candidate), set()),
+                    module_prefixes.get(relative, {}),
+                )
+                evidence = Evidence(
+                    relative,
+                    candidate.lineno,
+                    excerpt(parsed[relative][1], candidate.lineno),
+                )
+                attributes = {
+                    "scope": source_scope(relative),
+                    "api": f"{summary.class_name}.{summary.method}",
+                    "dynamic_origin": dynamic_origin,
+                    "summary": "imported-class-method",
+                    "callee_path": summary.path,
+                    "callee_class": summary.class_name,
+                    "callee_method": summary.method,
+                    "callee_parameter_key": summary.parameter_key,
+                    "callee_line": summary.line,
+                    "callee_network_lines": list(summary.network_lines),
+                }
+                ir.add_component(Component("capability", "network", evidence, attributes))
+                ir.add_relationship(
+                    Relationship(
+                        "tool",
+                        tool.name,
+                        "uses",
+                        "capability",
+                        "network",
+                        evidence,
+                        source_id=tool.symbol_id,
+                    )
+                )
+                seen_calls.add(call_key)
+                added += 1
+        if not added:
+            break
+
+
 def repository_files(root: Path) -> list[Path]:
     paths = []
     for directory, directory_names, file_names in os.walk(root, followlinks=False):
@@ -7126,6 +7630,12 @@ def scan_repository(
             )
         else:
             scan_typescript(ir, root, path, text)
+    propagate_python_class_network_helpers(
+        ir,
+        root,
+        registry_paths,
+        module_paths,
+    )
     ir.components.sort(
         key=lambda item: (item.evidence.path, item.evidence.line, item.kind, item.name)
     )

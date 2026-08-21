@@ -166,6 +166,17 @@ def main() -> int:
             (item.evidence.path, item.evidence.line)
             for item in python_imported_network_helpers
         }
+        python_imported_class_network_helpers = [
+            item
+            for item in ir.components
+            if item.kind == "capability"
+            and item.name == "network"
+            and item.attributes.get("summary") == "imported-class-method"
+        ]
+        python_imported_class_network_locations = {
+            (item.evidence.path, item.evidence.line)
+            for item in python_imported_class_network_helpers
+        }
         typescript_network_helper_capabilities = [
             item
             for item in ir.components
@@ -369,6 +380,30 @@ def main() -> int:
                     for edge in ir.relationships
                 ),
             },
+            "python_imported_class_network_helpers": {
+                "capabilities": len(python_imported_class_network_helpers),
+                "dynamic_origins": sum(
+                    bool(item.attributes.get("dynamic_origin"))
+                    for item in python_imported_class_network_helpers
+                ),
+                "callees": len(
+                    {
+                        (
+                            item.attributes.get("callee_path"),
+                            item.attributes.get("callee_class"),
+                            item.attributes.get("callee_method"),
+                        )
+                        for item in python_imported_class_network_helpers
+                    }
+                ),
+                "capability_edges": sum(
+                    edge.target_kind == "capability"
+                    and edge.target_name == "network"
+                    and (edge.evidence.path, edge.evidence.line)
+                    in python_imported_class_network_locations
+                    for edge in ir.relationships
+                ),
+            },
             "path_boundary_controls": {
                 "python": len(python_path_boundary_edges),
                 "typescript": len(typescript_path_boundary_edges),
@@ -471,7 +506,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 26,
+        "schema_version": 27,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -600,6 +635,13 @@ def main() -> int:
             "python_imported_network_helpers": {
                 name: sum(result["python_imported_network_helpers"][name] for result in successful)
                 for name in ("capabilities", "dynamic_origins", "helpers", "capability_edges")
+            },
+            "python_imported_class_network_helpers": {
+                name: sum(
+                    result["python_imported_class_network_helpers"][name]
+                    for result in successful
+                )
+                for name in ("capabilities", "dynamic_origins", "callees", "capability_edges")
             },
             "path_boundary_controls": {
                 name: sum(result["path_boundary_controls"][name] for result in successful)

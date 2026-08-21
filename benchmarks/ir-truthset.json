@@ -2441,6 +2441,123 @@
       "check_id": "IR-PY-IMPORTED-NETWORK",
       "path": "examples/open_deep_research/scripts/visual_qa.py", "line": 164, "expected": true,
       "relationship": {"source_kind":"tool","source_name":"visualizer","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-network-class-base-local",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "path": "pkg/parsers.py", "line": 10, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"url_parser","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-class-chain-local",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "path": "pkg/chain.py", "line": 12, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"chain_parser","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-class-direct-local",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "path": "pkg/class_tools.py", "line": 14, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"direct_class_loader","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-class-bound-local",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "path": "pkg/class_tools.py", "line": 23, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"bound_class_loader","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-class-fixed-local",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "path": "pkg/class_tools.py", "line": 29, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"fixed_class_loader","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-class-multihop-local",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "path": "pkg/class_tools.py", "line": 35, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"multi_hop_loader","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-class-mutable-local-negative",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "path": "pkg/class_tools.py", "line": 47, "expected": false,
+      "source_contains": "self.parser.call",
+      "relationship": {"source_kind":"tool","source_name":"mutable_class_loader","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-class-module-local-negative",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "path": "pkg/class_tools.py", "line": 53, "expected": false,
+      "source_contains": "parsers.UrlParser",
+      "relationship": {"source_kind":"tool","source_name":"module_class_loader","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-class-rebound-local-negative",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "path": "pkg/class_tools.py", "line": 59, "expected": false,
+      "source_contains": "ChangedParser",
+      "relationship": {"source_kind":"tool","source_name":"rebound_class_loader","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-class-setattr-local-negative",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "path": "pkg/class_tools.py", "line": 71, "expected": false,
+      "source_contains": "self.parser.call",
+      "relationship": {"source_kind":"tool","source_name":"setattr_class_loader","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-class-shadowed-local-negative",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "path": "pkg/class_tools.py", "line": 81, "expected": false,
+      "source_contains": "self.parser.call",
+      "relationship": {"source_kind":"tool","source_name":"shadowed_class_loader","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-class-qwen-doc-parser-real",
+      "target": {"kind":"repository","repository":"QwenLM/Qwen-Agent","commit":"31a4d36d123688581a9e9744427272b33ce940e0"},
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "path": "qwen_agent/tools/doc_parser.py", "line": 114, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"doc_parser","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-class-qwen-vocabulary-real",
+      "target": {"kind":"repository","repository":"QwenLM/Qwen-Agent","commit":"31a4d36d123688581a9e9744427272b33ce940e0"},
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "path": "qwen_agent/tools/extract_doc_vocabulary.py", "line": 61, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"extract_doc_vocabulary","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-class-qwen-retrieval-real",
+      "target": {"kind":"repository","repository":"QwenLM/Qwen-Agent","commit":"31a4d36d123688581a9e9744427272b33ce940e0"},
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "path": "qwen_agent/tools/retrieval.py", "line": 100, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"retrieval","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-class-qwen-web-extractor-real",
+      "target": {"kind":"repository","repository":"QwenLM/Qwen-Agent","commit":"31a4d36d123688581a9e9744427272b33ce940e0"},
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "path": "qwen_agent/tools/web_extractor.py", "line": 38, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"web_extractor","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-class-mixed-field-local",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "path": "pkg/class_tools.py", "line": 87, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"mixed_field_loader","relation":"uses","target_kind":"capability","target_name":"network"}
     }
   ]
 }

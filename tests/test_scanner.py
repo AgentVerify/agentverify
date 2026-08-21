@@ -1502,7 +1502,10 @@ def test_python_imported_network_helpers_require_exact_unrebound_imports() -> No
             item.attributes["helper_network_lines"],
         )
         for item in ir.components
-        if item.kind == "capability" and item.name == "network"
+        if item.kind == "capability"
+        and item.name == "network"
+        and item.attributes.get("summary") == "imported-function"
+        and item.evidence.path == "pkg/tools.py"
     ] == [
         (15, True, "imported-function", "pkg/helpers.py", [7]),
         (16, False, "imported-function", "pkg/helpers.py", [11]),
@@ -1511,7 +1514,7 @@ def test_python_imported_network_helpers_require_exact_unrebound_imports() -> No
     assert [
         (edge.source_name, edge.evidence.line)
         for edge in ir.relationships
-        if edge.target_name == "network"
+        if edge.target_name == "network" and edge.evidence.path == "pkg/tools.py"
     ] == [
         ("remote_loader", 15),
         ("remote_loader", 16),
@@ -1520,7 +1523,56 @@ def test_python_imported_network_helpers_require_exact_unrebound_imports() -> No
     assert [
         (finding.rule_id, finding.evidence.path, finding.evidence.line)
         for finding in ir.findings
+        if finding.evidence.path == "pkg/tools.py"
     ] == [("AV-NET001", "pkg/tools.py", 15)]
+
+
+def test_python_imported_class_network_helpers_are_iterative_and_binding_scoped() -> None:
+    ir = scan_repository(ROOT / "cases/python_imported_network_helper")
+
+    assert [
+        (
+            item.evidence.path,
+            item.evidence.line,
+            item.attributes["dynamic_origin"],
+            item.attributes["api"],
+            item.attributes["callee_network_lines"],
+        )
+        for item in ir.components
+        if item.kind == "capability"
+        and item.name == "network"
+        and item.attributes.get("summary") == "imported-class-method"
+    ] == [
+        ("pkg/chain.py", 12, True, "UrlParser.call", [10]),
+        ("pkg/class_tools.py", 14, True, "UrlParser.call", [10]),
+        ("pkg/class_tools.py", 23, True, "UrlParser.call", [10]),
+        ("pkg/class_tools.py", 29, False, "UrlParser.call", [10]),
+        ("pkg/class_tools.py", 35, True, "ChainParser.call", [12]),
+        ("pkg/class_tools.py", 87, False, "UrlParser.call", [10]),
+    ]
+    assert [
+        (edge.source_name, edge.evidence.path, edge.evidence.line)
+        for edge in ir.relationships
+        if edge.target_name == "network"
+        and edge.evidence.path in {"pkg/chain.py", "pkg/class_tools.py"}
+    ] == [
+        ("chain_parser", "pkg/chain.py", 12),
+        ("direct_class_loader", "pkg/class_tools.py", 14),
+        ("bound_class_loader", "pkg/class_tools.py", 23),
+        ("fixed_class_loader", "pkg/class_tools.py", 29),
+        ("multi_hop_loader", "pkg/class_tools.py", 35),
+        ("mixed_field_loader", "pkg/class_tools.py", 87),
+    ]
+    assert [
+        (finding.evidence.path, finding.evidence.line)
+        for finding in ir.findings
+        if finding.evidence.path in {"pkg/chain.py", "pkg/class_tools.py"}
+    ] == [
+        ("pkg/chain.py", 12),
+        ("pkg/class_tools.py", 14),
+        ("pkg/class_tools.py", 23),
+        ("pkg/class_tools.py", 35),
+    ]
 
 
 def test_python_filesystem_mutations_resolve_destinations_aliases_and_guards() -> None:

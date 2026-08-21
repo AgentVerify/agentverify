@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T12:26:20.028699+00:00",
-  "labels": 149,
-  "passed": 149,
+  "generated_at": "2026-08-21T12:41:39.193354+00:00",
+  "labels": 165,
+  "passed": 165,
   "metrics": {
     "IR-APPROVAL-CONTROL": {
       "tp": 3,
@@ -84,8 +84,16 @@
       "precision": 1.0,
       "recall": 1.0
     },
+    "IR-PY-IMPORTED-CLASS-NETWORK": {
+      "tp": 10,
+      "fp": 0,
+      "tn": 5,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
     "IR-PY-IMPORTED-NETWORK": {
-      "tp": 5,
+      "tp": 6,
       "fp": 0,
       "tn": 5,
       "fn": 0,
@@ -1509,6 +1517,150 @@
     {
       "id": "python-imported-network-smolagents-real",
       "check_id": "IR-PY-IMPORTED-NETWORK",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-network-class-base-local",
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-class-chain-local",
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-class-direct-local",
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-class-bound-local",
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-class-fixed-local",
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-class-multihop-local",
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-class-mutable-local-negative",
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-class-module-local-negative",
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-class-rebound-local-negative",
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-class-setattr-local-negative",
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-class-shadowed-local-negative",
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-class-qwen-doc-parser-real",
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-class-qwen-vocabulary-real",
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-class-qwen-retrieval-real",
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-class-qwen-web-extractor-real",
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-class-mixed-field-local",
+      "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

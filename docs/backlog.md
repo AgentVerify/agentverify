@@ -92,6 +92,9 @@ MCP `registerTool` callbacks with exact tool identities. Unique same-file free/s
 now propagate positional/destructured parameter flow to exact tool edges. Python additionally resolves
 unique top-level functions through exact named local imports when one of their parameters directly
 controls a recognized HTTP origin; local rebinding, nested helpers, and module-object calls remain
+unresolved. Single-entrypoint registered classes now propagate that proven behavior through exact
+direct construction or immutable constructor-bound fields for up to four graph layers. Mutable
+fields, module-qualified constructors, ambiguous classes, and rebound/shadowed constructors remain
 unresolved. Next
 resolve URL parsing/normalization guards, hostname allowlists, DNS rebinding defenses, proxy policy,
 and egress controls before treating a review as a demonstrated SSRF path. Add imported, arrow-assigned,
@@ -106,8 +109,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 268 pinned positive/negative locations, with 149 separately
-scored IR relationship labels. Schema-v26 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 284 pinned positive/negative locations, with 165 separately
+scored IR relationship labels. Schema-v27 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

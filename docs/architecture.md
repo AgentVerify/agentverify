@@ -86,6 +86,18 @@ function-local and statement-ordered, so reassignment, deletion, or replacement 
 the edge. Module-object calls, reexports, nested/transitive helpers, client instances, helper-local
 aliases, and rebound HTTP clients remain unresolved rather than being inferred by name.
 
+After all direct frontends run, a bounded graph pass promotes proven dynamic network behavior across
+registered Python classes. A summary requires a unique class tool, exactly one literal entrypoint,
+and an existing dynamic network edge. Callers resolve only an exact named imported constructor used
+directly or assigned once to `self.<field>` in `__init__`; all class-local assignments, deletion,
+`setattr`, constructor shadowing, and ambiguous definitions invalidate the field proof. The caller's
+first positional or matching keyword argument is evaluated with statement-ordered assignment and
+loop-variable taint. When the callee reads one unique literal object key, only that caller field is
+treated as the origin; a dynamic sibling field cannot taint a fixed URL. Fixed arguments remain
+inventory-only. Newly resolved class tools can become
+summaries for the next pass, capped at four iterations. Each capability retains the callee class,
+method, definition line, and prior network-edge lines.
+
 The same Python tool-parameter state distinguishes browser-page code execution from ordinary code
 inventory. In a module importing Playwright, Selenium, or Puppeteer, an attribute
 `.evaluate(...)` call becomes a `code-execution` capability with
