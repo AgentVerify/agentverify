@@ -144,6 +144,11 @@ def main() -> int:
             for edge in mcp_forwarding_control_edges
             if edge.target_name == "fixed-tool-binding"
         ]
+        mcp_registry_control_edges = [
+            edge
+            for edge in mcp_forwarding_control_edges
+            if edge.target_name == "tool-registry"
+        ]
         result = {
             "repository": repository,
             "category": row["category"],
@@ -213,6 +218,14 @@ def main() -> int:
                     ).items()
                 )
             ),
+            "mcp_registry_control_sources": dict(
+                sorted(
+                    Counter(
+                        str(edge.attributes.get("summary", "same-function-lookup"))
+                        for edge in mcp_registry_control_edges
+                    ).items()
+                )
+            ),
             "resolved_import_edges": len(imported_edges),
             "resolved_import_edges_by_frontend": {
                 "python": sum(edge.evidence.path.endswith(".py") for edge in imported_edges),
@@ -236,7 +249,7 @@ def main() -> int:
         {rule_id for result in successful for rule_id in result["findings"]}
     )
     payload = {
-        "schema_version": 12,
+        "schema_version": 13,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "summary": {
@@ -338,6 +351,17 @@ def main() -> int:
                     sum(
                         (
                             Counter(result["mcp_fixed_binding_scopes"])
+                            for result in successful
+                        ),
+                        Counter(),
+                    ).items()
+                )
+            ),
+            "mcp_registry_control_sources": dict(
+                sorted(
+                    sum(
+                        (
+                            Counter(result["mcp_registry_control_sources"])
                             for result in successful
                         ),
                         Counter(),

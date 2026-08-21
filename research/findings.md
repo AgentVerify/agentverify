@@ -47,8 +47,15 @@ name matching from inventing this control.
 Five more calls bind a tool source through an escaping callback: three browser-use actions are
 registered and two ArcadeAI wrappers are returned. Equivalent retry closures in the MCP Python SDK
 and FastMCP do not qualify because the public caller still selects the name for each operation.
-Schema v12 therefore reports five instance and five closure fixed-binding edges, without suppressing
+Schema v13 therefore reports five instance and five closure fixed-binding edges, without suppressing
 any review.
+
+FastMCP adds an interprocedural routing fact: its middleware recursion reaches a same-class callee
+that resolves `get_tool(name)`, rejects a missing tool, and only then executes. The literal
+`run_middleware=False` call argument proves that the earlier recursive return is bypassed and is
+retained as a required edge argument. This becomes the second `tool-registry` edge. A default-tool
+fallback and the selected MCP Python SDK file whose manager body is absent remain unresolved,
+demonstrating why semantic names are not enforcement evidence.
 
 ## 3. Approval exists, but bypass behavior recurs
 

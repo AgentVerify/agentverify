@@ -100,6 +100,15 @@ decorator. A retry or local helper closure invoked within the same caller-select
 an escaping binding. Reassigning the captured parameter also invalidates the edge. This distinction
 prevents lexical nesting alone from being reported as governance.
 
+Same-class calls receive a bounded method summary when the callee maps its tool-name parameter into
+`self.get_tool(...)` or a `self.*tool*.get(...)` registry, then directly raises or returns on a
+missing value in the same statement block. A return with a fallback value does not qualify. Earlier
+return paths disqualify the summary unless a simple boolean parameter guard is ruled out by a
+literal call argument; those required arguments are retained on the edge. The edge cites the
+rejecting branch and carries `summary: same-class-method`. A fallback assignment does not qualify.
+Imported or unselected manager implementations remain unresolved until their bodies are available;
+class and field names are not proof of enforcement.
+
 For audit modeling, a tool capability lexically inside an OpenTelemetry
 `start_as_current_span(...)` block receives an exact capability-to-`action-trace` control edge. A
 span elsewhere in the same tool does not cover the action. The edge records exporter durability as

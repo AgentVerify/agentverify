@@ -27,8 +27,9 @@ dynamic CLI/MCP roots retain a review plus an explicit unresolved-scope control 
 positive branch-local guards, equivalent Python path boundaries, and other imported policy objects.
 Constructor-only MCP wrapper fields, pure accessors, and unchanged parameters captured by
 returned/registered callbacks now produce fixed-binding edges. Mutable fields, rebound parameters,
-and same-operation retry closures remain unresolved. Next add interprocedural registry-manager
-summaries without treating discovery as authorization.
+and same-operation retry closures remain unresolved. Same-class methods now summarize exact
+`get_tool`-then-reject paths. Next resolve imported registry-manager summaries by expanding the
+selected-file dependency closure, without treating class names or discovery as authorization.
 Keep unresolved distinct from absent.
 
 ## P0 — approval coverage rule
@@ -67,8 +68,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 175 pinned positive/negative locations, with 48 separately
-scored IR relationship labels. Schema-v12 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 175 pinned positive/negative locations, with 52 separately
+scored IR relationship labels. Schema-v13 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

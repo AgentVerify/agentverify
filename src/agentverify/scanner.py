@@ -231,6 +231,17 @@ class PythonVisitor(ast.NodeVisitor):
         self.class_approval_environment_flags: list[dict[str, set[str]]] = []
         self.class_fixed_tool_bindings: list[dict[str, Evidence]] = []
         self.class_fixed_tool_accessors: list[dict[str, Evidence]] = []
+        self.class_registry_method_summaries: list[
+            dict[
+                str,
+                tuple[
+                    int | None,
+                    str,
+                    Evidence,
+                    tuple[tuple[str, int | None, bool], ...],
+                ],
+            ]
+        ] = []
         self.function_fixed_binding_sources: list[dict[str, Evidence]] = []
         self.function_escaping_children: list[set[str]] = []
         self.function_stack: list[str] = []
@@ -587,6 +598,9 @@ class PythonVisitor(ast.NodeVisitor):
         fixed_bindings, fixed_accessors = self.fixed_class_tool_bindings(node)
         self.class_fixed_tool_bindings.append(fixed_bindings)
         self.class_fixed_tool_accessors.append(fixed_accessors)
+        self.class_registry_method_summaries.append(
+            self.registry_method_summaries(node)
+        )
         class_environment_flags: dict[str, set[str]] = {}
         for statement in node.body:
             if not isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -609,6 +623,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.class_approval_environment_flags.pop()
         self.class_fixed_tool_accessors.pop()
         self.class_fixed_tool_bindings.pop()
+        self.class_registry_method_summaries.pop()
         self.class_stack.pop()
 
     def fixed_class_tool_bindings(
@@ -722,6 +737,264 @@ class PythonVisitor(ast.NodeVisitor):
             for name, argument in parameters.items()
             if name not in mutated
         }
+
+    def registry_method_summaries(
+        self, node: ast.ClassDef
+    ) -> dict[
+        str,
+        tuple[
+            int | None,
+            str,
+            Evidence,
+            tuple[tuple[str, int | None, bool], ...],
+        ],
+    ]:
+        """Summarize class methods that reject names missing from their tool registry."""
+        summaries: dict[
+            str,
+            tuple[
+                int | None,
+                str,
+                Evidence,
+                tuple[tuple[str, int | None, bool], ...],
+            ],
+        ] = {}
+
+        def rejecting_missing_value(statement: ast.If, local_name: str) -> bool:
+            test = statement.test
+            missing = (
+                isinstance(test, ast.UnaryOp)
+                and isinstance(test.op, ast.Not)
+                and isinstance(test.operand, ast.Name)
+                and test.operand.id == local_name
+            ) or (
+                isinstance(test, ast.Compare)
+                and isinstance(test.left, ast.Name)
+                and test.left.id == local_name
+                and len(test.ops) == 1
+                and isinstance(test.ops[0], (ast.Is, ast.Eq))
+                and len(test.comparators) == 1
+                and isinstance(test.comparators[0], ast.Constant)
+                and test.comparators[0].value is None
+            )
+            return missing and any(
+                isinstance(child, ast.Raise)
+                or (
+                    isinstance(child, ast.Return)
+                    and (
+                        child.value is None
+                        or (
+                            isinstance(child.value, ast.Constant)
+                            and child.value.value is None
+                        )
+                    )
+                )
+                for child in statement.body
+            )
+
+        def safe_registry_reassignment(candidate: ast.AST, local_name: str) -> bool | None:
+            """Return whether an assignment preserves registry provenance, or None if unrelated."""
+            value: ast.AST | None = None
+            assigned = False
+            if isinstance(candidate, ast.Assign):
+                assigned = any(
+                    isinstance(target, ast.Name) and target.id == local_name
+                    for target in candidate.targets
+                )
+                value = candidate.value
+            elif isinstance(candidate, ast.AnnAssign):
+                assigned = (
+                    isinstance(candidate.target, ast.Name)
+                    and candidate.target.id == local_name
+                )
+                value = candidate.value
+            elif isinstance(candidate, (ast.AugAssign, ast.NamedExpr)):
+                assigned = (
+                    isinstance(candidate.target, ast.Name)
+                    and candidate.target.id == local_name
+                )
+            if not assigned:
+                return None
+            if isinstance(value, ast.Await):
+                value = value.value
+            if not isinstance(value, ast.Call):
+                return False
+            assignment_name = dotted_name(value.func)
+            short_assignment = assignment_name.rsplit(".", 1)[-1]
+            receiver = assignment_name.rsplit(".", 1)[0]
+            return (receiver == "self" or receiver.startswith("self.")) and (
+                short_assignment.startswith("get_tool")
+                or (short_assignment == "get" and "tool" in receiver.lower())
+            )
+
+        def lexical_method_nodes(
+            method: ast.FunctionDef | ast.AsyncFunctionDef,
+        ) -> list[ast.AST]:
+            result: list[ast.AST] = []
+
+            def collect(candidate: ast.AST) -> None:
+                if isinstance(
+                    candidate,
+                    (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda, ast.ClassDef),
+                ):
+                    return
+                result.append(candidate)
+                for child in ast.iter_child_nodes(candidate):
+                    collect(child)
+
+            for statement in method.body:
+                collect(statement)
+            return result
+
+        for method in node.body:
+            if not isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                continue
+            positional_parameters = [
+                argument
+                for argument in (
+                    *method.args.posonlyargs,
+                    *method.args.args,
+                )
+                if argument.arg not in {"self", "cls"}
+            ]
+            parameter_positions = {
+                argument.arg: index
+                for index, argument in enumerate(positional_parameters)
+            }
+            parameter_names = {
+                argument.arg
+                for argument in (*positional_parameters, *method.args.kwonlyargs)
+            }
+            scope_nodes = lexical_method_nodes(method)
+            scope_node_ids = {id(candidate) for candidate in scope_nodes}
+            parent_by_id = {
+                id(child): candidate
+                for candidate in scope_nodes
+                for child in ast.iter_child_nodes(candidate)
+                if id(child) in scope_node_ids
+            }
+            lookups: list[tuple[int, str, str, ast.AST | None]] = []
+            guards = [candidate for candidate in scope_nodes if isinstance(candidate, ast.If)]
+            for candidate in scope_nodes:
+                target: ast.AST | None = None
+                value: ast.AST | None = None
+                if isinstance(candidate, ast.Assign) and len(candidate.targets) == 1:
+                    target, value = candidate.targets[0], candidate.value
+                elif isinstance(candidate, ast.AnnAssign):
+                    target, value = candidate.target, candidate.value
+                if not isinstance(target, ast.Name) or value is None:
+                    continue
+                if isinstance(value, ast.Await):
+                    value = value.value
+                if not isinstance(value, ast.Call):
+                    continue
+                lookup_name = dotted_name(value.func)
+                short_lookup = lookup_name.rsplit(".", 1)[-1]
+                receiver = lookup_name.rsplit(".", 1)[0]
+                if not (receiver == "self" or receiver.startswith("self.")) or not (
+                    short_lookup == "get_tool"
+                    or (short_lookup == "get" and "tool" in receiver.lower())
+                ):
+                    continue
+                name_expression = value.args[0] if value.args else None
+                for keyword in value.keywords:
+                    if keyword.arg == "name":
+                        name_expression = keyword.value
+                if not isinstance(name_expression, ast.Name):
+                    continue
+                if name_expression.id not in parameter_names:
+                    continue
+                lookups.append(
+                    (
+                        candidate.lineno,
+                        target.id,
+                        name_expression.id,
+                        parent_by_id.get(id(candidate)),
+                    )
+                )
+            for lookup_line, local_name, parameter_name, lookup_parent in sorted(
+                lookups, key=lambda lookup: lookup[0]
+            ):
+                matching_guards = sorted(
+                    (
+                        guard
+                        for guard in guards
+                        if guard.lineno > lookup_line
+                        and parent_by_id.get(id(guard)) is lookup_parent
+                        and rejecting_missing_value(guard, local_name)
+                        and not any(
+                            safe_registry_reassignment(candidate, local_name) is False
+                            for candidate in scope_nodes
+                            if lookup_line < getattr(candidate, "lineno", 0) < guard.lineno
+                        )
+                    ),
+                    key=lambda guard: guard.lineno,
+                )
+                if matching_guards:
+                    required_literals: dict[str, bool] = {}
+                    unresolved_early_return = False
+                    for early_return in (
+                        candidate
+                        for candidate in scope_nodes
+                        if isinstance(candidate, ast.Return)
+                        and candidate.lineno < lookup_line
+                    ):
+                        child: ast.AST = early_return
+                        parent = parent_by_id.get(id(early_return))
+                        condition: tuple[str, bool] | None = None
+                        while parent is not None:
+                            if isinstance(parent, ast.If):
+                                in_else_branch = child in parent.orelse
+                                if (
+                                    isinstance(parent.test, ast.Name)
+                                    and parent.test.id in parameter_names
+                                ):
+                                    condition = (
+                                        parent.test.id,
+                                        in_else_branch,
+                                    )
+                                    break
+                                if (
+                                    isinstance(parent.test, ast.UnaryOp)
+                                    and isinstance(parent.test.op, ast.Not)
+                                    and isinstance(parent.test.operand, ast.Name)
+                                    and parent.test.operand.id in parameter_names
+                                ):
+                                    condition = (
+                                        parent.test.operand.id,
+                                        not in_else_branch,
+                                    )
+                                    break
+                            child = parent
+                            parent = parent_by_id.get(id(parent))
+                        if condition is None:
+                            unresolved_early_return = True
+                            break
+                        condition_name, required_value = condition
+                        existing = required_literals.get(condition_name)
+                        if existing is not None and existing != required_value:
+                            unresolved_early_return = True
+                            break
+                        required_literals[condition_name] = required_value
+                    if unresolved_early_return:
+                        continue
+                    summaries[method.name] = (
+                        parameter_positions.get(parameter_name),
+                        parameter_name,
+                        self.ev(matching_guards[0]),
+                        tuple(
+                            sorted(
+                                (
+                                    name,
+                                    parameter_positions.get(name),
+                                    value,
+                                )
+                                for name, value in required_literals.items()
+                            )
+                        ),
+                    )
+                    break
+        return summaries
 
     @staticmethod
     def escaping_nested_function_names(
@@ -1205,6 +1478,66 @@ class PythonVisitor(ast.NodeVisitor):
                 binding_scope = fixed_binding[1] if fixed_binding else None
                 guard_control = self.allowlist_control_names.get(guarded_name, "tool-allowlist")
                 guard_evidence = self.allowlist_evidence.get(guarded_name)
+                guard_summary = ""
+                guard_conditions: dict[str, bool] = {}
+                if (
+                    not resolved_guard
+                    and call_name.startswith("self.")
+                    and self.class_registry_method_summaries
+                    and (
+                        method_summary := self.class_registry_method_summaries[-1].get(
+                            short_name
+                        )
+                    )
+                ):
+                    (
+                        parameter_index,
+                        parameter_name,
+                        method_evidence,
+                        required_literals,
+                    ) = method_summary
+                    mapped_argument = (
+                        node.args[parameter_index]
+                        if parameter_index is not None
+                        and parameter_index < len(node.args)
+                        else next(
+                            (
+                                keyword.value
+                                for keyword in node.keywords
+                                if keyword.arg == parameter_name
+                            ),
+                            None,
+                        )
+                    )
+                    literal_requirements_met = True
+                    for required_name, required_index, required_value in required_literals:
+                        required_argument = (
+                            node.args[required_index]
+                            if required_index is not None
+                            and required_index < len(node.args)
+                            else next(
+                                (
+                                    keyword.value
+                                    for keyword in node.keywords
+                                    if keyword.arg == required_name
+                                ),
+                                None,
+                            )
+                        )
+                        if not (
+                            isinstance(required_argument, ast.Constant)
+                            and required_argument.value is required_value
+                        ):
+                            literal_requirements_met = False
+                            break
+                    if mapped_argument is tool_name and literal_requirements_met:
+                        resolved_guard = True
+                        guard_control = "tool-registry"
+                        guard_evidence = method_evidence
+                        guard_summary = "same-class-method"
+                        guard_conditions = {
+                            name: value for name, _, value in required_literals
+                        }
                 allowlist_guard = resolved_guard and guard_control == "tool-allowlist"
                 registry_guard = resolved_guard and guard_control == "tool-registry"
                 attributes = {
@@ -1219,6 +1552,11 @@ class PythonVisitor(ast.NodeVisitor):
                 }
                 if resolved_guard:
                     attributes["guard_control"] = guard_control
+                    if guard_summary:
+                        attributes["guard_summary"] = guard_summary
+                        attributes["guard_method"] = short_name
+                        if guard_conditions:
+                            attributes["guard_conditions"] = guard_conditions
                     if guard_evidence:
                         attributes["guard_path"] = guard_evidence.path
                         attributes["guard_line"] = guard_evidence.line
@@ -1277,6 +1615,17 @@ class PythonVisitor(ast.NodeVisitor):
                         if guard_control == "tool-registry"
                         else "restricts-tool-name"
                     )
+                    guard_relationship_attributes = {
+                        "control_path": (guard_evidence or self.ev(node)).path,
+                        "control_line": (guard_evidence or self.ev(node)).line,
+                        "policy_effect": policy_effect,
+                    }
+                    if guard_summary:
+                        guard_relationship_attributes["summary"] = guard_summary
+                        if guard_conditions:
+                            guard_relationship_attributes["required_arguments"] = (
+                                guard_conditions
+                            )
                     self.ir.add_component(
                         Component(
                             "control",
@@ -1296,11 +1645,7 @@ class PythonVisitor(ast.NodeVisitor):
                             "control",
                             guard_control,
                             self.ev(node),
-                            {
-                                "control_path": (guard_evidence or self.ev(node)).path,
-                                "control_line": (guard_evidence or self.ev(node)).line,
-                                "policy_effect": policy_effect,
-                            },
+                            guard_relationship_attributes,
                         )
                     )
         if call_name in {

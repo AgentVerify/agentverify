@@ -90,3 +90,25 @@ def rebound_tool_closure(session: ClientSession, tool, replacement):
         return await session.call_tool(tool.name, arguments)
 
     return call
+
+
+class RoutedServer:
+    async def dispatch(self, name: str, arguments: dict):
+        return await self.call_tool(name, arguments)
+
+    async def call_tool(self, name: str, arguments: dict):
+        tool = await self.get_tool(name)
+        if tool is None:
+            raise ValueError(f"Unknown tool: {name}")
+        return await tool.run(arguments)
+
+
+class FallbackServer:
+    async def dispatch(self, name: str, arguments: dict):
+        return await self.call_tool(name, arguments)
+
+    async def call_tool(self, name: str, arguments: dict):
+        tool = await self.get_tool(name)
+        if tool is None:
+            tool = self.default_tool
+        return await tool.run(arguments)

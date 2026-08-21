@@ -32,6 +32,13 @@ tool/action registry binds a source across later invocations; a retry closure cr
 inside one public call does not narrow the caller's authority. Lexical nesting is not a control by
 itself.
 
+Internal dispatch also crosses methods. A caller can inherit routing evidence from a same-class
+callee only when parameter mapping, registry lookup, and a rejecting missing-value branch in the
+same statement block are all resolved. A return that computes a fallback does not qualify. Earlier
+returns require a simple boolean branch and a call-site literal that selects the path beyond it; the
+required literal remains visible on the relationship. Delegation to an unavailable manager body
+remains unknown; `ToolManager` naming alone is not a control.
+
 ## Local versus isolated execution
 
 Code and shell tools run directly, in local containers, or in remote sandboxes. “Sandbox present” is

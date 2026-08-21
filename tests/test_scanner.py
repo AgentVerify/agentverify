@@ -445,8 +445,10 @@ def test_dynamic_mcp_forwarding_but_not_fixed_tool_call() -> None:
         for item in ir.components
         if item.kind == "capability" and item.name == "mcp-tool-forwarding"
     ]
-    assert len(forwarding) == 10
+    assert len(forwarding) == 12
     assert [finding.rule_id for finding in ir.findings] == [
+        "AV-MCP002",
+        "AV-MCP002",
         "AV-MCP002",
         "AV-MCP002",
         "AV-MCP002",
@@ -549,6 +551,117 @@ def test_dynamic_mcp_forwarding_but_not_fixed_tool_call() -> None:
         item.evidence.line == 90 and item.target_name == "fixed-tool-binding"
         for item in ir.relationships
     )
+    routed = next(item for item in forwarding if item.evidence.line == 97)
+    assert routed.attributes["registry_guard"] is True
+    assert routed.attributes["guard_summary"] == "same-class-method"
+    routed_edge = next(
+        item
+        for item in ir.relationships
+        if item.evidence.line == 97 and item.target_name == "tool-registry"
+    )
+    assert routed_edge.attributes == {
+        "control_path": "proxy.py",
+        "control_line": 101,
+        "policy_effect": "routing-only",
+        "summary": "same-class-method",
+    }
+    routed_finding = next(item for item in ir.findings if item.evidence.line == 97)
+    assert routed_finding.analysis["governing_control_effects"] == {
+        "tool-registry": ["routing-only"]
+    }
+    fallback = next(item for item in forwarding if item.evidence.line == 108)
+    assert fallback.attributes["registry_guard"] is False
+    assert not any(
+        item.evidence.line == 108 and item.target_name == "tool-registry"
+        for item in ir.relationships
+    )
+
+
+def test_mcp_registry_method_summary_requires_literal_path_selection(tmp_path: Path) -> None:
+    source = """from mcp.server import Server
+
+class MiddlewareServer:
+    async def select_dynamic(self, name: str, arguments: dict, selected: bool):
+        return await self.call_tool(name, arguments, run_middleware=selected)
+
+    async def select_core(self, name: str, arguments: dict):
+        return await self.call_tool(name, arguments, run_middleware=False)
+
+    async def call_tool(
+        self,
+        name: str,
+        arguments: dict,
+        *,
+        run_middleware: bool = True,
+    ):
+        if run_middleware:
+            return await self.call_tool(name, arguments, run_middleware=False)
+        tool = await self.get_tool(name)
+        if tool is None:
+            raise ValueError(name)
+        return await tool.run(arguments)
+
+class ReturnFallbackServer:
+    async def dispatch(self, name: str, arguments: dict):
+        return await self.call_tool(name, arguments)
+
+    async def call_tool(self, name: str, arguments: dict):
+        tool = await self.get_tool(name)
+        if tool is None:
+            return await self.default_tool.run(arguments)
+        return await tool.run(arguments)
+
+class ConditionalGuardServer:
+    async def dispatch(self, name: str, arguments: dict):
+        return await self.call_tool(name, arguments)
+
+    async def call_tool(self, name: str, arguments: dict, enforce: bool = True):
+        tool = await self.get_tool(name)
+        if enforce:
+            if tool is None:
+                raise ValueError(name)
+        return await tool.run(arguments)
+
+class ReassignedFallbackServer:
+    async def dispatch(self, name: str, arguments: dict):
+        return await self.call_tool(name, arguments)
+
+    async def call_tool(self, name: str, arguments: dict):
+        tool = await self.get_tool(name)
+        if tool is None:
+            tool = self.default_tool
+        if tool is None:
+            raise ValueError(name)
+        return await tool.run(arguments)
+"""
+    (tmp_path / "server.py").write_text(source, encoding="utf-8")
+
+    ir = scan_repository(tmp_path)
+    registry_edges = [
+        item
+        for item in ir.relationships
+        if item.target_name == "tool-registry" and item.evidence.path == "server.py"
+    ]
+
+    def line_of(fragment: str) -> int:
+        return source[: source.index(fragment)].count("\n") + 1
+
+    dynamic_line = line_of("self.call_tool(name, arguments, run_middleware=selected)")
+    core_line = line_of("self.call_tool(name, arguments, run_middleware=False)")
+    fallback_line = line_of("return await self.call_tool(name, arguments)\n\n    async def call_tool")
+    conditional_line = line_of(
+        "return await self.call_tool(name, arguments)\n\n    async def call_tool(self, name: str, arguments: dict, enforce"
+    )
+    reassigned_line = line_of(
+        "return await self.call_tool(name, arguments)\n\n    async def call_tool(self, name: str, arguments: dict):\n        tool = await self.get_tool(name)\n        if tool is None:\n            tool = self.default_tool"
+    )
+    assert not any(item.evidence.line == dynamic_line for item in registry_edges)
+    assert not any(item.evidence.line == fallback_line for item in registry_edges)
+    assert not any(item.evidence.line == conditional_line for item in registry_edges)
+    assert not any(item.evidence.line == reassigned_line for item in registry_edges)
+    core_edge = next(item for item in registry_edges if item.evidence.line == core_line)
+    assert core_edge.attributes["required_arguments"] == {"run_middleware": False}
+    assert core_edge.attributes["summary"] == "same-class-method"
 
 
 def test_browser_and_external_action_capabilities_are_linked() -> None:
