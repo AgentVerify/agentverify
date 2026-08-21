@@ -1397,6 +1397,43 @@ def test_python_post_definition_tool_registration_is_exact_and_cross_file() -> N
     ]
 
 
+def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_input() -> None:
+    ir = scan_repository(ROOT / "cases/python_browser_evaluate")
+
+    executions = [
+        (
+            item.evidence.path,
+            item.evidence.line,
+            item.attributes["api"],
+            item.attributes["execution_context"],
+            item.attributes["dynamic_input"],
+        )
+        for item in ir.components
+        if item.kind == "capability" and item.name == "code-execution"
+    ]
+    assert executions == [
+        ("agent.py", 9, "page.evaluate", "browser-page", True),
+        ("agent.py", 14, "page.evaluate", "browser-page", False),
+        ("agent.py", 20, "page.evaluate", "browser-page", True),
+    ]
+    assert [
+        (edge.source_name, edge.evidence.line)
+        for edge in ir.relationships
+        if edge.target_name == "code-execution"
+    ] == [
+        ("dynamic_evaluate", 9),
+        ("literal_evaluate", 14),
+        ("aliased_evaluate", 20),
+    ]
+    assert [
+        (finding.rule_id, finding.evidence.path, finding.evidence.line)
+        for finding in ir.findings
+    ] == [
+        ("AV-EXEC002", "agent.py", 9),
+        ("AV-EXEC002", "agent.py", 20),
+    ]
+
+
 def test_python_filesystem_mutations_resolve_destinations_aliases_and_guards() -> None:
     ir = scan_repository(ROOT / "cases/filesystem_mutations")
 

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T11:26:53.804193+00:00",
-  "labels": 242,
-  "passed": 242,
+  "generated_at": "2026-08-21T11:44:32.223908+00:00",
+  "labels": 247,
+  "passed": 247,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 14,
@@ -29,9 +29,9 @@
       "recall": 1.0
     },
     "AV-EXEC002": {
-      "tp": 15,
+      "tp": 17,
       "fp": 0,
-      "tn": 5,
+      "tn": 8,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -2249,6 +2249,51 @@
     },
     {
       "id": "exec-code-camel-dependency-real",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-evaluate-local-positive",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-evaluate-literal-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-ordinary-evaluate-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-skyvern-scroll-evaluate-real-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-skyvern-evaluate-real",
       "rule_id": "AV-EXEC002",
       "expected": true,
       "observed": true,

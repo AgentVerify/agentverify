@@ -67,6 +67,16 @@ consumes only this origin-specific attribute; it does not equate a dynamic path 
 host with a dynamic destination. URL parsing guards, redirects, DNS, proxies, imported/transitive
 helpers, arrow functions, and request-object data flow remain unresolved.
 
+The same Python tool-parameter state distinguishes browser-page code execution from ordinary code
+inventory. In a module importing Playwright, Selenium, or Puppeteer, an attribute
+`.evaluate(...)` call becomes a `code-execution` capability with
+`execution_context: browser-page`. `dynamic_input` is true only when the script expression contains
+a current tool parameter or its direct assignment alias; literals, module constants, and values
+derived solely from normalized intermediates remain inventory-only. The capability still receives
+an exact tool edge when it occurs in a resolved tool body, including post-definition FastMCP tools.
+Receiver types, sanitizer proofs, imported/transitive script builders, and alternate browser
+evaluator APIs remain unresolved, so import context alone never promotes an evaluator to a finding.
+
 For TypeScript filesystem writes, a relative import can prove a `path-boundary` control only through
 an exact two-file chain: the guard must pass the tool-derived path into a uniquely resolved predicate,
 reject a false result before the write, and the predicate must normalize both candidate and roots and

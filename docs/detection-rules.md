@@ -11,7 +11,7 @@ coverage to justify them.
 | AV-TOOL001 | inventory | info | Enumerate tools and privileged capability classes | 69/71 expose browser/filesystem/code/shell signals |
 | AV-MCP001 | inventory | info | Identify MCP clients, servers, transports, commands, URLs, and declared tools | MCP signals in 50/71 |
 | AV-EXEC001 | finding | high | Dynamic command executed through a system shell | 21 default-scope engine matches after literal-command and API resolution |
-| AV-EXEC002 | finding | high | Dynamic input reaches an evaluator/interpreter | 43 repositories have code-execution signals |
+| AV-EXEC002 | finding | high | Dynamic input reaches an evaluator/interpreter | 51 default-scope matches across 15 repositories, including one tool-controlled Playwright evaluator |
 | AV-APPROVAL001 | review | high | Enabled auto-approve or skip-confirmation path | 15 default-scope engine candidates after semantic-name and approval-flow filtering |
 | AV-APPROVAL002 | review | high | Reachable local OpenAI Agents Python/TypeScript shell tool uses the SDK's disabled approval policy | 2 default-scope matches in the pinned SDK examples |
 | AV-FS001 | review | high | Agent tool writes, copies, moves, or deletes a dynamic filesystem path without a proven narrow path-boundary control | 22 default-scope matches across 8 repositories after post-definition FastMCP registration recovery |

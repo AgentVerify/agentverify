@@ -17,9 +17,15 @@ Preserve unresolved state for ambiguity and validate on larger real monoreposito
 
 Exact module-level Python `mcp.tool(...)(function)` applications now resolve through unique local or
 relative-imported definitions when both registrar and target bindings are immutable. The pinned
-Skyvern module contributes 115 recovered tools and 15 capability edges. Twenty-two tools pass through
+Skyvern module contributes 115 recovered tools and 21 capability edges. Twenty-two tools pass through
 structurally proven metadata-preserving forwarders, including one two-wrapper chain. Next support
 package reexports and additional wrapper forms without falling back to display-name matching.
+
+Python browser-page execution now inventories import-gated `.evaluate(...)` calls and promotes only
+direct tool-parameter/alias script flow. Skyvern contributes 30 evaluator observations but one
+finding; normalized numeric scroll JavaScript remains inventory-only. Next add receiver-type proof,
+sanitizer and bounded builder summaries, imported helper flow, and other browser evaluator APIs
+without treating every dynamic JavaScript expression as tool-controlled.
 
 ## P0 — configuration and policy resolution
 
@@ -96,8 +102,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 242 pinned positive/negative locations, with 123 separately
-scored IR relationship labels. Schema-v23 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 247 pinned positive/negative locations, with 126 separately
+scored IR relationship labels. Schema-v24 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

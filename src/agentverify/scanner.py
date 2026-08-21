@@ -1693,6 +1693,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.current_tool: str | None = None
         self.current_tool_id: str | None = None
         self.dynamic_http_origin_names: set[str] = set()
+        self.dynamic_tool_input_names: set[str] = set()
         self.class_stack: list[str] = []
         self.active_audit_controls: list[Evidence] = []
         self.http_client_names: set[str] = set()
@@ -1918,6 +1919,9 @@ class PythonVisitor(ast.NodeVisitor):
             dynamic_origin = python_http_origin_is_dynamic(
                 node.value, self.dynamic_http_origin_names
             )
+            dynamic_tool_input = bool(
+                python_expression_names(node.value) & self.dynamic_tool_input_names
+            )
             for target in node.targets:
                 if not isinstance(target, ast.Name):
                     continue
@@ -1925,6 +1929,10 @@ class PythonVisitor(ast.NodeVisitor):
                     self.dynamic_http_origin_names.add(target.id)
                 else:
                     self.dynamic_http_origin_names.discard(target.id)
+                if dynamic_tool_input:
+                    self.dynamic_tool_input_names.add(target.id)
+                else:
+                    self.dynamic_tool_input_names.discard(target.id)
         if isinstance(node.value, ast.Call):
             constructor = dotted_name(node.value.func)
             if constructor in {
@@ -2160,6 +2168,7 @@ class PythonVisitor(ast.NodeVisitor):
             previous_tool = self.current_tool
             previous_tool_id = self.current_tool_id
             previous_dynamic_http_origin_names = self.dynamic_http_origin_names
+            previous_dynamic_tool_input_names = self.dynamic_tool_input_names
             self.current_tool = node.name
             self.current_tool_id = tool_id
             self.dynamic_http_origin_names = {
@@ -2171,14 +2180,18 @@ class PythonVisitor(ast.NodeVisitor):
                 )
                 if argument.arg not in {"self", "cls"}
             }
+            self.dynamic_tool_input_names = set(self.dynamic_http_origin_names)
             if node.args.vararg:
                 self.dynamic_http_origin_names.add(node.args.vararg.arg)
+                self.dynamic_tool_input_names.add(node.args.vararg.arg)
             if node.args.kwarg:
                 self.dynamic_http_origin_names.add(node.args.kwarg.arg)
+                self.dynamic_tool_input_names.add(node.args.kwarg.arg)
             self.visit_function_statements(node)
             self.current_tool = previous_tool
             self.current_tool_id = previous_tool_id
             self.dynamic_http_origin_names = previous_dynamic_http_origin_names
+            self.dynamic_tool_input_names = previous_dynamic_tool_input_names
         else:
             self.visit_function_statements(node)
         self.allowlisted_names = previous_allowlisted_names
@@ -3343,8 +3356,22 @@ class PythonVisitor(ast.NodeVisitor):
                         source_id=self.current_tool_id,
                     )
                 )
-        if call_name in {"eval", "exec"}:
+        browser_evaluate = (
+            self.has_browser_import
+            and short_name == "evaluate"
+            and "." in call_name
+        )
+        if call_name in {"eval", "exec"} or browser_evaluate:
             argument = node.args[0] if node.args else None
+            dynamic_input = argument is not None and not isinstance(
+                argument, ast.Constant
+            )
+            if browser_evaluate:
+                dynamic_input = bool(
+                    argument is not None
+                    and python_expression_names(argument)
+                    & self.dynamic_tool_input_names
+                )
             self.ir.add_component(
                 Component(
                     "capability",
@@ -3352,8 +3379,10 @@ class PythonVisitor(ast.NodeVisitor):
                     self.ev(node),
                     {
                         "api": call_name,
-                        "dynamic_input": argument is not None
-                        and not isinstance(argument, ast.Constant),
+                        "execution_context": (
+                            "browser-page" if browser_evaluate else "python-process"
+                        ),
+                        "dynamic_input": dynamic_input,
                         "scope": source_scope(self.path),
                     },
                 )

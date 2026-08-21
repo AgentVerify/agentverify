@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T11:28:07.137270+00:00",
-  "labels": 123,
-  "passed": 123,
+  "generated_at": "2026-08-21T11:44:56.989270+00:00",
+  "labels": 126,
+  "passed": 126,
   "metrics": {
     "IR-APPROVAL-CONTROL": {
       "tp": 3,
@@ -61,6 +61,14 @@
       "recall": 1.0
     },
     "IR-MCP-REGISTRY": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-BROWSER-EVALUATE": {
       "tp": 2,
       "fp": 0,
       "tn": 1,
@@ -1251,6 +1259,33 @@
     {
       "id": "python-deferred-wrapper-local-negative",
       "check_id": "IR-PY-TRANSPARENT-WRAPPER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-evaluate-dynamic-local",
+      "check_id": "IR-PY-BROWSER-EVALUATE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-evaluate-literal-local",
+      "check_id": "IR-PY-BROWSER-EVALUATE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-ordinary-evaluate-local-negative",
+      "check_id": "IR-PY-BROWSER-EVALUATE",
       "expected": false,
       "observed": false,
       "anchor_ok": true,

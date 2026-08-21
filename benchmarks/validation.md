@@ -42,12 +42,15 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 - `cases/python_post_registration`: exact FastMCP decorator applications resolve same-module and
   relative-imported functions; wrappers, nested calls, rebound bindings, duplicate registrars, and
   unrelated factories remain negative.
+- `cases/python_browser_evaluate`: Playwright page evaluation preserves both inventory and browser
+  execution context; direct tool-controlled script text is a finding, while literal JavaScript and
+  an ordinary non-browser `.evaluate(...)` method remain negatives.
 
 ## Full-corpus engine benchmark
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,729 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,409 relationships, and completed in 92.26 seconds on the development machine. Three parse
+resolved 1,415 relationships, and completed in 91.15 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -56,9 +59,9 @@ The locked collector preserves the original 220-file root selection and adds at 
 imports reached from MCP forwarding files. This refresh materialized 135 dependency files across 11
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v2 records the dependency count per
-repository; engine schema v23 carries both the 135-file total and the 11-repository coverage.
+repository; engine schema v24 carries both the 135-file total and the 11-repository coverage.
 
-Engine benchmark schema v23 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v24 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It intentionally
 excludes arbitrary agent/tool display names from the summary. The resulting
@@ -66,15 +69,15 @@ framework/provider/protocol/capability coverage and unsupported syntax are publi
 `docs/frontend-coverage.md`; presence counts are discovery observations, not recall measurements.
 
 The benchmark now also measures identity coverage: 8,681 agent/tool component observations carry
-module-qualified IDs. Of 2,818 relationship endpoints, 1,897 carry symbol IDs and 1,895 resolve to an
-observed component (1,644 Python and 251 TypeScript). Schema v23 records 325 same-scope and 14
+module-qualified IDs. Of 2,830 relationship endpoints, 1,903 carry symbol IDs and 1,901 resolve to an
+observed component (1,650 Python and 251 TypeScript). Schema v24 records 325 same-scope and 14
 module-scope targets resolved from a single direct definition that appears before the Agent
 constructor. It also records 23 repeated-binding targets still withheld because the scope contains
 multiple definitions. The two unmatched IDs are explicit Python re-export targets; capability,
 control, and taxonomy endpoints intentionally remain evidence observations.
 
-Schema-v23 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
-resolves 1,895 endpoints by symbol ID, 376 by exact evidence location, and 17 by a unique display
+Schema-v24 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
+resolves 1,901 endpoints by symbol ID, 382 by exact evidence location, and 17 by a unique display
 name; 30 remain ambiguous and 500 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
@@ -104,7 +107,9 @@ and one unique module-level definition. Ninety-three registrations are direct; 2
 metadata-preserving forwarding wrappers, totaling 23 wrapper layers. A wrapper must carry an exact
 `functools.wraps(function)` decorator and directly call `function(*args, **kwargs)` from its returned
 callback; direct wrappers, decorator factories, and chains of at most four layers are supported.
-These tools yield 15 exact capability edges—14 browser and one filesystem—rather than 115 findings.
+These tools yield 21 exact capability edges—14 browser actions, six browser-page evaluations, and
+one filesystem mutation—rather than 115 findings. Only one of 30 Skyvern evaluations receives raw
+tool-controlled script text; the remaining evaluator inventory is not promoted to a finding.
 The filesystem edge exposes
 [`resolved.parent.mkdir(...)`](https://github.com/Skyvern-AI/skyvern/blob/486c8975e9864a53037d4701b781f8619e698c40/skyvern/cli/mcp_tools/state.py#L89)
 inside `skyvern_state_save`; equality with an allowed root does not prove that its parent remains
@@ -114,10 +119,10 @@ registrars, wildcard imports, and unrelated `.tool` methods remain unresolved.
 The TypeScript frontend now reads only balanced top-level entries from literal Agent tool arrays. It
 resolves OpenAI `tool`, `toolNamespace`, built-in tool factories, inline/assigned `asTool` adapters,
 and Cline `createTool`. Import-aware discovery now also resolves generic/Mastra object-property
-tools plus MCP `registerTool` names and callback spans. Schema v23 records 27 Mastra factory tools,
+tools plus MCP `registerTool` names and callback spans. Schema v24 records 27 Mastra factory tools,
 264 MCP registrations, 70 object-property tools (the factory/property categories overlap), and ten
 exact registration-to-capability edges. Four of those edges come from bounded same-file network
-helper summaries: three Mastra static methods and one MCP Servers free function. Schema v23 also
+helper summaries: three Mastra static methods and one MCP Servers free function. Schema v24 also
 records one imported TypeScript path-boundary control edge. The full sample
 contains 95 structure-backed agent edges: 14 delegations and 81 tool edges, all with targets that
 resolve to observed components. The prior token heuristic could
@@ -196,8 +201,12 @@ findings while preserving interpolated templates. Broad approval-name matching c
 and version-check flags with human approval; requiring approval-specific names removed six review
 candidates. Corpus totals are now 21 `AV-EXEC001` findings and 15 `AV-APPROVAL001` reviews.
 The dependency closure also exposes CAMEL's production `func_string_to_callable(code)` helper, whose
-parameter reaches `exec`; it raises the `AV-EXEC002` total to 50 and is now pinned in the rule truth
-set.
+parameter reaches `exec`. Browser-aware evaluation adds one more exact path: Skyvern's registered
+[`skyvern_evaluate`](https://github.com/Skyvern-AI/skyvern/blob/486c8975e9864a53037d4701b781f8619e698c40/skyvern/cli/mcp_tools/browser.py#L2458)
+passes its tool parameter to Playwright `page.evaluate`. Across 80 inventoried browser-page
+evaluations, this is the only one with direct tool-parameter flow, raising `AV-EXEC002` to 51 across
+15 repositories. Skyvern's normalized numeric scroll JavaScript at line 1664 is pinned as a real
+negative. The rule has 17 positive and eight negative exact labels.
 
 ## AV-MCP002 — dynamic MCP forwarding
 
@@ -411,12 +420,13 @@ and a literal `privileged=True` keyword.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 242 exact labels across all nine enabled rules: 138 positives and 104
+`benchmarks/truthset.json` contains 247 exact labels across all nine enabled rules: 140 positives and 107
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
-literal TypeScript shell calls, constant/test-only eval, non-approval skip flags, disabled
+literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
+non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
-Compose/Kubernetes/Docker SDK settings. All 242 currently pass; each rule's seed precision and recall
+Compose/Kubernetes/Docker SDK settings. All 247 currently pass; each rule's seed precision and recall
 are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified source
 text at the exact pinned line, preventing a missing or drifting location from passing silently.
 
@@ -459,7 +469,9 @@ and OpenAI's three real sinks. Eight path-prefix labels cover two local and four
 plus post-write and separator-aware negatives. Seven Python post-registration labels cover two local
 tool edges, one cross-file approval edge, three adversarial negatives, and Skyvern's real filesystem
 edge. Six transparent-wrapper labels cover direct, decorator-factory, and two-layer positives plus
-metadata-only, branch-only, and deferred-call negatives. All 123 IR labels pass: three approval positives/four negatives,
+metadata-only, branch-only, and deferred-call negatives. Three browser-evaluation labels cover two
+exact tool-to-browser-page execution edges and an ordinary-method negative. All 126 IR labels pass:
+three approval positives/four negatives,
 two audit positives/two negatives, two import positives/one negative, three TypeScript graph
 positives/one negative, eight registration positives/one negative, five helper-summary positives/one
 negative, 11 path-boundary positives/nine negatives, four path-helper positives/seven negatives,
@@ -467,4 +479,5 @@ six path-prefix positives/two negatives,
 12 filesystem-mutation positives/seven
 negatives, two MCP-registry positives/one negative, three
 fixed-instance positives/one negative, two closure positives/two negatives, two method-registry
-positives/one negative, and two imported-registry positives/three negatives.
+positives/one negative, two browser-evaluation positives/one negative, and two imported-registry
+positives/three negatives.

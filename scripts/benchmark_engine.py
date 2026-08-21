@@ -139,6 +139,13 @@ def main() -> int:
         python_post_registered_tool_ids = {
             item.symbol_id for item in python_post_registered_tools if item.symbol_id
         }
+        python_browser_evaluations = [
+            item
+            for item in ir.components
+            if item.kind == "capability"
+            and item.name == "code-execution"
+            and item.attributes.get("execution_context") == "browser-page"
+        ]
         typescript_network_helper_capabilities = [
             item
             for item in ir.components
@@ -286,6 +293,13 @@ def main() -> int:
                     for edge in ir.relationships
                 ),
             },
+            "python_browser_evaluate": {
+                "total": len(python_browser_evaluations),
+                "dynamic": sum(
+                    item.attributes.get("dynamic_input") is True
+                    for item in python_browser_evaluations
+                ),
+            },
             "path_boundary_controls": {
                 "python": len(python_path_boundary_edges),
                 "typescript": len(typescript_path_boundary_edges),
@@ -388,7 +402,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 23,
+        "schema_version": 24,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -497,6 +511,10 @@ def main() -> int:
                     "approval_enabled",
                     "capability_edges",
                 )
+            },
+            "python_browser_evaluate": {
+                name: sum(result["python_browser_evaluate"][name] for result in successful)
+                for name in ("total", "dynamic")
             },
             "path_boundary_controls": {
                 name: sum(result["path_boundary_controls"][name] for result in successful)
