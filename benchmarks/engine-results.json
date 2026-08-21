@@ -1,6 +1,6 @@
 {
-  "schema_version": 41,
-  "generated_at": "2026-08-21T17:44:30.339545+00:00",
+  "schema_version": 42,
+  "generated_at": "2026-08-21T17:59:30.582583+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -16,25 +16,25 @@
     "zero_source_repositories": [
       "daytonaio/daytona"
     ],
-    "files_scanned": 10754,
-    "dependency_files_materialized": 159,
+    "files_scanned": 10756,
+    "dependency_files_materialized": 161,
     "repositories_with_dependency_expansion": 17,
     "config_files_scanned": 155,
-    "relationships": 1485,
-    "symbolized_components": 8744,
-    "identified_symbol_endpoints": 1936,
-    "resolved_symbol_endpoints": 1934,
+    "relationships": 1486,
+    "symbolized_components": 8745,
+    "identified_symbol_endpoints": 1937,
+    "resolved_symbol_endpoints": 1935,
     "unmatched_identified_symbol_endpoints": 2,
     "ambiguous_repeated_binding_targets": 23,
     "resolved_binding_targets_by_basis": {
       "lexical-single-definition": 325,
       "module-single-definition": 14
     },
-    "relationship_endpoints": 2970,
+    "relationship_endpoints": 2972,
     "bom_endpoint_resolutions": {
       "ambiguous": 37,
-      "evidence-location": 481,
-      "symbol-id": 1934,
+      "evidence-location": 482,
+      "symbol-id": 1935,
       "unique-display-name": 19,
       "unresolved": 499
     },
@@ -45,7 +45,7 @@
     },
     "resolved_symbol_endpoints_by_frontend": {
       "py": 1677,
-      "ts": 257
+      "ts": 258
     },
     "typescript_graph": {
       "agent_edges": 95,
@@ -134,6 +134,13 @@
       "absolute_override_allowed": 0,
       "absolute_override_disabled": 0,
       "capability_edges": 0
+    },
+    "typescript_composio_cli_upload": {
+      "capabilities": 1,
+      "dynamic_origins": 1,
+      "capability_edges": 1,
+      "raw_global_fetch": 1,
+      "destination_policy_absent": 1
     },
     "typescript_network_origin_controls": {
       "total": 1,
@@ -257,7 +264,7 @@
       "AV-FS001": 26,
       "AV-FS002": 4,
       "AV-MCP002": 49,
-      "AV-NET001": 17,
+      "AV-NET001": 18,
       "AV-SANDBOX001": 19
     },
     "finding_repositories": {
@@ -269,7 +276,7 @@
       "AV-FS001": 9,
       "AV-FS002": 1,
       "AV-MCP002": 23,
-      "AV-NET001": 10,
+      "AV-NET001": 11,
       "AV-SANDBOX001": 9
     },
     "observed_component_names": {
@@ -441,7 +448,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 148.0339
+    "elapsed_seconds": 151.8678
   },
   "repositories": [
     {
@@ -562,6 +569,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -649,7 +663,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6452
+      "elapsed_seconds": 2.8219
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -776,6 +790,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -868,7 +889,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.082
+      "elapsed_seconds": 3.0959
     },
     {
       "repository": "langchain-ai/langchain",
@@ -992,6 +1013,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1077,7 +1105,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9157
+      "elapsed_seconds": 0.9748
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -1205,6 +1233,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1298,7 +1333,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.9539
+      "elapsed_seconds": 3.9162
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -1431,6 +1466,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1520,7 +1562,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1877
+      "elapsed_seconds": 0.189
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -1657,6 +1699,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1759,7 +1808,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.5258
+      "elapsed_seconds": 4.541
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -1898,6 +1947,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2005,7 +2061,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8893
+      "elapsed_seconds": 2.8571
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -2139,6 +2195,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2238,7 +2301,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2612
+      "elapsed_seconds": 0.2699
     },
     {
       "repository": "microsoft/autogen",
@@ -2368,6 +2431,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2462,7 +2532,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6855
+      "elapsed_seconds": 0.6807
     },
     {
       "repository": "microsoft/agent-framework",
@@ -2576,6 +2646,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2661,7 +2738,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0456
+      "elapsed_seconds": 0.0519
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -2789,6 +2866,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2883,7 +2967,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1087
+      "elapsed_seconds": 0.1093
     },
     {
       "repository": "openai/openai-agents-python",
@@ -3031,6 +3115,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3135,7 +3226,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.2437
+      "elapsed_seconds": 5.1683
     },
     {
       "repository": "openai/openai-agents-js",
@@ -3280,6 +3371,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3371,7 +3469,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9239
+      "elapsed_seconds": 0.9634
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -3505,6 +3603,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3603,7 +3708,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.456
+      "elapsed_seconds": 11.4885
     },
     {
       "repository": "google/adk-python",
@@ -3736,6 +3841,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3831,7 +3943,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4019
+      "elapsed_seconds": 3.384
     },
     {
       "repository": "google/adk-js",
@@ -3959,6 +4071,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4051,7 +4170,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.211
+      "elapsed_seconds": 3.4448
     },
     {
       "repository": "huggingface/smolagents",
@@ -4183,6 +4302,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4284,7 +4410,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3059
+      "elapsed_seconds": 1.3073
     },
     {
       "repository": "agno-agi/agno",
@@ -4408,6 +4534,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4503,7 +4636,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3037
+      "elapsed_seconds": 0.3068
     },
     {
       "repository": "camel-ai/camel",
@@ -4637,6 +4770,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4739,7 +4879,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6957
+      "elapsed_seconds": 2.6722
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -4861,6 +5001,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4949,7 +5096,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1867
+      "elapsed_seconds": 0.1841
     },
     {
       "repository": "run-llama/llama_index",
@@ -5077,6 +5224,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5162,7 +5316,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7502
+      "elapsed_seconds": 0.7529
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -5295,6 +5449,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5397,7 +5558,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4385
+      "elapsed_seconds": 1.4102
     },
     {
       "repository": "InternLM/lagent",
@@ -5529,6 +5690,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5627,7 +5795,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6556
+      "elapsed_seconds": 0.6388
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -5752,6 +5920,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5852,7 +6027,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0969
+      "elapsed_seconds": 1.1603
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -5982,6 +6157,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6084,7 +6266,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5661
+      "elapsed_seconds": 1.5314
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -6210,6 +6392,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6309,7 +6498,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9603
+      "elapsed_seconds": 0.9719
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -6438,6 +6627,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6533,7 +6729,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2197
+      "elapsed_seconds": 3.0974
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -6657,6 +6853,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6751,7 +6954,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2508
+      "elapsed_seconds": 1.2819
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -6877,6 +7080,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6962,7 +7172,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8802
+      "elapsed_seconds": 0.9238
     },
     {
       "repository": "letta-ai/letta-code",
@@ -7082,6 +7292,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7167,7 +7384,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.195
+      "elapsed_seconds": 4.5157
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -7300,6 +7517,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7399,7 +7623,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9502
+      "elapsed_seconds": 0.9722
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -7524,6 +7748,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7624,7 +7855,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9679
+      "elapsed_seconds": 2.0194
     },
     {
       "repository": "mastra-ai/mastra",
@@ -7755,6 +7986,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7846,7 +8084,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.4276
+      "elapsed_seconds": 2.5878
     },
     {
       "repository": "vercel/ai",
@@ -7972,6 +8210,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8062,7 +8307,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6302
+      "elapsed_seconds": 2.8304
     },
     {
       "repository": "cline/cline",
@@ -8192,6 +8437,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8283,7 +8535,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.6564
+      "elapsed_seconds": 3.8451
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -8406,6 +8658,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8491,7 +8750,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.9261
+      "elapsed_seconds": 4.1785
     },
     {
       "repository": "continuedev/continue",
@@ -8612,6 +8871,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8697,7 +8963,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.4194
+      "elapsed_seconds": 2.6213
     },
     {
       "repository": "Aider-AI/aider",
@@ -8817,6 +9083,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8917,7 +9190,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.4889
+      "elapsed_seconds": 2.5718
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -9036,6 +9309,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9129,7 +9409,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 0.7993
+      "elapsed_seconds": 0.7808
     },
     {
       "repository": "plandex-ai/plandex",
@@ -9235,6 +9515,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9320,7 +9607,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0428
+      "elapsed_seconds": 0.0432
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -9440,6 +9727,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9531,7 +9825,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1583
+      "elapsed_seconds": 1.1914
     },
     {
       "repository": "stitionai/devika",
@@ -9656,6 +9950,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9745,7 +10046,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3098
+      "elapsed_seconds": 0.3128
     },
     {
       "repository": "block/goose",
@@ -9866,6 +10167,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9960,7 +10268,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 4.9393
+      "elapsed_seconds": 5.535
     },
     {
       "repository": "bytedance/trae-agent",
@@ -10094,6 +10402,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10196,7 +10511,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.646
+      "elapsed_seconds": 0.632
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -10320,6 +10635,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10411,7 +10733,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.8166
+      "elapsed_seconds": 6.2276
     },
     {
       "repository": "openai/codex",
@@ -10524,6 +10846,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10615,7 +10944,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.598
+      "elapsed_seconds": 0.5868
     },
     {
       "repository": "browser-use/browser-use",
@@ -10751,6 +11080,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10854,7 +11190,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4048
+      "elapsed_seconds": 3.326
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -10996,6 +11332,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11097,7 +11440,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.7365
+      "elapsed_seconds": 6.455
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -11225,6 +11568,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11321,7 +11671,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7052
+      "elapsed_seconds": 0.7301
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -11444,6 +11794,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11531,7 +11888,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2551
+      "elapsed_seconds": 1.3499
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -11657,6 +12014,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 1,
         "configured_optional": 1,
@@ -11752,7 +12116,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2391
+      "elapsed_seconds": 1.313
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -11885,6 +12249,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11979,7 +12350,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0304
+      "elapsed_seconds": 1.9934
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -12105,6 +12476,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12195,7 +12573,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.6922
+      "elapsed_seconds": 3.99
     },
     {
       "repository": "github/github-mcp-server",
@@ -12311,6 +12689,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12396,7 +12781,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0482
+      "elapsed_seconds": 0.0481
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -12513,6 +12898,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12598,7 +12990,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1221
+      "elapsed_seconds": 0.1134
     },
     {
       "repository": "awslabs/mcp",
@@ -12722,6 +13114,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12815,7 +13214,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8103
+      "elapsed_seconds": 1.845
     },
     {
       "repository": "docker/mcp-gateway",
@@ -12932,6 +13331,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13019,7 +13425,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0342
+      "elapsed_seconds": 0.0344
     },
     {
       "repository": "jlowin/fastmcp",
@@ -13144,6 +13550,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13241,7 +13654,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1669
+      "elapsed_seconds": 2.1404
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -13347,6 +13760,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13432,7 +13852,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0308
+      "elapsed_seconds": 0.0321
     },
     {
       "repository": "langflow-ai/langflow",
@@ -13566,6 +13986,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13659,7 +14086,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8781
+      "elapsed_seconds": 2.9038
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -13783,6 +14210,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13876,7 +14310,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.5834
+      "elapsed_seconds": 3.7522
     },
     {
       "repository": "langgenius/dify",
@@ -13985,6 +14419,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14070,7 +14511,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4331
+      "elapsed_seconds": 1.4436
     },
     {
       "repository": "n8n-io/n8n",
@@ -14202,6 +14643,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14295,7 +14743,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.5206
+      "elapsed_seconds": 2.6607
     },
     {
       "repository": "activepieces/activepieces",
@@ -14430,6 +14878,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14525,7 +14980,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6482
+      "elapsed_seconds": 1.7242
     },
     {
       "repository": "simstudioai/sim",
@@ -14640,6 +15095,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14725,25 +15187,25 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.8255
+      "elapsed_seconds": 5.2152
     },
     {
       "repository": "composiohq/composio",
       "category": "tool-platform",
       "status": "ok",
-      "files_scanned": 181,
-      "dependency_files_materialized": 3,
+      "files_scanned": 183,
+      "dependency_files_materialized": 5,
       "config_files_scanned": 0,
       "components": {
         "agent": 16,
-        "capability": 65,
+        "capability": 68,
         "control": 3,
         "framework": 21,
         "mcp": 2,
         "model": 19,
         "protocol": 3,
         "provider": 11,
-        "tool": 47
+        "tool": 48
       },
       "component_names": {
         "capability": [
@@ -14771,16 +15233,16 @@
           "OpenAI"
         ]
       },
-      "relationships": 11,
-      "symbolized_components": 63,
-      "identified_symbol_endpoints": 7,
-      "resolved_symbol_endpoints": 7,
+      "relationships": 12,
+      "symbolized_components": 64,
+      "identified_symbol_endpoints": 8,
+      "resolved_symbol_endpoints": 8,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
         "py": 4,
-        "ts": 3
+        "ts": 4
       },
       "typescript_graph": {
         "agent_edges": 1,
@@ -14866,6 +15328,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 1,
+        "dynamic_origins": 1,
+        "capability_edges": 1,
+        "raw_global_fetch": 1,
+        "destination_policy_absent": 1
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14947,20 +15416,21 @@
       },
       "bom_endpoint_resolutions": {
         "ambiguous": 4,
-        "evidence-location": 9,
-        "symbol-id": 7,
+        "evidence-location": 10,
+        "symbol-id": 8,
         "unresolved": 2
       },
       "bom_ambiguous_endpoints_by_side_kind": {
         "target:control": 4
       },
       "findings": {
-        "AV-MCP002": 1
+        "AV-MCP002": 1,
+        "AV-NET001": 1
       },
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.67
+      "elapsed_seconds": 1.8021
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -15097,6 +15567,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -15200,7 +15677,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2446
+      "elapsed_seconds": 2.1495
     },
     {
       "repository": "e2b-dev/E2B",
@@ -15314,6 +15791,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -15399,7 +15883,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0321
+      "elapsed_seconds": 2.1027
     },
     {
       "repository": "daytonaio/daytona",
@@ -15504,6 +15988,13 @@
         "absolute_override_allowed": 0,
         "absolute_override_disabled": 0,
         "capability_edges": 0
+      },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -15722,6 +16213,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -15813,7 +16311,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1724
+      "elapsed_seconds": 1.1458
     },
     {
       "repository": "traceloop/openllmetry",
@@ -15950,6 +16448,13 @@
         "absolute_override_disabled": 0,
         "capability_edges": 0
       },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -16045,7 +16550,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9267
+      "elapsed_seconds": 1.9455
     }
   ]
 }

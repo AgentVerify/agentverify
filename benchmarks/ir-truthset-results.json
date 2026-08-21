@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T17:41:54.280921+00:00",
-  "labels": 246,
-  "passed": 246,
+  "generated_at": "2026-08-21T17:56:55.554698+00:00",
+  "labels": 249,
+  "passed": 249,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -206,6 +206,14 @@
     },
     "IR-TS-AXIOS-INSTANCE": {
       "tp": 4,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-COMPOSIO-CLI-UPLOAD": {
+      "tp": 2,
       "fp": 0,
       "tn": 1,
       "fn": 0,
@@ -2510,6 +2518,33 @@
     {
       "id": "typescript-composio-where-supported-real",
       "check_id": "IR-TS-UNDICI-SSRF-SAFE-FETCH",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-composio-cli-upload-local",
+      "check_id": "IR-TS-COMPOSIO-CLI-UPLOAD",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-composio-cli-upload-raw-local-negative",
+      "check_id": "IR-TS-COMPOSIO-CLI-UPLOAD",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-composio-cli-upload-real",
+      "check_id": "IR-TS-COMPOSIO-CLI-UPLOAD",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

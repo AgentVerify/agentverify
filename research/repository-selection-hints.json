@@ -40,6 +40,8 @@
       "packages/core/src/agents/a2a-client-manager.ts"
     ],
     "composiohq/composio": [
+      "ts/packages/cli/src/services/tool-file-uploads.ts",
+      "ts/packages/cli/src/services/tools-executor.ts",
       "ts/packages/core/src/models/RemoteFile.ts",
       "ts/packages/core/src/models/ToolRouterSessionFileMount.ts",
       "ts/packages/core/src/utils/pinnedDispatcher.node.ts",

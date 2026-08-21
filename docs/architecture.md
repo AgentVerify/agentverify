@@ -179,6 +179,12 @@ Undici dispatcher's lookup. Caller dispatchers, a non-stock global dispatcher, a
 mode are retained as preflight-only route residuals. The edge helper's two exports stay distinct:
 `ssrfSafeFetch` fails closed, while `ssrfSafeFetchWhereSupported` deliberately uses unguarded fetch.
 
+A separate Composio CLI pass models a real unsafe counterpart. It requires the exact
+`ToolsExecutor.execute` import and `params.arguments` mapping, schema `file_uploadable` recursion,
+URL-versus-local-file split, and final raw `fetch(url)`. The pass replaces that sink's generic
+inventory component with a dynamic network capability and a symbolized tool edge, allowing
+`AV-NET001` to report the proven tool-execution-argument origin without generalizing from filenames.
+
 The A2A endpoint-provenance passes model a different authority transition from tool-input SSRF.
 They create an `a2a-rpc` capability at SDK client construction when a network-resolved AgentCard can
 select the later RPC endpoint. The ADK JS proof requires an exact named import of its resolver and a

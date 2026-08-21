@@ -12219,6 +12219,169 @@ def add_typescript_composio_ssrf_safe_fetch_composition(
         )
 
 
+def add_typescript_composio_cli_file_upload_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve Composio CLI tool arguments into its raw URL-file fetch."""
+    sources: list[tuple[str, str, str]] = []
+    for path in paths:
+        if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+            continue
+        try:
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        sources.append(
+            (path.relative_to(root).as_posix(), text, typescript_code_mask(text))
+        )
+
+    upload_matches = [
+        item
+        for item in sources
+        if all(
+            marker in item[2]
+            for marker in (
+                "const readFileFromUrl = async",
+                "const response = await fetch(url)",
+                "const readUploadSource = async",
+                "return readFileFromUrl(path, file)",
+                "const uploadFile = async",
+                "readUploadSource(params.fs, params.path, params.file)",
+                "const hydrateFileUploads = async",
+                "schema?.file_uploadable === true",
+                "export const uploadToolInputFiles = async",
+                "hydrateFileUploads(params.arguments_, params.inputSchema",
+            )
+        )
+    ]
+    executor_matches = [
+        item
+        for item in sources
+        if all(
+            marker in item[2]
+            for marker in (
+                "export interface ToolsExecutor",
+                "export const ToolsExecutor =",
+                "execute: (slug, params) =>",
+                "uploadToolInputFiles({",
+                "arguments_: params.arguments",
+                "inputSchema: definition.schema",
+            )
+        )
+    ]
+    if len(upload_matches) != 1 or len(executor_matches) != 1:
+        return
+    upload_path, upload_text, upload_code = upload_matches[0]
+    executor_path, executor_text, executor_code = executor_matches[0]
+    if (
+        "ssrfSafeFetch" in upload_code
+        or not re.search(
+            r"if\s*\(\s*typeof\s+file\s*===\s*['\"]string['\"]\s*&&\s*"
+            r"/\^https\?:\\/\\//i\.test\s*\(\s*file\s*\)\s*\)\s*\{"
+            r"\s*return\s+readFileFromUrl\s*\(\s*path\s*,\s*file\s*\)",
+            upload_text,
+        )
+        or not re.search(
+            r"return\s+uploadFile\s*\(\s*\{[\s\S]{0,300}file\s*:\s*value"
+            r"[\s\S]{0,300}\}\s*\)",
+            upload_code,
+        )
+        or not re.search(
+            r"import\s*\{[^}]*\buploadToolInputFiles\b[^}]*\}\s*from\s*"
+            r"['\"]src/services/tool-file-uploads['\"]",
+            executor_text,
+        )
+        or not re.search(
+            r"uploadToolInputFiles\s*\(\s*\{[\s\S]{0,300}"
+            r"arguments_\s*:\s*params\.arguments[\s\S]{0,200}"
+            r"inputSchema\s*:\s*definition\.schema",
+            executor_code,
+        )
+    ):
+        return
+    fetch_matches = list(
+        re.finditer(r"(?<![\w$.])fetch\s*\(\s*url\s*\)", upload_code)
+    )
+    execute_match = re.search(r"\bexecute\s*:\s*\(\s*slug\s*,\s*params\s*\)\s*=>", executor_code)
+    upload_entry_match = re.search(
+        r"export\s+const\s+uploadToolInputFiles\s*=", upload_code
+    )
+    if len(fetch_matches) != 1 or execute_match is None or upload_entry_match is None:
+        return
+    fetch_match = fetch_matches[0]
+    fetch_line = line_at(upload_text, fetch_match.start())
+    execute_line = line_at(executor_text, execute_match.start())
+    upload_entry_line = line_at(upload_text, upload_entry_match.start())
+    evidence = Evidence(
+        upload_path,
+        fetch_line,
+        excerpt(upload_text.splitlines(), fetch_line),
+    )
+    tool_name = "Composio ToolsExecutor.execute"
+    ir.add_component(
+        Component(
+            "tool",
+            tool_name,
+            Evidence(
+                executor_path,
+                execute_line,
+                excerpt(executor_text.splitlines(), execute_line),
+            ),
+            {
+                "scope": source_scope(executor_path),
+                "entrypoint": "execute",
+                "argument_source": "tool-execution-arguments",
+                "file_upload_gate": "schema-file-uploadable",
+                "analysis": "typescript-composio-cli-file-upload-flow",
+            },
+            source_symbol("ts", executor_path, "tool", "ToolsExecutor.execute"),
+        )
+    )
+    capability_attributes = {
+        "scope": source_scope(upload_path),
+        "api": "fetch",
+        "dynamic_origin": True,
+        "origin_authority": "tool-execution-arguments",
+        "summary": "composio-cli-schema-file-upload",
+        "analysis": "typescript-composio-cli-file-upload-flow",
+        "transport_scope": "raw-global-fetch",
+        "destination_policy": "absent-on-proven-path",
+        "redirect_scope": "global-fetch-default",
+        "dns_scope": "global-fetch-default",
+        "proxy_scope": "runtime-default",
+        "executor_path": executor_path,
+        "executor_line": execute_line,
+        "upload_entry_line": upload_entry_line,
+    }
+    ir.components = [
+        item
+        for item in ir.components
+        if not (
+            item.kind == "capability"
+            and item.name == "network"
+            and item.evidence.path == upload_path
+            and item.evidence.line == fetch_line
+        )
+    ]
+    ir.add_component(
+        Component("capability", "network", evidence, capability_attributes)
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            tool_name,
+            "uses",
+            "capability",
+            "network",
+            evidence,
+            {"analysis": "typescript-composio-cli-file-upload-flow"},
+            source_symbol("ts", executor_path, "tool", "ToolsExecutor.execute"),
+        )
+    )
+
+
 def add_typescript_a2a_card_endpoint_composition(
     ir: RepositoryIR,
     root: Path,
@@ -12743,6 +12906,7 @@ def scan_repository(
     add_typescript_google_adk_load_web_page_composition(ir, root, registry_paths)
     add_typescript_activepieces_safe_http_composition(ir, root, registry_paths)
     add_typescript_composio_ssrf_safe_fetch_composition(ir, root, registry_paths)
+    add_typescript_composio_cli_file_upload_flow(ir, root, registry_paths)
     add_typescript_a2a_card_endpoint_composition(ir, root, registry_paths)
     add_python_adk_a2a_card_endpoint_policy(ir, root, registry_paths)
     propagate_python_class_network_helpers(

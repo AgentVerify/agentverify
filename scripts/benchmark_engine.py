@@ -230,6 +230,18 @@ def main() -> int:
             (item.evidence.path, item.evidence.line)
             for item in typescript_axios_instance_network
         }
+        typescript_composio_cli_upload = [
+            item
+            for item in ir.components
+            if item.kind == "capability"
+            and item.name == "network"
+            and item.attributes.get("analysis")
+            == "typescript-composio-cli-file-upload-flow"
+        ]
+        typescript_composio_cli_upload_locations = {
+            (item.evidence.path, item.evidence.line)
+            for item in typescript_composio_cli_upload
+        }
         typescript_network_origin_controls = [
             edge
             for edge in ir.relationships
@@ -607,6 +619,28 @@ def main() -> int:
                     for edge in ir.relationships
                 ),
             },
+            "typescript_composio_cli_upload": {
+                "capabilities": len(typescript_composio_cli_upload),
+                "dynamic_origins": sum(
+                    bool(item.attributes.get("dynamic_origin"))
+                    for item in typescript_composio_cli_upload
+                ),
+                "capability_edges": sum(
+                    edge.target_kind == "capability"
+                    and edge.target_name == "network"
+                    and (edge.evidence.path, edge.evidence.line)
+                    in typescript_composio_cli_upload_locations
+                    for edge in ir.relationships
+                ),
+                "raw_global_fetch": sum(
+                    item.attributes.get("transport_scope") == "raw-global-fetch"
+                    for item in typescript_composio_cli_upload
+                ),
+                "destination_policy_absent": sum(
+                    item.attributes.get("destination_policy") == "absent-on-proven-path"
+                    for item in typescript_composio_cli_upload
+                ),
+            },
             "typescript_network_origin_controls": {
                 "total": len(typescript_network_origin_controls),
                 "configured_optional": sum(
@@ -891,7 +925,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 41,
+        "schema_version": 42,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -1088,6 +1122,19 @@ def main() -> int:
                     "absolute_override_allowed",
                     "absolute_override_disabled",
                     "capability_edges",
+                )
+            },
+            "typescript_composio_cli_upload": {
+                name: sum(
+                    result["typescript_composio_cli_upload"][name]
+                    for result in successful
+                )
+                for name in (
+                    "capabilities",
+                    "dynamic_origins",
+                    "capability_edges",
+                    "raw_global_fetch",
+                    "destination_policy_absent",
                 )
             },
             "typescript_network_origin_controls": {

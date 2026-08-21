@@ -2211,6 +2211,74 @@ def test_typescript_composio_safe_fetch_preserves_runtime_and_route_residuals(
         )
 
 
+def test_typescript_composio_cli_upload_resolves_tool_arguments_to_raw_fetch(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/typescript_composio_cli_upload"
+    ir = scan_repository(root)
+    edges = [
+        edge
+        for edge in ir.relationships
+        if edge.attributes.get("analysis") == "typescript-composio-cli-file-upload-flow"
+    ]
+    assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [
+        ("tool-file-uploads.ts", 2)
+    ]
+    capability = next(
+        item
+        for item in ir.components
+        if item.kind == "capability"
+        and item.attributes.get("analysis") == "typescript-composio-cli-file-upload-flow"
+    )
+    assert capability.attributes["dynamic_origin"] is True
+    assert capability.attributes["origin_authority"] == "tool-execution-arguments"
+    assert capability.attributes["destination_policy"] == "absent-on-proven-path"
+    assert any(
+        finding.rule_id == "AV-NET001"
+        and finding.evidence.path == "tool-file-uploads.ts"
+        and finding.evidence.line == 2
+        for finding in ir.findings
+    )
+
+    for name, relative, before, after in (
+        (
+            "guarded-fetch",
+            "tool-file-uploads.ts",
+            "fetch(url)",
+            "ssrfSafeFetch(url)",
+        ),
+        (
+            "fixed-arguments",
+            "tools-executor.ts",
+            "arguments_: params.arguments",
+            "arguments_: {}",
+        ),
+        (
+            "broken-schema-gate",
+            "tool-file-uploads.ts",
+            "schema?.file_uploadable === true",
+            "schema?.file_uploadable === false",
+        ),
+        (
+            "wrong-import",
+            "tools-executor.ts",
+            "from 'src/services/tool-file-uploads'",
+            "from './raw'",
+        ),
+    ):
+        incomplete = tmp_path / name
+        shutil.copytree(root, incomplete)
+        source_path = incomplete / relative
+        source = source_path.read_text(encoding="utf-8")
+        assert before in source
+        source_path.write_text(source.replace(before, after), encoding="utf-8")
+        incomplete_ir = scan_repository(incomplete)
+        assert not any(
+            edge.attributes.get("analysis") == "typescript-composio-cli-file-upload-flow"
+            for edge in incomplete_ir.relationships
+        )
+
+
 def test_typescript_a2a_remote_cards_preserve_endpoint_authority_and_transport(
     tmp_path: Path,
 ) -> None:

@@ -69,6 +69,11 @@ validate DNS and pin an Undici dispatcher while an edge implementation either fa
 back to raw fetch. Analysis must resolve the exact imported export and runtime branch; the existence
 of a strong Node helper cannot govern an intentionally unguarded edge fallback.
 
+Schema-driven file hydration is also a network boundary. A tool executor may recursively inspect an
+argument object, identify `file_uploadable` values, and fetch URL strings before invoking the remote
+tool. That preprocessing is part of the tool's effective network authority even when the tool's own
+API call uses a fixed origin.
+
 ## A2A card → negotiated RPC endpoint
 
 Remote-agent configuration often names an AgentCard location, not the final RPC origin. The card can

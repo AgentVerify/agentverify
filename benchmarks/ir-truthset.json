@@ -3213,6 +3213,24 @@
       "target":{"kind":"repository","repository":"composiohq/composio","commit":"38899bdfa02fe10d9df65d230a67f9f5df987420"},
       "check_id":"IR-TS-UNDICI-SSRF-SAFE-FETCH","path":"ts/packages/core/src/models/RemoteFile.ts","line":89,"expected":true,
       "relationship":{"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy","attributes":{"analysis":"typescript-imported-undici-ssrf-safe-fetch","enforcement_default":"runtime-conditional","enforcement_mode":"node-filtered-edge-unenforced","edge_runtime_scope":"unguarded-fetch","helper_line":224}}
+    },
+    {
+      "id":"typescript-composio-cli-upload-local",
+      "target":{"kind":"local","path":"cases/typescript_composio_cli_upload"},
+      "check_id":"IR-TS-COMPOSIO-CLI-UPLOAD","path":"tool-file-uploads.ts","line":2,"expected":true,
+      "relationship":{"source_kind":"tool","source_name":"Composio ToolsExecutor.execute","relation":"uses","target_kind":"capability","target_name":"network","attributes":{"analysis":"typescript-composio-cli-file-upload-flow"}}
+    },
+    {
+      "id":"typescript-composio-cli-upload-raw-local-negative",
+      "target":{"kind":"local","path":"cases/typescript_composio_cli_upload"},
+      "check_id":"IR-TS-COMPOSIO-CLI-UPLOAD","path":"raw.ts","line":1,"expected":false,"source_contains":"fetch(url)",
+      "relationship":{"source_kind":"tool","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id":"typescript-composio-cli-upload-real",
+      "target":{"kind":"repository","repository":"composiohq/composio","commit":"38899bdfa02fe10d9df65d230a67f9f5df987420"},
+      "check_id":"IR-TS-COMPOSIO-CLI-UPLOAD","path":"ts/packages/cli/src/services/tool-file-uploads.ts","line":146,"expected":true,
+      "relationship":{"source_kind":"tool","source_name":"Composio ToolsExecutor.execute","relation":"uses","target_kind":"capability","target_name":"network","attributes":{"analysis":"typescript-composio-cli-file-upload-flow"}}
     }
   ]
 }

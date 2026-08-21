@@ -48,6 +48,9 @@ never imported or executed.
 - `typescript_composio_ssrf_safe_fetch`: Composio's imported Undici-backed guard validates every
   redirect and pins direct connections while retaining configured-route residuals; edge-runtime
   fail-closed and intentionally unguarded fallback exports remain distinct.
+- `typescript_composio_cli_upload`: Composio's schema-gated tool arguments recursively reach raw
+  global fetch for URL file uploads; guarded transport, fixed arguments, broken schema gates, and
+  wrong imports withhold the path.
 - `typescript_a2a_card_endpoint`: ADK JS and Gemini compositions preserve remotely supplied
   AgentCard authority at SDK client construction; fixed/local cards, wrong imports, and unproven
   transports stay negative.
