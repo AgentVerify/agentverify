@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T09:46:31.446555+00:00",
-  "labels": 196,
-  "passed": 196,
+  "generated_at": "2026-08-21T09:58:06.636024+00:00",
+  "labels": 203,
+  "passed": 203,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 14,
@@ -37,9 +37,9 @@
       "recall": 1.0
     },
     "AV-FS001": {
-      "tp": 27,
+      "tp": 30,
       "fp": 0,
-      "tn": 18,
+      "tn": 22,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -1263,6 +1263,69 @@
       "rule_id": "AV-FS001",
       "expected": true,
       "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-arcade-local-copy-alias-real",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-local-copy-choice-positive",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-branch-copy-choice-positive",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-guarded-local-copy-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-call-before-alias-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-conditional-rebind-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-incompatible-choice-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

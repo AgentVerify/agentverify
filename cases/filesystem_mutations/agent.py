@@ -64,3 +64,64 @@ def shadowed_module(source: str, destination: str, shutil: object) -> None:
 @tool
 def string_replacement(text: str) -> str:
     return text.replace("unsafe", "safe")
+
+
+@tool
+def local_copy_choice(
+    source: str, destination: str, preserve_metadata: bool
+) -> None:
+    copy_fn = shutil.copy2 if preserve_metadata else shutil.copy
+    copy_fn(source, destination)
+
+
+@tool
+def branch_copy_choice(
+    source: str, destination: str, preserve_metadata: bool
+) -> None:
+    if preserve_metadata:
+        copy_fn = shutil.copy2
+    else:
+        copy_fn = shutil.copy
+    copy_fn(source, destination)
+
+
+@tool
+def guarded_local_copy(
+    source: str, requested_path: str, preserve_metadata: bool
+) -> None:
+    root = Path("/srv/agent-output").resolve()
+    candidate = (root / requested_path).resolve()
+    if not candidate.is_relative_to(root):
+        raise ValueError("outside output root")
+    copy_fn = shutil.copy2 if preserve_metadata else shutil.copy
+    copy_fn(source, str(candidate))
+
+
+@tool
+def call_before_alias(source: str, destination: str) -> object:
+    copy_fn = wrapper
+    copy_fn(source, destination)
+    copy_fn = shutil.copy2
+    return copy_fn
+
+
+def wrapper(source: str, destination: str) -> None:
+    pass
+
+
+@tool
+def conditional_rebind(
+    source: str, destination: str, use_wrapper: bool
+) -> None:
+    copy_fn = shutil.copy2
+    if use_wrapper:
+        copy_fn = wrapper
+    copy_fn(source, destination)
+
+
+@tool
+def incompatible_choice(
+    source: str, destination: str, copy_mode: bool
+) -> None:
+    mutate = shutil.copy2 if copy_mode else delete_path
+    mutate(source, destination)

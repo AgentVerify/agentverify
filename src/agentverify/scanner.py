@@ -342,7 +342,7 @@ def canonical_python_filesystem_api(
     call_name: str, aliases: dict[str, str]
 ) -> str | None:
     if canonical := aliases.get(call_name):
-        return canonical if canonical in PYTHON_FILESYSTEM_WRITE_FUNCTIONS else None
+        return canonical if python_filesystem_write_spec(canonical) is not None else None
     if "." not in call_name:
         return None
     root, suffix = call_name.split(".", 1)
@@ -351,6 +351,197 @@ def canonical_python_filesystem_api(
         return None
     canonical = f"{module}.{suffix}"
     return canonical if canonical in PYTHON_FILESYSTEM_WRITE_FUNCTIONS else None
+
+
+def python_filesystem_write_spec(
+    canonical_api: str,
+) -> PythonFilesystemWriteSpec | None:
+    apis = canonical_api.split("|")
+    specs = [PYTHON_FILESYSTEM_WRITE_FUNCTIONS.get(api) for api in apis]
+    if not specs or any(spec is None for spec in specs):
+        return None
+    return specs[0] if all(spec == specs[0] for spec in specs[1:]) else None
+
+
+def python_filesystem_callable_reference(
+    expression: ast.AST, aliases: dict[str, str]
+) -> str | None:
+    if isinstance(expression, (ast.Name, ast.Attribute)):
+        return canonical_python_filesystem_api(dotted_name(expression), aliases)
+    if isinstance(expression, ast.IfExp):
+        body = python_filesystem_callable_reference(expression.body, aliases)
+        alternate = python_filesystem_callable_reference(expression.orelse, aliases)
+        if body is None or alternate is None:
+            return None
+        family = "|".join(sorted(set(body.split("|") + alternate.split("|"))))
+        return family if python_filesystem_write_spec(family) is not None else None
+    return None
+
+
+def python_filesystem_callable_calls(
+    node: ast.FunctionDef | ast.AsyncFunctionDef,
+    aliases: dict[str, str],
+) -> dict[int, str]:
+    """Resolve statement-ordered local aliases of compatible filesystem callables."""
+    resolved_calls: dict[int, str] = {}
+
+    def record_expression(expression: ast.AST | None, state: dict[str, str]) -> None:
+        if expression is None:
+            return
+
+        def collect(candidate: ast.AST) -> None:
+            if isinstance(
+                candidate,
+                (ast.Lambda, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef),
+            ):
+                return
+            if isinstance(candidate, ast.NamedExpr):
+                collect(candidate.value)
+                invalidate(candidate.target, state)
+                if (
+                    isinstance(candidate.target, ast.Name)
+                    and (
+                        canonical := python_filesystem_callable_reference(
+                            candidate.value, aliases
+                        )
+                    )
+                ):
+                    state[candidate.target.id] = canonical
+                return
+            if isinstance(candidate, ast.Call):
+                call_name = dotted_name(candidate.func)
+                if call_name in state:
+                    resolved_calls[id(candidate)] = state[call_name]
+            for child in ast.iter_child_nodes(candidate):
+                collect(child)
+
+        collect(expression)
+
+    def invalidate(target: ast.AST, state: dict[str, str]) -> None:
+        for name in python_assigned_names(target):
+            state.pop(name, None)
+
+    def merge(state: dict[str, str], branches: list[dict[str, str]]) -> None:
+        state.clear()
+        if not branches:
+            return
+        common_names = set(branches[0]).intersection(*(set(branch) for branch in branches[1:]))
+        for name in common_names:
+            family = "|".join(
+                sorted(
+                    {
+                        api
+                        for branch in branches
+                        for api in branch[name].split("|")
+                    }
+                )
+            )
+            if python_filesystem_write_spec(family) is not None:
+                state[name] = family
+
+    def analyze_block(statements: list[ast.stmt], state: dict[str, str]) -> None:
+        for statement in statements:
+            analyze_statement(statement, state)
+
+    def analyze_statement(statement: ast.stmt, state: dict[str, str]) -> None:
+        if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            state.pop(statement.name, None)
+            return
+        if isinstance(statement, (ast.Import, ast.ImportFrom)):
+            for alias in statement.names:
+                state.pop(alias.asname or alias.name.split(".", 1)[0], None)
+            return
+        if isinstance(statement, ast.Assign):
+            record_expression(statement.value, state)
+            for target in statement.targets:
+                invalidate(target, state)
+            if (
+                len(statement.targets) == 1
+                and isinstance(statement.targets[0], ast.Name)
+                and (
+                    canonical := python_filesystem_callable_reference(
+                        statement.value, aliases
+                    )
+                )
+            ):
+                state[statement.targets[0].id] = canonical
+            return
+        if isinstance(statement, ast.AnnAssign):
+            record_expression(statement.value, state)
+            invalidate(statement.target, state)
+            if (
+                isinstance(statement.target, ast.Name)
+                and statement.value is not None
+                and (
+                    canonical := python_filesystem_callable_reference(
+                        statement.value, aliases
+                    )
+                )
+            ):
+                state[statement.target.id] = canonical
+            return
+        if isinstance(statement, ast.AugAssign):
+            record_expression(statement.value, state)
+            invalidate(statement.target, state)
+            return
+        if isinstance(statement, ast.Delete):
+            for target in statement.targets:
+                invalidate(target, state)
+            return
+        if isinstance(statement, ast.If):
+            record_expression(statement.test, state)
+            body_state = dict(state)
+            else_state = dict(state)
+            analyze_block(statement.body, body_state)
+            analyze_block(statement.orelse, else_state)
+            merge(state, [body_state, else_state])
+            return
+        if isinstance(statement, (ast.With, ast.AsyncWith)):
+            for item in statement.items:
+                record_expression(item.context_expr, state)
+                if item.optional_vars:
+                    invalidate(item.optional_vars, state)
+            analyze_block(statement.body, state)
+            return
+        if isinstance(statement, (ast.For, ast.AsyncFor, ast.While)):
+            loop_state = dict(state)
+            if isinstance(statement, (ast.For, ast.AsyncFor)):
+                record_expression(statement.iter, state)
+                invalidate(statement.target, loop_state)
+            else:
+                record_expression(statement.test, state)
+            analyze_block(statement.body, loop_state)
+            else_state = dict(state)
+            analyze_block(statement.orelse, else_state)
+            merge(state, [dict(state), loop_state, else_state])
+            return
+        if isinstance(statement, ast.Try):
+            branches = [dict(state)]
+            body_state = dict(state)
+            analyze_block(statement.body, body_state)
+            branches.append(body_state)
+            for handler in statement.handlers:
+                handler_state = dict(state)
+                if handler.name:
+                    handler_state.pop(handler.name, None)
+                analyze_block(handler.body, handler_state)
+                branches.append(handler_state)
+            else_state = dict(body_state)
+            analyze_block(statement.orelse, else_state)
+            branches.append(else_state)
+            final_states = []
+            for branch in branches:
+                final_state = dict(branch)
+                analyze_block(statement.finalbody, final_state)
+                final_states.append(final_state)
+            merge(state, final_states)
+            return
+        for child in ast.iter_child_nodes(statement):
+            if isinstance(child, ast.expr):
+                record_expression(child, state)
+
+    analyze_block(node.body, {})
+    return resolved_calls
 
 
 def python_call_argument(
@@ -369,12 +560,18 @@ def python_call_argument(
 
 
 def python_filesystem_function_write(
-    node: ast.Call, aliases: dict[str, str]
+    node: ast.Call,
+    aliases: dict[str, str],
+    local_callable: str | None = None,
 ) -> tuple[str, PythonFilesystemWriteSpec, ast.AST] | None:
-    canonical = canonical_python_filesystem_api(dotted_name(node.func), aliases)
+    canonical = local_callable or canonical_python_filesystem_api(
+        dotted_name(node.func), aliases
+    )
     if canonical is None:
         return None
-    spec = PYTHON_FILESYSTEM_WRITE_FUNCTIONS[canonical]
+    spec = python_filesystem_write_spec(canonical)
+    if spec is None:
+        return None
     path_expression = python_call_argument(node, spec.path_index, spec.path_keywords)
     if path_expression is None:
         return None
@@ -535,12 +732,16 @@ def python_block_always_terminates(statements: list[ast.stmt]) -> bool:
 
 
 def python_filesystem_path_name(
-    node: ast.Call, aliases: dict[str, str]
+    node: ast.Call,
+    aliases: dict[str, str],
+    local_callable: str | None = None,
 ) -> tuple[str, int] | None:
     call_name = dotted_name(node.func)
     short_name = call_name.rsplit(".", 1)[-1]
     expression: ast.AST | None = None
-    if function_write := python_filesystem_function_write(node, aliases):
+    if function_write := python_filesystem_function_write(
+        node, aliases, local_callable
+    ):
         expression = function_write[2]
     elif short_name == "open" and node.args:
         expression = node.args[0]
@@ -568,6 +769,7 @@ def python_path_boundary_calls(
     lines: list[str],
     path_constructors: set[str],
     filesystem_api_aliases: dict[str, str],
+    filesystem_callable_calls: dict[int, str],
 ) -> dict[int, PythonPathBoundaryProof]:
     """Prove same-function, statement-ordered Python filesystem boundaries."""
     if not path_constructors:
@@ -608,7 +810,9 @@ def python_path_boundary_calls(
                 return
             if isinstance(candidate, ast.Call):
                 path_target = python_filesystem_path_name(
-                    candidate, filesystem_api_aliases
+                    candidate,
+                    filesystem_api_aliases,
+                    filesystem_callable_calls.get(id(candidate)),
                 )
                 if (
                     path_target
@@ -849,6 +1053,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_escaping_children: list[set[str]] = []
         self.function_path_boundary_calls: list[dict[int, PythonPathBoundaryProof]] = []
         self.function_filesystem_api_aliases: list[dict[str, str]] = []
+        self.function_filesystem_callable_calls: list[dict[int, str]] = []
         self.function_stack: list[str] = []
         self.function_depth = 0
         self.imported_symbol_paths: dict[str, str] = {}
@@ -1141,6 +1346,17 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_stack.append(node.name)
         self.function_fixed_binding_sources.append(self.fixed_function_parameter_bindings(node))
         self.function_escaping_children.append(self.escaping_nested_function_names(node))
+        local_bindings = python_function_local_bindings(node)
+        function_filesystem_aliases = {
+            alias: canonical
+            for alias, canonical in self.filesystem_api_aliases.items()
+            if alias.split(".", 1)[0] not in local_bindings
+        }
+        filesystem_callable_calls = python_filesystem_callable_calls(
+            node, function_filesystem_aliases
+        )
+        self.function_filesystem_api_aliases.append(function_filesystem_aliases)
+        self.function_filesystem_callable_calls.append(filesystem_callable_calls)
         self.function_path_boundary_calls.append(
             python_path_boundary_calls(
                 node,
@@ -1148,15 +1364,8 @@ class PythonVisitor(ast.NodeVisitor):
                 self.lines,
                 self.path_constructors,
                 self.filesystem_api_aliases,
+                filesystem_callable_calls,
             )
-        )
-        local_bindings = python_function_local_bindings(node)
-        self.function_filesystem_api_aliases.append(
-            {
-                alias: canonical
-                for alias, canonical in self.filesystem_api_aliases.items()
-                if alias.split(".", 1)[0] not in local_bindings
-            }
         )
         decorators = {
             dotted_name(decorator.func)
@@ -1236,6 +1445,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_escaping_children.pop()
         self.function_path_boundary_calls.pop()
         self.function_filesystem_api_aliases.pop()
+        self.function_filesystem_callable_calls.pop()
         self.approval_environment_flags = previous_approval_environment_flags
 
     visit_AsyncFunctionDef = visit_FunctionDef
@@ -2411,8 +2621,13 @@ class PythonVisitor(ast.NodeVisitor):
             if self.function_filesystem_api_aliases
             else self.filesystem_api_aliases
         )
+        local_filesystem_callable = (
+            self.function_filesystem_callable_calls[-1].get(id(node))
+            if self.function_filesystem_callable_calls
+            else None
+        )
         filesystem_function = python_filesystem_function_write(
-            node, filesystem_aliases
+            node, filesystem_aliases, local_filesystem_callable
         )
         if filesystem_function is not None:
             canonical_api, filesystem_spec, path_expression = filesystem_function
@@ -2427,6 +2642,8 @@ class PythonVisitor(ast.NodeVisitor):
                 {
                     "api": call_name,
                     "canonical_api": canonical_api,
+                    "possible_apis": canonical_api.split("|"),
+                    "callable_alias": local_filesystem_callable is not None,
                     "write_access": True,
                     "dynamic_path": not isinstance(path_expression, ast.Constant),
                     "operation": filesystem_spec.operation,

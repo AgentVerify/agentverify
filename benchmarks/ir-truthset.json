@@ -903,6 +903,139 @@
       }
     },
     {
+      "id": "python-filesystem-local-callable-choice-local",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-FILESYSTEM-MUTATION",
+      "path": "agent.py",
+      "line": 74,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "local_copy_choice",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-filesystem-branch-callable-choice-local",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-FILESYSTEM-MUTATION",
+      "path": "agent.py",
+      "line": 85,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "branch_copy_choice",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-filesystem-guarded-local-callable-local",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-FILESYSTEM-MUTATION",
+      "path": "agent.py",
+      "line": 97,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "guarded_local_copy",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-filesystem-call-before-alias-local-negative",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-FILESYSTEM-MUTATION",
+      "path": "agent.py",
+      "line": 103,
+      "expected": false,
+      "source_contains": "copy_fn(source, destination)",
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "call_before_alias",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-filesystem-conditional-rebind-local-negative",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-FILESYSTEM-MUTATION",
+      "path": "agent.py",
+      "line": 119,
+      "expected": false,
+      "source_contains": "copy_fn(source, destination)",
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "conditional_rebind",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-filesystem-incompatible-choice-local-negative",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-FILESYSTEM-MUTATION",
+      "path": "agent.py",
+      "line": 127,
+      "expected": false,
+      "source_contains": "mutate(source, destination)",
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "incompatible_choice",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-filesystem-arcade-local-callable-real",
+      "target": {
+        "kind": "repository",
+        "repository": "ArcadeAI/arcade-ai",
+        "commit": "597debaa1593b54172061ce36a414cc29aa8fc6a"
+      },
+      "check_id": "IR-PY-FILESYSTEM-MUTATION",
+      "path": "examples/mcp_servers/local_filesystem/src/local_filesystem/tools.py",
+      "line": 331,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "copy_path",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-filesystem-guarded-local-callable-path-boundary-local",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-PATH-BOUNDARY",
+      "path": "agent.py",
+      "line": 97,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-boundary",
+        "attributes": {
+          "control_line": 94,
+          "policy_effect": "restricts-filesystem-path",
+          "frontend": "python",
+          "boundary_scope": "constrained"
+        }
+      }
+    },
+    {
       "id": "python-filesystem-guarded-copy-path-boundary-local",
       "target": {"kind": "local", "path": "cases/filesystem_mutations"},
       "check_id": "IR-PY-PATH-BOUNDARY",

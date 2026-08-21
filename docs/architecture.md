@@ -80,7 +80,11 @@ create/delete APIs use their target argument; copy, move, rename, and replace AP
 destination argument, so a fixed source cannot hide a dynamic write boundary. Components record the
 canonical API, `copy`/`move`/`create`/`delete` operation, and `target` or `destination` path role.
 Destination expressions can inherit the same `path-boundary` proof as `open()` and `Path` writes.
-Arbitrary `.replace()` methods and rebound import names are not promoted from their spelling alone.
+Within a function, direct and conditional local callable assignments are resolved in statement
+order. Branches merge only when every path leaves an alias bound to filesystem APIs with identical
+path semantics; the component retains every possible API. Calls before assignment, conditional
+rebinding to an unknown wrapper, and copy/delete choices are withheld. Arbitrary `.replace()`
+methods and rebound import names are not promoted from their spelling alone.
 
 ## Result kinds and uncertainty
 

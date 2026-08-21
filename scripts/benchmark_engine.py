@@ -250,6 +250,10 @@ def main() -> int:
             },
             "python_filesystem_mutations": {
                 "total": len(python_filesystem_mutations),
+                "callable_aliases": sum(
+                    bool(item.attributes.get("callable_alias"))
+                    for item in python_filesystem_mutations
+                ),
                 "dynamic_paths": sum(
                     bool(item.attributes.get("dynamic_path"))
                     for item in python_filesystem_mutations
@@ -315,7 +319,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 16,
+        "schema_version": 17,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -420,6 +424,10 @@ def main() -> int:
             "python_filesystem_mutations": {
                 "total": sum(
                     result["python_filesystem_mutations"]["total"]
+                    for result in successful
+                ),
+                "callable_aliases": sum(
+                    result["python_filesystem_mutations"]["callable_aliases"]
                     for result in successful
                 ),
                 "dynamic_paths": sum(

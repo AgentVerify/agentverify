@@ -1265,6 +1265,39 @@ def test_python_filesystem_mutations_resolve_destinations_aliases_and_guards() -
         38: ("shutil.copy2", "copy", "destination", False, "unresolved"),
         47: ("shutil.copy2", "copy", "destination", True, "constrained"),
         56: ("shutil.copy2", "copy", "destination", True, "unresolved"),
+        74: (
+            "shutil.copy|shutil.copy2",
+            "copy",
+            "destination",
+            True,
+            "unresolved",
+        ),
+        85: (
+            "shutil.copy|shutil.copy2",
+            "copy",
+            "destination",
+            True,
+            "unresolved",
+        ),
+        97: (
+            "shutil.copy|shutil.copy2",
+            "copy",
+            "destination",
+            True,
+            "constrained",
+        ),
+    }
+    callable_aliases = {
+        item.evidence.line: item.attributes["possible_apis"]
+        for item in ir.components
+        if item.kind == "capability"
+        and item.name == "filesystem"
+        and item.attributes["callable_alias"]
+    }
+    assert callable_aliases == {
+        74: ["shutil.copy", "shutil.copy2"],
+        85: ["shutil.copy", "shutil.copy2"],
+        97: ["shutil.copy", "shutil.copy2"],
     }
     assert [
         (edge.evidence.line, edge.attributes["control_line"])
@@ -1272,7 +1305,7 @@ def test_python_filesystem_mutations_resolve_destinations_aliases_and_guards() -
         if edge.source_kind == "capability"
         and edge.relation == "governed-by"
         and edge.target_name == "path-boundary"
-    ] == [(47, 45)]
+    ] == [(47, 45), (97, 94)]
     assert [
         (finding.rule_id, finding.evidence.line, finding.analysis["tool"])
         for finding in ir.findings
@@ -1283,7 +1316,42 @@ def test_python_filesystem_mutations_resolve_destinations_aliases_and_guards() -
         ("AV-FS001", 28, "copy_file"),
         ("AV-FS001", 33, "delete_file"),
         ("AV-FS001", 56, "weak_prefix_copy"),
+        ("AV-FS001", 74, "local_copy_choice"),
+        ("AV-FS001", 85, "branch_copy_choice"),
     ]
+
+
+def test_python_filesystem_callable_rebinding_invalidates_state(tmp_path: Path) -> None:
+    (tmp_path / "agent.py").write_text(
+        """
+import shutil
+from langchain.tools import tool
+
+def wrapper(source: str, destination: str) -> None:
+    pass
+
+@tool
+def walrus_rebind(source: str, destination: str) -> None:
+    copy_fn = shutil.copy2
+    (copy_fn := wrapper)
+    copy_fn(source, destination)
+
+@tool
+def import_rebind(source: str, destination: str) -> None:
+    copy_fn = shutil.copy2
+    import json as copy_fn
+    copy_fn(source, destination)
+""".lstrip(),
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    assert not any(
+        item.kind == "capability" and item.name == "filesystem"
+        for item in ir.components
+    )
+    assert not ir.findings
 
 
 def test_dynamic_writable_tool_path_but_not_fixed_path_is_reviewed() -> None:
