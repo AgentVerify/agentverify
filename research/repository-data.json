@@ -1,6 +1,6 @@
 {
-  "schema_version": 2,
-  "generated_at": "2026-08-21T08:58:03.447164+00:00",
+  "schema_version": 3,
+  "generated_at": "2026-08-21T14:22:54.192985+00:00",
   "method": {
     "collector": "scripts/collect_repositories.py",
     "max_files_per_repository": 220,
@@ -8,7 +8,7 @@
     "max_bytes_per_repository": 2000000,
     "lock_file": "research/repository-data.json",
     "locked_repositories": 71,
-    "selection": "manifests, then security/agent/tool/MCP-related sources, then shallow paths; plus a bounded local Python import closure for MCP forwarding files"
+    "selection": "manifests, then explicit SSRF/URL-safety and general security/agent/tool/MCP-related sources, then shallow paths; plus a bounded local Python import closure for MCP forwarding and URL-security helper call sites"
   },
   "repositories": [
     {
@@ -22,7 +22,7 @@
       "files_in_tree": 25134,
       "files_scanned": 220,
       "dependency_files_materialized": 0,
-      "bytes_scanned": 727875,
+      "bytes_scanned": 715552,
       "languages": [
         "TypeScript",
         "TypeScript",
@@ -297,9 +297,21 @@
           ],
           "allowlist": [
             {
-              "path": "packages/core/shared/test/ee/agent-tool-phases.test.ts",
-              "line": 45,
-              "excerpt": "it('leaves unknown tools visible during discovery (denylist, not allowlist)', () => {",
+              "path": "packages/core/utils/src/lib/ssrf-ip-classifier.ts",
+              "line": 12,
+              "excerpt": "function isInAllowList({ ip, allowList }: { ip: string, allowList: string[] }): boolean {",
+              "pattern": "\\ballowlist\\b"
+            },
+            {
+              "path": "packages/core/utils/src/lib/ssrf-ip-classifier.ts",
+              "line": 13,
+              "excerpt": "if (allowList.includes(ip)) return true",
+              "pattern": "\\ballowlist\\b"
+            },
+            {
+              "path": "packages/core/utils/src/lib/ssrf-ip-classifier.ts",
+              "line": 16,
+              "excerpt": "return allowList.some((entry) => entry.includes('/') && matchesCidr({ addr, cidr: entry }))",
               "pattern": "\\ballowlist\\b"
             }
           ],
@@ -1016,7 +1028,7 @@
       "files_in_tree": 5260,
       "files_scanned": 220,
       "dependency_files_materialized": 0,
-      "bytes_scanned": 582346,
+      "bytes_scanned": 585402,
       "languages": [
         "Python",
         "TypeScript",
@@ -1274,13 +1286,31 @@
           ],
           "allowlist": [
             {
-              "path": "cookbook/91_tools/youcom_tools.py",
-              "line": 31,
-              "excerpt": "# Example 2: Search with a domain allowlist and a larger result count",
+              "path": "cookbook/07_knowledge/03_production/05_ssrf_allowed_hosts.py",
+              "line": 6,
+              "excerpt": "argument that restricts outbound requests to a hostname allowlist.",
+              "pattern": "\\ballowlist\\b"
+            },
+            {
+              "path": "cookbook/07_knowledge/03_production/05_ssrf_allowed_hosts.py",
+              "line": 11,
+              "excerpt": "a background fetch. Without an allowlist, an attacker can target internal",
+              "pattern": "\\ballowlist\\b"
+            },
+            {
+              "path": "cookbook/07_knowledge/03_production/05_ssrf_allowed_hosts.py",
+              "line": 14,
+              "excerpt": "2. The allowlist also runs on every redirect target via an httpx request hook,",
               "pattern": "\\ballowlist\\b"
             }
           ],
           "authentication": [
+            {
+              "path": "cookbook/07_knowledge/03_production/05_ssrf_allowed_hosts.py",
+              "line": 109,
+              "excerpt": "#   FirecrawlReader(api_key=..., allowed_hosts=[\"docs.agno.com\"])",
+              "pattern": "\\bAPI_KEY\\b"
+            },
             {
               "path": "cookbook/91_tools/browserbase_tools.py",
               "line": 22,
@@ -1291,12 +1321,6 @@
               "path": "cookbook/91_tools/custom_api_tools.py",
               "line": 19,
               "excerpt": "username (Optional[str]): Username for basic authentication",
-              "pattern": "\\bauthentication\\b"
-            },
-            {
-              "path": "cookbook/91_tools/custom_api_tools.py",
-              "line": 20,
-              "excerpt": "password (Optional[str]): Password for basic authentication",
               "pattern": "\\bauthentication\\b"
             }
           ]
@@ -3804,7 +3828,7 @@
       "files_in_tree": 2747,
       "files_scanned": 220,
       "dependency_files_materialized": 0,
-      "bytes_scanned": 1014526,
+      "bytes_scanned": 1033208,
       "languages": [
         "TypeScript",
         "Python",
@@ -4069,22 +4093,22 @@
           ],
           "network": [
             {
+              "path": "ts/packages/core/src/utils/ssrfGuard.node.ts",
+              "line": 248,
+              "excerpt": "response = await fetch(",
+              "pattern": "\\bfetch\\s*\\("
+            },
+            {
+              "path": "ts/packages/core/src/utils/ssrfGuard.workerd.ts",
+              "line": 35,
+              "excerpt": "): Promise<Response> => fetch(rawUrl, init);",
+              "pattern": "\\bfetch\\s*\\("
+            },
+            {
               "path": "docs/agent/agent.ts",
               "line": 37,
               "excerpt": "return fetch(input, { ...init, headers });",
               "pattern": "\\bfetch\\s*\\("
-            },
-            {
-              "path": "python/tests/test_tool_router.py",
-              "line": 210,
-              "excerpt": "requests: t.List[httpx.Request] = []",
-              "pattern": "httpx\\."
-            },
-            {
-              "path": "python/tests/test_tool_router.py",
-              "line": 212,
-              "excerpt": "def handler(request: httpx.Request) -> httpx.Response:",
-              "pattern": "httpx\\."
             }
           ]
         },
@@ -7838,7 +7862,7 @@
       "status": "ok",
       "commit": "609f79b8a118cd6c4bb58a5341bafd76e42e5a2b",
       "files_in_tree": 1555,
-      "files_scanned": 201,
+      "files_scanned": 200,
       "dependency_files_materialized": 8,
       "bytes_scanned": 2000000,
       "languages": [
@@ -9258,7 +9282,7 @@
       "status": "ok",
       "commit": "09ef6b2b7119e35a6787fc249f916f8b47b28615",
       "files_in_tree": 9514,
-      "files_scanned": 213,
+      "files_scanned": 212,
       "dependency_files_materialized": 0,
       "bytes_scanned": 2000000,
       "languages": [
@@ -9366,6 +9390,14 @@
               "excerpt": "@pytest.mark.skipif(not has_api_key(\"OPENAI_API_KEY\"), reason=\"OPENAI_API_KEY required for full execution test\")",
               "pattern": "OPENAI_API_KEY"
             }
+          ],
+          "ollama": [
+            {
+              "path": "src/lfx/src/lfx/utils/ssrf_protection.py",
+              "line": 955,
+              "excerpt": "# This is used for legitimate internal services like Ollama (localhost)",
+              "pattern": "\\bOllama\\s*\\("
+            }
           ]
         },
         "capabilities": {
@@ -9451,10 +9483,10 @@
               "pattern": "httpx\\."
             },
             {
-              "path": "src/frontend/tests/utils/mcp-server-list-without-tool-counts.ts",
-              "line": 16,
-              "excerpt": "const response = await route.fetch({ url: url.toString() });",
-              "pattern": "\\bfetch\\s*\\("
+              "path": "src/lfx/src/lfx/utils/ssrf_httpx.py",
+              "line": 45,
+              "excerpt": "return httpx.URL(url).raw_host.decode(\"ascii\")",
+              "pattern": "httpx\\."
             }
           ],
           "database": [
@@ -9589,35 +9621,35 @@
               "pattern": "\\ballowlist\\b"
             },
             {
-              "path": "src/backend/tests/unit/test_mcp_command_injection_security.py",
-              "line": 4,
-              "excerpt": "validates commands against an allowlist to prevent arbitrary command execution.",
+              "path": "src/lfx/src/lfx/utils/ssrf_protection.py",
+              "line": 102,
+              "excerpt": "# This ensures tests can override the allowlist without settings service caching issues",
               "pattern": "\\ballowlist\\b"
             },
             {
-              "path": "src/backend/tests/unit/test_mcp_command_injection_security.py",
-              "line": 10,
-              "excerpt": "Fix: Implement command allowlist, argument, env, and Docker argument validation",
+              "path": "src/lfx/src/lfx/utils/ssrf_protection.py",
+              "line": 317,
+              "excerpt": "# Check if IP is in allowlist",
               "pattern": "\\ballowlist\\b"
             }
           ],
           "authentication": [
             {
-              "path": "src/backend/tests/data/simple_agent.py",
-              "line": 53,
-              "excerpt": "api_key=os.getenv(\"OPENAI_API_KEY\"),",
-              "pattern": "\\bAPI_KEY\\b"
+              "path": "src/lfx/src/lfx/utils/ssrf_httpx.py",
+              "line": 121,
+              "excerpt": "\"\"\"Match httpx's authorization-preserving HTTP-to-HTTPS redirect exception.\"\"\"",
+              "pattern": "\\bauthorization\\b"
             },
             {
-              "path": "src/backend/tests/unit/test_mcp_command_injection_security.py",
-              "line": 704,
-              "excerpt": "env={\"DEBUG\": \"true\", \"PORT\": \"8080\", \"API_KEY\": \"secret123\"},  # pragma: allowlist secret",
-              "pattern": "\\bAPI_KEY\\b"
+              "path": "src/lfx/src/lfx/utils/ssrf_httpx.py",
+              "line": 141,
+              "excerpt": "# Match httpx's safe HTTP-to-HTTPS authorization exception, while never",
+              "pattern": "\\bauthorization\\b"
             },
             {
-              "path": "src/backend/tests/unit/test_security_cors.py",
-              "line": 53,
-              "excerpt": "#     assert settings.cors_allow_headers == [\"Content-Type\", \"Authorization\"]",
+              "path": "src/lfx/src/lfx/utils/ssrf_httpx.py",
+              "line": 144,
+              "excerpt": "redirect_headers.pop(\"Authorization\", None)",
               "pattern": "\\bauthorization\\b"
             }
           ]
@@ -9636,7 +9668,7 @@
       "files_in_tree": 13400,
       "files_scanned": 220,
       "dependency_files_materialized": 0,
-      "bytes_scanned": 1343092,
+      "bytes_scanned": 1358164,
       "languages": [
         "TypeScript",
         "Python",
@@ -9691,21 +9723,21 @@
           ],
           "network": [
             {
-              "path": "api/core/external_data_tool/external_data_fetch.py",
-              "line": 15,
-              "excerpt": "def fetch(",
-              "pattern": "\\bfetch\\s*\\("
-            },
-            {
-              "path": "api/core/mcp/error.py",
-              "line": 20,
-              "excerpt": "response: \"httpx.Response | None\" = None,",
+              "path": "api/core/helper/ssrf_proxy.py",
+              "line": 37,
+              "excerpt": "_SSRF_CLIENT_LIMITS = httpx.Limits(",
               "pattern": "httpx\\."
             },
             {
-              "path": "api/core/mcp/utils.py",
-              "line": 20,
-              "excerpt": "timeout: httpx.Timeout | None = None,",
+              "path": "api/core/helper/ssrf_proxy.py",
+              "line": 68,
+              "excerpt": "request_error = httpx.RequestError",
+              "pattern": "httpx\\."
+            },
+            {
+              "path": "api/core/helper/ssrf_proxy.py",
+              "line": 72,
+              "excerpt": "def _create_proxy_mounts(verify: bool) -> dict[str, httpx.HTTPTransport]:",
               "pattern": "httpx\\."
             }
           ],
@@ -9811,6 +9843,14 @@
               "line": 6,
               "excerpt": "1. Billing/plan level - via FeatureService (e.g., SANDBOX plan restrictions)",
               "pattern": "\\bsandbox(?:ed|ing)?\\b"
+            }
+          ],
+          "allowlist": [
+            {
+              "path": "api/core/helper/ssrf_proxy.py",
+              "line": 253,
+              "excerpt": "# allowlist the destination in the SSRF proxy. Tell the user",
+              "pattern": "\\ballowlist\\b"
             }
           ],
           "authentication": [
@@ -13089,7 +13129,7 @@
       "files_in_tree": 27052,
       "files_scanned": 220,
       "dependency_files_materialized": 0,
-      "bytes_scanned": 1245177,
+      "bytes_scanned": 1225455,
       "languages": [
         "TypeScript",
         "Python",
@@ -13135,20 +13175,6 @@
               "line": 258,
               "excerpt": "\"@langchain/langgraph\": \"catalog:\",",
               "pattern": "\\blanggraph(?:\\.|\\b)"
-            }
-          ],
-          "vercel-ai": [
-            {
-              "path": "packages/@n8n/agents/src/sdk/telemetry.ts",
-              "line": 3,
-              "excerpt": "import type { Telemetry as AiSdkTelemetry } from 'ai';",
-              "pattern": "from [\\\"']ai[\\\"']"
-            },
-            {
-              "path": "packages/@n8n/agents/src/sdk/vector-store.ts",
-              "line": 1,
-              "excerpt": "import type { EmbeddingModel } from 'ai';",
-              "pattern": "from [\\\"']ai[\\\"']"
             }
           ]
         },
@@ -13337,22 +13363,22 @@
         "controls": {
           "human-approval": [
             {
+              "path": "packages/@n8n/ai-workflow-builder.ee/src/tools/utils/ssrf-guard.ts",
+              "line": 25,
+              "excerpt": "* different host, so the tool can run its HITL domain-approval flow for the new host.",
+              "pattern": "\\bapproval\\b"
+            },
+            {
+              "path": "packages/@n8n/ai-workflow-builder.ee/src/tools/utils/ssrf-guard.ts",
+              "line": 36,
+              "excerpt": "* IP-level checks become no-ops; the tool's domain-approval layer still applies.",
+              "pattern": "\\bapproval\\b"
+            },
+            {
               "path": "packages/@n8n/ai-workflow-builder.ee/src/multi-agent-workflow-subgraphs.ts",
               "line": 142,
               "excerpt": "if (isGraphInterrupt(error)) {",
               "pattern": "interrupt\\s*\\("
-            },
-            {
-              "path": "packages/@n8n/ai-workflow-builder.ee/src/workflow-builder-agent.ts",
-              "line": 143,
-              "excerpt": "/** Resume payload for LangGraph interrupt() */",
-              "pattern": "interrupt\\s*\\("
-            },
-            {
-              "path": "packages/@n8n/ai-workflow-builder.ee/src/workflow-builder-agent.ts",
-              "line": 147,
-              "excerpt": "/** Approved plan from planning phase (injected when routing plan approval to code builder) */",
-              "pattern": "\\bapproval\\b"
             }
           ],
           "audit-or-tracing": [
@@ -13397,21 +13423,21 @@
           ],
           "allowlist": [
             {
-              "path": "packages/@n8n/task-runner-python/src/_sandbox_callables.py",
-              "line": 185,
-              "excerpt": "\"\"\"Return the ``(name, anchor_package)`` the allowlist should check.",
+              "path": "packages/@n8n/backend-network/src/ssrf/hostname-matcher.ts",
+              "line": 36,
+              "excerpt": "* Check whether a hostname matches any configured allowlist pattern.",
               "pattern": "\\ballowlist\\b"
             },
             {
-              "path": "packages/@n8n/task-runner-python/src/_sandbox_callables.py",
-              "line": 250,
-              "excerpt": "# When trusted, package-initiated imports skip the allowlist; user",
+              "path": "packages/@n8n/backend-network/src/ssrf/ssrf-blocked-ip.error.ts",
+              "line": 18,
+              "excerpt": "'If you need to access internal resources, ask your n8n administrator to allowlist ' +",
               "pattern": "\\ballowlist\\b"
             },
             {
-              "path": "packages/@n8n/task-runner-python/src/task_executor.py",
-              "line": 59,
-              "excerpt": "# Captured at module load before any allowlist guards are installed, so a",
+              "path": "packages/@n8n/backend-network/src/ssrf/ssrf-protection.service.ts",
+              "line": 51,
+              "excerpt": "* 1. Hostname allowlist \u2014 if hostname matches, request is allowed (an explicit",
               "pattern": "\\ballowlist\\b"
             }
           ],
@@ -15599,7 +15625,7 @@
       "status": "ok",
       "commit": "5e59fef14bd5abc86c4cfab1480c4f380542acfe",
       "files_in_tree": 2543,
-      "files_scanned": 39,
+      "files_scanned": 40,
       "dependency_files_materialized": 20,
       "bytes_scanned": 2000000,
       "languages": [
@@ -15746,21 +15772,21 @@
           ],
           "network": [
             {
-              "path": "tests/test_mcp.py",
-              "line": 231,
-              "excerpt": "client = httpx.AsyncClient()",
+              "path": "pydantic_ai_slim/pydantic_ai/_ssrf.py",
+              "line": 154,
+              "excerpt": "(httpx2.RequestError, _legacy_httpx.RequestError),",
               "pattern": "httpx\\."
             },
             {
-              "path": "tests/test_mcp.py",
-              "line": 242,
-              "excerpt": "client = httpx.AsyncClient()",
+              "path": "pydantic_ai_slim/pydantic_ai/_ssrf.py",
+              "line": 159,
+              "excerpt": "(httpx2.HTTPStatusError, _legacy_httpx.HTTPStatusError),",
               "pattern": "httpx\\."
             },
             {
-              "path": "tests/test_mcp.py",
-              "line": 264,
-              "excerpt": "http_client=httpx.AsyncClient(),",
+              "path": "pydantic_ai_slim/pydantic_ai/_ssrf.py",
+              "line": 164,
+              "excerpt": "(httpx2.DecodingError, _legacy_httpx.DecodingError),",
               "pattern": "httpx\\."
             }
           ]
@@ -15870,22 +15896,22 @@
           ],
           "authentication": [
             {
-              "path": "tests/test_agent.py",
-              "line": 8886,
-              "excerpt": "provider = OpenAIProvider(api_key='test-key')",
-              "pattern": "\\bAPI_KEY\\b"
+              "path": "pydantic_ai_slim/pydantic_ai/_ssrf.py",
+              "line": 129,
+              "excerpt": "_SENSITIVE_HEADERS = frozenset(('authorization', 'cookie', 'proxy-authorization'))",
+              "pattern": "\\bauthorization\\b"
             },
             {
-              "path": "tests/test_agent.py",
-              "line": 8900,
-              "excerpt": "provider = OpenAIProvider(api_key='test-key')",
-              "pattern": "\\bAPI_KEY\\b"
+              "path": "pydantic_ai_slim/pydantic_ai/_ssrf.py",
+              "line": 525,
+              "excerpt": "origin rule httpx uses for `Authorization`, including its http\u2192https",
+              "pattern": "\\bauthorization\\b"
             },
             {
-              "path": "tests/test_agent.py",
-              "line": 8916,
-              "excerpt": "provider = OpenAIProvider(api_key='test-key')",
-              "pattern": "\\bAPI_KEY\\b"
+              "path": "pydantic_ai_slim/pydantic_ai/_ssrf.py",
+              "line": 569,
+              "excerpt": "non-default port, and cannot be overridden. Sensitive headers (`Authorization`,",
+              "pattern": "\\bauthorization\\b"
             }
           ]
         }

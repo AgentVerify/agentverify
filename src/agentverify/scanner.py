@@ -279,8 +279,14 @@ class RegistryClassTarget:
 class PythonSecureNetworkPolicy:
     evidence: Evidence
     schemes: tuple[str, ...]
-    bypass_environment: str
-    force_safe_environment: str
+    redirect_scope: str
+    dns_scope: str
+    proxy_scope: str
+    enforcement_default: str
+    escape_hatch: str
+    policy_effect: str = "restricts-http-origin-and-peer"
+    bypass_environment: str | None = None
+    force_safe_environment: str | None = None
 
 
 @dataclass(frozen=True)
@@ -2388,20 +2394,22 @@ class PythonVisitor(ast.NodeVisitor):
     ) -> None:
         attributes = {
             "scope": source_scope(self.path),
-            "policy_effect": "restricts-http-origin-and-peer",
+            "policy_effect": policy.policy_effect,
             "frontend": "python",
             "helper": summary.name,
             "helper_path": summary.path,
             "schemes": list(policy.schemes),
             "initial_origin_scope": "public-addresses",
-            "redirect_scope": "each-hop-validated",
-            "dns_scope": "connection-pinned",
-            "proxy_scope": "disabled",
-            "enforcement_default": "enabled",
-            "escape_hatch": "configured-opt-out",
-            "bypass_environment": policy.bypass_environment,
-            "force_safe_environment": policy.force_safe_environment,
+            "redirect_scope": policy.redirect_scope,
+            "dns_scope": policy.dns_scope,
+            "proxy_scope": policy.proxy_scope,
+            "enforcement_default": policy.enforcement_default,
+            "escape_hatch": policy.escape_hatch,
         }
+        if policy.bypass_environment is not None:
+            attributes["bypass_environment"] = policy.bypass_environment
+        if policy.force_safe_environment is not None:
+            attributes["force_safe_environment"] = policy.force_safe_environment
         self.ir.add_component(
             Component("control", "network-ssrf-policy", policy.evidence, attributes)
         )
@@ -4494,10 +4502,10 @@ class PythonVisitor(ast.NodeVisitor):
                         {
                             "network_origin_policy": True,
                             "initial_origin_scope": "public-addresses",
-                            "redirect_scope": "each-hop-validated",
-                            "dns_scope": "connection-pinned",
-                            "proxy_scope": "disabled",
-                            "enforcement_default": "enabled",
+                            "redirect_scope": secure_policy.redirect_scope,
+                            "dns_scope": secure_policy.dns_scope,
+                            "proxy_scope": secure_policy.proxy_scope,
+                            "enforcement_default": secure_policy.enforcement_default,
                         }
                         if secure_policy is not None
                         else {}
@@ -8326,8 +8334,555 @@ def build_python_secure_network_helper_summaries(
                 PythonSecureNetworkPolicy(
                     Evidence(relative, function.lineno, excerpt(text.splitlines(), function.lineno)),
                     ("http", "https"),
-                    bypass_environment,
-                    force_safe_environment,
+                    "each-hop-validated",
+                    "connection-pinned",
+                    "disabled",
+                    "enabled",
+                    "configured-opt-out",
+                    bypass_environment=bypass_environment,
+                    force_safe_environment=force_safe_environment,
+                ),
+            )
+    return summaries
+
+
+def build_python_proxy_conditional_secure_network_helper_summaries(
+    root: Path,
+    paths: list[Path],
+) -> dict[tuple[str, str], PythonNetworkHelperSummary]:
+    """Index URL guards that pin direct sockets but defer DNS to configured proxies."""
+    summaries: dict[tuple[str, str], PythonNetworkHelperSummary] = {}
+    required_markers = (
+        "assert_safe_fetch_target",
+        "_PinnedAddressAdapter",
+        "_assert_pinned_peer",
+        "_proxy_applies",
+        "_pinned_request",
+        "allow_redirects",
+    )
+
+    def unique_function(
+        tree: ast.Module, name: str
+    ) -> ast.FunctionDef | ast.AsyncFunctionDef | None:
+        matches = [
+            node
+            for node in tree.body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and node.name == name
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    def unique_method(
+        node: ast.ClassDef, name: str
+    ) -> ast.FunctionDef | ast.AsyncFunctionDef | None:
+        matches = [
+            child
+            for child in node.body
+            if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and child.name == name
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    def short_call_name(node: ast.Call) -> str:
+        return dotted_name(node.func).rsplit(".", 1)[-1]
+
+    def calls(node: ast.AST) -> list[ast.Call]:
+        return [child for child in ast.walk(node) if isinstance(child, ast.Call)]
+
+    def direct_return_call(
+        function: ast.FunctionDef | ast.AsyncFunctionDef, name: str
+    ) -> ast.Call | None:
+        matches = [
+            statement.value
+            for statement in function.body
+            if isinstance(statement, ast.Return)
+            and isinstance(statement.value, ast.Call)
+            and short_call_name(statement.value) == name
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    for path in paths:
+        if (
+            path.is_symlink()
+            or not path.is_file()
+            or path.suffix.lower() != ".py"
+            or set(path.relative_to(root).parts) & SKIP_DIRECTORIES
+        ):
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+            if not all(marker in text for marker in required_markers):
+                continue
+            tree = ast.parse(text, filename=path.relative_to(root).as_posix())
+        except (OSError, SyntaxError):
+            continue
+        relative = path.relative_to(root).as_posix()
+        lines = text.splitlines()
+        functions = {
+            name: unique_function(tree, name)
+            for name in (
+                "is_blocked_ip",
+                "assert_safe_fetch_target",
+                "_assert_pinned_peer",
+                "_proxy_applies",
+                "_pinned_request",
+                "safe_get",
+                "safe_request",
+            )
+        }
+        if any(function is None for function in functions.values()):
+            continue
+        rebound_names = {
+            name
+            for statement in tree.body
+            if isinstance(statement, (ast.Assign, ast.AnnAssign, ast.AugAssign))
+            for target in (
+                statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+            )
+            for name in python_assigned_names(target)
+        }
+        if rebound_names & functions.keys():
+            continue
+
+        blocked_ip = functions["is_blocked_ip"]
+        validator = functions["assert_safe_fetch_target"]
+        peer_guard = functions["_assert_pinned_peer"]
+        proxy_guard = functions["_proxy_applies"]
+        pinned_request = functions["_pinned_request"]
+        safe_get = functions["safe_get"]
+        safe_request = functions["safe_request"]
+        assert all(
+            function is not None
+            for function in (
+                blocked_ip,
+                validator,
+                peer_guard,
+                proxy_guard,
+                pinned_request,
+                safe_get,
+                safe_request,
+            )
+        )
+
+        blocked_returns = [
+            node
+            for node in ast.walk(blocked_ip)
+            if isinstance(node, ast.Return) and node.value is not None
+        ]
+        blocked_policy = (
+            any(dotted_name(call.func) == "ipaddress.ip_address" for call in calls(blocked_ip))
+            and any(
+                isinstance(child, ast.UnaryOp)
+                and isinstance(child.op, ast.Not)
+                and isinstance(child.operand, ast.Attribute)
+                and child.operand.attr == "is_global"
+                for node in blocked_returns
+                for child in ast.walk(node.value)
+            )
+        )
+        validator_args = (*validator.args.posonlyargs, *validator.args.args)
+        if not validator_args:
+            continue
+        validator_url = validator_args[0].arg
+        validator_calls = calls(validator)
+        parser_names = {
+            alias.asname or alias.name
+            for statement in tree.body
+            if isinstance(statement, ast.ImportFrom)
+            and statement.module == "urllib.parse"
+            for alias in statement.names
+            if alias.name in {"urlparse", "urlsplit"}
+        }
+        canonical_url_names = {
+            target.id
+            for node in ast.walk(validator)
+            if isinstance(node, ast.Assign)
+            and len(node.targets) == 1
+            and isinstance((target := node.targets[0]), ast.Name)
+            and any(
+                dotted_name(call.func) == "requests.Request"
+                and any(
+                    keyword.arg == "url"
+                    and isinstance(keyword.value, ast.Name)
+                    and keyword.value.id == validator_url
+                    for keyword in call.keywords
+                )
+                for call in calls(node.value)
+            )
+        }
+        parser_input_names = {validator_url, *canonical_url_names}
+        parsed_names = {
+            target.id
+            for node in ast.walk(validator)
+            if isinstance(node, ast.Assign)
+            and len(node.targets) == 1
+            and isinstance((target := node.targets[0]), ast.Name)
+            and isinstance(node.value, ast.Call)
+            and dotted_name(node.value.func) in parser_names
+            and len(node.value.args) == 1
+            and isinstance(node.value.args[0], ast.Name)
+            and node.value.args[0].id in parser_input_names
+        }
+        scheme_guard = any(
+            isinstance(node, ast.Compare)
+            and isinstance(node.left, ast.Attribute)
+            and isinstance(node.left.value, ast.Name)
+            and node.left.value.id in parsed_names
+            and node.left.attr == "scheme"
+            and len(node.ops) == 1
+            and isinstance(node.ops[0], ast.NotIn)
+            and len(node.comparators) == 1
+            and isinstance(node.comparators[0], (ast.Set, ast.Tuple, ast.List))
+            and {
+                child.value
+                for child in node.comparators[0].elts
+                if isinstance(child, ast.Constant) and isinstance(child.value, str)
+            }
+            == {"http", "https"}
+            for node in ast.walk(validator)
+        )
+        blocked_guard = any(
+            isinstance(node, ast.If)
+            and any(short_call_name(call) == "is_blocked_ip" for call in calls(node.test))
+            and python_block_always_terminates(node.body)
+            for node in ast.walk(validator)
+        )
+        returned_addresses = {
+            node.value.id
+            for node in validator.body
+            if isinstance(node, ast.Return) and isinstance(node.value, ast.Name)
+        }
+        resolution_flows_to_return = False
+        if len(returned_addresses) == 1:
+            returned_name = next(iter(returned_addresses))
+            direct_resolution = any(
+                (
+                    isinstance(node, ast.Assign)
+                    and any(
+                        isinstance(target, ast.Name) and target.id == returned_name
+                        for target in node.targets
+                    )
+                    or isinstance(node, ast.AnnAssign)
+                    and isinstance(node.target, ast.Name)
+                    and node.target.id == returned_name
+                )
+                and node.value is not None
+                and any(
+                    dotted_name(call.func) == "socket.getaddrinfo"
+                    for call in calls(node.value)
+                )
+                for node in ast.walk(validator)
+                if isinstance(node, (ast.Assign, ast.AnnAssign))
+            )
+            loop_resolution = any(
+                any(
+                    dotted_name(call.func) == "socket.getaddrinfo"
+                    for call in calls(loop.iter)
+                )
+                and any(
+                    isinstance(call.func, ast.Attribute)
+                    and call.func.attr == "append"
+                    and isinstance(call.func.value, ast.Name)
+                    and call.func.value.id == returned_name
+                    for call in calls(loop)
+                )
+                for loop in ast.walk(validator)
+                if isinstance(loop, (ast.For, ast.AsyncFor))
+            )
+            resolution_flows_to_return = direct_resolution or loop_resolution
+        validator_policy = (
+            blocked_policy
+            and len(parser_names) == 1
+            and not parser_names & rebound_names
+            and len(parsed_names) == 1
+            and scheme_guard
+            and blocked_guard
+            and any(dotted_name(call.func) == "socket.getaddrinfo" for call in validator_calls)
+            and any(short_call_name(call) == "is_blocked_ip" for call in validator_calls)
+            and len(returned_addresses) == 1
+            and resolution_flows_to_return
+        )
+
+        adapters = [
+            node
+            for node in tree.body
+            if isinstance(node, ast.ClassDef) and node.name == "_PinnedAddressAdapter"
+        ]
+        adapter_method = unique_method(adapters[0], "get_connection_with_tls_context") if len(adapters) == 1 else None
+        adapter_policy = False
+        if adapter_method is not None:
+            adapter_calls = calls(adapter_method)
+            dns_values = {
+                node.value.id
+                for node in ast.walk(adapter_method)
+                if isinstance(node, ast.Assign)
+                and any(
+                    isinstance(target, ast.Attribute) and target.attr == "_dns_host"
+                    for target in node.targets
+                )
+                and isinstance(node.value, ast.Name)
+            }
+            adapter_policy = (
+                {"address", "hostname"} <= dns_values
+                and any(short_call_name(call) == "_assert_pinned_peer" for call in adapter_calls)
+                and any(
+                    isinstance(call.func, ast.Name) and call.func.id == "open_socket"
+                    for call in adapter_calls
+                )
+            )
+        peer_policy = (
+            any(short_call_name(call) == "getpeername" for call in calls(peer_guard))
+            and sum(
+                dotted_name(call.func) == "ipaddress.ip_address" for call in calls(peer_guard)
+            )
+            >= 2
+            and any(short_call_name(call) == "close" for call in calls(peer_guard))
+            and any(isinstance(node, ast.Raise) for node in ast.walk(peer_guard))
+        )
+        proxy_policy = (
+            any(short_call_name(call) == "get_environ_proxies" for call in calls(proxy_guard))
+            and any(short_call_name(call) == "select_proxy" for call in calls(proxy_guard))
+            and any(
+                isinstance(handler, ast.ExceptHandler)
+                and any(
+                    isinstance(statement, ast.Return)
+                    and isinstance(statement.value, ast.Constant)
+                    and statement.value.value is True
+                    for statement in handler.body
+                )
+                for handler in ast.walk(proxy_guard)
+            )
+        )
+
+        pinned_args = (*pinned_request.args.posonlyargs, *pinned_request.args.args)
+        if len(pinned_args) < 2:
+            continue
+        method_name, url_name = pinned_args[0].arg, pinned_args[1].arg
+        addresses = {
+            target.id
+            for node in pinned_request.body
+            if isinstance(node, ast.Assign)
+            and len(node.targets) == 1
+            and isinstance((target := node.targets[0]), ast.Name)
+            and isinstance(node.value, ast.Call)
+            and short_call_name(node.value) == "assert_safe_fetch_target"
+            and len(node.value.args) == 1
+            and isinstance(node.value.args[0], ast.Name)
+            and node.value.args[0].id == url_name
+        }
+        sessions = {
+            target.id
+            for node in pinned_request.body
+            if isinstance(node, ast.Assign)
+            and len(node.targets) == 1
+            and isinstance((target := node.targets[0]), ast.Name)
+            and isinstance(node.value, ast.Call)
+            and short_call_name(node.value) == "Session"
+        }
+        proxy_branches = [
+            node
+            for node in pinned_request.body
+            if isinstance(node, ast.If)
+            and isinstance(node.test, ast.UnaryOp)
+            and isinstance(node.test.op, ast.Not)
+            and isinstance(node.test.operand, ast.Call)
+            and short_call_name(node.test.operand) == "_proxy_applies"
+            and len(node.test.operand.args) == 2
+            and isinstance(node.test.operand.args[0], ast.Name)
+            and node.test.operand.args[0].id == url_name
+            and isinstance(node.test.operand.args[1], ast.Call)
+            and isinstance(node.test.operand.args[1].func, ast.Attribute)
+            and node.test.operand.args[1].func.attr == "get"
+            and isinstance(node.test.operand.args[1].func.value, ast.Name)
+            and pinned_request.args.kwarg is not None
+            and node.test.operand.args[1].func.value.id
+            == pinned_request.args.kwarg.arg
+            and node.test.operand.args[1].args
+            and isinstance(node.test.operand.args[1].args[0], ast.Constant)
+            and node.test.operand.args[1].args[0].value == "proxies"
+        ]
+        mounts: set[str] = set()
+        branch_adapter_names: set[str] = set()
+        if len(proxy_branches) == 1 and len(addresses) == 1 and len(sessions) == 1:
+            address_name = next(iter(addresses))
+            session_name = next(iter(sessions))
+            branch_adapter_names = {
+                target.id
+                for node in proxy_branches[0].body
+                if isinstance(node, ast.Assign)
+                and len(node.targets) == 1
+                and isinstance((target := node.targets[0]), ast.Name)
+                and isinstance(node.value, ast.Call)
+                and short_call_name(node.value) == "_PinnedAddressAdapter"
+                and len(node.value.args) == 1
+                and isinstance(node.value.args[0], ast.Name)
+                and node.value.args[0].id == address_name
+            }
+            mounts = {
+                call.args[0].value
+                for call in calls(proxy_branches[0])
+                if isinstance(call.func, ast.Attribute)
+                and call.func.attr == "mount"
+                and isinstance(call.func.value, ast.Name)
+                and call.func.value.id == session_name
+                and len(call.args) > 1
+                and isinstance(call.args[0], ast.Constant)
+                and isinstance(call.args[0].value, str)
+                and isinstance(call.args[1], ast.Name)
+                and call.args[1].id in branch_adapter_names
+            }
+        request_calls = [
+            call
+            for call in calls(pinned_request)
+            if isinstance(call.func, ast.Attribute)
+            and call.func.attr == "request"
+            and isinstance(call.func.value, ast.Name)
+            and call.func.value.id in sessions
+            and len(call.args) >= 2
+            and isinstance(call.args[0], ast.Name)
+            and call.args[0].id == method_name
+            and isinstance(call.args[1], ast.Name)
+            and call.args[1].id == url_name
+            and any(
+                keyword.arg == "allow_redirects"
+                and isinstance(keyword.value, ast.Constant)
+                and keyword.value.value is False
+                for keyword in call.keywords
+            )
+        ]
+        transport_policy = (
+            validator_policy
+            and adapter_policy
+            and peer_policy
+            and proxy_policy
+            and len(addresses) == 1
+            and len(sessions) == 1
+            and len(proxy_branches) == 1
+            and len(branch_adapter_names) == 1
+            and {"http://", "https://"} <= mounts
+            and len(request_calls) == 1
+        )
+        if not transport_policy:
+            continue
+
+        get_args = (*safe_get.args.posonlyargs, *safe_get.args.args)
+        get_call = direct_return_call(safe_get, "_pinned_request")
+        get_proven = (
+            bool(get_args)
+            and get_call is not None
+            and len(get_call.args) >= 2
+            and isinstance(get_call.args[0], ast.Constant)
+            and get_call.args[0].value == "GET"
+            and isinstance(get_call.args[1], ast.Name)
+            and get_call.args[1].id == get_args[0].arg
+        )
+
+        request_args = (*safe_request.args.posonlyargs, *safe_request.args.args)
+        current_names = {
+            target.id
+            for node in safe_request.body
+            if isinstance(node, ast.Assign)
+            and len(node.targets) == 1
+            and isinstance((target := node.targets[0]), ast.Name)
+            and isinstance(node.value, ast.Name)
+            and len(request_args) >= 2
+            and node.value.id == request_args[1].arg
+        }
+        redirect_loops = [node for node in safe_request.body if isinstance(node, ast.For)]
+        redirect_proven = False
+        if len(redirect_loops) == 1 and len(current_names) == 1 and len(request_args) >= 2:
+            current_name = next(iter(current_names))
+            loop = redirect_loops[0]
+            redirect_limit_names = {
+                argument.arg for argument in safe_request.args.kwonlyargs
+            }
+            bounded_loop = (
+                isinstance(loop.iter, ast.Call)
+                and isinstance(loop.iter.func, ast.Name)
+                and loop.iter.func.id == "range"
+                and len(loop.iter.args) == 1
+                and isinstance(loop.iter.args[0], ast.BinOp)
+                and isinstance(loop.iter.args[0].op, ast.Add)
+                and isinstance(loop.iter.args[0].left, ast.Name)
+                and loop.iter.args[0].left.id in redirect_limit_names
+                and isinstance(loop.iter.args[0].right, ast.Constant)
+                and loop.iter.args[0].right.value == 1
+            )
+            loop_calls = calls(loop)
+            pinned_calls = [
+                call
+                for call in loop_calls
+                if short_call_name(call) == "_pinned_request"
+                and len(call.args) >= 2
+                and isinstance(call.args[0], ast.Name)
+                and call.args[0].id == request_args[0].arg
+                and isinstance(call.args[1], ast.Name)
+                and call.args[1].id == current_name
+            ]
+            redirect_updates = [
+                node
+                for node in ast.walk(loop)
+                if isinstance(node, ast.Assign)
+                and len(node.targets) == 1
+                and isinstance(node.targets[0], ast.Name)
+                and node.targets[0].id == current_name
+                and isinstance(node.value, ast.Call)
+                and short_call_name(node.value) == "urljoin"
+                and node.value.args
+                and isinstance(node.value.args[0], ast.Name)
+                and node.value.args[0].id == current_name
+            ]
+            redirect_proven = (
+                bounded_loop
+                and len(pinned_calls) == 1
+                and len(redirect_updates) == 1
+                and any(isinstance(node, ast.Return) for node in ast.walk(loop))
+                and any(isinstance(node, ast.Raise) for node in safe_request.body)
+            )
+
+        shared_policy = {
+            "dns_scope": "connection-pinned-unless-proxied",
+            "proxy_scope": "environment-or-caller-dependent",
+            "enforcement_default": "enabled",
+            "escape_hatch": "none",
+            "policy_effect": "restricts-http-origin-and-conditionally-pins-peer",
+        }
+        if get_proven:
+            summaries[(relative, safe_get.name)] = PythonNetworkHelperSummary(
+                relative,
+                safe_get.name,
+                tuple(argument.arg for argument in get_args),
+                tuple(argument.arg for argument in safe_get.args.kwonlyargs),
+                (get_args[0].arg,),
+                safe_get.lineno,
+                (request_calls[0].lineno,),
+                PythonSecureNetworkPolicy(
+                    Evidence(relative, safe_get.lineno, excerpt(lines, safe_get.lineno)),
+                    ("http", "https"),
+                    "disabled",
+                    **shared_policy,
+                ),
+            )
+        if redirect_proven:
+            summaries[(relative, safe_request.name)] = PythonNetworkHelperSummary(
+                relative,
+                safe_request.name,
+                tuple(argument.arg for argument in request_args),
+                tuple(argument.arg for argument in safe_request.args.kwonlyargs),
+                (request_args[1].arg,),
+                safe_request.lineno,
+                (request_calls[0].lineno,),
+                PythonSecureNetworkPolicy(
+                    Evidence(
+                        relative,
+                        safe_request.lineno,
+                        excerpt(lines, safe_request.lineno),
+                    ),
+                    ("http", "https"),
+                    "each-hop-validated",
+                    **shared_policy,
                 ),
             )
     return summaries
@@ -9580,6 +10135,12 @@ def scan_repository(
             root,
             registry_paths,
             module_paths,
+        )
+    )
+    network_helper_summaries.update(
+        build_python_proxy_conditional_secure_network_helper_summaries(
+            root,
+            registry_paths,
         )
     )
     registered_tool_functions = build_python_tool_registrations(

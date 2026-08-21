@@ -2842,6 +2842,54 @@
       "check_id": "IR-PY-SECURE-NETWORK-HELPER",
       "path": "lib/crewai-tools/src/crewai_tools/rag/loaders/docx_loader.py", "line": 45, "expected": true,
       "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy"}
+    },
+    {
+      "id": "python-proxy-conditional-network-safe-get-local",
+      "target": {"kind":"local","path":"cases/python_proxy_conditional_network_helper"},
+      "check_id": "IR-PY-PROXY-CONDITIONAL-NETWORK-HELPER",
+      "path": "app.py", "line": 6, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
+        "attributes":{"control_line":69,"redirect_scope":"disabled","dns_scope":"connection-pinned-unless-proxied","proxy_scope":"environment-or-caller-dependent","enforcement_default":"enabled","escape_hatch":"none"}
+      }
+    },
+    {
+      "id": "python-proxy-conditional-network-safe-request-local",
+      "target": {"kind":"local","path":"cases/python_proxy_conditional_network_helper"},
+      "check_id": "IR-PY-PROXY-CONDITIONAL-NETWORK-HELPER",
+      "path": "app.py", "line": 10, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
+        "attributes":{"control_line":73,"redirect_scope":"each-hop-validated","dns_scope":"connection-pinned-unless-proxied","proxy_scope":"environment-or-caller-dependent","enforcement_default":"enabled","escape_hatch":"none"}
+      }
+    },
+    {
+      "id": "python-proxy-conditional-network-incomplete-local-negative",
+      "target": {"kind":"local","path":"cases/python_proxy_conditional_network_helper"},
+      "check_id": "IR-PY-PROXY-CONDITIONAL-NETWORK-HELPER",
+      "path": "app.py", "line": 14, "expected": false,
+      "source_contains": "requests.get(url)",
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy"}
+    },
+    {
+      "id": "python-proxy-conditional-network-composio-download-real",
+      "target": {"kind":"repository","repository":"composiohq/composio","commit":"38899bdfa02fe10d9df65d230a67f9f5df987420"},
+      "check_id": "IR-PY-PROXY-CONDITIONAL-NETWORK-HELPER",
+      "path": "python/composio/core/models/tool_router_session_files.py", "line": 94, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
+        "attributes":{"control_line":319,"redirect_scope":"disabled","dns_scope":"connection-pinned-unless-proxied","proxy_scope":"environment-or-caller-dependent","enforcement_default":"enabled","escape_hatch":"none"}
+      }
+    },
+    {
+      "id": "python-proxy-conditional-network-composio-upload-real",
+      "target": {"kind":"repository","repository":"composiohq/composio","commit":"38899bdfa02fe10d9df65d230a67f9f5df987420"},
+      "check_id": "IR-PY-PROXY-CONDITIONAL-NETWORK-HELPER",
+      "path": "python/composio/core/models/tool_router_session_files.py", "line": 389, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
+        "attributes":{"control_line":146,"redirect_scope":"each-hop-validated","dns_scope":"connection-pinned-unless-proxied","proxy_scope":"environment-or-caller-dependent","enforcement_default":"enabled","escape_hatch":"none"}
+      }
     }
   ]
 }

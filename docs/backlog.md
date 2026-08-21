@@ -24,7 +24,7 @@ package reexports and additional wrapper forms without falling back to display-n
 Python browser-page execution now inventories import-gated `.evaluate(...)` calls and promotes only
 direct tool-parameter/alias script flow. Dynamic calls additionally require an exact Playwright
 receiver annotation, one immutable alias of that parameter, or Skyvern's exact imported `get_page`
-factory result. Schema v32 proves seven of 80 corpus receivers; the other 73 fixed-script observations
+factory result. Schema v33 proves seven of 80 corpus receivers; the other 73 fixed-script observations
 retain explicit unresolved state. Skyvern contributes 30 evaluator observations but one finding;
 normalized numeric scroll JavaScript remains inventory-only. Next resolve constructor-bound page
 fields, locator chains, sanitizer and bounded builder summaries, imported helper flow, and other
@@ -103,16 +103,19 @@ unresolved. Exact module-level `urllib.request.urlopen` imports and aliases now 
 shadowing and module rebinding invalidate the API proof.
 Exact same-function Python `urlparse`/`urlsplit` guards now add a control edge only when immutable
 tool-origin data is rejected outside a static scheme and hostname set before the request. Redirect
-disabling is recorded separately; DNS and other redirect states stay unresolved. Schema v32 finds
+disabling is recorded separately; DNS and other redirect states stay unresolved. Schema v33 finds
 zero such controls on the 13 corpus reviews, making the absence visible without calling every review
 SSRF. A same-file TypeScript validator summary now resolves MCP Servers' scheme allowlist and
 environment-backed exact/subdomain predicate, while preserving its empty hostname default as open.
-Schema v32 separately proves two CrewAI loader calls through a locally defined `safe_get` transport:
+Schema v33 separately proves two CrewAI loader calls through a locally defined `safe_get` transport:
 both validate every redirect hop, pin the connected peer after DNS checks, disable proxies, and are
 enabled by default. The `CREWAI_TOOLS_ALLOW_UNSAFE_PATHS` opt-out and
 `CREWAI_TOOLS_FORCE_SAFE_PATHS` override remain explicit governance state. Next resolve normalized
-predicates and other imported validators or transports without generalizing from names, plus runtime
-egress controls and equivalent Axios request-object handling.
+predicates and other imported validators or transports without generalizing from names. Two Composio
+session-file calls are also proven, but retain proxy-dependent DNS pinning as an explicit residual:
+one disables redirects and one validates each bounded hop. Next resolve Langflow's configurable
+no-op guard and n8n's real-versus-passthrough service composition, plus runtime egress controls and
+equivalent Axios request-object handling.
 
 ## P1 — consequential-action audit coverage
 
@@ -123,8 +126,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 299 pinned positive/negative locations, with 202 separately
-scored IR relationship labels. Schema-v32 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 299 pinned positive/negative locations, with 207 separately
+scored IR relationship labels. Schema-v33 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

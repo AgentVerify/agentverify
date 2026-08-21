@@ -23,6 +23,9 @@ never imported or executed.
 - `python_secure_network_helper`: source-proven imported HTTP transport that validates initial and
   redirect origins, rejects private peers and proxies, and preserves explicit opt-out configuration;
   incomplete redirect validation and rebound imports remain negative.
+- `python_proxy_conditional_network_helper`: source-proven direct and redirecting transports that
+  pin direct sockets but preserve environment/caller proxy DNS as a residual; fixed validation,
+  detached DNS, missing peer/proxy flow, unbounded redirects, and ordinary requests stay negative.
 - `sandbox_boundary`: Compose and Kubernetes host/privilege boundaries plus explicit safe negatives.
 - `constant_eval`: constant Python evaluation negative case.
 - `python_browser_evaluate`: exact Playwright `Page` annotations and immutable aliases prove dynamic

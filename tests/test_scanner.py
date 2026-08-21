@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from datetime import date
 from pathlib import Path
 
@@ -1298,6 +1299,95 @@ def test_python_secure_network_helper_requires_complete_transport_proof() -> Non
         edge.target_kind == "control" and edge.target_name == "network-ssrf-policy"
         for edge in selected_ir.relationships
     )
+
+
+def test_python_proxy_conditional_network_helper_preserves_proxy_residual(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/python_proxy_conditional_network_helper"
+    ir = scan_repository(root)
+
+    network = [
+        item
+        for item in ir.components
+        if item.kind == "capability"
+        and item.name == "network"
+        and item.attributes.get("summary") == "secure-imported-function"
+    ]
+    assert [(item.evidence.path, item.evidence.line) for item in network] == [
+        ("app.py", 6),
+        ("app.py", 10),
+    ]
+    assert [item.attributes["redirect_scope"] for item in network] == [
+        "disabled",
+        "each-hop-validated",
+    ]
+    assert all(
+        item.attributes["dns_scope"] == "connection-pinned-unless-proxied"
+        and item.attributes["proxy_scope"] == "environment-or-caller-dependent"
+        and item.attributes["enforcement_default"] == "enabled"
+        and item.attributes["helper_network_lines"] == [65]
+        for item in network
+    )
+    controls = {
+        item.attributes["helper"]: item
+        for item in ir.components
+        if item.kind == "control" and item.name == "network-ssrf-policy"
+    }
+    assert set(controls) == {"safe_get", "safe_request"}
+    assert controls["safe_get"].evidence.line == 69
+    assert controls["safe_request"].evidence.line == 73
+    assert all(
+        item.attributes["policy_effect"]
+        == "restricts-http-origin-and-conditionally-pins-peer"
+        and item.attributes["escape_hatch"] == "none"
+        and "bypass_environment" not in item.attributes
+        and "force_safe_environment" not in item.attributes
+        for item in controls.values()
+    )
+
+    blocking_mutations = [
+        (
+            "_assert_pinned_peer(sock, address, hostname)",
+            "verify_peer(sock, address, hostname)",
+        ),
+        ("parsed = urlparse(url)", 'parsed = urlparse("https://fixed.example")'),
+        (
+            "addresses = [result[4][0] for result in socket.getaddrinfo(parsed.hostname, None)]",
+            'socket.getaddrinfo(parsed.hostname, None)\n    addresses = ["8.8.8.8"]',
+        ),
+        (
+            '_proxy_applies(url, kwargs.get("proxies"))',
+            "_proxy_applies(url, None)",
+        ),
+    ]
+    for index, (before, after) in enumerate(blocking_mutations):
+        incomplete = tmp_path / f"incomplete-{index}"
+        shutil.copytree(root, incomplete)
+        transport = incomplete / "transport/url_safety.py"
+        source = transport.read_text(encoding="utf-8")
+        assert before in source
+        transport.write_text(source.replace(before, after, 1), encoding="utf-8")
+        incomplete_ir = scan_repository(incomplete)
+        assert not any(
+            edge.target_kind == "control" and edge.target_name == "network-ssrf-policy"
+            for edge in incomplete_ir.relationships
+        )
+
+    unbounded = tmp_path / "unbounded"
+    shutil.copytree(root, unbounded)
+    transport = unbounded / "transport/url_safety.py"
+    source = transport.read_text(encoding="utf-8")
+    transport.write_text(
+        source.replace("range(max_redirects + 1)", "range(5)", 1),
+        encoding="utf-8",
+    )
+    unbounded_ir = scan_repository(unbounded)
+    assert [
+        edge.evidence.line
+        for edge in unbounded_ir.relationships
+        if edge.target_kind == "control" and edge.target_name == "network-ssrf-policy"
+    ] == [6]
 
 
 def test_typescript_network_helper_summaries_map_object_parameters_and_multiline_aliases(

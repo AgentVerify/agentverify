@@ -129,6 +129,7 @@ PRIORITY_WORDS = (
     "executor",
     "security",
 )
+CRITICAL_SECURITY_WORDS = ("ssrf", "url_safety", "url-security", "url_security")
 SKIP_PARTS = {"node_modules", "vendor", "dist", "build", ".venv", "fixtures", "snapshots"}
 EXTENSION_LANGUAGE = {
     ".py": "Python",
@@ -208,6 +209,7 @@ def ensure_clone(repository: str, cache_dir: Path, commit: str | None = None) ->
 
 def select_files(paths: list[str], max_files: int) -> list[str]:
     manifests: list[tuple[int, str]] = []
+    critical_security_sources: list[tuple[int, str]] = []
     priority_sources: list[tuple[int, str]] = []
     other_sources: list[tuple[int, str]] = []
     for path in paths:
@@ -225,18 +227,33 @@ def select_files(paths: list[str], max_files: int) -> list[str]:
         if name not in MANIFEST_NAMES and suffix not in SOURCE_SUFFIXES and not config_manifest:
             continue
         lowered = path.lower()
+        lowered_name = name.lower()
+        is_test_source = bool(lowered_parts & {"test", "tests", "__tests__"}) or (
+            lowered_name.startswith("test_")
+            or any(
+                marker in lowered_name
+                for marker in (".test.", ".spec.", "_test.", "_tests.")
+            )
+        )
         item = (len(Path(path).parts), path)
         if name in MANIFEST_NAMES or config_manifest:
             manifests.append(item)
+        elif not is_test_source and any(
+            word in lowered for word in CRITICAL_SECURITY_WORDS
+        ):
+            critical_security_sources.append(item)
         elif any(word in lowered for word in PRIORITY_WORDS):
             priority_sources.append(item)
         else:
             other_sources.append(item)
     manifests.sort()
+    critical_security_sources.sort()
     priority_sources.sort()
     other_sources.sort()
     manifest_budget = min(len(manifests), max(1, max_files // 4))
     selected = manifests[:manifest_budget]
+    source_budget = max_files - len(selected)
+    selected.extend(critical_security_sources[:source_budget])
     source_budget = max_files - len(selected)
     selected.extend(priority_sources[:source_budget])
     source_budget = max_files - len(selected)
@@ -347,43 +364,131 @@ def python_import_dependencies(
     return sorted(dependencies)
 
 
-def expand_python_mcp_dependencies(
+SECURITY_DEPENDENCY_PATTERN = re.compile(
+    r"(?:^|[/_.-])(?:ssrf|safe_(?:get|request|fetch|http|path)|validate_url|"
+    r"assert_safe_fetch_target|url_(?:safety|security))(?:[/_.-]|$)",
+    re.IGNORECASE,
+)
+SECURITY_SEED_TARGET_PATTERN = re.compile(
+    r"(?:^|[/_.-])(?:ssrf|safe_(?:get|request|fetch|http)|validate_url|"
+    r"assert_safe_fetch_target|url_(?:safety|security))(?:[/_.-]|$)",
+    re.IGNORECASE,
+)
+
+
+def python_security_dependency_seed(
+    path: str,
+    content: str,
+    module_paths: dict[str, str],
+    path_modules: dict[str, tuple[str, ...]],
+) -> bool:
+    """Return whether a file calls a locally imported URL/SSRF security helper."""
+    try:
+        tree = ast.parse(content, filename=path)
+    except SyntaxError:
+        return False
+    current_modules = path_modules.get(path, ())
+    current_module = current_modules[0] if current_modules else ""
+    current_package = (
+        current_module
+        if Path(path).name == "__init__.py"
+        else current_module.rsplit(".", 1)[0]
+        if "." in current_module
+        else ""
+    )
+
+    def expression_name(node: ast.AST) -> str:
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            parent = expression_name(node.value)
+            return f"{parent}.{node.attr}" if parent else node.attr
+        return ""
+
+    call_names = {
+        expression_name(node.func) for node in ast.walk(tree) if isinstance(node, ast.Call)
+    }
+    candidates: list[tuple[str, str]] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                target = module_paths.get(alias.name)
+                if target is not None:
+                    candidates.append((alias.asname or alias.name.split(".", 1)[0], target))
+            continue
+        if not isinstance(node, ast.ImportFrom):
+            continue
+        if node.level:
+            package_parts = current_package.split(".") if current_package else []
+            if not package_parts or node.level - 1 >= len(package_parts):
+                continue
+            base_parts = package_parts[: len(package_parts) - (node.level - 1)]
+            imported_parts = node.module.split(".") if node.module else []
+            module = ".".join([*base_parts, *imported_parts])
+        else:
+            module = node.module or ""
+        module_target = module_paths.get(module)
+        for alias in node.names:
+            if alias.name == "*":
+                continue
+            submodule = ".".join(part for part in (module, alias.name) if part)
+            target = module_paths.get(submodule) or module_target
+            if target is not None:
+                candidates.append((alias.asname or alias.name, target))
+    return any(
+        SECURITY_SEED_TARGET_PATTERN.search(target)
+        and any(call == binding or call.startswith(f"{binding}.") for call in call_names)
+        for binding, target in candidates
+    )
+
+
+def expand_python_analysis_dependencies(
     clone: Path,
     tree_paths: list[str],
     selected_paths: list[str],
     max_dependency_files: int,
 ) -> list[str]:
-    """Add a deterministic, depth-bounded local import closure for MCP forwarding files."""
+    """Add bounded local imports for MCP forwarding and URL-security call sites."""
     if max_dependency_files <= 0:
         return []
     module_paths, path_modules = python_module_indexes(tree_paths)
     selected = set(selected_paths)
 
+    source_cache: dict[str, str] = {}
+
     def source(path: str) -> str:
+        if path in source_cache:
+            return source_cache[path]
         local = clone / path
         if local.is_file():
-            return local.read_text(encoding="utf-8", errors="ignore")
-        return run_git(["show", f"HEAD:{path}"], cwd=clone)
+            content = local.read_text(encoding="utf-8", errors="ignore")
+        else:
+            content = run_git(["show", f"HEAD:{path}"], cwd=clone)
+        source_cache[path] = content
+        return content
 
-    seed_paths = []
+    seed_paths: list[tuple[int, str]] = []
     for path in selected_paths:
         if Path(path).suffix.lower() != ".py":
             continue
         content = source(path)
         if re.search(r"\bcall_tool\s*\(", content):
-            seed_paths.append(path)
+            seed_paths.append((0, path))
+        elif python_security_dependency_seed(path, content, module_paths, path_modules):
+            seed_paths.append((1, path))
     seed_paths.sort(
-        key=lambda path: (
-            bool(set(Path(path).parts) & {"test", "tests"}),
-            len(Path(path).parts),
-            path,
+        key=lambda item: (
+            item[0],
+            bool(set(Path(item[1]).parts) & {"test", "tests"}),
+            len(Path(item[1]).parts),
+            item[1],
         )
     )
 
     dependencies: list[str] = []
     discovered: set[str] = set()
     per_seed_limit = 4
-    for seed in seed_paths:
+    for seed_kind, seed in seed_paths:
         if len(dependencies) >= max_dependency_files:
             break
         seed_added = 0
@@ -404,9 +509,23 @@ def expand_python_mcp_dependencies(
                 module_paths,
                 path_modules,
             )
+            if seed_kind == 1:
+                targets = [
+                    target
+                    for target in targets
+                    if (
+                        SECURITY_SEED_TARGET_PATTERN.search(target)
+                        if depth == 0
+                        else SECURITY_DEPENDENCY_PATTERN.search(target)
+                    )
+                ]
             targets.sort(
                 key=lambda target: (
-                    "tool" not in target.lower(),
+                    (
+                        "tool" not in target.lower()
+                        if seed_kind == 0
+                        else SECURITY_DEPENDENCY_PATTERN.search(target) is None
+                    ),
                     bool(set(Path(target).parts) & {"test", "tests"}),
                     len(Path(target).parts),
                     target,
@@ -414,6 +533,21 @@ def expand_python_mcp_dependencies(
             )
             stack.extend((target, depth + 1) for target in reversed(targets))
     return dependencies
+
+
+def expand_python_mcp_dependencies(
+    clone: Path,
+    tree_paths: list[str],
+    selected_paths: list[str],
+    max_dependency_files: int,
+) -> list[str]:
+    """Compatibility wrapper for the generalized bounded dependency closure."""
+    return expand_python_analysis_dependencies(
+        clone,
+        tree_paths,
+        selected_paths,
+        max_dependency_files,
+    )
 
 
 def compile_signatures() -> dict[str, dict[str, list[tuple[str, re.Pattern[str]]]]]:
@@ -477,7 +611,7 @@ def collect_one(
         ][:4]
         selected_paths = select_files(paths, max_files)
         materialize_files(clone, selected_paths)
-        dependency_paths = expand_python_mcp_dependencies(
+        dependency_paths = expand_python_analysis_dependencies(
             clone,
             paths,
             selected_paths,
@@ -576,7 +710,7 @@ def main() -> int:
             )
     results.sort(key=lambda item: item.repository.casefold())
     payload = {
-        "schema_version": 2,
+        "schema_version": 3,
         "generated_at": datetime.now(UTC).isoformat(),
         "method": {
             "collector": "scripts/collect_repositories.py",
@@ -586,8 +720,10 @@ def main() -> int:
             "lock_file": None if args.refresh else str(args.lock_file),
             "locked_repositories": sum(row["repository"] in commits for row in rows),
             "selection": (
-                "manifests, then security/agent/tool/MCP-related sources, then shallow paths; "
-                "plus a bounded local Python import closure for MCP forwarding files"
+                "manifests, then explicit SSRF/URL-safety and general "
+                "security/agent/tool/MCP-related sources, then shallow paths; "
+                "plus a bounded local Python import closure for MCP forwarding and "
+                "URL-security helper call sites"
             ),
         },
         "repositories": [asdict(result) for result in results],

@@ -1,6 +1,6 @@
 {
-  "schema_version": 32,
-  "generated_at": "2026-08-21T14:03:32.095266+00:00",
+  "schema_version": 33,
+  "generated_at": "2026-08-21T14:42:01.234857+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -16,33 +16,33 @@
     "zero_source_repositories": [
       "daytonaio/daytona"
     ],
-    "files_scanned": 10729,
+    "files_scanned": 10730,
     "dependency_files_materialized": 135,
     "repositories_with_dependency_expansion": 11,
     "config_files_scanned": 155,
-    "relationships": 1454,
-    "symbolized_components": 8737,
-    "identified_symbol_endpoints": 1929,
-    "resolved_symbol_endpoints": 1927,
+    "relationships": 1455,
+    "symbolized_components": 8733,
+    "identified_symbol_endpoints": 1928,
+    "resolved_symbol_endpoints": 1926,
     "unmatched_identified_symbol_endpoints": 2,
     "ambiguous_repeated_binding_targets": 23,
     "resolved_binding_targets_by_basis": {
       "lexical-single-definition": 325,
       "module-single-definition": 14
     },
-    "relationship_endpoints": 2908,
+    "relationship_endpoints": 2910,
     "bom_endpoint_resolutions": {
       "ambiguous": 30,
-      "evidence-location": 434,
-      "symbol-id": 1927,
+      "evidence-location": 438,
+      "symbol-id": 1926,
       "unique-display-name": 17,
-      "unresolved": 500
+      "unresolved": 499
     },
     "bom_ambiguous_endpoints_by_side_kind": {
       "target:tool": 30
     },
     "resolved_symbol_endpoints_by_frontend": {
-      "py": 1676,
+      "py": 1675,
       "ts": 251
     },
     "typescript_graph": {
@@ -111,12 +111,16 @@
       "dns_unresolved": 0
     },
     "python_secure_network_controls": {
-      "total": 2,
-      "enabled_default": 2,
+      "total": 4,
+      "enabled_default": 4,
       "configured_opt_out": 2,
-      "redirects_validated": 2,
+      "redirects_validated": 3,
+      "redirects_disabled": 1,
       "dns_connection_pinned": 2,
-      "proxies_disabled": 2
+      "dns_connection_pinned_unless_proxied": 2,
+      "proxies_disabled": 2,
+      "proxies_environment_or_caller_dependent": 2,
+      "no_escape_hatch": 2
     },
     "typescript_network_origin_controls": {
       "total": 1,
@@ -228,7 +232,7 @@
         "fixed-tool-binding": 6,
         "human-approval": 3,
         "network-origin-policy": 1,
-        "network-ssrf-policy": 1,
+        "network-ssrf-policy": 2,
         "path-boundary": 4,
         "path-prefix-check": 1,
         "tool-allowlist": 1,
@@ -375,7 +379,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 115.5522
+    "elapsed_seconds": 117.1253
   },
   "repositories": [
     {
@@ -478,8 +482,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -524,7 +532,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3906
+      "elapsed_seconds": 1.4484
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -633,8 +641,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -684,7 +696,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8498
+      "elapsed_seconds": 2.9833
     },
     {
       "repository": "langchain-ai/langchain",
@@ -790,8 +802,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -834,7 +850,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8575
+      "elapsed_seconds": 0.8871
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -944,8 +960,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -996,7 +1016,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.793
+      "elapsed_seconds": 3.8842
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -1111,8 +1131,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -1159,7 +1183,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1814
+      "elapsed_seconds": 0.1843
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -1278,8 +1302,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -1339,7 +1367,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.4001
+      "elapsed_seconds": 4.466
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -1460,8 +1488,12 @@
         "enabled_default": 2,
         "configured_opt_out": 2,
         "redirects_validated": 2,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 2,
-        "proxies_disabled": 2
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 2,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -1526,7 +1558,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7617
+      "elapsed_seconds": 2.8469
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -1642,8 +1674,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -1700,7 +1736,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2358
+      "elapsed_seconds": 0.2502
     },
     {
       "repository": "microsoft/autogen",
@@ -1812,8 +1848,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -1865,7 +1905,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6609
+      "elapsed_seconds": 0.67
     },
     {
       "repository": "microsoft/agent-framework",
@@ -1961,8 +2001,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -2005,7 +2049,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0199
+      "elapsed_seconds": 0.0344
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -2115,8 +2159,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -2168,7 +2216,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1034
+      "elapsed_seconds": 0.1059
     },
     {
       "repository": "openai/openai-agents-python",
@@ -2298,8 +2346,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -2361,7 +2413,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.0897
+      "elapsed_seconds": 5.1492
     },
     {
       "repository": "openai/openai-agents-js",
@@ -2488,8 +2540,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -2538,7 +2594,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5161
+      "elapsed_seconds": 0.5247
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -2549,7 +2605,7 @@
       "config_files_scanned": 1,
       "components": {
         "agent": 2276,
-        "capability": 199,
+        "capability": 196,
         "framework": 1502,
         "mcp": 9,
         "model": 4,
@@ -2654,8 +2710,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -2711,7 +2771,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.3459
+      "elapsed_seconds": 11.3821
     },
     {
       "repository": "google/adk-python",
@@ -2819,8 +2879,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -2872,7 +2936,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2478
+      "elapsed_seconds": 3.3156
     },
     {
       "repository": "google/adk-js",
@@ -2975,8 +3039,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -3019,7 +3087,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8341
+      "elapsed_seconds": 1.8556
     },
     {
       "repository": "huggingface/smolagents",
@@ -3133,8 +3201,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -3193,7 +3265,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.299
+      "elapsed_seconds": 1.3041
     },
     {
       "repository": "agno-agi/agno",
@@ -3222,15 +3294,15 @@
           "Azure OpenAI"
         ]
       },
-      "relationships": 49,
+      "relationships": 48,
       "symbolized_components": 382,
-      "identified_symbol_endpoints": 50,
-      "resolved_symbol_endpoints": 50,
+      "identified_symbol_endpoints": 49,
+      "resolved_symbol_endpoints": 49,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
-        "py": 50,
+        "py": 49,
         "ts": 0
       },
       "typescript_graph": {
@@ -3299,8 +3371,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -3345,15 +3421,15 @@
         "typescript": 0
       },
       "bom_endpoint_resolutions": {
-        "symbol-id": 50,
-        "unresolved": 48
+        "symbol-id": 49,
+        "unresolved": 47
       },
       "bom_ambiguous_endpoints_by_side_kind": {},
       "findings": {},
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2708
+      "elapsed_seconds": 0.2942
     },
     {
       "repository": "camel-ai/camel",
@@ -3469,8 +3545,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -3530,7 +3610,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.595
+      "elapsed_seconds": 2.6574
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -3634,8 +3714,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -3681,7 +3765,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1629
+      "elapsed_seconds": 0.1706
     },
     {
       "repository": "run-llama/llama_index",
@@ -3791,8 +3875,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -3835,7 +3923,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7357
+      "elapsed_seconds": 0.7385
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -3950,8 +4038,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -4011,7 +4103,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3405
+      "elapsed_seconds": 1.3632
     },
     {
       "repository": "InternLM/lagent",
@@ -4125,8 +4217,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -4182,7 +4278,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6323
+      "elapsed_seconds": 0.6303
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -4289,8 +4385,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -4348,7 +4448,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0779
+      "elapsed_seconds": 1.0759
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -4460,8 +4560,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -4521,7 +4625,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.442
+      "elapsed_seconds": 1.4654
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -4629,8 +4733,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -4687,7 +4795,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9231
+      "elapsed_seconds": 0.9402
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -4798,8 +4906,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -4852,7 +4964,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0278
+      "elapsed_seconds": 3.1007
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -4958,8 +5070,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -5011,7 +5127,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0102
+      "elapsed_seconds": 1.0266
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -5119,8 +5235,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -5163,7 +5283,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5501
+      "elapsed_seconds": 0.544
     },
     {
       "repository": "letta-ai/letta-code",
@@ -5265,8 +5385,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -5309,7 +5433,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2678
+      "elapsed_seconds": 2.293
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -5424,8 +5548,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -5482,7 +5610,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9276
+      "elapsed_seconds": 0.9284
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -5589,8 +5717,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -5648,7 +5780,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9599
+      "elapsed_seconds": 1.9269
     },
     {
       "repository": "mastra-ai/mastra",
@@ -5761,8 +5893,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -5811,7 +5947,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3885
+      "elapsed_seconds": 1.4101
     },
     {
       "repository": "vercel/ai",
@@ -5919,8 +6055,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -5968,7 +6108,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4344
+      "elapsed_seconds": 1.4591
     },
     {
       "repository": "cline/cline",
@@ -6080,8 +6220,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -6130,7 +6274,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9821
+      "elapsed_seconds": 1.9994
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -6235,8 +6379,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -6279,7 +6427,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1548
+      "elapsed_seconds": 2.1756
     },
     {
       "repository": "continuedev/continue",
@@ -6382,8 +6530,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -6426,7 +6578,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3643
+      "elapsed_seconds": 1.3788
     },
     {
       "repository": "Aider-AI/aider",
@@ -6528,8 +6680,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -6587,7 +6743,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2718
+      "elapsed_seconds": 2.2486
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -6688,8 +6844,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -6740,7 +6900,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 0.7884
+      "elapsed_seconds": 0.7684
     },
     {
       "repository": "plandex-ai/plandex",
@@ -6828,8 +6988,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -6872,7 +7036,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0237
+      "elapsed_seconds": 0.028
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -6974,8 +7138,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -7024,7 +7192,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0761
+      "elapsed_seconds": 1.0753
     },
     {
       "repository": "stitionai/devika",
@@ -7131,8 +7299,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -7179,7 +7351,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2676
+      "elapsed_seconds": 0.2743
     },
     {
       "repository": "block/goose",
@@ -7282,8 +7454,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -7335,7 +7511,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 1.1431
+      "elapsed_seconds": 1.159
     },
     {
       "repository": "bytedance/trae-agent",
@@ -7451,8 +7627,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -7512,7 +7692,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6297
+      "elapsed_seconds": 0.6425
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -7616,8 +7796,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -7662,7 +7846,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2393
+      "elapsed_seconds": 3.2752
     },
     {
       "repository": "openai/codex",
@@ -7757,8 +7941,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -7807,7 +7995,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5636
+      "elapsed_seconds": 0.5751
     },
     {
       "repository": "browser-use/browser-use",
@@ -7925,8 +8113,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -7987,7 +8179,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3189
+      "elapsed_seconds": 3.3567
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -8111,8 +8303,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -8171,7 +8367,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.4078
+      "elapsed_seconds": 6.5873
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -8281,8 +8477,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -8336,7 +8536,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6073
+      "elapsed_seconds": 0.6216
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -8441,8 +8641,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -8487,7 +8691,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7053
+      "elapsed_seconds": 0.7167
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -8595,8 +8799,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 1,
@@ -8649,7 +8857,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.782
+      "elapsed_seconds": 0.7938
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -8764,8 +8972,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -8817,7 +9029,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9885
+      "elapsed_seconds": 2.0225
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -8925,8 +9137,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -8974,7 +9190,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0687
+      "elapsed_seconds": 2.089
     },
     {
       "repository": "github/github-mcp-server",
@@ -9072,8 +9288,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -9116,7 +9336,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0225
+      "elapsed_seconds": 0.0267
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -9215,8 +9435,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -9259,7 +9483,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0572
+      "elapsed_seconds": 0.057
     },
     {
       "repository": "awslabs/mcp",
@@ -9365,8 +9589,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -9417,7 +9645,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8335
+      "elapsed_seconds": 1.8232
     },
     {
       "repository": "docker/mcp-gateway",
@@ -9516,8 +9744,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -9562,7 +9794,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0193
+      "elapsed_seconds": 0.024
     },
     {
       "repository": "jlowin/fastmcp",
@@ -9575,7 +9807,7 @@
         "capability": 71,
         "control": 2,
         "mcp": 225,
-        "protocol": 117,
+        "protocol": 114,
         "tool": 190
       },
       "component_names": {
@@ -9669,8 +9901,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -9725,7 +9961,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1071
+      "elapsed_seconds": 2.1436
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -9813,8 +10049,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -9857,7 +10097,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0158
+      "elapsed_seconds": 0.0197
     },
     {
       "repository": "langflow-ai/langflow",
@@ -9965,8 +10205,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -10011,7 +10255,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9639
+      "elapsed_seconds": 1.9795
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -10112,8 +10356,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -10156,13 +10404,13 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8515
+      "elapsed_seconds": 1.8712
     },
     {
       "repository": "langgenius/dify",
       "category": "visual-platform",
       "status": "ok",
-      "files_scanned": 163,
+      "files_scanned": 164,
       "dependency_files_materialized": 0,
       "config_files_scanned": 0,
       "components": {
@@ -10247,8 +10495,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -10291,7 +10543,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3218
+      "elapsed_seconds": 1.3842
     },
     {
       "repository": "n8n-io/n8n",
@@ -10301,7 +10553,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 3,
       "components": {
-        "agent": 24,
+        "agent": 22,
         "capability": 27,
         "mcp": 2,
         "model": 3,
@@ -10325,7 +10577,7 @@
         ]
       },
       "relationships": 0,
-      "symbolized_components": 25,
+      "symbolized_components": 23,
       "identified_symbol_endpoints": 0,
       "resolved_symbol_endpoints": 0,
       "unmatched_identified_symbol_endpoints": 0,
@@ -10401,8 +10653,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -10449,7 +10705,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3366
+      "elapsed_seconds": 1.3268
     },
     {
       "repository": "activepieces/activepieces",
@@ -10459,7 +10715,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 17,
       "components": {
-        "capability": 61,
+        "capability": 57,
         "mcp": 4,
         "protocol": 9,
         "provider": 5,
@@ -10562,8 +10818,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -10610,7 +10870,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9605
+      "elapsed_seconds": 0.9562
     },
     {
       "repository": "simstudioai/sim",
@@ -10707,8 +10967,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -10751,7 +11015,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.5856
+      "elapsed_seconds": 2.6134
     },
     {
       "repository": "composiohq/composio",
@@ -10761,13 +11025,14 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 0,
       "components": {
-        "agent": 17,
-        "capability": 52,
+        "agent": 15,
+        "capability": 58,
+        "control": 2,
         "framework": 21,
         "mcp": 2,
-        "model": 21,
+        "model": 19,
         "protocol": 3,
-        "provider": 13,
+        "provider": 11,
         "tool": 47
       },
       "component_names": {
@@ -10779,6 +11044,9 @@
           "mcp-tool-forwarding",
           "network",
           "shell-execution"
+        ],
+        "control": [
+          "network-ssrf-policy"
         ],
         "framework": [
           "CrewAI",
@@ -10793,8 +11061,8 @@
           "OpenAI"
         ]
       },
-      "relationships": 5,
-      "symbolized_components": 64,
+      "relationships": 7,
+      "symbolized_components": 62,
       "identified_symbol_endpoints": 7,
       "resolved_symbol_endpoints": 7,
       "unmatched_identified_symbol_endpoints": 0,
@@ -10866,12 +11134,16 @@
         "dns_unresolved": 0
       },
       "python_secure_network_controls": {
-        "total": 0,
-        "enabled_default": 0,
+        "total": 2,
+        "enabled_default": 2,
         "configured_opt_out": 0,
-        "redirects_validated": 0,
+        "redirects_validated": 1,
+        "redirects_disabled": 1,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 2,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 2,
+        "no_escape_hatch": 2
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -10909,7 +11181,7 @@
         "typescript": 0
       },
       "bom_endpoint_resolutions": {
-        "evidence-location": 1,
+        "evidence-location": 5,
         "symbol-id": 7,
         "unresolved": 2
       },
@@ -10920,7 +11192,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0935
+      "elapsed_seconds": 1.1267
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -11039,8 +11311,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -11101,7 +11377,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1887
+      "elapsed_seconds": 2.1632
     },
     {
       "repository": "e2b-dev/E2B",
@@ -11197,8 +11473,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -11241,7 +11521,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4355
+      "elapsed_seconds": 1.4538
     },
     {
       "repository": "daytonaio/daytona",
@@ -11329,8 +11609,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -11487,8 +11771,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -11537,7 +11825,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.14
+      "elapsed_seconds": 1.1417
     },
     {
       "repository": "traceloop/openllmetry",
@@ -11656,8 +11944,12 @@
         "enabled_default": 0,
         "configured_opt_out": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "dns_connection_pinned": 0,
-        "proxies_disabled": 0
+        "dns_connection_pinned_unless_proxied": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "no_escape_hatch": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -11710,7 +12002,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8994
+      "elapsed_seconds": 1.9064
     }
   ]
 }

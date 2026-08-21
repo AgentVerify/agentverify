@@ -100,15 +100,17 @@ an immutable normalized environment list. An empty environment default is repres
 allowlist that satisfies destination policy. Late validation, rebound results, nested validator calls,
 scheme-only helpers, DNS, and redirect behavior remain unresolved, and `AV-NET001` is not suppressed.
 
-A separate Python prepass recognizes a source-proven imported secure transport only when the local
-implementation validates the initial URL and each redirect, disables automatic redirects and
-environment proxies, mounts one protected adapter for both HTTP schemes, rejects private/reserved
-resolution results, and checks the connected peer. The resulting `network-ssrf-policy` distinguishes
-`initial_origin_scope: public-addresses`, `redirect_scope: each-hop-validated`,
-`dns_scope: connection-pinned`, and `proxy_scope: disabled`. Environment escape and force-safe names
-are preserved with `enforcement_default: enabled`; the edge is not inferred from a helper name or
-docstring. Exact named imports and aliases apply the summary, while rebinding or any missing transport
-proof withholds it.
+A separate Python prepass recognizes two source-proven imported secure-transport families. The
+fully pinned family validates the initial URL and each redirect, disables automatic redirects and
+all proxy sources, mounts protected adapters for both HTTP schemes, rejects private/reserved
+resolution results, and checks the connected peer. The proxy-conditional family proves the same
+public-address and peer checks for direct connections, but preserves environment or caller proxy
+selection as `dns_scope: connection-pinned-unless-proxied` and
+`proxy_scope: environment-or-caller-dependent`; redirect-disabled and bounded each-hop helpers stay
+distinct. Both produce `network-ssrf-policy` with `enforcement_default: enabled`. Environment escape
+and force-safe names are retained when present, and proxy residuals are never promoted to full
+pinning. Exact named imports and aliases apply the summary, while rebinding or any missing transport
+proof withholds it; helper names and docstrings alone do not contribute evidence.
 
 A repository prepass builds bounded Python network summaries for unique top-level free functions in
 selected files. A summary records direct recognized HTTP calls and the formal parameters that can

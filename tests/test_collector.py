@@ -14,6 +14,7 @@ sys.modules[SPEC.name] = COLLECTOR
 SPEC.loader.exec_module(COLLECTOR)
 ensure_clone = COLLECTOR.ensure_clone
 expand_python_mcp_dependencies = COLLECTOR.expand_python_mcp_dependencies
+expand_python_analysis_dependencies = COLLECTOR.expand_python_analysis_dependencies
 locked_commits = COLLECTOR.locked_commits
 select_files = COLLECTOR.select_files
 
@@ -81,6 +82,19 @@ def test_manifest_selection_includes_kubernetes_but_not_ci_workflows() -> None:
     assert ".github/workflows/deploy.yaml" not in selected
 
 
+def test_selection_prioritizes_explicit_ssrf_sources_under_tight_budget() -> None:
+    selected = select_files(
+        [
+            "src/agent.py",
+            "tests/url_safety.py",
+            "deep/pkg/security/ssrf_guard.ts",
+        ],
+        max_files=1,
+    )
+
+    assert selected == ["deep/pkg/security/ssrf_guard.ts"]
+
+
 def test_mcp_dependency_expansion_follows_local_reexports(tmp_path: Path) -> None:
     repository = tmp_path / "repo"
     (repository / "src/pkg/tools").mkdir(parents=True)
@@ -145,6 +159,74 @@ def test_dependency_expansion_ignores_non_forwarding_roots(tmp_path: Path) -> No
             repository,
             tree_paths,
             ["src/pkg/main.py"],
+            max_dependency_files=4,
+        )
+        == []
+    )
+
+
+def test_dependency_expansion_follows_called_url_security_helpers(tmp_path: Path) -> None:
+    repository = tmp_path / "repo"
+    (repository / "src/pkg/security").mkdir(parents=True)
+    (repository / "src/pkg/client.py").write_text(
+        "from pkg.security.url_safety import safe_get as protected_get\n\n"
+        "def fetch(url):\n"
+        "    return protected_get(url)\n",
+        encoding="utf-8",
+    )
+    (repository / "src/pkg/security/url_safety.py").write_text(
+        "from .ssrf_peer import assert_safe_peer\n\n"
+        "def safe_get(url):\n"
+        "    return assert_safe_peer(url)\n",
+        encoding="utf-8",
+    )
+    (repository / "src/pkg/security/ssrf_peer.py").write_text(
+        "def assert_safe_peer(url):\n    return url\n",
+        encoding="utf-8",
+    )
+    (repository / "src/pkg/unrelated.py").write_text("VALUE = 1\n", encoding="utf-8")
+    git(repository, "init", "-q")
+    git(repository, "config", "user.email", "test@example.invalid")
+    git(repository, "config", "user.name", "AgentVerify test")
+    git(repository, "add", ".")
+    git(repository, "commit", "-qm", "fixture")
+    tree_paths = git(repository, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
+
+    assert expand_python_analysis_dependencies(
+        repository,
+        tree_paths,
+        ["src/pkg/client.py"],
+        max_dependency_files=4,
+    ) == [
+        "src/pkg/security/url_safety.py",
+        "src/pkg/security/ssrf_peer.py",
+    ]
+
+
+def test_security_dependency_expansion_requires_a_real_imported_call(tmp_path: Path) -> None:
+    repository = tmp_path / "repo"
+    (repository / "src/pkg/security").mkdir(parents=True)
+    (repository / "src/pkg/client.py").write_text(
+        "from pkg.security.url_safety import safe_get\n"
+        "MESSAGE = 'safe_get(url)'\n",
+        encoding="utf-8",
+    )
+    (repository / "src/pkg/security/url_safety.py").write_text(
+        "def safe_get(url):\n    return url\n",
+        encoding="utf-8",
+    )
+    git(repository, "init", "-q")
+    git(repository, "config", "user.email", "test@example.invalid")
+    git(repository, "config", "user.name", "AgentVerify test")
+    git(repository, "add", ".")
+    git(repository, "commit", "-qm", "fixture")
+    tree_paths = git(repository, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
+
+    assert (
+        expand_python_analysis_dependencies(
+            repository,
+            tree_paths,
+            ["src/pkg/client.py"],
             max_dependency_files=4,
         )
         == []
