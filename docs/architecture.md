@@ -133,6 +133,15 @@ The custom lookup is recorded as configured rather than connection-pinned, and p
 unresolved because selected source does not prove how Axios routes proxied destinations. Missing any
 stage withholds both the tool capability and control edge.
 
+A second TypeScript composition pass resolves Flowise's CommonJS-registered Agentflow HTTP node through a
+request object into its imported secure transport. It requires the variable URL descriptor, exact
+`nodeData.inputs.url` flow, one fixed `url: finalUrl` config without Axios transport overrides or
+spreads, a default-on deny list with mapped-address normalization, manual bounded redirects, all-DNS
+answer validation, and a pinned agent lookup. The resulting edge retains the configured opt-out and
+`environment-dependent` proxy scope; proxy routing can move destination resolution away from the
+pinned lookup. Default-off settings, automatic redirects, caller transport fields, or incomplete
+address normalization withhold the proof.
+
 A repository prepass builds bounded Python network summaries for unique top-level free functions in
 selected files. A summary records direct recognized HTTP calls and the formal parameters that can
 control their origins after fixed-prefix discrimination. At a tool call site, only an exact named

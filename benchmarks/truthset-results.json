@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T15:29:43.484917+00:00",
-  "labels": 302,
-  "passed": 302,
+  "generated_at": "2026-08-21T15:51:05.623462+00:00",
+  "labels": 305,
+  "passed": 305,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 14,
@@ -61,9 +61,9 @@
       "recall": 1.0
     },
     "AV-NET001": {
-      "tp": 30,
+      "tp": 32,
       "fp": 0,
-      "tn": 30,
+      "tn": 31,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -1988,6 +1988,33 @@
     },
     {
       "id": "network-n8n-web-fetch-real-review",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "network-typescript-flowise-request-object-local-review",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "network-typescript-flowise-request-object-raw-local-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "network-flowise-agentflow-http-real-review",
       "rule_id": "AV-NET001",
       "expected": true,
       "observed": true,

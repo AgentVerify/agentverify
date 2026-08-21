@@ -33,6 +33,8 @@ never imported or executed.
   propagated into an Axios-backed tool with bounded redirect hooks and a custom lookup; composition,
   lookup, redirect, and raw-Axios near misses remain negative, while a literal default-on mutation
   changes the recorded enforcement state.
+- `typescript_flowise_secure_request`: a variable Flowise node URL reaches a fixed Axios request
+  object and a default-on, redirect-validating, DNS-pinned helper with proxy-conditional scope.
 - `sandbox_boundary`: Compose and Kubernetes host/privilege boundaries plus explicit safe negatives.
 - `constant_eval`: constant Python evaluation negative case.
 - `python_browser_evaluate`: exact Playwright `Page` annotations and immutable aliases prove dynamic

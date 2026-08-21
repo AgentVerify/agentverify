@@ -595,13 +595,34 @@ def main() -> int:
                     == "bounded-each-hop-hooks-when-enforced"
                     for edge in typescript_secure_network_controls
                 ),
+                "redirects_validated": sum(
+                    edge.attributes.get("redirect_scope") == "each-hop-validated"
+                    for edge in typescript_secure_network_controls
+                ),
                 "secure_lookup_configured": sum(
                     edge.attributes.get("dns_scope")
                     == "secure-lookup-configured-when-enforced"
                     for edge in typescript_secure_network_controls
                 ),
+                "dns_connection_pinned_unless_proxied": sum(
+                    edge.attributes.get("dns_scope")
+                    == "connection-pinned-unless-proxied"
+                    for edge in typescript_secure_network_controls
+                ),
                 "proxy_unresolved": sum(
                     edge.attributes.get("proxy_scope") == "unresolved"
+                    for edge in typescript_secure_network_controls
+                ),
+                "proxy_environment_dependent": sum(
+                    edge.attributes.get("proxy_scope") == "environment-dependent"
+                    for edge in typescript_secure_network_controls
+                ),
+                "fixed_caller_config": sum(
+                    edge.attributes.get("transport_scope") == "fixed-caller-config"
+                    for edge in typescript_secure_network_controls
+                ),
+                "ipv4_mapped_ipv6_normalized": sum(
+                    edge.attributes.get("ipv4_mapped_ipv6") == "normalized"
                     for edge in typescript_secure_network_controls
                 ),
                 "domain_hitl_independent": sum(
@@ -711,7 +732,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 35,
+        "schema_version": 36,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -921,8 +942,13 @@ def main() -> int:
                     "configured_opt_in",
                     "configured_opt_out",
                     "bounded_redirect_hooks",
+                    "redirects_validated",
                     "secure_lookup_configured",
+                    "dns_connection_pinned_unless_proxied",
                     "proxy_unresolved",
+                    "proxy_environment_dependent",
+                    "fixed_caller_config",
+                    "ipv4_mapped_ipv6_normalized",
                     "domain_hitl_independent",
                 )
             },

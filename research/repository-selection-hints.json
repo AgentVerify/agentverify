@@ -21,6 +21,9 @@
       "packages/@n8n/ai-workflow-builder.ee/src/tools/utils/web-fetch.utils.ts",
       "packages/@n8n/ai-workflow-builder.ee/src/tools/web-fetch.tool.ts",
       "packages/cli/src/services/ai-workflow-builder.service.ts"
+    ],
+    "FlowiseAI/Flowise": [
+      "packages/components/nodes/agentflow/HTTP/HTTP.ts"
     ]
   }
 }

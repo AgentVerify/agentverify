@@ -10664,6 +10664,247 @@ def add_typescript_configurable_ssrf_composition(
     )
 
 
+def add_typescript_flowise_secure_request_composition(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve Flowise's request-object URL flow into its pinned Axios transport."""
+    sources: dict[str, tuple[str, str]] = {}
+    for path in paths:
+        if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        sources[relative] = (text, typescript_code_mask(text))
+
+    def unique_source(*markers: str) -> tuple[str, str, str] | None:
+        matches = [
+            (relative, text, code)
+            for relative, (text, code) in sources.items()
+            if all(marker in code for marker in markers)
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    helper = unique_source(
+        "function getHttpDenyList()",
+        "export async function secureAxiosRequest(",
+        "resolveAndValidate(currentUrl)",
+        "createPinnedAgent(target",
+        "axios(currentConfig)",
+        "function createPinnedAgent(",
+    )
+    caller = unique_source(
+        "class HTTP_Agentflow implements INode",
+        "async run(nodeData: INodeData",
+        "nodeData.inputs?.url",
+        "const requestConfig: AxiosRequestConfig =",
+        "secureAxiosRequest(requestConfig)",
+        "module.exports = { nodeClass: HTTP_Agentflow }",
+    )
+    if helper is None or caller is None:
+        return
+    helper_path, helper_text, helper_code = helper
+    caller_path, caller_text, caller_code = caller
+
+    required_helper_text = (
+        "process.env.HTTP_SECURITY_CHECK !== 'false'",
+        "return [...new Set([...DEFAULT_DENY_LIST, ...customList])]",
+        "'10.0.0.0/8'",
+        "'127.0.0.0/8'",
+        "'169.254.169.254'",
+        "'::1'",
+        "maxRedirects: 0",
+        "const records = await dns.lookup(hostname, { all: true })",
+        "const chosen = records.find((r) => r.family === 4) ?? records[0]",
+        "lookup: (_host, _opts, cb) =>",
+        "cb(null, target.ip, target.family)",
+        "currentUrl = new URL(location, currentUrl).toString()",
+        "ipv6Addr.isIPv4MappedAddress()",
+        "parsedIp = ipv6Addr.toIPv4Address()",
+    )
+    if not all(marker in helper_text for marker in required_helper_text):
+        return
+    if not (
+        re.search(
+            r"(?:export\s+)?function\s+isDeniedIP\s*\([\s\S]{0,6000}"
+            r"ipaddr\.parse\s*\(\s*ip\s*\)[\s\S]{0,6000}"
+            r"isIPv4MappedAddress\s*\(\s*\)[\s\S]{0,1000}"
+            r"toIPv4Address\s*\(\s*\)[\s\S]{0,6000}"
+            r"ipaddr\.parseCIDR\s*\([\s\S]{0,2500}"
+            r"\.match\s*\([\s\S]{0,1200}Access to this host is denied by policy",
+            helper_text,
+        )
+        and re.search(
+            r"if\s*\(\s*ipaddr\.isValid\s*\(\s*hostname\s*\)\s*\)\s*\{"
+            r"[\s\S]{0,500}isDeniedIP\s*\(\s*hostname\s*,",
+            helper_code,
+        )
+        and re.search(
+            r"dns\.lookup\s*\(\s*hostname\s*,\s*\{\s*all\s*:\s*true\s*\}\s*\)"
+            r"[\s\S]{0,700}for\s*\([^)]*\s+of\s+records\s*\)\s*\{"
+            r"[\s\S]{0,300}isDeniedIP\s*\([^,]+\.address\s*,",
+            helper_code,
+        )
+        and re.search(
+            r"while\s*\(\s*redirects\s*<=\s*maxRedirects\s*\)[\s\S]{0,1800}"
+            r"resolveAndValidate\s*\(\s*currentUrl\s*\)[\s\S]{0,1200}"
+            r"axios\s*\(\s*currentConfig\s*\)",
+            helper_code,
+        )
+        and "httpAgent: undefined" in helper_code
+        and "httpsAgent: undefined" in helper_code
+        and "target.protocol ===" in helper_code
+        and "httpAgent: agent" in helper_code
+        and "httpsAgent: agent" in helper_code
+    ):
+        return
+
+    input_match = re.search(
+        r"const\s+url\s*=\s*nodeData\.inputs\?\.url\s+as\s+string\b",
+        caller_code,
+    )
+    final_url_match = re.search(
+        r"const\s+finalUrl\s*=\s*queryString\s*\?\s*"
+        r"`\$\{url\}[\s\S]{0,180}\$\{queryString\}`\s*:\s*url\b",
+        caller_text,
+    )
+    config_match = re.search(
+        r"const\s+requestConfig\s*:\s*AxiosRequestConfig\s*=\s*\{",
+        caller_code,
+    )
+    call_match = re.search(r"\bsecureAxiosRequest\s*\(\s*requestConfig\s*\)", caller_code)
+    helper_match = re.search(r"\bexport\s+async\s+function\s+secureAxiosRequest\b", helper_code)
+    class_match = re.search(r"\bclass\s+HTTP_Agentflow\b", caller_code)
+    if None in {
+        input_match,
+        final_url_match,
+        config_match,
+        call_match,
+        helper_match,
+        class_match,
+    }:
+        return
+    assert input_match is not None
+    assert final_url_match is not None
+    assert config_match is not None
+    assert call_match is not None
+    assert helper_match is not None
+    assert class_match is not None
+    config_opening = caller_code.find("{", config_match.start(), config_match.end())
+    config_end = typescript_balanced_end(caller_code, config_opening, "{", "}")
+    if config_end is None or call_match.start() <= config_end:
+        return
+    config_source = caller_text[config_opening:config_end]
+    post_config_code = caller_code[config_end : call_match.start()]
+    if (
+        typescript_object_property_expression(config_source, "url") != "finalUrl"
+        or any(
+            typescript_object_property_expression(config_source, name) is not None
+            for name in ("adapter", "httpAgent", "httpsAgent", "proxy", "socketPath", "transport")
+        )
+        or "..." in typescript_code_mask(config_source)
+        or re.search(
+            r"\brequestConfig\s*\.\s*"
+            r"(?:adapter|httpAgent|httpsAgent|proxy|socketPath|transport)\s*=",
+            post_config_code,
+        )
+        or re.search(r"\bObject\.assign\s*\(\s*requestConfig\b", post_config_code)
+    ):
+        return
+    if not (
+        re.search(r"name\s*:\s*['\"]url['\"][\s\S]{0,160}acceptVariable\s*:\s*true", caller_text)
+        and re.search(r"this\.name\s*=\s*['\"]httpAgentflow['\"]", caller_text)
+    ):
+        return
+
+    call_line = line_at(caller_text, call_match.start())
+    helper_line = line_at(helper_text, helper_match.start())
+    class_line = line_at(caller_text, class_match.start())
+    evidence = Evidence(caller_path, call_line, excerpt(caller_text.splitlines(), call_line))
+    helper_evidence = Evidence(
+        helper_path,
+        helper_line,
+        excerpt(helper_text.splitlines(), helper_line),
+    )
+    tool_id = f"ts:{caller_path}#tool:httpAgentflow"
+    attributes = {
+        "scope": source_scope(caller_path),
+        "policy_effect": "validates-and-pins-addresses-unless-proxied",
+        "frontend": "typescript",
+        "analysis": "typescript-flowise-secure-request-composition",
+        "initial_origin_scope": "default-address-denylist-when-enforced",
+        "redirect_scope": "each-hop-validated",
+        "dns_scope": "connection-pinned-unless-proxied",
+        "proxy_scope": "environment-dependent",
+        "transport_scope": "fixed-caller-config",
+        "enforcement_default": "enabled",
+        "escape_hatch": "configured-opt-out",
+        "enforcement_mode": "configured-opt-out",
+        "disable_environment": "HTTP_SECURITY_CHECK",
+        "denylist_environment": "HTTP_DENY_LIST",
+        "ipv4_mapped_ipv6": "normalized",
+        "helper_path": helper_path,
+        "helper_line": helper_line,
+    }
+    ir.add_component(
+        Component(
+            "tool",
+            "httpAgentflow",
+            Evidence(caller_path, class_line, excerpt(caller_text.splitlines(), class_line)),
+            {
+                "constructor": "flowise-node",
+                "framework": "flowise",
+                "entrypoint": "HTTP_Agentflow.run",
+                "url_input": "nodeData.inputs.url",
+            },
+            tool_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "capability",
+            "network",
+            evidence,
+            {
+                "scope": source_scope(caller_path),
+                "api": "secureAxiosRequest",
+                "dynamic_origin": True,
+                "summary": "imported-request-object-helper",
+                "request_url_property": "url",
+                "helper_path": helper_path,
+                "helper_line": helper_line,
+            },
+        )
+    )
+    ir.add_component(Component("control", "network-ssrf-policy", helper_evidence, attributes))
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            "httpAgentflow",
+            "uses",
+            "capability",
+            "network",
+            evidence,
+            source_id=tool_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "capability",
+            "network",
+            "governed-by",
+            "control",
+            "network-ssrf-policy",
+            evidence,
+            attributes,
+        )
+    )
+
+
 def repository_files(root: Path) -> list[Path]:
     paths = []
     for directory, directory_names, file_names in os.walk(root, followlinks=False):
@@ -10804,6 +11045,7 @@ def scan_repository(
         else:
             scan_typescript(ir, root, path, text)
     add_typescript_configurable_ssrf_composition(ir, root, registry_paths)
+    add_typescript_flowise_secure_request_composition(ir, root, registry_paths)
     propagate_python_class_network_helpers(
         ir,
         root,

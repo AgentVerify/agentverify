@@ -220,6 +220,9 @@
     {"id":"network-typescript-configurable-ssrf-local-review","target":{"kind":"local","path":"cases/typescript_configurable_ssrf_composition"},"rule_id":"AV-NET001","path":"web-fetch.tool.ts","line":18,"expected":true},
     {"id":"network-typescript-configurable-ssrf-raw-local-negative","target":{"kind":"local","path":"cases/typescript_configurable_ssrf_composition"},"rule_id":"AV-NET001","path":"raw.ts","line":4,"expected":false,"source_contains":"axios.get(url)"},
     {"id":"network-n8n-web-fetch-real-review","target":{"kind":"repository","repository":"n8n-io/n8n","commit":"258d4cbf23ab85840f3ae9e20b2948039af157e6"},"rule_id":"AV-NET001","path":"packages/@n8n/ai-workflow-builder.ee/src/tools/web-fetch.tool.ts","line":156,"expected":true},
+    {"id":"network-typescript-flowise-request-object-local-review","target":{"kind":"local","path":"cases/typescript_flowise_secure_request"},"rule_id":"AV-NET001","path":"HTTP.ts","line":31,"expected":true},
+    {"id":"network-typescript-flowise-request-object-raw-local-negative","target":{"kind":"local","path":"cases/typescript_flowise_secure_request"},"rule_id":"AV-NET001","path":"raw.ts","line":3,"expected":false,"source_contains":"secureAxiosRequest(requestConfig)"},
+    {"id":"network-flowise-agentflow-http-real-review","target":{"kind":"repository","repository":"FlowiseAI/Flowise","commit":"9291856d1ea4a4ceea9f8fef8ce14f4f6c81e8eb"},"rule_id":"AV-NET001","path":"packages/components/nodes/agentflow/HTTP/HTTP.ts","line":303,"expected":true},
 
     {"id":"sandbox-privileged-positive","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"docker-compose.yml","line":3,"expected":true},
     {"id":"sandbox-comment-negative","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"docker-compose.safe.yml","line":2,"expected":false,"source_contains":"Do not mount /var/run/docker.sock"},

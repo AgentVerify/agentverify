@@ -1574,6 +1574,101 @@ def test_typescript_configurable_ssrf_composition_preserves_disabled_default(
         )
 
 
+def test_typescript_flowise_secure_request_composition_preserves_proxy_residual(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/typescript_flowise_secure_request"
+    ir = scan_repository(root)
+    edges = [
+        edge
+        for edge in ir.relationships
+        if edge.attributes.get("analysis")
+        == "typescript-flowise-secure-request-composition"
+    ]
+    assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [
+        ("HTTP.ts", 31)
+    ]
+    assert edges[0].attributes == {
+        "scope": "production",
+        "policy_effect": "validates-and-pins-addresses-unless-proxied",
+        "frontend": "typescript",
+        "analysis": "typescript-flowise-secure-request-composition",
+        "initial_origin_scope": "default-address-denylist-when-enforced",
+        "redirect_scope": "each-hop-validated",
+        "dns_scope": "connection-pinned-unless-proxied",
+        "proxy_scope": "environment-dependent",
+        "transport_scope": "fixed-caller-config",
+        "enforcement_default": "enabled",
+        "escape_hatch": "configured-opt-out",
+        "enforcement_mode": "configured-opt-out",
+        "disable_environment": "HTTP_SECURITY_CHECK",
+        "denylist_environment": "HTTP_DENY_LIST",
+        "ipv4_mapped_ipv6": "normalized",
+        "helper_path": "httpSecurity.ts",
+        "helper_line": 33,
+    }
+    assert [
+        (finding.rule_id, finding.evidence.path, finding.evidence.line)
+        for finding in ir.findings
+        if finding.rule_id == "AV-NET001"
+    ] == [("AV-NET001", "HTTP.ts", 31)]
+    assert not any(
+        finding.rule_id == "AV-NET001" and finding.evidence.path == "raw.ts"
+        for finding in ir.findings
+    )
+
+    for name, relative, before, after in (
+        (
+            "default-off",
+            "httpSecurity.ts",
+            "process.env.HTTP_SECURITY_CHECK !== 'false'",
+            "process.env.HTTP_SECURITY_CHECK === 'true'",
+        ),
+        (
+            "automatic-redirects",
+            "httpSecurity.ts",
+            "maxRedirects: 0",
+            "maxRedirects: 5",
+        ),
+        (
+            "unpinned-agent",
+            "httpSecurity.ts",
+            "cb(null, target.ip, target.family)",
+            "cb(null, _host, target.family)",
+        ),
+        (
+            "caller-proxy",
+            "HTTP.ts",
+            "return await secureAxiosRequest(requestConfig)",
+            "requestConfig.proxy = {}\n    return await secureAxiosRequest(requestConfig)",
+        ),
+        (
+            "unnormalized-mapped-ipv6",
+            "httpSecurity.ts",
+            "parsedIp = ipv6Addr.toIPv4Address()",
+            "parsedIp = ipv6Addr",
+        ),
+        (
+            "no-deny-match",
+            "httpSecurity.ts",
+            "parsedIp.match(parsedRange, adjustedMask)",
+            "publicMatch(parsedIp, parsedRange, adjustedMask)",
+        ),
+    ):
+        incomplete = tmp_path / name
+        shutil.copytree(root, incomplete)
+        source_path = incomplete / relative
+        source = source_path.read_text(encoding="utf-8")
+        assert before in source
+        source_path.write_text(source.replace(before, after), encoding="utf-8")
+        incomplete_ir = scan_repository(incomplete)
+        assert not any(
+            edge.attributes.get("analysis")
+            == "typescript-flowise-secure-request-composition"
+            for edge in incomplete_ir.relationships
+        )
+
+
 def test_typescript_network_helper_summaries_map_object_parameters_and_multiline_aliases(
     tmp_path: Path,
 ) -> None:

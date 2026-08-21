@@ -67,12 +67,15 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 - `cases/typescript_configurable_ssrf_composition`: a default-off real-versus-passthrough service
   choice propagates into a LangChain tool and Axios helper; a default-on mutation changes policy
   state, while branch, lookup, and redirect-hook mutations plus a raw-Axios near miss remain negative.
+- `cases/typescript_flowise_secure_request`: a variable Flowise node URL reaches a fixed Axios
+  request object and default-on pinned helper; default, redirect, lookup, deny-predicate,
+  caller-transport, mapped-IP, and unrelated same-named-helper negatives withhold the policy edge.
 
 ## Full-corpus engine benchmark
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
-snapshot. It parsed 10,746 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,467 relationships, and completed in 122.94 seconds on the development machine. Three parse
+snapshot. It parsed 10,747 selected Python/TypeScript/JavaScript files plus 155 configuration files,
+resolved 1,469 relationships, and completed in 123.37 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -80,13 +83,13 @@ so the benchmark records zero suppressed findings.
 The locked collector prioritizes manifests, production SSRF/URL-safety sources, and then general
 security/agent/tool/MCP sources within the 220-file cap. It adds at most 20 local source files:
 versioned audited evidence hints plus Python imports reached from MCP forwarding or source-proven
-URL-security call sites, all charged against the same cap. This refresh materialized 151 dependency files across 13
+URL-security call sites, all charged against the same cap. This refresh materialized 152 dependency files across 14
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v35 carries both the 151-file total and the
-13-repository coverage.
+dependency count per repository; engine schema v36 carries both the 152-file total and the
+14-repository coverage.
 
-Engine benchmark schema v35 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v36 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It also publishes Python and TypeScript initial-origin control coverage
 plus source-proven Python and TypeScript secure transports, with redirect, DNS, proxy, configured
@@ -95,16 +98,16 @@ excludes arbitrary agent/tool display names from the summary. The resulting
 framework/provider/protocol/capability coverage and unsupported syntax are published in
 `docs/frontend-coverage.md`; presence counts are discovery observations, not recall measurements.
 
-The benchmark now also measures identity coverage: 8,737 agent/tool component observations carry
-module-qualified IDs. Of 2,934 relationship endpoints, 1,929 carry symbol IDs and 1,927 resolve to an
-observed component (1,675 Python and 252 TypeScript). Schema v35 records 325 same-scope and 14
+The benchmark now also measures identity coverage: 8,738 agent/tool component observations carry
+module-qualified IDs. Of 2,938 relationship endpoints, 1,930 carry symbol IDs and 1,928 resolve to an
+observed component (1,675 Python and 253 TypeScript). Schema v36 records 325 same-scope and 14
 module-scope targets resolved from a single direct definition that appears before the Agent
 constructor. It also records 23 repeated-binding targets still withheld because the scope contains
 multiple definitions. The two unmatched IDs are explicit Python re-export targets; capability,
 control, and taxonomy endpoints intentionally remain evidence observations.
 
-Schema-v35 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
-resolves 1,927 endpoints by symbol ID, 461 by exact evidence location, and 17 by a unique display
+Schema-v36 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
+resolves 1,928 endpoints by symbol ID, 463 by exact evidence location, and 18 by a unique display
 name; 30 remain ambiguous and 499 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
@@ -183,10 +186,10 @@ module-qualified calls, inheritance, and more than four iterations remain unreso
 The TypeScript frontend now reads only balanced top-level entries from literal Agent tool arrays. It
 resolves OpenAI `tool`, `toolNamespace`, built-in tool factories, inline/assigned `asTool` adapters,
 and Cline `createTool`. Import-aware discovery now also resolves generic/Mastra object-property
-tools plus MCP `registerTool` names and callback spans. Schema v35 records 27 Mastra factory tools,
+tools plus MCP `registerTool` names and callback spans. Schema v36 records 27 Mastra factory tools,
 264 MCP registrations, 70 object-property tools (the factory/property categories overlap), and ten
 exact registration-to-capability edges. Four of those edges come from bounded same-file network
-helper summaries: three Mastra static methods and one MCP Servers free function. Schema v35 also
+helper summaries: three Mastra static methods and one MCP Servers free function. Schema v36 also
 records one imported TypeScript path-boundary control edge. The full sample
 contains 95 structure-backed agent edges: 14 delegations and 81 tool edges, all with targets that
 resolve to observed components. The prior token heuristic could
@@ -269,7 +272,7 @@ parameter reaches `exec`. Browser-aware evaluation adds one more exact path: Sky
 [`skyvern_evaluate`](https://github.com/Skyvern-AI/skyvern/blob/486c8975e9864a53037d4701b781f8619e698c40/skyvern/cli/mcp_tools/browser.py#L2458)
 passes its tool parameter to Playwright `page.evaluate`. Across 80 inventoried browser-page
 evaluations, this is the only one with direct tool-parameter flow, raising `AV-EXEC002` to 51 across
-15 repositories. Schema v35 proves seven receivers: two exact Playwright `Page` annotations in
+15 repositories. Schema v36 proves seven receivers: two exact Playwright `Page` annotations in
 SWE-agent and five results of Skyvern's exact imported `get_page` factory. The other 73 fixed-script
 observations remain inventory with unresolved receiver state. Dynamic calls with only browser-import
 context are withheld: local regressions cover an ordinary calculator's `.evaluate(...)`, a
@@ -325,7 +328,7 @@ three wrappers through its action registry, while ArcadeAI returns two LangChain
 carry `binding_scope: closure` and `policy_effect: binds-tool-source-per-closure`. Merely nesting a
 function does not qualify: the MCP Python SDK and FastMCP retry helpers are invoked within the same
 caller-selected operation, so their names remain uncontrolled. A rebound parameter is likewise
-unresolved. Schema v35 publishes the resulting fixed-binding split as five instance edges and five
+unresolved. Schema v36 publishes the resulting fixed-binding split as five instance edges and five
 closure edges; all ten remain AV-MCP002 reviews.
 
 FastMCP contributes a second `tool-registry` edge through a same-class method summary. Its middleware
@@ -339,7 +342,7 @@ The bounded dependency closure now selects the MCP Python SDK's `tools` package 
 `ToolManager` body. `MCPServer.__init__` binds `self._tool_manager` once to that imported class;
 `ToolManager.call_tool` resolves `get_tool(name)` and raises before execution when absent. This adds
 the third `tool-registry` edge with `summary: imported-class-method`. Local negatives cover a mutable
-manager attribute, a fallback manager, and a rebound imported constructor. Schema v35 distinguishes
+manager attribute, a fallback manager, and a rebound imported constructor. Schema v36 distinguishes
 one same-function lookup, one same-class method summary, and one imported-class summary; all three
 retain their AV-MCP002 reviews as routing-only discovery controls rather than authorization
 allowlists.
@@ -398,7 +401,7 @@ rebound methods, async/generator helpers, opaque path transforms, continuing han
 reassigned returns, try `else`/`finally` mutation, conditional construction preludes, caller
 reassignment, and parent writes remain unresolved.
 
-Schema v35 therefore records five Python and one TypeScript boundary edges, all with unresolved root
+Schema v36 therefore records five Python and one TypeScript boundary edges, all with unresolved root
 scope in the pinned corpus. Four Python edges use `Path.relative_to`; three are same-class return
 summaries. The helper distinction and summary provenance are explicit.
 
@@ -414,7 +417,7 @@ calls before assignment, conditional rebinding to an unknown wrapper, and copy/d
 negative. A fixed destination and two boundary-guarded copies are local negatives; shadowed imports
 and string `.replace()` remain explicit near misses.
 
-Schema v35 additionally resolves 20 `Path.rename`/`Path.replace` moves: two renames and 18 replaces.
+Schema v36 additionally resolves 20 `Path.rename`/`Path.replace` moves: two renames and 18 replaces.
 Receivers require an explicit unshadowed constructor, an exact Path annotation, or a single immutable
 local derived from one. DeepAgents contributes 18 real atomic replacement calls; these are inventory,
 not AV-FS001 reviews, because they are not reached from resolved tools. Conditional, reassigned,
@@ -446,10 +449,10 @@ sandbox, or other enclosing policy may still prevent exploitation.
 
 The rule requires a recognized Python HTTP client or TypeScript global `fetch`/Axios call inside a
 tool, or a uniquely named same-file TypeScript helper containing such a call, where an execution
-parameter (or its shallow assignment/destructuring alias) determines the URL origin. One exact
-TypeScript composition family additionally propagates a tool URL through an imported Axios helper. A
+parameter (or its shallow assignment/destructuring alias) determines the URL origin. Two exact
+TypeScript composition families additionally propagate tool URLs through imported Axios helpers. A
 literal URL and a template/concatenation whose resolved literal prefix already contains a complete
-HTTP scheme and host remain inventory-only. The full benchmark reports 14 reviews across eight
+HTTP scheme and host remain inventory-only. The full benchmark reports 15 reviews across nine
 repositories:
 
 - [Goose's Wikipedia MCP tool](https://github.com/block/goose/blob/48d480f91163bbcdc0f69f01befa3841a93a1d3e/examples/mcp-wiki/src/mcp_wiki/server.py#L29)
@@ -477,8 +480,10 @@ repositories:
   `DocParser.call`. Exact class and tool identities make the second hop explicit.
 - n8n's AI Builder `web_fetch` passes its parsed tool URL into an imported Axios helper. Its address
   policy is default-off and separately modeled below, so the dynamic-origin review remains visible.
+- Flowise's Agentflow HTTP node copies its variable URL into a fixed Axios request object and calls
+  the imported `secureAxiosRequest`; the proxy-conditional policy is modeled separately below.
 
-Schema v35 separately inventories 22 import-proven `urllib.request.urlopen` calls. Two occur in
+Schema v36 separately inventories 22 import-proven `urllib.request.urlopen` calls. Two occur in
 Qwen's registered `area_to_weather` and `weather_hour24` tools and therefore receive exact tool
 edges. Both construct `Request` objects from a fixed `https://ali-weather.showapi.com` origin plus
 tool-controlled query data, so unwrapping the Request's URL keeps them inventory-only. The other 20
@@ -500,7 +505,7 @@ Because the normalized environment list explicitly defaults to empty, the edge r
 `configured-optional` and `hostname_default: open`; DNS and redirect scope remain unresolved. It
 therefore explains partial governance without satisfying destination policy or suppressing the review.
 
-Schema v35 also resolves CrewAI's locally defined `safe_get` as a `network-ssrf-policy` at two
+Schema v36 also resolves CrewAI's locally defined `safe_get` as a `network-ssrf-policy` at two
 production call sites: `DocsSiteLoader.load` and `DOCXLoader._download_from_url`. The helper validates
 the initial URL and each redirect, disables automatic redirects and environment proxies, rejects
 private/reserved DNS results, and verifies the connected peer through its mounted adapter. Both edges
@@ -510,7 +515,7 @@ record `enforcement_default: enabled`, `redirect_scope: each-hop-validated`,
 explicit instead of being collapsed into unconditional protection. Ten test-scope `safe_get` calls
 are inventoried but excluded from the production-control total.
 
-Schema v35 adds two production Composio edges from the session-file router to `safe_get` and
+Schema v36 adds two production Composio edges from the session-file router to `safe_get` and
 `safe_request`. Both validate HTTP(S) targets against public resolution results before requesting and
 pin direct connections through a protected adapter with a connected-peer assertion. `safe_get`
 records `redirect_scope: disabled`; `safe_request` follows a bounded loop and records
@@ -521,7 +526,7 @@ where the proxy resolves the target and the SDK cannot pin that peer. Both edges
 `connection-pinned`/`disabled` profile. Four positive and one negative exact IR labels validate this
 new family.
 
-Schema v35 adds ten Langflow production edges whose policy is strong when enabled but explicitly
+Schema v36 adds ten Langflow production edges whose policy is strong when enabled but explicitly
 configurable. The collector's schema-v4 selection-hint manifest lists 11 callers from Langflow's own
 SSRF-wiring registry plus the security settings source; all 12 files are charged against the existing
 20-file dependency cap. The analyzer then resolves exact imports across Langflow's nested source root
@@ -537,7 +542,7 @@ positive and one negative IR labels cover local sync/async applications, DeepSee
 calls, and an ordinary request; mutations of the enabled default or pinned backend withhold the
 summary.
 
-Schema v35 resolves n8n's AI Builder `web_fetch` as a dynamic-origin tool path and preserves its
+Schema v36 resolves n8n's AI Builder `web_fetch` as a dynamic-origin tool path and preserves its
 default-off composition. Four audited hint files add the CLI composition root, discovery subgraph,
 tool factory, and Axios helper within n8n's existing dependency budget. The composition root injects
 `SsrfProtectionService` only when `N8N_SSRF_PROTECTION_ENABLED` is true; the false/default branch
@@ -552,14 +557,28 @@ does not satisfy address policy. Two positive and one negative IR labels cover t
 edges plus raw Axios. Mutations of the composition branch, lookup, or redirect hook withhold the
 edge; a literal default-on mutation instead retains it and changes its enforcement/escape state.
 
+Schema v36 also resolves Flowise's `httpAgentflow` node through its request object into
+`secureAxiosRequest`. One audited caller hint is charged against Flowise's dependency budget. The
+node exposes `nodeData.inputs.url` as a variable input, derives `finalUrl`, and assigns it to the
+fixed config's `url` property before the imported call. The helper enables its default address deny
+list unless `HTTP_SECURITY_CHECK=false`, normalizes IPv4-mapped IPv6, validates every DNS answer,
+disables automatic redirects, validates each manual hop, and installs an agent lookup pinned to the
+chosen address. The exact caller supplies no adapter, agent, proxy, socket path, transport, or spread
+property. Environment proxy routing remains a real residual, so the edge records
+`dns_scope: connection-pinned-unless-proxied`, `proxy_scope: environment-dependent`, and
+`escape_hatch: configured-opt-out`. Two positive and one negative IR labels cover the local and
+pinned edges plus an unrelated same-named helper; mutations of the default, redirect mode, deny
+predicate, pinned lookup, caller transport config, or mapped-address normalization withhold the edge.
+
 Pinned negatives include a [fixed Devpost origin](https://github.com/microsoft/ai-agents-for-beginners/blob/01777b05e8afeba6bf5a6dbe74cc2293372d3693/11-agentic-protocols/code_samples/github-mcp/app.py#L118),
 the MCP SDK's [fixed weather API](https://github.com/modelcontextprotocol/typescript-sdk/blob/3924de99df834302d89f5997a1b64ca268282284/examples/guides/get-started/firstServer.examples.ts#L20-L40),
 Vercel's [literal PDF URL](https://github.com/vercel/ai/blob/f607a129c0298870038b398dbcba57ff041114f6/examples/ai-e2e-next/tool/fetch-pdf-tool.ts#L5-L12),
 and Qwen's two fixed urllib weather endpoints plus fixed AMap endpoint formatted with a dynamic
 query. Python fixed-origin facts propagate
 through unique module constants and immutable `self` fields, concatenation, and `.format(...)`.
-Results remain `review`: neither the local Python controls, configured-open TypeScript policy, nor
-default-off n8n control suppresses the rule, and redirects, DNS rebinding, proxies, imported
+Results remain `review`: neither the local Python controls, configured-open TypeScript policy,
+default-off n8n control, nor proxy-conditional Flowise control suppresses the rule, and redirects,
+DNS rebinding, proxies, imported
 validators, and runtime egress policy are not fully resolved.
 
 ## AV-SANDBOX001 — container/host boundary
@@ -587,13 +606,13 @@ and a literal `privileged=True` keyword.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 302 exact labels across all nine enabled rules: 166 positives and 136
+`benchmarks/truthset.json` contains 305 exact labels across all nine enabled rules: 168 positives and 137
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
-Compose/Kubernetes/Docker SDK settings. All 302 currently pass; each rule's seed precision and recall
+Compose/Kubernetes/Docker SDK settings. All 305 currently pass; each rule's seed precision and recall
 are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified source
 text at the exact pinned line, preventing a missing or drifting location from passing silently.
 
@@ -653,7 +672,8 @@ labels cover two local and two CrewAI edges plus incomplete-redirect and rebound
 Five proxy-conditional secure-network labels cover two local and two Composio edges plus an ordinary
 request negative. Five configurable pinned-network labels cover two local and two Langflow edges plus
 an ordinary request negative. Three TypeScript configurable-composition labels cover local and n8n
-edges plus raw Axios. All 215 IR
+edges plus raw Axios. Three Flowise request-object labels cover the local and pinned governed paths
+plus an unrelated same-named helper. All 218 IR
 labels pass:
 three approval positives/four negatives,
 two audit positives/two negatives, two import positives/one negative, three TypeScript graph
@@ -672,4 +692,5 @@ Python network-origin-control positives/seven negatives, two TypeScript network-
 positives/five negatives, four Python secure-network-helper positives/two negatives, and two
 imported-registry positives/three negatives, plus four proxy-conditional secure-network positives/one
 negative, plus four configurable pinned-network positives/one negative, plus two TypeScript
-configurable-composition positives/one negative.
+configurable-composition positives/one negative, plus two Flowise request-object positives/one
+negative.

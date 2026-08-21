@@ -1,6 +1,6 @@
 {
   "schema_version": 4,
-  "generated_at": "2026-08-21T15:13:06.469434+00:00",
+  "generated_at": "2026-08-21T15:40:23.596278+00:00",
   "method": {
     "collector": "scripts/collect_repositories.py",
     "max_files_per_repository": 220,
@@ -9,7 +9,7 @@
     "lock_file": "research/repository-data.json",
     "locked_repositories": 71,
     "selection_hints_file": "research/repository-selection-hints.json",
-    "hinted_repositories": 2,
+    "hinted_repositories": 3,
     "selection": "manifests, then explicit SSRF/URL-safety and general security/agent/tool/MCP-related sources, then shallow paths; plus audited evidence paths and a bounded local Python import closure for MCP forwarding and URL-security helper call sites"
   },
   "repositories": [
@@ -5696,9 +5696,9 @@
       "status": "ok",
       "commit": "9291856d1ea4a4ceea9f8fef8ce14f4f6c81e8eb",
       "files_in_tree": 2450,
-      "files_scanned": 220,
-      "dependency_files_materialized": 0,
-      "bytes_scanned": 1563851,
+      "files_scanned": 221,
+      "dependency_files_materialized": 1,
+      "bytes_scanned": 1577404,
       "languages": [
         "TypeScript",
         "JavaScript",

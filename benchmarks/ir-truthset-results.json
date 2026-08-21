@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T15:28:59.231424+00:00",
-  "labels": 215,
-  "passed": 215,
+  "generated_at": "2026-08-21T15:50:20.888309+00:00",
+  "labels": 218,
+  "passed": 218,
   "metrics": {
     "IR-APPROVAL-CONTROL": {
       "tp": 3,
@@ -197,6 +197,14 @@
       "recall": 1.0
     },
     "IR-TS-CONFIGURABLE-SSRF-COMPOSITION": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-FLOWISE-SECURE-REQUEST": {
       "tp": 2,
       "fp": 0,
       "tn": 1,
@@ -2175,6 +2183,33 @@
     {
       "id": "typescript-configurable-ssrf-n8n-real",
       "check_id": "IR-TS-CONFIGURABLE-SSRF-COMPOSITION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-flowise-secure-request-local",
+      "check_id": "IR-TS-FLOWISE-SECURE-REQUEST",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-flowise-secure-request-raw-local-negative",
+      "check_id": "IR-TS-FLOWISE-SECURE-REQUEST",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-flowise-secure-request-real",
+      "check_id": "IR-TS-FLOWISE-SECURE-REQUEST",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

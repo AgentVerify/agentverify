@@ -1,6 +1,6 @@
 {
-  "schema_version": 35,
-  "generated_at": "2026-08-21T15:26:29.362386+00:00",
+  "schema_version": 36,
+  "generated_at": "2026-08-21T15:44:46.900777+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -16,26 +16,26 @@
     "zero_source_repositories": [
       "daytonaio/daytona"
     ],
-    "files_scanned": 10746,
-    "dependency_files_materialized": 151,
-    "repositories_with_dependency_expansion": 13,
+    "files_scanned": 10747,
+    "dependency_files_materialized": 152,
+    "repositories_with_dependency_expansion": 14,
     "config_files_scanned": 155,
-    "relationships": 1467,
-    "symbolized_components": 8737,
-    "identified_symbol_endpoints": 1929,
-    "resolved_symbol_endpoints": 1927,
+    "relationships": 1469,
+    "symbolized_components": 8738,
+    "identified_symbol_endpoints": 1930,
+    "resolved_symbol_endpoints": 1928,
     "unmatched_identified_symbol_endpoints": 2,
     "ambiguous_repeated_binding_targets": 23,
     "resolved_binding_targets_by_basis": {
       "lexical-single-definition": 325,
       "module-single-definition": 14
     },
-    "relationship_endpoints": 2934,
+    "relationship_endpoints": 2938,
     "bom_endpoint_resolutions": {
       "ambiguous": 30,
-      "evidence-location": 461,
-      "symbol-id": 1927,
-      "unique-display-name": 17,
+      "evidence-location": 463,
+      "symbol-id": 1928,
+      "unique-display-name": 18,
       "unresolved": 499
     },
     "bom_ambiguous_endpoints_by_side_kind": {
@@ -43,7 +43,7 @@
     },
     "resolved_symbol_endpoints_by_frontend": {
       "py": 1675,
-      "ts": 252
+      "ts": 253
     },
     "typescript_graph": {
       "agent_edges": 95,
@@ -133,14 +133,19 @@
       "dns_unresolved": 1
     },
     "typescript_secure_network_controls": {
-      "total": 1,
-      "enabled_default": 0,
+      "total": 2,
+      "enabled_default": 1,
       "disabled_default": 1,
       "configured_opt_in": 1,
-      "configured_opt_out": 0,
+      "configured_opt_out": 1,
       "bounded_redirect_hooks": 1,
+      "redirects_validated": 1,
       "secure_lookup_configured": 1,
+      "dns_connection_pinned_unless_proxied": 1,
       "proxy_unresolved": 1,
+      "proxy_environment_dependent": 1,
+      "fixed_caller_config": 1,
+      "ipv4_mapped_ipv6_normalized": 1,
       "domain_hitl_independent": 1
     },
     "path_boundary_controls": {
@@ -214,7 +219,7 @@
       "AV-FS001": 26,
       "AV-FS002": 4,
       "AV-MCP002": 49,
-      "AV-NET001": 14,
+      "AV-NET001": 15,
       "AV-SANDBOX001": 19
     },
     "finding_repositories": {
@@ -225,7 +230,7 @@
       "AV-FS001": 9,
       "AV-FS002": 1,
       "AV-MCP002": 23,
-      "AV-NET001": 8,
+      "AV-NET001": 9,
       "AV-SANDBOX001": 9
     },
     "observed_component_names": {
@@ -247,7 +252,7 @@
         "fixed-tool-binding": 6,
         "human-approval": 3,
         "network-origin-policy": 1,
-        "network-ssrf-policy": 4,
+        "network-ssrf-policy": 5,
         "path-boundary": 4,
         "path-prefix-check": 1,
         "tool-allowlist": 1,
@@ -394,7 +399,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 122.9363
+    "elapsed_seconds": 123.3671
   },
   "repositories": [
     {
@@ -521,8 +526,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -562,7 +572,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6218
+      "elapsed_seconds": 1.6985
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -695,8 +705,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -741,7 +756,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0706
+      "elapsed_seconds": 2.9503
     },
     {
       "repository": "langchain-ai/langchain",
@@ -871,8 +886,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -910,7 +930,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9243
+      "elapsed_seconds": 0.893
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -1044,8 +1064,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -1091,7 +1116,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.0342
+      "elapsed_seconds": 3.8888
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -1230,8 +1255,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -1273,7 +1303,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1879
+      "elapsed_seconds": 0.1848
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -1416,8 +1446,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -1472,7 +1507,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.5773
+      "elapsed_seconds": 4.4501
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -1617,8 +1652,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -1678,7 +1718,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9426
+      "elapsed_seconds": 2.8219
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -1818,8 +1858,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -1871,7 +1916,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2608
+      "elapsed_seconds": 0.2506
     },
     {
       "repository": "microsoft/autogen",
@@ -2007,8 +2052,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -2055,7 +2105,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7122
+      "elapsed_seconds": 0.6673
     },
     {
       "repository": "microsoft/agent-framework",
@@ -2175,8 +2225,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -2214,7 +2269,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0414
+      "elapsed_seconds": 0.04
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -2348,8 +2403,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -2396,7 +2456,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1127
+      "elapsed_seconds": 0.1051
     },
     {
       "repository": "openai/openai-agents-python",
@@ -2550,8 +2610,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -2608,7 +2673,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.3468
+      "elapsed_seconds": 5.1567
     },
     {
       "repository": "openai/openai-agents-js",
@@ -2759,8 +2824,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -2804,7 +2874,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5819
+      "elapsed_seconds": 0.6104
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -2944,8 +3014,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -2996,7 +3071,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.9726
+      "elapsed_seconds": 11.3037
     },
     {
       "repository": "google/adk-python",
@@ -3128,8 +3203,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -3176,7 +3256,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4544
+      "elapsed_seconds": 3.3176
     },
     {
       "repository": "google/adk-js",
@@ -3303,8 +3383,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -3342,7 +3427,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0879
+      "elapsed_seconds": 2.1797
     },
     {
       "repository": "huggingface/smolagents",
@@ -3480,8 +3565,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -3535,7 +3625,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3394
+      "elapsed_seconds": 1.2832
     },
     {
       "repository": "agno-agi/agno",
@@ -3665,8 +3755,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -3714,7 +3809,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3007
+      "elapsed_seconds": 0.2999
     },
     {
       "repository": "camel-ai/camel",
@@ -3854,8 +3949,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -3910,7 +4010,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7368
+      "elapsed_seconds": 2.6409
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -4038,8 +4138,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -4080,7 +4185,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1846
+      "elapsed_seconds": 0.1743
     },
     {
       "repository": "run-llama/llama_index",
@@ -4214,8 +4319,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -4253,7 +4363,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7478
+      "elapsed_seconds": 0.7371
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -4392,8 +4502,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -4448,7 +4563,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3486
+      "elapsed_seconds": 1.3776
     },
     {
       "repository": "InternLM/lagent",
@@ -4586,8 +4701,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -4638,7 +4758,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6464
+      "elapsed_seconds": 0.6236
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -4769,8 +4889,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -4823,7 +4948,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0836
+      "elapsed_seconds": 1.0634
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -4959,8 +5084,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -5015,7 +5145,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4853
+      "elapsed_seconds": 1.4565
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -5147,8 +5277,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -5200,7 +5335,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9342
+      "elapsed_seconds": 0.9633
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -5335,8 +5470,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -5384,7 +5524,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1296
+      "elapsed_seconds": 3.0611
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -5514,8 +5654,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -5562,7 +5707,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0397
+      "elapsed_seconds": 1.0748
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -5694,8 +5839,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -5733,7 +5883,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5901
+      "elapsed_seconds": 0.624
     },
     {
       "repository": "letta-ai/letta-code",
@@ -5859,8 +6009,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -5898,7 +6053,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.531
+      "elapsed_seconds": 2.7471
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -6037,8 +6192,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -6090,7 +6250,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9502
+      "elapsed_seconds": 0.9175
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -6221,8 +6381,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -6275,7 +6440,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9583
+      "elapsed_seconds": 1.9004
     },
     {
       "repository": "mastra-ai/mastra",
@@ -6412,8 +6577,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -6457,7 +6627,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.554
+      "elapsed_seconds": 1.6234
     },
     {
       "repository": "vercel/ai",
@@ -6589,8 +6759,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -6633,7 +6808,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6137
+      "elapsed_seconds": 1.7112
     },
     {
       "repository": "cline/cline",
@@ -6769,8 +6944,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -6814,7 +6994,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2125
+      "elapsed_seconds": 2.3706
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -6943,8 +7123,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -6982,7 +7167,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.4361
+      "elapsed_seconds": 2.6012
     },
     {
       "repository": "continuedev/continue",
@@ -7109,8 +7294,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -7148,7 +7338,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5293
+      "elapsed_seconds": 1.6265
     },
     {
       "repository": "Aider-AI/aider",
@@ -7274,8 +7464,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -7328,7 +7523,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2632
+      "elapsed_seconds": 2.2934
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -7453,8 +7648,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -7500,7 +7700,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 0.7728
+      "elapsed_seconds": 0.7703
     },
     {
       "repository": "plandex-ai/plandex",
@@ -7612,8 +7812,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -7651,7 +7856,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.034
+      "elapsed_seconds": 0.0347
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -7777,8 +7982,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -7822,7 +8032,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0789
+      "elapsed_seconds": 1.0891
     },
     {
       "repository": "stitionai/devika",
@@ -7953,8 +8163,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -7996,7 +8211,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2819
+      "elapsed_seconds": 0.2848
     },
     {
       "repository": "block/goose",
@@ -8123,8 +8338,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -8171,7 +8391,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 1.6917
+      "elapsed_seconds": 2.1968
     },
     {
       "repository": "bytedance/trae-agent",
@@ -8311,8 +8531,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -8367,7 +8592,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6293
+      "elapsed_seconds": 0.6212
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -8495,8 +8720,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -8536,7 +8766,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.6037
+      "elapsed_seconds": 3.8565
     },
     {
       "repository": "openai/codex",
@@ -8655,8 +8885,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -8700,7 +8935,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5729
+      "elapsed_seconds": 0.5594
     },
     {
       "repository": "browser-use/browser-use",
@@ -8842,8 +9077,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -8899,7 +9139,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3333
+      "elapsed_seconds": 3.3222
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -9047,8 +9287,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -9102,7 +9347,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.447
+      "elapsed_seconds": 6.3886
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -9236,8 +9481,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -9286,7 +9536,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6273
+      "elapsed_seconds": 0.6234
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -9415,8 +9665,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -9456,7 +9711,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7931
+      "elapsed_seconds": 0.8319
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -9588,8 +9843,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -9637,7 +9897,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8503
+      "elapsed_seconds": 0.8851
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -9776,8 +10036,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -9824,7 +10089,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0543
+      "elapsed_seconds": 1.9606
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -9956,8 +10221,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -10000,7 +10270,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3391
+      "elapsed_seconds": 2.4459
     },
     {
       "repository": "github/github-mcp-server",
@@ -10122,8 +10392,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -10161,7 +10436,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.033
+      "elapsed_seconds": 0.0343
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -10284,8 +10559,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -10323,7 +10603,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0651
+      "elapsed_seconds": 0.0692
     },
     {
       "repository": "awslabs/mcp",
@@ -10453,8 +10733,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -10500,7 +10785,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7836
+      "elapsed_seconds": 1.7785
     },
     {
       "repository": "docker/mcp-gateway",
@@ -10623,8 +10908,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -10664,7 +10954,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0282
+      "elapsed_seconds": 0.0285
     },
     {
       "repository": "jlowin/fastmcp",
@@ -10795,8 +11085,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -10846,7 +11141,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1361
+      "elapsed_seconds": 2.0932
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -10958,8 +11253,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -10997,7 +11297,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0242
+      "elapsed_seconds": 0.0249
     },
     {
       "repository": "langflow-ai/langflow",
@@ -11137,8 +11437,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -11184,40 +11489,45 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2693
+      "elapsed_seconds": 2.3099
     },
     {
       "repository": "FlowiseAI/Flowise",
       "category": "visual-platform",
       "status": "ok",
-      "files_scanned": 208,
-      "dependency_files_materialized": 0,
+      "files_scanned": 209,
+      "dependency_files_materialized": 1,
       "config_files_scanned": 2,
       "components": {
         "agent": 1,
-        "capability": 11,
+        "capability": 12,
+        "control": 1,
         "framework": 1,
-        "model": 18
+        "model": 18,
+        "tool": 1
       },
       "component_names": {
         "capability": [
           "external-action",
           "network"
         ],
+        "control": [
+          "network-ssrf-policy"
+        ],
         "framework": [
           "LangChain"
         ]
       },
-      "relationships": 0,
-      "symbolized_components": 1,
-      "identified_symbol_endpoints": 0,
-      "resolved_symbol_endpoints": 0,
+      "relationships": 2,
+      "symbolized_components": 2,
+      "identified_symbol_endpoints": 1,
+      "resolved_symbol_endpoints": 1,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
         "py": 0,
-        "ts": 0
+        "ts": 1
       },
       "typescript_graph": {
         "agent_edges": 0,
@@ -11303,14 +11613,19 @@
         "dns_unresolved": 0
       },
       "typescript_secure_network_controls": {
-        "total": 0,
-        "enabled_default": 0,
+        "total": 1,
+        "enabled_default": 1,
         "disabled_default": 0,
         "configured_opt_in": 0,
-        "configured_opt_out": 0,
+        "configured_opt_out": 1,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 1,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 1,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 1,
+        "fixed_caller_config": 1,
+        "ipv4_mapped_ipv6_normalized": 1,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -11342,13 +11657,19 @@
         "python": 0,
         "typescript": 0
       },
-      "bom_endpoint_resolutions": {},
+      "bom_endpoint_resolutions": {
+        "evidence-location": 2,
+        "symbol-id": 1,
+        "unique-display-name": 1
+      },
       "bom_ambiguous_endpoints_by_side_kind": {},
-      "findings": {},
+      "findings": {
+        "AV-NET001": 1
+      },
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.069
+      "elapsed_seconds": 2.2542
     },
     {
       "repository": "langgenius/dify",
@@ -11463,8 +11784,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -11502,7 +11828,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3813
+      "elapsed_seconds": 1.3627
     },
     {
       "repository": "n8n-io/n8n",
@@ -11640,8 +11966,13 @@
         "configured_opt_in": 1,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 1,
+        "redirects_validated": 0,
         "secure_lookup_configured": 1,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 1,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 1
       },
       "path_boundary_controls": {
@@ -11687,7 +12018,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5547
+      "elapsed_seconds": 1.6525
     },
     {
       "repository": "activepieces/activepieces",
@@ -11824,8 +12155,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -11867,7 +12203,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0433
+      "elapsed_seconds": 1.1015
     },
     {
       "repository": "simstudioai/sim",
@@ -11988,8 +12324,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -12027,7 +12368,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8944
+      "elapsed_seconds": 3.1309
     },
     {
       "repository": "composiohq/composio",
@@ -12174,8 +12515,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -12219,7 +12565,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1903
+      "elapsed_seconds": 1.2117
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -12362,8 +12708,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -12419,7 +12770,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1732
+      "elapsed_seconds": 2.1526
     },
     {
       "repository": "e2b-dev/E2B",
@@ -12539,8 +12890,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -12578,7 +12934,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5185
+      "elapsed_seconds": 1.5857
     },
     {
       "repository": "daytonaio/daytona",
@@ -12690,8 +13046,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -12867,8 +13228,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -12912,7 +13278,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1574
+      "elapsed_seconds": 1.1165
     },
     {
       "repository": "traceloop/openllmetry",
@@ -13055,8 +13421,13 @@
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
         "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
         "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
         "domain_hitl_independent": 0
       },
       "path_boundary_controls": {
@@ -13104,7 +13475,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9571
+      "elapsed_seconds": 1.8966
     }
   ]
 }
