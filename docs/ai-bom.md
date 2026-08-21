@@ -71,14 +71,17 @@ when their target is missing or duplicated. The same principle applies to
 
 Repeated Python and TypeScript constructor bindings receive occurrence-qualified symbol IDs such as
 `#agent:agent@42` for their direct source edges. A later reference to a repeated binding does not pick
-an occurrence by name. In files with repeated identities, Python references resolve when one direct
-definition in the same lexical or module scope appears earlier, recording
+an occurrence by name. Python references are scope-aware for both unique and repeated names, so a
+locally shadowed binding cannot inherit a same-named outer or module identity. Repeated identities
+resolve when one direct definition in the same lexical or module scope appears earlier, recording
 `target_identity: lexical-single-definition` or
 `module-single-definition`. A nested statement block can additionally record
-`block-dominating-definition` when one exact constructor assignment is the binding's sole mutation
-before use in that block. This proof wins over a broader lexical candidate, and a locally bound name
-cannot fall back to a same-named module definition. Reassignments, cross-branch definitions,
-parameters, helper returns, and otherwise unproven references record
+`block-dominating-definition` when one exact constructor assignment or callable definition is the
+binding's sole mutation before use in that block. Literal Agent tool lists can therefore promote an
+exact preceding local function to a tool while retaining the Agent registration location. This proof
+wins over a broader lexical candidate, and a locally bound name cannot fall back to a same-named
+module definition. Reassignments, cross-branch or forward definitions, parameters, helper returns,
+and otherwise unproven references record
 `ambiguous-repeated-binding` or remain unresolved.
 
 Selected-path scans remain partial. Their metadata records `scan_scope: selected-paths` and the exact

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T20:48:37.510932+00:00",
-  "labels": 340,
-  "passed": 340,
+  "generated_at": "2026-08-21T21:16:30.059460+00:00",
+  "labels": 342,
+  "passed": 342,
   "metrics": {
     "AV-A2A001": {
       "tp": 4,
@@ -53,7 +53,7 @@
       "recall": 1.0
     },
     "AV-FS001": {
-      "tp": 45,
+      "tp": 47,
       "fp": 0,
       "tn": 41,
       "fn": 0,
@@ -1095,6 +1095,24 @@
     },
     {
       "id": "filesystem-marvin-real",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-marvin-agent-reference-real",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-marvin-writer-reference-real",
       "rule_id": "AV-FS001",
       "expected": true,
       "observed": true,

@@ -70,6 +70,9 @@ never imported or executed.
 - `python_computer_tool`: import-proven OpenAI Agents `ComputerTool` constructors produce
   computer-control inventory and exact inline/repeated-binding agent edges; an unimported lookalike
   stays ignored.
+- `python_direct_callable_tool`: a sole same-block Python function passed through a literal Agent
+  tools list becomes an analyzed tool asset; reassigned, cross-branch, forward, and parameter
+  forms—including a parameter shadowing a unique module tool—remain unresolved.
 - `typescript_a2a_card_endpoint`: ADK JS and Gemini compositions preserve remotely supplied
   AgentCard authority at SDK client construction; fixed/local cards, wrong imports, and unproven
   transports stay negative.

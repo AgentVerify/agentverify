@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T20:50:00.672710+00:00",
-  "labels": 288,
-  "passed": 288,
+  "generated_at": "2026-08-21T21:21:48.403989+00:00",
+  "labels": 298,
+  "passed": 298,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -112,6 +112,14 @@
       "tp": 4,
       "fp": 0,
       "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-DIRECT-CALLABLE-TOOL": {
+      "tp": 8,
+      "fp": 0,
+      "tn": 2,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -2952,6 +2960,96 @@
     {
       "id": "python-computer-tool-real-third-binding",
       "check_id": "IR-PY-COMPUTER-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-direct-callable-capability-local",
+      "check_id": "IR-PY-DIRECT-CALLABLE-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-direct-callable-agent-local",
+      "check_id": "IR-PY-DIRECT-CALLABLE-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-direct-callable-branch-local",
+      "check_id": "IR-PY-DIRECT-CALLABLE-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-direct-callable-reassigned-negative",
+      "check_id": "IR-PY-DIRECT-CALLABLE-TOOL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-direct-callable-reassigned-unresolved",
+      "check_id": "IR-PY-DIRECT-CALLABLE-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-direct-callable-cross-branch-negative",
+      "check_id": "IR-PY-DIRECT-CALLABLE-TOOL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-direct-callable-cross-branch-unresolved",
+      "check_id": "IR-PY-DIRECT-CALLABLE-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-direct-callable-parameter-unresolved",
+      "check_id": "IR-PY-DIRECT-CALLABLE-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-direct-callable-forward-unresolved",
+      "check_id": "IR-PY-DIRECT-CALLABLE-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-direct-callable-pydantic-real",
+      "check_id": "IR-PY-DIRECT-CALLABLE-TOOL",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

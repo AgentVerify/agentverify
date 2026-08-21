@@ -9,14 +9,18 @@ Python and TypeScript agent/tool components now carry module-qualified IDs, incl
 methods, built-in tools, tool namespaces, and Cline/OpenAI inline factories. The structure-aware
 TypeScript tools-array reader resolves all 81 observed agent-to-tool edges and 14 agent-as-tool
 delegations in the pinned sample without treating nested tokens as tools. Repeated constructor and
-decorated-tool bindings now receive occurrence-qualified IDs for exact source edges. Repeated target
-references resolve for a single direct, earlier definition in the same Python lexical/module scope,
-plus an exact single-mutation constructor assignment that dominates use in the same branch/with body.
-Schema v50 additionally inventories 15 import-proven OpenAI Agents Python `ComputerTool` instances
-and resolves ten agent links to them, including three formerly ambiguous repeated bindings. Seven
-corpus targets in parameter, helper-return, direct-function, wrapper-factory, or tuple-unpack forms
-remain unresolved; cross-branch and reassigned fixture cases also stay withheld. Next recover direct
-local callable and import-proven wrapper-factory tool identities, then add broader branch/reassignment
+decorated-tool bindings now receive occurrence-qualified IDs for exact source edges. Python target
+references are scope-aware for unique and repeated names; repeated targets resolve for a single
+direct, earlier definition in the same lexical/module scope, plus an exact single-mutation definition
+that dominates use in the same branch/with body.
+Schema v51 additionally inventories 15 import-proven OpenAI Agents Python `ComputerTool` instances
+and resolves ten agent links to them, including three formerly ambiguous repeated bindings. Literal
+Python Agent tool lists now recover 150 exact same-block callable definitions and 162 Agent links,
+including the PydanticAI direct-function target; 83 definitions are outside test paths and seven
+capability edges become reachable. Six corpus targets in parameter, helper-return, wrapper-factory,
+or tuple-unpack forms remain unresolved; cross-branch, forward, parameter, and reassigned fixture
+cases also stay withheld. Next recover import-proven wrapper-factory tool identities, then add broader
+branch/reassignment
 dataflow and resolve Python/TS package re-exports, wildcard imports, other wrapper factories, and
 type-driven symbols.
 Preserve unresolved state for ambiguity and validate on larger real monorepository graphs.
@@ -177,8 +181,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 340 pinned positive/negative locations, with 288 separately
-scored IR relationship labels. Schema-v50 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 342 pinned positive/negative locations, with 298 separately
+scored IR relationship labels. Schema-v51 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

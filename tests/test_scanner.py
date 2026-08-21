@@ -3893,6 +3893,61 @@ def test_python_repeated_bindings_require_same_block_dominance() -> None:
     assert edges[42].target_id == "py:app.py#agent:agent@41"
 
 
+def test_python_direct_callable_tools_require_same_block_definition() -> None:
+    ir = scan_repository(ROOT / "cases/python_direct_callable_tool")
+    tools = {component.name: component for component in ir.components if component.kind == "tool"}
+    assert set(tools) == {"branch_tool", "run_command", "unique_tool"}
+    assert tools["run_command"].symbol_id == "py:app.py#tool:run_command"
+    assert tools["run_command"].attributes == {
+        "decorators": [],
+        "needs_approval": False,
+        "registration": "agent-tool-reference",
+        "registration_path": "app.py",
+        "registration_line": 9,
+        "resolution": "same-block-single-definition",
+    }
+    assert tools["branch_tool"].symbol_id == "py:app.py#tool:branch_tool"
+    assert tools["branch_tool"].attributes["registration_line"] == 16
+    assert tools["unique_tool"].symbol_id == "py:app.py#tool:unique_tool"
+    assert tools["unique_tool"].attributes["registration_line"] == 49
+
+    edges = {
+        edge.evidence.line: edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent" and edge.target_kind == "tool"
+    }
+    assert edges[9].target_id == "py:app.py#tool:run_command"
+    assert edges[9].attributes == {}
+    assert edges[16].target_id == "py:app.py#tool:branch_tool"
+    assert edges[16].attributes == {}
+    assert edges[24].target_id is None
+    assert edges[31].target_id is None
+    assert edges[35].target_id is None
+    assert edges[39].target_id is None
+    assert edges[49].target_id == "py:app.py#tool:unique_tool"
+    assert edges[53].target_id is None
+
+    shell = next(
+        component
+        for component in ir.components
+        if component.kind == "capability" and component.name == "shell-execution"
+    )
+    assert shell.evidence.line == 8
+    shell_edge = next(
+        edge
+        for edge in ir.relationships
+        if edge.source_id == "py:app.py#tool:run_command"
+        and edge.target_name == "shell-execution"
+    )
+    assert shell_edge.evidence.line == 8
+    finding = next(
+        finding
+        for finding in ir.findings
+        if finding.rule_id == "AV-EXEC001" and finding.evidence.line == 8
+    )
+    assert finding.ir_path[:2] == ("agent:Agent", "tool:run_command")
+
+
 def test_relative_typescript_import_resolves_cross_file_tool_path() -> None:
     ir = scan_repository(ROOT / "cases/imported_ts_tool")
 

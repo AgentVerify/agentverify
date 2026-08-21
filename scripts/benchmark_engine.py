@@ -181,6 +181,38 @@ def main() -> int:
             for edge in ir.relationships
             if edge.source_kind == "agent" and edge.target_id in python_computer_tool_ids
         ]
+        python_agent_referenced_tools = [
+            item
+            for item in ir.components
+            if item.kind == "tool"
+            and item.attributes.get("registration") == "agent-tool-reference"
+        ]
+        python_agent_referenced_tool_ids = {
+            item.symbol_id for item in python_agent_referenced_tools if item.symbol_id
+        }
+        if len(python_agent_referenced_tool_ids) != len(python_agent_referenced_tools):
+            raise RuntimeError(
+                f"{repository}: Agent-referenced Python callable lacks a unique symbol ID"
+            )
+        python_agent_referenced_capability_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_id in python_agent_referenced_tool_ids
+            and edge.target_kind == "capability"
+        ]
+        python_agent_referenced_agent_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "agent"
+            and edge.target_id in python_agent_referenced_tool_ids
+        ]
+        referenced_tool_agent_targets = {
+            edge.target_id for edge in python_agent_referenced_agent_edges
+        }
+        if referenced_tool_agent_targets != python_agent_referenced_tool_ids:
+            raise RuntimeError(
+                f"{repository}: Agent-referenced Python callable lacks an exact Agent edge"
+            )
         python_browser_evaluations = [
             item
             for item in ir.components
@@ -555,6 +587,16 @@ def main() -> int:
                 ),
                 "capability_edges": len(python_computer_capability_edges),
                 "resolved_agent_edges": len(python_computer_agent_edges),
+            },
+            "python_agent_referenced_tools": {
+                "instances": len(python_agent_referenced_tools),
+                "non_test_instances": sum(
+                    not item.evidence.path.startswith("tests/")
+                    and "/tests/" not in item.evidence.path
+                    for item in python_agent_referenced_tools
+                ),
+                "capability_edges": len(python_agent_referenced_capability_edges),
+                "resolved_agent_edges": len(python_agent_referenced_agent_edges),
             },
             "python_browser_evaluate": {
                 "total": len(python_browser_evaluations),
@@ -1195,7 +1237,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 50,
+        "schema_version": 51,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -1324,6 +1366,18 @@ def main() -> int:
                     "non_test_instances",
                     "local_execution",
                     "safety_check_handlers_configured",
+                    "capability_edges",
+                    "resolved_agent_edges",
+                )
+            },
+            "python_agent_referenced_tools": {
+                name: sum(
+                    result["python_agent_referenced_tools"][name]
+                    for result in successful
+                )
+                for name in (
+                    "instances",
+                    "non_test_instances",
                     "capability_edges",
                     "resolved_agent_edges",
                 )

@@ -43,12 +43,14 @@ candidate files remain unresolved. Python class methods use class-qualified IDs,
 or built-in-tool instances use their binding name. The TypeScript frontend balances delimiters and
 reads only direct properties and top-level tool-array entries; it models OpenAI tool namespaces,
 built-ins, inline/assigned agent adapters, and Cline inline tools without treating nested tokens as
-symbols. Repeated Python constructor bindings gain a target ID inside a `with`, branch, or other
-statement body only when one exact constructor assignment is the sole same-block mutation before
-use. This block-local proof takes precedence over a broader lexical candidate, while any local binding
-prevents fallback to a same-named module definition. Cross-branch definitions, reassignments,
-parameters, helper returns, and tuple unpacking remain unresolved. Package re-exports, wildcard
-imports, dynamic lookups, conditional tool expressions, and unrecognized wrapper-factory forms
+symbols. Python constructor and callable bindings gain a target ID inside a `with`, branch, or other
+statement body only when one exact assignment or function definition is the sole same-block mutation
+before use. Literal Agent `tools=[name]` entries promote the exact preceding callable definition to a
+tool and record its registration site. This block-local proof takes precedence over a broader lexical
+candidate, while any local binding prevents fallback to a same-named module definition. Cross-branch
+definitions, reassignments, forward definitions, parameters, helper returns, and tuple unpacking
+remain unresolved. Package re-exports, wildcard imports, dynamic lookups, conditional tool
+expressions, and unrecognized wrapper-factory forms
 remain unresolved.
 
 A repository prepass also resolves direct module-level Python
@@ -422,10 +424,11 @@ CycloneDX or SPDX conformance.
 
 Source-symbol IDs are module-qualified. When a Python or TypeScript file constructs multiple
 agents/tools through the same binding, each definition receives an `@line` occurrence suffix so its
-own outgoing edges stay exact. When a file-level identity is repeated, Python target references
+own outgoing edges stay exact. Python target references are scope-aware even when a display name has
+only one observed definition: a local shadow cannot fall back to that definition. Repeated identities
 resolve only when one direct definition in the same lexical or module scope appears earlier; the edge
 records `target_identity: lexical-single-definition` or `module-single-definition`. One exact
-constructor assignment that is the sole same-block mutation before use records
+constructor assignment or callable definition that is the sole same-block mutation before use records
 `block-dominating-definition`. Reassignments and unproven references do not inherit an arbitrary
 occurrence; repeated ones carry
 `target_identity: ambiguous-repeated-binding` and remain unresolved.

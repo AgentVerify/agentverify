@@ -3465,6 +3465,66 @@
       "target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},
       "check_id":"IR-PY-COMPUTER-TOOL","path":"tests/test_tool_approval_call_id_reuse.py","line":1622,"expected":true,
       "relationship":{"source_kind":"agent","source_name":"computer-agent","relation":"uses","target_kind":"tool","target_name":"tool","target_id":"py:tests/test_tool_approval_call_id_reuse.py#tool:tool@1611","attributes":{"target_identity":"lexical-single-definition"}}
+    },
+    {
+      "id":"python-direct-callable-capability-local",
+      "target":{"kind":"local","path":"cases/python_direct_callable_tool"},
+      "check_id":"IR-PY-DIRECT-CALLABLE-TOOL","path":"app.py","line":8,"expected":true,
+      "relationship":{"source_kind":"tool","source_name":"run_command","source_id":"py:app.py#tool:run_command","relation":"uses","target_kind":"capability","target_name":"shell-execution"}
+    },
+    {
+      "id":"python-direct-callable-agent-local",
+      "target":{"kind":"local","path":"cases/python_direct_callable_tool"},
+      "check_id":"IR-PY-DIRECT-CALLABLE-TOOL","path":"app.py","line":9,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Agent","relation":"uses","target_kind":"tool","target_name":"run_command","target_id":"py:app.py#tool:run_command"}
+    },
+    {
+      "id":"python-direct-callable-branch-local",
+      "target":{"kind":"local","path":"cases/python_direct_callable_tool"},
+      "check_id":"IR-PY-DIRECT-CALLABLE-TOOL","path":"app.py","line":16,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Agent","relation":"uses","target_kind":"tool","target_name":"branch_tool","target_id":"py:app.py#tool:branch_tool"}
+    },
+    {
+      "id":"python-direct-callable-reassigned-negative",
+      "target":{"kind":"local","path":"cases/python_direct_callable_tool"},
+      "check_id":"IR-PY-DIRECT-CALLABLE-TOOL","path":"app.py","line":24,"expected":false,"source_contains":"tools=[run_command]",
+      "relationship":{"source_kind":"agent","relation":"uses","target_kind":"tool","target_name":"run_command","target_id":"py:app.py#tool:run_command"}
+    },
+    {
+      "id":"python-direct-callable-reassigned-unresolved",
+      "target":{"kind":"local","path":"cases/python_direct_callable_tool"},
+      "check_id":"IR-PY-DIRECT-CALLABLE-TOOL","path":"app.py","line":24,"expected":true,
+      "relationship":{"source_kind":"agent","relation":"uses","target_kind":"tool","target_name":"run_command","target_id":null}
+    },
+    {
+      "id":"python-direct-callable-cross-branch-negative",
+      "target":{"kind":"local","path":"cases/python_direct_callable_tool"},
+      "check_id":"IR-PY-DIRECT-CALLABLE-TOOL","path":"app.py","line":31,"expected":false,"source_contains":"tools=[run_command]",
+      "relationship":{"source_kind":"agent","relation":"uses","target_kind":"tool","target_name":"run_command","target_id":"py:app.py#tool:run_command"}
+    },
+    {
+      "id":"python-direct-callable-cross-branch-unresolved",
+      "target":{"kind":"local","path":"cases/python_direct_callable_tool"},
+      "check_id":"IR-PY-DIRECT-CALLABLE-TOOL","path":"app.py","line":31,"expected":true,
+      "relationship":{"source_kind":"agent","relation":"uses","target_kind":"tool","target_name":"run_command","target_id":null}
+    },
+    {
+      "id":"python-direct-callable-parameter-unresolved",
+      "target":{"kind":"local","path":"cases/python_direct_callable_tool"},
+      "check_id":"IR-PY-DIRECT-CALLABLE-TOOL","path":"app.py","line":35,"expected":true,
+      "relationship":{"source_kind":"agent","relation":"uses","target_kind":"tool","target_name":"run_command","target_id":null}
+    },
+    {
+      "id":"python-direct-callable-forward-unresolved",
+      "target":{"kind":"local","path":"cases/python_direct_callable_tool"},
+      "check_id":"IR-PY-DIRECT-CALLABLE-TOOL","path":"app.py","line":39,"expected":true,
+      "relationship":{"source_kind":"agent","relation":"uses","target_kind":"tool","target_name":"later_tool","target_id":null}
+    },
+    {
+      "id":"python-direct-callable-pydantic-real",
+      "target":{"kind":"repository","repository":"pydantic/pydantic-ai","commit":"5e59fef14bd5abc86c4cfab1480c4f380542acfe"},
+      "check_id":"IR-PY-DIRECT-CALLABLE-TOOL","path":"tests/test_tools.py","line":4562,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Agent","relation":"uses","target_kind":"tool","target_name":"my_tool","target_id":"py:tests/test_tools.py#tool:my_tool@4558","attributes":{"target_identity":"lexical-single-definition"}}
     }
   ]
 }

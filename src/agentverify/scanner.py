@@ -2141,6 +2141,7 @@ class PythonVisitor(ast.NodeVisitor):
         node_scopes: dict[int, tuple[str, ...]],
         call_symbol_ids: dict[int, str],
         definition_symbol_ids: dict[int, str],
+        referenced_tool_functions: dict[int, ast.Call],
         registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
         network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
         registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
@@ -2208,6 +2209,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.node_scopes = node_scopes
         self.call_symbol_ids = call_symbol_ids
         self.definition_symbol_ids = definition_symbol_ids
+        self.referenced_tool_functions = referenced_tool_functions
         self.registry_class_exports = registry_class_exports
         self.network_helper_summaries = network_helper_summaries
         self.registered_tool_functions = registered_tool_functions
@@ -2446,15 +2448,16 @@ class PythonVisitor(ast.NodeVisitor):
         self, kind: str, name: str, node: ast.AST
     ) -> tuple[str | None, str | None]:
         scope = self.node_scopes.get(id(node), ())
+        repeated = (kind, name) in self.ambiguous_local_symbols
         dominating = self.dominating_symbol_ids.get((id(node), kind, name))
         if scoped := self.scoped_symbol_ids.get((scope, kind, name)):
             definition_line, symbol_id = scoped
             if definition_line < getattr(node, "lineno", 1):
                 if dominating and dominating[0] != symbol_id:
-                    return dominating
-                return symbol_id, "lexical-single-definition"
+                    return dominating if repeated else (dominating[0], None)
+                return symbol_id, "lexical-single-definition" if repeated else None
         if dominating:
-            return dominating
+            return dominating if repeated else (dominating[0], None)
         if (
             scope
             and (scope, name) not in self.scope_bound_names
@@ -2462,7 +2465,7 @@ class PythonVisitor(ast.NodeVisitor):
         ):
             definition_line, symbol_id = module_symbol
             if definition_line < getattr(node, "lineno", 1):
-                return symbol_id, "module-single-definition"
+                return symbol_id, "module-single-definition" if repeated else None
         if self.node_scopes:
             return None, None
         if (kind, name) not in self.ambiguous_local_symbols:
@@ -2832,11 +2835,13 @@ class PythonVisitor(ast.NodeVisitor):
             else None
         )
         registry_function = self.registry_function_tools.get(id(node))
+        tool_reference = self.referenced_tool_functions.get(id(node))
         direct_tool = bool(
             decorators & TOOL_DECORATORS
             or any(name.endswith(".tool") for name in decorators)
             or registration is not None
             or registry_function is not None
+            or tool_reference is not None
         )
         active_class_tool = (
             self.active_registry_class_tools[-1]
@@ -2901,6 +2906,21 @@ class PythonVisitor(ast.NodeVisitor):
                             "wrapper_summary": "metadata-preserving-forwarder",
                         }
                     )
+            if (
+                tool_reference is not None
+                and not decorators & TOOL_DECORATORS
+                and not any(name.endswith(".tool") for name in decorators)
+                and registration is None
+                and registry_function is None
+            ):
+                attributes.update(
+                    {
+                        "registration": "agent-tool-reference",
+                        "registration_path": self.path,
+                        "registration_line": tool_reference.lineno,
+                        "resolution": "same-block-single-definition",
+                    }
+                )
             if active_class_tool is None:
                 self.ir.add_component(
                     Component(
@@ -4962,6 +4982,81 @@ def scan_python(
         registry_class_tools[id(node)] = PythonRegistryTool(
             framework, tool_name, registrar, entrypoints
         )
+    parent_by_id = {
+        id(child): parent for parent in nodes for child in ast.iter_child_nodes(parent)
+    }
+
+    def enclosing_statement_block(node: ast.AST) -> tuple[list[ast.stmt], int] | None:
+        current = node
+        while parent := parent_by_id.get(id(current)):
+            for _field, value in ast.iter_fields(parent):
+                if not isinstance(value, list):
+                    continue
+                for index, item in enumerate(value):
+                    if item is current and isinstance(item, ast.stmt):
+                        return value, index
+            current = parent
+        return None
+
+    mutation_cache: dict[int, set[str]] = {}
+
+    def statement_mutations(statement: ast.stmt) -> set[str]:
+        if id(statement) in mutation_cache:
+            return mutation_cache[id(statement)]
+        mutations: set[str] = set()
+
+        def collect(candidate: ast.AST) -> None:
+            if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                mutations.add(candidate.name)
+                return
+            if isinstance(candidate, (ast.Import, ast.ImportFrom)):
+                mutations.update(
+                    alias.asname or alias.name.split(".", 1)[0]
+                    for alias in candidate.names
+                )
+                return
+            if isinstance(candidate, ast.ExceptHandler) and candidate.name:
+                mutations.add(candidate.name)
+            if isinstance(candidate, ast.Name) and isinstance(
+                candidate.ctx, (ast.Store, ast.Del)
+            ):
+                mutations.add(candidate.id)
+            for child in ast.iter_child_nodes(candidate):
+                collect(child)
+
+        collect(statement)
+        mutation_cache[id(statement)] = mutations
+        return mutations
+
+    referenced_tool_functions: dict[int, ast.Call] = {}
+    for call in (
+        candidate
+        for candidate in nodes
+        if isinstance(candidate, ast.Call)
+        and dotted_name(candidate.func).rsplit(".", 1)[-1] in AGENT_CALLS
+    ):
+        block = enclosing_statement_block(call)
+        if block is None:
+            continue
+        statements, use_index = block
+        for keyword in call.keywords:
+            if keyword.arg != "tools" or not isinstance(keyword.value, (ast.List, ast.Tuple)):
+                continue
+            for value in keyword.value.elts:
+                if not isinstance(value, ast.Name):
+                    continue
+                mutations = [
+                    statement
+                    for statement in statements[:use_index]
+                    if value.id in statement_mutations(statement)
+                ]
+                if len(mutations) != 1 or not isinstance(
+                    mutations[0], (ast.FunctionDef, ast.AsyncFunctionDef)
+                ):
+                    continue
+                definition = mutations[0]
+                if definition.name == value.id:
+                    referenced_tool_functions.setdefault(id(definition), call)
     symbol_candidates: dict[tuple[str, str], set[str]] = {}
     call_symbol_ids: dict[int, str] = {}
     definition_symbol_ids: dict[int, str] = {}
@@ -4996,6 +5091,7 @@ def scan_python(
                 decorators & TOOL_DECORATORS
                 or any(name.endswith(".tool") for name in decorators)
                 or id(node) in registry_function_tools
+                or id(node) in referenced_tool_functions
                 or (
                     module_scope
                     and (relative, node.name) in registered_tool_functions
@@ -5006,6 +5102,19 @@ def scan_python(
             collect_definitions(node.body, class_stack, module_scope=False)
 
     collect_definitions(tree.body)
+    collected_tool_definition_ids = {id(node) for node, _name in decorated_tools}
+    for node in nodes:
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        if id(node) not in referenced_tool_functions or id(node) in collected_tool_definition_ids:
+            continue
+        class_names: list[str] = []
+        parent = parent_by_id.get(id(node))
+        while parent is not None:
+            if isinstance(parent, ast.ClassDef):
+                class_names.append(parent.name)
+            parent = parent_by_id.get(id(parent))
+        decorated_tools.append((node, ".".join([*reversed(class_names), node.name])))
     definition_counts = Counter(qualified_name for _, qualified_name in decorated_tools)
     for node, qualified_name in decorated_tools:
         identity = (
@@ -5061,10 +5170,7 @@ def scan_python(
     dominating_symbol_ids: dict[tuple[int, str, str], tuple[str, str]] = {}
     scope_bound_names: set[tuple[tuple[str, ...], str]] = set()
     node_scopes: dict[int, tuple[str, ...]] = {}
-    if ambiguous_local_symbols:
-        parent_by_id = {
-            id(child): parent for parent in nodes for child in ast.iter_child_nodes(parent)
-        }
+    if symbol_candidates:
         scope_cache: dict[int, tuple[str, ...]] = {id(tree): ()}
 
         def lexical_scope(node: ast.AST) -> tuple[str, ...]:
@@ -5132,52 +5238,16 @@ def scan_python(
                 (node.lineno, call_symbol_ids[id(node.value)])
             )
 
-        def enclosing_statement_block(node: ast.AST) -> tuple[list[ast.stmt], int] | None:
-            current = node
-            while parent := parent_by_id.get(id(current)):
-                for _field, value in ast.iter_fields(parent):
-                    if not isinstance(value, list):
-                        continue
-                    for index, item in enumerate(value):
-                        if item is current and isinstance(item, ast.stmt):
-                            return value, index
-                current = parent
-            return None
-
-        mutation_cache: dict[int, set[str]] = {}
-
-        def statement_mutations(statement: ast.stmt) -> set[str]:
-            if id(statement) in mutation_cache:
-                return mutation_cache[id(statement)]
-            mutations: set[str] = set()
-
-            def collect(candidate: ast.AST) -> None:
-                if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-                    mutations.add(candidate.name)
-                    return
-                if isinstance(candidate, (ast.Import, ast.ImportFrom)):
-                    mutations.update(
-                        alias.asname or alias.name.split(".", 1)[0]
-                        for alias in candidate.names
-                    )
-                    return
-                if isinstance(candidate, ast.ExceptHandler) and candidate.name:
-                    mutations.add(candidate.name)
-                if isinstance(candidate, ast.Name) and isinstance(
-                    candidate.ctx, (ast.Store, ast.Del)
-                ):
-                    mutations.add(candidate.id)
-                for child in ast.iter_child_nodes(candidate):
-                    collect(child)
-
-            collect(statement)
-            mutation_cache[id(statement)] = mutations
-            return mutations
-
-        constructor_by_statement = {
+        definition_by_statement = {
             id(node): (kind, binding, call_symbol_ids[id(node.value)])
             for node, kind, binding in assigned_constructors
         }
+        definition_by_statement.update(
+            {
+                id(node): ("tool", node.name, definition_symbol_ids[id(node)])
+                for node, _qualified_name in decorated_tools
+            }
+        )
         for call in (
             candidate
             for candidate in nodes
@@ -5200,7 +5270,7 @@ def scan_python(
                     if isinstance(value, ast.Call) and dotted_name(value.func).endswith(".as_tool"):
                         kind = "agent"
                         name = dotted_name(value.func).removesuffix(".as_tool")
-                    if (kind, name) in ambiguous_local_symbols:
+                    if (kind, name) in symbol_candidates:
                         references.add((kind, name))
             for kind, name in references:
                 mutations = [
@@ -5210,7 +5280,7 @@ def scan_python(
                 ]
                 if len(mutations) != 1:
                     continue
-                definition = constructor_by_statement.get(id(mutations[0]))
+                definition = definition_by_statement.get(id(mutations[0]))
                 if definition and definition[:2] == (kind, name):
                     dominating_symbol_ids[(id(call), kind, name)] = (
                         definition[2],
@@ -5236,6 +5306,7 @@ def scan_python(
         node_scopes=node_scopes,
         call_symbol_ids=call_symbol_ids,
         definition_symbol_ids=definition_symbol_ids,
+        referenced_tool_functions=referenced_tool_functions,
         registry_class_exports=registry_class_exports,
         network_helper_summaries=network_helper_summaries,
         registered_tool_functions=registered_tool_functions,

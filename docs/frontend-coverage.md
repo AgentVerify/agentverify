@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v50
+framework, wrapper, or configuration path. Counts come from schema-v51
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -33,14 +33,15 @@ Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK
 (41), Anthropic (17), and Azure OpenAI (11). These counts overlap and are lower than research-wide lexical signals
 because the engine requires supported selected files and more specific syntax.
 
-Across the selected snapshot, 8,765 agent/tool observations have module-qualified symbol IDs. Of
-3,034 relationship endpoint observations, all 1,983 identified endpoints resolve to an observed
-component (1,724 Python and 259 TypeScript). Two former false IDs on CrewAI test edges are now
+Across the selected snapshot, 8,915 agent/tool observations have module-qualified symbol IDs. Of
+3,048 relationship endpoint observations, all 2,156 identified endpoints resolve to an observed
+component (1,897 Python and 259 TypeScript). Two former false IDs on CrewAI test edges are now
 withheld because a function parameter and assignment shadow the same-named package import.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
-edges resolve exactly. In Python files with repeated identities, schema v50 records 334 same-scope,
-14 module-scope, and 13 same-block dominating-definition resolutions. Seven
-`ambiguous-repeated-binding` references remain withheld. Import-proven Python `ComputerTool`
+edges resolve exactly. Schema v51 records 303 Python lexical-single-definition and 20 same-block
+dominating-definition resolutions. Six `ambiguous-repeated-binding` references remain withheld.
+Literal Python Agent tool lists recover 150 exact callable tools—83 outside tests—with seven
+capability edges and 162 exact Agent edges. Import-proven Python `ComputerTool`
 constructors contribute 15 computer-control assets and ten exact agent links; their optional
 `on_safety_check` callback is inventoried separately from generic approval policy. All 15 are local,
 two configure the callback, and one occurs outside test paths in the pinned SDK example.
@@ -48,11 +49,11 @@ Capability/control taxonomy endpoints intentionally lack
 source-symbol IDs, so the endpoint fraction is inventory coverage rather than an accuracy or recall
 metric.
 
-The native AI BOM 1.2 resolver independently classifies all 3,034 endpoints: 1,983 by symbol ID, 511
-by exact relationship evidence, 23 by a unique display name, 38 as ambiguous, and 479 as unresolved.
+The native AI BOM 1.2 resolver independently classifies all 3,048 endpoints: 2,156 by symbol ID, 518
+by exact relationship evidence, 11 by a unique display name, 32 as ambiguous, and 331 as unresolved.
 Evidence-local resolution removes capability/control ambiguities; occurrence-qualified bindings
 resolve repeated source agent/tool observations, and conservative lexical resolution removes further
-target ambiguities. The remaining 38 ambiguous endpoints are control or tool targets without a unique
+target ambiguities. The remaining 32 ambiguous endpoints are control or tool targets without a unique
 local symbol or target location.
 
 The TypeScript graph contains 95 structure-backed agent edges: 14 agent-as-tool delegations and 81
@@ -114,7 +115,7 @@ fields as an inventory-only edge.
 
 Exact same-function Python scheme and hostname rejection can govern a direct network capability as
 `network-origin-allowlist`. The proof is statement-ordered and import-proven, and records explicit
-redirect disabling separately from unresolved DNS and redirect scope. The full schema-v50 corpus run
+redirect disabling separately from unresolved DNS and redirect scope. The full schema-v51 corpus run
 finds zero qualifying controls on the Python AV-NET001 review paths; imported validators and runtime
 egress policy remain outside this bounded observation.
 
@@ -198,7 +199,7 @@ and uses an Undici dispatcher that reconnects only to validated addresses. Calle
 non-stock global dispatchers, and `NODE_USE_ENV_PROXY` routes intentionally retain preflight-only
 behavior because the proxy resolves the destination. The edge implementation fails closed for the
 caller-selected upload URL, but three `ssrfSafeFetchWhereSupported` API-response transfers fall back
-to unguarded edge-runtime fetch. Schema v50 therefore reports nine TypeScript secure-network
+to unguarded edge-runtime fetch. Schema v51 therefore reports nine TypeScript secure-network
 controls: the prior five plus one Composio all-runtime/fail-closed edge and three runtime-conditional
 edges.
 
@@ -225,7 +226,7 @@ select the later RPC origin without a proven source-origin binding, so `AV-A2A00
 reviews. Gemini additionally records unpinned dispatcher DNS, configuration-dependent proxying, and
 the card-selected gRPC scheme. Google ADK Python provides two guarded paths: before either cached or
 per-invocation client construction, it checks every advertised RPC URL, requires HTTPS except an
-explicit loopback policy, and binds the endpoint to the network card source origin. Schema v50 thus
+explicit loopback policy, and binds the endpoint to the network card source origin. Schema v51 thus
 separates two unconstrained TypeScript paths from two same-origin-constrained Python paths; configured
 card selection is not mislabeled as model-controlled `AV-NET001` input.
 
@@ -235,7 +236,7 @@ Two checks govern both a parent-directory creation and its write/copy action. Th
 `AV-FS002` result explains the sibling-prefix weakness without duplicating `AV-FS001` at the same
 sink.
 
-Schema v50 records 14 exact MCP-forwarding control edges: one explicit allowlist, three discovery
+Schema v51 records 14 exact MCP-forwarding control edges: one explicit allowlist, three discovery
 registries, and ten fixed bindings. The fixed-binding edges split evenly between constructor-bound
 instance sources and escaping returned/registered closures. Same-operation retry closures do not
 qualify. The ten bindings and discovery registries retain their reviews; only the explicit allowlist
@@ -254,9 +255,9 @@ The Python frontend inventories 449 canonical/import/callable-aliased and proven
 one is reached through a statement-ordered local callable alias and 20 are `Path.rename`/`replace`
 methods with explicit or immutable receiver proof. That
 inventory count is intentionally broader than AV-FS001, which additionally requires an exact tool
-edge and a path derived from a tool input. Expanded registry reachability produces 30 filesystem
-reviews across ten repositories. Four CrewAI Examples sinks are specialized as AV-FS002, leaving 26
-AV-FS001 sites across nine repositories. Fixed paths remain inventory-only, and attribute `.open()`
+edge and a path derived from a tool input. Expanded registry and direct-callable reachability produces
+32 filesystem reviews across ten repositories. Four CrewAI Examples sinks are specialized as
+AV-FS002, leaving 28 AV-FS001 sites across nine repositories. Fixed paths remain inventory-only, and attribute `.open()`
 is treated as filesystem access only for a proven `pathlib.Path` receiver. The Skyvern review is
 `resolved.parent.mkdir(...)` in its registered state-save tool: the validator admits equality with an
 allowed root, so the parent mutation is not proven to remain inside that root. No pinned mutation
@@ -353,7 +354,7 @@ and `network-ssrf-policy` edge.
   plus hostname rejection before the direct request. Late, partial, continuing, rebound, shadowed,
   normalized-expression, positive-branch, and imported-validator forms remain unresolved. The
   control covers the initial origin only; redirect disabling and unresolved redirect/DNS scope are
-  preserved separately. Schema v50 observes zero such controls on the Python corpus reviews.
+  preserved separately. Schema v51 observes zero such controls on the Python corpus reviews.
 - Python secure-network helper proof requires selected local source for the validator, transport,
   adapter/backend, caller, and any defaults that affect enforcement. One structural family proves
   every redirect, disables proxies, and pins all connections; another distinguishes redirect-disabled
@@ -411,7 +412,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 340-label rule truth set and 288-label IR relationship set are curated regression suites. They
+The 342-label rule truth set and 298-label IR relationship set are curated regression suites. They
 guard known positives and negatives; they are not an unbiased accuracy estimate. A future holdout
 must be sampled separately across the categories above, externally reviewed, and kept sealed while
 rules change. Until then, precision/recall values apply only to the published seed labels.
