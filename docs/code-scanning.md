@@ -44,7 +44,9 @@ SARIF upload still runs. To enforce a policy in a separate step, add a second sc
 
 Generate the policy schema with `agentverify schema policy`. Policies can independently budget rule
 IDs, findings/reviews, and minimum severity while retaining every matched result in the report. The
-legacy `--fail-on high --fail-on-kind finding` threshold remains available for simple gates.
+repository policy may extend checked-in local organization policies; reports retain every source and
+gate digest. The legacy `--fail-on high --fail-on-kind finding` threshold remains available for
+simple gates.
 
 Keep policy enforcement separate from SARIF generation: a failing scan step otherwise prevents the
 upload step unless it uses `if: always()`. For an existing repository, `--baseline` can hide known

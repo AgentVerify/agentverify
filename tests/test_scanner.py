@@ -3808,7 +3808,7 @@ def test_native_ai_bom_is_deterministic_evidence_first_and_schema_shaped() -> No
     Draft202012Validator(schema).validate(bom)
     assert set(bom) == set(schema["required"])
     assert bom["bom_format"] == "AgentVerify AI BOM"
-    assert bom["spec_version"] == "1.1"
+    assert bom["spec_version"] == "1.2"
     assert bom["metadata"]["root"] == "."
     assert bom["metadata"]["scan_scope"] == "repository"
     assert len({asset["id"] for asset in bom["assets"]}) == len(bom["assets"])

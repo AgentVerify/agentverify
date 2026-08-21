@@ -406,4 +406,6 @@ unproven references do not inherit an arbitrary occurrence; repeated ones carry
 
 Policy evaluation is a post-baseline reporting stage, not a rule filter. Gates count matching
 fingerprints by rule, result kind, and minimum severity; findings remain in every output. JSON, text,
-AI BOM, and SARIF retain the policy file digest and per-gate decision evidence.
+AI BOM, and SARIF retain the policy file digest and per-gate decision evidence. Local `extends`
+composition loads base policies depth first, deduplicates shared files by resolved path, rejects
+cycles and duplicate gate identities, and attaches the contributing file digest to every gate.

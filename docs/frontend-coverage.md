@@ -44,7 +44,7 @@ Capability/control taxonomy endpoints intentionally lack
 source-symbol IDs, so the endpoint fraction is inventory coverage rather than an accuracy or recall
 metric.
 
-The native AI BOM 1.1 resolver independently classifies all 2,980 endpoints: 1,937 by symbol ID, 487
+The native AI BOM 1.2 resolver independently classifies all 2,980 endpoints: 1,937 by symbol ID, 487
 by exact relationship evidence, 20 by a unique display name, 37 as ambiguous, and 499 as unresolved.
 Evidence-local resolution removes capability/control ambiguities; occurrence-qualified bindings
 resolve repeated source agent/tool observations, and conservative lexical resolution removes further

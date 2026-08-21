@@ -178,13 +178,16 @@ counts that avoid false resolution claims on partial scans. Inline suppressions 
 expiry status, and CI can require an active ISO date. A distributable pre-commit manifest and local
 setup are included; publishing its remote form waits for an approved repository URL and release tag.
 Schema-backed JSON policies now provide per-rule/result-kind/severity count budgets with decision
-evidence in every report. Next add organization policy composition and signed policy provenance
-without weakening strict unknown-field validation.
+evidence in every report. Local organization policy composition resolves relative files depth first,
+rejects cycles and duplicate gate IDs, and preserves file and gate SHA-256 provenance without
+weakening strict unknown-field validation. Next add signed policy provenance with explicit trust-root
+configuration; a content hash alone must not be presented as author authenticity.
 
 ## P2 — AI BOM standards adapters
 
-The native schema-backed AI BOM 1.1 now preserves assets, relationships, evidence, governance
-summaries, risks, and ambiguous identities without information loss. Exact relationship evidence
+The native schema-backed AI BOM 1.2 now preserves assets, relationships, evidence, governance,
+composed-policy source provenance, summaries, risks, and ambiguous identities without information
+loss. Exact relationship evidence
 resolves capability/control endpoints while genuinely ambiguous agent/tool references remain explicit.
 Next design separately validated CycloneDX
 and SPDX AI-profile adapters. Map only concepts supported by the target specification and retain a

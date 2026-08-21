@@ -103,7 +103,7 @@ def test_cli_prints_bundled_bom_schema(capsys) -> None:
 
     schema = __import__("json").loads(capsys.readouterr().out)
     Draft202012Validator.check_schema(schema)
-    assert schema["title"] == "AgentVerify AI BOM 1.1"
+    assert schema["title"] == "AgentVerify AI BOM 1.2"
 
 
 def test_cli_prints_bundled_policy_schema(capsys) -> None:
@@ -115,6 +115,11 @@ def test_cli_prints_bundled_policy_schema(capsys) -> None:
     )
     Draft202012Validator.check_schema(schema)
     Draft202012Validator(schema).validate(policy)
+    Draft202012Validator(schema).validate(
+        __import__("json").loads(
+            (ROOT / "examples/repository-policy.json").read_text(encoding="utf-8")
+        )
+    )
     assert schema["title"] == "AgentVerify Policy 1"
 
 
@@ -196,6 +201,58 @@ def test_policy_is_evaluated_after_baseline(tmp_path: Path, capsys) -> None:
     assert payload["findings"] == []
     assert payload["policy_summary"]["evaluated_after_baseline"] is True
     assert payload["policy_summary"]["gates"][0]["matched_count"] == 0
+
+
+def test_composed_policy_retains_each_gate_source_and_digest(tmp_path: Path, capsys) -> None:
+    org = tmp_path / "org.json"
+    org.write_text(
+        '{"schema_version":1,"name":"org","gates":['
+        '{"id":"org-high","result_kinds":["finding"],"max_count":0}]}',
+        encoding="utf-8",
+    )
+    repository = tmp_path / "repository.json"
+    repository.write_text(
+        '{"schema_version":1,"name":"repository","extends":["org.json"],"gates":['
+        '{"id":"repository-reviews","result_kinds":["review"],"max_count":5}]}',
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "scan",
+                str(ROOT / "cases/python_dangerous"),
+                "--policy",
+                str(repository),
+                "--format",
+                "json",
+            ]
+        )
+        == 1
+    )
+    summary = __import__("json").loads(capsys.readouterr().out)["policy_summary"]
+    assert summary["name"] == "repository"
+    assert [source["source"] for source in summary["sources"]] == [
+        "org.json",
+        "repository.json",
+    ]
+    assert [gate["policy_source"] for gate in summary["gates"]] == [
+        "org.json",
+        "repository.json",
+    ]
+    assert all(len(source["sha256"]) == 64 for source in summary["sources"])
+    assert summary["gates"][0]["matched_count"] == 1
+    assert summary["gates"][0]["passed"] is False
+
+    assert (
+        cli.main(
+            ["scan", str(ROOT / "examples/safe_agent"), "--policy", str(repository)]
+        )
+        == 0
+    )
+    text = capsys.readouterr().out
+    assert "Policy sources: 2" in text
+    assert "org-high (org.json): 0 matched / 0 allowed [passed]" in text
 
 
 def test_invalid_policy_is_rejected_before_scanning(

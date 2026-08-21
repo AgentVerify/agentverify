@@ -242,7 +242,7 @@ def render_bom(ir: RepositoryIR) -> str:
     ]
     payload = {
         "bom_format": "AgentVerify AI BOM",
-        "spec_version": "1.1",
+        "spec_version": "1.2",
         "metadata": {
             "generator": {"name": "AgentVerify", "version": __version__},
             "root": ".",
@@ -370,10 +370,14 @@ def render_text(ir: RepositoryIR) -> str:
         lines.append(
             f"Policy: {ir.policy_summary['name']} [{status}; {len(ir.policy_summary['gates'])} gates]"
         )
+        composed = len(ir.policy_summary["sources"]) > 1
+        if composed:
+            lines.append(f"Policy sources: {len(ir.policy_summary['sources'])}")
         for gate in ir.policy_summary["gates"]:
             gate_status = "passed" if gate["passed"] else "failed"
+            provenance = f" ({gate['policy_source']})" if composed else ""
             lines.append(
-                f"  {gate['id']}: {gate['matched_count']} matched / "
+                f"  {gate['id']}{provenance}: {gate['matched_count']} matched / "
                 f"{gate['max_count']} allowed [{gate_status}]"
             )
     lines += ["", "AI Components:"]

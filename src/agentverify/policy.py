@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import posixpath
 from pathlib import Path
 from typing import Any
 
@@ -11,6 +12,7 @@ from .ir import RepositoryIR
 
 SEVERITY_RANK = {"info": 0, "low": 1, "medium": 2, "high": 3}
 RESULT_KINDS = {"finding", "review"}
+MAX_POLICY_DEPTH = 32
 
 
 class PolicyError(ValueError):
@@ -34,7 +36,7 @@ def _string_list(value: object, field: str, *, allowed: set[str] | None = None) 
 def normalize_policy(payload: object) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise PolicyError("policy must be a JSON object")
-    unknown = set(payload) - {"schema_version", "name", "gates"}
+    unknown = set(payload) - {"schema_version", "name", "extends", "gates"}
     if unknown:
         raise PolicyError(f"unknown policy fields: {', '.join(sorted(unknown))}")
     if type(payload.get("schema_version")) is not int or payload["schema_version"] != 1:
@@ -43,9 +45,12 @@ def normalize_policy(payload: object) -> dict[str, Any]:
     if not isinstance(name, str) or not name.strip():
         raise PolicyError("name must be a non-empty string")
     name = name.strip()
-    raw_gates = payload.get("gates")
-    if not isinstance(raw_gates, list) or not raw_gates:
+    extends = _string_list(payload["extends"], "extends") if "extends" in payload else []
+    raw_gates = payload.get("gates", [])
+    if not isinstance(raw_gates, list) or ("gates" in payload and not raw_gates):
         raise PolicyError("gates must be a non-empty array")
+    if not extends and not raw_gates:
+        raise PolicyError("policy must define extends or gates")
 
     gates = []
     gate_ids = set()
@@ -90,16 +95,85 @@ def normalize_policy(payload: object) -> dict[str, Any]:
                 "max_count": maximum,
             }
         )
-    return {"schema_version": 1, "name": name, "gates": gates}
+    normalized = {"schema_version": 1, "name": name, "gates": gates}
+    if extends:
+        normalized["extends"] = extends
+    return normalized
 
 
 def load_policy(path: Path) -> tuple[dict[str, Any], str]:
-    raw = path.read_bytes()
-    try:
-        payload = json.loads(raw.decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError) as error:
-        raise PolicyError(f"invalid JSON: {error}") from error
-    return normalize_policy(payload), hashlib.sha256(raw).hexdigest()
+    root = path.resolve()
+    display_root = root.parent
+    loaded: set[Path] = set()
+    stack: list[Path] = []
+    sources: list[dict[str, str]] = []
+    gates: list[dict[str, Any]] = []
+    gate_sources: dict[str, str] = {}
+    root_policy: dict[str, Any] | None = None
+    root_digest = ""
+
+    def display_name(policy_path: Path) -> str:
+        try:
+            return policy_path.relative_to(display_root).as_posix()
+        except ValueError:
+            return posixpath.relpath(policy_path.as_posix(), display_root.as_posix())
+
+    def visit(policy_path: Path, depth: int) -> None:
+        nonlocal root_policy, root_digest
+        resolved = policy_path.resolve()
+        source = display_name(resolved)
+        if resolved in stack:
+            cycle = " -> ".join(display_name(item) for item in [*stack, resolved])
+            raise PolicyError(f"policy composition cycle: {cycle}")
+        if resolved in loaded:
+            return
+        if depth >= MAX_POLICY_DEPTH:
+            raise PolicyError(f"policy composition exceeds {MAX_POLICY_DEPTH} levels at {source}")
+        try:
+            raw = resolved.read_bytes()
+        except OSError as error:
+            raise PolicyError(f"cannot read {source}: {error}") from error
+        try:
+            payload = json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as error:
+            raise PolicyError(f"invalid JSON in {source}: {error}") from error
+        try:
+            normalized = normalize_policy(payload)
+        except PolicyError as error:
+            raise PolicyError(f"{source}: {error}") from error
+        digest = hashlib.sha256(raw).hexdigest()
+        if resolved == root:
+            root_policy = normalized
+            root_digest = digest
+
+        stack.append(resolved)
+        for reference in normalized.get("extends", []):
+            candidate = Path(reference)
+            if candidate.is_absolute() or "://" in reference:
+                raise PolicyError(f"{source}: extends entries must be relative local paths")
+            visit(resolved.parent / candidate, depth + 1)
+        stack.pop()
+
+        for gate in normalized["gates"]:
+            gate_id = gate["id"]
+            if gate_id in gate_sources:
+                raise PolicyError(
+                    f"duplicate gate id {gate_id}: {gate_sources[gate_id]} and {source}"
+                )
+            gate_sources[gate_id] = source
+            gates.append({**gate, "_policy_source": source, "_policy_sha256": digest})
+        loaded.add(resolved)
+        sources.append({"source": source, "sha256": digest})
+
+    visit(root, 0)
+    if root_policy is None:  # pragma: no cover - the root visit either loads or raises
+        raise PolicyError("root policy was not loaded")
+    return {
+        "schema_version": 1,
+        "name": root_policy["name"],
+        "gates": gates,
+        "_sources": sources,
+    }, root_digest
 
 
 def evaluate_policy(ir: RepositoryIR, policy: dict[str, Any], *, source: str, digest: str) -> bool:
@@ -116,7 +190,9 @@ def evaluate_policy(ir: RepositoryIR, policy: dict[str, Any], *, source: str, di
         passed = len(matches) <= gate["max_count"]
         gate_results.append(
             {
-                **gate,
+                **{key: value for key, value in gate.items() if not key.startswith("_")},
+                "policy_source": gate.get("_policy_source", source),
+                "policy_sha256": gate.get("_policy_sha256", digest),
                 "matched_count": len(matches),
                 "matched_fingerprints": sorted(finding.fingerprint for finding in matches),
                 "passed": passed,
@@ -127,6 +203,7 @@ def evaluate_policy(ir: RepositoryIR, policy: dict[str, Any], *, source: str, di
         "name": policy["name"],
         "source": source,
         "sha256": digest,
+        "sources": policy.get("_sources", [{"source": source, "sha256": digest}]),
         "evaluated_after_baseline": True,
         "passed": passed,
         "gates": gate_results,

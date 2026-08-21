@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "AgentVerify AI BOM 1.1",
+  "title": "AgentVerify AI BOM 1.2",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -14,7 +14,7 @@
   ],
   "properties": {
     "bom_format": {"const": "AgentVerify AI BOM"},
-    "spec_version": {"const": "1.1"},
+    "spec_version": {"const": "1.2"},
     "metadata": {
       "type": "object",
       "additionalProperties": false,
@@ -234,6 +234,7 @@
             "name",
             "source",
             "sha256",
+            "sources",
             "evaluated_after_baseline",
             "passed",
             "gates"
@@ -242,6 +243,12 @@
             "name": {"type": "string"},
             "source": {"type": "string"},
             "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+            "sources": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {"$ref": "#/$defs/policySource"}
+            },
             "evaluated_after_baseline": {"const": true},
             "passed": {"type": "boolean"},
             "gates": {
@@ -253,6 +260,15 @@
         }
       ]
     },
+    "policySource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "sha256"],
+      "properties": {
+        "source": {"type": "string"},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
     "policyGateSummary": {
       "type": "object",
       "additionalProperties": false,
@@ -262,6 +278,8 @@
         "result_kinds",
         "min_severity",
         "max_count",
+        "policy_source",
+        "policy_sha256",
         "matched_count",
         "matched_fingerprints",
         "passed"
@@ -275,6 +293,8 @@
         },
         "min_severity": {"enum": ["info", "low", "medium", "high"]},
         "max_count": {"type": "integer", "minimum": 0},
+        "policy_source": {"type": "string"},
+        "policy_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         "matched_count": {"type": "integer", "minimum": 0},
         "matched_fingerprints": {
           "type": "array",

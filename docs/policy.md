@@ -51,6 +51,38 @@ output. Each report includes the policy name, source filename, SHA-256 digest, o
 filters, matched counts, and matching fingerprints. Unknown fields, duplicate gate IDs, invalid
 enumerations, and negative budgets are rejected rather than ignored.
 
+## Organization policy composition
+
+A repository policy can extend one or more local organization or team policies. References are
+resolved relative to the policy that declares them, so a checked-in hierarchy remains portable:
+
+```json
+{
+  "schema_version": 1,
+  "name": "repository-release",
+  "extends": ["org-policy.json"],
+  "gates": [
+    {
+      "id": "repository-mcp-budget",
+      "rules": ["AV-MCP002"],
+      "result_kinds": ["review"],
+      "max_count": 2
+    }
+  ]
+}
+```
+
+[`repository-policy.json`](../examples/repository-policy.json) and
+[`org-policy.json`](../examples/org-policy.json) are a runnable pair. Base policies are composed
+depth first in listed order, followed by the declaring policy's gates. A policy may contain only
+`extends`; each resolved file contributes its gates once. Gate IDs must be unique across the entire
+composition. Cycles, compositions deeper than 32 files, absolute paths, URL references, unreadable
+files, and malformed included policies fail before scanning.
+
+Reports retain the root policy's source and digest, a source/digest entry for every composed file,
+and the source/digest that contributed each gate. These hashes make the evaluated local inputs
+auditable; they are not signatures and do not prove who authored a policy.
+
 ## Baselines and partial scans
 
 Policy evaluation occurs after `--baseline`, so a gate applies to new results while unchanged known

@@ -147,7 +147,7 @@ constructor. It also records 23 repeated-binding targets still withheld because 
 multiple definitions. The two unmatched IDs are explicit Python re-export targets; capability,
 control, and taxonomy endpoints intentionally remain evidence observations.
 
-Schema-v44 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
+Schema-v44 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
 resolves 1,937 endpoints by symbol ID, 487 by exact evidence location, and 20 by a unique display
 name; 37 remain ambiguous and 499 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional

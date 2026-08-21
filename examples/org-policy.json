@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "name": "organization-defaults",
+  "gates": [
+    {
+      "id": "no-high-findings",
+      "result_kinds": ["finding"],
+      "min_severity": "high",
+      "max_count": 0
+    }
+  ]
+}

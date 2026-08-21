@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "name": "repository-release",
+  "extends": ["org-policy.json"],
+  "gates": [
+    {
+      "id": "no-approval-bypass-reviews",
+      "rules": ["AV-APPROVAL001", "AV-APPROVAL002"],
+      "result_kinds": ["review"],
+      "min_severity": "high",
+      "max_count": 0
+    }
+  ]
+}
