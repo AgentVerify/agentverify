@@ -172,6 +172,13 @@ shorthand at `safeHttp.axios.request`, and no caller proxy or agent override. Th
 connection-time address filtering and `AP_SSRF_ALLOW_LIST` IP/CIDR exceptions, but retains
 environment-proxy dependence because a proxy can become the directly filtered connection target.
 
+A sixth TypeScript pass resolves Composio's conditional `#ssrf_guard` import only when its package
+map selects the Node guard by default and the edge-specific implementation for edge runtimes. The
+Node helper must validate every DNS answer and manual redirect, then pass those addresses to an
+Undici dispatcher's lookup. Caller dispatchers, a non-stock global dispatcher, and environment-proxy
+mode are retained as preflight-only route residuals. The edge helper's two exports stay distinct:
+`ssrfSafeFetch` fails closed, while `ssrfSafeFetchWhereSupported` deliberately uses unguarded fetch.
+
 The A2A endpoint-provenance passes model a different authority transition from tool-input SSRF.
 They create an `a2a-rpc` capability at SDK client construction when a network-resolved AgentCard can
 select the later RPC endpoint. The ADK JS proof requires an exact named import of its resolver and a

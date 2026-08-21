@@ -64,6 +64,11 @@ validation boundary to the proxy connection. The IR must preserve `allowAbsolute
 override ordering, configured IP/CIDR exceptions, and proxy dependence instead of flattening the
 client to “safe” or “unsafe.”
 
+Conditional package exports can change the security contract by runtime. A Node implementation may
+validate DNS and pin an Undici dispatcher while an edge implementation either fails closed or falls
+back to raw fetch. Analysis must resolve the exact imported export and runtime branch; the existence
+of a strong Node helper cannot govern an intentionally unguarded edge fallback.
+
 ## A2A card → negotiated RPC endpoint
 
 Remote-agent configuration often names an AgentCard location, not the final RPC origin. The card can

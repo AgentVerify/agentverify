@@ -45,6 +45,9 @@ never imported or executed.
 - `typescript_activepieces_safe_http`: Activepieces' imported `safeHttp.axios` client composes both
   request-filtering agents after caller configuration, a pinned filtering-library version, and MCP
   transport propagation; import, ordering, manifest, and caller-override mutations withhold the edge.
+- `typescript_composio_ssrf_safe_fetch`: Composio's imported Undici-backed guard validates every
+  redirect and pins direct connections while retaining configured-route residuals; edge-runtime
+  fail-closed and intentionally unguarded fallback exports remain distinct.
 - `typescript_a2a_card_endpoint`: ADK JS and Gemini compositions preserve remotely supplied
   AgentCard authority at SDK client construction; fixed/local cards, wrong imports, and unproven
   transports stay negative.

@@ -39,6 +39,13 @@
     "google-gemini/gemini-cli": [
       "packages/core/src/agents/a2a-client-manager.ts"
     ],
+    "composiohq/composio": [
+      "ts/packages/core/src/models/RemoteFile.ts",
+      "ts/packages/core/src/models/ToolRouterSessionFileMount.ts",
+      "ts/packages/core/src/utils/pinnedDispatcher.node.ts",
+      "ts/packages/core/src/utils/ssrfGuard.node.ts",
+      "ts/packages/core/src/utils/ssrfGuard.workerd.ts"
+    ],
     "activepieces/activepieces": [
       "packages/server/api/src/app/agents/mcp-tool-validator.ts",
       "packages/server/utils/src/mcp-transport.ts",

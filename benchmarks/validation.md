@@ -81,6 +81,9 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 - `cases/typescript_activepieces_safe_http`: exact Activepieces imports compose a manifest-pinned
   filtering Axios client with the MCP transport; private-address, agent-ordering, caller-proxy,
   manifest, and import mutations withhold the policy.
+- `cases/typescript_composio_ssrf_safe_fetch`: conditional package imports preserve Node Undici
+  pinning, configured-route residuals, edge fail-closed behavior, and the distinct intentionally
+  unguarded `WhereSupported` fallback; runtime-map and transport mutations withhold the policy.
 - `cases/typescript_a2a_card_endpoint`: two remote-card flows reach `ClientFactory`: ADK JS through
   an import-proven resolver and Gemini through an Undici agent/proxy dispatcher. Fixed cards, fixed
   resolver inputs, wrong imports, and unproven dispatchers withhold the corresponding edge.
@@ -91,8 +94,8 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 ## Full-corpus engine benchmark
 
 The 2026-08-22 default scan covered 70 source-bearing repositories plus one docs-only upstream
-snapshot. It parsed 10,751 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,481 relationships, and completed in 144.13 seconds on the development machine. Three parse
+snapshot. It parsed 10,754 selected Python/TypeScript/JavaScript files plus 155 configuration files,
+resolved 1,485 relationships, and completed in 148.03 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -100,13 +103,13 @@ so the benchmark records zero suppressed findings.
 The locked collector prioritizes manifests, production SSRF/URL-safety sources, and then general
 security/agent/tool/MCP sources within the 220-file cap. It adds at most 20 local source files:
 versioned audited evidence hints plus Python imports reached from MCP forwarding or source-proven
-URL-security call sites, all charged against the same cap. This refresh materialized 156 dependency files across 16
+URL-security call sites, all charged against the same cap. This refresh materialized 159 dependency files across 17
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v40 carries both the 156-file total and the
-16-repository coverage.
+dependency count per repository; engine schema v41 carries both the 159-file total and the
+17-repository coverage.
 
-Engine benchmark schema v40 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v41 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It also publishes Python and TypeScript initial-origin control coverage
 plus source-proven Python and TypeScript secure transports, with redirect, DNS, proxy, configured
@@ -115,32 +118,34 @@ excludes arbitrary agent/tool display names from the summary. The resulting
 framework/provider/protocol/capability coverage and unsupported syntax are published in
 `docs/frontend-coverage.md`; presence counts are discovery observations, not recall measurements.
 
-Schema v40 retains A2A endpoint provenance as a separate authority class: four exact client-construction
+Schema v41 retains A2A endpoint provenance as a separate authority class: four exact client-construction
 paths comprise two unconstrained remote-card-selected TypeScript origins and two same-origin-
 constrained ADK Python paths. The guarded paths validate every advertised interface; the Gemini path
 also records its Undici agent/proxy transport. These metrics do not count configured card URLs as
 model-controlled AV-NET001 origins.
 
-Schema v40 also publishes immutable same-file Axios-instance metrics and the fifth TypeScript
+Schema v41 also publishes immutable same-file Axios-instance metrics and the sixth TypeScript
 secure-network composition. The corpus-level generic instance counters are zero; those syntax paths
 are fixture-validated. The selected Activepieces path contributes one imported-client capability and
-one address-filtering control with configured allowlist and environment-proxy residual metrics.
+one address-filtering control with configured allowlist and environment-proxy residual metrics. Four
+Composio edges separately count configured-route pinning residuals, one edge-runtime fail-closed path,
+and three edge-runtime unguarded fallbacks.
 
-The benchmark now also measures identity coverage: 8,743 agent/tool component observations carry
-module-qualified IDs. Of 2,962 relationship endpoints, 1,936 carry symbol IDs and 1,934 resolve to an
-observed component (1,677 Python and 257 TypeScript). Schema v40 records 325 same-scope and 14
+The benchmark now also measures identity coverage: 8,744 agent/tool component observations carry
+module-qualified IDs. Of 2,970 relationship endpoints, 1,936 carry symbol IDs and 1,934 resolve to an
+observed component (1,677 Python and 257 TypeScript). Schema v41 records 325 same-scope and 14
 module-scope targets resolved from a single direct definition that appears before the Agent
 constructor. It also records 23 repeated-binding targets still withheld because the scope contains
 multiple definitions. The two unmatched IDs are explicit Python re-export targets; capability,
 control, and taxonomy endpoints intentionally remain evidence observations.
 
-Schema-v40 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
-resolves 1,934 endpoints by symbol ID, 477 by exact evidence location, and 19 by a unique display
-name; 33 remain ambiguous and 499 unresolved. Before evidence-local and occurrence-qualified
+Schema-v41 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
+resolves 1,934 endpoints by symbol ID, 481 by exact evidence location, and 19 by a unique display
+name; 37 remain ambiguous and 499 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
 and mark unsafe targets explicitly unresolved. Conservative lexical resolution removes further target
-ambiguities. The 33 remaining ambiguities are control or tool targets without a unique local definition, so the
+ambiguities. The 37 remaining ambiguities are control or tool targets without a unique local definition, so the
 resolver does not use a nearby source location to invent an identity.
 
 The Python frontend resolves unambiguous absolute imports rooted at the repository, `src/`, or
@@ -635,6 +640,16 @@ local and pinned paths plus raw Axios; wrong imports, missing manifest proof, un
 and caller proxy/agent overrides withhold the edge. The generic same-file Axios-instance syntax is
 fixture-validated; the selected corpus contains no matching real same-file instance call.
 
+Schema v41 adds four Composio TypeScript paths through the package-conditional `#ssrf_guard`
+import. The Node/default helper validates every DNS answer and bounded manual redirect, then supplies
+the validated addresses through an Undici dispatcher's lookup. Caller dispatchers, non-stock global
+dispatchers, and `NODE_USE_ENV_PROXY` routing stand down from pinning and retain preflight-only
+validation. The edge implementation of `ssrfSafeFetch` fails closed for the caller-selected session
+upload URL; the separate `ssrfSafeFetchWhereSupported` export uses raw edge fetch for three
+API-response transfer paths. Four positive and one negative IR labels cover local and pinned paths
+plus raw fetch. Mutations of the package map, manual redirect, dispatcher pin, import, or edge
+fail-closed branch withhold all four edges.
+
 Pinned negatives include a [fixed Devpost origin](https://github.com/microsoft/ai-agents-for-beginners/blob/01777b05e8afeba6bf5a6dbe74cc2293372d3693/11-agentic-protocols/code_samples/github-mcp/app.py#L118),
 the MCP SDK's [fixed weather API](https://github.com/modelcontextprotocol/typescript-sdk/blob/3924de99df834302d89f5997a1b64ca268282284/examples/guides/get-started/firstServer.examples.ts#L20-L40),
 Vercel's [literal PDF URL](https://github.com/vercel/ai/blob/f607a129c0298870038b398dbcba57ff041114f6/examples/ai-e2e-next/tool/fetch-pdf-tool.ts#L5-L12),
@@ -671,13 +686,13 @@ and a literal `privileged=True` keyword.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 328 exact labels across all ten enabled rules: 180 positives and 148
+`benchmarks/truthset.json` contains 330 exact labels across all ten enabled rules: 180 positives and 150
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
-Compose/Kubernetes/Docker SDK settings. All 328 currently pass; each rule's seed precision and recall
+Compose/Kubernetes/Docker SDK settings. All 330 currently pass; each rule's seed precision and recall
 are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified source
 text at the exact pinned line, preventing a missing or drifting location from passing silently.
 
@@ -743,7 +758,8 @@ cover local and pinned preflight-only paths plus an ordinary same-named helper. 
 labels cover two local and two pinned unconstrained TypeScript paths, four guarded ADK Python paths,
 and a trusted local-card negative. Five Axios-instance labels cover four direct/request/base-policy
 edges and one shadowed-client negative. Three Activepieces filtering-client labels cover the local
-and pinned governed paths plus raw Axios. All 241 IR
+and pinned governed paths plus raw Axios. Five Composio conditional-runtime labels cover two local
+and two pinned governed paths plus raw fetch. All 246 IR
 labels pass:
 three approval positives/four negatives,
 two audit positives/two negatives, two import positives/one negative, three TypeScript graph
@@ -766,4 +782,4 @@ provenance positives/one negative, plus two TypeScript
 configurable-composition positives/one negative, plus two Flowise request-object positives/one
 negative, two Flowise `secureFetch` positives/one negative, two Google ADK fetch positives/one
 negative, four Axios-instance positives/one negative, and two Activepieces filtering-client
-positives/one negative.
+positives/one negative, plus four Composio conditional-runtime positives/one negative.

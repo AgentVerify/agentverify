@@ -2068,6 +2068,149 @@ def test_typescript_activepieces_imported_axios_control_preserves_proxy_residual
         )
 
 
+def test_typescript_composio_safe_fetch_preserves_runtime_and_route_residuals(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/typescript_composio_ssrf_safe_fetch"
+    ir = scan_repository(root)
+    edges = [
+        edge
+        for edge in ir.relationships
+        if edge.attributes.get("analysis")
+        == "typescript-imported-undici-ssrf-safe-fetch"
+    ]
+    assert [
+        (
+            edge.evidence.path,
+            edge.evidence.line,
+            edge.attributes["call_helper"],
+            edge.attributes["enforcement_mode"],
+            edge.attributes["edge_runtime_scope"],
+        )
+        for edge in edges
+    ] == [
+        (
+            "RemoteFile.ts",
+            7,
+            "ssrfSafeFetchWhereSupported",
+            "node-filtered-edge-unenforced",
+            "unguarded-fetch",
+        ),
+        (
+            "RemoteFile.ts",
+            11,
+            "ssrfSafeFetchWhereSupported",
+            "node-filtered-edge-unenforced",
+            "unguarded-fetch",
+        ),
+        (
+            "ToolRouterSessionFileMount.ts",
+            5,
+            "ssrfSafeFetch",
+            "node-filtered-edge-fail-closed",
+            "fail-closed",
+        ),
+        (
+            "ToolRouterSessionFileMount.ts",
+            10,
+            "ssrfSafeFetchWhereSupported",
+            "node-filtered-edge-unenforced",
+            "unguarded-fetch",
+        ),
+    ]
+    assert {edge.attributes["dns_scope"] for edge in edges} == {
+        "connection-pinned-unless-configured-route"
+    }
+    assert {edge.attributes["proxy_scope"] for edge in edges} == {
+        "caller-global-or-environment-dependent"
+    }
+    assert {edge.attributes["filter_library_version"] for edge in edges} == {
+        "^7.29.0"
+    }
+    capabilities = [
+        item
+        for item in ir.components
+        if item.kind == "capability"
+        and item.attributes.get("summary") == "imported-undici-ssrf-safe-fetch"
+    ]
+    assert [
+        (item.evidence.path, item.evidence.line, item.attributes["dynamic_origin"])
+        for item in capabilities
+    ] == [
+        ("RemoteFile.ts", 7, False),
+        ("RemoteFile.ts", 11, False),
+        ("ToolRouterSessionFileMount.ts", 5, True),
+        ("ToolRouterSessionFileMount.ts", 10, False),
+    ]
+
+    without_manifest = scan_repository(
+        root,
+        selected_paths=[
+            "RemoteFile.ts",
+            "ToolRouterSessionFileMount.ts",
+            "pinnedDispatcher.node.ts",
+            "ssrfGuard.node.ts",
+            "ssrfGuard.workerd.ts",
+        ],
+    )
+    assert not any(
+        edge.attributes.get("analysis")
+        == "typescript-imported-undici-ssrf-safe-fetch"
+        for edge in without_manifest.relationships
+    )
+
+    for name, relative, before, after in (
+        (
+            "automatic-redirect",
+            "ssrfGuard.node.ts",
+            "{ ...init, redirect: 'manual', dispatcher }",
+            "{ ...init, dispatcher }",
+        ),
+        (
+            "metadata-range-removed",
+            "ssrfGuard.node.ts",
+            "['169.254.0.0', 16]",
+            "['11.0.0.0', 8]",
+        ),
+        (
+            "unpinned-dispatcher",
+            "pinnedDispatcher.node.ts",
+            "addresses.map(address => ({ address, family: isIP(address) }))",
+            "[{ address: _hostname, family: 0 }]",
+        ),
+        (
+            "edge-does-not-fail-closed",
+            "ssrfGuard.workerd.ts",
+            "throw new ComposioBlockedInternalUrlError('unsupported', { cause: rawUrl });",
+            "return fetch(rawUrl);",
+        ),
+        (
+            "wrong-guard-import",
+            "ToolRouterSessionFileMount.ts",
+            "from '#ssrf_guard'",
+            "from './raw'",
+        ),
+        (
+            "wrong-runtime-map",
+            "package.json",
+            '"workerd": "./dist/utils/ssrfGuard.workerd.mjs"',
+            '"workerd": "./dist/utils/ssrfGuard.node.mjs"',
+        ),
+    ):
+        incomplete = tmp_path / name
+        shutil.copytree(root, incomplete)
+        source_path = incomplete / relative
+        source = source_path.read_text(encoding="utf-8")
+        assert before in source
+        source_path.write_text(source.replace(before, after), encoding="utf-8")
+        incomplete_ir = scan_repository(incomplete)
+        assert not any(
+            edge.attributes.get("analysis")
+            == "typescript-imported-undici-ssrf-safe-fetch"
+            for edge in incomplete_ir.relationships
+        )
+
+
 def test_typescript_a2a_remote_cards_preserve_endpoint_authority_and_transport(
     tmp_path: Path,
 ) -> None:

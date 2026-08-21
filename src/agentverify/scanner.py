@@ -11867,6 +11867,358 @@ def add_typescript_activepieces_safe_http_composition(
     )
 
 
+def add_typescript_composio_ssrf_safe_fetch_composition(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve Composio's conditional-runtime SSRF-safe fetch composition."""
+    sources: dict[str, tuple[str, str]] = {}
+    manifests: dict[str, dict[str, object]] = {}
+    for path in paths:
+        if not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        if path.name == "package.json":
+            try:
+                manifests[relative] = json.loads(path.read_text(encoding="utf-8-sig"))
+            except (OSError, json.JSONDecodeError):
+                continue
+        elif path.suffix.lower() in {".ts", ".tsx", ".js", ".jsx"}:
+            try:
+                text = path.read_text(encoding="utf-8-sig", errors="ignore")
+            except OSError:
+                continue
+            sources[relative] = (text, typescript_code_mask(text))
+
+    def unique_source(*markers: str) -> tuple[str, str, str] | None:
+        matches = [
+            (relative, text, code)
+            for relative, (text, code) in sources.items()
+            if all(marker in code for marker in markers)
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    node_source = unique_source(
+        "export const assertSafeFetchTarget = async",
+        "export const ssrfSafeFetch = async",
+        "const envProxyApplies =",
+        "hasCustomGlobalDispatcher()",
+        "createPinnedDispatcher(addresses)",
+    )
+    edge_source = unique_source(
+        "export const ssrfSafeFetch = async",
+        "throw new ComposioBlockedInternalUrlError(",
+        "export const ssrfSafeFetchWhereSupported = async",
+        "fetch(rawUrl, init)",
+    )
+    dispatcher_source = unique_source(
+        "export const createPinnedDispatcher = async",
+        "const loadUndici =",
+        "new Agent({",
+        "export const hasCustomGlobalDispatcher =",
+    )
+    mount_source = unique_source(
+        "export class ToolRouterSessionFilesMount",
+        "ssrfSafeFetch(input)",
+        "ssrfSafeFetchWhereSupported(",
+        "upload_url: string",
+    )
+    remote_source = unique_source(
+        "export class RemoteFile",
+        "ssrfSafeFetchWhereSupported(this.downloadUrl)",
+        "async buffer()",
+        "async blob()",
+    )
+    if None in {
+        node_source,
+        edge_source,
+        dispatcher_source,
+        mount_source,
+        remote_source,
+    }:
+        return
+    assert node_source is not None
+    assert edge_source is not None
+    assert dispatcher_source is not None
+    assert mount_source is not None
+    assert remote_source is not None
+    node_path, node_text, node_code = node_source
+    edge_path, _edge_text, edge_code = edge_source
+    dispatcher_path, dispatcher_text, dispatcher_code = dispatcher_source
+    mount_path, mount_text, _mount_code = mount_source
+    remote_path, remote_text, _remote_code = remote_source
+
+    package_matches: list[tuple[int, str, dict[str, object]]] = []
+    node_source_path = Path(node_path)
+    for manifest_path, manifest in manifests.items():
+        relative_manifest = Path(manifest_path)
+        imports = manifest.get("imports", {})
+        guard_import = imports.get("#ssrf_guard", {}) if isinstance(imports, dict) else {}
+        dependencies = manifest.get("dependencies", {})
+        if not isinstance(guard_import, dict) or not isinstance(dependencies, dict):
+            continue
+        if (
+            guard_import.get("workerd") == "./dist/utils/ssrfGuard.workerd.mjs"
+            and guard_import.get("edge-light") == "./dist/utils/ssrfGuard.workerd.mjs"
+            and guard_import.get("node") == "./dist/utils/ssrfGuard.node.mjs"
+            and guard_import.get("default") == "./dist/utils/ssrfGuard.node.mjs"
+            and dependencies.get("undici") == "^7.29.0"
+            and relative_manifest.parent in node_source_path.parents
+        ):
+            package_matches.append(
+                (len(relative_manifest.parent.parts), manifest_path, manifest)
+            )
+    if not package_matches:
+        return
+    deepest = max(depth for depth, _, _ in package_matches)
+    selected_manifests = [
+        (path, manifest)
+        for depth, path, manifest in package_matches
+        if depth == deepest
+    ]
+    if len(selected_manifests) != 1:
+        return
+    manifest_path, _ = selected_manifests[0]
+
+    mount_imports = typescript_named_import_bindings(mount_text, "#ssrf_guard")
+    remote_imports = typescript_named_import_bindings(remote_text, "#ssrf_guard")
+    if not (
+        mount_imports.get("ssrfSafeFetch") == "ssrfSafeFetch"
+        and mount_imports.get("ssrfSafeFetchWhereSupported")
+        == "ssrfSafeFetchWhereSupported"
+        and remote_imports.get("ssrfSafeFetchWhereSupported")
+        == "ssrfSafeFetchWhereSupported"
+    ):
+        return
+
+    node_checks = (
+        all(
+            marker in node_text
+            for marker in (
+                "['10.0.0.0', 8]",
+                "['127.0.0.0', 8]",
+                "['169.254.0.0', 16]",
+                "['172.16.0.0', 12]",
+                "['192.168.0.0', 16]",
+                "h[5] === 0xffff",
+                "h[0] === 0x0064 && h[1] === 0xff9b",
+                "(h[0] & 0xfe00) === 0xfc00",
+                "(h[0] & 0xffc0) === 0xfe80",
+                "(h[0] & 0xff00) === 0xff00",
+                "process.env.NODE_USE_ENV_PROXY",
+                "process.env.NO_PROXY ?? process.env.no_proxy",
+                "'HTTPS_PROXY' : 'HTTP_PROXY'",
+            )
+        ),
+        re.search(
+            r"export\s+const\s+isBlockedIp\s*=[\s\S]{0,300}"
+            r"family\s*===\s*4[\s\S]{0,150}isBlockedIpv4Long"
+            r"[\s\S]{0,200}family\s*===\s*6[\s\S]{0,150}isBlockedIpv6",
+            node_code,
+        ),
+        re.search(
+            r"lookup\s*\(\s*host\s*,\s*\{\s*all\s*:\s*true\s*,"
+            r"\s*verbatim\s*:\s*true\s*\}\s*\)",
+            node_code,
+        ),
+        re.search(
+            r"for\s*\(\s*const\s*\{\s*address\s*\}\s*of\s*resolved\s*\)"
+            r"\s*\{[\s\S]{0,200}if\s*\(\s*isBlockedIp\s*\(\s*address\s*\)",
+            node_code,
+        ),
+        re.search(
+            r"url\.protocol\s*!==\s*['\"]http:['\"]\s*&&\s*"
+            r"url\.protocol\s*!==\s*['\"]https:['\"]",
+            node_text,
+        ),
+        re.search(
+            r"for\s*\(\s*let\s+hop\s*=\s*0\s*;\s*hop\s*<=\s*maxRedirects",
+            node_code,
+        ),
+        re.search(
+            r"callerDispatcher\s*!==\s*undefined\s*\|\|[\s\S]{0,200}"
+            r"envProxyApplies\s*\([\s\S]{0,100}\)\s*\|\|[\s\S]{0,100}"
+            r"hasCustomGlobalDispatcher\s*\(\s*\)",
+            node_code,
+        ),
+        re.search(
+            r"respectConfiguredRoute\s*\?\s*undefined\s*:\s*await\s+"
+            r"createPinnedDispatcher\s*\(\s*addresses\s*\)",
+            node_code,
+        ),
+        re.search(
+            r"\{\s*\.\.\.init\s*,\s*redirect\s*:\s*['\"]manual['\"]\s*,"
+            r"\s*dispatcher\s*\}",
+            node_text,
+        ),
+        re.search(
+            r"currentUrl\s*=\s*new\s+URL\s*\(\s*response\.headers\.get"
+            r"\s*\(\s*['\"]location['\"]\s*\)!?\s*,\s*currentUrl\s*\)"
+            r"\.toString\s*\(\s*\)",
+            node_text,
+        ),
+    )
+    dispatcher_checks = (
+        "import type { Agent } from 'undici'" in dispatcher_text,
+        "import('undici')" in dispatcher_text,
+        "Symbol.for('undici.globalDispatcher.1')" in dispatcher_text,
+        "Symbol.for('undici.globalDispatcher.2')" in dispatcher_text,
+        bool(
+            re.search(
+                r"return\s+new\s+Agent\s*\(\s*\{[\s\S]{0,1200}"
+                r"connect\s*:\s*\{[\s\S]{0,500}lookup\s*:\s*"
+                r"\([^)]*callback[^)]*\)\s*=>[\s\S]{0,900}addresses\.map",
+                dispatcher_code,
+            )
+        ),
+        "dispatcher.constructor?.name !== 'Agent'" in dispatcher_text,
+    )
+    edge_checks = (
+        bool(
+            re.search(
+                r"export\s+const\s+ssrfSafeFetch\s*=\s*async[\s\S]{0,300}"
+                r"throw\s+new\s+ComposioBlockedInternalUrlError",
+                edge_code,
+            )
+        ),
+        bool(
+            re.search(
+                r"export\s+const\s+ssrfSafeFetchWhereSupported\s*=\s*async"
+                r"[\s\S]{0,300}=>\s*fetch\s*\(\s*rawUrl\s*,\s*init\s*\)",
+                edge_code,
+            )
+        ),
+    )
+    if not all((*node_checks, *dispatcher_checks, *edge_checks)):
+        return
+
+    call_specs: list[tuple[str, str, re.Pattern[str], bool, str]] = [
+        (
+            mount_path,
+            mount_text,
+            re.compile(r"(?<![\w$.])ssrfSafeFetch\s*\(\s*input\s*\)"),
+            True,
+            "caller-supplied-url",
+        ),
+        (
+            mount_path,
+            mount_text,
+            re.compile(
+                r"(?<![\w$.])ssrfSafeFetchWhereSupported\s*\(\s*"
+                r"\(\s*uploadURLData\s+as\s+\{\s*upload_url\s*:\s*string\s*\}\s*\)"
+                r"\.upload_url\s*,"
+            ),
+            False,
+            "remote-api-response",
+        ),
+        (
+            remote_path,
+            remote_text,
+            re.compile(
+                r"(?<![\w$.])ssrfSafeFetchWhereSupported\s*\(\s*this\.downloadUrl\s*\)"
+            ),
+            False,
+            "remote-api-response",
+        ),
+    ]
+    calls: list[tuple[str, str, re.Match[str], bool, str, str]] = []
+    for call_path, call_text, pattern, dynamic_origin, authority in call_specs:
+        matches = list(pattern.finditer(typescript_code_mask(call_text)))
+        expected = 2 if call_path == remote_path else 1
+        if len(matches) != expected:
+            return
+        helper = (
+            "ssrfSafeFetch"
+            if "WhereSupported" not in pattern.pattern
+            else "ssrfSafeFetchWhereSupported"
+        )
+        calls.extend(
+            (call_path, call_text, match, dynamic_origin, authority, helper)
+            for match in matches
+        )
+
+    control_match = re.search(r"export\s+const\s+ssrfSafeFetch\s*=", node_code)
+    if control_match is None:
+        return
+    control_line = line_at(node_text, control_match.start())
+    control_evidence = Evidence(
+        node_path,
+        control_line,
+        excerpt(node_text.splitlines(), control_line),
+    )
+    for call_path, call_text, match, dynamic_origin, authority, helper in calls:
+        line = line_at(call_text, match.start())
+        evidence = Evidence(call_path, line, excerpt(call_text.splitlines(), line))
+        edge_runtime = "fail-closed" if helper == "ssrfSafeFetch" else "unguarded-fetch"
+        attributes = {
+            "scope": source_scope(call_path),
+            "policy_effect": "filters-public-addresses-with-configured-route-residual",
+            "frontend": "typescript",
+            "analysis": "typescript-imported-undici-ssrf-safe-fetch",
+            "initial_origin_scope": "http-https-public-resolution",
+            "redirect_scope": "each-hop-validated",
+            "dns_scope": "connection-pinned-unless-configured-route",
+            "proxy_scope": "caller-global-or-environment-dependent",
+            "transport_scope": "undici-pinned-dispatcher-unless-configured-route",
+            "enforcement_default": (
+                "enabled" if helper == "ssrfSafeFetch" else "runtime-conditional"
+            ),
+            "enforcement_mode": (
+                "node-filtered-edge-fail-closed"
+                if helper == "ssrfSafeFetch"
+                else "node-filtered-edge-unenforced"
+            ),
+            "escape_hatch": "none",
+            "configured_route_residual": True,
+            "edge_runtime_scope": edge_runtime,
+            "ipv4_mapped_ipv6": "normalized",
+            "filter_library": "undici",
+            "filter_library_version": "^7.29.0",
+            "manifest_path": manifest_path,
+            "helper_path": node_path,
+            "helper_line": control_line,
+            "dispatcher_path": dispatcher_path,
+            "edge_helper_path": edge_path,
+            "call_helper": helper,
+        }
+        ir.add_component(
+            Component(
+                "capability",
+                "network",
+                evidence,
+                {
+                    "scope": source_scope(call_path),
+                    "api": helper,
+                    "dynamic_origin": dynamic_origin,
+                    "origin_authority": authority,
+                    "summary": "imported-undici-ssrf-safe-fetch",
+                    "runtime_scope": (
+                        "node-filtered-edge-fail-closed"
+                        if helper == "ssrfSafeFetch"
+                        else "node-filtered-edge-unenforced"
+                    ),
+                    "helper_path": node_path,
+                    "helper_line": control_line,
+                },
+            )
+        )
+        ir.add_component(
+            Component("control", "network-ssrf-policy", control_evidence, attributes)
+        )
+        ir.add_relationship(
+            Relationship(
+                "capability",
+                "network",
+                "governed-by",
+                "control",
+                "network-ssrf-policy",
+                evidence,
+                attributes,
+            )
+        )
+
+
 def add_typescript_a2a_card_endpoint_composition(
     ir: RepositoryIR,
     root: Path,
@@ -12390,6 +12742,7 @@ def scan_repository(
     add_typescript_flowise_secure_fetch_composition(ir, root, registry_paths)
     add_typescript_google_adk_load_web_page_composition(ir, root, registry_paths)
     add_typescript_activepieces_safe_http_composition(ir, root, registry_paths)
+    add_typescript_composio_ssrf_safe_fetch_composition(ir, root, registry_paths)
     add_typescript_a2a_card_endpoint_composition(ir, root, registry_paths)
     add_python_adk_a2a_card_endpoint_policy(ir, root, registry_paths)
     propagate_python_class_network_helpers(

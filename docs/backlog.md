@@ -103,11 +103,11 @@ unresolved. Exact module-level `urllib.request.urlopen` imports and aliases now 
 shadowing and module rebinding invalidate the API proof.
 Exact same-function Python `urlparse`/`urlsplit` guards now add a control edge only when immutable
 tool-origin data is rejected outside a static scheme and hostname set before the request. Redirect
-disabling is recorded separately; DNS and other redirect states stay unresolved. Schema v40 finds
+disabling is recorded separately; DNS and other redirect states stay unresolved. Schema v41 finds
 zero such controls on the Python corpus reviews, making the absence visible without calling every review
 SSRF. A same-file TypeScript validator summary now resolves MCP Servers' scheme allowlist and
 environment-backed exact/subdomain predicate, while preserving its empty hostname default as open.
-Schema v40 separately proves two CrewAI loader calls through a locally defined `safe_get` transport:
+Schema v41 separately proves two CrewAI loader calls through a locally defined `safe_get` transport:
 both validate every redirect hop, pin the connected peer after DNS checks, disable proxies, and are
 enabled by default. The `CREWAI_TOOLS_ALLOW_UNSAFE_PATHS` opt-out and
 `CREWAI_TOOLS_FORCE_SAFE_PATHS` override remain explicit governance state. Next resolve normalized
@@ -130,8 +130,11 @@ Axios instances now preserve verb/`.request(...)` flow and `allowAbsoluteUrls: f
 Activepieces' configured MCP transport additionally resolves through imported `safeHttp.axios` into
 `request-filtering-agent` 3.2.0: both HTTP agents are forced after caller options and filter each
 direct connection, while `AP_SSRF_ALLOW_LIST` exceptions and environment-proxy routing remain
-explicit. Next resolve general imported clients, mutated/interceptor-configured instances, fetch and
-Undici dispatchers, and runtime egress controls.
+explicit. Composio's TypeScript guard now proves four imported fetch paths through a default Node
+backend that validates every redirect and pins an Undici dispatcher unless a caller/global/env route
+is configured. Its edge backend fails closed for caller URL uploads but deliberately leaves three
+`WhereSupported` API-response transfers unguarded. Next resolve general imported clients,
+mutated/interceptor-configured instances, other fetch/Undici dispatchers, and runtime egress controls.
 
 ## P1 — A2A AgentCard endpoint provenance
 
@@ -154,8 +157,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 328 pinned positive/negative locations, with 241 separately
-scored IR relationship labels. Schema-v40 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 330 pinned positive/negative locations, with 246 separately
+scored IR relationship labels. Schema-v41 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

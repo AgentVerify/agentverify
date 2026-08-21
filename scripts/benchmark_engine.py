@@ -640,6 +640,10 @@ def main() -> int:
                     edge.attributes.get("enforcement_mode") == "configured-opt-out"
                     for edge in typescript_secure_network_controls
                 ),
+                "runtime_conditional": sum(
+                    edge.attributes.get("enforcement_default") == "runtime-conditional"
+                    for edge in typescript_secure_network_controls
+                ),
                 "bounded_redirect_hooks": sum(
                     edge.attributes.get("redirect_scope")
                     == "bounded-each-hop-hooks-when-enforced"
@@ -682,6 +686,11 @@ def main() -> int:
                     == "connection-time-filtered-unless-proxied"
                     for edge in typescript_secure_network_controls
                 ),
+                "dns_connection_pinned_unless_configured_route": sum(
+                    edge.attributes.get("dns_scope")
+                    == "connection-pinned-unless-configured-route"
+                    for edge in typescript_secure_network_controls
+                ),
                 "proxy_unresolved": sum(
                     edge.attributes.get("proxy_scope") == "unresolved"
                     for edge in typescript_secure_network_controls
@@ -692,6 +701,11 @@ def main() -> int:
                 ),
                 "proxy_pinned_agent": sum(
                     edge.attributes.get("proxy_scope") == "pinned-agent"
+                    for edge in typescript_secure_network_controls
+                ),
+                "proxy_caller_global_or_environment_dependent": sum(
+                    edge.attributes.get("proxy_scope")
+                    == "caller-global-or-environment-dependent"
                     for edge in typescript_secure_network_controls
                 ),
                 "fixed_caller_config": sum(
@@ -714,6 +728,23 @@ def main() -> int:
                 "configured_address_allowlist": sum(
                     edge.attributes.get("escape_hatch")
                     == "configured-address-allowlist"
+                    for edge in typescript_secure_network_controls
+                ),
+                "undici_pinned_dispatcher_unless_configured_route": sum(
+                    edge.attributes.get("transport_scope")
+                    == "undici-pinned-dispatcher-unless-configured-route"
+                    for edge in typescript_secure_network_controls
+                ),
+                "edge_runtime_fail_closed": sum(
+                    edge.attributes.get("edge_runtime_scope") == "fail-closed"
+                    for edge in typescript_secure_network_controls
+                ),
+                "edge_runtime_unguarded_fetch": sum(
+                    edge.attributes.get("edge_runtime_scope") == "unguarded-fetch"
+                    for edge in typescript_secure_network_controls
+                ),
+                "configured_route_residual": sum(
+                    edge.attributes.get("configured_route_residual") is True
                     for edge in typescript_secure_network_controls
                 ),
                 "ipv4_mapped_ipv6_normalized": sum(
@@ -860,7 +891,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 40,
+        "schema_version": 41,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -1082,6 +1113,7 @@ def main() -> int:
                     "disabled_default",
                     "configured_opt_in",
                     "configured_opt_out",
+                    "runtime_conditional",
                     "bounded_redirect_hooks",
                     "redirects_validated",
                     "redirects_disabled",
@@ -1091,14 +1123,20 @@ def main() -> int:
                     "dns_connection_pinned",
                     "dns_preflight_only_rebinding_residual",
                     "dns_connection_time_filtered_unless_proxied",
+                    "dns_connection_pinned_unless_configured_route",
                     "proxy_unresolved",
                     "proxy_environment_dependent",
                     "proxy_pinned_agent",
+                    "proxy_caller_global_or_environment_dependent",
                     "fixed_caller_config",
                     "caller_agent_overridden",
                     "global_fetch_unpinned",
                     "imported_axios_client_instance",
                     "configured_address_allowlist",
+                    "undici_pinned_dispatcher_unless_configured_route",
+                    "edge_runtime_fail_closed",
+                    "edge_runtime_unguarded_fetch",
+                    "configured_route_residual",
                     "ipv4_mapped_ipv6_normalized",
                     "domain_hitl_independent",
                     "no_escape_hatch",

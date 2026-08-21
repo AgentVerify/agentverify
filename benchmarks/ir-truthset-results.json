@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T17:30:57.326656+00:00",
-  "labels": 241,
-  "passed": 241,
+  "generated_at": "2026-08-21T17:41:54.280921+00:00",
+  "labels": 246,
+  "passed": 246,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -286,6 +286,14 @@
     },
     "IR-TS-TOOL-REGISTRATION": {
       "tp": 8,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-UNDICI-SSRF-SAFE-FETCH": {
+      "tp": 4,
       "fp": 0,
       "tn": 1,
       "fn": 0,
@@ -2457,6 +2465,51 @@
     {
       "id": "typescript-activepieces-safe-http-real",
       "check_id": "IR-TS-FILTERING-AXIOS-INSTANCE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-composio-safe-fetch-local",
+      "check_id": "IR-TS-UNDICI-SSRF-SAFE-FETCH",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-composio-where-supported-local",
+      "check_id": "IR-TS-UNDICI-SSRF-SAFE-FETCH",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-composio-raw-local-negative",
+      "check_id": "IR-TS-UNDICI-SSRF-SAFE-FETCH",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-composio-safe-fetch-real",
+      "check_id": "IR-TS-UNDICI-SSRF-SAFE-FETCH",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-composio-where-supported-real",
+      "check_id": "IR-TS-UNDICI-SSRF-SAFE-FETCH",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

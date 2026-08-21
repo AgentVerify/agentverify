@@ -3183,6 +3183,36 @@
       "target":{"kind":"repository","repository":"activepieces/activepieces","commit":"d4cc3eaff77209b773f31e947b3b71306b02059d"},
       "check_id":"IR-TS-FILTERING-AXIOS-INSTANCE","path":"packages/server/utils/src/mcp-transport.ts","line":56,"expected":true,
       "relationship":{"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy","attributes":{"analysis":"typescript-imported-filtering-axios-instance","dns_scope":"connection-time-filtered-unless-proxied","proxy_scope":"environment-dependent","transport_scope":"imported-axios-client-instance","enforcement_default":"enabled","escape_hatch":"configured-address-allowlist","filter_library_version":"3.2.0","helper_line":47,"entry_line":6}}
+    },
+    {
+      "id":"typescript-composio-safe-fetch-local",
+      "target":{"kind":"local","path":"cases/typescript_composio_ssrf_safe_fetch"},
+      "check_id":"IR-TS-UNDICI-SSRF-SAFE-FETCH","path":"ToolRouterSessionFileMount.ts","line":5,"expected":true,
+      "relationship":{"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy","attributes":{"analysis":"typescript-imported-undici-ssrf-safe-fetch","dns_scope":"connection-pinned-unless-configured-route","proxy_scope":"caller-global-or-environment-dependent","transport_scope":"undici-pinned-dispatcher-unless-configured-route","enforcement_mode":"node-filtered-edge-fail-closed","edge_runtime_scope":"fail-closed","filter_library_version":"^7.29.0"}}
+    },
+    {
+      "id":"typescript-composio-where-supported-local",
+      "target":{"kind":"local","path":"cases/typescript_composio_ssrf_safe_fetch"},
+      "check_id":"IR-TS-UNDICI-SSRF-SAFE-FETCH","path":"ToolRouterSessionFileMount.ts","line":10,"expected":true,
+      "relationship":{"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy","attributes":{"analysis":"typescript-imported-undici-ssrf-safe-fetch","enforcement_default":"runtime-conditional","enforcement_mode":"node-filtered-edge-unenforced","edge_runtime_scope":"unguarded-fetch"}}
+    },
+    {
+      "id":"typescript-composio-raw-local-negative",
+      "target":{"kind":"local","path":"cases/typescript_composio_ssrf_safe_fetch"},
+      "check_id":"IR-TS-UNDICI-SSRF-SAFE-FETCH","path":"raw.ts","line":2,"expected":false,"source_contains":"fetch(url)",
+      "relationship":{"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy"}
+    },
+    {
+      "id":"typescript-composio-safe-fetch-real",
+      "target":{"kind":"repository","repository":"composiohq/composio","commit":"38899bdfa02fe10d9df65d230a67f9f5df987420"},
+      "check_id":"IR-TS-UNDICI-SSRF-SAFE-FETCH","path":"ts/packages/core/src/models/ToolRouterSessionFileMount.ts","line":115,"expected":true,
+      "relationship":{"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy","attributes":{"analysis":"typescript-imported-undici-ssrf-safe-fetch","enforcement_mode":"node-filtered-edge-fail-closed","edge_runtime_scope":"fail-closed","helper_line":224}}
+    },
+    {
+      "id":"typescript-composio-where-supported-real",
+      "target":{"kind":"repository","repository":"composiohq/composio","commit":"38899bdfa02fe10d9df65d230a67f9f5df987420"},
+      "check_id":"IR-TS-UNDICI-SSRF-SAFE-FETCH","path":"ts/packages/core/src/models/RemoteFile.ts","line":89,"expected":true,
+      "relationship":{"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy","attributes":{"analysis":"typescript-imported-undici-ssrf-safe-fetch","enforcement_default":"runtime-conditional","enforcement_mode":"node-filtered-edge-unenforced","edge_runtime_scope":"unguarded-fetch","helper_line":224}}
     }
   ]
 }

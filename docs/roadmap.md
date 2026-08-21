@@ -11,7 +11,7 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
 | 4 | Approval coverage and bypass paths | 5 | 4 | 3 | 60 | 52 approval-positive; 18 auto-approval candidates |
 | 5 | Filesystem scope and destructive writes | 5 | 4 | 3 | 60 | 59 writable-filesystem repos |
 | 6 | Sandbox boundary quality | 5 | 4 | 3 | 60 | 64 sandbox-positive; mounts/network/credentials determine quality |
-| 7 | Parameter-controlled network origins | 5 | 2 | 4 | 40 | 17 reviews across 10 repositories; zero exact Python allowlists, one configured-open TypeScript policy, two fully pinned CrewAI paths, two proxy-conditional Composio paths, ten configurable Langflow paths, one default-off n8n composition, two Flowise paths with distinct proxy behavior, one Google ADK preflight-only global-fetch path, and one Activepieces configured-origin filtering-Axios path with an environment-proxy residual |
+| 7 | Parameter-controlled network origins | 5 | 2 | 4 | 40 | 17 reviews across 10 repositories; zero exact Python allowlists, one configured-open TypeScript policy, two fully pinned CrewAI paths, two proxy-conditional Composio Python paths, ten configurable Langflow paths, one default-off n8n composition, two Flowise paths, one Google ADK preflight-only path, one Activepieces filtering-Axios path, and four Composio TypeScript paths that preserve configured-route and edge-runtime residuals |
 | 8 | A2A AgentCard endpoint provenance | 5 | 2 | 4 | 40 | Two pinned TypeScript clients accept remote-card-selected RPC origins; ADK Python supplies two guarded comparison paths |
 | 9 | Consequential-action audit coverage | 4 | 4 | 2 | 32 | 57 tracing-positive, but action-level coverage needs data flow |
 
