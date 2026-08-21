@@ -8,6 +8,7 @@ import os
 import re
 import warnings
 from collections import Counter, defaultdict
+from dataclasses import dataclass
 from datetime import UTC, date, datetime
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
@@ -1399,6 +1400,22 @@ INLINE_SUPPRESSION = re.compile(
 )
 
 
+@dataclass(frozen=True)
+class TypeScriptHelperParameter:
+    index: int
+    local_name: str
+    property_name: str | None = None
+
+
+@dataclass(frozen=True)
+class TypeScriptNetworkHelperSummary:
+    name: str
+    line: int
+    parameters: tuple[TypeScriptHelperParameter, ...]
+    controlled_names: frozenset[str]
+    network_calls: int
+
+
 def line_at(text: str, offset: int) -> int:
     return text.count("\n", 0, offset) + 1
 
@@ -1423,6 +1440,17 @@ def typescript_code_mask(text: str) -> str:
     index = 0
     state = "code"
     quote = ""
+    regex_character_class = False
+
+    def regex_can_start(position: int) -> bool:
+        previous = position - 1
+        while previous >= 0 and text[previous].isspace():
+            previous -= 1
+        if previous < 0 or text[previous] in "([{=:;,!?&|+-*%^~<>":
+            return True
+        prefix = text[max(0, previous - 16) : position]
+        return bool(re.search(r"(?:\b(?:return|throw|case|yield)|=>)\s*$", prefix))
+
     while index < len(text):
         character = text[index]
         following = text[index + 1] if index + 1 < len(text) else ""
@@ -1436,6 +1464,12 @@ def typescript_code_mask(text: str) -> str:
                 masked[index] = masked[index + 1] = " "
                 index += 2
                 state = "block-comment"
+                continue
+            if character == "/" and regex_can_start(index):
+                masked[index] = " "
+                state = "regex"
+                regex_character_class = False
+                index += 1
                 continue
             if character in {"'", '"', "`"}:
                 masked[index] = " "
@@ -1454,7 +1488,7 @@ def typescript_code_mask(text: str) -> str:
                 continue
             if character != "\n":
                 masked[index] = " "
-        else:
+        elif state == "string":
             if character == "\\":
                 masked[index] = " "
                 if index + 1 < len(text):
@@ -1466,6 +1500,27 @@ def typescript_code_mask(text: str) -> str:
                 masked[index] = " "
                 state = "code"
             elif character != "\n":
+                masked[index] = " "
+        else:
+            if character == "\\":
+                masked[index] = " "
+                if index + 1 < len(text):
+                    if text[index + 1] != "\n":
+                        masked[index + 1] = " "
+                    index += 2
+                    continue
+            elif character == "[":
+                regex_character_class = True
+                masked[index] = " "
+            elif character == "]":
+                regex_character_class = False
+                masked[index] = " "
+            elif character == "/" and not regex_character_class:
+                masked[index] = " "
+                state = "code"
+            elif character == "\n":
+                state = "code"
+            else:
                 masked[index] = " "
         index += 1
     return "".join(masked)
@@ -1795,6 +1850,64 @@ def typescript_http_origin_is_dynamic(
     return re.match(r"^https?://[^/?#]+", prefix, re.IGNORECASE) is None
 
 
+def typescript_update_dynamic_names(
+    line: str,
+    dynamic_names: set[str],
+    literal_bindings: dict[str, str],
+) -> None:
+    """Apply one shallow TypeScript assignment to callback-local origin taint."""
+    code_line = typescript_code_mask(line)
+    if destructuring := re.search(
+        r"\b(?:const|let)\s*\{([^}]*)\}\s*=\s*([^;]+)", code_line
+    ):
+        source_expression = line[destructuring.start(2) : destructuring.end(2)]
+        if typescript_expression_names(source_expression) & dynamic_names:
+            dynamic_names.update(
+                typescript_destructured_names(
+                    "{" + line[destructuring.start(1) : destructuring.end(1)] + "}"
+                )
+            )
+        return
+    if assignment := re.search(
+        r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)"
+        r"(?:\s*:[^=]+)?\s*=",
+        code_line,
+    ):
+        value = line[assignment.end() :].rstrip().removesuffix(";").rstrip()
+        if typescript_http_origin_is_dynamic(value, dynamic_names, literal_bindings):
+            dynamic_names.add(assignment.group(1))
+        else:
+            dynamic_names.discard(assignment.group(1))
+
+
+def typescript_multiline_destructuring_assignments(
+    text: str,
+) -> dict[int, list[tuple[set[str], str]]]:
+    """Collect shallow destructuring assignments that span more than one line."""
+    code = typescript_code_mask(text)
+    assignments: dict[int, list[tuple[set[str], str]]] = defaultdict(list)
+    pattern = re.compile(
+        r"\b(?:const|let)\s*\{([^{}]*)\}\s*=\s*([^;]+)", re.DOTALL
+    )
+    for match in pattern.finditer(code):
+        if "\n" not in text[match.start() : match.end()]:
+            continue
+        names = typescript_destructured_names(
+            "{" + text[match.start(1) : match.end(1)] + "}"
+        )
+        source_expression = text[match.start(2) : match.end(2)]
+        assignments[line_at(text, match.start())].append((names, source_expression))
+    return assignments
+
+
+def typescript_apply_destructuring_assignments(
+    assignments: list[tuple[set[str], str]], dynamic_names: set[str]
+) -> None:
+    for names, source_expression in assignments:
+        if typescript_expression_names(source_expression) & dynamic_names:
+            dynamic_names.update(names)
+
+
 def typescript_network_calls(text: str) -> dict[int, list[tuple[str, str]]]:
     """Return recognized global fetch/Axios calls with their first URL argument."""
     code = typescript_code_mask(text)
@@ -1813,6 +1926,160 @@ def typescript_network_calls(text: str) -> dict[int, list[tuple[str, str]]]:
         api = f"axios.{match.group(1)}" if match.group(1) else "fetch"
         calls[line_at(text, match.start())].append((api, arguments[0][0]))
     return calls
+
+
+def typescript_function_parameters(parameter_text: str) -> tuple[TypeScriptHelperParameter, ...]:
+    parameters: list[TypeScriptHelperParameter] = []
+    for index, (parameter, _) in enumerate(typescript_call_arguments(parameter_text)):
+        value = parameter.strip()
+        if value.startswith("{"):
+            code = typescript_code_mask(value)
+            end = typescript_balanced_end(code, 0, "{", "}")
+            if end is None:
+                continue
+            for item, _ in typescript_call_arguments(value[1 : end - 1]):
+                binding = item.lstrip(".").split("=", 1)[0].strip()
+                if ":" in binding:
+                    property_name, local_value = binding.split(":", 1)
+                    property_name = property_name.strip()
+                    local_value = local_value.strip()
+                else:
+                    property_name = local_value = binding
+                property_match = re.match(r"[A-Za-z_$][\w$]*", property_name)
+                local_match = re.match(r"[A-Za-z_$][\w$]*", local_value)
+                if property_match and local_match:
+                    parameters.append(
+                        TypeScriptHelperParameter(
+                            index, local_match.group(0), property_match.group(0)
+                        )
+                    )
+            continue
+        if match := re.match(r"[A-Za-z_$][\w$]*", value.removeprefix("...")):
+            parameters.append(TypeScriptHelperParameter(index, match.group(0)))
+    return tuple(parameters)
+
+
+def typescript_function_definitions(
+    text: str,
+) -> list[tuple[str, int, tuple[TypeScriptHelperParameter, ...], str]]:
+    """Return bounded free/static function bodies with structurally balanced signatures."""
+    code = typescript_code_mask(text)
+    patterns = (
+        re.compile(
+            r"\b(?:export\s+)?(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\("
+        ),
+        re.compile(r"\bstatic\s+(?:async\s+)?([A-Za-z_$][\w$]*)\s*\("),
+    )
+    matches = sorted(
+        (match for pattern in patterns for match in pattern.finditer(code)),
+        key=lambda match: match.start(),
+    )
+    definitions = []
+    for match in matches:
+        opening = code.find("(", match.start(), match.end())
+        parameter_end = typescript_balanced_end(code, opening, "(", ")")
+        if parameter_end is None:
+            continue
+        body_opening = code.find("{", parameter_end)
+        if body_opening < 0 or body_opening - parameter_end > 500:
+            continue
+        terminator = code.find(";", parameter_end, body_opening)
+        if terminator >= 0:
+            continue
+        body_end = typescript_balanced_end(code, body_opening, "{", "}")
+        if body_end is None:
+            continue
+        definitions.append(
+            (
+                match.group(1),
+                line_at(text, match.start()),
+                typescript_function_parameters(text[opening + 1 : parameter_end - 1]),
+                text[body_opening + 1 : body_end - 1],
+            )
+        )
+    return definitions
+
+
+def typescript_network_helper_summaries(
+    text: str, literal_bindings: dict[str, str]
+) -> dict[str, TypeScriptNetworkHelperSummary]:
+    definitions = typescript_function_definitions(text)
+    name_counts = Counter(name for name, _, _, _ in definitions)
+    summaries = {}
+    for name, line, parameters, body in definitions:
+        if name_counts[name] != 1:
+            continue
+        calls = typescript_network_calls(body)
+        if not calls:
+            continue
+        destructuring_assignments = typescript_multiline_destructuring_assignments(body)
+        controlled_names = set()
+        for parameter in parameters:
+            dynamic_names = {parameter.local_name}
+            for body_line_number, body_line in enumerate(body.splitlines(), start=1):
+                typescript_apply_destructuring_assignments(
+                    destructuring_assignments.get(body_line_number, []), dynamic_names
+                )
+                typescript_update_dynamic_names(body_line, dynamic_names, literal_bindings)
+                if any(
+                    typescript_http_origin_is_dynamic(
+                        expression, dynamic_names, literal_bindings
+                    )
+                    for _, expression in calls.get(body_line_number, [])
+                ):
+                    controlled_names.add(parameter.local_name)
+        summaries[name] = TypeScriptNetworkHelperSummary(
+            name,
+            line,
+            parameters,
+            frozenset(controlled_names),
+            sum(len(items) for items in calls.values()),
+        )
+    return summaries
+
+
+def typescript_helper_calls(
+    text: str, summaries: dict[str, TypeScriptNetworkHelperSummary]
+) -> dict[int, list[tuple[TypeScriptNetworkHelperSummary, list[str]]]]:
+    if not summaries:
+        return {}
+    code = typescript_code_mask(text)
+    names = "|".join(re.escape(name) for name in sorted(summaries, key=len, reverse=True))
+    pattern = re.compile(
+        rf"(?<![\w$])(?:[A-Za-z_$][\w$]*\.)*({names})\s*\("
+    )
+    calls: dict[int, list[tuple[TypeScriptNetworkHelperSummary, list[str]]]] = defaultdict(
+        list
+    )
+    for match in pattern.finditer(code):
+        opening = code.find("(", match.start(), match.end())
+        end = typescript_balanced_end(code, opening, "(", ")")
+        if end is None:
+            continue
+        arguments = [
+            argument for argument, _ in typescript_call_arguments(text[opening + 1 : end - 1])
+        ]
+        calls[line_at(text, match.start())].append((summaries[match.group(1)], arguments))
+    return calls
+
+
+def typescript_helper_argument_expression(
+    arguments: list[str], parameter: TypeScriptHelperParameter
+) -> str | None:
+    if parameter.index >= len(arguments):
+        return None
+    argument = arguments[parameter.index]
+    if parameter.property_name is None:
+        return argument
+    if value := typescript_object_property_expression(argument, parameter.property_name):
+        return value
+    for item, _ in typescript_object_items(argument):
+        code = typescript_code_mask(item).strip()
+        if code == parameter.property_name:
+            return item.strip()
+        if code.startswith("..."):
+            return item[3:].strip()
+    return None
 
 
 def typescript_call_parts(expression: str) -> tuple[str, str, int] | None:
@@ -2464,6 +2731,17 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
     }
     literal_bindings = typescript_literal_string_bindings(text)
     network_calls = typescript_network_calls(text)
+    if tool_by_line and network_calls:
+        network_helper_summaries = typescript_network_helper_summaries(
+            text, literal_bindings
+        )
+        network_helper_calls = typescript_helper_calls(text, network_helper_summaries)
+        multiline_destructuring_assignments = (
+            typescript_multiline_destructuring_assignments(text)
+        )
+    else:
+        network_helper_calls = {}
+        multiline_destructuring_assignments = {}
     shell_bindings = child_process_bindings(text)
     has_mcp_import = "@modelcontextprotocol/" in text or re.search(
         r"from\s+['\"][^'\"]*mcp[^'\"]*['\"]", text, re.IGNORECASE
@@ -2497,30 +2775,10 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
         dynamic_names: set[str] = set()
         if tool := tool_by_line.get(line_number):
             dynamic_names = dynamic_names_by_tool.setdefault(tool[1], set())
-            if destructuring := re.search(
-                r"\b(?:const|let)\s*\{([^}]*)\}\s*=\s*([^;]+)", code_line
-            ):
-                source_expression = line[
-                    destructuring.start(2) : destructuring.end(2)
-                ]
-                if typescript_expression_names(source_expression) & dynamic_names:
-                    dynamic_names.update(
-                        typescript_destructured_names(
-                            "{" + line[destructuring.start(1) : destructuring.end(1)] + "}"
-                        )
-                    )
-            elif assignment := re.search(
-                r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)"
-                r"(?:\s*:[^=]+)?\s*=",
-                code_line,
-            ):
-                value = line[assignment.end() :].rstrip().removesuffix(";").rstrip()
-                if typescript_http_origin_is_dynamic(
-                    value, dynamic_names, literal_bindings
-                ):
-                    dynamic_names.add(assignment.group(1))
-                else:
-                    dynamic_names.discard(assignment.group(1))
+            typescript_apply_destructuring_assignments(
+                multiline_destructuring_assignments.get(line_number, []), dynamic_names
+            )
+            typescript_update_dynamic_names(line, dynamic_names, literal_bindings)
         for match in TS_IMPORT.finditer(line):
             component_from_import(ir, match.group(1), ev)
         for match in TS_MODEL_SETTING.finditer(line):
@@ -2618,6 +2876,33 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                     ),
                 },
             )
+        if line_number in tool_by_line:
+            for summary, arguments in network_helper_calls.get(line_number, []):
+                dynamic_origin = False
+                for parameter in summary.parameters:
+                    if parameter.local_name not in summary.controlled_names:
+                        continue
+                    argument = typescript_helper_argument_expression(arguments, parameter)
+                    if argument and typescript_http_origin_is_dynamic(
+                        argument, dynamic_names, literal_bindings
+                    ):
+                        dynamic_origin = True
+                        break
+                add_typescript_capability(
+                    ir,
+                    relative,
+                    line_number,
+                    ev,
+                    tool_by_line,
+                    "network",
+                    {
+                        "api": summary.name,
+                        "dynamic_origin": dynamic_origin,
+                        "summary": "same-file-helper",
+                        "helper_line": summary.line,
+                        "helper_network_calls": summary.network_calls,
+                    },
+                )
         if re.search(r"\baxios\.(?:post|put|patch|delete)\s*\(", code_line) or (
             re.search(r"\bmethod\s*:", code_line)
             and re.search(

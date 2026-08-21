@@ -115,6 +115,13 @@ def main() -> int:
             for item in (*typescript_registered_tools, *typescript_object_property_tools)
             if item.symbol_id
         }
+        typescript_network_helper_capabilities = [
+            item
+            for item in ir.components
+            if item.kind == "capability"
+            and item.name == "network"
+            and item.attributes.get("summary") == "same-file-helper"
+        ]
         result = {
             "repository": repository,
             "category": row["category"],
@@ -170,6 +177,7 @@ def main() -> int:
                     and edge.target_kind == "capability"
                     for edge in ir.relationships
                 ),
+                "network_helper_edges": len(typescript_network_helper_capabilities),
             },
             "resolved_import_edges": len(imported_edges),
             "resolved_import_edges_by_frontend": {
@@ -194,7 +202,7 @@ def main() -> int:
         {rule_id for result in successful for rule_id in result["findings"]}
     )
     payload = {
-        "schema_version": 8,
+        "schema_version": 9,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "summary": {
@@ -276,6 +284,7 @@ def main() -> int:
                     "mcp_register_tool",
                     "object_property_tools",
                     "capability_edges",
+                    "network_helper_edges",
                 )
             },
             "resolved_import_edges": sum(result["resolved_import_edges"] for result in successful),

@@ -47,9 +47,12 @@ Within decorated Python tools and structurally resolved TypeScript execution cal
 parameters begin as potential dynamic HTTP origins. Direct assignment aliases preserve that state,
 while reassignment to a literal or a URL expression whose literal prefix contains a complete HTTP
 scheme and host clears it. The TypeScript frontend also resolves unique module string constants used
-as a template prefix. `AV-NET001` consumes only this origin-specific attribute; it does not equate a
-dynamic path or query on a fixed host with a dynamic destination. URL parsing guards, redirects, DNS,
-proxies, local helper summaries, and request-object data flow remain unresolved.
+as a template prefix. For a uniquely named same-file free function or static method containing a
+recognized network call, a bounded summary records which formal parameters can control the origin;
+tool calls map positional and destructured-object arguments back to those parameters. `AV-NET001`
+consumes only this origin-specific attribute; it does not equate a dynamic path or query on a fixed
+host with a dynamic destination. URL parsing guards, redirects, DNS, proxies, imported/transitive
+helpers, arrow functions, and request-object data flow remain unresolved.
 
 ## Result kinds and uncertainty
 

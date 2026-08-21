@@ -798,6 +798,108 @@ const search = tool({
     ] == [("AV-NET001", 7, "requester")]
 
 
+def test_typescript_same_file_network_helpers_propagate_only_controlled_origins() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_helper_summary")
+
+    summarized = {
+        item.evidence.line: item.attributes
+        for item in ir.components
+        if item.kind == "capability"
+        and item.name == "network"
+        and item.attributes.get("summary") == "same-file-helper"
+    }
+    assert {
+        item.evidence.line
+        for item in ir.components
+        if item.kind == "capability" and item.name == "network"
+    } == {8, 13, 18, 24}
+    assert summarized == {
+        18: {
+            "scope": "production",
+            "api": "fetchRemote",
+            "dynamic_origin": True,
+            "summary": "same-file-helper",
+            "helper_line": 7,
+            "helper_network_calls": 1,
+        },
+        24: {
+            "scope": "production",
+            "api": "searchRemote",
+            "dynamic_origin": False,
+            "summary": "same-file-helper",
+            "helper_line": 11,
+            "helper_network_calls": 1,
+        },
+    }
+    assert [
+        (edge.source_name, edge.evidence.line, edge.source_id)
+        for edge in ir.relationships
+        if edge.target_kind == "capability" and edge.target_name == "network"
+    ] == [
+        ("proxy", 18, "ts:tools.ts#tool:proxy"),
+        ("search", 24, "ts:tools.ts#tool:search"),
+    ]
+    assert [(finding.rule_id, finding.evidence.line) for finding in ir.findings] == [
+        ("AV-NET001", 18)
+    ]
+
+
+def test_typescript_network_helper_summaries_map_object_parameters_and_multiline_aliases(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "tools.ts").write_text(
+        """import { createTool } from "@mastra/core/tools";
+
+class Helpers {
+  static async request({ baseUrl, route }: { baseUrl: string; route: string }) {
+    const fullUrl = `${baseUrl}${route}`;
+    return fetch(fullUrl);
+  }
+}
+
+const request = createTool({
+  id: "request",
+  execute: async (inputData) => {
+    const {
+      baseUrl,
+      route,
+    } = inputData;
+    return Helpers.request({
+      baseUrl,
+      route,
+    });
+  },
+});
+""",
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    summarized = [
+        item
+        for item in ir.components
+        if item.kind == "capability"
+        and item.name == "network"
+        and item.attributes.get("summary") == "same-file-helper"
+    ]
+    assert len(summarized) == 1
+    assert summarized[0].attributes == {
+        "scope": "production",
+        "api": "request",
+        "dynamic_origin": True,
+        "summary": "same-file-helper",
+        "helper_line": 4,
+        "helper_network_calls": 1,
+    }
+    assert [
+        (edge.source_name, edge.source_id)
+        for edge in ir.relationships
+        if edge.target_kind == "capability" and edge.target_name == "network"
+    ] == [("request", "ts:tools.ts#tool:request")]
+    assert [finding.rule_id for finding in ir.findings] == ["AV-NET001"]
+
+
 def test_dynamic_writable_tool_path_but_not_fixed_path_is_reviewed() -> None:
     ir = scan_repository(ROOT / "cases/filesystem_scope")
 

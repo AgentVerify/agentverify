@@ -22,4 +22,5 @@ never imported or executed.
 - `imported_tool`: a local Python import resolves an agent to a tool defined in another module.
 - `imported_ts_tool`: a relative TypeScript import resolves an aliased tool across modules.
 - `typescript_tool_registrations`: import-aware Mastra object-property tools and MCP `registerTool` callbacks.
+- `typescript_helper_summary`: same-file network helper flow, fixed-host negative, and regex-literal masking.
 - `../examples/safe_agent`: near-miss showing fixed argv is inventory-only.

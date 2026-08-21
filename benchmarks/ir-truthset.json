@@ -499,6 +499,113 @@
       }
     },
     {
+      "id": "typescript-network-helper-controlled-local",
+      "target": {"kind": "local", "path": "cases/typescript_helper_summary"},
+      "check_id": "IR-TS-HELPER-SUMMARY",
+      "path": "tools.ts",
+      "line": 18,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "proxy",
+        "source_id": "ts:tools.ts#tool:proxy",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "network"
+      }
+    },
+    {
+      "id": "typescript-network-helper-fixed-local",
+      "target": {"kind": "local", "path": "cases/typescript_helper_summary"},
+      "check_id": "IR-TS-HELPER-SUMMARY",
+      "path": "tools.ts",
+      "line": 24,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "search",
+        "source_id": "ts:tools.ts#tool:search",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "network"
+      }
+    },
+    {
+      "id": "typescript-network-regex-literal-local-negative",
+      "target": {"kind": "local", "path": "cases/typescript_helper_summary"},
+      "check_id": "IR-TS-HELPER-SUMMARY",
+      "path": "tools.ts",
+      "line": 5,
+      "expected": false,
+      "source_contains": "const fakePattern",
+      "relationship": {
+        "source_kind": "tool",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "network"
+      }
+    },
+    {
+      "id": "typescript-network-helper-mastra-real",
+      "target": {
+        "kind": "repository",
+        "repository": "mastra-ai/mastra",
+        "commit": "1da5fb00e141b78c2148b21ee085ec24112cf2a5"
+      },
+      "check_id": "IR-TS-HELPER-SUMMARY",
+      "path": "packages/agent-builder/src/defaults.ts",
+      "line": 1045,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "httpRequest",
+        "source_id": "ts:packages/agent-builder/src/defaults.ts#tool:httpRequest",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "network"
+      }
+    },
+    {
+      "id": "typescript-network-fixed-helper-mastra-real",
+      "target": {
+        "kind": "repository",
+        "repository": "mastra-ai/mastra",
+        "commit": "1da5fb00e141b78c2148b21ee085ec24112cf2a5"
+      },
+      "check_id": "IR-TS-HELPER-SUMMARY",
+      "path": "packages/agent-builder/src/defaults.ts",
+      "line": 825,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "webSearch",
+        "source_id": "ts:packages/agent-builder/src/defaults.ts#tool:webSearch",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "network"
+      }
+    },
+    {
+      "id": "typescript-network-helper-mcp-servers-real",
+      "target": {
+        "kind": "repository",
+        "repository": "modelcontextprotocol/servers",
+        "commit": "599dafc1054550a6eeb87a6545c1e1b03b3ca827"
+      },
+      "check_id": "IR-TS-HELPER-SUMMARY",
+      "path": "src/everything/tools/gzip-file-as-resource.ts",
+      "line": 85,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "gzip-file-as-resource",
+        "source_id": "ts:src/everything/tools/gzip-file-as-resource.ts#tool:gzip-file-as-resource",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "network"
+      }
+    },
+    {
       "id": "mcp-registry-control-local",
       "target": {"kind": "local", "path": "cases/mcp_forwarder"},
       "check_id": "IR-MCP-REGISTRY",

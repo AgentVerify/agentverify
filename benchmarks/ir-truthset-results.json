@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T07:21:58.705849+00:00",
-  "labels": 30,
-  "passed": 30,
+  "generated_at": "2026-08-21T07:44:36.114501+00:00",
+  "labels": 36,
+  "passed": 36,
   "metrics": {
     "IR-APPROVAL-CONTROL": {
       "tp": 3,
@@ -30,6 +30,14 @@
     },
     "IR-MCP-REGISTRY": {
       "tp": 2,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-HELPER-SUMMARY": {
+      "tp": 5,
       "fp": 0,
       "tn": 1,
       "fn": 0,
@@ -291,6 +299,60 @@
     {
       "id": "typescript-mcp-literal-filesystem-tool-real",
       "check_id": "IR-TS-TOOL-REGISTRATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-network-helper-controlled-local",
+      "check_id": "IR-TS-HELPER-SUMMARY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-network-helper-fixed-local",
+      "check_id": "IR-TS-HELPER-SUMMARY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-network-regex-literal-local-negative",
+      "check_id": "IR-TS-HELPER-SUMMARY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-network-helper-mastra-real",
+      "check_id": "IR-TS-HELPER-SUMMARY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-network-fixed-helper-mastra-real",
+      "check_id": "IR-TS-HELPER-SUMMARY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-network-helper-mcp-servers-real",
+      "check_id": "IR-TS-HELPER-SUMMARY",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

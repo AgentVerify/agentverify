@@ -1,6 +1,6 @@
 {
-  "schema_version": 8,
-  "generated_at": "2026-08-21T07:25:34.468910+00:00",
+  "schema_version": 9,
+  "generated_at": "2026-08-21T07:43:16.621636+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -13,21 +13,21 @@
     ],
     "files_scanned": 10594,
     "config_files_scanned": 155,
-    "relationships": 1361,
+    "relationships": 1365,
     "symbolized_components": 8549,
-    "identified_symbol_endpoints": 1871,
-    "resolved_symbol_endpoints": 1869,
+    "identified_symbol_endpoints": 1875,
+    "resolved_symbol_endpoints": 1873,
     "unmatched_identified_symbol_endpoints": 2,
     "ambiguous_repeated_binding_targets": 23,
     "resolved_binding_targets_by_basis": {
       "lexical-single-definition": 325,
       "module-single-definition": 14
     },
-    "relationship_endpoints": 2722,
+    "relationship_endpoints": 2730,
     "bom_endpoint_resolutions": {
       "ambiguous": 30,
-      "evidence-location": 306,
-      "symbol-id": 1869,
+      "evidence-location": 310,
+      "symbol-id": 1873,
       "unique-display-name": 17,
       "unresolved": 500
     },
@@ -36,7 +36,7 @@
     },
     "resolved_symbol_endpoints_by_frontend": {
       "py": 1622,
-      "ts": 247
+      "ts": 251
     },
     "typescript_graph": {
       "agent_edges": 95,
@@ -48,7 +48,8 @@
       "mastra_create_tool": 27,
       "mcp_register_tool": 264,
       "object_property_tools": 70,
-      "capability_edges": 6
+      "capability_edges": 10,
+      "network_helper_edges": 4
     },
     "resolved_import_edges": 5,
     "resolved_import_edges_by_frontend": {
@@ -64,7 +65,7 @@
       "AV-EXEC002": 49,
       "AV-FS001": 18,
       "AV-MCP002": 43,
-      "AV-NET001": 3,
+      "AV-NET001": 5,
       "AV-SANDBOX001": 19
     },
     "finding_repositories": {
@@ -74,7 +75,7 @@
       "AV-EXEC002": 14,
       "AV-FS001": 8,
       "AV-MCP002": 22,
-      "AV-NET001": 3,
+      "AV-NET001": 5,
       "AV-SANDBOX001": 9
     },
     "observed_component_names": {
@@ -238,7 +239,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 49.8593
+    "elapsed_seconds": 50.7354
   },
   "repositories": [
     {
@@ -284,7 +285,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -299,7 +301,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2161
+      "elapsed_seconds": 1.2719
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -351,7 +353,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -364,7 +367,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7703
+      "elapsed_seconds": 0.7625
     },
     {
       "repository": "langchain-ai/langchain",
@@ -413,7 +416,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -426,7 +430,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.258
+      "elapsed_seconds": 0.2609
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -479,7 +483,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -492,7 +497,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2
+      "elapsed_seconds": 1.1716
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -550,7 +555,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -563,7 +569,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0533
+      "elapsed_seconds": 0.0519
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -625,7 +631,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -645,7 +652,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0081
+      "elapsed_seconds": 0.9882
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -704,7 +711,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 2,
       "resolved_import_edges_by_frontend": {
@@ -723,7 +731,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7428
+      "elapsed_seconds": 0.7313
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -778,7 +786,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 3,
       "resolved_import_edges_by_frontend": {
@@ -797,7 +806,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0724
+      "elapsed_seconds": 0.0754
     },
     {
       "repository": "microsoft/autogen",
@@ -852,7 +861,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -870,7 +880,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2214
+      "elapsed_seconds": 0.2181
     },
     {
       "repository": "microsoft/agent-framework",
@@ -909,7 +919,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -922,7 +933,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0136
+      "elapsed_seconds": 0.0128
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -975,7 +986,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -993,7 +1005,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0279
+      "elapsed_seconds": 0.0286
     },
     {
       "repository": "openai/openai-agents-python",
@@ -1062,7 +1074,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1086,7 +1099,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5884
+      "elapsed_seconds": 1.532
     },
     {
       "repository": "openai/openai-agents-js",
@@ -1156,7 +1169,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1175,7 +1189,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4461
+      "elapsed_seconds": 0.4668
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -1234,7 +1248,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1256,7 +1271,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.5383
+      "elapsed_seconds": 3.4517
     },
     {
       "repository": "google/adk-python",
@@ -1307,7 +1322,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1323,7 +1339,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8911
+      "elapsed_seconds": 0.8828
     },
     {
       "repository": "google/adk-js",
@@ -1369,7 +1385,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1382,7 +1399,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6136
+      "elapsed_seconds": 1.6659
     },
     {
       "repository": "huggingface/smolagents",
@@ -1439,7 +1456,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1457,7 +1475,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3111
+      "elapsed_seconds": 0.308
     },
     {
       "repository": "agno-agi/agno",
@@ -1506,7 +1524,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1522,7 +1541,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1181
+      "elapsed_seconds": 0.1169
     },
     {
       "repository": "camel-ai/camel",
@@ -1579,7 +1598,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1597,7 +1617,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5796
+      "elapsed_seconds": 0.5593
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -1644,7 +1664,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1660,7 +1681,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0429
+      "elapsed_seconds": 0.0431
     },
     {
       "repository": "run-llama/llama_index",
@@ -1713,7 +1734,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1726,7 +1748,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2048
+      "elapsed_seconds": 0.2016
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -1783,7 +1805,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1799,7 +1822,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3695
+      "elapsed_seconds": 0.3632
     },
     {
       "repository": "InternLM/lagent",
@@ -1852,7 +1875,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1868,7 +1892,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.17
+      "elapsed_seconds": 0.1601
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -1915,7 +1939,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1931,7 +1956,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2712
+      "elapsed_seconds": 0.2639
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -1982,7 +2007,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -1998,7 +2024,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3899
+      "elapsed_seconds": 0.3886
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -2049,7 +2075,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2064,7 +2091,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2491
+      "elapsed_seconds": 0.251
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -2118,7 +2145,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2134,7 +2162,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7696
+      "elapsed_seconds": 0.7918
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -2183,7 +2211,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2198,7 +2227,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4195
+      "elapsed_seconds": 0.4261
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -2249,7 +2278,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2262,7 +2292,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3948
+      "elapsed_seconds": 0.4078
     },
     {
       "repository": "letta-ai/letta-code",
@@ -2307,7 +2337,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2320,7 +2351,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9815
+      "elapsed_seconds": 2.0412
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -2378,7 +2409,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2399,7 +2431,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2515
+      "elapsed_seconds": 0.2493
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -2445,7 +2477,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2460,7 +2493,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4975
+      "elapsed_seconds": 0.4776
     },
     {
       "repository": "mastra-ai/mastra",
@@ -2470,7 +2503,7 @@
       "config_files_scanned": 2,
       "components": {
         "agent": 12,
-        "capability": 84,
+        "capability": 89,
         "framework": 3,
         "model": 7,
         "protocol": 4,
@@ -2495,16 +2528,16 @@
           "OpenAI"
         ]
       },
-      "relationships": 1,
+      "relationships": 4,
       "symbolized_components": 38,
-      "identified_symbol_endpoints": 1,
-      "resolved_symbol_endpoints": 1,
+      "identified_symbol_endpoints": 4,
+      "resolved_symbol_endpoints": 4,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
         "py": 0,
-        "ts": 1
+        "ts": 4
       },
       "typescript_graph": {
         "agent_edges": 0,
@@ -2516,7 +2549,8 @@
         "mastra_create_tool": 26,
         "mcp_register_tool": 0,
         "object_property_tools": 15,
-        "capability_edges": 1
+        "capability_edges": 4,
+        "network_helper_edges": 3
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2524,17 +2558,18 @@
         "typescript": 0
       },
       "bom_endpoint_resolutions": {
-        "evidence-location": 1,
-        "symbol-id": 1
+        "evidence-location": 4,
+        "symbol-id": 4
       },
       "bom_ambiguous_endpoints_by_side_kind": {},
       "findings": {
-        "AV-FS001": 1
+        "AV-FS001": 1,
+        "AV-NET001": 1
       },
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1065
+      "elapsed_seconds": 1.2116
     },
     {
       "repository": "vercel/ai",
@@ -2585,7 +2620,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 48,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2603,7 +2639,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2302
+      "elapsed_seconds": 1.2927
     },
     {
       "repository": "cline/cline",
@@ -2658,7 +2694,8 @@
         "mastra_create_tool": 1,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 1
+        "capability_edges": 1,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2677,7 +2714,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7071
+      "elapsed_seconds": 1.779
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -2725,7 +2762,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2738,7 +2776,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8874
+      "elapsed_seconds": 1.949
     },
     {
       "repository": "continuedev/continue",
@@ -2784,7 +2822,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2797,7 +2836,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1856
+      "elapsed_seconds": 1.2383
     },
     {
       "repository": "Aider-AI/aider",
@@ -2839,7 +2878,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2854,7 +2894,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6863
+      "elapsed_seconds": 0.687
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -2895,7 +2935,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2912,7 +2953,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 0.1883
+      "elapsed_seconds": 0.1887
     },
     {
       "repository": "plandex-ai/plandex",
@@ -2943,7 +2984,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2956,7 +2998,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0152
+      "elapsed_seconds": 0.0151
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -3001,7 +3043,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3014,7 +3057,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3354
+      "elapsed_seconds": 0.3383
     },
     {
       "repository": "stitionai/devika",
@@ -3061,7 +3104,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3074,7 +3118,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.09
+      "elapsed_seconds": 0.0895
     },
     {
       "repository": "block/goose",
@@ -3083,7 +3127,7 @@
       "files_scanned": 54,
       "config_files_scanned": 2,
       "components": {
-        "capability": 16,
+        "capability": 17,
         "mcp": 4,
         "protocol": 15,
         "tool": 11
@@ -3120,7 +3164,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 7,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3143,7 +3188,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 0.9461
+      "elapsed_seconds": 1.0241
     },
     {
       "repository": "bytedance/trae-agent",
@@ -3198,7 +3243,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3215,7 +3261,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1583
+      "elapsed_seconds": 0.1547
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -3262,7 +3308,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 1,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3277,7 +3324,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8126
+      "elapsed_seconds": 2.943
     },
     {
       "repository": "openai/codex",
@@ -3315,7 +3362,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3328,7 +3376,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1309
+      "elapsed_seconds": 0.1288
     },
     {
       "repository": "browser-use/browser-use",
@@ -3383,7 +3431,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3399,7 +3448,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7687
+      "elapsed_seconds": 0.7548
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -3461,7 +3510,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3477,7 +3527,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3157
+      "elapsed_seconds": 1.3169
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -3528,7 +3578,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3543,7 +3594,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2224
+      "elapsed_seconds": 0.2196
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -3591,7 +3642,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3606,7 +3658,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6231
+      "elapsed_seconds": 0.6418
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -3615,7 +3667,7 @@
       "files_scanned": 79,
       "config_files_scanned": 0,
       "components": {
-        "capability": 116,
+        "capability": 117,
         "mcp": 6,
         "model": 1,
         "protocol": 95,
@@ -3631,16 +3683,16 @@
           "MCP"
         ]
       },
-      "relationships": 1,
+      "relationships": 2,
       "symbolized_components": 42,
-      "identified_symbol_endpoints": 1,
-      "resolved_symbol_endpoints": 1,
+      "identified_symbol_endpoints": 2,
+      "resolved_symbol_endpoints": 2,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
         "py": 0,
-        "ts": 1
+        "ts": 2
       },
       "typescript_graph": {
         "agent_edges": 0,
@@ -3652,7 +3704,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 42,
         "object_property_tools": 0,
-        "capability_edges": 1
+        "capability_edges": 2,
+        "network_helper_edges": 1
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3660,17 +3713,18 @@
         "typescript": 0
       },
       "bom_endpoint_resolutions": {
-        "evidence-location": 1,
-        "symbol-id": 1
+        "evidence-location": 2,
+        "symbol-id": 2
       },
       "bom_ambiguous_endpoints_by_side_kind": {},
       "findings": {
-        "AV-FS001": 1
+        "AV-FS001": 1,
+        "AV-NET001": 1
       },
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5463
+      "elapsed_seconds": 0.579
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -3728,7 +3782,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3745,7 +3800,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4962
+      "elapsed_seconds": 0.4979
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -3796,7 +3851,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 214,
         "object_property_tools": 0,
-        "capability_edges": 3
+        "capability_edges": 3,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3814,7 +3870,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7199
+      "elapsed_seconds": 1.816
     },
     {
       "repository": "github/github-mcp-server",
@@ -3855,7 +3911,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3910,7 +3967,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3923,7 +3981,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0495
+      "elapsed_seconds": 0.0507
     },
     {
       "repository": "awslabs/mcp",
@@ -3972,7 +4030,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3987,7 +4046,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4428
+      "elapsed_seconds": 0.4335
     },
     {
       "repository": "docker/mcp-gateway",
@@ -4029,7 +4088,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4044,7 +4104,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0125
+      "elapsed_seconds": 0.0112
     },
     {
       "repository": "jlowin/fastmcp",
@@ -4089,7 +4149,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4104,7 +4165,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5092
+      "elapsed_seconds": 0.5079
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -4135,7 +4196,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4199,7 +4261,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4214,7 +4277,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9562
+      "elapsed_seconds": 0.9758
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -4258,7 +4321,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4271,7 +4335,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6061
+      "elapsed_seconds": 1.6585
     },
     {
       "repository": "langgenius/dify",
@@ -4305,7 +4369,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4318,7 +4383,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4019
+      "elapsed_seconds": 0.3942
     },
     {
       "repository": "n8n-io/n8n",
@@ -4371,7 +4436,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 1,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4388,7 +4454,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1455
+      "elapsed_seconds": 1.1801
     },
     {
       "repository": "activepieces/activepieces",
@@ -4444,7 +4510,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 6,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4461,7 +4528,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8276
+      "elapsed_seconds": 0.861
     },
     {
       "repository": "simstudioai/sim",
@@ -4501,7 +4568,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4514,7 +4582,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2106
+      "elapsed_seconds": 2.3161
     },
     {
       "repository": "composiohq/composio",
@@ -4576,7 +4644,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4595,7 +4664,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6187
+      "elapsed_seconds": 0.6337
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -4656,7 +4725,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4675,7 +4745,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5369
+      "elapsed_seconds": 0.529
     },
     {
       "repository": "e2b-dev/E2B",
@@ -4714,7 +4784,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4727,7 +4798,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8343
+      "elapsed_seconds": 0.8559
     },
     {
       "repository": "daytonaio/daytona",
@@ -4758,7 +4829,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4828,7 +4900,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4847,7 +4920,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3154
+      "elapsed_seconds": 0.314
     },
     {
       "repository": "traceloop/openllmetry",
@@ -4909,7 +4982,8 @@
         "mastra_create_tool": 0,
         "mcp_register_tool": 0,
         "object_property_tools": 0,
-        "capability_edges": 0
+        "capability_edges": 0,
+        "network_helper_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4932,7 +5006,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5058
+      "elapsed_seconds": 0.4944
     }
   ]
 }

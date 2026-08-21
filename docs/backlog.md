@@ -44,10 +44,11 @@ semantics. Model containment as a control attached to the exact code/shell capab
 `AV-NET001` now reports Python and structurally resolved TypeScript tool parameters and their direct
 aliases when they determine the HTTP origin. Literal URLs and formatted URLs with a fixed scheme and
 host remain inventory-only. TypeScript coverage includes Mastra `createTool` object properties and
-MCP `registerTool` callbacks with exact tool identities. Next
+MCP `registerTool` callbacks with exact tool identities. Unique same-file free/static network helpers
+now propagate positional/destructured parameter flow to exact tool edges. Next
 resolve URL parsing/normalization guards, hostname allowlists, DNS rebinding defenses, proxy policy,
-and egress controls before treating a review as a demonstrated SSRF path. Add local helper summaries,
-deeper alias propagation, and equivalent Axios request-object handling.
+and egress controls before treating a review as a demonstrated SSRF path. Add imported, arrow-assigned,
+and transitive helper summaries, deeper alias propagation, and equivalent Axios request-object handling.
 
 ## P1 — consequential-action audit coverage
 
@@ -58,8 +59,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 166 pinned positive/negative locations, with 30 separately
-scored IR relationship labels. Schema-v8 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 172 pinned positive/negative locations, with 36 separately
+scored IR relationship labels. Schema-v9 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.
