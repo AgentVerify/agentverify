@@ -12896,6 +12896,568 @@ def add_python_openai_agents_mcp_approval_default_flow(
     )
 
 
+def add_python_google_adk_bigquery_audit_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve ADK Runner plugins into attributable BigQuery action-audit edges."""
+    sources: list[tuple[str, str, ast.Module]] = []
+    for path in paths:
+        if path.suffix.lower() != ".py" or not path.is_file():
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+            tree = ast.parse(text)
+        except (OSError, SyntaxError, ValueError):
+            continue
+        sources.append((path.relative_to(root).as_posix(), text, tree))
+
+    plugin_matches = [
+        item
+        for item in sources
+        if all(
+            marker in item[1]
+            for marker in (
+                "class BigQueryLoggerConfig:",
+                "enabled: bool = True",
+                "event_allowlist: list[str] | None = None",
+                "event_denylist: list[str] | None = None",
+                "class BigQueryAgentAnalyticsPlugin(BasePlugin):",
+                "async def before_tool_callback(",
+                '"TOOL_STARTING"',
+                "async def after_tool_callback(",
+                '"TOOL_COMPLETED"',
+                "async def on_tool_error_callback(",
+                '"TOOL_ERROR"',
+                '"event_id": uuid.uuid4().hex',
+                '"user_id": callback_context.user_id',
+                '"session_id": callback_context.session.id',
+                '"invocation_id": callback_context.invocation_id',
+                '"agent":',
+                '"tool":',
+                "def get_drop_stats(",
+                'self._dropped["retry_exhausted"]',
+                "await self.write_client.append_rows(",
+            )
+        )
+        and re.search(
+            r"async\s+def\s+_log_event\s*\([\s\S]{0,700}?"
+            r"if\s+not\s+self\.config\.enabled\s+or\s+self\._is_shutting_down\s*:\s*return",
+            item[1],
+        )
+    ]
+    runner_matches = [
+        item
+        for item in sources
+        if all(
+            marker in item[1]
+            for marker in (
+                "class Runner:",
+                "plugins: Optional[List[BasePlugin]] = None",
+                "self.plugin_manager = PluginManager(",
+                "plugins=app.plugins",
+            )
+        )
+    ]
+    manager_matches = [
+        item
+        for item in sources
+        if all(
+            marker in item[1]
+            for marker in (
+                "class PluginManager:",
+                "for plugin in self.plugins:",
+                "run_before_tool_callback",
+                '"before_tool_callback"',
+                "run_after_tool_callback",
+                '"after_tool_callback"',
+                "run_on_tool_error_callback",
+                '"on_tool_error_callback"',
+            )
+        )
+    ]
+    flow_matches = [
+        item
+        for item in sources
+        if re.search(
+            r"run_before_tool_callback\s*\([\s\S]{0,1800}?"
+            r"__call_tool_async\s*\([\s\S]{0,1800}?"
+            r"run_after_tool_callback\s*\(",
+            item[1],
+        )
+        and "run_on_tool_error_callback(" in item[1]
+    ]
+    if not all(
+        len(matches) == 1
+        for matches in (plugin_matches, runner_matches, manager_matches, flow_matches)
+    ):
+        return
+
+    plugin_path, plugin_text, _plugin_tree = plugin_matches[0]
+    runner_path, _runner_text, _runner_tree = runner_matches[0]
+    manager_path, _manager_text, _manager_tree = manager_matches[0]
+    flow_path, _flow_text, _flow_tree = flow_matches[0]
+    plugin_lines = plugin_text.splitlines()
+    class_offset = plugin_text.find("class BigQueryAgentAnalyticsPlugin(BasePlugin):")
+    storage_offset = plugin_text.find("await self.write_client.append_rows(")
+    if class_offset < 0 or storage_offset < 0:
+        return
+    class_line = line_at(plugin_text, class_offset)
+    storage_line = line_at(plugin_text, storage_offset)
+    class_evidence = Evidence(plugin_path, class_line, excerpt(plugin_lines, class_line))
+    storage_evidence = Evidence(plugin_path, storage_line, excerpt(plugin_lines, storage_line))
+    analysis = "python-google-adk-bigquery-action-audit"
+    audit_attributes: dict[str, object] = {
+        "analysis": analysis,
+        "framework": "google-adk",
+        "sink": "bigquery-storage-write-api",
+        "durability": "durable-remote-database",
+        "delivery": "best-effort-with-drop-accounting",
+        "event_types": ["TOOL_STARTING", "TOOL_COMPLETED", "TOOL_ERROR"],
+        "attribution_fields": [
+            "event_id",
+            "agent",
+            "user_id",
+            "session_id",
+            "invocation_id",
+            "tool",
+        ],
+        "plugin_path": plugin_path,
+        "runner_path": runner_path,
+        "manager_path": manager_path,
+        "flow_path": flow_path,
+    }
+    ir.add_component(
+        Component(
+            "control",
+            "durable-action-audit",
+            class_evidence,
+            {
+                **audit_attributes,
+                "deployment_state": "framework-available",
+                "scope": source_scope(plugin_path),
+            },
+        )
+    )
+    ir.add_component(
+        Component(
+            "capability",
+            "audit-storage",
+            storage_evidence,
+            {
+                "analysis": analysis,
+                "api": "BigQueryWriteAsyncClient.append_rows",
+                "sink": "bigquery-storage-write-api",
+                "durability": "durable-remote-database",
+                "scope": source_scope(plugin_path),
+            },
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "control",
+            "durable-action-audit",
+            "exports-to",
+            "capability",
+            "audit-storage",
+            storage_evidence,
+            audit_attributes,
+        )
+    )
+
+    wrapper_matches = [
+        item
+        for item in sources
+        if all(
+            marker in item[1]
+            for marker in (
+                "from google.adk.runners import InMemoryRunner as AfInMemoryRunner",
+                "from google.adk.runners import Runner",
+                "class InMemoryRunner:",
+                "plugins: list[BasePlugin] = []",
+                "self.runner = Runner(",
+                "plugins=plugins",
+            )
+        )
+    ]
+    wrapper_available = len(wrapper_matches) == 1
+
+    def imported_bindings(body: list[ast.stmt]) -> tuple[set[str], set[str], set[str]]:
+        plugin_classes: set[str] = set()
+        config_classes: set[str] = set()
+        runner_constructors: set[str] = set()
+        for statement in body:
+            if isinstance(statement, ast.ImportFrom):
+                if statement.module == "google.adk.plugins.bigquery_agent_analytics_plugin":
+                    for alias in statement.names:
+                        local = alias.asname or alias.name
+                        if alias.name == "BigQueryAgentAnalyticsPlugin":
+                            plugin_classes.add(local)
+                        elif alias.name == "BigQueryLoggerConfig":
+                            config_classes.add(local)
+                elif statement.module == "google.adk.plugins":
+                    for alias in statement.names:
+                        if alias.name == "bigquery_agent_analytics_plugin":
+                            module = alias.asname or alias.name
+                            plugin_classes.add(f"{module}.BigQueryAgentAnalyticsPlugin")
+                            config_classes.add(f"{module}.BigQueryLoggerConfig")
+                elif statement.module == "google.adk.runners":
+                    for alias in statement.names:
+                        if alias.name in {"Runner", "InMemoryRunner"}:
+                            runner_constructors.add(alias.asname or alias.name)
+                elif wrapper_available and statement.level and any(
+                    alias.name == "testing_utils" for alias in statement.names
+                ):
+                    for alias in statement.names:
+                        if alias.name == "testing_utils":
+                            runner_constructors.add(
+                                f"{alias.asname or alias.name}.InMemoryRunner"
+                            )
+            elif isinstance(statement, ast.Import):
+                for alias in statement.names:
+                    if alias.name == "google.adk.plugins.bigquery_agent_analytics_plugin":
+                        module = alias.asname or alias.name
+                        plugin_classes.add(f"{module}.BigQueryAgentAnalyticsPlugin")
+                        config_classes.add(f"{module}.BigQueryLoggerConfig")
+                    elif alias.name == "google.adk.runners":
+                        module = alias.asname or alias.name
+                        runner_constructors.update(
+                            {f"{module}.Runner", f"{module}.InMemoryRunner"}
+                        )
+        return plugin_classes, config_classes, runner_constructors
+
+    def scope_binding_counts(
+        body: list[ast.stmt], parameters: tuple[str, ...] = ()
+    ) -> Counter[str]:
+        counts: Counter[str] = Counter(parameters)
+
+        def collect(node: ast.AST) -> None:
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                    counts[node.name] += 1
+                return
+            if isinstance(node, (ast.Import, ast.ImportFrom)):
+                for alias in node.names:
+                    counts[alias.asname or alias.name.split(".", 1)[0]] += 1
+                return
+            if isinstance(node, ast.ExceptHandler) and node.name:
+                counts[node.name] += 1
+            if isinstance(node, ast.Name) and isinstance(node.ctx, (ast.Store, ast.Del)):
+                counts[node.id] += 1
+            for child in ast.iter_child_nodes(node):
+                collect(child)
+
+        for statement in body:
+            collect(statement)
+        return counts
+
+    def assigned_calls(
+        body: list[ast.stmt], parameters: tuple[str, ...] = ()
+    ) -> dict[str, ast.Call]:
+        counts = scope_binding_counts(body, parameters)
+        result: dict[str, ast.Call] = {}
+        for statement in body:
+            target: ast.Name | None = None
+            value: ast.AST | None = None
+            if (
+                isinstance(statement, ast.Assign)
+                and len(statement.targets) == 1
+                and isinstance(statement.targets[0], ast.Name)
+            ):
+                target = statement.targets[0]
+                value = statement.value
+            elif isinstance(statement, ast.AnnAssign) and isinstance(statement.target, ast.Name):
+                target = statement.target
+                value = statement.value
+            if target is not None and counts[target.id] == 1 and isinstance(value, ast.Call):
+                result[target.id] = value
+        return result
+
+    def configuration_state(
+        expression: ast.AST,
+        config_classes: set[str],
+        configs: dict[str, ast.Call],
+    ) -> str:
+        if isinstance(expression, ast.Constant) and expression.value is None:
+            return "enabled"
+        if isinstance(expression, ast.Name):
+            call = configs.get(expression.id)
+            return configuration_state(call, config_classes, configs) if call else "unresolved"
+        if not isinstance(expression, ast.Call) or dotted_name(expression.func) not in config_classes:
+            return "unresolved"
+        if any(keyword.arg is None for keyword in expression.keywords):
+            return "unresolved"
+        if any(
+            keyword.arg in {"event_allowlist", "event_denylist"}
+            for keyword in expression.keywords
+        ):
+            return "unresolved"
+        enabled = next(
+            (keyword.value for keyword in expression.keywords if keyword.arg == "enabled"),
+            None,
+        )
+        if enabled is None:
+            return "enabled"
+        if isinstance(enabled, ast.Constant) and isinstance(enabled.value, bool):
+            return "enabled" if enabled.value else "disabled-explicit"
+        return "unresolved"
+
+    def plugin_state(
+        call: ast.Call,
+        config_classes: set[str],
+        configs: dict[str, ast.Call],
+    ) -> str:
+        if any(keyword.arg is None for keyword in call.keywords):
+            return "unresolved"
+        if any(
+            keyword.arg in {"event_allowlist", "event_denylist"}
+            for keyword in call.keywords
+        ):
+            return "unresolved"
+        config = next((keyword.value for keyword in call.keywords if keyword.arg == "config"), None)
+        state = (
+            configuration_state(config, config_classes, configs)
+            if config is not None
+            else "enabled"
+        )
+        enabled = next(
+            (keyword.value for keyword in call.keywords if keyword.arg == "enabled"),
+            None,
+        )
+        if enabled is not None:
+            if not isinstance(enabled, ast.Constant) or not isinstance(enabled.value, bool):
+                return "unresolved"
+            state = "enabled" if enabled.value else "disabled-explicit"
+        return state
+
+    for app_path, app_text, tree in sources:
+        module_plugin_classes, module_config_classes, module_runner_constructors = (
+            imported_bindings(tree.body)
+        )
+        if not module_plugin_classes:
+            continue
+        app_lines = app_text.splitlines()
+        scopes: list[tuple[list[ast.stmt], tuple[str, ...]]] = [(tree.body, ())]
+        for node in ast.walk(tree):
+            if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                continue
+            arguments = (
+                *node.args.posonlyargs,
+                *node.args.args,
+                *node.args.kwonlyargs,
+            )
+            parameters = tuple(argument.arg for argument in arguments)
+            if node.args.vararg is not None:
+                parameters += (node.args.vararg.arg,)
+            if node.args.kwarg is not None:
+                parameters += (node.args.kwarg.arg,)
+            scopes.append((node.body, parameters))
+        for body, parameters in scopes:
+            local_plugin_classes, local_config_classes, local_runner_constructors = (
+                imported_bindings(body)
+            )
+            plugin_classes = module_plugin_classes | local_plugin_classes
+            config_classes = module_config_classes | local_config_classes
+            runner_constructors = module_runner_constructors | local_runner_constructors
+            if not runner_constructors:
+                continue
+            calls = assigned_calls(body, parameters)
+            configs = {
+                name: call
+                for name, call in calls.items()
+                if dotted_name(call.func) in config_classes
+            }
+            plugins = {
+                name: (call, plugin_state(call, config_classes, configs))
+                for name, call in calls.items()
+                if dotted_name(call.func) in plugin_classes
+            }
+            agents = {
+                name: next(
+                    (
+                        component
+                        for component in ir.components
+                        if component.kind == "agent"
+                        and component.evidence.path == app_path
+                        and component.evidence.line == call.lineno
+                    ),
+                    None,
+                )
+                for name, call in calls.items()
+                if dotted_name(call.func).rsplit(".", 1)[-1] in AGENT_CALLS
+            }
+            for runner_call in calls.values():
+                if dotted_name(runner_call.func) not in runner_constructors:
+                    continue
+                agent_expression = next(
+                    (
+                        keyword.value
+                        for keyword in runner_call.keywords
+                        if keyword.arg in {"agent", "root_agent"}
+                    ),
+                    runner_call.args[0] if runner_call.args else None,
+                )
+                plugins_expression = next(
+                    (
+                        keyword.value
+                        for keyword in runner_call.keywords
+                        if keyword.arg == "plugins"
+                    ),
+                    None,
+                )
+                if not isinstance(agent_expression, ast.Name) or not isinstance(
+                    plugins_expression, (ast.List, ast.Tuple)
+                ):
+                    continue
+                agent = agents.get(agent_expression.id)
+                if agent is None:
+                    continue
+                plugin_names = [
+                    element.id for element in plugins_expression.elts if isinstance(element, ast.Name)
+                ]
+                if len(plugin_names) != len(plugins_expression.elts):
+                    continue
+                selected_plugins = [plugins[name] for name in plugin_names if name in plugins]
+                if len(selected_plugins) != 1:
+                    continue
+                plugin_call, state = selected_plugins[0]
+                runner_evidence = Evidence(
+                    app_path,
+                    runner_call.lineno,
+                    excerpt(app_lines, runner_call.lineno),
+                )
+                plugin_evidence = Evidence(
+                    app_path,
+                    plugin_call.lineno,
+                    excerpt(app_lines, plugin_call.lineno),
+                )
+                if state != "enabled":
+                    setting_attributes = {
+                        "analysis": analysis,
+                        "enabled": False if state == "disabled-explicit" else "unresolved",
+                        "state": state,
+                        "scope": source_scope(app_path),
+                        "plugin_path": plugin_path,
+                    }
+                    ir.add_component(
+                        Component(
+                            "control-setting",
+                            "action-audit",
+                            plugin_evidence,
+                            setting_attributes,
+                        )
+                    )
+                    ir.add_relationship(
+                        Relationship(
+                            "agent",
+                            agent.name,
+                            "configured-by",
+                            "control-setting",
+                            "action-audit",
+                            runner_evidence,
+                            setting_attributes,
+                            source_id=agent.symbol_id,
+                        )
+                    )
+                    continue
+
+                deployed_attributes = {
+                    **audit_attributes,
+                    "deployment_state": "enabled",
+                    "scope": source_scope(app_path),
+                    "plugin_line": plugin_call.lineno,
+                    "policy_effect": "records-attributable-tool-actions",
+                }
+                ir.add_component(
+                    Component(
+                        "control",
+                        "durable-action-audit",
+                        runner_evidence,
+                        deployed_attributes,
+                    )
+                )
+                ir.add_relationship(
+                    Relationship(
+                        "agent",
+                        agent.name,
+                        "governed-by",
+                        "control",
+                        "durable-action-audit",
+                        runner_evidence,
+                        deployed_attributes,
+                        source_id=agent.symbol_id,
+                    )
+                )
+                tool_edges = [
+                    edge
+                    for edge in ir.relationships
+                    if edge.source_kind == "agent"
+                    and edge.relation == "uses"
+                    and edge.target_kind == "tool"
+                    and (
+                        (agent.symbol_id is not None and edge.source_id == agent.symbol_id)
+                        or (
+                            agent.symbol_id is None
+                            and edge.source_name == agent.name
+                            and edge.evidence.path == app_path
+                            and edge.evidence.line == agent.evidence.line
+                        )
+                    )
+                ]
+                for tool_edge in tool_edges:
+                    ir.add_relationship(
+                        Relationship(
+                            "tool",
+                            tool_edge.target_name,
+                            "governed-by",
+                            "control",
+                            "durable-action-audit",
+                            runner_evidence,
+                            deployed_attributes,
+                            source_id=tool_edge.target_id,
+                        )
+                    )
+                    capability_edges = [
+                        edge
+                        for edge in ir.relationships
+                        if edge.source_kind == "tool"
+                        and edge.relation == "uses"
+                        and edge.target_kind == "capability"
+                        and edge.target_name == "external-action"
+                        and (
+                            (
+                                tool_edge.target_id is not None
+                                and edge.source_id == tool_edge.target_id
+                            )
+                            or (
+                                tool_edge.target_id is None
+                                and edge.source_name == tool_edge.target_name
+                                and edge.evidence.path
+                                == tool_edge.attributes.get("target_path", app_path)
+                            )
+                        )
+                    ]
+                    for capability_edge in capability_edges:
+                        ir.add_relationship(
+                            Relationship(
+                                "capability",
+                                "external-action",
+                                "governed-by",
+                                "control",
+                                "durable-action-audit",
+                                capability_edge.evidence,
+                                {
+                                    **deployed_attributes,
+                                    "control_path": app_path,
+                                    "control_line": runner_call.lineno,
+                                },
+                            )
+                        )
+
+
 def add_typescript_a2a_card_endpoint_composition(
     ir: RepositoryIR,
     root: Path,
@@ -13425,6 +13987,7 @@ def scan_repository(
     add_typescript_a2a_card_endpoint_composition(ir, root, registry_paths)
     add_python_adk_a2a_card_endpoint_policy(ir, root, registry_paths)
     add_python_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)
+    add_python_google_adk_bigquery_audit_flow(ir, root, registry_paths)
     propagate_python_class_network_helpers(
         ir,
         root,

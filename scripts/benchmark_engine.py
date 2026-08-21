@@ -262,6 +262,30 @@ def main() -> int:
             and item.attributes.get("analysis")
             == "python-openai-agents-mcp-approval-default"
         ]
+        python_google_adk_bigquery_audit_controls = [
+            item
+            for item in ir.components
+            if item.kind == "control"
+            and item.name == "durable-action-audit"
+            and item.attributes.get("analysis")
+            == "python-google-adk-bigquery-action-audit"
+        ]
+        python_google_adk_bigquery_audit_storage = [
+            item
+            for item in ir.components
+            if item.kind == "capability"
+            and item.name == "audit-storage"
+            and item.attributes.get("analysis")
+            == "python-google-adk-bigquery-action-audit"
+        ]
+        python_google_adk_bigquery_audit_settings = [
+            item
+            for item in ir.components
+            if item.kind == "control-setting"
+            and item.name == "action-audit"
+            and item.attributes.get("analysis")
+            == "python-google-adk-bigquery-action-audit"
+        ]
         typescript_network_origin_controls = [
             edge
             for edge in ir.relationships
@@ -718,6 +742,57 @@ def main() -> int:
                     for edge in ir.relationships
                 ),
             },
+            "python_google_adk_bigquery_audit": {
+                "available_controls": sum(
+                    item.attributes.get("deployment_state") == "framework-available"
+                    for item in python_google_adk_bigquery_audit_controls
+                ),
+                "deployed_controls": sum(
+                    item.attributes.get("deployment_state") == "enabled"
+                    for item in python_google_adk_bigquery_audit_controls
+                ),
+                "production_deployments": sum(
+                    item.attributes.get("deployment_state") == "enabled"
+                    and item.attributes.get("scope") == "production"
+                    for item in python_google_adk_bigquery_audit_controls
+                ),
+                "test_deployments": sum(
+                    item.attributes.get("deployment_state") == "enabled"
+                    and item.attributes.get("scope") == "test"
+                    for item in python_google_adk_bigquery_audit_controls
+                ),
+                "storage_capabilities": len(python_google_adk_bigquery_audit_storage),
+                "disabled_settings": sum(
+                    item.attributes.get("state") == "disabled-explicit"
+                    for item in python_google_adk_bigquery_audit_settings
+                ),
+                "agent_control_edges": sum(
+                    edge.source_kind == "agent"
+                    and edge.relation == "governed-by"
+                    and edge.target_name == "durable-action-audit"
+                    and edge.attributes.get("analysis")
+                    == "python-google-adk-bigquery-action-audit"
+                    for edge in ir.relationships
+                ),
+                "external_action_control_edges": sum(
+                    edge.source_kind == "capability"
+                    and edge.source_name == "external-action"
+                    and edge.relation == "governed-by"
+                    and edge.target_name == "durable-action-audit"
+                    and edge.attributes.get("analysis")
+                    == "python-google-adk-bigquery-action-audit"
+                    for edge in ir.relationships
+                ),
+                "storage_edges": sum(
+                    edge.source_kind == "control"
+                    and edge.source_name == "durable-action-audit"
+                    and edge.relation == "exports-to"
+                    and edge.target_name == "audit-storage"
+                    and edge.attributes.get("analysis")
+                    == "python-google-adk-bigquery-action-audit"
+                    for edge in ir.relationships
+                ),
+            },
             "typescript_network_origin_controls": {
                 "total": len(typescript_network_origin_controls),
                 "configured_optional": sum(
@@ -1002,7 +1077,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 44,
+        "schema_version": 45,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -1237,6 +1312,23 @@ def main() -> int:
                     "disabled_default",
                     "agent_server_edges",
                     "configured_by_edges",
+                )
+            },
+            "python_google_adk_bigquery_audit": {
+                name: sum(
+                    result["python_google_adk_bigquery_audit"][name]
+                    for result in successful
+                )
+                for name in (
+                    "available_controls",
+                    "deployed_controls",
+                    "production_deployments",
+                    "test_deployments",
+                    "storage_capabilities",
+                    "disabled_settings",
+                    "agent_control_edges",
+                    "external_action_control_edges",
+                    "storage_edges",
                 )
             },
             "typescript_network_origin_controls": {

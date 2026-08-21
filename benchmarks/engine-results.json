@@ -1,6 +1,6 @@
 {
-  "schema_version": 44,
-  "generated_at": "2026-08-21T18:28:40.583097+00:00",
+  "schema_version": 45,
+  "generated_at": "2026-08-21T19:08:49.396592+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -16,35 +16,36 @@
     "zero_source_repositories": [
       "daytonaio/daytona"
     ],
-    "files_scanned": 10758,
-    "dependency_files_materialized": 163,
+    "files_scanned": 10763,
+    "dependency_files_materialized": 168,
     "repositories_with_dependency_expansion": 18,
     "config_files_scanned": 155,
-    "relationships": 1490,
-    "symbolized_components": 8747,
-    "identified_symbol_endpoints": 1939,
-    "resolved_symbol_endpoints": 1937,
+    "relationships": 1495,
+    "symbolized_components": 8748,
+    "identified_symbol_endpoints": 1941,
+    "resolved_symbol_endpoints": 1939,
     "unmatched_identified_symbol_endpoints": 2,
     "ambiguous_repeated_binding_targets": 23,
     "resolved_binding_targets_by_basis": {
       "lexical-single-definition": 325,
       "module-single-definition": 14
     },
-    "relationship_endpoints": 2980,
+    "relationship_endpoints": 2990,
     "bom_endpoint_resolutions": {
-      "ambiguous": 37,
-      "evidence-location": 487,
-      "symbol-id": 1937,
+      "ambiguous": 38,
+      "evidence-location": 492,
+      "symbol-id": 1939,
       "unique-display-name": 20,
-      "unresolved": 499
+      "unresolved": 501
     },
     "bom_ambiguous_endpoints_by_side_kind": {
+      "source:control": 1,
       "source:protocol": 1,
       "target:control": 6,
       "target:tool": 30
     },
     "resolved_symbol_endpoints_by_frontend": {
-      "py": 1678,
+      "py": 1680,
       "ts": 259
     },
     "typescript_graph": {
@@ -154,6 +155,17 @@
       "disabled_default": 1,
       "agent_server_edges": 1,
       "configured_by_edges": 1
+    },
+    "python_google_adk_bigquery_audit": {
+      "available_controls": 1,
+      "deployed_controls": 2,
+      "production_deployments": 0,
+      "test_deployments": 2,
+      "storage_capabilities": 1,
+      "disabled_settings": 0,
+      "agent_control_edges": 2,
+      "external_action_control_edges": 0,
+      "storage_edges": 1
     },
     "typescript_network_origin_controls": {
       "total": 2,
@@ -295,6 +307,7 @@
     "observed_component_names": {
       "capability": {
         "a2a-rpc": 3,
+        "audit-storage": 1,
         "browser": 13,
         "code-execution": 28,
         "computer-control": 1,
@@ -310,6 +323,7 @@
       "control": {
         "a2a-card-rpc-origin-policy": 1,
         "action-trace": 1,
+        "durable-action-audit": 1,
         "fixed-tool-binding": 6,
         "human-approval": 3,
         "network-origin-policy": 2,
@@ -462,7 +476,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 162.5545
+    "elapsed_seconds": 173.8705
   },
   "repositories": [
     {
@@ -603,6 +617,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -690,7 +715,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8804
+      "elapsed_seconds": 2.9247
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -837,6 +862,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -929,7 +965,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3168
+      "elapsed_seconds": 3.5784
     },
     {
       "repository": "langchain-ai/langchain",
@@ -1073,6 +1109,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1158,7 +1205,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9976
+      "elapsed_seconds": 1.0763
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -1306,6 +1353,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1399,7 +1457,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.3735
+      "elapsed_seconds": 4.7373
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -1552,6 +1610,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1641,7 +1710,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.202
+      "elapsed_seconds": 0.2147
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -1798,6 +1867,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1900,7 +1980,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.9371
+      "elapsed_seconds": 6.4674
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -2059,6 +2139,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2166,7 +2257,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1629
+      "elapsed_seconds": 3.9484
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -2320,6 +2411,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2419,7 +2521,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2768
+      "elapsed_seconds": 0.303
     },
     {
       "repository": "microsoft/autogen",
@@ -2569,6 +2671,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2663,7 +2776,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7584
+      "elapsed_seconds": 0.8152
     },
     {
       "repository": "microsoft/agent-framework",
@@ -2797,6 +2910,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2882,7 +3006,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0373
+      "elapsed_seconds": 0.0371
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -3030,6 +3154,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3124,7 +3259,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1158
+      "elapsed_seconds": 0.1287
     },
     {
       "repository": "openai/openai-agents-python",
@@ -3294,6 +3429,17 @@
         "agent_server_edges": 1,
         "configured_by_edges": 1
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3398,7 +3544,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.8487
+      "elapsed_seconds": 6.2544
     },
     {
       "repository": "openai/openai-agents-js",
@@ -3563,6 +3709,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3654,7 +3811,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9861
+      "elapsed_seconds": 1.0032
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -3808,6 +3965,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3906,26 +4074,27 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 12.4831
+      "elapsed_seconds": 13.826
     },
     {
       "repository": "google/adk-python",
       "category": "framework",
       "status": "ok",
-      "files_scanned": 213,
-      "dependency_files_materialized": 1,
+      "files_scanned": 218,
+      "dependency_files_materialized": 6,
       "config_files_scanned": 1,
       "components": {
-        "agent": 439,
-        "capability": 102,
-        "control": 1,
-        "framework": 9,
+        "agent": 440,
+        "capability": 103,
+        "control": 4,
+        "framework": 35,
         "model": 93,
         "protocol": 3
       },
       "component_names": {
         "capability": [
           "a2a-rpc",
+          "audit-storage",
           "code-execution",
           "external-action",
           "filesystem",
@@ -3933,7 +4102,8 @@
           "shell-execution"
         ],
         "control": [
-          "a2a-card-rpc-origin-policy"
+          "a2a-card-rpc-origin-policy",
+          "durable-action-audit"
         ],
         "framework": [
           "LangGraph",
@@ -3944,15 +4114,15 @@
           "MCP"
         ]
       },
-      "relationships": 137,
-      "symbolized_components": 440,
-      "identified_symbol_endpoints": 135,
-      "resolved_symbol_endpoints": 135,
+      "relationships": 142,
+      "symbolized_components": 441,
+      "identified_symbol_endpoints": 137,
+      "resolved_symbol_endpoints": 137,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
-        "py": 135,
+        "py": 137,
         "ts": 0
       },
       "typescript_graph": {
@@ -4059,6 +4229,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 1,
+        "deployed_controls": 2,
+        "production_deployments": 0,
+        "test_deployments": 2,
+        "storage_capabilities": 1,
+        "disabled_settings": 0,
+        "agent_control_edges": 2,
+        "external_action_control_edges": 0,
+        "storage_edges": 1
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4145,16 +4326,19 @@
         "typescript": 0
       },
       "bom_endpoint_resolutions": {
-        "evidence-location": 6,
-        "symbol-id": 135,
-        "unresolved": 133
+        "ambiguous": 1,
+        "evidence-location": 11,
+        "symbol-id": 137,
+        "unresolved": 135
       },
-      "bom_ambiguous_endpoints_by_side_kind": {},
+      "bom_ambiguous_endpoints_by_side_kind": {
+        "source:control": 1
+      },
       "findings": {},
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.7304
+      "elapsed_seconds": 4.9153
     },
     {
       "repository": "google/adk-js",
@@ -4303,6 +4487,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 1,
         "configured_optional": 0,
@@ -4395,7 +4590,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.5725
+      "elapsed_seconds": 3.6434
     },
     {
       "repository": "huggingface/smolagents",
@@ -4547,6 +4742,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4648,7 +4854,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3944
+      "elapsed_seconds": 1.5305
     },
     {
       "repository": "agno-agi/agno",
@@ -4792,6 +4998,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4887,7 +5104,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3343
+      "elapsed_seconds": 0.3811
     },
     {
       "repository": "camel-ai/camel",
@@ -5041,6 +5258,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5143,7 +5371,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8642
+      "elapsed_seconds": 3.0748
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -5285,6 +5513,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5373,7 +5612,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1935
+      "elapsed_seconds": 0.2139
     },
     {
       "repository": "run-llama/llama_index",
@@ -5521,6 +5760,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5606,7 +5856,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8092
+      "elapsed_seconds": 0.8798
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -5759,6 +6009,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5861,7 +6122,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5848
+      "elapsed_seconds": 1.7348
     },
     {
       "repository": "InternLM/lagent",
@@ -6013,6 +6274,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6111,7 +6383,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.739
+      "elapsed_seconds": 0.7678
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -6256,6 +6528,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6356,7 +6639,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.189
+      "elapsed_seconds": 1.284
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -6506,6 +6789,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6608,7 +6902,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6574
+      "elapsed_seconds": 1.7905
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -6754,6 +7048,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6853,7 +7158,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0474
+      "elapsed_seconds": 1.1175
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -7002,6 +7307,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7097,7 +7413,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4769
+      "elapsed_seconds": 3.9289
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -7241,6 +7557,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7335,7 +7662,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3537
+      "elapsed_seconds": 1.4353
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -7481,6 +7808,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7566,7 +7904,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9713
+      "elapsed_seconds": 0.9786
     },
     {
       "repository": "letta-ai/letta-code",
@@ -7706,6 +8044,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7791,7 +8140,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.7177
+      "elapsed_seconds": 4.6952
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -7944,6 +8293,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8043,7 +8403,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0342
+      "elapsed_seconds": 1.1188
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -8188,6 +8548,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8288,7 +8659,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1279
+      "elapsed_seconds": 2.2985
     },
     {
       "repository": "mastra-ai/mastra",
@@ -8439,6 +8810,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8530,7 +8912,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7126
+      "elapsed_seconds": 2.6823
     },
     {
       "repository": "vercel/ai",
@@ -8676,6 +9058,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8766,7 +9159,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9176
+      "elapsed_seconds": 2.917
     },
     {
       "repository": "cline/cline",
@@ -8916,6 +9309,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9007,7 +9411,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.0345
+      "elapsed_seconds": 4.0411
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -9150,6 +9554,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9235,7 +9650,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.3503
+      "elapsed_seconds": 4.3746
     },
     {
       "repository": "continuedev/continue",
@@ -9376,6 +9791,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9461,7 +9887,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.679
+      "elapsed_seconds": 2.7235
     },
     {
       "repository": "Aider-AI/aider",
@@ -9601,6 +10027,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9701,7 +10138,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6922
+      "elapsed_seconds": 2.8381
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -9840,6 +10277,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9933,7 +10381,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 0.8418
+      "elapsed_seconds": 0.918
     },
     {
       "repository": "plandex-ai/plandex",
@@ -10059,6 +10507,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10144,7 +10603,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0461
+      "elapsed_seconds": 0.0453
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -10284,6 +10743,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10375,7 +10845,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2899
+      "elapsed_seconds": 1.36
     },
     {
       "repository": "stitionai/devika",
@@ -10520,6 +10990,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10609,7 +11090,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.333
+      "elapsed_seconds": 0.3574
     },
     {
       "repository": "block/goose",
@@ -10750,6 +11231,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10844,7 +11336,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 5.9859
+      "elapsed_seconds": 6.0351
     },
     {
       "repository": "bytedance/trae-agent",
@@ -10998,6 +11490,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11100,7 +11603,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6811
+      "elapsed_seconds": 0.7295
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -11244,6 +11747,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11335,7 +11849,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.4232
+      "elapsed_seconds": 6.4958
     },
     {
       "repository": "openai/codex",
@@ -11468,6 +11982,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11559,7 +12084,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6255
+      "elapsed_seconds": 0.6661
     },
     {
       "repository": "browser-use/browser-use",
@@ -11715,6 +12240,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11818,7 +12354,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.6921
+      "elapsed_seconds": 3.8779
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -11980,6 +12516,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12081,7 +12628,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.2419
+      "elapsed_seconds": 7.9765
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -12229,6 +12776,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12325,7 +12883,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7574
+      "elapsed_seconds": 0.8129
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -12468,6 +13026,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12555,7 +13124,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3801
+      "elapsed_seconds": 1.4029
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -12701,6 +13270,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 1,
         "configured_optional": 1,
@@ -12796,7 +13376,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3619
+      "elapsed_seconds": 1.3836
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -12949,6 +13529,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13043,7 +13634,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2136
+      "elapsed_seconds": 2.4211
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -13189,6 +13780,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13279,7 +13881,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.2415
+      "elapsed_seconds": 4.1207
     },
     {
       "repository": "github/github-mcp-server",
@@ -13415,6 +14017,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13500,7 +14113,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0471
+      "elapsed_seconds": 0.0468
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -13637,6 +14250,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13722,7 +14346,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1156
+      "elapsed_seconds": 0.1182
     },
     {
       "repository": "awslabs/mcp",
@@ -13866,6 +14490,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13959,7 +14594,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9528
+      "elapsed_seconds": 2.1625
     },
     {
       "repository": "docker/mcp-gateway",
@@ -14096,6 +14731,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14183,7 +14829,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0345
+      "elapsed_seconds": 0.0348
     },
     {
       "repository": "jlowin/fastmcp",
@@ -14328,6 +14974,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14425,7 +15082,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3689
+      "elapsed_seconds": 2.5941
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -14551,6 +15208,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14636,7 +15304,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0324
+      "elapsed_seconds": 0.0334
     },
     {
       "repository": "langflow-ai/langflow",
@@ -14790,6 +15458,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14883,7 +15562,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1335
+      "elapsed_seconds": 3.2566
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -15027,6 +15706,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -15120,7 +15810,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.8862
+      "elapsed_seconds": 3.9322
     },
     {
       "repository": "langgenius/dify",
@@ -15249,6 +15939,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -15334,7 +16035,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5383
+      "elapsed_seconds": 1.6758
     },
     {
       "repository": "n8n-io/n8n",
@@ -15486,6 +16187,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -15579,7 +16291,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7756
+      "elapsed_seconds": 2.8204
     },
     {
       "repository": "activepieces/activepieces",
@@ -15734,6 +16446,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -15829,7 +16552,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7863
+      "elapsed_seconds": 1.8228
     },
     {
       "repository": "simstudioai/sim",
@@ -15964,6 +16687,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -16049,7 +16783,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.3624
+      "elapsed_seconds": 5.5941
     },
     {
       "repository": "composiohq/composio",
@@ -16210,6 +16944,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -16305,7 +17050,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8986
+      "elapsed_seconds": 1.9733
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -16462,6 +17207,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -16565,7 +17321,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.363
+      "elapsed_seconds": 2.5496
     },
     {
       "repository": "e2b-dev/E2B",
@@ -16699,6 +17455,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -16784,7 +17551,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2333
+      "elapsed_seconds": 2.3037
     },
     {
       "repository": "daytonaio/daytona",
@@ -16909,6 +17676,17 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -17147,6 +17925,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -17238,7 +18027,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2464
+      "elapsed_seconds": 1.3811
     },
     {
       "repository": "traceloop/openllmetry",
@@ -17395,6 +18184,17 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -17490,7 +18290,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0997
+      "elapsed_seconds": 2.284
     }
   ]
 }

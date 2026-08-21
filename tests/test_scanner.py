@@ -3442,6 +3442,149 @@ def test_action_trace_only_governs_capabilities_inside_the_span() -> None:
     assert analysis["audit_coverage"] == "instrumented; exporter durability unresolved"
 
 
+def test_google_adk_bigquery_plugin_proves_durable_attributable_action_audit() -> None:
+    ir = scan_repository(ROOT / "cases/python_google_adk_bigquery_audit")
+
+    storage = next(
+        component
+        for component in ir.components
+        if component.kind == "capability" and component.name == "audit-storage"
+    )
+    assert storage.attributes == {
+        "analysis": "python-google-adk-bigquery-action-audit",
+        "api": "BigQueryWriteAsyncClient.append_rows",
+        "sink": "bigquery-storage-write-api",
+        "durability": "durable-remote-database",
+        "scope": "production",
+    }
+    deployed = next(
+        component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "durable-action-audit"
+        and component.evidence.path == "app.py"
+    )
+    assert deployed.attributes["deployment_state"] == "enabled"
+    assert deployed.attributes["event_types"] == [
+        "TOOL_STARTING",
+        "TOOL_COMPLETED",
+        "TOOL_ERROR",
+    ]
+    assert deployed.attributes["attribution_fields"] == [
+        "event_id",
+        "agent",
+        "user_id",
+        "session_id",
+        "invocation_id",
+        "tool",
+    ]
+    actions = {
+        component.evidence.line: component
+        for component in ir.components
+        if component.kind == "capability"
+        and component.name == "external-action"
+        and component.evidence.path == "app.py"
+    }
+    _, audited = component_context(ir, actions[13])
+    _, disabled = component_context(ir, actions[18])
+    assert audited["governing_controls"] == ["durable-action-audit"]
+    assert audited["audit_coverage"] == "durable and attributable; delivery best-effort"
+    assert disabled["governing_controls"] == []
+    assert disabled["audit_coverage"] == "unresolved"
+    setting = next(
+        component
+        for component in ir.components
+        if component.kind == "control-setting" and component.name == "action-audit"
+    )
+    assert setting.attributes["enabled"] is False
+    assert setting.attributes["state"] == "disabled-explicit"
+    assert any(
+        edge.source_name == "disabled_agent"
+        and edge.relation == "configured-by"
+        and edge.target_name == "action-audit"
+        for edge in ir.relationships
+    )
+
+
+def test_google_adk_audit_control_requires_the_full_framework_path(tmp_path: Path) -> None:
+    source = ROOT / "cases/python_google_adk_bigquery_audit"
+    mutations = (
+        (
+            "google/adk/plugins/bigquery_agent_analytics_plugin.py",
+            "enabled: bool = True",
+            "enabled: bool = False",
+        ),
+        (
+            "google/adk/plugins/bigquery_agent_analytics_plugin.py",
+            "await self.write_client.append_rows(row)",
+            "print(row)",
+        ),
+        (
+            "google/adk/runners.py",
+            "plugins=app.plugins",
+            "plugins=[]",
+        ),
+        (
+            "google/adk/flows/llm_flows/functions.py",
+            "await invocation_context.plugin_manager.run_after_tool_callback(",
+            "await invocation_context.plugin_manager.after_tool_callback(",
+        ),
+    )
+    for index, (relative, before, after) in enumerate(mutations):
+        incomplete = tmp_path / str(index)
+        shutil.copytree(source, incomplete)
+        target = incomplete / relative
+        text = target.read_text(encoding="utf-8")
+        assert before in text
+        target.write_text(text.replace(before, after, 1), encoding="utf-8")
+
+        ir = scan_repository(incomplete)
+
+        assert not any(
+            component.name in {"durable-action-audit", "audit-storage", "action-audit"}
+            for component in ir.components
+        )
+
+
+def test_google_adk_audit_control_withholds_mutable_or_filtered_compositions(
+    tmp_path: Path,
+) -> None:
+    source = ROOT / "cases/python_google_adk_bigquery_audit"
+    mutations = (
+        (
+            "audit_plugin = BigQueryAgentAnalyticsPlugin(",
+            "audit_plugin = BigQueryAgentAnalyticsPlugin(",
+            "audit_plugin = object()\n",
+        ),
+        (
+            'project_id="project", dataset_id="audit")',
+            (
+                'project_id="project", dataset_id="audit", '
+                + 'event_allowlist=["TOOL_STARTING"])'
+            ),
+            "",
+        ),
+    )
+    for index, (before, after, suffix) in enumerate(mutations):
+        incomplete = tmp_path / str(index)
+        shutil.copytree(source, incomplete)
+        target = incomplete / "app.py"
+        text = target.read_text(encoding="utf-8")
+        assert before in text
+        target.write_text(text.replace(before, after, 1) + suffix, encoding="utf-8")
+
+        ir = scan_repository(incomplete)
+
+        assert not any(
+            edge.source_kind == "capability"
+            and edge.evidence.path == "app.py"
+            and edge.evidence.line == 13
+            and edge.relation == "governed-by"
+            and edge.target_name == "durable-action-audit"
+            for edge in ir.relationships
+        )
+
+
 def test_delegation_expands_transitive_capability_path() -> None:
     ir = scan_repository(ROOT / "cases/delegation")
 

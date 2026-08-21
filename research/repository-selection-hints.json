@@ -36,7 +36,12 @@
       "core/src/a2a/agent_card.ts"
     ],
     "google/adk-python": [
-      "src/google/adk/agents/remote_a2a_agent.py"
+      "src/google/adk/agents/remote_a2a_agent.py",
+      "src/google/adk/flows/llm_flows/functions.py",
+      "src/google/adk/plugins/bigquery_agent_analytics_plugin.py",
+      "src/google/adk/plugins/plugin_manager.py",
+      "src/google/adk/runners.py",
+      "tests/unittests/testing_utils.py"
     ],
     "google-gemini/gemini-cli": [
       "packages/core/src/agents/a2a-client-manager.ts"

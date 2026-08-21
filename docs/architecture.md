@@ -375,6 +375,11 @@ For audit modeling, a tool capability lexically inside an OpenTelemetry
 `start_as_current_span(...)` block receives an exact capability-to-`action-trace` control edge. A
 span elsewhere in the same tool does not cover the action. The edge records exporter durability as
 unresolved: instrumentation is not proof that an attributable record reaches durable storage.
+An exact Google ADK Python path separately resolves `Runner` plugin composition, `PluginManager`
+tool callbacks, and the BigQuery Agent Analytics Storage Write API. It emits a
+`durable-action-audit` control only for enabled literal/default configurations and records event,
+agent, user, session, invocation, and tool attribution. Delivery remains best-effort with explicit
+drop accounting; nonliteral filters/configuration and incomplete framework source paths are withheld.
 
 ## Safety boundary
 

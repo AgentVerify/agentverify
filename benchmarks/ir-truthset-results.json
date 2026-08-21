@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T18:25:02.994734+00:00",
-  "labels": 255,
-  "passed": 255,
+  "generated_at": "2026-08-21T19:05:49.279829+00:00",
+  "labels": 259,
+  "passed": 259,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -104,6 +104,14 @@
       "tp": 12,
       "fp": 0,
       "tn": 7,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-GOOGLE-ADK-BIGQUERY-AUDIT": {
+      "tp": 3,
+      "fp": 0,
+      "tn": 1,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -2615,6 +2623,42 @@
     {
       "id": "python-openai-mcp-approval-default-real",
       "check_id": "IR-PY-OPENAI-MCP-APPROVAL-DEFAULT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-google-adk-bigquery-audit-local",
+      "check_id": "IR-PY-GOOGLE-ADK-BIGQUERY-AUDIT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-google-adk-bigquery-audit-disabled-local-negative",
+      "check_id": "IR-PY-GOOGLE-ADK-BIGQUERY-AUDIT",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-google-adk-bigquery-storage-real",
+      "check_id": "IR-PY-GOOGLE-ADK-BIGQUERY-AUDIT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-google-adk-bigquery-runner-real",
+      "check_id": "IR-PY-GOOGLE-ADK-BIGQUERY-AUDIT",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

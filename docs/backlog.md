@@ -157,15 +157,18 @@ configuration-controlled card URLs into model-controlled SSRF findings.
 
 ## P1 — consequential-action audit coverage
 
-Lexically scoped OpenTelemetry spans now create action-level control edges, without treating imports
-or sibling spans as coverage. Next recognize framework tracing and tool middleware, then resolve span
-processors/exporters to durable audit sinks. Implement `AV-AUDIT001` only when durable, attributable
-records can be distinguished from instrumentation alone.
+Lexically scoped OpenTelemetry spans create action-level instrumentation edges without treating
+imports or sibling spans as coverage. An exact Google ADK Python composition now proves tool callback
+identity through `Runner` and `PluginManager` into the BigQuery Agent Analytics Storage Write sink,
+including start/completed/error events and actor/session/invocation attribution. The pinned corpus has
+one available framework control and two test deployments, but no production deployment; delivery is
+best-effort with drop accounting. Next cover more framework middleware/exporters and retention or
+loss guarantees. Keep `AV-AUDIT001` disabled until absence can be established across production paths.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 336 pinned positive/negative locations, with 255 separately
-scored IR relationship labels. Schema-v44 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 336 pinned positive/negative locations, with 259 separately
+scored IR relationship labels. Schema-v45 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

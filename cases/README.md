@@ -58,6 +58,8 @@ never imported or executed.
 - `python_openai_mcp_approval_default`: OpenAI Agents Python propagates the absent
   `MCPServerStdio.require_approval` argument through its disabled SDK default into every discovered
   MCP `FunctionTool`; explicit approval and broken import/binding/default propagation stay negative.
+- `python_google_adk_bigquery_audit`: Google ADK Runner composition attaches its default-enabled
+  BigQuery analytics plugin to one tool action while retaining an explicit disabled near miss.
 - `typescript_a2a_card_endpoint`: ADK JS and Gemini compositions preserve remotely supplied
   AgentCard authority at SDK client construction; fixed/local cards, wrong imports, and unproven
   transports stay negative.

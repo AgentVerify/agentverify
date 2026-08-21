@@ -1,6 +1,6 @@
 {
   "schema_version": 4,
-  "generated_at": "2026-08-21T18:08:56.914856+00:00",
+  "generated_at": "2026-08-21T18:44:00.151270+00:00",
   "method": {
     "collector": "scripts/collect_repositories.py",
     "max_files_per_repository": 220,
@@ -6986,7 +6986,7 @@
       "commit": "775c1bd36e205eec65e207ad29fdc4cf2184e47e",
       "files_in_tree": 2525,
       "files_scanned": 97,
-      "dependency_files_materialized": 1,
+      "dependency_files_materialized": 6,
       "bytes_scanned": 2000000,
       "languages": [
         "Python",

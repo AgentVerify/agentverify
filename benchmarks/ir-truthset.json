@@ -3267,6 +3267,30 @@
       "target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},
       "check_id":"IR-PY-OPENAI-MCP-APPROVAL-DEFAULT","path":"examples/sandbox/sandbox_agent_with_tools.py","line":68,"expected":true,
       "relationship":{"source_kind":"mcp-server","source_name":"Reference Policy Server","relation":"configured-by","target_kind":"control-setting","target_name":"mcp-tool-approval","attributes":{"analysis":"python-openai-agents-mcp-approval-default","approval_policy":"disabled-default"}}
+    },
+    {
+      "id":"python-google-adk-bigquery-audit-local",
+      "target":{"kind":"local","path":"cases/python_google_adk_bigquery_audit"},
+      "check_id":"IR-PY-GOOGLE-ADK-BIGQUERY-AUDIT","path":"app.py","line":13,"expected":true,
+      "relationship":{"source_kind":"capability","source_name":"external-action","relation":"governed-by","target_kind":"control","target_name":"durable-action-audit","attributes":{"analysis":"python-google-adk-bigquery-action-audit","durability":"durable-remote-database","delivery":"best-effort-with-drop-accounting","policy_effect":"records-attributable-tool-actions"}}
+    },
+    {
+      "id":"python-google-adk-bigquery-audit-disabled-local-negative",
+      "target":{"kind":"local","path":"cases/python_google_adk_bigquery_audit"},
+      "check_id":"IR-PY-GOOGLE-ADK-BIGQUERY-AUDIT","path":"app.py","line":18,"expected":false,"source_contains":"requests.post",
+      "relationship":{"source_kind":"capability","source_name":"external-action","relation":"governed-by","target_kind":"control","target_name":"durable-action-audit"}
+    },
+    {
+      "id":"python-google-adk-bigquery-storage-real",
+      "target":{"kind":"repository","repository":"google/adk-python","commit":"775c1bd36e205eec65e207ad29fdc4cf2184e47e"},
+      "check_id":"IR-PY-GOOGLE-ADK-BIGQUERY-AUDIT","path":"src/google/adk/plugins/bigquery_agent_analytics_plugin.py","line":2641,"expected":true,
+      "relationship":{"source_kind":"control","source_name":"durable-action-audit","relation":"exports-to","target_kind":"capability","target_name":"audit-storage","attributes":{"analysis":"python-google-adk-bigquery-action-audit","sink":"bigquery-storage-write-api","durability":"durable-remote-database"}}
+    },
+    {
+      "id":"python-google-adk-bigquery-runner-real",
+      "target":{"kind":"repository","repository":"google/adk-python","commit":"775c1bd36e205eec65e207ad29fdc4cf2184e47e"},
+      "check_id":"IR-PY-GOOGLE-ADK-BIGQUERY-AUDIT","path":"tests/unittests/plugins/test_bigquery_agent_analytics_plugin.py","line":6385,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"regular_agent","relation":"governed-by","target_kind":"control","target_name":"durable-action-audit","attributes":{"analysis":"python-google-adk-bigquery-action-audit","deployment_state":"enabled","policy_effect":"records-attributable-tool-actions"}}
     }
   ]
 }

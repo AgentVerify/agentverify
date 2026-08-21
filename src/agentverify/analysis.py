@@ -5,6 +5,14 @@ from __future__ import annotations
 from .ir import Component, RepositoryIR
 
 
+def _audit_coverage(controls: set[str] | list[str]) -> str:
+    if "durable-action-audit" in controls:
+        return "durable and attributable; delivery best-effort"
+    if "action-trace" in controls:
+        return "instrumented; exporter durability unresolved"
+    return "unresolved"
+
+
 def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str, ...], dict]:
     """Resolve direct agent/tool/control context for a capability observation.
 
@@ -66,6 +74,7 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
                 "governing_controls": capability_controls,
                 "governing_control_effects": capability_control_effects,
                 "approval_coverage": "unresolved",
+                "audit_coverage": _audit_coverage(capability_controls),
             }
         return (f"capability:{component.name}",), {
             "governing_controls": capability_controls,
@@ -73,6 +82,7 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
             "approval_coverage": (
                 "present" if "human-approval" in capability_controls else "unresolved"
             ),
+            "audit_coverage": _audit_coverage(capability_controls),
         }
     tool_edge = min(tool_edges, key=lambda edge: (edge.source_id or "", edge.source_name))
     tool_name = tool_edge.source_name
@@ -187,9 +197,5 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
         "governing_controls": controls,
         "governing_control_effects": control_effects,
         "approval_coverage": "present" if "human-approval" in controls else "unresolved",
-        "audit_coverage": (
-            "instrumented; exporter durability unresolved"
-            if "action-trace" in controls
-            else "unresolved"
-        ),
+        "audit_coverage": _audit_coverage(controls),
     }
