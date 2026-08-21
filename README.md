@@ -44,6 +44,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`docs/backlog.md`](docs/backlog.md) — prioritized issue-ready future work
 - [`benchmarks/engine-results.json`](benchmarks/engine-results.json) — full-corpus engine metrics
 - [`benchmarks/truthset.json`](benchmarks/truthset.json) — exact hand-labeled positives and negatives
+- [`benchmarks/truthset-results.json`](benchmarks/truthset-results.json) — per-rule seed precision and recall
 
 SARIF output includes stable fingerprints, source locations, severity, remediation, Agent IR paths,
 and resolved/unresolved control context for code-scanning integrations.

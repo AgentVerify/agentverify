@@ -54,7 +54,9 @@ MODEL_CONSTRUCTORS = {
     "Azure OpenAI": {"AzureOpenAI", "AsyncAzureOpenAI", "AzureChatOpenAI"},
 }
 APPROVAL_BYPASS_NAME = re.compile(
-    r"(?:auto_?approve|skip_?confirmation|dangerously_?skip)", re.IGNORECASE
+    r"(?:^|[._])(?:\w+_)*auto_?approve$|"
+    r"(?:^|[._])(?:skip_?confirmation|dangerously_?skip_?(?:permissions?|confirmation|approval))$",
+    re.IGNORECASE,
 )
 
 
@@ -493,7 +495,9 @@ TS_TOOL_ASSIGNMENT = re.compile(r"\b(?:const|let)\s+(\w+)\s*=\s*(?:tool|function
 TS_AGENT_ASSIGNMENT = re.compile(r"\b(?:const|let)\s+(\w+)\s*=\s*new\s+Agent\s*\(")
 TS_LITERAL_APPROVAL = re.compile(r"\bneedsApproval\s*:\s*true\b")
 TS_AUTO_APPROVAL_ENABLED = re.compile(
-    r"\b(?:autoApprove|auto_approve|skipConfirmation|dangerouslySkip\w*)\b"
+    r"\b(?:autoApprove|auto_approve|skipConfirmation|skip_confirmation|"
+    r"dangerouslySkip(?:Permissions?|Confirmation|Approval)|"
+    r"dangerously_skip_(?:permissions?|confirmation|approval))\b"
     r"\s*(?:=|:)\s*(?:true|['\"](?:1|true|all)['\"])",
     re.IGNORECASE,
 )
@@ -592,6 +596,27 @@ def typescript_code_mask(text: str) -> str:
                 masked[index] = " "
         index += 1
     return "".join(masked)
+
+
+def typescript_first_argument_is_literal(argument_text: str) -> bool:
+    """Return true only when the first call argument is one complete string literal."""
+    value = argument_text.lstrip()
+    if not value or value[0] not in {"'", '"', "`"}:
+        return False
+    quote = value[0]
+    escaped = False
+    for index, character in enumerate(value[1:], start=1):
+        if escaped:
+            escaped = False
+            continue
+        if character == "\\":
+            escaped = True
+            continue
+        if character == quote:
+            if quote == "`" and "${" in value[1:index]:
+                return False
+            return value[index + 1 :].lstrip().startswith((",", ")"))
+    return False
 
 
 def typescript_graph(
@@ -726,7 +751,7 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                 {
                     "api": match.group(1),
                     "shell": match.group(1) in {"exec", "execSync"},
-                    "dynamic_command": True,
+                    "dynamic_command": not typescript_first_argument_is_literal(match.group(2)),
                 },
             )
         if TS_DYNAMIC_EVAL.search(line):

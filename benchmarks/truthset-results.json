@@ -1,27 +1,27 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T03:19:49.203550+00:00",
-  "labels": 25,
-  "passed": 25,
+  "generated_at": "2026-08-21T03:29:47.972088+00:00",
+  "labels": 56,
+  "passed": 56,
   "metrics": {
     "AV-APPROVAL001": {
-      "tp": 3,
+      "tp": 4,
       "fp": 0,
-      "tn": 1,
+      "tn": 6,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
     },
     "AV-EXEC001": {
-      "tp": 3,
+      "tp": 5,
       "fp": 0,
-      "tn": 1,
+      "tn": 6,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
     },
     "AV-EXEC002": {
-      "tp": 4,
+      "tp": 9,
       "fp": 0,
       "tn": 1,
       "fn": 0,
@@ -29,7 +29,7 @@
       "recall": 1.0
     },
     "AV-FS001": {
-      "tp": 2,
+      "tp": 5,
       "fp": 0,
       "tn": 1,
       "fn": 0,
@@ -37,7 +37,7 @@
       "recall": 1.0
     },
     "AV-MCP002": {
-      "tp": 2,
+      "tp": 7,
       "fp": 0,
       "tn": 3,
       "fn": 0,
@@ -45,7 +45,7 @@
       "recall": 1.0
     },
     "AV-SANDBOX001": {
-      "tp": 3,
+      "tp": 8,
       "fp": 0,
       "tn": 1,
       "fn": 0,
@@ -83,6 +83,62 @@
       "rule_id": "AV-EXEC001",
       "expected": true,
       "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-gemini-dynamic-template-real",
+      "rule_id": "AV-EXEC001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-gemini-dynamic-check-real",
+      "rule_id": "AV-EXEC001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-gemini-literal-node-negative",
+      "rule_id": "AV-EXEC001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-gemini-literal-install-negative",
+      "rule_id": "AV-EXEC001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-gemini-literal-build-negative",
+      "rule_id": "AV-EXEC001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-activepieces-literal-negative",
+      "rule_id": "AV-EXEC001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-activepieces-static-template-negative",
+      "rule_id": "AV-EXEC001",
+      "expected": false,
+      "observed": false,
       "anchor_ok": true,
       "passed": true
     },
@@ -127,6 +183,46 @@
       "passed": true
     },
     {
+      "id": "exec-code-camel-eval-real",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-camel-exec-real",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-use-real",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-n8n-real",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-lavague-real",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
       "id": "approval-python-positive",
       "rule_id": "AV-APPROVAL001",
       "expected": true,
@@ -155,6 +251,54 @@
       "rule_id": "AV-APPROVAL001",
       "expected": true,
       "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-deepagents-auto-real",
+      "rule_id": "AV-APPROVAL001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-deepagents-accumulator-negative",
+      "rule_id": "AV-APPROVAL001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-semantic-warning-flag-negative",
+      "rule_id": "AV-APPROVAL001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-composio-version-check-negative",
+      "rule_id": "AV-APPROVAL001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-composio-router-version-negative",
+      "rule_id": "AV-APPROVAL001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-composio-ts-version-negative",
+      "rule_id": "AV-APPROVAL001",
+      "expected": false,
+      "observed": false,
       "anchor_ok": true,
       "passed": true
     },
@@ -199,6 +343,46 @@
       "passed": true
     },
     {
+      "id": "mcp-semantic-kernel-real",
+      "rule_id": "AV-MCP002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-chatdev-real",
+      "rule_id": "AV-MCP002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-browser-use-real",
+      "rule_id": "AV-MCP002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-trae-real",
+      "rule_id": "AV-MCP002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-python-sdk-real",
+      "rule_id": "AV-MCP002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
       "id": "filesystem-dynamic-positive",
       "rule_id": "AV-FS001",
       "expected": true,
@@ -216,6 +400,30 @@
     },
     {
       "id": "filesystem-arcade-real",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-arcade-write-real",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-arcade-append-real",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-arcade-mkdir-real",
       "rule_id": "AV-FS001",
       "expected": true,
       "observed": true,
@@ -248,6 +456,46 @@
     },
     {
       "id": "sandbox-bytebot-real",
+      "rule_id": "AV-SANDBOX001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-autogen-socket-real",
+      "rule_id": "AV-SANDBOX001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-autogpt-socket-real",
+      "rule_id": "AV-SANDBOX001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-n8n-privileged-real",
+      "rule_id": "AV-SANDBOX001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-activepieces-dev-real",
+      "rule_id": "AV-SANDBOX001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-activepieces-benchmark-real",
       "rule_id": "AV-SANDBOX001",
       "expected": true,
       "observed": true,

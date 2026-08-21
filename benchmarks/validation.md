@@ -28,7 +28,7 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 8,840 selected Python/TypeScript/JavaScript files plus 40 configuration files,
-resolved 1,593 relationships, and completed in 19.72 seconds on the development machine. Two syntax warnings were isolated and
+resolved 1,593 relationships, and completed in 19.44 seconds on the development machine. Two syntax warnings were isolated and
 reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them.
 
@@ -42,6 +42,12 @@ from 16 to zero after proving the matches were `RegExp.exec()`, not `child_proce
 approval-bypass matching plus test-scope filtering reduced Cline approval candidates from 41 to five.
 The remaining candidates are explicit policy assignments or an `--auto-approve` path and remain
 `review` results rather than confirmed vulnerabilities.
+
+Expanding the truth set exposed two additional false-positive families. Literal TypeScript commands
+were incorrectly classified as dynamic; resolving complete string literals removed five corpus
+findings while preserving interpolated templates. Broad approval-name matching confused warning-state
+and version-check flags with human approval; requiring approval-specific names removed six review
+candidates. Corpus totals are now 20 `AV-EXEC001` findings and six `AV-APPROVAL001` reviews.
 
 ## AV-MCP002 — dynamic MCP forwarding
 
@@ -87,10 +93,11 @@ workloads even when the socket file itself is mounted read-only.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 25 exact labels across all six enabled rules. Labels mix local
+`benchmarks/truthset.json` contains 56 exact labels across all six enabled rules. Labels mix local
 positive/negative fixtures, immutable real positives, a real CAMEL allowlist negative, fixed-name MCP,
-fixed-path filesystem, fixed-argv shell, constant-eval, disabled auto-approval, and commented safe
-compose cases. All 25 currently pass; each rule's seed precision and recall are 1.0.
+fixed-path filesystem, fixed-argv and literal TypeScript shell calls, constant-eval, non-approval skip
+flags, disabled auto-approval, and commented safe compose cases. All 56 currently pass; each rule's
+seed precision and recall are 1.0.
 
 This is a curated regression seed, not an unbiased estimate of ecosystem precision or recall. The
 next benchmark milestone is at least 100 independently reviewed labels sampled from unmatched as well

@@ -87,6 +87,31 @@ def test_python_enabled_auto_approval_is_review_candidate() -> None:
     assert ir.findings[0].result_kind == "review"
 
 
+def test_non_approval_skip_and_status_flags_are_not_bypasses(tmp_path: Path) -> None:
+    (tmp_path / "flags.py").write_text(
+        """_sampling_auto_approved_warning_logged = True
+dangerously_skip_version_check = True
+auto_approve = True
+""",
+        encoding="utf-8",
+    )
+    (tmp_path / "flags.ts").write_text(
+        """const warning = { autoApprovedWarningLogged: true };
+const client = { dangerouslySkipVersionCheck: true };
+const policy = { autoApprove: true };
+""",
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    approval_findings = [finding for finding in ir.findings if finding.rule_id == "AV-APPROVAL001"]
+    assert [(finding.evidence.path, finding.evidence.line) for finding in approval_findings] == [
+        ("flags.py", 3),
+        ("flags.ts", 3),
+    ]
+
+
 def test_anthropic_and_azure_model_providers() -> None:
     ir = scan_repository(ROOT / "cases/model_providers")
 
@@ -222,6 +247,31 @@ def test_regex_exec_is_not_code_or_shell_execution(tmp_path: Path) -> None:
 
     assert not [item for item in ir.components if item.kind == "capability"]
     assert not ir.findings
+
+
+def test_typescript_literal_shell_commands_are_inventory_only(tmp_path: Path) -> None:
+    (tmp_path / "commands.ts").write_text(
+        """import { execSync } from \"node:child_process\";
+execSync("npm install");
+execSync(`npm run build`);
+execSync(`npm run ${target}`);
+execSync("npm " + command);
+execSync(command);
+""",
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    shell = [item for item in ir.components if item.name == "shell-execution"]
+    assert [item.attributes["dynamic_command"] for item in shell] == [
+        False,
+        False,
+        True,
+        True,
+        True,
+    ]
+    assert [finding.evidence.line for finding in ir.findings] == [4, 5, 6]
 
 
 def test_oversized_source_is_skipped(tmp_path: Path) -> None:

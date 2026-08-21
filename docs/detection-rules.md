@@ -10,9 +10,9 @@ coverage to justify them.
 | AV-AG001 | inventory | info | Identify agent framework, agent definitions, handoffs, and graph edges | Framework signatures span 12 families |
 | AV-TOOL001 | inventory | info | Enumerate tools and privileged capability classes | 69/71 expose browser/filesystem/code/shell signals |
 | AV-MCP001 | inventory | info | Identify MCP clients, servers, transports, commands, URLs, and declared tools | MCP signals in 49/71 |
-| AV-EXEC001 | finding | high | Dynamic command executed through a system shell | 25 default-scope engine matches; real cases validated |
+| AV-EXEC001 | finding | high | Dynamic command executed through a system shell | 20 default-scope engine matches after literal-command resolution |
 | AV-EXEC002 | finding | high | Dynamic input reaches an evaluator/interpreter | 43 repositories have code-execution signals |
-| AV-APPROVAL001 | review | high | Enabled auto-approve or skip-confirmation path | 12 default-scope engine candidates |
+| AV-APPROVAL001 | review | high | Enabled auto-approve or skip-confirmation path | 6 default-scope engine candidates after semantic-name filtering |
 | AV-APPROVAL002 | finding | high | Reachable destructive action has no governing approval edge | Requires graph/config resolution |
 | AV-FS001 | review | high | Agent tool writes to a dynamic filesystem path | 16 default-scope matches across 6 repositories |
 | AV-MCP002 | review | high | Dynamic MCP tool name and arguments are forwarded to a server | 36 default-scope matches across 20 repositories after policy resolution |
