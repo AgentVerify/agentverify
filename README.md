@@ -19,6 +19,8 @@ agentverify scan ./project --format json
 agentverify scan ./project --format bom
 agentverify scan ./project --format sarif
 agentverify schema bom > agentverify-ai-bom.schema.json
+agentverify schema policy > agentverify-policy.schema.json
+agentverify scan ./project --policy agentverify-policy.json
 agentverify scan ./project --fail-on high
 agentverify scan ./project --fail-on high --fail-on-kind any
 agentverify scan ./project --include-tests
@@ -65,6 +67,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`docs/architecture.md`](docs/architecture.md) — Agent IR, graph analysis, and uncertainty model
 - [`docs/frontend-coverage.md`](docs/frontend-coverage.md) — supported syntax and empirical gaps
 - [`docs/ai-bom.md`](docs/ai-bom.md) — native machine-readable asset and governance inventory
+- [`docs/policy.md`](docs/policy.md) — schema-backed, non-hiding CI gate policies
 - [`docs/code-scanning.md`](docs/code-scanning.md) — copy-ready GitHub SARIF integration
 - [`docs/pre-commit.md`](docs/pre-commit.md) — local and tagged-release hook setup
 - [`docs/backlog.md`](docs/backlog.md) — prioritized issue-ready future work

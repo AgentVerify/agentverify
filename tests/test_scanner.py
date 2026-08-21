@@ -8,6 +8,7 @@ from jsonschema import Draft202012Validator
 
 from agentverify.analysis import component_context
 from agentverify.cli import main
+from agentverify.policy import evaluate_policy, normalize_policy
 from agentverify.report import render_bom, render_json, render_sarif, render_text
 from agentverify.scanner import scan_repository
 
@@ -676,6 +677,7 @@ def test_sarif_contains_location_fingerprint_and_ir_context() -> None:
         "scanScope": "repository",
         "pathFilters": [],
         "baselineSummary": {},
+        "policySummary": {},
     }
     assert result["ruleId"] == "AV-EXEC001"
     assert result["locations"][0]["physicalLocation"]["region"]["startLine"] == 13
@@ -746,3 +748,30 @@ def test_native_ai_bom_does_not_embed_checkout_path(tmp_path: Path) -> None:
 
     assert outputs[0] == outputs[1]
     assert str(tmp_path) not in outputs[0]
+
+
+def test_policy_decision_evidence_is_retained_by_all_reporters() -> None:
+    ir = scan_repository(ROOT / "cases/python_dangerous")
+    policy = normalize_policy(
+        {
+            "schema_version": 1,
+            "name": "release",
+            "gates": [{"id": "high", "max_count": 0}],
+        }
+    )
+    assert evaluate_policy(ir, policy, source="policy.json", digest="a" * 64) is False
+
+    json_report = json.loads(render_json(ir))
+    bom = json.loads(render_bom(ir))
+    sarif = json.loads(render_sarif(ir))
+    text_report = render_text(ir)
+    assert json_report["policy_summary"]["gates"][0]["matched_count"] == 1
+    bom_schema = json.loads(
+        (ROOT / "src/agentverify/schemas/agentverify-ai-bom-v1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    Draft202012Validator(bom_schema).validate(bom)
+    assert bom["metadata"]["policy_summary"] == json_report["policy_summary"]
+    assert sarif["runs"][0]["properties"]["policySummary"] == json_report["policy_summary"]
+    assert "Policy: release [failed; 1 gates]" in text_report

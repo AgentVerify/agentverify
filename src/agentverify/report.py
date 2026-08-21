@@ -15,9 +15,17 @@ def render_json(ir: RepositoryIR) -> str:
     return json.dumps(ir.to_dict(), indent=2, sort_keys=True) + "\n"
 
 
-def render_bom_schema() -> str:
-    schema = files("agentverify").joinpath("schemas/agentverify-ai-bom-v1.schema.json")
+def render_schema(name: str) -> str:
+    filenames = {
+        "bom": "agentverify-ai-bom-v1.schema.json",
+        "policy": "agentverify-policy-v1.schema.json",
+    }
+    schema = files("agentverify").joinpath(f"schemas/{filenames[name]}")
     return schema.read_text(encoding="utf-8")
+
+
+def render_bom_schema() -> str:
+    return render_schema("bom")
 
 
 def _stable_id(prefix: str, values: tuple[object, ...]) -> str:
@@ -166,6 +174,7 @@ def render_bom(ir: RepositoryIR) -> str:
             "parse_warnings": len(ir.errors),
             "suppressed_findings": ir.suppressed_findings,
             "baseline_summary": ir.baseline_summary,
+            "policy_summary": ir.policy_summary,
         },
         "assets": assets,
         "relationships": relationships,
@@ -245,6 +254,7 @@ def render_sarif(ir: RepositoryIR) -> str:
                     "scanScope": ir.scan_scope,
                     "pathFilters": ir.path_filters,
                     "baselineSummary": ir.baseline_summary,
+                    "policySummary": ir.policy_summary,
                 },
                 "results": results,
             }
@@ -276,6 +286,17 @@ def render_text(ir: RepositoryIR) -> str:
                 else "no-longer-reported count unavailable for partial scan"
             )
         )
+    if ir.policy_summary:
+        status = "passed" if ir.policy_summary["passed"] else "failed"
+        lines.append(
+            f"Policy: {ir.policy_summary['name']} [{status}; {len(ir.policy_summary['gates'])} gates]"
+        )
+        for gate in ir.policy_summary["gates"]:
+            gate_status = "passed" if gate["passed"] else "failed"
+            lines.append(
+                f"  {gate['id']}: {gate['matched_count']} matched / "
+                f"{gate['max_count']} allowed [{gate_status}]"
+            )
     lines += ["", "AI Components:"]
     if not ir.components:
         lines.append("  None detected")

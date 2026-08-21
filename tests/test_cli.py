@@ -106,6 +106,118 @@ def test_cli_prints_bundled_bom_schema(capsys) -> None:
     assert schema["title"] == "AgentVerify AI BOM 1.0"
 
 
+def test_cli_prints_bundled_policy_schema(capsys) -> None:
+    assert cli.main(["schema", "policy"]) == 0
+
+    schema = __import__("json").loads(capsys.readouterr().out)
+    policy = __import__("json").loads(
+        (ROOT / "examples/ci-policy.json").read_text(encoding="utf-8")
+    )
+    Draft202012Validator.check_schema(schema)
+    Draft202012Validator(schema).validate(policy)
+    assert schema["title"] == "AgentVerify Policy 1"
+
+
+def test_policy_gate_fails_without_hiding_matching_findings(tmp_path: Path, capsys) -> None:
+    policy = tmp_path / "strict-policy.json"
+    policy.write_text(
+        '{"schema_version":1,"name":"strict","gates":['
+        '{"id":"high-findings","result_kinds":["finding"],'
+        '"min_severity":"high","max_count":0}]}',
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "scan",
+                str(ROOT / "cases/python_dangerous"),
+                "--policy",
+                str(policy),
+                "--format",
+                "json",
+            ]
+        )
+        == 1
+    )
+    payload = __import__("json").loads(capsys.readouterr().out)
+    assert [finding["rule_id"] for finding in payload["findings"]] == ["AV-EXEC001"]
+    summary = payload["policy_summary"]
+    assert summary["passed"] is False
+    assert summary["source"] == "strict-policy.json"
+    assert len(summary["sha256"]) == 64
+    assert summary["gates"][0]["matched_count"] == 1
+    assert summary["gates"][0]["matched_fingerprints"] == [payload["findings"][0]["fingerprint"]]
+
+
+def test_policy_gate_can_allow_a_review_budget(tmp_path: Path, capsys) -> None:
+    policy = tmp_path / "review-budget.json"
+    policy.write_text(
+        '{"schema_version":1,"gates":['
+        '{"id":"approval-review-budget","rules":["AV-APPROVAL001"],'
+        '"result_kinds":["review"],"min_severity":"high","max_count":1}]}',
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(["scan", str(ROOT / "cases/python_auto_approval"), "--policy", str(policy)]) == 0
+    )
+    output = capsys.readouterr().out
+    assert "Policy: unnamed [passed; 1 gates]" in output
+    assert "approval-review-budget: 1 matched / 1 allowed [passed]" in output
+
+
+def test_policy_is_evaluated_after_baseline(tmp_path: Path, capsys) -> None:
+    target = ROOT / "cases/python_dangerous"
+    baseline = tmp_path / "baseline.json"
+    baseline.write_text(render_json(scan_repository(target)), encoding="utf-8")
+    policy = tmp_path / "strict.json"
+    policy.write_text(
+        '{"schema_version":1,"gates":[{"id":"new-high","max_count":0}]}',
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "scan",
+                str(target),
+                "--baseline",
+                str(baseline),
+                "--policy",
+                str(policy),
+                "--format",
+                "json",
+            ]
+        )
+        == 0
+    )
+    payload = __import__("json").loads(capsys.readouterr().out)
+    assert payload["findings"] == []
+    assert payload["policy_summary"]["evaluated_after_baseline"] is True
+    assert payload["policy_summary"]["gates"][0]["matched_count"] == 0
+
+
+def test_invalid_policy_is_rejected_before_scanning(
+    tmp_path: Path, capsys, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    policy = tmp_path / "invalid.json"
+    policy.write_text(
+        '{"schema_version":1,"gates":[],"disable_rules":["AV-EXEC001"]}',
+        encoding="utf-8",
+    )
+
+    def unexpected_scan(*args: object, **kwargs: object) -> None:
+        raise AssertionError("scan must not run")
+
+    monkeypatch.setattr(cli, "scan_repository", unexpected_scan)
+
+    assert cli.main(["scan", str(ROOT / "cases/python_dangerous"), "--policy", str(policy)]) == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "unknown policy fields: disable_rules" in captured.err
+
+
 def test_paths_from_scans_only_selected_repository_paths(tmp_path: Path, capsys) -> None:
     paths = tmp_path / "changed.txt"
     paths.write_text("cases/python_dangerous/agent.py\n", encoding="utf-8")

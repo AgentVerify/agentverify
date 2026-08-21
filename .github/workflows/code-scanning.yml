@@ -33,3 +33,5 @@ jobs:
         with:
           sarif_file: agentverify.sarif
           category: agentverify
+      - name: Enforce AgentVerify policy
+        run: agentverify scan src --policy examples/ci-policy.json

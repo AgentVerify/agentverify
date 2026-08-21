@@ -55,7 +55,9 @@ with a stable category, an auditable `--paths-from` mode for changed-file scans,
 counts that avoid false resolution claims on partial scans. Inline suppressions now retain optional
 expiry status, and CI can require an active ISO date. A distributable pre-commit manifest and local
 setup are included; publishing its remote form waits for an approved repository URL and release tag.
-Next add richer policy-as-code configuration.
+Schema-backed JSON policies now provide per-rule/result-kind/severity count budgets with decision
+evidence in every report. Next add organization policy composition and signed policy provenance
+without weakening strict unknown-field validation.
 
 ## P2 — AI BOM standards adapters
 

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "name": "default-ci",
+  "gates": [
+    {
+      "id": "no-high-findings",
+      "result_kinds": ["finding"],
+      "min_severity": "high",
+      "max_count": 0
+    },
+    {
+      "id": "no-approval-bypass-reviews",
+      "rules": ["AV-APPROVAL001", "AV-APPROVAL002"],
+      "result_kinds": ["review"],
+      "min_severity": "high",
+      "max_count": 0
+    }
+  ]
+}

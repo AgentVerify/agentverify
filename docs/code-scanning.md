@@ -38,9 +38,13 @@ default AgentVerify exit status does not fail a build merely because review find
 SARIF upload still runs. To enforce a policy in a separate step, add a second scan such as:
 
 ```yaml
-- name: Enforce high-confidence high-severity findings
-  run: agentverify scan . --fail-on high --fail-on-kind finding
+- name: Enforce AgentVerify policy
+  run: agentverify scan . --policy agentverify-policy.json
 ```
+
+Generate the policy schema with `agentverify schema policy`. Policies can independently budget rule
+IDs, findings/reviews, and minimum severity while retaining every matched result in the report. The
+legacy `--fail-on high --fail-on-kind finding` threshold remains available for simple gates.
 
 Keep policy enforcement separate from SARIF generation: a failing scan step otherwise prevents the
 upload step unless it uses `if: always()`. For an existing repository, `--baseline` can hide known

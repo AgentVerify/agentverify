@@ -73,3 +73,7 @@ explicitly resolved.
 The native AI BOM serializes the same evidence graph with stable observation IDs. Relationship
 endpoints expose unique-display-name, ambiguous, or unresolved identity instead of collapsing
 same-named assets. It is a lossless AgentVerify format, not a claim of CycloneDX or SPDX conformance.
+
+Policy evaluation is a post-baseline reporting stage, not a rule filter. Gates count matching
+fingerprints by rule, result kind, and minimum severity; findings remain in every output. JSON, text,
+AI BOM, and SARIF retain the policy file digest and per-gate decision evidence.

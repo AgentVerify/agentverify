@@ -27,7 +27,8 @@
         "configuration_files_scanned",
         "parse_warnings",
         "suppressed_findings",
-        "baseline_summary"
+        "baseline_summary",
+        "policy_summary"
       ],
       "properties": {
         "generator": {
@@ -46,7 +47,8 @@
         "configuration_files_scanned": {"type": "integer", "minimum": 0},
         "parse_warnings": {"type": "integer", "minimum": 0},
         "suppressed_findings": {"type": "integer", "minimum": 0},
-        "baseline_summary": {"type": "object"}
+        "baseline_summary": {"type": "object"},
+        "policy_summary": {"$ref": "#/$defs/policySummary"}
       }
     },
     "assets": {
@@ -199,6 +201,66 @@
     "countMap": {
       "type": "object",
       "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "policySummary": {
+      "anyOf": [
+        {"type": "object", "maxProperties": 0},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "source",
+            "sha256",
+            "evaluated_after_baseline",
+            "passed",
+            "gates"
+          ],
+          "properties": {
+            "name": {"type": "string"},
+            "source": {"type": "string"},
+            "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+            "evaluated_after_baseline": {"const": true},
+            "passed": {"type": "boolean"},
+            "gates": {
+              "type": "array",
+              "minItems": 1,
+              "items": {"$ref": "#/$defs/policyGateSummary"}
+            }
+          }
+        }
+      ]
+    },
+    "policyGateSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "rules",
+        "result_kinds",
+        "min_severity",
+        "max_count",
+        "matched_count",
+        "matched_fingerprints",
+        "passed"
+      ],
+      "properties": {
+        "id": {"type": "string"},
+        "rules": {"type": "array", "items": {"type": "string"}},
+        "result_kinds": {
+          "type": "array",
+          "items": {"enum": ["finding", "review"]}
+        },
+        "min_severity": {"enum": ["info", "low", "medium", "high"]},
+        "max_count": {"type": "integer", "minimum": 0},
+        "matched_count": {"type": "integer", "minimum": 0},
+        "matched_fingerprints": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[0-9a-f]{20}$"}
+        },
+        "passed": {"type": "boolean"}
+      }
     }
   }
 }

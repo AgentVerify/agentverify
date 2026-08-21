@@ -8,7 +8,8 @@ import sys
 from pathlib import Path
 
 from . import __version__
-from .report import render_bom, render_bom_schema, render_json, render_sarif, render_text
+from .policy import SEVERITY_RANK, PolicyError, evaluate_policy, load_policy
+from .report import render_bom, render_json, render_sarif, render_schema, render_text
 from .scanner import scan_repository
 
 
@@ -46,8 +47,13 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="keep inline-suppressed findings unless the directive has an active ISO expiry date",
     )
+    scan.add_argument(
+        "--policy",
+        type=Path,
+        help="evaluate a schema-v1 JSON policy against post-baseline results",
+    )
     schema = subparsers.add_parser("schema", help="print a bundled machine-readable schema")
-    schema.add_argument("name", choices=("bom",))
+    schema.add_argument("name", choices=("bom", "policy"))
     return parser
 
 
@@ -82,7 +88,7 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "schema":
         try:
-            print(render_bom_schema(), end="")
+            print(render_schema(args.name), end="")
         except BrokenPipeError:
             return 0
         return 0
@@ -95,6 +101,14 @@ def main(argv: list[str] | None = None) -> int:
             selected_paths = args.paths_from.read_text(encoding="utf-8").splitlines()
         except OSError as error:
             print(f"agentverify: invalid path list: {error}", file=sys.stderr)
+            return 2
+    loaded_policy = None
+    policy_digest = None
+    if args.policy:
+        try:
+            loaded_policy, policy_digest = load_policy(args.policy)
+        except (OSError, PolicyError) as error:
+            print(f"agentverify: invalid policy: {error}", file=sys.stderr)
             return 2
     try:
         ir = scan_repository(
@@ -124,6 +138,11 @@ def main(argv: list[str] | None = None) -> int:
             "unchanged": len(unchanged),
             "no_longer_reported": len(known - current) if ir.scan_scope == "repository" else None,
         }
+    policy_passed = True
+    if args.policy and loaded_policy is not None and policy_digest is not None:
+        policy_passed = evaluate_policy(
+            ir, loaded_policy, source=args.policy.name, digest=policy_digest
+        )
     try:
         report = {
             "bom": render_bom,
@@ -139,11 +158,11 @@ def main(argv: list[str] | None = None) -> int:
         for finding in ir.findings
         if args.fail_on_kind == "any" or finding.result_kind == args.fail_on_kind
     ]
-    severity_rank = {"info": 0, "low": 1, "medium": 2, "high": 3}
-    if args.fail_on != "none" and any(
-        severity_rank.get(finding.severity, 0) >= severity_rank[args.fail_on]
+    threshold_failed = args.fail_on != "none" and any(
+        SEVERITY_RANK.get(finding.severity, 0) >= SEVERITY_RANK[args.fail_on]
         for finding in considered
-    ):
+    )
+    if threshold_failed or not policy_passed:
         return 1
     return 0
 

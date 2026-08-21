@@ -63,6 +63,7 @@ class RepositoryIR:
     scan_scope: str = "repository"
     path_filters: list[str] = field(default_factory=list)
     baseline_summary: dict[str, int | None] = field(default_factory=dict)
+    policy_summary: dict[str, Any] = field(default_factory=dict)
     files_scanned: int = 0
     config_files_scanned: int = 0
     suppressed_findings: int = 0

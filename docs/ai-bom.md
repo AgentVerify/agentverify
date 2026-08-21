@@ -31,8 +31,8 @@ validated against the relevant official schema.
 The top-level document contains:
 
 - `metadata`: generator version, full or selected-path scope, scanned-file counts, parse warnings,
-  suppressions, and baseline summary. `root` is always `.` and evidence paths are relative to it, so
-  local checkout paths are not disclosed.
+  suppressions, baseline summary, and policy decision summary. `root` is always `.` and evidence
+  paths are relative to it, so local checkout paths are not disclosed.
 - `assets`: every Agent IR component with a stable `avc-*` ID, kind, display name, attributes, and
   exact path/line/excerpt evidence.
 - `relationships`: sorted `avr-*` graph observations with evidence and source/target identity status.

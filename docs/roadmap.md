@@ -41,7 +41,8 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
 - Maintain one real pinned case, minimal regression fixture, and documented remediation per rule.
 - Publish precision/recall results and scan-performance budgets.
 - Maintain SARIF, baseline/suppression workflows, CI examples, and the schema-backed native AI BOM;
-  add standards adapters only after their Agent IR mappings are validated.
+  maintain schema-backed non-hiding policy gates, and add standards adapters only after their Agent
+  IR mappings are validated.
 
 ## Not prioritized yet
 
