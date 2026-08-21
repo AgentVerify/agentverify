@@ -105,6 +105,20 @@
     {"id":"sandbox-activepieces-dev-real","target":{"kind":"repository","repository":"activepieces/activepieces","commit":"d4cc3eaff77209b773f31e947b3b71306b02059d"},"rule_id":"AV-SANDBOX001","path":".devcontainer/docker-compose.yml","line":9,"expected":true},
     {"id":"sandbox-activepieces-benchmark-real","target":{"kind":"repository","repository":"activepieces/activepieces","commit":"d4cc3eaff77209b773f31e947b3b71306b02059d"},"rule_id":"AV-SANDBOX001","path":"benchmark/docker-compose.yml","line":87,"expected":true},
     {"id":"sandbox-safe-network-negative","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"docker-compose.safe.yml","line":4,"expected":false,"source_contains":"read_only: true"},
-    {"id":"sandbox-safe-volume-negative","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"docker-compose.safe.yml","line":7,"expected":false,"source_contains":"./workspace:/workspace:ro"}
+    {"id":"sandbox-safe-volume-negative","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"docker-compose.safe.yml","line":7,"expected":false,"source_contains":"./workspace:/workspace:ro"},
+    {"id":"sandbox-k8s-token-positive","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"kubernetes.yaml","line":4,"expected":true},
+    {"id":"sandbox-k8s-network-positive","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"kubernetes.yaml","line":5,"expected":true},
+    {"id":"sandbox-k8s-pid-positive","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"kubernetes.yaml","line":6,"expected":true},
+    {"id":"sandbox-k8s-ipc-positive","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"kubernetes.yaml","line":7,"expected":true},
+    {"id":"sandbox-k8s-privileged-positive","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"kubernetes.yaml","line":11,"expected":true},
+    {"id":"sandbox-k8s-escalation-positive","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"kubernetes.yaml","line":12,"expected":true},
+    {"id":"sandbox-k8s-token-safe-negative","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"kubernetes.safe.yaml","line":4,"expected":false,"source_contains":"automountServiceAccountToken: false"},
+    {"id":"sandbox-k8s-network-safe-negative","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"kubernetes.safe.yaml","line":5,"expected":false,"source_contains":"hostNetwork: false"},
+    {"id":"sandbox-k8s-pid-safe-negative","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"kubernetes.safe.yaml","line":6,"expected":false,"source_contains":"hostPID: false"},
+    {"id":"sandbox-k8s-ipc-safe-negative","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"kubernetes.safe.yaml","line":7,"expected":false,"source_contains":"hostIPC: false"},
+    {"id":"sandbox-k8s-privileged-safe-negative","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"kubernetes.safe.yaml","line":11,"expected":false,"source_contains":"privileged: false"},
+    {"id":"sandbox-k8s-escalation-safe-negative","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"kubernetes.safe.yaml","line":12,"expected":false,"source_contains":"allowPrivilegeEscalation: false"},
+    {"id":"sandbox-openhands-token-real","target":{"kind":"repository","repository":"OpenHands/OpenHands","commit":"4a8cabc5fdc81bb6d899785f33ea7449387beb4c"},"rule_id":"AV-SANDBOX001","path":"helm/agent-canvas/values.yaml","line":45,"expected":true},
+    {"id":"sandbox-bytebot-helm-real","target":{"kind":"repository","repository":"bytebot-ai/bytebot","commit":"3d37894ce07ef8d8b40adc7fd309ad96c2a71313"},"rule_id":"AV-SANDBOX001","path":"helm/charts/bytebot-desktop/values.yaml","line":40,"expected":true}
   ]
 }

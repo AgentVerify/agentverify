@@ -192,9 +192,14 @@ def test_container_host_boundaries_but_not_safe_compose_are_reviewed() -> None:
         "A container mounts the host Docker socket",
         "A container runs in privileged mode",
         "A container shares the host network namespace",
+        "A container shares the host process namespace",
+        "A container shares the host IPC namespace",
+        "A workload automatically mounts a Kubernetes service-account token",
+        "A container explicitly allows privilege escalation",
         "A container mounts the host filesystem root",
     }
-    assert ir.config_files_scanned == 2
+    assert len(findings) == 10
+    assert ir.config_files_scanned == 4
     assert all(finding.result_kind == "review" for finding in findings)
 
 

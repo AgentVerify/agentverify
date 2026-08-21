@@ -14,6 +14,7 @@ sys.modules[SPEC.name] = COLLECTOR
 SPEC.loader.exec_module(COLLECTOR)
 ensure_clone = COLLECTOR.ensure_clone
 locked_commits = COLLECTOR.locked_commits
+select_files = COLLECTOR.select_files
 
 
 def git(path: Path, *args: str) -> str:
@@ -61,3 +62,19 @@ def test_locked_commits_reads_only_successful_pinned_results(tmp_path: Path) -> 
 
     assert locked_commits(lock) == {"owner/good": "abc123"}
     assert locked_commits(tmp_path / "missing.json") == {}
+
+
+def test_manifest_selection_includes_kubernetes_but_not_ci_workflows() -> None:
+    selected = select_files(
+        [
+            ".github/workflows/deploy.yaml",
+            "helm/agent/templates/statefulset.yaml",
+            "k8s/pod.yml",
+            "src/agent.py",
+        ],
+        max_files=10,
+    )
+
+    assert "helm/agent/templates/statefulset.yaml" in selected
+    assert "k8s/pod.yml" in selected
+    assert ".github/workflows/deploy.yaml" not in selected

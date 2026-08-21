@@ -5,9 +5,9 @@ Counts are repository-level presence signals. Candidate-risk matches require rul
 
 ## 1. Privileged actions are the norm
 
-69/71 repositories contain browser, filesystem, code, or shell-execution signals; 37 contain at
-least three of those four capability classes. Shell execution appears in 41 repositories and
-writable-filesystem operations in 57. Agent discovery therefore needs a capability and trust-boundary
+69/71 repositories contain browser, filesystem, code, or shell-execution signals; 42 contain at
+least three of those four capability classes. Shell execution appears in 42 repositories and
+writable-filesystem operations in 59. Agent discovery therefore needs a capability and trust-boundary
 inventory before it attempts policy judgments.
 
 The initial matcher found `shell=True` in eight repositories. Reviewable examples include:
@@ -17,11 +17,11 @@ The initial matcher found `shell=True` in eight repositories. Reviewable example
 - [MetaGPT](https://github.com/FoundationAgents/MetaGPT/blob/11cdf466d042aece04fc6cfd13b28e1a70341b1f/metagpt/tools/libs/shell.py#L51)
 - [SWE-agent](https://github.com/SWE-agent/SWE-agent/blob/3ea751c087f32b16e039a2233dd6eefecef325d5/sweagent/environment/repo.py#L115)
 
-The links are corpus snapshots; a later scan may pin newer commits.
+The links are locked corpus snapshots; only an explicit collector `--refresh` pins newer commits.
 
 ## 2. MCP creates a cross-process trust boundary
 
-MCP signals occur in 49 repositories. Sixteen contain generic tool-call forwarding shapes, and 17
+MCP signals occur in 50 repositories. Seventeen contain generic tool-call forwarding shapes, and 17
 MCP-positive repositories had no allowlist term in the bounded sample. The latter number is a triage
 queue, not proof that allowlist enforcement is missing.
 
@@ -33,21 +33,21 @@ server, discovered tool set, transport, authentication, argument flow, and enclo
 
 ## 3. Approval exists, but bypass behavior recurs
 
-Human-approval vocabulary appears in 50 repositories, while auto-approval or skip-confirmation
-vocabulary appears in 17. Some matches are deliberately safe tests or demonstrations; others are
+Human-approval vocabulary appears in 52 repositories, while auto-approval or skip-confirmation
+vocabulary appears in 18. Some matches are deliberately safe tests or demonstrations; others are
 production configuration. A useful analyzer must model approval scope and bypass paths rather than
 only checking whether an approval API exists.
 
 ## 4. Provider identity is a governance dependency
 
-OpenAI signals appear in 50 repositories, Anthropic in 35, Google in 28, Azure OpenAI in 15, and AWS
-Bedrock in 12. Forty-two repositories contain two or more provider signals. An AI bill of
+OpenAI signals appear in 51 repositories, Anthropic in 37, Google in 28, Azure OpenAI in 18, and AWS
+Bedrock in 14. Forty-four repositories contain two or more provider signals. An AI bill of
 materials should report providers and model configuration even when no security issue is present.
 
 ## 5. Controls are layered
 
-Sandboxing vocabulary appears in 64 repositories, audit/tracing in 55, human approval in 50, and
-allowlisting in 38. These controls live in infrastructure, framework middleware, configuration, or
+Sandboxing vocabulary appears in 64 repositories, audit/tracing in 57, human approval in 52, and
+allowlisting in 39. These controls live in infrastructure, framework middleware, configuration, or
 individual tool wrappers. The Agent IR must preserve which control governs which action instead of
 producing repository-wide flags.
 

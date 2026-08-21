@@ -35,6 +35,7 @@ def main() -> int:
             continue
         repo_started = time.perf_counter()
         ir = scan_repository(checkout)
+        imported_edges = [edge for edge in ir.relationships if edge.attributes.get("target_path")]
         result = {
             "repository": repository,
             "status": "ok",
@@ -42,6 +43,14 @@ def main() -> int:
             "config_files_scanned": ir.config_files_scanned,
             "components": dict(sorted(Counter(item.kind for item in ir.components).items())),
             "relationships": len(ir.relationships),
+            "resolved_import_edges": len(imported_edges),
+            "resolved_import_edges_by_frontend": {
+                "python": sum(edge.evidence.path.endswith(".py") for edge in imported_edges),
+                "typescript": sum(
+                    edge.evidence.path.endswith((".ts", ".tsx", ".js", ".jsx"))
+                    for edge in imported_edges
+                ),
+            },
             "findings": dict(sorted(Counter(item.rule_id for item in ir.findings).items())),
             "suppressed_findings": ir.suppressed_findings,
             "parse_warnings": len(ir.errors),
@@ -65,6 +74,13 @@ def main() -> int:
             "files_scanned": sum(result["files_scanned"] for result in successful),
             "config_files_scanned": sum(result["config_files_scanned"] for result in successful),
             "relationships": sum(result["relationships"] for result in successful),
+            "resolved_import_edges": sum(result["resolved_import_edges"] for result in successful),
+            "resolved_import_edges_by_frontend": {
+                frontend: sum(
+                    result["resolved_import_edges_by_frontend"][frontend] for result in successful
+                )
+                for frontend in ("python", "typescript")
+            },
             "parse_warnings": sum(result["parse_warnings"] for result in successful),
             "suppressed_findings": sum(result["suppressed_findings"] for result in successful),
             "findings": dict(

@@ -1,10 +1,12 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T02:43:12.290610+00:00",
+  "generated_at": "2026-08-21T03:52:09.759072+00:00",
   "method": {
     "collector": "scripts/collect_repositories.py",
-    "max_files_per_repository": 180,
+    "max_files_per_repository": 220,
     "max_bytes_per_repository": 2000000,
+    "lock_file": "research/repository-data.json",
+    "locked_repositories": 71,
     "selection": "manifests, then security/agent/tool/MCP-related sources, then shallow paths"
   },
   "repositories": [
@@ -17,8 +19,8 @@
       "status": "ok",
       "commit": "d4cc3eaff77209b773f31e947b3b71306b02059d",
       "files_in_tree": 25134,
-      "files_scanned": 180,
-      "bytes_scanned": 549236,
+      "files_scanned": 220,
+      "bytes_scanned": 727875,
       "languages": [
         "TypeScript",
         "TypeScript",
@@ -78,12 +80,6 @@
             }
           ],
           "aws-bedrock": [
-            {
-              "path": "packages/pieces/community/amazon-bedrock/package.json",
-              "line": 12,
-              "excerpt": "\"@aws-sdk/client-bedrock-runtime\": \"^3.987.0\",",
-              "pattern": "\\bbedrock-runtime\\b"
-            },
             {
               "path": "packages/web/src/features/agents/aws-regions.ts",
               "line": 1,
@@ -257,6 +253,26 @@
               "pattern": "\\bapproval\\b"
             }
           ],
+          "audit-or-tracing": [
+            {
+              "path": "packages/server/sandbox/test/lib/cache/action-run-cache.test.ts",
+              "line": 28,
+              "excerpt": "trace: () => undefined,",
+              "pattern": "\\btrac(?:e|ing)\\b"
+            },
+            {
+              "path": "packages/server/sandbox/test/lib/cache/action-run-cache.test.ts",
+              "line": 49,
+              "excerpt": "trace: record('trace'),",
+              "pattern": "\\btrac(?:e|ing)\\b"
+            },
+            {
+              "path": "packages/server/sandbox/test/lib/cache/action-run-cache.test.ts",
+              "line": 414,
+              "excerpt": "type LogLevel = 'info' | 'warn' | 'error' | 'fatal' | 'debug' | 'trace'",
+              "pattern": "\\btrac(?:e|ing)\\b"
+            }
+          ],
           "sandboxing": [
             {
               "path": "package.json",
@@ -334,8 +350,8 @@
       "status": "ok",
       "commit": "f8e907b92dabe47232978023fdcb01e2a7d4b752",
       "files_in_tree": 1531,
-      "files_scanned": 180,
-      "bytes_scanned": 1071888,
+      "files_scanned": 220,
+      "bytes_scanned": 1224895,
       "languages": [
         "Python",
         "TypeScript",
@@ -550,6 +566,20 @@
               "pattern": "CodeInterpreter"
             }
           ],
+          "filesystem": [
+            {
+              "path": "app/api/agentops/exporter/processor.py",
+              "line": 74,
+              "excerpt": "with open(DROPPED_RECORDS_FILENAME, 'a') as f:",
+              "pattern": "\\bopen\\s*\\([^\\n]+[\\\"'][wax+]"
+            },
+            {
+              "path": "app/api/agentops/exporter/processor.py",
+              "line": 536,
+              "excerpt": "with open(DROPPED_RECORDS_FILENAME, 'w') as f:",
+              "pattern": "\\bopen\\s*\\([^\\n]+[\\\"'][wax+]"
+            }
+          ],
           "network": [
             {
               "path": "app/api/agentops/deploy/views/setup.py",
@@ -648,22 +678,22 @@
           ],
           "authentication": [
             {
-              "path": "app/api/agentops/deploy/views/setup.py",
-              "line": 13,
-              "excerpt": "Exchange GitHub OAuth code for access token and store it in the deploy.projects table.",
-              "pattern": "\\bOAuth2?\\b"
+              "path": "app/deploy/configs/aws-load-balancer-controller.yaml",
+              "line": 10,
+              "excerpt": "apiVersion: rbac.authorization.k8s.io/v1",
+              "pattern": "\\bauthorization\\b"
             },
             {
-              "path": "app/api/agentops/deploy/views/setup.py",
-              "line": 27,
-              "excerpt": "raise HTTPException(status_code=500, detail=\"GitHub OAuth not configured in the API\")",
-              "pattern": "\\bOAuth2?\\b"
+              "path": "app/deploy/configs/aws-load-balancer-controller.yaml",
+              "line": 179,
+              "excerpt": "apiVersion: rbac.authorization.k8s.io/v1",
+              "pattern": "\\bauthorization\\b"
             },
             {
-              "path": "app/api/agentops/deploy/views/setup.py",
-              "line": 30,
-              "excerpt": "token_url = \"https://github.com/login/oauth/access_token\"",
-              "pattern": "\\bOAuth2?\\b"
+              "path": "app/deploy/configs/aws-load-balancer-controller.yaml",
+              "line": 184,
+              "excerpt": "apiGroup: rbac.authorization.k8s.io",
+              "pattern": "\\bauthorization\\b"
             }
           ]
         },
@@ -701,8 +731,8 @@
       "status": "ok",
       "commit": "ad4d2839e8ad57b6b9dffa7b583be7bee33009fb",
       "files_in_tree": 955,
-      "files_scanned": 180,
-      "bytes_scanned": 1797243,
+      "files_scanned": 197,
+      "bytes_scanned": 2000000,
       "languages": [
         "Python",
         "TypeScript",
@@ -980,8 +1010,8 @@
       "status": "ok",
       "commit": "955931ab6e2c5e19cca29ddd45f27a1c8b74be1c",
       "files_in_tree": 5260,
-      "files_scanned": 180,
-      "bytes_scanned": 504655,
+      "files_scanned": 220,
+      "bytes_scanned": 582346,
       "languages": [
         "Python",
         "TypeScript",
@@ -1577,8 +1607,8 @@
       "status": "ok",
       "commit": "597debaa1593b54172061ce36a414cc29aa8fc6a",
       "files_in_tree": 527,
-      "files_scanned": 180,
-      "bytes_scanned": 1983938,
+      "files_scanned": 189,
+      "bytes_scanned": 2000000,
       "languages": [
         "Python"
       ],
@@ -1829,8 +1859,8 @@
       "status": "ok",
       "commit": "7b69f2e6c651e48345456a879cc3159879694124",
       "files_in_tree": 3717,
-      "files_scanned": 180,
-      "bytes_scanned": 1876271,
+      "files_scanned": 200,
+      "bytes_scanned": 2000000,
       "languages": [
         "Python",
         "TypeScript",
@@ -1934,21 +1964,21 @@
           ],
           "database": [
             {
-              "path": "src/aurora-dsql-mcp-server/tests/test_readonly_enforcement.py",
-              "line": 188,
-              "excerpt": "\"\"\"Bare Postgres SET / RESET forms must be detected.\"\"\"",
+              "path": "src/postgres-mcp-server/pyproject.toml",
+              "line": 2,
+              "excerpt": "name = \"awslabs.postgres-mcp-server\"",
               "pattern": "\\bpostgres(?:ql)?\\b"
             },
             {
-              "path": "src/aurora-dsql-mcp-server/tests/test_readonly_enforcement.py",
-              "line": 273,
-              "excerpt": "These are ordinary Postgres statements that write or act on durable state.",
+              "path": "src/postgres-mcp-server/pyproject.toml",
+              "line": 4,
+              "excerpt": "description = \"An AWS Labs Model Context Protocol (MCP) server for postgres\"",
               "pattern": "\\bpostgres(?:ql)?\\b"
             },
             {
-              "path": "src/aurora-dsql-mcp-server/tests/test_readonly_enforcement.py",
-              "line": 275,
-              "excerpt": "forward-looking defense-in-depth, mirroring the postgres-mcp-server sibling.",
+              "path": "src/postgres-mcp-server/pyproject.toml",
+              "line": 36,
+              "excerpt": "docs = \"https://awslabs.github.io/mcp/servers/postgres-mcp-server/\"",
               "pattern": "\\bpostgres(?:ql)?\\b"
             }
           ]
@@ -2040,6 +2070,12 @@
           ],
           "authentication": [
             {
+              "path": "src/mysql-mcp-server/pyproject.toml",
+              "line": 122,
+              "excerpt": "# IAM authentication (mysqlwire_iam connection method) to succeed without",
+              "pattern": "\\bauthentication\\b"
+            },
+            {
               "path": "src/mysql-mcp-server/hatch_build.py",
               "line": 19,
               "excerpt": "Aurora MySQL IAM authentication requires strict TLS, but Python's default",
@@ -2049,12 +2085,6 @@
               "path": "src/amazon-translate-mcp-server/tests/test_aws_client.py",
               "line": 728,
               "excerpt": "\"\"\"Test _get_client with authentication error.\"\"\"",
-              "pattern": "\\bauthentication\\b"
-            },
-            {
-              "path": "src/amazon-translate-mcp-server/tests/test_translation_service.py",
-              "line": 443,
-              "excerpt": "\"\"\"Test client error handling for authentication errors.\"\"\"",
               "pattern": "\\bauthentication\\b"
             }
           ]
@@ -2093,7 +2123,7 @@
       "status": "ok",
       "commit": "48d480f91163bbcdc0f69f01befa3841a93a1d3e",
       "files_in_tree": 2392,
-      "files_scanned": 159,
+      "files_scanned": 160,
       "bytes_scanned": 2000000,
       "languages": [
         "Rust",
@@ -2706,8 +2736,8 @@
       "status": "ok",
       "commit": "3d37894ce07ef8d8b40adc7fd309ad96c2a71313",
       "files_in_tree": 345,
-      "files_scanned": 152,
-      "bytes_scanned": 515585,
+      "files_scanned": 187,
+      "bytes_scanned": 554201,
       "languages": [
         "TypeScript",
         "TypeScript"
@@ -2722,15 +2752,15 @@
               "pattern": "OPENAI_API_KEY"
             },
             {
-              "path": "packages/bytebot-agent/src/openai/openai.service.ts",
-              "line": 30,
-              "excerpt": "const apiKey = this.configService.get<string>('OPENAI_API_KEY');",
+              "path": "helm/values-proxy.yaml",
+              "line": 12,
+              "excerpt": "OPENAI_API_KEY: \"\"",
               "pattern": "OPENAI_API_KEY"
             },
             {
-              "path": "packages/bytebot-agent/src/openai/openai.service.ts",
-              "line": 34,
-              "excerpt": "'OPENAI_API_KEY is not set. OpenAIService will not work properly.',",
+              "path": "helm/values-proxy.yaml",
+              "line": 32,
+              "excerpt": "OPENAI_API_KEY: \"\"",
               "pattern": "OPENAI_API_KEY"
             }
           ],
@@ -2742,15 +2772,15 @@
               "pattern": "ANTHROPIC_API_KEY"
             },
             {
-              "path": "packages/bytebot-agent/src/anthropic/anthropic.service.ts",
-              "line": 29,
-              "excerpt": "const apiKey = this.configService.get<string>('ANTHROPIC_API_KEY');",
+              "path": "helm/values-proxy.yaml",
+              "line": 11,
+              "excerpt": "ANTHROPIC_API_KEY: \"\"",
               "pattern": "ANTHROPIC_API_KEY"
             },
             {
-              "path": "packages/bytebot-agent/src/anthropic/anthropic.service.ts",
-              "line": 33,
-              "excerpt": "'ANTHROPIC_API_KEY is not set. AnthropicService will not work properly.',",
+              "path": "helm/values-proxy.yaml",
+              "line": 31,
+              "excerpt": "ANTHROPIC_API_KEY: \"\"",
               "pattern": "ANTHROPIC_API_KEY"
             }
           ],
@@ -2762,15 +2792,15 @@
               "pattern": "GEMINI_API_KEY"
             },
             {
-              "path": "packages/bytebot-agent/src/google/google.service.ts",
-              "line": 35,
-              "excerpt": "const apiKey = this.configService.get<string>('GEMINI_API_KEY');",
+              "path": "helm/values-proxy.yaml",
+              "line": 13,
+              "excerpt": "GEMINI_API_KEY: \"\"",
               "pattern": "GEMINI_API_KEY"
             },
             {
-              "path": "packages/bytebot-agent/src/google/google.service.ts",
-              "line": 39,
-              "excerpt": "'GEMINI_API_KEY is not set. GoogleService will not work properly.',",
+              "path": "helm/values-proxy.yaml",
+              "line": 33,
+              "excerpt": "GEMINI_API_KEY: \"\"",
               "pattern": "GEMINI_API_KEY"
             }
           ]
@@ -2906,6 +2936,26 @@
               "line": 57,
               "excerpt": "container.dispatchEvent(event);",
               "pattern": "\\bcontainer(?:ized|isation|ization)?\\b"
+            }
+          ],
+          "authentication": [
+            {
+              "path": "helm/charts/bytebot-llm-proxy/values.yaml",
+              "line": 43,
+              "excerpt": "api_key: os.environ/ANTHROPIC_API_KEY",
+              "pattern": "\\bAPI_KEY\\b"
+            },
+            {
+              "path": "helm/charts/bytebot-llm-proxy/values.yaml",
+              "line": 47,
+              "excerpt": "api_key: os.environ/ANTHROPIC_API_KEY",
+              "pattern": "\\bAPI_KEY\\b"
+            },
+            {
+              "path": "helm/charts/bytebot-llm-proxy/values.yaml",
+              "line": 53,
+              "excerpt": "api_key: os.environ/OPENAI_API_KEY",
+              "pattern": "\\bAPI_KEY\\b"
             }
           ]
         }
@@ -3455,8 +3505,8 @@
       "status": "ok",
       "commit": "80b3b0348e694bafc48e3dcd70154de3cf4289d9",
       "files_in_tree": 3793,
-      "files_scanned": 180,
-      "bytes_scanned": 1316516,
+      "files_scanned": 220,
+      "bytes_scanned": 1647941,
       "languages": [
         "TypeScript",
         "TypeScript",
@@ -3738,8 +3788,8 @@
       "status": "ok",
       "commit": "38899bdfa02fe10d9df65d230a67f9f5df987420",
       "files_in_tree": 2747,
-      "files_scanned": 180,
-      "bytes_scanned": 872154,
+      "files_scanned": 220,
+      "bytes_scanned": 1014526,
       "languages": [
         "TypeScript",
         "Python",
@@ -4161,8 +4211,8 @@
       "status": "ok",
       "commit": "5522c6f44ca0ac3528b37244818fbfa39b5af470",
       "files_in_tree": 3058,
-      "files_scanned": 180,
-      "bytes_scanned": 846644,
+      "files_scanned": 220,
+      "bytes_scanned": 1087073,
       "languages": [
         "TypeScript",
         "TypeScript",
@@ -4171,6 +4221,26 @@
       ],
       "signals": {
         "providers": {
+          "anthropic": [
+            {
+              "path": "extensions/cli/src/smoke-api/headless-all-tools.test.ts",
+              "line": 15,
+              "excerpt": "const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;",
+              "pattern": "ANTHROPIC_API_KEY"
+            },
+            {
+              "path": "extensions/cli/src/smoke-api/headless-all-tools.test.ts",
+              "line": 17,
+              "excerpt": "describe.skipIf(!ANTHROPIC_API_KEY)(",
+              "pattern": "ANTHROPIC_API_KEY"
+            },
+            {
+              "path": "extensions/cli/src/smoke-api/headless-all-tools.test.ts",
+              "line": 24,
+              "excerpt": "await writeAnthropicConfig(ctx, ANTHROPIC_API_KEY!);",
+              "pattern": "ANTHROPIC_API_KEY"
+            }
+          ],
           "aws-bedrock": [
             {
               "path": "core/package.json",
@@ -4193,6 +4263,18 @@
               "line": 481,
               "excerpt": "// used as a local cwd for child_process.spawn(). When the extension",
               "pattern": "child_process\\.(?:exec|spawn)"
+            },
+            {
+              "path": "extensions/cli/src/smoke-api/headless-all-tools.test.ts",
+              "line": 40,
+              "excerpt": "execSync(\"git init\", { cwd: ctx.testDir, env: gitEnv });",
+              "pattern": "execSync\\s*\\("
+            },
+            {
+              "path": "extensions/cli/src/smoke-api/headless-all-tools.test.ts",
+              "line": 41,
+              "excerpt": "execSync(\"git add .\", { cwd: ctx.testDir, env: gitEnv });",
+              "pattern": "execSync\\s*\\("
             }
           ],
           "code-execution": [
@@ -5104,8 +5186,8 @@
       "status": "ok",
       "commit": "24b028f4f9aac85ce1a1057c5e8d739836e7c18d",
       "files_in_tree": 6779,
-      "files_scanned": 180,
-      "bytes_scanned": 993021,
+      "files_scanned": 220,
+      "bytes_scanned": 1089593,
       "languages": [
         "Go",
         "Python"
@@ -5152,6 +5234,26 @@
               "line": 408,
               "excerpt": "result, err := vs.db.Exec(\"INSERT INTO collections (name) VALUES (?)\", params.Name)",
               "pattern": "\\bexec\\s*\\("
+            }
+          ],
+          "filesystem": [
+            {
+              "path": "pkg/db/db.go",
+              "line": 85,
+              "excerpt": "db, err := sql.Open(\"sqlite\", \"file:\"+o.dbFile+\"?_pragma=busy_timeout(5000)&_pragma=foreign_keys(ON)\")",
+              "pattern": "\\bopen\\s*\\([^\\n]+[\\\"'][wax+]"
+            },
+            {
+              "path": "pkg/db/migration_test.go",
+              "line": 184,
+              "excerpt": "db, err := sql.Open(\"sqlite\", \"file:\"+dbFile)",
+              "pattern": "\\bopen\\s*\\([^\\n]+[\\\"'][wax+]"
+            },
+            {
+              "path": "pkg/db/migration_test.go",
+              "line": 211,
+              "excerpt": "db, err := sql.Open(\"sqlite\", \"file:\"+dbFile)",
+              "pattern": "\\bopen\\s*\\([^\\n]+[\\\"'][wax+]"
             }
           ],
           "browser": [
@@ -5205,6 +5307,12 @@
               "path": "pkg/gateway/findmcps_test.go",
               "line": 133,
               "excerpt": "query:         \"nonexistent database postgresql\",",
+              "pattern": "\\bpostgres(?:ql)?\\b"
+            },
+            {
+              "path": "pkg/db/workingset_test.go",
+              "line": 435,
+              "excerpt": "{Type: \"image\", Image: \"postgres:latest\"},",
               "pattern": "\\bpostgres(?:ql)?\\b"
             }
           ]
@@ -5333,8 +5441,8 @@
       "status": "ok",
       "commit": "5995e0ad1cb7b2fba9ce7c5ae2c0acb3c86d46a5",
       "files_in_tree": 869,
-      "files_scanned": 180,
-      "bytes_scanned": 1207561,
+      "files_scanned": 220,
+      "bytes_scanned": 1300262,
       "languages": [
         "Python",
         "TypeScript",
@@ -5541,8 +5649,8 @@
       "status": "ok",
       "commit": "9291856d1ea4a4ceea9f8fef8ce14f4f6c81e8eb",
       "files_in_tree": 2450,
-      "files_scanned": 180,
-      "bytes_scanned": 1253831,
+      "files_scanned": 220,
+      "bytes_scanned": 1563851,
       "languages": [
         "TypeScript",
         "JavaScript",
@@ -5796,8 +5904,8 @@
       "status": "ok",
       "commit": "11cdf466d042aece04fc6cfd13b28e1a70341b1f",
       "files_in_tree": 1255,
-      "files_scanned": 180,
-      "bytes_scanned": 688735,
+      "files_scanned": 220,
+      "bytes_scanned": 904967,
       "languages": [
         "Python",
         "JavaScript",
@@ -6230,8 +6338,8 @@
       "status": "ok",
       "commit": "30573d2e4d85bdc2c0ae8218c377cd410336da77",
       "files_in_tree": 2997,
-      "files_scanned": 180,
-      "bytes_scanned": 1993848,
+      "files_scanned": 182,
+      "bytes_scanned": 2000000,
       "languages": [
         "TypeScript",
         "TypeScript",
@@ -6523,8 +6631,8 @@
       "status": "ok",
       "commit": "5ee247e677393bfd8751fdd871f2220448807649",
       "files_in_tree": 901,
-      "files_scanned": 180,
-      "bytes_scanned": 1129929,
+      "files_scanned": 220,
+      "bytes_scanned": 1359931,
       "languages": [
         "TypeScript",
         "JavaScript",
@@ -6641,6 +6749,12 @@
               "path": "core/test/a2a/agent_to_a2a_body_parsing_test.ts",
               "line": 85,
               "excerpt": "return fetch(`http://127.0.0.1:${port}${path}`, {",
+              "pattern": "\\bfetch\\s*\\("
+            },
+            {
+              "path": "core/src/integrations/agent_registry/agent_registry.ts",
+              "line": 156,
+              "excerpt": "const res = await fetch(url, {",
               "pattern": "\\bfetch\\s*\\("
             }
           ],
@@ -6819,7 +6933,7 @@
       "status": "ok",
       "commit": "775c1bd36e205eec65e207ad29fdc4cf2184e47e",
       "files_in_tree": 2525,
-      "files_scanned": 96,
+      "files_scanned": 97,
       "bytes_scanned": 2000000,
       "languages": [
         "Python",
@@ -7117,21 +7231,21 @@
           ],
           "authentication": [
             {
-              "path": "tests/unittests/agents/test_callback_context.py",
-              "line": 86,
-              "excerpt": "mock_credential.auth_type = AuthCredentialTypes.OAUTH2",
-              "pattern": "\\bOAuth2?\\b"
+              "path": "contributing/samples/integrations/gke_agent_sandbox/deployment_rbac.yaml",
+              "line": 26,
+              "excerpt": "apiVersion: rbac.authorization.k8s.io/v1",
+              "pattern": "\\bauthorization\\b"
             },
             {
-              "path": "tests/unittests/agents/test_context.py",
-              "line": 80,
-              "excerpt": "mock_credential.auth_type = AuthCredentialTypes.OAUTH2",
-              "pattern": "\\bOAuth2?\\b"
+              "path": "contributing/samples/integrations/gke_agent_sandbox/deployment_rbac.yaml",
+              "line": 52,
+              "excerpt": "apiVersion: rbac.authorization.k8s.io/v1",
+              "pattern": "\\bauthorization\\b"
             },
             {
-              "path": "tests/unittests/agents/test_managed_agent.py",
-              "line": 841,
-              "excerpt": "header_provider=lambda ctx: {'Authorization': 'Bearer t'},",
+              "path": "contributing/samples/integrations/gke_agent_sandbox/deployment_rbac.yaml",
+              "line": 64,
+              "excerpt": "apiGroup: rbac.authorization.k8s.io",
               "pattern": "\\bauthorization\\b"
             }
           ]
@@ -7695,8 +7809,8 @@
       "status": "ok",
       "commit": "609f79b8a118cd6c4bb58a5341bafd76e42e5a2b",
       "files_in_tree": 1555,
-      "files_scanned": 180,
-      "bytes_scanned": 1907154,
+      "files_scanned": 201,
+      "bytes_scanned": 2000000,
       "languages": [
         "Python",
         "JavaScript"
@@ -8315,8 +8429,8 @@
       "status": "ok",
       "commit": "09a917e1a3fcd67edddbfd9fc557066414bbb66b",
       "files_in_tree": 3039,
-      "files_scanned": 180,
-      "bytes_scanned": 1066798,
+      "files_scanned": 220,
+      "bytes_scanned": 1095831,
       "languages": [
         "Python",
         "JavaScript"
@@ -9110,8 +9224,8 @@
       "status": "ok",
       "commit": "09ef6b2b7119e35a6787fc249f916f8b47b28615",
       "files_in_tree": 9514,
-      "files_scanned": 180,
-      "bytes_scanned": 1703162,
+      "files_scanned": 213,
+      "bytes_scanned": 2000000,
       "languages": [
         "Python",
         "TypeScript",
@@ -9160,6 +9274,26 @@
               "line": 284,
               "excerpt": "# crewai = [\"crewai>=0.126.0\"]",
               "pattern": "\\bcrewai(?:\\.|\\b)"
+            },
+            {
+              "path": "src/backend/base/langflow/agentic/flows/translation_flow.py",
+              "line": 102,
+              "excerpt": "- Questions about OTHER tools or platforms (n8n, Make, Zapier, AutoGen, CrewAI, etc.) = off_topic",
+              "pattern": "\\bcrewai(?:\\.|\\b)"
+            }
+          ],
+          "autogen": [
+            {
+              "path": "src/backend/base/langflow/agentic/flows/translation_flow.py",
+              "line": 77,
+              "excerpt": "\"Explain Docker\", \"What is AutoGen?\", \"How does Make.com work?\", \"Write me a poem\"",
+              "pattern": "\\bautogen(?:_|\\.|\\b)"
+            },
+            {
+              "path": "src/backend/base/langflow/agentic/flows/translation_flow.py",
+              "line": 102,
+              "excerpt": "- Questions about OTHER tools or platforms (n8n, Make, Zapier, AutoGen, CrewAI, etc.) = off_topic",
+              "pattern": "\\bautogen(?:_|\\.|\\b)"
             }
           ],
           "smolagents": [
@@ -9465,8 +9599,8 @@
       "status": "ok",
       "commit": "edc805c4530edfc2d0197ca59a9539f5b56457cc",
       "files_in_tree": 13400,
-      "files_scanned": 180,
-      "bytes_scanned": 929041,
+      "files_scanned": 220,
+      "bytes_scanned": 1343092,
       "languages": [
         "TypeScript",
         "Python",
@@ -9941,8 +10075,8 @@
       "status": "ok",
       "commit": "db60f05fdd897d48a4ba6335e2ada32c286333cf",
       "files_in_tree": 2026,
-      "files_scanned": 180,
-      "bytes_scanned": 1449275,
+      "files_scanned": 220,
+      "bytes_scanned": 1887243,
       "languages": [
         "TypeScript",
         "TypeScript",
@@ -9979,6 +10113,20 @@
               "line": 128,
               "excerpt": "execSync(`git clone ${remote} .`, { cwd: repo, stdio: \"ignore\" });",
               "pattern": "execSync\\s*\\("
+            }
+          ],
+          "code-execution": [
+            {
+              "path": "src/permissions/analyzer.ts",
+              "line": 460,
+              "excerpt": "let quotedMatch: RegExpExecArray | null = quotedRegex.exec(normalized);",
+              "pattern": "\\bexec\\s*\\("
+            },
+            {
+              "path": "src/permissions/analyzer.ts",
+              "line": 465,
+              "excerpt": "quotedMatch = quotedRegex.exec(normalized);",
+              "pattern": "\\bexec\\s*\\("
             }
           ],
           "filesystem": [
@@ -10111,6 +10259,20 @@
               "line": 277,
               "excerpt": "* sandbox scenario). When set, `sendMessageStream` echoes this on",
               "pattern": "\\bsandbox(?:ed|ing)?\\b"
+            }
+          ],
+          "allowlist": [
+            {
+              "path": "src/permissions/read-only-shell.test.ts",
+              "line": 99,
+              "excerpt": "test(\"denies unsafe variants of memory-rooted git allowlist additions\", () => {",
+              "pattern": "\\ballowlist\\b"
+            },
+            {
+              "path": "src/permissions/read-only-shell.test.ts",
+              "line": 812,
+              "excerpt": "// restore/backup/pull/diff mutate state \u2014 not in read-only allowlist",
+              "pattern": "\\ballowlist\\b"
             }
           ],
           "authentication": [
@@ -10293,8 +10455,8 @@
       "status": "ok",
       "commit": "1da5fb00e141b78c2148b21ee085ec24112cf2a5",
       "files_in_tree": 14114,
-      "files_scanned": 180,
-      "bytes_scanned": 901600,
+      "files_scanned": 220,
+      "bytes_scanned": 1199318,
       "languages": [
         "TypeScript",
         "TypeScript",
@@ -10363,6 +10525,18 @@
               "path": "examples/voice-agent/scripts/summary-smoke.ts",
               "line": 303,
               "excerpt": "if (process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GOOGLE_API_KEY) {",
+              "pattern": "GOOGLE_API_KEY"
+            },
+            {
+              "path": "voice/google-gemini-live-api/src/tool-args-integration.test.ts",
+              "line": 8,
+              "excerpt": "* - Set GOOGLE_API_KEY environment variable",
+              "pattern": "GOOGLE_API_KEY"
+            },
+            {
+              "path": "voice/google-gemini-live-api/src/tool-args-integration.test.ts",
+              "line": 24,
+              "excerpt": "const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY;",
               "pattern": "GOOGLE_API_KEY"
             }
           ]
@@ -10454,11 +10628,29 @@
               "line": 42,
               "excerpt": "\"redis\": \"^5.12.1\"",
               "pattern": "\\bredis\\b"
+            },
+            {
+              "path": "examples/durable-agents/package.json",
+              "line": 24,
+              "excerpt": "\"@mastra/redis\": \"1.0.0-beta.4\",",
+              "pattern": "\\bredis\\b"
+            },
+            {
+              "path": "examples/durable-agents/package.json",
+              "line": 35,
+              "excerpt": "\"@mastra/redis\": \"link:../../stores/redis\",",
+              "pattern": "\\bredis\\b"
             }
           ]
         },
         "protocols": {
           "mcp": [
+            {
+              "path": "examples/agent/package.json",
+              "line": 30,
+              "excerpt": "\"@modelcontextprotocol/sdk\": \"^1.29.0\",",
+              "pattern": "modelcontextprotocol"
+            },
             {
               "path": "agent-sdks/acp/src/connection.ts",
               "line": 335,
@@ -10470,54 +10662,56 @@
               "line": 143,
               "excerpt": "mcpServers: {",
               "pattern": "mcpServers"
-            },
+            }
+          ],
+          "a2a": [
             {
-              "path": "agent-sdks/claude/src/index.test.ts",
-              "line": 192,
-              "excerpt": "mcpServers: {",
-              "pattern": "mcpServers"
+              "path": "packages/server/scripts/permission-generator.ts",
+              "line": 45,
+              "excerpt": "a2a: 'agent-to-agent communication',",
+              "pattern": "\\bA2A\\b"
             }
           ]
         },
         "controls": {
           "human-approval": [
             {
+              "path": "examples/agent/package.json",
+              "line": 67,
+              "excerpt": "\"hitl:approval\": \"npx tsx src/hitl-approval-recall.ts\",",
+              "pattern": "\\bapproval\\b"
+            },
+            {
+              "path": "examples/agent/package.json",
+              "line": 75,
+              "excerpt": "\"clean\": \"rm -rf .mastra mastra-observability.duckdb* vector.db src/mastra/public/*.duckdb* database.sqlite hitl-approval-recall.db*\"",
+              "pattern": "\\bapproval\\b"
+            },
+            {
               "path": "examples/agent/src/hitl-approval-recall.ts",
               "line": 2,
               "excerpt": "* HITL tool-approval recall round-trip demo \u2014 issue #17218",
-              "pattern": "\\bapproval\\b"
-            },
-            {
-              "path": "examples/agent/src/hitl-approval-recall.ts",
-              "line": 6,
-              "excerpt": "*   pnpm --dir examples/agent hitl:approval",
-              "pattern": "\\bapproval\\b"
-            },
-            {
-              "path": "examples/agent/src/hitl-approval-recall.ts",
-              "line": 7,
-              "excerpt": "*   # or: npx tsx src/hitl-approval-recall.ts   (from examples/agent)",
               "pattern": "\\bapproval\\b"
             }
           ],
           "audit-or-tracing": [
             {
-              "path": "agent-sdks/claude/src/observability.test.ts",
-              "line": 39,
-              "excerpt": "externalTraceId: 'trace-id',",
+              "path": "e2e-tests/deployers/pnpm-lock.yaml",
+              "line": 321,
+              "excerpt": "'@sentry-internal/tracing@7.120.4':",
               "pattern": "\\btrac(?:e|ing)\\b"
             },
             {
-              "path": "agent-sdks/cursor/src/observability.test.ts",
-              "line": 38,
-              "excerpt": "externalTraceId: 'trace-id',",
-              "pattern": "\\btrac(?:e|ing)\\b"
+              "path": "e2e-tests/deployers/pnpm-lock.yaml",
+              "line": 2078,
+              "excerpt": "'@opentelemetry/api': ^1.9.0",
+              "pattern": "opentelemetry"
             },
             {
-              "path": "observability/mastra/src/durable-agent-tracing.integration.test.ts",
-              "line": 111,
-              "excerpt": "configs: { test: { serviceName: 'durable-tracing-it', exporters: [testExporter] } },",
-              "pattern": "\\btrac(?:e|ing)\\b"
+              "path": "e2e-tests/deployers/pnpm-lock.yaml",
+              "line": 2092,
+              "excerpt": "'@opentelemetry/api':",
+              "pattern": "opentelemetry"
             }
           ],
           "sandboxing": [
@@ -10573,8 +10767,8 @@
       "status": "ok",
       "commit": "4e754a636d6d688b35027de4070d64d4f1566d15",
       "files_in_tree": 5051,
-      "files_scanned": 180,
-      "bytes_scanned": 1192101,
+      "files_scanned": 220,
+      "bytes_scanned": 1363051,
       "languages": [
         "C#",
         "Python",
@@ -10817,6 +11011,28 @@
               "pattern": "\\bauthentication\\b"
             }
           ]
+        },
+        "risk_patterns": {
+          "auto-approve": [
+            {
+              "path": "dotnet/src/Microsoft.Agents.AI.Harness/HarnessAgent.cs",
+              "line": 57,
+              "excerpt": "/// <item><description><see cref=\"ToolApprovalAgent\"/> \u2014 \"don't ask again\" tool approval rules enabling safe unattended execution. Disable with <see cref=\"HarnessAgentOptions.DisableToolAutoApproval\"/>.</description></item>",
+              "pattern": "auto.?approv"
+            },
+            {
+              "path": "dotnet/src/Microsoft.Agents.AI.Harness/HarnessAgent.cs",
+              "line": 185,
+              "excerpt": "if (options?.DisableToolAutoApproval is not true)",
+              "pattern": "auto.?approv"
+            },
+            {
+              "path": "dotnet/src/Microsoft.Agents.AI.Harness/HarnessAgentOptions.cs",
+              "line": 188,
+              "excerpt": "/// Gets or sets a value indicating whether the <see cref=\"ToolApprovalAgent\"/> auto-approval middleware is disabled.",
+              "pattern": "auto.?approv"
+            }
+          ]
         }
       },
       "error": ""
@@ -11033,8 +11249,8 @@
       "status": "ok",
       "commit": "027ecf0a379bcc1d09956d46d12d44a3ad9cee14",
       "files_in_tree": 1837,
-      "files_scanned": 180,
-      "bytes_scanned": 642450,
+      "files_scanned": 220,
+      "bytes_scanned": 1201995,
       "languages": [
         "Python",
         "C#",
@@ -11165,6 +11381,12 @@
               "line": 20,
               "excerpt": "Console.WriteLine(\"Please set GOOGLE_GEMINI_API_KEY environment variable.\");",
               "pattern": "GEMINI_API_KEY"
+            },
+            {
+              "path": "python/packages/autogen-agentchat/tests/test_group_chat_endpoint.py",
+              "line": 81,
+              "excerpt": "api_key = os.environ[\"GEMINI_API_KEY\"]",
+              "pattern": "GEMINI_API_KEY"
             }
           ],
           "ollama": [
@@ -11189,6 +11411,20 @@
           ]
         },
         "capabilities": {
+          "code-execution": [
+            {
+              "path": "python/packages/autogen-ext/tests/test_azure_ai_agent.py",
+              "line": 18,
+              "excerpt": "CodeInterpreterToolDefinition,",
+              "pattern": "CodeInterpreter"
+            },
+            {
+              "path": "python/packages/autogen-ext/tests/test_azure_ai_agent.py",
+              "line": 443,
+              "excerpt": "CodeInterpreterToolDefinition(),",
+              "pattern": "CodeInterpreter"
+            }
+          ],
           "filesystem": [
             {
               "path": "python/samples/agentchat_fastapi/app_agent.py",
@@ -11258,7 +11494,49 @@
             }
           ]
         },
+        "protocols": {
+          "mcp": [
+            {
+              "path": "python/packages/autogen-ext/examples/mcp_example_server.py",
+              "line": 1,
+              "excerpt": "\"\"\"From: https://github.com/modelcontextprotocol/python-sdk?tab=readme-ov-file#elicitation\"\"\"",
+              "pattern": "modelcontextprotocol"
+            },
+            {
+              "path": "python/packages/autogen-ext/examples/mcp_example_server.py",
+              "line": 10,
+              "excerpt": "mcp = FastMCP(name=\"Elicitation Example\")",
+              "pattern": "\\bFastMCP\\s*\\("
+            },
+            {
+              "path": "python/packages/autogen-ext/examples/mcp_session_host_example.py",
+              "line": 211,
+              "excerpt": "logger.info(\"   npm install -g @modelcontextprotocol/server-everything\")",
+              "pattern": "modelcontextprotocol"
+            }
+          ]
+        },
         "controls": {
+          "human-approval": [
+            {
+              "path": "python/packages/autogen-agentchat/tests/test_code_executor_agent.py",
+              "line": 440,
+              "excerpt": "# Approval function test helpers",
+              "pattern": "\\bapproval\\b"
+            },
+            {
+              "path": "python/packages/autogen-agentchat/tests/test_code_executor_agent.py",
+              "line": 442,
+              "excerpt": "\"\"\"Approval function that allows all code execution.\"\"\"",
+              "pattern": "\\bapproval\\b"
+            },
+            {
+              "path": "python/packages/autogen-agentchat/tests/test_code_executor_agent.py",
+              "line": 447,
+              "excerpt": "\"\"\"Approval function that denies potentially dangerous code.\"\"\"",
+              "pattern": "\\bapproval\\b"
+            }
+          ],
           "audit-or-tracing": [
             {
               "path": "python/pyproject.toml",
@@ -11291,6 +11569,12 @@
               "line": 12,
               "excerpt": "// Add services to the container.",
               "pattern": "\\bcontainer(?:ized|isation|ization)?\\b"
+            },
+            {
+              "path": "python/packages/autogen-agentchat/tests/test_messages.py",
+              "line": 182,
+              "excerpt": "# Create a container with the messages.",
+              "pattern": "\\bcontainer(?:ized|isation|ization)?\\b"
             }
           ],
           "authentication": [
@@ -11311,6 +11595,28 @@
               "line": 55,
               "excerpt": "model_client = OpenAIChatCompletionClient(model=\"gpt-4o-mini\", api_key=api_key)",
               "pattern": "\\bAPI_KEY\\b"
+            }
+          ]
+        },
+        "risk_patterns": {
+          "unrestricted-mcp-tool-proxy": [
+            {
+              "path": "python/packages/autogen-ext/tests/mcp_server_comprehensive.py",
+              "line": 223,
+              "excerpt": "async def call_tool(self, name: str, arguments: Optional[Dict[str, Any]] = None) -> list[TextContent]:",
+              "pattern": "call_tool\\s*\\([^\\n]{0,160}(?:arguments|params)"
+            },
+            {
+              "path": "python/packages/autogen-ext/tests/mcp_server_comprehensive.py",
+              "line": 353,
+              "excerpt": "async def call_tool(name: str, arguments: Optional[Dict[str, Any]] = None) -> list[TextContent]:  # pyright: ignore[reportUnusedFunction]",
+              "pattern": "call_tool\\s*\\([^\\n]{0,160}(?:arguments|params)"
+            },
+            {
+              "path": "python/packages/autogen-ext/tests/mcp_server_comprehensive.py",
+              "line": 354,
+              "excerpt": "return await self.call_tool(name, arguments)",
+              "pattern": "call_tool\\s*\\([^\\n]{0,160}(?:arguments|params)"
             }
           ]
         }
@@ -11429,8 +11735,8 @@
       "status": "ok",
       "commit": "b39d95a34435f4c1d55dd00c86120ce118d847e1",
       "files_in_tree": 4853,
-      "files_scanned": 180,
-      "bytes_scanned": 1009942,
+      "files_scanned": 220,
+      "bytes_scanned": 1287524,
       "languages": [
         "C#",
         "Python",
@@ -11477,6 +11783,48 @@
               "line": 15,
               "excerpt": "from semantic_kernel.agents.channels.agent_channel import AgentChannel",
               "pattern": "\\bsemantic_kernel(?:\\.|\\b)"
+            }
+          ]
+        },
+        "providers": {
+          "openai": [
+            {
+              "path": "python/samples/concepts/mcp/agent_with_http_mcp_plugin.py",
+              "line": 18,
+              "excerpt": "- Optionally: AZURE_OPENAI_API_KEY",
+              "pattern": "OPENAI_API_KEY"
+            },
+            {
+              "path": "python/samples/concepts/mcp/agent_with_mcp_agent.py",
+              "line": 21,
+              "excerpt": "- Optionally: AZURE_OPENAI_API_KEY",
+              "pattern": "OPENAI_API_KEY"
+            },
+            {
+              "path": "python/samples/concepts/mcp/agent_with_mcp_plugin.py",
+              "line": 19,
+              "excerpt": "- Optionally: AZURE_OPENAI_API_KEY",
+              "pattern": "OPENAI_API_KEY"
+            }
+          ],
+          "azure-openai": [
+            {
+              "path": "python/samples/concepts/mcp/agent_with_http_mcp_plugin.py",
+              "line": 17,
+              "excerpt": "- AZURE_OPENAI_CHAT_DEPLOYMENT_NAME",
+              "pattern": "AZURE_OPENAI_"
+            },
+            {
+              "path": "python/samples/concepts/mcp/agent_with_http_mcp_plugin.py",
+              "line": 18,
+              "excerpt": "- Optionally: AZURE_OPENAI_API_KEY",
+              "pattern": "AZURE_OPENAI_"
+            },
+            {
+              "path": "python/samples/concepts/mcp/agent_with_mcp_agent.py",
+              "line": 20,
+              "excerpt": "- AZURE_OPENAI_CHAT_DEPLOYMENT_NAME",
+              "pattern": "AZURE_OPENAI_"
             }
           ]
         },
@@ -11529,6 +11877,18 @@
               "line": 4,
               "excerpt": "description = \"A simple MCP server demonstrating OAuth authentication: source: https://github.com/modelcontextprotocol/python-sdk/tree/main/examples/servers/simple-auth\"",
               "pattern": "modelcontextprotocol"
+            },
+            {
+              "path": "python/samples/demos/mcp_server/agent_as_server.py",
+              "line": 27,
+              "excerpt": "\"mcpServers\": {",
+              "pattern": "mcpServers"
+            },
+            {
+              "path": "python/samples/demos/mcp_server/mcp_server_with_prompts.py",
+              "line": 25,
+              "excerpt": "\"mcpServers\": {",
+              "pattern": "mcpServers"
             }
           ],
           "a2a": [
@@ -12001,8 +12361,8 @@
       "status": "ok",
       "commit": "57394b0548d1e2dc2dce8d67d84985769df3b8bb",
       "files_in_tree": 1662,
-      "files_scanned": 180,
-      "bytes_scanned": 1583108,
+      "files_scanned": 218,
+      "bytes_scanned": 2000000,
       "languages": [
         "Python",
         "JavaScript"
@@ -12030,6 +12390,12 @@
               "path": "src/mcp/cli/cli.py",
               "line": 276,
               "excerpt": "process = subprocess.run(",
+              "pattern": "subprocess\\.(?:run|Popen|call|check_output)\\s*\\("
+            },
+            {
+              "path": "src/mcp/os/win32/utilities.py",
+              "line": 184,
+              "excerpt": "popen_obj = subprocess.Popen(",
               "pattern": "subprocess\\.(?:run|Popen|call|check_output)\\s*\\("
             }
           ],
@@ -12102,6 +12468,18 @@
               "path": "src/mcp-types/mcp_types/_types.py",
               "line": 1678,
               "excerpt": "the user before sampling (human in the loop). A standalone JSON-RPC request",
+              "pattern": "human.in.the.loop"
+            },
+            {
+              "path": "src/mcp-types/mcp_types/_v2025_11_25/__init__.py",
+              "line": 3341,
+              "excerpt": "to inspect the response (human in the loop) and decide whether to allow the server to see it.",
+              "pattern": "human.in.the.loop"
+            },
+            {
+              "path": "src/mcp-types/mcp_types/_v2025_11_25/__init__.py",
+              "line": 3493,
+              "excerpt": "A request from the server to sample an LLM via the client. The client has full discretion over which model to select. The client should also inform the user before beginning sampling, to allow them to inspect the request (human in the loop)",
               "pattern": "human.in.the.loop"
             }
           ],
@@ -12383,8 +12761,8 @@
       "status": "ok",
       "commit": "3924de99df834302d89f5997a1b64ca268282284",
       "files_in_tree": 1121,
-      "files_scanned": 180,
-      "bytes_scanned": 1442704,
+      "files_scanned": 220,
+      "bytes_scanned": 1659223,
       "languages": [
         "TypeScript",
         "JavaScript"
@@ -12402,6 +12780,12 @@
               "path": "examples/cli-client/cli.ts",
               "line": 136,
               "excerpt": "'provider: scripted (no API key found \u2014 replies are canned; set ANTHROPIC_API_KEY / OPENAI_API_KEY / GEMINI_API_KEY or pass --provider)'",
+              "pattern": "OPENAI_API_KEY"
+            },
+            {
+              "path": "examples/cli-client/providers/openai.ts",
+              "line": 106,
+              "excerpt": "if (!process.env.OPENAI_API_KEY) {",
               "pattern": "OPENAI_API_KEY"
             }
           ],
@@ -12577,6 +12961,18 @@
               "line": 1120,
               "excerpt": "* Migrate to stderr logging (STDIO servers) or OpenTelemetry.",
               "pattern": "opentelemetry"
+            },
+            {
+              "path": "examples/guides/advanced/gateway.examples.ts",
+              "line": 158,
+              "excerpt": "// Count server/discover probes at the fetch layer (the wire trace).",
+              "pattern": "\\btrac(?:e|ing)\\b"
+            },
+            {
+              "path": "examples/guides/clients/middleware.examples.ts",
+              "line": 54,
+              "excerpt": "await applyMiddlewares(stamp('retry'), stamp('auth'), stamp('trace'))(base)('http://localhost:3000/mcp');",
+              "pattern": "\\btrac(?:e|ing)\\b"
             }
           ],
           "authentication": [
@@ -12634,8 +13030,8 @@
       "status": "ok",
       "commit": "258d4cbf23ab85840f3ae9e20b2948039af157e6",
       "files_in_tree": 27052,
-      "files_scanned": 180,
-      "bytes_scanned": 1051570,
+      "files_scanned": 220,
+      "bytes_scanned": 1245177,
       "languages": [
         "TypeScript",
         "Python",
@@ -12677,10 +13073,24 @@
               "pattern": "\\blanggraph(?:\\.|\\b)"
             },
             {
-              "path": "packages/@n8n/ai-workflow-builder.ee/src/multi-agent-workflow-subgraphs.ts",
-              "line": 10,
-              "excerpt": "} from '@langchain/langgraph';",
+              "path": "packages/@n8n/nodes-langchain/package.json",
+              "line": 258,
+              "excerpt": "\"@langchain/langgraph\": \"catalog:\",",
               "pattern": "\\blanggraph(?:\\.|\\b)"
+            }
+          ],
+          "vercel-ai": [
+            {
+              "path": "packages/@n8n/agents/src/sdk/telemetry.ts",
+              "line": 3,
+              "excerpt": "import type { Telemetry as AiSdkTelemetry } from 'ai';",
+              "pattern": "from [\\\"']ai[\\\"']"
+            },
+            {
+              "path": "packages/@n8n/agents/src/sdk/vector-store.ts",
+              "line": 1,
+              "excerpt": "import type { EmbeddingModel } from 'ai';",
+              "pattern": "from [\\\"']ai[\\\"']"
             }
           ]
         },
@@ -12711,6 +13121,14 @@
               "line": 121,
               "excerpt": "console.log('   (Set ANTHROPIC_API_KEY to run with real LLM calls)');",
               "pattern": "ANTHROPIC_API_KEY"
+            }
+          ],
+          "aws-bedrock": [
+            {
+              "path": "packages/@n8n/nodes-langchain/package.json",
+              "line": 237,
+              "excerpt": "\"@aws-sdk/client-bedrock-runtime\": \"3.938.0\",",
+              "pattern": "\\bbedrock-runtime\\b"
             }
           ]
         },
@@ -12972,7 +13390,7 @@
       "status": "ok",
       "commit": "d8ec270183ffb341fb0211c5ee8335419ea67cc7",
       "files_in_tree": 6443,
-      "files_scanned": 162,
+      "files_scanned": 170,
       "bytes_scanned": 2000000,
       "languages": [
         "Rust",
@@ -13259,8 +13677,8 @@
       "status": "ok",
       "commit": "0b944370c6fe019ac5b08364ca013826cd7d0668",
       "files_in_tree": 1490,
-      "files_scanned": 180,
-      "bytes_scanned": 350589,
+      "files_scanned": 220,
+      "bytes_scanned": 376595,
       "languages": [
         "TypeScript",
         "TypeScript",
@@ -13476,6 +13894,12 @@
               "path": "examples/docs/mcp/hostedConnector.ts",
               "line": 13,
               "excerpt": "authorization,",
+              "pattern": "\\bauthorization\\b"
+            },
+            {
+              "path": "examples/docs/voice-agents/helloWorld.ts",
+              "line": 15,
+              "excerpt": "// curl -s -X POST https://api.openai.com/v1/realtime/client_secrets -H \"Authorization: Bearer $OPENAI_API_KEY\" -H \"Content-Type: application/json\" -d '{\"session\": {\"type\": \"realtime\", \"model\": \"gpt-realtime-2.1\"}}' | jq .value",
               "pattern": "\\bauthorization\\b"
             }
           ]
@@ -13819,8 +14243,8 @@
       "status": "ok",
       "commit": "4fb2db0ea90375ce1059f44fe03ffbd191a7a169",
       "files_in_tree": 613,
-      "files_scanned": 180,
-      "bytes_scanned": 991003,
+      "files_scanned": 208,
+      "bytes_scanned": 1117940,
       "languages": [
         "Python",
         "JavaScript"
@@ -13901,6 +14325,12 @@
               "line": 167,
               "excerpt": "response = requests.get(target_url, headers=headers)",
               "pattern": "requests\\.(?:get|post|put|delete)\\s*\\("
+            },
+            {
+              "path": "frontend/src/utils/apiFunctions.js",
+              "line": 19,
+              "excerpt": "const response = await fetch(apiUrl('/api/workflows/upload/content'), {",
+              "pattern": "\\bfetch\\s*\\("
             }
           ],
           "database": [
@@ -14080,8 +14510,8 @@
       "status": "ok",
       "commit": "4a8cabc5fdc81bb6d899785f33ea7449387beb4c",
       "files_in_tree": 2113,
-      "files_scanned": 180,
-      "bytes_scanned": 1028592,
+      "files_scanned": 220,
+      "bytes_scanned": 1179651,
       "languages": [
         "TypeScript",
         "TypeScript",
@@ -14190,9 +14620,21 @@
           ],
           "database": [
             {
-              "path": "src/components/features/mcp-page/install-server-modal.tsx",
-              "line": 145,
-              "excerpt": "// two Slack workspaces, two Postgres connections, etc.) even when",
+              "path": "helm/agent-canvas/values.yaml",
+              "line": 8,
+              "excerpt": "# unless you point AUTOMATION_DB_URL at an external Postgres and are ready",
+              "pattern": "\\bpostgres(?:ql)?\\b"
+            },
+            {
+              "path": "helm/agent-canvas/values.yaml",
+              "line": 137,
+              "excerpt": "# Optional Postgres connection string for the automation backend.",
+              "pattern": "\\bpostgres(?:ql)?\\b"
+            },
+            {
+              "path": "helm/agent-canvas/values.yaml",
+              "line": 139,
+              "excerpt": "# automationDbUrl: \"postgresql+asyncpg://user:pass@host/db\"",
               "pattern": "\\bpostgres(?:ql)?\\b"
             }
           ]
@@ -14232,6 +14674,12 @@
               "line": 244,
               "excerpt": "headers: { \"X-Region\": \"eu-west-1\", \"X-Trace\": \"on\" },",
               "pattern": "\\btrac(?:e|ing)\\b"
+            },
+            {
+              "path": "src/types/agent-server/core/events/conversation-state-event.ts",
+              "line": 86,
+              "excerpt": "/** Audit rounds completed so far (0 at kickoff). */",
+              "pattern": "\\baudit(?:_|\\s|log)"
             }
           ],
           "sandboxing": [
@@ -14264,22 +14712,22 @@
           ],
           "authentication": [
             {
-              "path": "__tests__/api/agent-server-adapter.test.ts",
-              "line": 115,
-              "excerpt": "api_key: \"  nested-key  \",",
-              "pattern": "\\bAPI_KEY\\b"
+              "path": "helm/agent-canvas/templates/rbac.yaml",
+              "line": 15,
+              "excerpt": "apiVersion: rbac.authorization.k8s.io/v1",
+              "pattern": "\\bauthorization\\b"
             },
             {
-              "path": "__tests__/api/agent-server-adapter.test.ts",
-              "line": 145,
-              "excerpt": "api_key: \"nested-key\",",
-              "pattern": "\\bAPI_KEY\\b"
+              "path": "helm/agent-canvas/templates/rbac.yaml",
+              "line": 23,
+              "excerpt": "apiGroup: rbac.authorization.k8s.io",
+              "pattern": "\\bauthorization\\b"
             },
             {
-              "path": "__tests__/api/agent-server-adapter.test.ts",
-              "line": 219,
-              "excerpt": "api_key: \"stale-api-key\",",
-              "pattern": "\\bAPI_KEY\\b"
+              "path": "helm/agent-canvas/templates/rbac.yaml",
+              "line": 40,
+              "excerpt": "apiVersion: rbac.authorization.k8s.io/v1",
+              "pattern": "\\bauthorization\\b"
             }
           ]
         }
@@ -14582,8 +15030,8 @@
       "status": "ok",
       "commit": "e2d772072efadbe41d2946d97d79be55532dbab5",
       "files_in_tree": 696,
-      "files_scanned": 180,
-      "bytes_scanned": 923784,
+      "files_scanned": 220,
+      "bytes_scanned": 1190434,
       "languages": [
         "Go",
         "TypeScript",
@@ -14674,6 +15122,26 @@
           ]
         },
         "controls": {
+          "audit-or-tracing": [
+            {
+              "path": "app/server/db/locks.go",
+              "line": 537,
+              "excerpt": "// Take first 10 meaningful lines of stack trace",
+              "pattern": "\\btrac(?:e|ing)\\b"
+            },
+            {
+              "path": "app/server/db/queue.go",
+              "line": 251,
+              "excerpt": "log.Printf(\"[Queue] Stack trace: %s\", string(debug.Stack()))",
+              "pattern": "\\btrac(?:e|ing)\\b"
+            },
+            {
+              "path": "app/server/db/transactions.go",
+              "line": 36,
+              "excerpt": "log.Printf(\"stack trace (panic - %s):\\n%s\", reason, debug.Stack())",
+              "pattern": "\\btrac(?:e|ing)\\b"
+            }
+          ],
           "sandboxing": [
             {
               "path": "app/shared/ai_models_providers.go",
@@ -14731,8 +15199,8 @@
       "status": "ok",
       "commit": "eaf1040642b205973318769cab65f0c62b4b6ca4",
       "files_in_tree": 336,
-      "files_scanned": 180,
-      "bytes_scanned": 826906,
+      "files_scanned": 187,
+      "bytes_scanned": 847227,
       "languages": [
         "Python"
       ],
@@ -15065,7 +15533,7 @@
       "status": "ok",
       "commit": "5e59fef14bd5abc86c4cfab1480c4f380542acfe",
       "files_in_tree": 2543,
-      "files_scanned": 38,
+      "files_scanned": 39,
       "bytes_scanned": 2000000,
       "languages": [
         "Python",
@@ -15366,8 +15834,8 @@
       "status": "ok",
       "commit": "9b763fdaf0020c7d8abacc7b58b2b09e57494623",
       "files_in_tree": 518,
-      "files_scanned": 180,
-      "bytes_scanned": 883255,
+      "files_scanned": 220,
+      "bytes_scanned": 929682,
       "languages": [
         "Python",
         "TypeScript",
@@ -15418,6 +15886,26 @@
           ]
         },
         "capabilities": {
+          "code-execution": [
+            {
+              "path": "core/templates/tree/react_express/api/models/user.js",
+              "line": 58,
+              "excerpt": "const user = await this.findOne({ email }).exec();",
+              "pattern": "\\bexec\\s*\\("
+            },
+            {
+              "path": "core/templates/tree/react_express/api/services/userService.js",
+              "line": 28,
+              "excerpt": "return User.findOne({ _id: id }).exec();",
+              "pattern": "\\bexec\\s*\\("
+            },
+            {
+              "path": "core/templates/tree/react_express/api/services/userService.js",
+              "line": 47,
+              "excerpt": "return User.findOne({ email }).exec();",
+              "pattern": "\\bexec\\s*\\("
+            }
+          ],
           "filesystem": [
             {
               "path": "core/agents/git.py",
@@ -15555,8 +16043,8 @@
       "status": "ok",
       "commit": "31a4d36d123688581a9e9744427272b33ce940e0",
       "files_in_tree": 345,
-      "files_scanned": 180,
-      "bytes_scanned": 942361,
+      "files_scanned": 220,
+      "bytes_scanned": 1098130,
       "languages": [
         "Python",
         "TypeScript",
@@ -15800,8 +16288,8 @@
       "status": "ok",
       "commit": "18b073ab05b2902e1d052c3d2799786d8623b5e5",
       "files_in_tree": 571,
-      "files_scanned": 180,
-      "bytes_scanned": 318524,
+      "files_scanned": 220,
+      "bytes_scanned": 403901,
       "languages": [
         "Python",
         "TypeScript",
@@ -15918,6 +16406,14 @@
           ]
         },
         "controls": {
+          "human-approval": [
+            {
+              "path": "next/src/components/landing/Section.tsx",
+              "line": 16,
+              "excerpt": "title=\"Human in the Loop\"",
+              "pattern": "human.in.the.loop"
+            }
+          ],
           "audit-or-tracing": [
             {
               "path": "platform/reworkd_platform/timer.py",
@@ -15973,8 +16469,8 @@
       "status": "ok",
       "commit": "b867ec9145750d0ae1ff7f02d35406e9bf2a0b16",
       "files_in_tree": 3022,
-      "files_scanned": 180,
-      "bytes_scanned": 1590813,
+      "files_scanned": 220,
+      "bytes_scanned": 1732735,
       "languages": [
         "TypeScript",
         "TypeScript",
@@ -16004,6 +16500,28 @@
           ]
         },
         "capabilities": {
+          "shell-execution": [
+            {
+              "path": "scripts/code-server.js",
+              "line": 47,
+              "excerpt": "execSync(`pnpm vsix -- --out \"${VSIX_PATH}\"`, { stdio: \"inherit\" })",
+              "pattern": "execSync\\s*\\("
+            },
+            {
+              "path": "scripts/code-server.js",
+              "line": 57,
+              "excerpt": "execSync(`code-server --install-extension \"${VSIX_PATH}\"`, { stdio: \"inherit\" })",
+              "pattern": "execSync\\s*\\("
+            }
+          ],
+          "code-execution": [
+            {
+              "path": "scripts/find-missing-i18n-key.js",
+              "line": 135,
+              "excerpt": "while ((match = pattern.exec(content)) !== null) {",
+              "pattern": "\\bexec\\s*\\("
+            }
+          ],
           "filesystem": [
             {
               "path": "src/core/tools/ApplyPatchTool.ts",
@@ -16104,6 +16622,18 @@
               "line": 46,
               "excerpt": "data-testid=\"tool-row-container\"",
               "pattern": "\\bcontainer(?:ized|isation|ization)?\\b"
+            },
+            {
+              "path": "webview-ui/src/components/chat/__tests__/BatchFilePermission.spec.tsx",
+              "line": 69,
+              "excerpt": "const { container } = render(",
+              "pattern": "\\bcontainer(?:ized|isation|ization)?\\b"
+            },
+            {
+              "path": "webview-ui/src/components/chat/__tests__/BatchFilePermission.spec.tsx",
+              "line": 75,
+              "excerpt": "expect(container.firstChild).toBeNull()",
+              "pattern": "\\bcontainer(?:ized|isation|ization)?\\b"
             }
           ],
           "allowlist": [
@@ -16181,8 +16711,8 @@
       "status": "ok",
       "commit": "d8021225eb7e7b276d5ceb476b0a4650240f27f8",
       "files_in_tree": 10029,
-      "files_scanned": 180,
-      "bytes_scanned": 655589,
+      "files_scanned": 220,
+      "bytes_scanned": 749360,
       "languages": [
         "Python",
         "JavaScript"
@@ -16409,6 +16939,18 @@
               "line": 112,
               "excerpt": "\"\"\"Stdlib modules in the allowlist should be importable at runtime.\"\"\"",
               "pattern": "\\ballowlist\\b"
+            },
+            {
+              "path": "llama-index-integrations/tools/llama-index-tools-mcp/tests/test_tools_mcp.py",
+              "line": 51,
+              "excerpt": "tool_spec = McpToolSpec(client, allowed_tools=[\"echo\"])",
+              "pattern": "allowed_(?:tools|commands|paths)"
+            },
+            {
+              "path": "llama-index-integrations/tools/llama-index-tools-mcp/tests/test_tools_mcp.py",
+              "line": 60,
+              "excerpt": "tool_spec = McpToolSpec(client, allowed_tools=[\"echo\"])",
+              "pattern": "allowed_(?:tools|commands|paths)"
             }
           ],
           "authentication": [
@@ -16767,7 +17309,7 @@
       "status": "ok",
       "commit": "ceda457904d1573e102333a2e709bd39d5d93a63",
       "files_in_tree": 18158,
-      "files_scanned": 163,
+      "files_scanned": 180,
       "bytes_scanned": 2000000,
       "languages": [
         "TypeScript",
@@ -16778,22 +17320,62 @@
         "providers": {
           "openai": [
             {
-              "path": "apps/sim/executor/execution/block-executor.test.ts",
-              "line": 797,
-              "excerpt": "mountedSecrets: ['OPENAI_API_KEY'],",
+              "path": "helm/sim/values.yaml",
+              "line": 144,
+              "excerpt": "AZURE_OPENAI_API_KEY: \"\"                              # Azure OpenAI API key",
               "pattern": "OPENAI_API_KEY"
             },
             {
-              "path": "apps/sim/executor/execution/block-executor.test.ts",
-              "line": 816,
-              "excerpt": "mountedSecrets: ['OPENAI_API_KEY'],",
+              "path": "helm/sim/values.yaml",
+              "line": 164,
+              "excerpt": "OPENAI_API_KEY: \"\"                                    # Primary OpenAI API key",
               "pattern": "OPENAI_API_KEY"
             },
             {
-              "path": "apps/sim/executor/execution/block-executor.test.ts",
-              "line": 859,
-              "excerpt": "code: 'return {{OPENAI_API_KEY}}',",
+              "path": "helm/sim/values.yaml",
+              "line": 165,
+              "excerpt": "OPENAI_API_KEY_1: \"\"                                  # Additional OpenAI API key for load balancing",
               "pattern": "OPENAI_API_KEY"
+            }
+          ],
+          "anthropic": [
+            {
+              "path": "helm/sim/values.yaml",
+              "line": 149,
+              "excerpt": "AZURE_ANTHROPIC_API_KEY: \"\"                           # Azure Anthropic API key",
+              "pattern": "ANTHROPIC_API_KEY"
+            },
+            {
+              "path": "helm/sim/values.yaml",
+              "line": 170,
+              "excerpt": "ANTHROPIC_API_KEY_1: \"\"                               # Primary Anthropic Claude API key",
+              "pattern": "ANTHROPIC_API_KEY"
+            },
+            {
+              "path": "helm/sim/values.yaml",
+              "line": 171,
+              "excerpt": "ANTHROPIC_API_KEY_2: \"\"                               # Additional Anthropic API key for load balancing",
+              "pattern": "ANTHROPIC_API_KEY"
+            }
+          ],
+          "azure-openai": [
+            {
+              "path": "helm/sim/values.yaml",
+              "line": 143,
+              "excerpt": "AZURE_OPENAI_ENDPOINT: \"\"                             # Azure OpenAI service endpoint (e.g., https://your-resource.openai.azure.com)",
+              "pattern": "AZURE_OPENAI_"
+            },
+            {
+              "path": "helm/sim/values.yaml",
+              "line": 144,
+              "excerpt": "AZURE_OPENAI_API_KEY: \"\"                              # Azure OpenAI API key",
+              "pattern": "AZURE_OPENAI_"
+            },
+            {
+              "path": "helm/sim/values.yaml",
+              "line": 145,
+              "excerpt": "AZURE_OPENAI_API_VERSION: \"\"                          # Azure OpenAI API version (e.g., 2024-07-01-preview)",
+              "pattern": "AZURE_OPENAI_"
             }
           ],
           "aws-bedrock": [
@@ -16802,6 +17384,14 @@
               "line": 44,
               "excerpt": "\"@aws-sdk/client-bedrock-runtime\": \"3.1032.0\",",
               "pattern": "\\bbedrock-runtime\\b"
+            }
+          ],
+          "ollama": [
+            {
+              "path": "helm/sim/examples/values-external-db.yaml",
+              "line": 124,
+              "excerpt": "# Ollama (optional for AI models)",
+              "pattern": "\\bOllama\\s*\\("
             }
           ]
         },
@@ -17002,6 +17592,12 @@
           ],
           "allowlist": [
             {
+              "path": "helm/sim/examples/values-external-db.yaml",
+              "line": 181,
+              "excerpt": "# policy on, the chart's egress allowlist only covers the in-cluster",
+              "pattern": "\\ballowlist\\b"
+            },
+            {
               "path": "apps/sim/hooks/use-permission-config.ts",
               "line": 18,
               "excerpt": "import { intersectIntegrationAllowlists } from '@/lib/permission-groups/integration-allowlist'",
@@ -17012,32 +17608,26 @@
               "line": 38,
               "excerpt": "* the provider allowlist. Both gates apply to every model field, so this is",
               "pattern": "\\ballowlist\\b"
-            },
-            {
-              "path": "apps/sim/hooks/use-permission-config.ts",
-              "line": 144,
-              "excerpt": "provider allowlist has nothing to say about it \u2014 judging it anyway",
-              "pattern": "\\ballowlist\\b"
             }
           ],
           "authentication": [
             {
-              "path": "scripts/sync-tool-metadata.ts",
-              "line": 21,
-              "excerpt": "*   tools/generated/tool-metadata.ts   id -> { name, description, version, params, oauth }",
-              "pattern": "\\bOAuth2?\\b"
+              "path": "helm/sim/values.yaml",
+              "line": 96,
+              "excerpt": "# Authentication and encryption secrets (REQUIRED for production)",
+              "pattern": "\\bauthentication\\b"
             },
             {
-              "path": "scripts/sync-tool-metadata.ts",
-              "line": 59,
-              "excerpt": "const METADATA_FIELDS = ['name', 'description', 'version', 'params', 'oauth'] as const",
-              "pattern": "\\bOAuth2?\\b"
+              "path": "helm/sim/values.yaml",
+              "line": 100,
+              "excerpt": "INTERNAL_API_SECRET: \"\" # REQUIRED - set via --set flag or external secret manager, used for internal service-to-service authentication",
+              "pattern": "\\bauthentication\\b"
             },
             {
-              "path": "apps/sim/tools/enrichment-hosting.test.ts",
-              "line": 183,
-              "excerpt": "expect.objectContaining({ headers: expect.objectContaining({ Authorization: 'Bearer k' }) })",
-              "pattern": "\\bauthorization\\b"
+              "path": "helm/sim/values.yaml",
+              "line": 102,
+              "excerpt": "# Optional: Scheduled Jobs Authentication",
+              "pattern": "\\bauthentication\\b"
             }
           ]
         }
@@ -17053,7 +17643,7 @@
       "status": "ok",
       "commit": "486c8975e9864a53037d4701b781f8619e698c40",
       "files_in_tree": 5316,
-      "files_scanned": 72,
+      "files_scanned": 89,
       "bytes_scanned": 2000000,
       "languages": [
         "Python",
@@ -17079,6 +17669,12 @@
               "line": 92,
               "excerpt": "# - OPENAI_API_KEY=<your_openai_key>",
               "pattern": "OPENAI_API_KEY"
+            },
+            {
+              "path": "kubernetes-deployment/backend/backend-secrets.yaml",
+              "line": 12,
+              "excerpt": "OPENAI_API_KEY: \"\"",
+              "pattern": "OPENAI_API_KEY"
             }
           ],
           "anthropic": [
@@ -17087,6 +17683,12 @@
               "line": 97,
               "excerpt": "# - ANTHROPIC_API_KEY=<your_anthropic_key>",
               "pattern": "ANTHROPIC_API_KEY"
+            },
+            {
+              "path": "kubernetes-deployment/backend/backend-secrets.yaml",
+              "line": 14,
+              "excerpt": "ANTHROPIC_API_KEY: \"\"",
+              "pattern": "ANTHROPIC_API_KEY"
             }
           ],
           "google": [
@@ -17094,6 +17696,12 @@
               "path": "docker-compose.yml",
               "line": 102,
               "excerpt": "# - GEMINI_API_KEY=<your_gemini_key>",
+              "pattern": "GEMINI_API_KEY"
+            },
+            {
+              "path": "kubernetes-deployment/backend/backend-secrets.yaml",
+              "line": 26,
+              "excerpt": "GEMINI_API_KEY: \"\"",
               "pattern": "GEMINI_API_KEY"
             }
           ],
@@ -17287,9 +17895,9 @@
               "pattern": "\\bcontainer(?:ized|isation|ization)?\\b"
             },
             {
-              "path": "skyvern/forge/agent.py",
-              "line": 926,
-              "excerpt": "\"\"\"Container task v1 for a code block's recorded actions, also the seat for future agent fallback.\"\"\"",
+              "path": "k8s/charts/skyvern-ui/values.yaml",
+              "line": 14,
+              "excerpt": "# IMPORTANT: do not set a container `command`/`args` for the UI.",
               "pattern": "\\bcontainer(?:ized|isation|ization)?\\b"
             }
           ],
@@ -17778,8 +18386,8 @@
       "status": "ok",
       "commit": "62e24c2ffde6c1ee04dc290e52d8d5dbda054cff",
       "files_in_tree": 1709,
-      "files_scanned": 180,
-      "bytes_scanned": 1676253,
+      "files_scanned": 220,
+      "bytes_scanned": 1867199,
       "languages": [
         "Python"
       ],
@@ -17925,6 +18533,26 @@
               "line": 564,
               "excerpt": "model = ChatAnthropic(model=\"claude-3-5-haiku-latest\")",
               "pattern": "\\bChatAnthropic\\s*\\("
+            }
+          ],
+          "azure-openai": [
+            {
+              "path": "packages/opentelemetry-instrumentation-openai/tests/conftest.py",
+              "line": 34,
+              "excerpt": "if not os.getenv(\"AZURE_OPENAI_API_KEY\"):",
+              "pattern": "AZURE_OPENAI_"
+            },
+            {
+              "path": "packages/opentelemetry-instrumentation-openai/tests/conftest.py",
+              "line": 35,
+              "excerpt": "os.environ[\"AZURE_OPENAI_API_KEY\"] = \"test_azure_api_key\"",
+              "pattern": "AZURE_OPENAI_"
+            },
+            {
+              "path": "packages/opentelemetry-instrumentation-openai/tests/conftest.py",
+              "line": 36,
+              "excerpt": "if not os.getenv(\"AZURE_OPENAI_ENDPOINT\"):",
+              "pattern": "AZURE_OPENAI_"
             }
           ],
           "google": [
@@ -18144,8 +18772,8 @@
       "status": "ok",
       "commit": "c3c1982e7bd6a11cfed53c5a193ea502f924b1b6",
       "files_in_tree": 771,
-      "files_scanned": 180,
-      "bytes_scanned": 638881,
+      "files_scanned": 220,
+      "bytes_scanned": 901695,
       "languages": [
         "Python",
         "JavaScript"
@@ -18312,6 +18940,12 @@
               "line": 96,
               "excerpt": "#post request to post the media container on instagram account",
               "pattern": "\\bcontainer(?:ized|isation|ization)?\\b"
+            },
+            {
+              "path": "gui/pages/Content/Agents/Agents.js",
+              "line": 9,
+              "excerpt": "<div className=\"container\">",
+              "pattern": "\\bcontainer(?:ized|isation|ization)?\\b"
             }
           ],
           "authentication": [
@@ -18347,8 +18981,8 @@
       "status": "ok",
       "commit": "f607a129c0298870038b398dbcba57ff041114f6",
       "files_in_tree": 8036,
-      "files_scanned": 180,
-      "bytes_scanned": 825411,
+      "files_scanned": 220,
+      "bytes_scanned": 1237786,
       "languages": [
         "TypeScript",
         "TypeScript",
@@ -18416,6 +19050,14 @@
               "excerpt": "codeExample: `import { generateText, isStepCount } from 'ai';",
               "pattern": "from [\\\"']ai[\\\"']"
             }
+          ],
+          "mastra": [
+            {
+              "path": "tools/analyze-downloads/src/analyze-market.ts",
+              "line": 39,
+              "excerpt": "Mastra: ['@mastra/core'],",
+              "pattern": "@mastra/"
+            }
           ]
         },
         "providers": {
@@ -18457,6 +19099,14 @@
               "line": 36,
               "excerpt": "expect(env.ANTHROPIC_API_KEY).toBe('gw-key');",
               "pattern": "ANTHROPIC_API_KEY"
+            }
+          ],
+          "aws-bedrock": [
+            {
+              "path": "tools/analyze-downloads/src/analyze-market.ts",
+              "line": 13,
+              "excerpt": "'AWS Bedrock': ['@aws-sdk/client-bedrock-runtime'],",
+              "pattern": "\\bbedrock-runtime\\b"
             }
           ]
         },
@@ -18515,10 +19165,10 @@
               "pattern": "\\bplaywright\\b"
             },
             {
-              "path": "content/tools-registry/registry.ts",
-              "line": 288,
-              "excerpt": "import { BrowserTools } from 'bedrock-agentcore/browser/vercel-ai';",
-              "pattern": "BrowserTool"
+              "path": "packages/devtools/package.json",
+              "line": 36,
+              "excerpt": "\"test:e2e\": \"pnpm build:client && playwright test\",",
+              "pattern": "\\bplaywright\\b"
             }
           ],
           "network": [

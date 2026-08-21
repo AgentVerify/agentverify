@@ -5,13 +5,13 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
 
 | Priority | Capability | Impact | Frequency | Feasibility | Score | Evidence |
 |---:|---|---:|---:|---:|---:|---|
-| 1 | Agent bill of materials: models, providers, frameworks, tools, MCP | 4 | 5 | 5 | 100 | 42 multi-provider repos; 49 with MCP; 69 with privileged capabilities |
-| 2 | Dangerous shell and code execution | 5 | 4 | 4 | 80 | 41 shell-capable repos; 8 `shell=True` candidates |
-| 3 | MCP server/tool trust-boundary analysis | 5 | 4 | 4 | 80 | 49 MCP repos; 16 generic forwarding shapes |
-| 4 | Approval coverage and bypass paths | 5 | 4 | 3 | 60 | 50 approval-positive; 17 auto-approval candidates |
-| 5 | Filesystem scope and destructive writes | 5 | 4 | 3 | 60 | 57 writable-filesystem repos |
+| 1 | Agent bill of materials: models, providers, frameworks, tools, MCP | 4 | 5 | 5 | 100 | 44 multi-provider repos; 50 with MCP; 69 with privileged capabilities |
+| 2 | Dangerous shell and code execution | 5 | 4 | 4 | 80 | 42 shell-capable repos; 8 `shell=True` candidates |
+| 3 | MCP server/tool trust-boundary analysis | 5 | 4 | 4 | 80 | 50 MCP repos; 17 generic forwarding shapes |
+| 4 | Approval coverage and bypass paths | 5 | 4 | 3 | 60 | 52 approval-positive; 18 auto-approval candidates |
+| 5 | Filesystem scope and destructive writes | 5 | 4 | 3 | 60 | 59 writable-filesystem repos |
 | 6 | Sandbox boundary quality | 5 | 4 | 3 | 60 | 64 sandbox-positive; mounts/network/credentials determine quality |
-| 7 | Consequential-action audit coverage | 4 | 4 | 2 | 32 | 55 tracing-positive, but action-level coverage needs data flow |
+| 7 | Consequential-action audit coverage | 4 | 4 | 2 | 32 | 57 tracing-positive, but action-level coverage needs data flow |
 
 ## Milestone 1 — explainable discovery
 

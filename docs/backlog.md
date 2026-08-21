@@ -22,9 +22,10 @@ governs it. Add real positive, approved negative, auto-approved bypass, and dele
 
 ## P1 — sandbox containment quality
 
-Extend `AV-SANDBOX001` from compose syntax to Docker SDK calls, Kubernetes hostPath/privileged specs,
-network policy, Linux capabilities, host PID/IPC, device passthrough, and credential mounts. Model the
-sandbox as a control attached to the exact code/shell capability.
+Kubernetes privileged mode, host network/PID/IPC, service-account token mounts, and explicit privilege
+escalation are now covered alongside Compose. Next add Docker SDK calls, arbitrary hostPath mounts,
+network policy, Linux capabilities, device passthrough, and credential volumes. Model containment as
+a control attached to the exact code/shell capability.
 
 ## P1 — consequential-action audit coverage
 

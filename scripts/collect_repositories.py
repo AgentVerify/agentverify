@@ -104,6 +104,8 @@ SIGNATURES: dict[str, dict[str, tuple[str, ...]]] = {
 }
 
 SOURCE_SUFFIXES = {".py", ".ts", ".tsx", ".js", ".jsx", ".go", ".rs", ".cs", ".java"}
+CONFIG_SUFFIXES = {".yml", ".yaml"}
+CONFIG_PATH_WORDS = {"chart", "charts", "deploy", "helm", "k8s", "kubernetes"}
 MANIFEST_NAMES = {
     "pyproject.toml",
     "package.json",
@@ -212,11 +214,17 @@ def select_files(paths: list[str], max_files: int) -> list[str]:
             continue
         name = Path(path).name
         suffix = Path(path).suffix.lower()
-        if name not in MANIFEST_NAMES and suffix not in SOURCE_SUFFIXES:
+        lowered_parts = {part.lower() for part in Path(path).parts}
+        config_manifest = (
+            suffix in CONFIG_SUFFIXES
+            and ".github" not in lowered_parts
+            and any(word in part for word in CONFIG_PATH_WORDS for part in lowered_parts)
+        )
+        if name not in MANIFEST_NAMES and suffix not in SOURCE_SUFFIXES and not config_manifest:
             continue
         lowered = path.lower()
         item = (len(Path(path).parts), path)
-        if name in MANIFEST_NAMES:
+        if name in MANIFEST_NAMES or config_manifest:
             manifests.append(item)
         elif any(word in lowered for word in PRIORITY_WORDS):
             priority_sources.append(item)
@@ -348,7 +356,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output", type=Path, default=Path("research/repository-data.json"))
     parser.add_argument("--cache-dir", type=Path, default=Path(".agentverify-cache/repositories"))
     parser.add_argument("--workers", type=int, default=6)
-    parser.add_argument("--max-files", type=int, default=180)
+    parser.add_argument("--max-files", type=int, default=220)
     parser.add_argument("--max-bytes", type=int, default=2_000_000)
     parser.add_argument(
         "--lock-file",

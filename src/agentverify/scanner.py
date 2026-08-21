@@ -946,8 +946,14 @@ def scan_mcp_config(ir: RepositoryIR, root: Path, path: Path) -> None:
 
 
 def is_container_config(path: Path) -> bool:
+    lowered_parts = {part.lower() for part in path.parts}
+    kubernetes_path = any(
+        word in part
+        for word in ("chart", "deploy", "helm", "k8s", "kubernetes")
+        for part in lowered_parts
+    )
     return path.suffix.lower() in CONTAINER_CONFIG_SUFFIXES and (
-        "compose" in path.name.lower() or ".devcontainer" in path.parts
+        "compose" in path.name.lower() or ".devcontainer" in lowered_parts or kubernetes_path
     )
 
 
@@ -969,8 +975,26 @@ def scan_container_config(ir: RepositoryIR, root: Path, path: Path) -> None:
             boundary = "docker-socket"
         elif re.match(r"^privileged\s*:\s*true\s*(?:#.*)?$", stripped, re.IGNORECASE):
             boundary = "privileged-container"
-        elif re.match(r"^network_mode\s*:\s*['\"]?host['\"]?\s*(?:#.*)?$", stripped):
+        elif re.match(r"^network_mode\s*:\s*['\"]?host['\"]?\s*(?:#.*)?$", stripped) or re.match(
+            r"^hostNetwork\s*:\s*true\s*(?:#.*)?$", stripped, re.IGNORECASE
+        ):
             boundary = "host-network"
+        elif re.match(r"^hostPID\s*:\s*true\s*(?:#.*)?$", stripped, re.IGNORECASE):
+            boundary = "host-pid"
+        elif re.match(r"^hostIPC\s*:\s*true\s*(?:#.*)?$", stripped, re.IGNORECASE):
+            boundary = "host-ipc"
+        elif re.match(
+            r"^automountServiceAccountToken\s*:\s*true\s*(?:#.*)?$",
+            stripped,
+            re.IGNORECASE,
+        ):
+            boundary = "service-account-token"
+        elif re.match(
+            r"^allowPrivilegeEscalation\s*:\s*true\s*(?:#.*)?$",
+            stripped,
+            re.IGNORECASE,
+        ):
+            boundary = "privilege-escalation"
         elif re.match(r"^-\s*['\"]?/\s*:", stripped) or (
             host_path_pending and re.match(r"^path\s*:\s*['\"]?/['\"]?\s*(?:#.*)?$", stripped)
         ):

@@ -53,3 +53,8 @@ before forwarding. It also resolves an OpenAI Agents TypeScript function tool's 
 AgentVerify reads source and configuration as data. It never imports project modules, evaluates their
 code, installs their dependencies, or launches configured MCP servers. Repository traversal excludes
 dependency, build, VCS, cache, and virtual-environment directories.
+
+Configuration discovery includes Compose, devcontainers, and Kubernetes/Helm paths. Exact dangerous
+boolean settings are reported as review results; templates and values are not rendered or executed,
+and AgentVerify does not infer that a chart value governs a workload unless that relationship is
+explicitly resolved.

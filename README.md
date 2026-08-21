@@ -8,7 +8,7 @@ The initial research corpus contains 71 pinned repositories spanning frameworks,
 agents, MCP servers, workflow platforms, tool integrations, sandboxes, and observability systems.
 The first engine supports Python AST analysis, TypeScript/JavaScript discovery, MCP configuration,
 framework/provider/tool inventory, deterministic JSON, and initial dangerous-execution rules. Its
-curated cross-rule regression set contains 100 pinned positive and negative labels.
+curated cross-rule regression set contains 114 pinned positive and negative labels.
 
 ## Install and scan
 
@@ -70,8 +70,9 @@ PYTHONPATH=src python3 scripts/benchmark_engine.py
 PYTHONPATH=src python3 scripts/evaluate_truthset.py
 ```
 
-The collector reuses commits from `research/repository-data.json` by default. Use `--refresh` only
-when intentionally creating a new upstream snapshot; the refreshed output becomes the next lock.
+The collector reuses commits from `research/repository-data.json` by default and samples up to 220
+source/manifest files per repository. Use `--refresh` only when intentionally creating a new upstream
+snapshot; the refreshed output becomes the next lock.
 
 ## Development
 

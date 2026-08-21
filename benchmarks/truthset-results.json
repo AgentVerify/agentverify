@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T03:45:24.802836+00:00",
-  "labels": 100,
-  "passed": 100,
+  "generated_at": "2026-08-21T03:57:37.165257+00:00",
+  "labels": 114,
+  "passed": 114,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 4,
@@ -45,9 +45,9 @@
       "recall": 1.0
     },
     "AV-SANDBOX001": {
-      "tp": 8,
+      "tp": 16,
       "fp": 0,
-      "tn": 3,
+      "tn": 9,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -950,6 +950,132 @@
       "rule_id": "AV-SANDBOX001",
       "expected": false,
       "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-k8s-token-positive",
+      "rule_id": "AV-SANDBOX001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-k8s-network-positive",
+      "rule_id": "AV-SANDBOX001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-k8s-pid-positive",
+      "rule_id": "AV-SANDBOX001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-k8s-ipc-positive",
+      "rule_id": "AV-SANDBOX001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-k8s-privileged-positive",
+      "rule_id": "AV-SANDBOX001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-k8s-escalation-positive",
+      "rule_id": "AV-SANDBOX001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-k8s-token-safe-negative",
+      "rule_id": "AV-SANDBOX001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-k8s-network-safe-negative",
+      "rule_id": "AV-SANDBOX001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-k8s-pid-safe-negative",
+      "rule_id": "AV-SANDBOX001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-k8s-ipc-safe-negative",
+      "rule_id": "AV-SANDBOX001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-k8s-privileged-safe-negative",
+      "rule_id": "AV-SANDBOX001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-k8s-escalation-safe-negative",
+      "rule_id": "AV-SANDBOX001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-openhands-token-real",
+      "rule_id": "AV-SANDBOX001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-bytebot-helm-real",
+      "rule_id": "AV-SANDBOX001",
+      "expected": true,
+      "observed": true,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

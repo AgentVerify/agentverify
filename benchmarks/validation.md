@@ -27,8 +27,8 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 ## Full-corpus engine benchmark
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
-snapshot. It parsed 8,840 selected Python/TypeScript/JavaScript files plus 40 configuration files,
-resolved 1,593 relationships, and completed in 19.00 seconds on the development machine. Two syntax warnings were isolated and
+snapshot. It parsed 10,594 selected Python/TypeScript/JavaScript files plus 155 configuration files,
+resolved 1,734 relationships, and completed in 26.12 seconds on the development machine. Three parse warnings were isolated and
 reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -59,12 +59,12 @@ Expanding the truth set exposed two additional false-positive families. Literal 
 were incorrectly classified as dynamic; resolving complete string literals removed five corpus
 findings while preserving interpolated templates. Broad approval-name matching confused warning-state
 and version-check flags with human approval; requiring approval-specific names removed six review
-candidates. Corpus totals are now 20 `AV-EXEC001` findings and six `AV-APPROVAL001` reviews.
+candidates. Corpus totals are now 20 `AV-EXEC001` findings and seven `AV-APPROVAL001` reviews.
 
 ## AV-MCP002 — dynamic MCP forwarding
 
 The rule requires an MCP import plus a non-literal tool name. A fixed tool name is the negative
-regression. The full benchmark reports 36 default-scope forwarding sites across 20 repositories.
+regression. The full benchmark reports 43 default-scope forwarding sites across 22 repositories.
 Hand-reviewed pinned examples include:
 
 - [CrewAI client](https://github.com/crewAIInc/crewAI/blob/456c67d7c27923ed3c3dca202c6f56651d8e6063/lib/crewai/src/crewai/mcp/client.py#L599)
@@ -91,25 +91,29 @@ tool function, but the result remains `review` because enclosing server policy i
 
 ## AV-SANDBOX001 — container/host boundary
 
-The rule found seven default-scope boundary crossings across six repositories. It reports development
+The rule found nine default-scope boundary crossings across seven repositories. It reports development
 and production configuration alike but retains their source path so policy can distinguish them.
 Hand-reviewed examples include:
 
 - [AutoGen devcontainer Docker socket](https://github.com/microsoft/autogen/blob/027ecf0a379bcc1d09956d46d12d44a3ad9cee14/.devcontainer/docker-compose.yml#L11)
 - [Langflow deployment Docker socket](https://github.com/langflow-ai/langflow/blob/09ef6b2b7119e35a6787fc249f916f8b47b28615/deploy/docker-compose.yml#L10)
 - [Bytebot privileged container](https://github.com/bytebot-ai/bytebot/blob/3d37894ce07ef8d8b40adc7fd309ad96c2a71313/docker/docker-compose.yml#L15)
+- [Bytebot Helm privileged default](https://github.com/bytebot-ai/bytebot/blob/3d37894ce07ef8d8b40adc7fd309ad96c2a71313/helm/charts/bytebot-desktop/values.yaml#L40)
+- [OpenHands service-account token default](https://github.com/OpenHands/OpenHands/blob/4a8cabc5fdc81bb6d899785f33ea7449387beb4c/helm/agent-canvas/values.yaml#L45)
 - [AutoGPT read-only Docker socket mount](https://github.com/Significant-Gravitas/AutoGPT/blob/601093ddfe23a3d58a9c8f4a208bd49b203ee612/autogpt_platform/db/docker/docker-compose.yml#L471)
 
 A read-only Docker socket mount is still reported because the Docker API can create privileged
-workloads even when the socket file itself is mounted read-only.
+workloads even when the socket file itself is mounted read-only. A mounted service-account token does
+not by itself prove useful Kubernetes privileges; the result remains `review` until RBAC bindings and
+the rendered workload are resolved.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 100 exact labels across all six enabled rules: 56 positives and 44
+`benchmarks/truthset.json` contains 114 exact labels across all six enabled rules: 64 positives and 50
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, non-approval skip flags, disabled
-auto-approval, and safe Compose settings. All 100 currently pass; each rule's seed precision and
+auto-approval, and safe Compose/Kubernetes settings. All 114 currently pass; each rule's seed precision and
 recall are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified
 source text at the exact pinned line, preventing a missing or drifting location from passing silently.
 
