@@ -1,0 +1,72 @@
+repository,category,framework_hint,rationale
+OpenHands/OpenHands,coding-agent,custom,Production software-development agent
+OpenHands/software-agent-sdk,coding-agent,OpenHands SDK,SDK with terminal and file tools
+langchain-ai/langchain,framework,LangChain,Widely used tool-calling framework
+langchain-ai/langgraph,framework,LangGraph,Graph-based agent orchestration
+langchain-ai/open_deep_research,research-agent,LangGraph,Representative research application
+langchain-ai/deepagents,framework,LangGraph,Agent harness with planning and filesystem tools
+crewAIInc/crewAI,framework,CrewAI,Role-based multi-agent framework
+crewAIInc/crewAI-examples,examples,CrewAI,Realistic CrewAI application examples
+microsoft/autogen,framework,AutoGen,Conversational multi-agent framework
+microsoft/agent-framework,framework,Microsoft Agent Framework,Successor to AutoGen
+microsoft/ai-agents-for-beginners,examples,multiple,Cross-framework agent examples
+openai/openai-agents-python,framework,OpenAI Agents SDK,Python agent and handoff SDK
+openai/openai-agents-js,framework,OpenAI Agents SDK,TypeScript agent and handoff SDK
+pydantic/pydantic-ai,framework,PydanticAI,Typed Python agent framework
+google/adk-python,framework,Google ADK,Python agent development kit
+google/adk-js,framework,Google ADK,TypeScript agent development kit
+huggingface/smolagents,framework,smolagents,Code-capable lightweight agents
+agno-agi/agno,framework,Agno,Multi-model agent framework
+camel-ai/camel,framework,CAMEL,Multi-agent research framework
+microsoft/semantic-kernel,framework,Semantic Kernel,Enterprise agent orchestration
+run-llama/llama_index,framework,LlamaIndex,Data-centric agent framework
+QwenLM/Qwen-Agent,framework,Qwen-Agent,Tool and function calling agents
+InternLM/lagent,framework,Lagent,LLM agent framework
+FoundationAgents/MetaGPT,workflow-agent,MetaGPT,Software-company multi-agent workflow
+OpenBMB/ChatDev,workflow-agent,custom,Multi-agent software-development workflow
+microsoft/TaskWeaver,workflow-agent,custom,Code-first data analytics agent
+Significant-Gravitas/AutoGPT,autonomous-agent,custom,Long-running autonomous agent platform
+TransformerOptimus/SuperAGI,autonomous-agent,custom,Autonomous agent platform
+reworkd/AgentGPT,autonomous-agent,custom,Browser-based autonomous agent
+letta-ai/letta-code,coding-agent,custom,Memory-first stateful coding agent
+PrefectHQ/marvin,framework,Marvin,Python agent and workflow library
+agentscope-ai/agentscope,framework,AgentScope,Multi-agent application framework
+mastra-ai/mastra,framework,Mastra,TypeScript agent framework
+vercel/ai,framework,Vercel AI SDK,TypeScript tool-calling SDK
+cline/cline,coding-agent,custom,IDE coding agent with broad tool access
+RooCodeInc/Roo-Code,coding-agent,custom,IDE coding agent with approval controls
+continuedev/continue,coding-agent,custom,Open-source coding assistant and agent
+Aider-AI/aider,coding-agent,custom,Terminal pair-programming agent
+SWE-agent/SWE-agent,coding-agent,custom,Autonomous issue-solving agent
+plandex-ai/plandex,coding-agent,custom,Terminal development agent
+Pythagora-io/gpt-pilot,coding-agent,custom,Autonomous coding agent
+stitionai/devika,coding-agent,custom,Agentic software engineer
+block/goose,coding-agent,custom,Extensible coding agent with MCP
+bytedance/trae-agent,coding-agent,custom,Software-engineering agent
+google-gemini/gemini-cli,coding-agent,custom,Terminal coding agent
+openai/codex,coding-agent,custom,Terminal coding agent
+browser-use/browser-use,browser-agent,custom,Autonomous browser control
+Skyvern-AI/skyvern,browser-agent,custom,Browser automation agent
+lavague-ai/LaVague,browser-agent,custom,LLM-driven browser automation
+bytebot-ai/bytebot,computer-agent,custom,Desktop computer-use agent
+modelcontextprotocol/servers,mcp,MCP,Reference MCP servers
+modelcontextprotocol/python-sdk,mcp,MCP,Python protocol SDK and examples
+modelcontextprotocol/typescript-sdk,mcp,MCP,TypeScript protocol SDK and examples
+github/github-mcp-server,mcp,MCP,High-impact source-control MCP server
+microsoft/playwright-mcp,mcp,MCP,Browser-control MCP server
+awslabs/mcp,mcp,MCP,Cloud-service MCP servers
+docker/mcp-gateway,mcp,MCP,MCP gateway and tool isolation
+jlowin/fastmcp,mcp,MCP,Popular Python MCP framework
+mark3labs/mcp-go,mcp,MCP,Popular Go MCP framework
+langflow-ai/langflow,visual-platform,multiple,Visual agent workflow builder
+FlowiseAI/Flowise,visual-platform,multiple,Visual LLM and agent workflow builder
+langgenius/dify,visual-platform,multiple,Production agent application platform
+n8n-io/n8n,workflow-platform,multiple,Automation platform with AI agents
+activepieces/activepieces,workflow-platform,multiple,Automation and agent platform
+simstudioai/sim,visual-platform,multiple,Visual agent workflow builder
+composiohq/composio,tool-platform,multiple,Large external-action integration surface
+ArcadeAI/arcade-ai,tool-platform,multiple,Agent tool authorization platform
+e2b-dev/E2B,sandbox,custom,Remote code execution sandbox
+daytonaio/daytona,sandbox,custom,Agent development sandbox infrastructure
+AgentOps-AI/agentops,observability,multiple,Agent audit and observability tooling
+traceloop/openllmetry,observability,multiple,LLM and agent tracing instrumentation

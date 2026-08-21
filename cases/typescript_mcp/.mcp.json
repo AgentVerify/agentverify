@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "local-shell": {
+      "command": "npx",
+      "args": ["unsafe-example-server", "--api-token", "fixture-secret-value"],
+      "env": {
+        "SERVICE_API_KEY": "fixture-secret-value"
+      }
+    },
+    "remote": {
+      "url": "https://user:fixture-secret-value@example.invalid/mcp?token=fixture-secret-value"
+    }
+  }
+}

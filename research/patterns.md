@@ -1,0 +1,40 @@
+# Recurring agent-system patterns
+
+## Model → orchestrator → tool router → privileged executor
+
+The dominant architecture separates reasoning from action. A model proposes a call, an agent loop or
+graph routes it, and a tool crosses a trust boundary into the filesystem, shell, browser, network,
+database, or third-party API. Verification must link all four layers; a model import alone is not an
+agent architecture.
+
+## Multi-agent delegation
+
+Frameworks express delegation as graph edges, handoffs, group chat, role-based crews, or agents
+wrapped as tools. Delegation can expand effective permissions: a low-privilege coordinator may invoke
+a specialist with shell or browser access. The IR should compute transitive capabilities.
+
+## MCP client/server indirection
+
+MCP moves tool definitions and execution outside the application process. Clients can discover tools
+dynamically and forward model-generated argument maps. Servers may expose narrow domain actions or
+broad primitives such as command execution and writable roots. Verification needs client config,
+server capability manifests, transport, authentication, and approval context.
+
+## Local versus isolated execution
+
+Code and shell tools run directly, in local containers, or in remote sandboxes. “Sandbox present” is
+not binary evidence of safety: mounts, network access, credentials, host sockets, and workspace scope
+determine containment quality.
+
+## Approval gates and bypasses
+
+Approval may apply per tool, per argument pattern, per session, or only to destructive operations.
+Auto-approve lists and skip-confirmation modes can silently widen authority. Analysis must represent
+gate scope and the configuration that bypasses it.
+
+## Observability as a cross-cutting control
+
+Tracing and audit hooks appear at framework, model-client, runtime, and tool layers. A useful rule asks
+whether consequential actions receive durable, attributable records—not merely whether a logging
+package is imported.
+
