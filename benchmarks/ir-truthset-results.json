@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T13:51:57.998460+00:00",
-  "labels": 196,
-  "passed": 196,
+  "generated_at": "2026-08-21T14:12:29.689578+00:00",
+  "labels": 202,
+  "passed": 202,
   "metrics": {
     "IR-APPROVAL-CONTROL": {
       "tp": 3,
@@ -152,6 +152,14 @@
       "tp": 8,
       "fp": 0,
       "tn": 5,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-SECURE-NETWORK-HELPER": {
+      "tp": 4,
+      "fp": 0,
+      "tn": 2,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -1972,6 +1980,60 @@
     {
       "id": "python-browser-receiver-skyvern-factory-real",
       "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-secure-network-helper-local",
+      "check_id": "IR-PY-SECURE-NETWORK-HELPER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-secure-network-helper-alias-local",
+      "check_id": "IR-PY-SECURE-NETWORK-HELPER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-secure-network-helper-partial-local-negative",
+      "check_id": "IR-PY-SECURE-NETWORK-HELPER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-secure-network-helper-rebound-local-negative",
+      "check_id": "IR-PY-SECURE-NETWORK-HELPER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-secure-network-helper-crewai-docs-real",
+      "check_id": "IR-PY-SECURE-NETWORK-HELPER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-secure-network-helper-crewai-docx-real",
+      "check_id": "IR-PY-SECURE-NETWORK-HELPER",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

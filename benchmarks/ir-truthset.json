@@ -2794,6 +2794,54 @@
       "check_id": "IR-PY-BROWSER-RECEIVER",
       "path": "skyvern/cli/mcp_tools/browser.py", "line": 2458, "expected": true,
       "relationship": {"source_kind":"tool","source_name":"skyvern_evaluate","relation":"uses","target_kind":"capability","target_name":"code-execution"}
+    },
+    {
+      "id": "python-secure-network-helper-local",
+      "target": {"kind":"local","path":"cases/python_secure_network_helper"},
+      "check_id": "IR-PY-SECURE-NETWORK-HELPER",
+      "path": "app.py", "line": 6, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
+        "attributes":{"control_line":30,"initial_origin_scope":"public-addresses","redirect_scope":"each-hop-validated","dns_scope":"connection-pinned","proxy_scope":"disabled","enforcement_default":"enabled","escape_hatch":"configured-opt-out"}
+      }
+    },
+    {
+      "id": "python-secure-network-helper-alias-local",
+      "target": {"kind":"local","path":"cases/python_secure_network_helper"},
+      "check_id": "IR-PY-SECURE-NETWORK-HELPER",
+      "path": "app.py", "line": 10, "expected": true,
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy"}
+    },
+    {
+      "id": "python-secure-network-helper-partial-local-negative",
+      "target": {"kind":"local","path":"cases/python_secure_network_helper"},
+      "check_id": "IR-PY-SECURE-NETWORK-HELPER",
+      "path": "app.py", "line": 14, "expected": false,
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy"}
+    },
+    {
+      "id": "python-secure-network-helper-rebound-local-negative",
+      "target": {"kind":"local","path":"cases/python_secure_network_helper"},
+      "check_id": "IR-PY-SECURE-NETWORK-HELPER",
+      "path": "app.py", "line": 21, "expected": false,
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy"}
+    },
+    {
+      "id": "python-secure-network-helper-crewai-docs-real",
+      "target": {"kind":"repository","repository":"crewAIInc/crewAI","commit":"456c67d7c27923ed3c3dca202c6f56651d8e6063"},
+      "check_id": "IR-PY-SECURE-NETWORK-HELPER",
+      "path": "lib/crewai-tools/src/crewai_tools/rag/loaders/docs_site_loader.py", "line": 30, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
+        "attributes":{"control_line":125,"initial_origin_scope":"public-addresses","redirect_scope":"each-hop-validated","dns_scope":"connection-pinned","proxy_scope":"disabled","enforcement_default":"enabled","bypass_environment":"CREWAI_TOOLS_ALLOW_UNSAFE_PATHS","force_safe_environment":"CREWAI_TOOLS_FORCE_SAFE_PATHS"}
+      }
+    },
+    {
+      "id": "python-secure-network-helper-crewai-docx-real",
+      "target": {"kind":"repository","repository":"crewAIInc/crewAI","commit":"456c67d7c27923ed3c3dca202c6f56651d8e6063"},
+      "check_id": "IR-PY-SECURE-NETWORK-HELPER",
+      "path": "lib/crewai-tools/src/crewai_tools/rag/loaders/docx_loader.py", "line": 45, "expected": true,
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy"}
     }
   ]
 }

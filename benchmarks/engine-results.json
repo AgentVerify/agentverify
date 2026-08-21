@@ -1,6 +1,6 @@
 {
-  "schema_version": 31,
-  "generated_at": "2026-08-21T13:45:44.438449+00:00",
+  "schema_version": 32,
+  "generated_at": "2026-08-21T14:03:32.095266+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -20,7 +20,7 @@
     "dependency_files_materialized": 135,
     "repositories_with_dependency_expansion": 11,
     "config_files_scanned": 155,
-    "relationships": 1442,
+    "relationships": 1454,
     "symbolized_components": 8737,
     "identified_symbol_endpoints": 1929,
     "resolved_symbol_endpoints": 1927,
@@ -30,10 +30,10 @@
       "lexical-single-definition": 325,
       "module-single-definition": 14
     },
-    "relationship_endpoints": 2884,
+    "relationship_endpoints": 2908,
     "bom_endpoint_resolutions": {
       "ambiguous": 30,
-      "evidence-location": 410,
+      "evidence-location": 434,
       "symbol-id": 1927,
       "unique-display-name": 17,
       "unresolved": 500
@@ -109,6 +109,14 @@
       "redirects_disabled": 0,
       "redirects_unresolved": 0,
       "dns_unresolved": 0
+    },
+    "python_secure_network_controls": {
+      "total": 2,
+      "enabled_default": 2,
+      "configured_opt_out": 2,
+      "redirects_validated": 2,
+      "dns_connection_pinned": 2,
+      "proxies_disabled": 2
     },
     "typescript_network_origin_controls": {
       "total": 1,
@@ -220,6 +228,7 @@
         "fixed-tool-binding": 6,
         "human-approval": 3,
         "network-origin-policy": 1,
+        "network-ssrf-policy": 1,
         "path-boundary": 4,
         "path-prefix-check": 1,
         "tool-allowlist": 1,
@@ -366,7 +375,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 105.7811
+    "elapsed_seconds": 115.5522
   },
   "repositories": [
     {
@@ -464,6 +473,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -507,7 +524,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2886
+      "elapsed_seconds": 1.3906
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -611,6 +628,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -659,7 +684,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7628
+      "elapsed_seconds": 2.8498
     },
     {
       "repository": "langchain-ai/langchain",
@@ -760,6 +785,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -801,7 +834,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8029
+      "elapsed_seconds": 0.8575
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -906,6 +939,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -955,7 +996,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.7215
+      "elapsed_seconds": 3.793
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -1065,6 +1106,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1110,7 +1159,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1641
+      "elapsed_seconds": 0.1814
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -1224,6 +1273,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1282,7 +1339,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.089
+      "elapsed_seconds": 4.4001
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -1293,8 +1350,8 @@
       "config_files_scanned": 0,
       "components": {
         "agent": 413,
-        "capability": 195,
-        "control": 1,
+        "capability": 207,
+        "control": 2,
         "framework": 885,
         "mcp": 12,
         "protocol": 11,
@@ -1311,7 +1368,8 @@
           "shell-execution"
         ],
         "control": [
-          "fixed-tool-binding"
+          "fixed-tool-binding",
+          "network-ssrf-policy"
         ],
         "framework": [
           "CrewAI"
@@ -1323,7 +1381,7 @@
           "OpenAI"
         ]
       },
-      "relationships": 128,
+      "relationships": 140,
       "symbolized_components": 456,
       "identified_symbol_endpoints": 219,
       "resolved_symbol_endpoints": 217,
@@ -1397,6 +1455,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 2,
+        "enabled_default": 2,
+        "configured_opt_out": 2,
+        "redirects_validated": 2,
+        "dns_connection_pinned": 2,
+        "proxies_disabled": 2
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1448,7 +1514,7 @@
         "typescript": 0
       },
       "bom_endpoint_resolutions": {
-        "evidence-location": 2,
+        "evidence-location": 26,
         "symbol-id": 217,
         "unique-display-name": 1,
         "unresolved": 36
@@ -1460,7 +1526,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.655
+      "elapsed_seconds": 2.7617
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -1571,6 +1637,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1626,7 +1700,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2277
+      "elapsed_seconds": 0.2358
     },
     {
       "repository": "microsoft/autogen",
@@ -1733,6 +1807,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1783,7 +1865,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6216
+      "elapsed_seconds": 0.6609
     },
     {
       "repository": "microsoft/agent-framework",
@@ -1874,6 +1956,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1915,7 +2005,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0197
+      "elapsed_seconds": 0.0199
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -2020,6 +2110,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2070,7 +2168,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.099
+      "elapsed_seconds": 0.1034
     },
     {
       "repository": "openai/openai-agents-python",
@@ -2195,6 +2293,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2255,7 +2361,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.8623
+      "elapsed_seconds": 5.0897
     },
     {
       "repository": "openai/openai-agents-js",
@@ -2377,6 +2483,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2424,7 +2538,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4827
+      "elapsed_seconds": 0.5161
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -2535,6 +2649,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2589,7 +2711,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.5065
+      "elapsed_seconds": 11.3459
     },
     {
       "repository": "google/adk-python",
@@ -2692,6 +2814,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2742,7 +2872,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0043
+      "elapsed_seconds": 3.2478
     },
     {
       "repository": "google/adk-js",
@@ -2840,6 +2970,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2881,7 +3019,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.676
+      "elapsed_seconds": 1.8341
     },
     {
       "repository": "huggingface/smolagents",
@@ -2990,6 +3128,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3047,7 +3193,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1806
+      "elapsed_seconds": 1.299
     },
     {
       "repository": "agno-agi/agno",
@@ -3148,6 +3294,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3199,7 +3353,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2393
+      "elapsed_seconds": 0.2708
     },
     {
       "repository": "camel-ai/camel",
@@ -3310,6 +3464,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3368,7 +3530,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3941
+      "elapsed_seconds": 2.595
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -3467,6 +3629,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3511,7 +3681,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1484
+      "elapsed_seconds": 0.1629
     },
     {
       "repository": "run-llama/llama_index",
@@ -3616,6 +3786,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3657,7 +3835,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6459
+      "elapsed_seconds": 0.7357
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -3767,6 +3945,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3825,7 +4011,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1973
+      "elapsed_seconds": 1.3405
     },
     {
       "repository": "InternLM/lagent",
@@ -3934,6 +4120,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3988,7 +4182,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5752
+      "elapsed_seconds": 0.6323
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -4090,6 +4284,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4146,7 +4348,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9537
+      "elapsed_seconds": 1.0779
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -4253,6 +4455,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4311,7 +4521,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3345
+      "elapsed_seconds": 1.442
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -4414,6 +4624,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4469,7 +4687,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8433
+      "elapsed_seconds": 0.9231
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -4575,6 +4793,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4626,7 +4852,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7755
+      "elapsed_seconds": 3.0278
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -4727,6 +4953,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4777,7 +5011,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8959
+      "elapsed_seconds": 1.0102
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -4880,6 +5114,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4921,7 +5163,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4897
+      "elapsed_seconds": 0.5501
     },
     {
       "repository": "letta-ai/letta-code",
@@ -5018,6 +5260,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5059,7 +5309,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0486
+      "elapsed_seconds": 2.2678
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -5169,6 +5419,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5224,7 +5482,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8308
+      "elapsed_seconds": 0.9276
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -5326,6 +5584,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5382,7 +5648,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7631
+      "elapsed_seconds": 1.9599
     },
     {
       "repository": "mastra-ai/mastra",
@@ -5490,6 +5756,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5537,7 +5811,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2657
+      "elapsed_seconds": 1.3885
     },
     {
       "repository": "vercel/ai",
@@ -5640,6 +5914,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5686,7 +5968,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3007
+      "elapsed_seconds": 1.4344
     },
     {
       "repository": "cline/cline",
@@ -5793,6 +6075,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5840,7 +6130,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7747
+      "elapsed_seconds": 1.9821
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -5940,6 +6230,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5981,7 +6279,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9506
+      "elapsed_seconds": 2.1548
     },
     {
       "repository": "continuedev/continue",
@@ -6079,6 +6377,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6120,7 +6426,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2389
+      "elapsed_seconds": 1.3643
     },
     {
       "repository": "Aider-AI/aider",
@@ -6217,6 +6523,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6273,7 +6587,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0217
+      "elapsed_seconds": 2.2718
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -6369,6 +6683,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6418,7 +6740,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 0.6979
+      "elapsed_seconds": 0.7884
     },
     {
       "repository": "plandex-ai/plandex",
@@ -6501,6 +6823,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6542,7 +6872,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0224
+      "elapsed_seconds": 0.0237
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -6639,6 +6969,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6686,7 +7024,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9585
+      "elapsed_seconds": 1.0761
     },
     {
       "repository": "stitionai/devika",
@@ -6788,6 +7126,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6833,7 +7179,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2501
+      "elapsed_seconds": 0.2676
     },
     {
       "repository": "block/goose",
@@ -6931,6 +7277,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6981,7 +7335,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 1.0412
+      "elapsed_seconds": 1.1431
     },
     {
       "repository": "bytedance/trae-agent",
@@ -7092,6 +7446,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7150,7 +7512,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5712
+      "elapsed_seconds": 0.6297
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -7249,6 +7611,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7292,7 +7662,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9395
+      "elapsed_seconds": 3.2393
     },
     {
       "repository": "openai/codex",
@@ -7382,6 +7752,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7429,7 +7807,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5189
+      "elapsed_seconds": 0.5636
     },
     {
       "repository": "browser-use/browser-use",
@@ -7542,6 +7920,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7601,7 +7987,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9917
+      "elapsed_seconds": 3.3189
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -7720,6 +8106,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7777,7 +8171,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.7395
+      "elapsed_seconds": 6.4078
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -7882,6 +8276,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7934,7 +8336,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5515
+      "elapsed_seconds": 0.6073
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -8034,6 +8436,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8077,7 +8487,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6504
+      "elapsed_seconds": 0.7053
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -8180,6 +8590,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 1,
         "configured_optional": 1,
@@ -8231,7 +8649,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7233
+      "elapsed_seconds": 0.782
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -8341,6 +8759,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8391,7 +8817,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7644
+      "elapsed_seconds": 1.9885
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -8494,6 +8920,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8540,7 +8974,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8841
+      "elapsed_seconds": 2.0687
     },
     {
       "repository": "github/github-mcp-server",
@@ -8633,6 +9067,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8674,7 +9116,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0209
+      "elapsed_seconds": 0.0225
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -8768,6 +9210,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8809,7 +9259,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.051
+      "elapsed_seconds": 0.0572
     },
     {
       "repository": "awslabs/mcp",
@@ -8910,6 +9360,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8959,7 +9417,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6138
+      "elapsed_seconds": 1.8335
     },
     {
       "repository": "docker/mcp-gateway",
@@ -9053,6 +9511,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9096,7 +9562,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0179
+      "elapsed_seconds": 0.0193
     },
     {
       "repository": "jlowin/fastmcp",
@@ -9198,6 +9664,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9251,7 +9725,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8935
+      "elapsed_seconds": 2.1071
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -9334,6 +9808,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9375,7 +9857,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0147
+      "elapsed_seconds": 0.0158
     },
     {
       "repository": "langflow-ai/langflow",
@@ -9478,6 +9960,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9521,7 +10011,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7796
+      "elapsed_seconds": 1.9639
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -9617,6 +10107,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9658,7 +10156,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6627
+      "elapsed_seconds": 1.8515
     },
     {
       "repository": "langgenius/dify",
@@ -9744,6 +10242,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9785,7 +10291,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2011
+      "elapsed_seconds": 1.3218
     },
     {
       "repository": "n8n-io/n8n",
@@ -9890,6 +10396,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9935,7 +10449,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2019
+      "elapsed_seconds": 1.3366
     },
     {
       "repository": "activepieces/activepieces",
@@ -10043,6 +10557,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10088,7 +10610,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8729
+      "elapsed_seconds": 0.9605
     },
     {
       "repository": "simstudioai/sim",
@@ -10180,6 +10702,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10221,7 +10751,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3079
+      "elapsed_seconds": 2.5856
     },
     {
       "repository": "composiohq/composio",
@@ -10335,6 +10865,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10382,7 +10920,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9968
+      "elapsed_seconds": 1.0935
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -10496,6 +11034,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10555,7 +11101,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9536
+      "elapsed_seconds": 2.1887
     },
     {
       "repository": "e2b-dev/E2B",
@@ -10646,6 +11192,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10687,7 +11241,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2908
+      "elapsed_seconds": 1.4355
     },
     {
       "repository": "daytonaio/daytona",
@@ -10769,6 +11323,14 @@
         "redirects_disabled": 0,
         "redirects_unresolved": 0,
         "dns_unresolved": 0
+      },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
       },
       "typescript_network_origin_controls": {
         "total": 0,
@@ -10920,6 +11482,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10967,7 +11537,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0214
+      "elapsed_seconds": 1.14
     },
     {
       "repository": "traceloop/openllmetry",
@@ -11081,6 +11651,14 @@
         "redirects_unresolved": 0,
         "dns_unresolved": 0
       },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "dns_connection_pinned": 0,
+        "proxies_disabled": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11132,7 +11710,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7203
+      "elapsed_seconds": 1.8994
     }
   ]
 }

@@ -197,6 +197,16 @@ def main() -> int:
             and edge.target_name == "network-origin-allowlist"
             and edge.evidence.path.endswith(".py")
         ]
+        python_secure_network_controls = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "capability"
+            and edge.source_name == "network"
+            and edge.relation == "governed-by"
+            and edge.target_kind == "control"
+            and edge.target_name == "network-ssrf-policy"
+            and edge.attributes.get("scope") == "production"
+        ]
         typescript_network_origin_controls = [
             edge
             for edge in ir.relationships
@@ -476,6 +486,29 @@ def main() -> int:
                     for edge in python_network_origin_controls
                 ),
             },
+            "python_secure_network_controls": {
+                "total": len(python_secure_network_controls),
+                "enabled_default": sum(
+                    edge.attributes.get("enforcement_default") == "enabled"
+                    for edge in python_secure_network_controls
+                ),
+                "configured_opt_out": sum(
+                    edge.attributes.get("escape_hatch") == "configured-opt-out"
+                    for edge in python_secure_network_controls
+                ),
+                "redirects_validated": sum(
+                    edge.attributes.get("redirect_scope") == "each-hop-validated"
+                    for edge in python_secure_network_controls
+                ),
+                "dns_connection_pinned": sum(
+                    edge.attributes.get("dns_scope") == "connection-pinned"
+                    for edge in python_secure_network_controls
+                ),
+                "proxies_disabled": sum(
+                    edge.attributes.get("proxy_scope") == "disabled"
+                    for edge in python_secure_network_controls
+                ),
+            },
             "typescript_network_origin_controls": {
                 "total": len(typescript_network_origin_controls),
                 "configured_optional": sum(
@@ -593,7 +626,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 31,
+        "schema_version": 32,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -755,6 +788,20 @@ def main() -> int:
                     "redirects_disabled",
                     "redirects_unresolved",
                     "dns_unresolved",
+                )
+            },
+            "python_secure_network_controls": {
+                name: sum(
+                    result["python_secure_network_controls"][name]
+                    for result in successful
+                )
+                for name in (
+                    "total",
+                    "enabled_default",
+                    "configured_opt_out",
+                    "redirects_validated",
+                    "dns_connection_pinned",
+                    "proxies_disabled",
                 )
             },
             "typescript_network_origin_controls": {

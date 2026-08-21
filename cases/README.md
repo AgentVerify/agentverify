@@ -20,6 +20,9 @@ never imported or executed.
 - `typescript_network_origin_policy`: same-file URL validation with an always-on scheme set and an
   optional environment-backed hostname list whose empty default remains open; late, rebound, nested,
   scheme-only, and branch-only paths do not acquire the policy edge.
+- `python_secure_network_helper`: source-proven imported HTTP transport that validates initial and
+  redirect origins, rejects private peers and proxies, and preserves explicit opt-out configuration;
+  incomplete redirect validation and rebound imports remain negative.
 - `sandbox_boundary`: Compose and Kubernetes host/privilege boundaries plus explicit safe negatives.
 - `constant_eval`: constant Python evaluation negative case.
 - `python_browser_evaluate`: exact Playwright `Page` annotations and immutable aliases prove dynamic

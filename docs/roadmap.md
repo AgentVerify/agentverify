@@ -11,7 +11,7 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
 | 4 | Approval coverage and bypass paths | 5 | 4 | 3 | 60 | 52 approval-positive; 18 auto-approval candidates |
 | 5 | Filesystem scope and destructive writes | 5 | 4 | 3 | 60 | 59 writable-filesystem repos |
 | 6 | Sandbox boundary quality | 5 | 4 | 3 | 60 | 64 sandbox-positive; mounts/network/credentials determine quality |
-| 7 | Parameter-controlled network origins | 5 | 2 | 4 | 40 | 13 reviews across 7 repositories; zero exact Python allowlists and one TypeScript configured-optional hostname policy with an open default |
+| 7 | Parameter-controlled network origins | 5 | 2 | 4 | 40 | 13 reviews across 7 repositories; zero exact Python allowlists, one configured-open TypeScript policy, and two default-on CrewAI SSRF-safe loader paths |
 | 8 | Consequential-action audit coverage | 4 | 4 | 2 | 32 | 57 tracing-positive, but action-level coverage needs data flow |
 
 ## Milestone 1 — explainable discovery
@@ -37,6 +37,8 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
   preserving redirect and DNS scope as unresolved rather than claiming full SSRF prevention.
 - Resolve same-file TypeScript URL validators while distinguishing always-on schemes from optional,
   default-open hostname configuration.
+- Resolve source-proven imported Python transports only when initial and redirect origins, connected
+  peers, and proxies are all covered; retain default-on, opt-out, and force-safe configuration.
 
 ## Milestone 3 — graph and control analysis
 

@@ -1223,6 +1223,83 @@ def test_typescript_network_origin_policy_preserves_optional_open_hostname_scope
     }
 
 
+def test_python_secure_network_helper_requires_complete_transport_proof() -> None:
+    ir = scan_repository(ROOT / "cases/python_secure_network_helper")
+
+    network = [
+        item
+        for item in ir.components
+        if item.kind == "capability"
+        and item.name == "network"
+        and item.attributes.get("summary") == "secure-imported-function"
+    ]
+    assert [(item.evidence.path, item.evidence.line) for item in network] == [
+        ("app.py", 6),
+        ("app.py", 10),
+    ]
+    assert all(
+        item.attributes
+        == {
+            "scope": "production",
+            "api": "safe_get",
+            "dynamic_origin": True,
+            "summary": "secure-imported-function",
+            "helper_path": "secure_transport/safe_requests.py",
+            "helper_line": 30,
+            "helper_network_lines": [21],
+            "network_origin_policy": True,
+            "initial_origin_scope": "public-addresses",
+            "redirect_scope": "each-hop-validated",
+            "dns_scope": "connection-pinned",
+            "proxy_scope": "disabled",
+            "enforcement_default": "enabled",
+        }
+        for item in network
+    )
+    controls = [
+        item
+        for item in ir.components
+        if item.kind == "control" and item.name == "network-ssrf-policy"
+    ]
+    assert len(controls) == 1
+    assert controls[0].evidence.path == "secure_transport/safe_requests.py"
+    assert controls[0].evidence.line == 30
+    assert controls[0].attributes == {
+        "scope": "production",
+        "policy_effect": "restricts-http-origin-and-peer",
+        "frontend": "python",
+        "helper": "safe_get",
+        "helper_path": "secure_transport/safe_requests.py",
+        "schemes": ["http", "https"],
+        "initial_origin_scope": "public-addresses",
+        "redirect_scope": "each-hop-validated",
+        "dns_scope": "connection-pinned",
+        "proxy_scope": "disabled",
+        "enforcement_default": "enabled",
+        "escape_hatch": "configured-opt-out",
+        "bypass_environment": "ALLOW_UNSAFE_NETWORK",
+        "force_safe_environment": "FORCE_SAFE_NETWORK",
+    }
+    edges = [
+        edge
+        for edge in ir.relationships
+        if edge.target_kind == "control" and edge.target_name == "network-ssrf-policy"
+    ]
+    assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [
+        ("app.py", 6),
+        ("app.py", 10),
+    ]
+
+    selected_ir = scan_repository(
+        ROOT / "cases/python_secure_network_helper",
+        selected_paths={"app.py", "secure_transport/safe_requests.py"},
+    )
+    assert not any(
+        edge.target_kind == "control" and edge.target_name == "network-ssrf-policy"
+        for edge in selected_ir.relationships
+    )
+
+
 def test_typescript_network_helper_summaries_map_object_parameters_and_multiline_aliases(
     tmp_path: Path,
 ) -> None:

@@ -100,6 +100,16 @@ an immutable normalized environment list. An empty environment default is repres
 allowlist that satisfies destination policy. Late validation, rebound results, nested validator calls,
 scheme-only helpers, DNS, and redirect behavior remain unresolved, and `AV-NET001` is not suppressed.
 
+A separate Python prepass recognizes a source-proven imported secure transport only when the local
+implementation validates the initial URL and each redirect, disables automatic redirects and
+environment proxies, mounts one protected adapter for both HTTP schemes, rejects private/reserved
+resolution results, and checks the connected peer. The resulting `network-ssrf-policy` distinguishes
+`initial_origin_scope: public-addresses`, `redirect_scope: each-hop-validated`,
+`dns_scope: connection-pinned`, and `proxy_scope: disabled`. Environment escape and force-safe names
+are preserved with `enforcement_default: enabled`; the edge is not inferred from a helper name or
+docstring. Exact named imports and aliases apply the summary, while rebinding or any missing transport
+proof withholds it.
+
 A repository prepass builds bounded Python network summaries for unique top-level free functions in
 selected files. A summary records direct recognized HTTP calls and the formal parameters that can
 control their origins after fixed-prefix discrimination. At a tool call site, only an exact named
