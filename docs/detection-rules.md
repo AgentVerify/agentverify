@@ -16,7 +16,7 @@ coverage to justify them.
 | AV-APPROVAL002 | review | high | Reachable local OpenAI Agents Python/TypeScript shell tool uses the SDK's disabled approval policy | 2 default-scope matches in the pinned SDK examples |
 | AV-FS001 | review | high | Agent tool writes to a dynamic filesystem path without a proven narrow path-boundary control | 18 default-scope matches across 8 repositories |
 | AV-NET001 | review | high | Agent tool sends an HTTP request to a parameter-controlled origin | 5 default-scope matches across 5 repositories |
-| AV-MCP002 | review | high | Dynamic MCP tool name and arguments are forwarded to a server | 43 default-scope matches across 22 repositories after policy resolution |
+| AV-MCP002 | review | high | Dynamic MCP tool name and arguments are forwarded to a server | 49 default-scope matches across 23 repositories after policy resolution |
 | AV-SANDBOX001 | review | high | Container/Kubernetes workload or Docker SDK call exposes a host, privilege, or service-account boundary | 19 matches across 9 repositories |
 | AV-AUDIT001 | warning | medium | Consequential action has no attributable durable audit edge | Requires action-level data flow |
 

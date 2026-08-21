@@ -182,6 +182,8 @@
     {"id":"sandbox-docker-sdk-positive","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"docker_sdk.py","line":4,"expected":true},
     {"id":"sandbox-docker-sdk-false-negative","target":{"kind":"local","path":"cases/sandbox_boundary"},"rule_id":"AV-SANDBOX001","path":"docker_sdk.py","line":5,"expected":false,"source_contains":"privileged=False"},
     {"id":"sandbox-trae-sdk-real","target":{"kind":"repository","repository":"bytedance/trae-agent","commit":"e839e559ac61bdd0e057c375dd1dee391fee797d"},"rule_id":"AV-SANDBOX001","path":"evaluation/patch_selection/trae_selector/sandbox.py","line":33,"expected":true},
-    {"id":"sandbox-skyvern-hostpath-real","target":{"kind":"repository","repository":"Skyvern-AI/skyvern","commit":"486c8975e9864a53037d4701b781f8619e698c40"},"rule_id":"AV-SANDBOX001","path":"kubernetes-deployment/backend/backend-deployment.yaml","line":63,"expected":true}
+    {"id":"sandbox-skyvern-hostpath-real","target":{"kind":"repository","repository":"Skyvern-AI/skyvern","commit":"486c8975e9864a53037d4701b781f8619e698c40"},"rule_id":"AV-SANDBOX001","path":"kubernetes-deployment/backend/backend-deployment.yaml","line":63,"expected":true},
+    {"id":"mcp-openai-agents-forwarding-dependency-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"rule_id":"AV-MCP002","path":"src/agents/mcp/server.py","line":1538,"expected":true},
+    {"id":"exec-code-camel-dependency-real","target":{"kind":"repository","repository":"camel-ai/camel","commit":"473388d36390b22e0df31e25b7b2d50db55310d2"},"rule_id":"AV-EXEC002","path":"camel/utils/commons.py","line":445,"expected":true}
   ]
 }

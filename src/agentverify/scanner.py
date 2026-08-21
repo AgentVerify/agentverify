@@ -196,6 +196,53 @@ def python_approval_environment_names(node: ast.AST) -> set[str]:
     return names
 
 
+RegistryLiteralRequirement = tuple[str, int | None, bool]
+RegistryMethodSummary = tuple[
+    int | None,
+    str,
+    Evidence,
+    tuple[RegistryLiteralRequirement, ...],
+]
+
+
+@dataclass(frozen=True)
+class RegistryClassTarget:
+    path: str
+    name: str
+    methods: dict[str, RegistryMethodSummary]
+
+
+def resolve_python_import_path(
+    root: Path,
+    current_path: str,
+    node: ast.ImportFrom,
+    alias_name: str,
+    module_paths: dict[str, str],
+) -> str | None:
+    """Resolve one absolute or relative Python import to a selected local file."""
+    if node.level == 0 and node.module:
+        return module_paths.get(node.module)
+    if not node.level:
+        return None
+    base = Path(current_path).parent
+    if node.level - 1 >= len(base.parts):
+        return None
+    for _ in range(node.level - 1):
+        base = base.parent
+    module_parts = (node.module or alias_name).split(".")
+    module_path = base.joinpath(*module_parts)
+    candidates = [module_path.with_suffix(".py"), module_path / "__init__.py"]
+    resolved = [
+        candidate
+        for candidate in candidates
+        if not candidate.is_absolute()
+        and ".." not in candidate.parts
+        and (root / candidate).is_file()
+        and not (root / candidate).is_symlink()
+    ]
+    return resolved[0].as_posix() if len(resolved) == 1 else None
+
+
 class PythonVisitor(ast.NodeVisitor):
     def __init__(
         self,
@@ -212,6 +259,8 @@ class PythonVisitor(ast.NodeVisitor):
         node_scopes: dict[int, tuple[str, ...]],
         call_symbol_ids: dict[int, str],
         definition_symbol_ids: dict[int, str],
+        registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
+        module_rebound_names: set[str],
     ) -> None:
         self.ir = ir
         self.root = root
@@ -232,15 +281,10 @@ class PythonVisitor(ast.NodeVisitor):
         self.class_fixed_tool_bindings: list[dict[str, Evidence]] = []
         self.class_fixed_tool_accessors: list[dict[str, Evidence]] = []
         self.class_registry_method_summaries: list[
-            dict[
-                str,
-                tuple[
-                    int | None,
-                    str,
-                    Evidence,
-                    tuple[tuple[str, int | None, bool], ...],
-                ],
-            ]
+            dict[str, RegistryMethodSummary]
+        ] = []
+        self.class_registry_manager_bindings: list[
+            dict[str, RegistryClassTarget]
         ] = []
         self.function_fixed_binding_sources: list[dict[str, Evidence]] = []
         self.function_escaping_children: list[set[str]] = []
@@ -255,6 +299,8 @@ class PythonVisitor(ast.NodeVisitor):
         self.node_scopes = node_scopes
         self.call_symbol_ids = call_symbol_ids
         self.definition_symbol_ids = definition_symbol_ids
+        self.registry_class_exports = registry_class_exports
+        self.module_rebound_names = module_rebound_names
         self.has_mcp_import = any(
             module == "mcp" or module.startswith("mcp.") or "modelcontextprotocol" in module
             for module in imported_modules
@@ -335,27 +381,13 @@ class PythonVisitor(ast.NodeVisitor):
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
         for alias in node.names:
-            target = None
-            if node.level == 0 and node.module:
-                target = self.module_paths.get(node.module)
-            elif node.level:
-                base = Path(self.path).parent
-                if node.level - 1 < len(base.parts):
-                    for _ in range(node.level - 1):
-                        base = base.parent
-                    module_parts = (node.module or alias.name).split(".")
-                    module_path = base.joinpath(*module_parts)
-                    candidates = [module_path.with_suffix(".py"), module_path / "__init__.py"]
-                    resolved = [
-                        candidate
-                        for candidate in candidates
-                        if not candidate.is_absolute()
-                        and ".." not in candidate.parts
-                        and (self.root / candidate).is_file()
-                        and not (self.root / candidate).is_symlink()
-                    ]
-                    if len(resolved) == 1:
-                        target = resolved[0].as_posix()
+            target = resolve_python_import_path(
+                self.root,
+                self.path,
+                node,
+                alias.name,
+                self.module_paths,
+            )
             if target:
                 local_name = alias.asname or alias.name
                 self.imported_symbol_paths[local_name] = target
@@ -599,7 +631,10 @@ class PythonVisitor(ast.NodeVisitor):
         self.class_fixed_tool_bindings.append(fixed_bindings)
         self.class_fixed_tool_accessors.append(fixed_accessors)
         self.class_registry_method_summaries.append(
-            self.registry_method_summaries(node)
+            self.registry_method_summaries(node, self.path, self.lines)
+        )
+        self.class_registry_manager_bindings.append(
+            self.registry_manager_bindings(node)
         )
         class_environment_flags: dict[str, set[str]] = {}
         for statement in node.body:
@@ -623,8 +658,65 @@ class PythonVisitor(ast.NodeVisitor):
         self.class_approval_environment_flags.pop()
         self.class_fixed_tool_accessors.pop()
         self.class_fixed_tool_bindings.pop()
+        self.class_registry_manager_bindings.pop()
         self.class_registry_method_summaries.pop()
         self.class_stack.pop()
+
+    def registry_manager_bindings(
+        self, node: ast.ClassDef
+    ) -> dict[str, RegistryClassTarget]:
+        """Resolve immutable constructor-bound attributes to imported registry classes."""
+        assignments: dict[str, list[tuple[str, ast.AST | None]]] = defaultdict(list)
+        for method in node.body:
+            if not isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                continue
+            for candidate in ast.walk(method):
+                targets: tuple[ast.AST, ...] = ()
+                value: ast.AST | None = None
+                if isinstance(candidate, ast.Assign):
+                    targets, value = tuple(candidate.targets), candidate.value
+                elif isinstance(candidate, ast.AnnAssign):
+                    targets, value = (candidate.target,), candidate.value
+                elif isinstance(candidate, ast.AugAssign):
+                    targets = (candidate.target,)
+                elif isinstance(candidate, ast.Delete):
+                    targets = tuple(candidate.targets)
+                elif (
+                    isinstance(candidate, ast.Call)
+                    and dotted_name(candidate.func) == "setattr"
+                    and len(candidate.args) >= 2
+                    and isinstance(candidate.args[0], ast.Name)
+                    and candidate.args[0].id == "self"
+                    and isinstance(candidate.args[1], ast.Constant)
+                    and isinstance(candidate.args[1].value, str)
+                ):
+                    assignments[candidate.args[1].value].append(
+                        (method.name, None)
+                    )
+                for target in targets:
+                    if (
+                        isinstance(target, ast.Attribute)
+                        and isinstance(target.value, ast.Name)
+                        and target.value.id == "self"
+                    ):
+                        assignments[target.attr].append((method.name, value))
+
+        bindings: dict[str, RegistryClassTarget] = {}
+        for attribute, observations in assignments.items():
+            if len(observations) != 1 or observations[0][0] != "__init__":
+                continue
+            value = observations[0][1]
+            if not isinstance(value, ast.Call):
+                continue
+            constructor = dotted_name(value.func)
+            root_name = constructor.split(".", 1)[0]
+            if root_name in self.module_rebound_names:
+                continue
+            target_path = self.imported_symbol_paths.get(root_name, self.path)
+            target_name = self.imported_symbol_names.get(root_name, root_name)
+            if target := self.registry_class_exports.get((target_path, target_name)):
+                bindings[attribute] = target
+        return bindings
 
     def fixed_class_tool_bindings(
         self, node: ast.ClassDef
@@ -738,27 +830,14 @@ class PythonVisitor(ast.NodeVisitor):
             if name not in mutated
         }
 
+    @staticmethod
     def registry_method_summaries(
-        self, node: ast.ClassDef
-    ) -> dict[
-        str,
-        tuple[
-            int | None,
-            str,
-            Evidence,
-            tuple[tuple[str, int | None, bool], ...],
-        ],
-    ]:
+        node: ast.ClassDef,
+        path: str,
+        lines: list[str],
+    ) -> dict[str, RegistryMethodSummary]:
         """Summarize class methods that reject names missing from their tool registry."""
-        summaries: dict[
-            str,
-            tuple[
-                int | None,
-                str,
-                Evidence,
-                tuple[tuple[str, int | None, bool], ...],
-            ],
-        ] = {}
+        summaries: dict[str, RegistryMethodSummary] = {}
 
         def rejecting_missing_value(statement: ast.If, local_name: str) -> bool:
             test = statement.test
@@ -981,7 +1060,11 @@ class PythonVisitor(ast.NodeVisitor):
                     summaries[method.name] = (
                         parameter_positions.get(parameter_name),
                         parameter_name,
-                        self.ev(matching_guards[0]),
+                        Evidence(
+                            path,
+                            matching_guards[0].lineno,
+                            excerpt(lines, matching_guards[0].lineno),
+                        ),
                         tuple(
                             sorted(
                                 (
@@ -1480,16 +1563,31 @@ class PythonVisitor(ast.NodeVisitor):
                 guard_evidence = self.allowlist_evidence.get(guarded_name)
                 guard_summary = ""
                 guard_conditions: dict[str, bool] = {}
-                if (
-                    not resolved_guard
-                    and call_name.startswith("self.")
-                    and self.class_registry_method_summaries
-                    and (
-                        method_summary := self.class_registry_method_summaries[-1].get(
+                guard_class: RegistryClassTarget | None = None
+                method_summary: RegistryMethodSummary | None = None
+                call_parts = call_name.split(".")
+                if not resolved_guard and len(call_parts) == 2 and call_parts[0] == "self":
+                    if self.class_registry_method_summaries:
+                        method_summary = self.class_registry_method_summaries[-1].get(
                             short_name
+                        )
+                    if method_summary:
+                        guard_summary = "same-class-method"
+                elif (
+                    not resolved_guard
+                    and len(call_parts) == 3
+                    and call_parts[0] == "self"
+                    and self.class_registry_manager_bindings
+                    and (
+                        guard_class := self.class_registry_manager_bindings[-1].get(
+                            call_parts[1]
                         )
                     )
                 ):
+                    method_summary = guard_class.methods.get(short_name)
+                    if method_summary:
+                        guard_summary = "imported-class-method"
+                if method_summary:
                     (
                         parameter_index,
                         parameter_name,
@@ -1534,10 +1632,11 @@ class PythonVisitor(ast.NodeVisitor):
                         resolved_guard = True
                         guard_control = "tool-registry"
                         guard_evidence = method_evidence
-                        guard_summary = "same-class-method"
                         guard_conditions = {
                             name: value for name, _, value in required_literals
                         }
+                    else:
+                        guard_summary = ""
                 allowlist_guard = resolved_guard and guard_control == "tool-allowlist"
                 registry_guard = resolved_guard and guard_control == "tool-registry"
                 attributes = {
@@ -1555,6 +1654,8 @@ class PythonVisitor(ast.NodeVisitor):
                     if guard_summary:
                         attributes["guard_summary"] = guard_summary
                         attributes["guard_method"] = short_name
+                        if guard_class:
+                            attributes["guard_class"] = guard_class.name
                         if guard_conditions:
                             attributes["guard_conditions"] = guard_conditions
                     if guard_evidence:
@@ -1622,6 +1723,13 @@ class PythonVisitor(ast.NodeVisitor):
                     }
                     if guard_summary:
                         guard_relationship_attributes["summary"] = guard_summary
+                        if guard_class:
+                            guard_relationship_attributes["summary_class"] = (
+                                guard_class.name
+                            )
+                            guard_relationship_attributes["summary_path"] = (
+                                guard_class.path
+                            )
                         if guard_conditions:
                             guard_relationship_attributes["required_arguments"] = (
                                 guard_conditions
@@ -1767,7 +1875,12 @@ class PythonVisitor(ast.NodeVisitor):
 
 
 def scan_python(
-    ir: RepositoryIR, root: Path, path: Path, text: str, module_paths: dict[str, str]
+    ir: RepositoryIR,
+    root: Path,
+    path: Path,
+    text: str,
+    module_paths: dict[str, str],
+    registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
 ) -> None:
     relative = path.relative_to(root).as_posix()
     try:
@@ -1781,6 +1894,42 @@ def scan_python(
     imported_modules = {
         alias.name for node in nodes if isinstance(node, ast.Import) for alias in node.names
     } | {node.module or "" for node in nodes if isinstance(node, ast.ImportFrom)}
+    imported_bindings = {
+        alias.asname or alias.name.split(".", 1)[0]
+        for node in tree.body
+        if isinstance(node, ast.Import)
+        for alias in node.names
+    } | {
+        alias.asname or alias.name
+        for node in tree.body
+        if isinstance(node, ast.ImportFrom)
+        for alias in node.names
+    }
+    module_mutations: set[str] = set()
+
+    def collect_module_mutations(candidate: ast.AST) -> None:
+        if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            module_mutations.add(candidate.name)
+            return
+        if isinstance(candidate, (ast.Import, ast.ImportFrom, ast.Lambda)):
+            return
+        if isinstance(candidate, ast.Name) and isinstance(
+            candidate.ctx, (ast.Store, ast.Del)
+        ):
+            module_mutations.add(candidate.id)
+        for child in ast.iter_child_nodes(candidate):
+            collect_module_mutations(child)
+
+    for statement in tree.body:
+        if not isinstance(statement, (ast.Import, ast.ImportFrom)):
+            collect_module_mutations(statement)
+    module_mutations.update(
+        name
+        for candidate in nodes
+        if isinstance(candidate, ast.Global)
+        for name in candidate.names
+    )
+    module_rebound_names = imported_bindings & module_mutations
     symbol_candidates: dict[tuple[str, str], set[str]] = {}
     call_symbol_ids: dict[int, str] = {}
     definition_symbol_ids: dict[int, str] = {}
@@ -1924,6 +2073,8 @@ def scan_python(
         node_scopes=node_scopes,
         call_symbol_ids=call_symbol_ids,
         definition_symbol_ids=definition_symbol_ids,
+        registry_class_exports=registry_class_exports,
+        module_rebound_names=module_rebound_names,
     ).visit(tree)
 
 
@@ -4054,6 +4205,11 @@ def build_python_module_index(root: Path, paths: list[Path]) -> dict[str, str]:
             or set(path.relative_to(root).parts) & SKIP_DIRECTORIES
         ):
             continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+        except OSError:
+            continue
         relative = path.relative_to(root)
         parts = list(relative.with_suffix("").parts)
         if parts and parts[-1] == "__init__":
@@ -4071,6 +4227,100 @@ def build_python_module_index(root: Path, paths: list[Path]) -> dict[str, str]:
         for module, locations in candidates.items()
         if len(locations) == 1
     }
+
+
+def build_python_registry_class_exports(
+    root: Path,
+    paths: list[Path],
+    module_paths: dict[str, str],
+) -> dict[tuple[str, str], RegistryClassTarget]:
+    """Index selected registry classes and package-level reexports without importing code."""
+    direct: dict[tuple[str, str], RegistryClassTarget] = {}
+    export_references: list[tuple[str, str, str, str]] = []
+    for path in paths:
+        if (
+            path.is_symlink()
+            or not path.is_file()
+            or path.suffix.lower() != ".py"
+            or set(path.relative_to(root).parts) & SKIP_DIRECTORIES
+        ):
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+        except OSError:
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        is_export_module = path.name == "__init__.py"
+        if not is_export_module and not (
+            "call_tool" in text and ("get_tool" in text or ".get(" in text)
+        ):
+            continue
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", SyntaxWarning)
+                tree = ast.parse(text, filename=relative)
+        except SyntaxError:
+            continue
+        lines = text.splitlines()
+        for node in tree.body:
+            if isinstance(node, ast.ClassDef):
+                methods = PythonVisitor.registry_method_summaries(node, relative, lines)
+                if methods:
+                    direct[(relative, node.name)] = RegistryClassTarget(
+                        relative,
+                        node.name,
+                        methods,
+                    )
+            if not (is_export_module and isinstance(node, ast.ImportFrom)):
+                continue
+            for alias in node.names:
+                target_path = resolve_python_import_path(
+                    root,
+                    relative,
+                    node,
+                    alias.name,
+                    module_paths,
+                )
+                if target_path:
+                    export_references.append(
+                        (
+                            relative,
+                            alias.asname or alias.name,
+                            target_path,
+                            alias.name,
+                        )
+                    )
+
+    exports = dict(direct)
+    references_by_export: dict[tuple[str, str], list[tuple[str, str]]] = defaultdict(
+        list
+    )
+    for path, local_name, target_path, target_name in export_references:
+        references_by_export[(path, local_name)].append((target_path, target_name))
+    changed = True
+    while changed:
+        changed = False
+        for export_key, references in references_by_export.items():
+            if export_key in exports:
+                continue
+            targets = [exports.get(reference) for reference in references]
+            if any(target is None for target in targets):
+                continue
+            target_identities = {
+                (target.path, target.name) for target in targets if target is not None
+            }
+            if len(target_identities) != 1:
+                continue
+            exports[export_key] = next(
+                target for target in targets if target is not None
+            )
+            changed = True
+    return exports
 
 
 def repository_files(root: Path) -> list[Path]:
@@ -4113,6 +4363,21 @@ def scan_repository(
         selectors = sorted(set(selectors), key=lambda item: item.as_posix())
         ir.scan_scope = "selected-paths"
         ir.path_filters = [selector.as_posix() for selector in selectors]
+    registry_paths = [
+        path
+        for path in paths
+        if selectors is None
+        or any(
+            path.relative_to(root) == selector
+            or selector in path.relative_to(root).parents
+            for selector in selectors
+        )
+    ]
+    registry_class_exports = build_python_registry_class_exports(
+        root,
+        registry_paths,
+        module_paths,
+    )
     for path in paths:
         relative_path = path.relative_to(root)
         if path.is_symlink() or not path.is_file() or set(relative_path.parts) & SKIP_DIRECTORIES:
@@ -4157,7 +4422,14 @@ def scan_repository(
         ir.files_scanned += 1
         source_lines[relative_path.as_posix()] = text.splitlines()
         if path.suffix.lower() == ".py":
-            scan_python(ir, root, path, text, module_paths)
+            scan_python(
+                ir,
+                root,
+                path,
+                text,
+                module_paths,
+                registry_class_exports,
+            )
         else:
             scan_typescript(ir, root, path, text)
     ir.components.sort(

@@ -978,23 +978,101 @@
       }
     },
     {
-      "id": "mcp-python-sdk-unselected-manager-negative",
-      "target": {
-        "kind": "repository",
-        "repository": "modelcontextprotocol/python-sdk",
-        "commit": "57394b0548d1e2dc2dce8d67d84985769df3b8bb"
-      },
-      "check_id": "IR-MCP-METHOD-REGISTRY",
-      "path": "src/mcp/server/mcpserver/server.py",
-      "line": 505,
+      "id": "mcp-imported-manager-local",
+      "target": {"kind": "local", "path": "cases/mcp_imported_manager"},
+      "check_id": "IR-MCP-IMPORTED-REGISTRY",
+      "path": "app/server.py",
+      "line": 11,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "mcp-tool-forwarding",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "tool-registry",
+        "attributes": {
+          "control_path": "app/managers/registry.py",
+          "control_line": 4,
+          "policy_effect": "routing-only",
+          "summary": "imported-class-method",
+          "summary_class": "RegistryManager",
+          "summary_path": "app/managers/registry.py"
+        }
+      }
+    },
+    {
+      "id": "mcp-imported-manager-mutable-local-negative",
+      "target": {"kind": "local", "path": "cases/mcp_imported_manager"},
+      "check_id": "IR-MCP-IMPORTED-REGISTRY",
+      "path": "app/server.py",
+      "line": 22,
       "expected": false,
-      "source_contains": "self._tool_manager.call_tool(",
+      "source_contains": "self._manager.call_tool(name, arguments)",
       "relationship": {
         "source_kind": "capability",
         "source_name": "mcp-tool-forwarding",
         "relation": "governed-by",
         "target_kind": "control",
         "target_name": "tool-registry"
+      }
+    },
+    {
+      "id": "mcp-imported-manager-fallback-local-negative",
+      "target": {"kind": "local", "path": "cases/mcp_imported_manager"},
+      "check_id": "IR-MCP-IMPORTED-REGISTRY",
+      "path": "app/server.py",
+      "line": 30,
+      "expected": false,
+      "source_contains": "self._manager.call_tool(name, arguments)",
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "mcp-tool-forwarding",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "tool-registry"
+      }
+    },
+    {
+      "id": "mcp-imported-manager-rebound-local-negative",
+      "target": {"kind": "local", "path": "cases/mcp_imported_manager"},
+      "check_id": "IR-MCP-IMPORTED-REGISTRY",
+      "path": "app/rebound_server.py",
+      "line": 13,
+      "expected": false,
+      "source_contains": "self._manager.call_tool(name, arguments)",
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "mcp-tool-forwarding",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "tool-registry"
+      }
+    },
+    {
+      "id": "mcp-python-sdk-imported-manager-real",
+      "target": {
+        "kind": "repository",
+        "repository": "modelcontextprotocol/python-sdk",
+        "commit": "57394b0548d1e2dc2dce8d67d84985769df3b8bb"
+      },
+      "check_id": "IR-MCP-IMPORTED-REGISTRY",
+      "path": "src/mcp/server/mcpserver/server.py",
+      "line": 505,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "mcp-tool-forwarding",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "tool-registry",
+        "attributes": {
+          "control_path": "src/mcp/server/mcpserver/tools/tool_manager.py",
+          "control_line": 84,
+          "policy_effect": "routing-only",
+          "summary": "imported-class-method",
+          "summary_class": "ToolManager",
+          "summary_path": "src/mcp/server/mcpserver/tools/tool_manager.py"
+        }
       }
     }
   ]

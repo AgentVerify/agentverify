@@ -13,6 +13,7 @@ COLLECTOR = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = COLLECTOR
 SPEC.loader.exec_module(COLLECTOR)
 ensure_clone = COLLECTOR.ensure_clone
+expand_python_mcp_dependencies = COLLECTOR.expand_python_mcp_dependencies
 locked_commits = COLLECTOR.locked_commits
 select_files = COLLECTOR.select_files
 
@@ -78,3 +79,73 @@ def test_manifest_selection_includes_kubernetes_but_not_ci_workflows() -> None:
     assert "helm/agent/templates/statefulset.yaml" in selected
     assert "k8s/pod.yml" in selected
     assert ".github/workflows/deploy.yaml" not in selected
+
+
+def test_mcp_dependency_expansion_follows_local_reexports(tmp_path: Path) -> None:
+    repository = tmp_path / "repo"
+    (repository / "src/pkg/tools").mkdir(parents=True)
+    (repository / "src/pkg/server.py").write_text(
+        "from pkg.tools import ToolManager\n\n"
+        "async def dispatch(manager, name, arguments):\n"
+        "    return await manager.call_tool(name, arguments)\n",
+        encoding="utf-8",
+    )
+    (repository / "src/pkg/tools/__init__.py").write_text(
+        "from .tool_manager import ToolManager\n",
+        encoding="utf-8",
+    )
+    (repository / "src/pkg/tools/tool_manager.py").write_text(
+        "class ToolManager:\n    pass\n",
+        encoding="utf-8",
+    )
+    (repository / "src/pkg/unrelated.py").write_text("VALUE = 1\n", encoding="utf-8")
+    git(repository, "init", "-q")
+    git(repository, "config", "user.email", "test@example.invalid")
+    git(repository, "config", "user.name", "AgentVerify test")
+    git(repository, "add", ".")
+    git(repository, "commit", "-qm", "fixture")
+    tree_paths = git(repository, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
+
+    dependencies = expand_python_mcp_dependencies(
+        repository,
+        tree_paths,
+        ["src/pkg/server.py"],
+        max_dependency_files=4,
+    )
+
+    assert dependencies == [
+        "src/pkg/tools/__init__.py",
+        "src/pkg/tools/tool_manager.py",
+    ]
+    assert expand_python_mcp_dependencies(
+        repository,
+        tree_paths,
+        ["src/pkg/server.py"],
+        max_dependency_files=1,
+    ) == ["src/pkg/tools/__init__.py"]
+
+
+def test_dependency_expansion_ignores_non_forwarding_roots(tmp_path: Path) -> None:
+    repository = tmp_path / "repo"
+    (repository / "src/pkg").mkdir(parents=True)
+    (repository / "src/pkg/main.py").write_text(
+        "from pkg import helper\nprint(helper.VALUE)\n",
+        encoding="utf-8",
+    )
+    (repository / "src/pkg/helper.py").write_text("VALUE = 1\n", encoding="utf-8")
+    git(repository, "init", "-q")
+    git(repository, "config", "user.email", "test@example.invalid")
+    git(repository, "config", "user.name", "AgentVerify test")
+    git(repository, "add", ".")
+    git(repository, "commit", "-qm", "fixture")
+    tree_paths = git(repository, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
+
+    assert (
+        expand_python_mcp_dependencies(
+            repository,
+            tree_paths,
+            ["src/pkg/main.py"],
+            max_dependency_files=4,
+        )
+        == []
+    )

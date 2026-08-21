@@ -37,33 +37,41 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
   fixed-host flows and `fetch(...)` text inside JavaScript regex literals remain negatives.
 - `cases/mcp_forwarder`: statement-ordered allowlists, internal registries, constructor-only and
   returned closure bindings, plus mutable/rebound negatives remain distinct.
+- `cases/mcp_imported_manager`: package reexports and immutable constructor bindings resolve an
+  imported registry guard; mutable fields, fallback managers, and rebound imports remain negative.
 
 ## Full-corpus engine benchmark
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
-snapshot. It parsed 10,594 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,377 relationships, and completed in 73.05 seconds on the development machine. Three parse
+snapshot. It parsed 10,729 selected Python/TypeScript/JavaScript files plus 155 configuration files,
+resolved 1,378 relationships, and completed in 71.27 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
 
-Engine benchmark schema v13 retains stable component-name taxonomies, category presence counts,
+The locked collector preserves the original 220-file root selection and adds at most 20 local Python
+imports reached from MCP forwarding files. This refresh materialized 135 dependency files across 11
+repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
+its independent 2 MB per-repository byte cap. Collector schema v2 records the dependency count per
+repository; engine schema v14 carries both the 135-file total and the 11-repository coverage.
+
+Engine benchmark schema v14 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It intentionally
 excludes arbitrary agent/tool display names from the summary. The resulting
 framework/provider/protocol/capability coverage and unsupported syntax are published in
 `docs/frontend-coverage.md`; presence counts are discovery observations, not recall measurements.
 
-The benchmark now also measures identity coverage: 8,549 agent/tool component observations carry
-module-qualified IDs. Of 2,754 relationship endpoints, 1,875 carry symbol IDs and 1,873 resolve to an
-observed component (1,622 Python and 251 TypeScript). Schema v13 records 325 same-scope and 14
+The benchmark now also measures identity coverage: 8,566 agent/tool component observations carry
+module-qualified IDs. Of 2,756 relationship endpoints, 1,875 carry symbol IDs and 1,873 resolve to an
+observed component (1,622 Python and 251 TypeScript). Schema v14 records 325 same-scope and 14
 module-scope targets resolved from a single direct definition that appears before the Agent
 constructor. It also records 23 repeated-binding targets still withheld because the scope contains
 multiple definitions. The two unmatched IDs are explicit Python re-export targets; capability,
 control, and taxonomy endpoints intentionally remain evidence observations.
 
-Schema-v13 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
-resolves 1,873 endpoints by symbol ID, 334 by exact evidence location, and 17 by a unique display
+Schema-v14 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
+resolves 1,873 endpoints by symbol ID, 336 by exact evidence location, and 17 by a unique display
 name; 30 remain ambiguous and 500 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
@@ -90,10 +98,10 @@ not share reachability or control coverage.
 The TypeScript frontend now reads only balanced top-level entries from literal Agent tool arrays. It
 resolves OpenAI `tool`, `toolNamespace`, built-in tool factories, inline/assigned `asTool` adapters,
 and Cline `createTool`. Import-aware discovery now also resolves generic/Mastra object-property
-tools plus MCP `registerTool` names and callback spans. Schema v13 records 27 Mastra factory tools,
+tools plus MCP `registerTool` names and callback spans. Schema v14 records 27 Mastra factory tools,
 264 MCP registrations, 70 object-property tools (the factory/property categories overlap), and ten
 exact registration-to-capability edges. Four of those edges come from bounded same-file network
-helper summaries: three Mastra static methods and one MCP Servers free function. Schema v13 also
+helper summaries: three Mastra static methods and one MCP Servers free function. Schema v14 also
 records one imported TypeScript path-boundary control edge. The full sample
 contains 95 structure-backed agent edges: 14 delegations and 81 tool edges, all with targets that
 resolve to observed components. The prior token heuristic could
@@ -171,11 +179,14 @@ were incorrectly classified as dynamic; resolving complete string literals remov
 findings while preserving interpolated templates. Broad approval-name matching confused warning-state
 and version-check flags with human approval; requiring approval-specific names removed six review
 candidates. Corpus totals are now 21 `AV-EXEC001` findings and 15 `AV-APPROVAL001` reviews.
+The dependency closure also exposes CAMEL's production `func_string_to_callable(code)` helper, whose
+parameter reaches `exec`; it raises the `AV-EXEC002` total to 50 and is now pinned in the rule truth
+set.
 
 ## AV-MCP002 — dynamic MCP forwarding
 
 The rule requires an MCP import plus a non-literal tool name. A fixed tool name is the negative
-regression. The full benchmark reports 43 default-scope forwarding sites across 22 repositories.
+regression. The full benchmark reports 49 default-scope forwarding sites across 23 repositories.
 Hand-reviewed pinned examples include:
 
 - [CrewAI client](https://github.com/crewAIInc/crewAI/blob/456c67d7c27923ed3c3dca202c6f56651d8e6063/lib/crewai/src/crewai/mcp/client.py#L599)
@@ -186,6 +197,8 @@ Hand-reviewed pinned examples include:
 These are legitimate protocol boundaries in framework code and are therefore `review` results. A
 later policy-resolution pass will suppress sites governed by a resolved allowlist rather than
 claiming that the forwarding operation itself is unsafe.
+Six newly selected OpenAI Agents Python SDK calls account for the corpus increase; the retry wrapper
+at `src/agents/mcp/server.py:1538` is pinned as a real dynamic-forwarding positive.
 
 That policy pass now handles a same-function `not in` guard followed by `raise`/`return`. Guards are
 applied in statement order: a rejection after the forwarding call does not govern the earlier action.
@@ -203,7 +216,7 @@ registry aggregates every server-advertised tool and is not an authorization all
 caller-owned mapping, a lookup after the call, or a lookup hidden inside a caught fallback does not
 qualify even as routing coverage.
 
-The 43-site audit also found five forwarding calls in four repositories where the name comes from a
+The 49-site audit also found five forwarding calls in four repositories where the name comes from a
 single constructor assignment with no class-local reassignment. CrewAI exposes the
 stored name through a property, Trae through a zero-argument getter, Lagent directly through stored
 metadata, and AgentScope has two calls over one stored tool. AgentVerify attaches a
@@ -218,7 +231,7 @@ three wrappers through its action registry, while ArcadeAI returns two LangChain
 carry `binding_scope: closure` and `policy_effect: binds-tool-source-per-closure`. Merely nesting a
 function does not qualify: the MCP Python SDK and FastMCP retry helpers are invoked within the same
 caller-selected operation, so their names remain uncontrolled. A rebound parameter is likewise
-unresolved. Schema v13 publishes the resulting fixed-binding split as five instance edges and five
+unresolved. Schema v14 publishes the resulting fixed-binding split as five instance edges and five
 closure edges; all ten remain AV-MCP002 reviews.
 
 FastMCP contributes a second `tool-registry` edge through a same-class method summary. Its middleware
@@ -226,10 +239,16 @@ branch recursively calls `self.call_tool(..., run_middleware=False)`; the summar
 the name through `get_tool`, rejects `None`, and only then invokes the tool. The edge records
 `required_arguments: {run_middleware: false}` rather than assuming that the earlier recursive return
 was bypassed. A local fallback fixture proves that substituting a default tool is not a rejecting
-guard. The selected MCP Python SDK files delegate to an unselected manager implementation, so that
-path remains unresolved rather than being inferred from `ToolManager` naming. Schema v13
-distinguishes one same-function lookup from one same-class method summary; both retain their reviews
-as routing-only discovery controls.
+guard.
+
+The bounded dependency closure now selects the MCP Python SDK's `tools` package reexport and
+`ToolManager` body. `MCPServer.__init__` binds `self._tool_manager` once to that imported class;
+`ToolManager.call_tool` resolves `get_tool(name)` and raises before execution when absent. This adds
+the third `tool-registry` edge with `summary: imported-class-method`. Local negatives cover a mutable
+manager attribute, a fallback manager, and a rebound imported constructor. Schema v14 distinguishes
+one same-function lookup, one same-class method summary, and one imported-class summary; all three
+retain their AV-MCP002 reviews as routing-only discovery controls rather than authorization
+allowlists.
 
 ## AV-FS001 — dynamic writable tool path
 
@@ -305,12 +324,12 @@ and a literal `privileged=True` keyword.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 175 exact labels across all eight enabled rules: 100 positives and 75
+`benchmarks/truthset.json` contains 177 exact labels across all eight enabled rules: 102 positives and 75
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
-Compose/Kubernetes/Docker SDK settings. All 175 currently pass; each rule's seed precision and recall
+Compose/Kubernetes/Docker SDK settings. All 177 currently pass; each rule's seed precision and recall
 are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified source
 text at the exact pinned line, preventing a missing or drifting location from passing silently.
 
@@ -342,11 +361,12 @@ pinned Mastra/MCP capability edges. Six helper-summary labels cover two local ed
 Mastra edges, the MCP Servers edge, and a regex-literal negative. Four path-boundary labels cover a
 local proven guard, imported name-only and reassignment negatives, and MCP Servers' real control
 edge. Four closure-binding labels cover a returned local callback, a rebound negative, browser-use's
-registered wrapper, and the Python SDK retry negative. Four method-registry labels cover a local
-resolved callee, a fallback negative, FastMCP's real summary, and the unselected Python SDK manager
-negative. All 52 IR labels pass: three approval positives/four negatives,
+registered wrapper, and the Python SDK retry negative. Three method-registry labels cover a local
+resolved callee, a fallback negative, and FastMCP's real summary. Five imported-registry labels cover
+a local resolved manager, mutable/fallback/rebound negatives, and the pinned MCP Python SDK manager.
+All 56 IR labels pass: three approval positives/four negatives,
 two audit positives/two negatives, two import positives/one negative, three TypeScript graph
 positives/one negative, eight registration positives/one negative, five helper-summary positives/one
 negative, two path-boundary positives/two negatives, two MCP-registry positives/one negative, three
-fixed-instance positives/one negative, two closure positives/two negatives, and two method-registry
-positives/two negatives.
+fixed-instance positives/one negative, two closure positives/two negatives, two method-registry
+positives/one negative, and two imported-registry positives/three negatives.

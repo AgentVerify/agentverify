@@ -8,7 +8,7 @@ The initial research corpus contains 71 pinned repositories spanning frameworks,
 agents, MCP servers, workflow platforms, tool integrations, sandboxes, and observability systems.
 The first engine supports Python AST analysis, structure-aware TypeScript/JavaScript discovery, MCP
 configuration, framework/provider/tool inventory, deterministic JSON, and initial
-agent-security review rules. Its curated cross-rule regression set contains 175 pinned positive and
+agent-security review rules. Its curated cross-rule regression set contains 177 pinned positive and
 negative labels.
 
 ## Install and scan
@@ -75,7 +75,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`benchmarks/engine-results.json`](benchmarks/engine-results.json) — full-corpus engine metrics
 - [`benchmarks/truthset.json`](benchmarks/truthset.json) — exact hand-labeled positives and negatives
 - [`benchmarks/truthset-results.json`](benchmarks/truthset-results.json) — per-rule seed precision and recall
-- [`benchmarks/ir-truthset.json`](benchmarks/ir-truthset.json) — 52 separately scored relationship labels
+- [`benchmarks/ir-truthset.json`](benchmarks/ir-truthset.json) — 56 separately scored relationship labels
 
 SARIF output includes stable fingerprints, source locations, severity, remediation, Agent IR paths,
 and resolved/unresolved control context for code-scanning integrations.
@@ -99,8 +99,9 @@ PYTHONPATH=src python3 scripts/evaluate_truthset.py --labels benchmarks/ir-truth
 ```
 
 The collector reuses commits from `research/repository-data.json` by default and samples up to 220
-source/manifest files per repository. Use `--refresh` only when intentionally creating a new upstream
-snapshot; the refreshed output becomes the next lock.
+source/manifest roots plus a bounded 20-file local Python dependency closure for MCP forwarding
+paths per repository. Use `--refresh` only when intentionally creating a new upstream snapshot; the
+refreshed output becomes the next lock.
 
 ## Development
 

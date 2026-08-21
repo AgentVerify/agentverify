@@ -109,6 +109,14 @@ rejecting branch and carries `summary: same-class-method`. A fallback assignment
 Imported or unselected manager implementations remain unresolved until their bodies are available;
 class and field names are not proof of enforcement.
 
+When a selected package reexports a registry class, the Python frontend follows only exact local
+`from ... import ...` paths. A caller may inherit that class's method summary when one `__init__`
+assignment binds `self.<attribute>` to the imported constructor and no other direct assignment,
+deletion, or augmentation of that attribute occurs in the class. Rebound imported constructor names,
+mutable attributes, fallback-returning managers, wildcard imports, and module-qualified constructor
+aliases remain unresolved. The relationship cites both the consumer call and the imported rejecting
+branch and carries `summary: imported-class-method`; its effect remains `routing-only`.
+
 For audit modeling, a tool capability lexically inside an OpenTelemetry
 `start_as_current_span(...)` block receives an exact capability-to-`action-trace` control edge. A
 span elsewhere in the same tool does not cover the action. The edge records exporter durability as
@@ -118,8 +126,10 @@ unresolved: instrumentation is not proof that an attributable record reaches dur
 
 AgentVerify reads source and configuration as data. It never imports project modules, evaluates their
 code, installs their dependencies, or launches configured MCP servers. Repository traversal excludes
-and prunes dependency, build, VCS, cache, and virtual-environment directories. Selected-path scans
-reject absolute and parent-traversal paths; their reports are explicitly marked partial.
+and prunes dependency, build, VCS, cache, and virtual-environment directories. The research collector
+preserves its 220 root-file cap and may materialize up to 20 additional local Python imports reached
+from MCP forwarding roots. Selected-path scans reject absolute and parent-traversal paths; their
+reports are explicitly marked partial.
 
 Configuration discovery includes Compose, devcontainers, and Kubernetes/Helm paths. Exact dangerous
 boolean settings are reported as review results; templates and values are not rendered or executed,

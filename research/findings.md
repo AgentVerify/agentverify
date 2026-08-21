@@ -31,12 +31,12 @@ Representative forwarding shapes occur in
 [AutoGPT](https://github.com/Significant-Gravitas/AutoGPT). AgentVerify should resolve the configured
 server, discovered tool set, transport, authentication, argument flow, and enclosing approval policy.
 
-The structure-aware engine retains every selected dynamic forwarding capability and reports 43 for
-review. One MCP Python SDK path is now proven to be governed by an internal tool registry: two
-uncaught mapping lookups occur before forwarding, so unknown names terminate before the call. This
-routing fact is represented as an Agent IR edge but does not suppress the review, because the registry
-contains server-advertised tools rather than an explicit authorization policy. Caller-owned mappings
-and post-call lookups remain unresolved.
+The structure-aware engine retains every selected dynamic forwarding capability and reports 49 for
+review across 23 repositories. The MCP Python SDK's `SessionGroup` path is proven to be governed by
+an internal tool registry: two uncaught mapping lookups occur before forwarding, so unknown names
+terminate before the call. This routing fact is represented as an Agent IR edge but does not suppress
+the review, because the registry contains server-advertised tools rather than an explicit
+authorization policy. Caller-owned mappings and post-call lookups remain unresolved.
 
 Five additional calls across CrewAI, Lagent, AgentScope, and Trae bind the forwarded name once in a
 wrapper constructor. The engine records exact `fixed-tool-binding` edges—including pure property and
@@ -47,15 +47,22 @@ name matching from inventing this control.
 Five more calls bind a tool source through an escaping callback: three browser-use actions are
 registered and two ArcadeAI wrappers are returned. Equivalent retry closures in the MCP Python SDK
 and FastMCP do not qualify because the public caller still selects the name for each operation.
-Schema v13 therefore reports five instance and five closure fixed-binding edges, without suppressing
+Schema v14 therefore reports five instance and five closure fixed-binding edges, without suppressing
 any review.
 
 FastMCP adds an interprocedural routing fact: its middleware recursion reaches a same-class callee
 that resolves `get_tool(name)`, rejects a missing tool, and only then executes. The literal
 `run_middleware=False` call argument proves that the earlier recursive return is bypassed and is
 retained as a required edge argument. This becomes the second `tool-registry` edge. A default-tool
-fallback and the selected MCP Python SDK file whose manager body is absent remain unresolved,
-demonstrating why semantic names are not enforcement evidence.
+fallback remains unresolved, demonstrating why semantic names are not enforcement evidence.
+
+The collector's bounded dependency closure adds 135 local Python imports across 11 repositories. It
+exposes the MCP Python SDK's `ToolManager` reexport and implementation: `MCPServer` binds one imported
+manager in its constructor, and that manager resolves `get_tool(name)` and rejects a miss before
+execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
+managers, and rebound constructor imports are regression negatives. The same dependency refresh
+exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
+rule observations are pinned in the 177-label truth set.
 
 ## 3. Approval exists, but bypass behavior recurs
 

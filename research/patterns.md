@@ -39,6 +39,11 @@ returns require a simple boolean branch and a call-site literal that selects the
 required literal remains visible on the relationship. Delegation to an unavailable manager body
 remains unknown; `ToolManager` naming alone is not a control.
 
+Cross-file routing proof requires more than a manager-shaped attribute. The selected dependency must
+export a class whose method has the same rejecting registry pattern, and the consumer must bind that
+imported constructor once in `__init__` without rebinding either the attribute or constructor name.
+This resolves the MCP Python SDK path while keeping mutable and fallback managers unknown.
+
 ## Local versus isolated execution
 
 Code and shell tools run directly, in local containers, or in remote sandboxes. “Sandbox present” is

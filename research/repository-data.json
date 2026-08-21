@@ -1,13 +1,14 @@
 {
-  "schema_version": 1,
-  "generated_at": "2026-08-21T03:52:09.759072+00:00",
+  "schema_version": 2,
+  "generated_at": "2026-08-21T08:58:03.447164+00:00",
   "method": {
     "collector": "scripts/collect_repositories.py",
     "max_files_per_repository": 220,
+    "max_dependency_files_per_repository": 20,
     "max_bytes_per_repository": 2000000,
     "lock_file": "research/repository-data.json",
     "locked_repositories": 71,
-    "selection": "manifests, then security/agent/tool/MCP-related sources, then shallow paths"
+    "selection": "manifests, then security/agent/tool/MCP-related sources, then shallow paths; plus a bounded local Python import closure for MCP forwarding files"
   },
   "repositories": [
     {
@@ -20,6 +21,7 @@
       "commit": "d4cc3eaff77209b773f31e947b3b71306b02059d",
       "files_in_tree": 25134,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 727875,
       "languages": [
         "TypeScript",
@@ -351,6 +353,7 @@
       "commit": "f8e907b92dabe47232978023fdcb01e2a7d4b752",
       "files_in_tree": 1531,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1224895,
       "languages": [
         "Python",
@@ -732,6 +735,7 @@
       "commit": "ad4d2839e8ad57b6b9dffa7b583be7bee33009fb",
       "files_in_tree": 955,
       "files_scanned": 197,
+      "dependency_files_materialized": 10,
       "bytes_scanned": 2000000,
       "languages": [
         "Python",
@@ -1011,6 +1015,7 @@
       "commit": "955931ab6e2c5e19cca29ddd45f27a1c8b74be1c",
       "files_in_tree": 5260,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 582346,
       "languages": [
         "Python",
@@ -1309,6 +1314,7 @@
       "commit": "5dc9490bb35f9729ef2c95d00a19ccd30c26339c",
       "files_in_tree": 691,
       "files_scanned": 154,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1601802,
       "languages": [
         "Python",
@@ -1608,6 +1614,7 @@
       "commit": "597debaa1593b54172061ce36a414cc29aa8fc6a",
       "files_in_tree": 527,
       "files_scanned": 189,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 2000000,
       "languages": [
         "Python"
@@ -1860,6 +1867,7 @@
       "commit": "7b69f2e6c651e48345456a879cc3159879694124",
       "files_in_tree": 3717,
       "files_scanned": 200,
+      "dependency_files_materialized": 1,
       "bytes_scanned": 2000000,
       "languages": [
         "Python",
@@ -2124,6 +2132,7 @@
       "commit": "48d480f91163bbcdc0f69f01befa3841a93a1d3e",
       "files_in_tree": 2392,
       "files_scanned": 160,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 2000000,
       "languages": [
         "Rust",
@@ -2385,6 +2394,7 @@
       "commit": "85ddbfedf609166b2d2c76c3d80506649fee82a9",
       "files_in_tree": 494,
       "files_scanned": 111,
+      "dependency_files_materialized": 6,
       "bytes_scanned": 2000000,
       "languages": [
         "Python"
@@ -2737,6 +2747,7 @@
       "commit": "3d37894ce07ef8d8b40adc7fd309ad96c2a71313",
       "files_in_tree": 345,
       "files_scanned": 187,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 554201,
       "languages": [
         "TypeScript",
@@ -2972,6 +2983,7 @@
       "commit": "e839e559ac61bdd0e057c375dd1dee391fee797d",
       "files_in_tree": 108,
       "files_scanned": 76,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 506003,
       "languages": [
         "Python"
@@ -3224,6 +3236,7 @@
       "commit": "473388d36390b22e0df31e25b7b2d50db55310d2",
       "files_in_tree": 2234,
       "files_scanned": 108,
+      "dependency_files_materialized": 20,
       "bytes_scanned": 2000000,
       "languages": [
         "Python",
@@ -3506,6 +3519,7 @@
       "commit": "80b3b0348e694bafc48e3dcd70154de3cf4289d9",
       "files_in_tree": 3793,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1647941,
       "languages": [
         "TypeScript",
@@ -3789,6 +3803,7 @@
       "commit": "38899bdfa02fe10d9df65d230a67f9f5df987420",
       "files_in_tree": 2747,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1014526,
       "languages": [
         "TypeScript",
@@ -4212,6 +4227,7 @@
       "commit": "5522c6f44ca0ac3528b37244818fbfa39b5af470",
       "files_in_tree": 3058,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1087073,
       "languages": [
         "TypeScript",
@@ -4495,6 +4511,7 @@
       "commit": "456c67d7c27923ed3c3dca202c6f56651d8e6063",
       "files_in_tree": 27139,
       "files_scanned": 179,
+      "dependency_files_materialized": 6,
       "bytes_scanned": 2000000,
       "languages": [
         "Python",
@@ -4912,6 +4929,7 @@
       "commit": "da94a91e691e1cf5b3151416bb15b5b62729bea8",
       "files_in_tree": 313,
       "files_scanned": 138,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 192044,
       "languages": [
         "Python"
@@ -5172,6 +5190,7 @@
       "commit": "ec4c21b2d597091ac09ecc278f3bcc172575a987",
       "files_in_tree": 3,
       "files_scanned": 0,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 0,
       "languages": [],
       "signals": {},
@@ -5187,6 +5206,7 @@
       "commit": "24b028f4f9aac85ce1a1057c5e8d739836e7c18d",
       "files_in_tree": 6779,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1089593,
       "languages": [
         "Go",
@@ -5442,6 +5462,7 @@
       "commit": "5995e0ad1cb7b2fba9ce7c5ae2c0acb3c86d46a5",
       "files_in_tree": 869,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1300262,
       "languages": [
         "Python",
@@ -5650,6 +5671,7 @@
       "commit": "9291856d1ea4a4ceea9f8fef8ce14f4f6c81e8eb",
       "files_in_tree": 2450,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1563851,
       "languages": [
         "TypeScript",
@@ -5905,6 +5927,7 @@
       "commit": "11cdf466d042aece04fc6cfd13b28e1a70341b1f",
       "files_in_tree": 1255,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 904967,
       "languages": [
         "Python",
@@ -6205,6 +6228,7 @@
       "commit": "64a49f34d076b6f5917dae1424521d43c7bcae84",
       "files_in_tree": 552,
       "files_scanned": 129,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 2000000,
       "languages": [
         "Go",
@@ -6339,6 +6363,7 @@
       "commit": "30573d2e4d85bdc2c0ae8218c377cd410336da77",
       "files_in_tree": 2997,
       "files_scanned": 182,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 2000000,
       "languages": [
         "TypeScript",
@@ -6632,6 +6657,7 @@
       "commit": "5ee247e677393bfd8751fdd871f2220448807649",
       "files_in_tree": 901,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1359931,
       "languages": [
         "TypeScript",
@@ -6934,6 +6960,7 @@
       "commit": "775c1bd36e205eec65e207ad29fdc4cf2184e47e",
       "files_in_tree": 2525,
       "files_scanned": 97,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 2000000,
       "languages": [
         "Python",
@@ -7263,6 +7290,7 @@
       "commit": "e3a5b8994b301983b91c0325546e9dc82eab8cf0",
       "files_in_tree": 185,
       "files_scanned": 76,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1164483,
       "languages": [
         "Python"
@@ -7633,6 +7661,7 @@
       "commit": "0ab2e2f550477884743cd63fbca7bc4aa7b00290",
       "files_in_tree": 130,
       "files_scanned": 85,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 492313,
       "languages": [
         "Python",
@@ -7810,6 +7839,7 @@
       "commit": "609f79b8a118cd6c4bb58a5341bafd76e42e5a2b",
       "files_in_tree": 1555,
       "files_scanned": 201,
+      "dependency_files_materialized": 8,
       "bytes_scanned": 2000000,
       "languages": [
         "Python",
@@ -8075,6 +8105,7 @@
       "commit": "b650b412988ba53c59830b4207fcdb63c45a9a3c",
       "files_in_tree": 1550,
       "files_scanned": 78,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 2000000,
       "languages": [
         "Python",
@@ -8430,6 +8461,7 @@
       "commit": "09a917e1a3fcd67edddbfd9fc557066414bbb66b",
       "files_in_tree": 3039,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1095831,
       "languages": [
         "Python",
@@ -8685,6 +8717,7 @@
       "commit": "f09cfe8ffc1eeffd68f4b628ed69c30f7cad229f",
       "files_in_tree": 672,
       "files_scanned": 174,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 2000000,
       "languages": [
         "Python",
@@ -8997,6 +9030,7 @@
       "commit": "1b7d2e80db9faa586165c60e09096dbbfd483a64",
       "files_in_tree": 45,
       "files_scanned": 23,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 296688,
       "languages": [
         "Python"
@@ -9225,6 +9259,7 @@
       "commit": "09ef6b2b7119e35a6787fc249f916f8b47b28615",
       "files_in_tree": 9514,
       "files_scanned": 213,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 2000000,
       "languages": [
         "Python",
@@ -9600,6 +9635,7 @@
       "commit": "edc805c4530edfc2d0197ca59a9539f5b56457cc",
       "files_in_tree": 13400,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1343092,
       "languages": [
         "TypeScript",
@@ -9811,6 +9847,7 @@
       "commit": "9024bb832c40291cd012916757f27ef60469b22d",
       "files_in_tree": 342,
       "files_scanned": 133,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 504016,
       "languages": [
         "Python",
@@ -10076,6 +10113,7 @@
       "commit": "db60f05fdd897d48a4ba6335e2ada32c286333cf",
       "files_in_tree": 2026,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1887243,
       "languages": [
         "TypeScript",
@@ -10331,6 +10369,7 @@
       "commit": "56af04b2a9aedefa7756d9eef77065e4275a7ae6",
       "files_in_tree": 311,
       "files_scanned": 163,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 2000000,
       "languages": [
         "Go",
@@ -10456,6 +10495,7 @@
       "commit": "1da5fb00e141b78c2148b21ee085ec24112cf2a5",
       "files_in_tree": 14114,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1199318,
       "languages": [
         "TypeScript",
@@ -10768,6 +10808,7 @@
       "commit": "4e754a636d6d688b35027de4070d64d4f1566d15",
       "files_in_tree": 5051,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1363051,
       "languages": [
         "C#",
@@ -11047,6 +11088,7 @@
       "commit": "01777b05e8afeba6bf5a6dbe74cc2293372d3693",
       "files_in_tree": 10224,
       "files_scanned": 28,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 177879,
       "languages": [
         "Python",
@@ -11250,6 +11292,7 @@
       "commit": "027ecf0a379bcc1d09956d46d12d44a3ad9cee14",
       "files_in_tree": 1837,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1201995,
       "languages": [
         "Python",
@@ -11633,6 +11676,7 @@
       "commit": "16cf228d7b02c07f800ec3423f471ec2a42d22a9",
       "files_in_tree": 35,
       "files_scanned": 15,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 45848,
       "languages": [
         "TypeScript",
@@ -11735,8 +11779,9 @@
       "status": "ok",
       "commit": "b39d95a34435f4c1d55dd00c86120ce118d847e1",
       "files_in_tree": 4853,
-      "files_scanned": 220,
-      "bytes_scanned": 1287524,
+      "files_scanned": 224,
+      "dependency_files_materialized": 4,
+      "bytes_scanned": 1319626,
       "languages": [
         "C#",
         "Python",
@@ -11973,6 +12018,14 @@
               "pattern": "\\bcontainer(?:ized|isation|ization)?\\b"
             }
           ],
+          "allowlist": [
+            {
+              "path": "python/semantic_kernel/kernel.py",
+              "line": 353,
+              "excerpt": "\"No allowlist validation will be performed for function '%s'. \"",
+              "pattern": "\\ballowlist\\b"
+            }
+          ],
           "authentication": [
             {
               "path": "python/samples/demos/mcp_with_oauth/pyproject.toml",
@@ -12037,6 +12090,7 @@
       "commit": "d44ddef23f90059fb17999d3095db4240e98f955",
       "files_in_tree": 421,
       "files_scanned": 176,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 698537,
       "languages": [
         "Python",
@@ -12362,6 +12416,7 @@
       "commit": "57394b0548d1e2dc2dce8d67d84985769df3b8bb",
       "files_in_tree": 1662,
       "files_scanned": 218,
+      "dependency_files_materialized": 20,
       "bytes_scanned": 2000000,
       "languages": [
         "Python",
@@ -12621,6 +12676,7 @@
       "commit": "599dafc1054550a6eeb87a6545c1e1b03b3ca827",
       "files_in_tree": 145,
       "files_scanned": 87,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 545008,
       "languages": [
         "TypeScript",
@@ -12762,6 +12818,7 @@
       "commit": "3924de99df834302d89f5997a1b64ca268282284",
       "files_in_tree": 1121,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1659223,
       "languages": [
         "TypeScript",
@@ -13031,6 +13088,7 @@
       "commit": "258d4cbf23ab85840f3ae9e20b2948039af157e6",
       "files_in_tree": 27052,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1245177,
       "languages": [
         "TypeScript",
@@ -13391,6 +13449,7 @@
       "commit": "d8ec270183ffb341fb0211c5ee8335419ea67cc7",
       "files_in_tree": 6443,
       "files_scanned": 170,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 2000000,
       "languages": [
         "Rust",
@@ -13678,6 +13737,7 @@
       "commit": "0b944370c6fe019ac5b08364ca013826cd7d0668",
       "files_in_tree": 1490,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 376595,
       "languages": [
         "TypeScript",
@@ -13939,6 +13999,7 @@
       "commit": "17ba331bb0ad1622a4ff4ecdc914c77118075dad",
       "files_in_tree": 1550,
       "files_scanned": 148,
+      "dependency_files_materialized": 20,
       "bytes_scanned": 2000000,
       "languages": [
         "Python",
@@ -14244,6 +14305,7 @@
       "commit": "4fb2db0ea90375ce1059f44fe03ffbd191a7a169",
       "files_in_tree": 613,
       "files_scanned": 208,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1117940,
       "languages": [
         "Python",
@@ -14511,6 +14573,7 @@
       "commit": "4a8cabc5fdc81bb6d899785f33ea7449387beb4c",
       "files_in_tree": 2113,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1179651,
       "languages": [
         "TypeScript",
@@ -14744,6 +14807,7 @@
       "commit": "1de2e6d1bfcf70c7c3d4eb13616811943f33dd75",
       "files_in_tree": 1478,
       "files_scanned": 147,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 2000000,
       "languages": [
         "Python",
@@ -15031,6 +15095,7 @@
       "commit": "e2d772072efadbe41d2946d97d79be55532dbab5",
       "files_in_tree": 696,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1190434,
       "languages": [
         "Go",
@@ -15200,6 +15265,7 @@
       "commit": "eaf1040642b205973318769cab65f0c62b4b6ca4",
       "files_in_tree": 336,
       "files_scanned": 187,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 847227,
       "languages": [
         "Python"
@@ -15534,6 +15600,7 @@
       "commit": "5e59fef14bd5abc86c4cfab1480c4f380542acfe",
       "files_in_tree": 2543,
       "files_scanned": 39,
+      "dependency_files_materialized": 20,
       "bytes_scanned": 2000000,
       "languages": [
         "Python",
@@ -15835,6 +15902,7 @@
       "commit": "9b763fdaf0020c7d8abacc7b58b2b09e57494623",
       "files_in_tree": 518,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 929682,
       "languages": [
         "Python",
@@ -16044,6 +16112,7 @@
       "commit": "31a4d36d123688581a9e9744427272b33ce940e0",
       "files_in_tree": 345,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1098130,
       "languages": [
         "Python",
@@ -16289,6 +16358,7 @@
       "commit": "18b073ab05b2902e1d052c3d2799786d8623b5e5",
       "files_in_tree": 571,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 403901,
       "languages": [
         "Python",
@@ -16470,6 +16540,7 @@
       "commit": "b867ec9145750d0ae1ff7f02d35406e9bf2a0b16",
       "files_in_tree": 3022,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1732735,
       "languages": [
         "TypeScript",
@@ -16712,6 +16783,7 @@
       "commit": "d8021225eb7e7b276d5ceb476b0a4650240f27f8",
       "files_in_tree": 10029,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 749360,
       "languages": [
         "Python",
@@ -17003,6 +17075,7 @@
       "commit": "601093ddfe23a3d58a9c8f4a208bd49b203ee612",
       "files_in_tree": 5163,
       "files_scanned": 124,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 2000000,
       "languages": [
         "Python",
@@ -17310,6 +17383,7 @@
       "commit": "ceda457904d1573e102333a2e709bd39d5d93a63",
       "files_in_tree": 18158,
       "files_scanned": 180,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 2000000,
       "languages": [
         "TypeScript",
@@ -17644,6 +17718,7 @@
       "commit": "486c8975e9864a53037d4701b781f8619e698c40",
       "files_in_tree": 5316,
       "files_scanned": 89,
+      "dependency_files_materialized": 20,
       "bytes_scanned": 2000000,
       "languages": [
         "Python",
@@ -17965,6 +18040,7 @@
       "commit": "80bb343cbe4a4e5f5a0ba08d2524920139baceb6",
       "files_in_tree": 169,
       "files_scanned": 87,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 153955,
       "languages": [
         "Python",
@@ -18166,6 +18242,7 @@
       "commit": "3ea751c087f32b16e039a2233dd6eefecef325d5",
       "files_in_tree": 409,
       "files_scanned": 106,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 584403,
       "languages": [
         "Python",
@@ -18387,6 +18464,7 @@
       "commit": "62e24c2ffde6c1ee04dc290e52d8d5dbda054cff",
       "files_in_tree": 1709,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1867199,
       "languages": [
         "Python"
@@ -18773,6 +18851,7 @@
       "commit": "c3c1982e7bd6a11cfed53c5a193ea502f924b1b6",
       "files_in_tree": 771,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 901695,
       "languages": [
         "Python",
@@ -18982,6 +19061,7 @@
       "commit": "f607a129c0298870038b398dbcba57ff041114f6",
       "files_in_tree": 8036,
       "files_scanned": 220,
+      "dependency_files_materialized": 0,
       "bytes_scanned": 1237786,
       "languages": [
         "TypeScript",

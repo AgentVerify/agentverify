@@ -27,6 +27,11 @@ PUBLISHED_NAME_KINDS = {
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--corpus", type=Path, default=Path("research/corpus.csv"))
+    parser.add_argument(
+        "--repository-data",
+        type=Path,
+        default=Path("research/repository-data.json"),
+    )
     parser.add_argument("--cache-dir", type=Path, default=Path(".agentverify-cache/repositories"))
     parser.add_argument("--output", type=Path, default=Path("benchmarks/engine-results.json"))
     return parser.parse_args()
@@ -36,6 +41,15 @@ def main() -> int:
     args = parse_args()
     with args.corpus.open(newline="", encoding="utf-8") as handle:
         repositories = list(csv.DictReader(handle))
+    repository_data = (
+        json.loads(args.repository_data.read_text(encoding="utf-8"))
+        if args.repository_data.is_file()
+        else {"method": {}, "repositories": []}
+    )
+    dependency_files = {
+        item["repository"]: int(item.get("dependency_files_materialized", 0))
+        for item in repository_data.get("repositories", [])
+    }
     results = []
     started = time.perf_counter()
     for index, row in enumerate(repositories, start=1):
@@ -154,6 +168,7 @@ def main() -> int:
             "category": row["category"],
             "status": "ok",
             "files_scanned": ir.files_scanned,
+            "dependency_files_materialized": dependency_files.get(repository, 0),
             "config_files_scanned": ir.config_files_scanned,
             "components": dict(sorted(Counter(item.kind for item in ir.components).items())),
             "component_names": {
@@ -249,9 +264,17 @@ def main() -> int:
         {rule_id for result in successful for rule_id in result["findings"]}
     )
     payload = {
-        "schema_version": 13,
+        "schema_version": 14,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
+        "sampling": {
+            key: repository_data.get("method", {}).get(key)
+            for key in (
+                "max_files_per_repository",
+                "max_dependency_files_per_repository",
+                "max_bytes_per_repository",
+            )
+        },
         "summary": {
             "repositories": len(results),
             "successful": len(successful),
@@ -260,6 +283,12 @@ def main() -> int:
                 result["repository"] for result in successful if result["files_scanned"] == 0
             ],
             "files_scanned": sum(result["files_scanned"] for result in successful),
+            "dependency_files_materialized": sum(
+                result["dependency_files_materialized"] for result in successful
+            ),
+            "repositories_with_dependency_expansion": sum(
+                result["dependency_files_materialized"] > 0 for result in successful
+            ),
             "config_files_scanned": sum(result["config_files_scanned"] for result in successful),
             "relationships": sum(result["relationships"] for result in successful),
             "symbolized_components": sum(result["symbolized_components"] for result in successful),

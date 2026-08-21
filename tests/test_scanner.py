@@ -664,6 +664,66 @@ class ReassignedFallbackServer:
     assert core_edge.attributes["summary"] == "same-class-method"
 
 
+def test_imported_mcp_registry_manager_requires_immutable_constructor_binding() -> None:
+    fixture = ROOT / "cases/mcp_imported_manager"
+    ir = scan_repository(fixture)
+
+    forwarding = {
+        item.evidence.line: item
+        for item in ir.components
+        if item.kind == "capability"
+        and item.name == "mcp-tool-forwarding"
+        and item.evidence.path == "app/server.py"
+    }
+    assert set(forwarding) == {11, 22, 30}
+    routed = forwarding[11]
+    assert routed.attributes["registry_guard"] is True
+    assert routed.attributes["guard_summary"] == "imported-class-method"
+    assert routed.attributes["guard_class"] == "RegistryManager"
+    assert routed.attributes["guard_path"] == "app/managers/registry.py"
+    assert routed.attributes["guard_line"] == 4
+    routed_edge = next(
+        item
+        for item in ir.relationships
+        if item.evidence.path == "app/server.py"
+        and item.evidence.line == 11
+        and item.target_name == "tool-registry"
+    )
+    assert routed_edge.attributes == {
+        "control_path": "app/managers/registry.py",
+        "control_line": 4,
+        "policy_effect": "routing-only",
+        "summary": "imported-class-method",
+        "summary_class": "RegistryManager",
+        "summary_path": "app/managers/registry.py",
+    }
+    assert forwarding[22].attributes["registry_guard"] is False
+    assert forwarding[30].attributes["registry_guard"] is False
+    assert not any(
+        item.target_name == "tool-registry"
+        and item.evidence.path == "app/server.py"
+        and item.evidence.line in {22, 30}
+        for item in ir.relationships
+    )
+    rebound = next(
+        item
+        for item in ir.components
+        if item.name == "mcp-tool-forwarding"
+        and item.evidence.path == "app/rebound_server.py"
+        and item.evidence.line == 13
+    )
+    assert rebound.attributes["registry_guard"] is False
+    assert not any(
+        item.target_name == "tool-registry"
+        and item.evidence.path == "app/rebound_server.py"
+        and item.evidence.line == 13
+        for item in ir.relationships
+    )
+
+    partial = scan_repository(fixture, selected_paths=["app/server.py"])
+    assert not any(item.target_name == "tool-registry" for item in partial.relationships)
+
+
 def test_browser_and_external_action_capabilities_are_linked() -> None:
     ir = scan_repository(ROOT / "cases/external_actions")
 

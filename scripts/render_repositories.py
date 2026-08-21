@@ -31,7 +31,9 @@ def main() -> None:
             f"{sum(repository['files_scanned'] for repository in repositories):,} selected "
             f"source/manifest files ({sum(repository['bytes_scanned'] for repository in repositories) / 1_000_000:.1f} MB). "
             "Selection prioritizes manifests and agent, tool, MCP, permission, approval, sandbox, "
-            "executor, and security paths."
+            "executor, and security paths, then materializes "
+            f"{sum(repository.get('dependency_files_materialized', 0) for repository in repositories):,} "
+            "bounded local Python dependencies reached from MCP forwarding roots."
         ),
         "",
         (

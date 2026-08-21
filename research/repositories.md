@@ -1,10 +1,10 @@
 # Repository corpus
 
-Generated at `2026-08-21T03:52:09.759072+00:00` from `scripts/collect_repositories.py`.
+Generated at `2026-08-21T08:58:03.447164+00:00` from `scripts/collect_repositories.py`.
 
 ## Method
 
-The initial corpus contains **71 repositories** across **14 categories**, all pinned to commits. The collector scanned 12,082 selected source/manifest files (91.9 MB). Selection prioritizes manifests and agent, tool, MCP, permission, approval, sandbox, executor, and security paths.
+The initial corpus contains **71 repositories** across **14 categories**, all pinned to commits. The collector scanned 12,086 selected source/manifest files (92.0 MB). Selection prioritizes manifests and agent, tool, MCP, permission, approval, sandbox, executor, and security paths, then materializes 135 bounded local Python dependencies reached from MCP forwarding roots.
 
 Signals mean code evidence was observed. Absence is not proof that a repository lacks a feature or control. Evidence in `repository-data.json` includes immutable commit, path, line, excerpt, and matched pattern.
 
@@ -55,7 +55,7 @@ Signals mean code evidence was observed. Absence is not proof that a repository 
 | [microsoft/ai-agents-for-beginners](https://github.com/microsoft/ai-agents-for-beginners) | examples | `01777b05` | Python, C# | langchain, langgraph | azure-openai, openai | code-execution, filesystem, network | a2a | audit-or-tracing, authentication, human-approval, sandboxing | — |
 | [microsoft/autogen](https://github.com/microsoft/autogen) | framework | `027ecf0a` | Python, C#, TypeScript, TypeScript | autogen, langchain, langgraph | anthropic, azure-openai, google, ollama, openai | browser, code-execution, database, filesystem, network | mcp | audit-or-tracing, authentication, human-approval, sandboxing | unrestricted-mcp-tool-proxy |
 | [microsoft/playwright-mcp](https://github.com/microsoft/playwright-mcp) | mcp | `16cf228d` | TypeScript, JavaScript | — | — | browser, filesystem, shell-execution | mcp | — | — |
-| [microsoft/semantic-kernel](https://github.com/microsoft/semantic-kernel) | framework | `b39d95a3` | C#, Python, TypeScript, TypeScript | autogen, semantic-kernel | azure-openai, openai | code-execution, database | a2a, mcp | audit-or-tracing, authentication, human-approval, sandboxing | auto-approve, unrestricted-mcp-tool-proxy |
+| [microsoft/semantic-kernel](https://github.com/microsoft/semantic-kernel) | framework | `b39d95a3` | C#, Python, TypeScript, TypeScript | autogen, semantic-kernel | azure-openai, openai | code-execution, database | a2a, mcp | allowlist, audit-or-tracing, authentication, human-approval, sandboxing | auto-approve, unrestricted-mcp-tool-proxy |
 | [microsoft/TaskWeaver](https://github.com/microsoft/TaskWeaver) | workflow-agent | `d44ddef2` | Python, JavaScript | langchain | anthropic, azure-openai, google, openai | browser, code-execution, filesystem, network, shell-execution | — | allowlist, audit-or-tracing, authentication, sandboxing | dynamic-shell-command, shell-true |
 | [modelcontextprotocol/python-sdk](https://github.com/modelcontextprotocol/python-sdk) | mcp | `57394b05` | Python, JavaScript | pydantic-ai | — | database, network, shell-execution | mcp | allowlist, audit-or-tracing, authentication, human-approval, sandboxing | dynamic-shell-command, shell-true, unrestricted-mcp-tool-proxy |
 | [modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers) | mcp | `599dafc1` | TypeScript, Python | — | — | filesystem, network, shell-execution | mcp | authentication | unrestricted-mcp-tool-proxy |

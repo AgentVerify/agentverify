@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T08:42:24.491107+00:00",
-  "labels": 175,
-  "passed": 175,
+  "generated_at": "2026-08-21T09:11:04.925979+00:00",
+  "labels": 177,
+  "passed": 177,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 14,
@@ -29,7 +29,7 @@
       "recall": 1.0
     },
     "AV-EXEC002": {
-      "tp": 14,
+      "tp": 15,
       "fp": 0,
       "tn": 5,
       "fn": 0,
@@ -45,7 +45,7 @@
       "recall": 1.0
     },
     "AV-MCP002": {
-      "tp": 15,
+      "tp": 16,
       "fp": 0,
       "tn": 3,
       "fn": 0,
@@ -1639,6 +1639,24 @@
     {
       "id": "sandbox-skyvern-hostpath-real",
       "rule_id": "AV-SANDBOX001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-openai-agents-forwarding-dependency-real",
+      "rule_id": "AV-MCP002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-camel-dependency-real",
+      "rule_id": "AV-EXEC002",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

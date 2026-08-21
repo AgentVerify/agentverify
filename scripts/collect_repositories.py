@@ -8,6 +8,7 @@ JSON that can be regenerated without a GitHub API token.
 from __future__ import annotations
 
 import argparse
+import ast
 import csv
 import json
 import re
@@ -161,6 +162,7 @@ class RepositoryResult:
     commit: str = ""
     files_in_tree: int = 0
     files_scanned: int = 0
+    dependency_files_materialized: int = 0
     bytes_scanned: int = 0
     languages: list[str] = field(default_factory=list)
     signals: dict[str, dict[str, list[Evidence]]] = field(default_factory=dict)
@@ -262,6 +264,158 @@ def materialize_files(clone: Path, paths: list[str]) -> None:
     run_git(["checkout", "--force", "HEAD"], cwd=clone, timeout=300)
 
 
+def python_module_indexes(
+    paths: list[str],
+) -> tuple[dict[str, str], dict[str, tuple[str, ...]]]:
+    """Map importable Python modules to unique paths and paths back to module names."""
+    candidates: dict[str, set[str]] = {}
+    path_modules: dict[str, set[str]] = {}
+    for path in paths:
+        if Path(path).suffix.lower() != ".py" or set(Path(path).parts) & SKIP_PARTS:
+            continue
+        parts = list(Path(path).with_suffix("").parts)
+        if parts and parts[-1] == "__init__":
+            parts.pop()
+        module_parts = [parts]
+        for source_root in ("src", "python"):
+            if source_root in parts:
+                module_parts.append(parts[parts.index(source_root) + 1 :])
+        for candidate_parts in module_parts:
+            if not candidate_parts:
+                continue
+            module = ".".join(candidate_parts)
+            candidates.setdefault(module, set()).add(path)
+            path_modules.setdefault(path, set()).add(module)
+    modules = {
+        module: next(iter(locations))
+        for module, locations in candidates.items()
+        if len(locations) == 1
+    }
+    return modules, {
+        path: tuple(sorted(names, key=lambda name: (name.count("."), name)))
+        for path, names in path_modules.items()
+    }
+
+
+def python_import_dependencies(
+    path: str,
+    content: str,
+    module_paths: dict[str, str],
+    path_modules: dict[str, tuple[str, ...]],
+) -> list[str]:
+    """Resolve local Python import targets without importing project code."""
+    try:
+        tree = ast.parse(content, filename=path)
+    except SyntaxError:
+        return []
+    current_modules = path_modules.get(path, ())
+    current_module = current_modules[0] if current_modules else ""
+    current_package = (
+        current_module
+        if Path(path).name == "__init__.py"
+        else current_module.rsplit(".", 1)[0]
+        if "." in current_module
+        else ""
+    )
+    dependencies: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                if target := module_paths.get(alias.name):
+                    dependencies.add(target)
+            continue
+        if not isinstance(node, ast.ImportFrom):
+            continue
+        if node.level:
+            package_parts = current_package.split(".") if current_package else []
+            if not package_parts or node.level - 1 >= len(package_parts):
+                continue
+            base_parts = package_parts[: len(package_parts) - (node.level - 1)]
+            imported_parts = node.module.split(".") if node.module else []
+            module = ".".join([*base_parts, *imported_parts])
+        else:
+            module = node.module or ""
+        if target := module_paths.get(module):
+            dependencies.add(target)
+        for alias in node.names:
+            if alias.name == "*":
+                continue
+            submodule = ".".join(part for part in (module, alias.name) if part)
+            if target := module_paths.get(submodule):
+                dependencies.add(target)
+    dependencies.discard(path)
+    return sorted(dependencies)
+
+
+def expand_python_mcp_dependencies(
+    clone: Path,
+    tree_paths: list[str],
+    selected_paths: list[str],
+    max_dependency_files: int,
+) -> list[str]:
+    """Add a deterministic, depth-bounded local import closure for MCP forwarding files."""
+    if max_dependency_files <= 0:
+        return []
+    module_paths, path_modules = python_module_indexes(tree_paths)
+    selected = set(selected_paths)
+
+    def source(path: str) -> str:
+        local = clone / path
+        if local.is_file():
+            return local.read_text(encoding="utf-8", errors="ignore")
+        return run_git(["show", f"HEAD:{path}"], cwd=clone)
+
+    seed_paths = []
+    for path in selected_paths:
+        if Path(path).suffix.lower() != ".py":
+            continue
+        content = source(path)
+        if re.search(r"\bcall_tool\s*\(", content):
+            seed_paths.append(path)
+    seed_paths.sort(
+        key=lambda path: (
+            bool(set(Path(path).parts) & {"test", "tests"}),
+            len(Path(path).parts),
+            path,
+        )
+    )
+
+    dependencies: list[str] = []
+    discovered: set[str] = set()
+    per_seed_limit = 4
+    for seed in seed_paths:
+        if len(dependencies) >= max_dependency_files:
+            break
+        seed_added = 0
+        stack: list[tuple[str, int]] = [(seed, 0)]
+        visited: set[str] = set()
+        while stack and seed_added < per_seed_limit and len(dependencies) < max_dependency_files:
+            path, depth = stack.pop()
+            if path in visited or depth > 3:
+                continue
+            visited.add(path)
+            if path not in selected and path not in discovered:
+                dependencies.append(path)
+                discovered.add(path)
+                seed_added += 1
+            targets = python_import_dependencies(
+                path,
+                source(path),
+                module_paths,
+                path_modules,
+            )
+            targets.sort(
+                key=lambda target: (
+                    "tool" not in target.lower(),
+                    bool(set(Path(target).parts) & {"test", "tests"}),
+                    len(Path(target).parts),
+                    target,
+                )
+            )
+            stack.extend((target, depth + 1) for target in reversed(targets))
+    return dependencies
+
+
 def compile_signatures() -> dict[str, dict[str, list[tuple[str, re.Pattern[str]]]]]:
     return {
         group: {
@@ -295,6 +449,7 @@ def collect_one(
     row: dict[str, str],
     cache_dir: Path,
     max_files: int,
+    max_dependency_files: int,
     max_bytes: int,
     locked_commit: str | None = None,
 ) -> RepositoryResult:
@@ -322,8 +477,17 @@ def collect_one(
         ][:4]
         selected_paths = select_files(paths, max_files)
         materialize_files(clone, selected_paths)
+        dependency_paths = expand_python_mcp_dependencies(
+            clone,
+            paths,
+            selected_paths,
+            max_dependency_files,
+        )
+        if dependency_paths:
+            materialize_files(clone, [*selected_paths, *dependency_paths])
+        result.dependency_files_materialized = len(dependency_paths)
         remaining = max_bytes
-        for path in selected_paths:
+        for path in [*selected_paths, *dependency_paths]:
             if remaining <= 0:
                 break
             try:
@@ -357,6 +521,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--cache-dir", type=Path, default=Path(".agentverify-cache/repositories"))
     parser.add_argument("--workers", type=int, default=6)
     parser.add_argument("--max-files", type=int, default=220)
+    parser.add_argument("--max-dependency-files", type=int, default=20)
     parser.add_argument("--max-bytes", type=int, default=2_000_000)
     parser.add_argument(
         "--lock-file",
@@ -397,6 +562,7 @@ def main() -> int:
                 row,
                 args.cache_dir,
                 args.max_files,
+                args.max_dependency_files,
                 args.max_bytes,
                 commits.get(row["repository"]),
             ): row
@@ -410,15 +576,19 @@ def main() -> int:
             )
     results.sort(key=lambda item: item.repository.casefold())
     payload = {
-        "schema_version": 1,
+        "schema_version": 2,
         "generated_at": datetime.now(UTC).isoformat(),
         "method": {
             "collector": "scripts/collect_repositories.py",
             "max_files_per_repository": args.max_files,
+            "max_dependency_files_per_repository": args.max_dependency_files,
             "max_bytes_per_repository": args.max_bytes,
             "lock_file": None if args.refresh else str(args.lock_file),
             "locked_repositories": sum(row["repository"] in commits for row in rows),
-            "selection": "manifests, then security/agent/tool/MCP-related sources, then shallow paths",
+            "selection": (
+                "manifests, then security/agent/tool/MCP-related sources, then shallow paths; "
+                "plus a bounded local Python import closure for MCP forwarding files"
+            ),
         },
         "repositories": [asdict(result) for result in results],
     }
