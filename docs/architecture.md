@@ -159,6 +159,18 @@ fetch. Because that fetch performs a separate connection-time lookup, the contro
 preflight-only with an unpinned-transport residual. Removing any stage withholds both reachability and
 the control edge.
 
+The A2A endpoint-provenance passes model a different authority transition from tool-input SSRF.
+They create an `a2a-rpc` capability at SDK client construction when a network-resolved AgentCard can
+select the later RPC endpoint. The ADK JS proof requires an exact named import of its resolver and a
+direct resolved-card flow into `createFromAgentCard`; the Gemini proof requires configured URL versus
+inline JSON resolution, card normalization, SDK interface selection, and its Undici agent/proxy
+dispatcher. Both preserve `dynamic_origin: false` and `origin_authority: remote-agent-card`, allowing
+`AV-A2A001` to report the missing card-source binding without changing AV-NET001's model-parameter
+contract. The ADK Python counterproof requires validation to dominate both cached and per-invocation
+factory calls, enumeration of every advertised RPC URL, HTTPS-or-loopback rejection, and normalized
+source-origin equality. Those paths receive `a2a-card-rpc-origin-policy`; missing any stage withholds
+the control rather than inferring it from validator names.
+
 A repository prepass builds bounded Python network summaries for unique top-level free functions in
 selected files. A summary records direct recognized HTTP calls and the formal parameters that can
 control their origins after fixed-prefix discrimination. At a tool call site, only an exact named

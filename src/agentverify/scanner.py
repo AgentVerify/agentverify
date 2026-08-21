@@ -11369,6 +11369,385 @@ def add_typescript_google_adk_load_web_page_composition(
     )
 
 
+def add_typescript_a2a_card_endpoint_composition(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve remotely fetched A2A cards into SDK-selected downstream RPC origins."""
+    sources: dict[str, tuple[str, str]] = {}
+    for path in paths:
+        if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        sources[relative] = (text, typescript_code_mask(text))
+
+    def add_gap(
+        relative: str,
+        text: str,
+        call_offset: int,
+        class_match: re.Match[str],
+        attributes: dict[str, object],
+    ) -> None:
+        call_line = line_at(text, call_offset)
+        class_line = line_at(text, class_match.start())
+        evidence = Evidence(relative, call_line, excerpt(text.splitlines(), call_line))
+        protocol_id = f"ts:{relative}#protocol:a2a-card-client"
+        capability_attributes = {
+            "scope": source_scope(relative),
+            "frontend": "typescript",
+            "protocol": "a2a",
+            "dynamic_origin": False,
+            "origin_authority": "remote-agent-card",
+            "remote_card_endpoint_scope": "unconstrained",
+            **attributes,
+        }
+        ir.add_component(
+            Component(
+                "protocol",
+                "A2A",
+                Evidence(relative, class_line, excerpt(text.splitlines(), class_line)),
+                {
+                    "role": "client",
+                    "card_source": capability_attributes["card_source_scope"],
+                },
+                protocol_id,
+            )
+        )
+        ir.add_component(Component("capability", "a2a-rpc", evidence, capability_attributes))
+        ir.add_relationship(
+            Relationship(
+                "protocol",
+                "A2A",
+                "uses",
+                "capability",
+                "a2a-rpc",
+                evidence,
+                capability_attributes,
+                source_id=protocol_id,
+            )
+        )
+
+    selected = set(sources)
+    remote_agent_callers = [
+        (relative, text, code)
+        for relative, (text, code) in sources.items()
+        if re.search(r"\bclass\s+(?:A2ARemoteAgent|RemoteA2AAgent)\b", code)
+        and "this.card = await resolveAgentCard(this.a2aConfig.agentCard)" in code
+        and "factory.createFromAgentCard(this.card)" in code
+    ]
+    resolver_sources = [
+        (relative, text, code)
+        for relative, (text, code) in sources.items()
+        if "export async function resolveAgentCard(" in code
+        and "new DefaultAgentCardResolver()" in code
+        and "resolver.resolve(source)" in code
+    ]
+    if len(remote_agent_callers) == 1 and len(resolver_sources) == 1:
+        caller_path, caller_text, caller_code = remote_agent_callers[0]
+        resolver_path, resolver_text, resolver_code = resolver_sources[0]
+        imports = typescript_named_import_bindings(caller_text, "@a2a-js/sdk/client")
+        chain_match = re.search(
+            r"this\.card\s*=\s*await\s+resolveAgentCard\s*\(\s*this\.a2aConfig\.agentCard\s*\)\s*;"
+            r"\s*if\s*\(\s*!this\.client\s*\)\s*\{"
+            r"[\s\S]{0,500}?this\.client\s*=\s*await\s+factory\.createFromAgentCard\s*\(\s*this\.card\s*\)",
+            caller_code,
+        )
+        call_match = re.search(
+            r"factory\.createFromAgentCard\s*\(\s*this\.card\s*\)", caller_code
+        )
+        class_match = re.search(
+            r"\bclass\s+(?:A2ARemoteAgent|RemoteA2AAgent)\b", caller_code
+        )
+        resolver_proof = re.search(
+            r"source\.startsWith\s*\(\s*['\"]http://['\"]\s*\)\s*\|\|\s*"
+            r"source\.startsWith\s*\(\s*['\"]https://['\"]\s*\)"
+            r"[\s\S]{0,300}?new\s+DefaultAgentCardResolver\s*\(\s*\)"
+            r"[\s\S]{0,300}?resolver\.resolve\s*\(\s*source\s*\)",
+            resolver_text,
+        )
+        if (
+            chain_match is not None
+            and call_match is not None
+            and class_match is not None
+            and resolver_proof is not None
+            and imports.get("ClientFactory") == "ClientFactory"
+            and typescript_named_import_reaches_path(
+                root,
+                root / caller_path,
+                caller_text,
+                "resolveAgentCard",
+                "resolveAgentCard",
+                resolver_path,
+                selected,
+            )
+        ):
+            resolver_offset = resolver_code.find("export async function resolveAgentCard(")
+            add_gap(
+                caller_path,
+                caller_text,
+                call_match.start(),
+                class_match,
+                {
+                    "analysis": "typescript-adk-a2a-card-endpoint-composition",
+                    "card_source_scope": "configuration-object-url-or-local-file",
+                    "card_fetch_scope": "sdk-default-resolver",
+                    "rpc_origin_scope": "remote-card-controlled",
+                    "rpc_scheme_scope": "remote-card-controlled",
+                    "advertised_interface_scope": "sdk-selected",
+                    "redirect_scope": "sdk-default-unresolved",
+                    "dns_scope": "sdk-default-unresolved",
+                    "proxy_scope": "sdk-default-unresolved",
+                    "transport_scope": "sdk-client-factory",
+                    "endpoint_policy": "absent-on-proven-path",
+                    "resolver_path": resolver_path,
+                    "resolver_line": line_at(resolver_text, resolver_offset),
+                },
+            )
+
+    manager_sources = [
+        (relative, text, code)
+        for relative, (text, code) in sources.items()
+        if "class A2AClientManager" in code
+        and "new DefaultAgentCardResolver({" in code
+        and "factory.createFromAgentCard(agentCard)" in code
+        and "dispatcher: this.a2aDispatcher" in code
+    ]
+    if len(manager_sources) == 1:
+        relative, text, code = manager_sources[0]
+        sdk_imports = typescript_named_import_bindings(text, "@a2a-js/sdk/client")
+        undici_imports = typescript_named_import_bindings(text, "undici")
+        remote_resolution = re.search(
+            r"if\s*\(\s*options\.type\s*===\s*['\"]json['\"]\s*\)\s*\{"
+            r"[\s\S]{0,500}?JSON\.parse\s*\(\s*options\.json\s*\)"
+            r"[\s\S]{0,1500}?\}\s*else\s*\{"
+            r"[\s\S]{0,300}?resolver\.resolve\s*\(\s*options\.url\s*,\s*['\"]['\"]\s*\)",
+            text,
+        )
+        create_chain = re.search(
+            r"const\s+agentCard\s*=\s*normalizeAgentCard\s*\(\s*rawCard\s*\)"
+            r"[\s\S]{0,1800}?new\s+ClientFactory\s*\([^)]*\)"
+            r"[\s\S]{0,300}?(?:const\s+client\s*=|return)\s*await\s+"
+            r"factory\.createFromAgentCard\s*\(\s*agentCard\s*\)",
+            code,
+        )
+        create_match = re.search(
+            r"factory\.createFromAgentCard\s*\(\s*agentCard\s*\)", code
+        )
+        normalized_card = re.search(
+            r"const\s+agentCard\s*=\s*normalizeAgentCard\s*\(\s*rawCard\s*\)", code
+        )
+        intervening_card_call = None
+        if normalized_card is not None and create_match is not None:
+            intervening_card_call = re.search(
+                r"\b[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*\s*\(\s*agentCard\s*[,)]",
+                code[normalized_card.end() : create_match.start()],
+            )
+        class_match = re.search(r"\bclass\s+A2AClientManager\b", code)
+        dispatcher_proof = re.search(
+            r"new\s+ProxyAgent\s*\([\s\S]{0,400}?new\s+UndiciAgent\s*\("
+            r"[\s\S]{0,500}?fetch\s*\(\s*input\s*,\s*\{\s*\.\.\.init\s*,\s*"
+            r"dispatcher\s*:\s*this\.a2aDispatcher",
+            code,
+        )
+        grpc_endpoint = re.search(
+            r"agentCard\.additionalInterfaces\?\.find\s*\([\s\S]{0,250}?"
+            r"transport\s*===\s*['\"]GRPC['\"][\s\S]{0,120}?\)\s*\?\.url"
+            r"\s*\?\?\s*agentCard\.url",
+            text,
+        )
+        if (
+            remote_resolution is not None
+            and create_chain is not None
+            and create_match is not None
+            and normalized_card is not None
+            and intervening_card_call is None
+            and class_match is not None
+            and dispatcher_proof is not None
+            and grpc_endpoint is not None
+            and all(
+                sdk_imports.get(name) == name
+                for name in ("ClientFactory", "DefaultAgentCardResolver")
+            )
+            and undici_imports.get("ProxyAgent") == "ProxyAgent"
+            and undici_imports.get("UndiciAgent") == "Agent"
+        ):
+            add_gap(
+                relative,
+                text,
+                create_match.start(),
+                class_match,
+                {
+                    "analysis": "typescript-gemini-a2a-card-endpoint-composition",
+                    "card_source_scope": "configured-url-or-inline-json",
+                    "card_fetch_scope": "unauthenticated-first-auth-retry",
+                    "rpc_origin_scope": "remote-card-controlled",
+                    "rpc_scheme_scope": "remote-card-controlled-grpc-allows-insecure",
+                    "advertised_interface_scope": "sdk-selected",
+                    "redirect_scope": "sdk-default-unresolved",
+                    "dns_scope": "dispatcher-default-unpinned",
+                    "proxy_scope": "configuration-dependent",
+                    "transport_scope": "undici-agent-or-proxy",
+                    "endpoint_policy": "absent-on-proven-path",
+                },
+            )
+
+
+def add_python_adk_a2a_card_endpoint_policy(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve ADK Python's all-interface HTTPS/loopback and same-origin card policy."""
+    candidates: list[tuple[str, str]] = []
+    for path in paths:
+        if path.suffix.lower() != ".py" or not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        required = (
+            "class RemoteA2aAgent",
+            "async def _validate_agent_card(",
+            "def _validate_card_rpc_targets(",
+            "_compat.agent_card_rpc_urls(agent_card)",
+            "self._a2a_client_factory.create(",
+        )
+        if all(marker in text for marker in required):
+            candidates.append((relative, text))
+    if len(candidates) != 1:
+        return
+    relative, text = candidates[0]
+    try:
+        ast.parse(text, filename=relative)
+    except SyntaxError:
+        return
+    policy_proof = (
+        re.search(
+            r"async\s+def\s+_validate_agent_card\s*\([^)]*agent_card[^)]*\)\s*[^:]*:"
+            r"[\s\S]{0,1000}?self\._validate_card_rpc_targets\s*\(\s*agent_card\s*\)",
+            text,
+        )
+        and re.search(
+            r"def\s+_validate_card_rpc_targets\s*\([^)]*agent_card[^)]*\)\s*[^:]*:"
+            r"[\s\S]{0,1000}?source\.startswith\s*\(\s*\(\s*['\"]http://['\"]\s*,\s*['\"]https://['\"]\s*\)\s*\)"
+            r"[\s\S]{0,1000}?for\s+card_url\s+in\s+_compat\.agent_card_rpc_urls\s*\(\s*agent_card\s*\)\s*:"
+            r"[\s\S]{0,1000}?parsed_card\.scheme\.lower\s*\(\s*\)\s*!=\s*['\"]https['\"]"
+            r"[\s\S]{0,500}?not\s+_is_loopback_host\s*\(\s*parsed_card\.hostname\s*\)"
+            r"[\s\S]{0,1000}?card_origin\s*=\s*_url_origin\s*\(\s*card_url\s*\)"
+            r"[\s\S]{0,500}?card_origin\s*!=\s*source_origin",
+            text,
+        )
+    )
+    if not policy_proof:
+        return
+    path_patterns = (
+        re.compile(
+            r"agent_card\s*=\s*await\s+self\._resolve_agent_card\s*\(\s*ctx\s*\)"
+            r"[\s\S]{0,500}?await\s+self\._validate_agent_card\s*\(\s*agent_card\s*\)"
+            r"[\s\S]{0,500}?client\s*=\s*self\._a2a_client_factory\.create\s*\(\s*agent_card\s*\)"
+        ),
+        re.compile(
+            r"self\._agent_card\s*=\s*await\s+self\._resolve_agent_card\s*\(\s*ctx\s*\)"
+            r"[\s\S]{0,600}?await\s+self\._validate_agent_card\s*\(\s*self\._agent_card\s*\)"
+            r"[\s\S]{0,800}?self\._a2a_client\s*=\s*self\._a2a_client_factory\.create\s*\(\s*self\._agent_card\s*\)"
+        ),
+    )
+    matches = [match for pattern in path_patterns if (match := pattern.search(text)) is not None]
+    if not matches:
+        return
+    class_match = re.search(r"\bclass\s+RemoteA2aAgent\b", text)
+    policy_match = re.search(r"\bdef\s+_validate_card_rpc_targets\b", text)
+    if class_match is None or policy_match is None:
+        return
+    protocol_id = f"py:{relative}#protocol:a2a-card-client"
+    class_line = line_at(text, class_match.start())
+    policy_line = line_at(text, policy_match.start())
+    control_attributes: dict[str, object] = {
+        "scope": source_scope(relative),
+        "frontend": "python",
+        "analysis": "python-google-adk-a2a-card-endpoint-policy",
+        "policy_effect": "binds-network-card-rpc-to-source-origin",
+        "card_source_scope": "network-card-only",
+        "rpc_origin_scope": "same-origin-with-card-source",
+        "rpc_scheme_scope": "https-or-loopback-http",
+        "advertised_interface_scope": "all-rpc-urls",
+        "enforcement_default": "enabled",
+        "escape_hatch": "none",
+        "enforcement_mode": "always-on-for-network-cards",
+        "redirect_scope": "httpx-default-unresolved",
+        "dns_scope": "httpx-default-unresolved",
+        "proxy_scope": "httpx-environment-dependent",
+        "transport_scope": "httpx-sdk-client-factory",
+        "control_path": relative,
+        "control_line": policy_line,
+    }
+    ir.add_component(
+        Component(
+            "protocol",
+            "A2A",
+            Evidence(relative, class_line, excerpt(text.splitlines(), class_line)),
+            {"role": "client", "card_source": "configuration-url-or-local-file"},
+            protocol_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "control",
+            "a2a-card-rpc-origin-policy",
+            Evidence(relative, policy_line, excerpt(text.splitlines(), policy_line)),
+            control_attributes,
+        )
+    )
+    for match in matches:
+        create_offset = match.start() + match.group(0).rfind(
+            "self._a2a_client_factory.create"
+        )
+        if create_offset < match.start():
+            continue
+        call_line = line_at(text, create_offset)
+        evidence = Evidence(relative, call_line, excerpt(text.splitlines(), call_line))
+        capability_attributes = {
+            "scope": source_scope(relative),
+            "frontend": "python",
+            "protocol": "a2a",
+            "dynamic_origin": False,
+            "origin_authority": "remote-agent-card",
+            "remote_card_endpoint_scope": "same-origin-constrained",
+            "analysis": "python-google-adk-a2a-card-endpoint-policy",
+        }
+        ir.add_component(Component("capability", "a2a-rpc", evidence, capability_attributes))
+        ir.add_relationship(
+            Relationship(
+                "protocol",
+                "A2A",
+                "uses",
+                "capability",
+                "a2a-rpc",
+                evidence,
+                capability_attributes,
+                source_id=protocol_id,
+            )
+        )
+        ir.add_relationship(
+            Relationship(
+                "capability",
+                "a2a-rpc",
+                "governed-by",
+                "control",
+                "a2a-card-rpc-origin-policy",
+                evidence,
+                control_attributes,
+            )
+        )
+
+
 def repository_files(root: Path) -> list[Path]:
     paths = []
     for directory, directory_names, file_names in os.walk(root, followlinks=False):
@@ -11512,6 +11891,8 @@ def scan_repository(
     add_typescript_flowise_secure_request_composition(ir, root, registry_paths)
     add_typescript_flowise_secure_fetch_composition(ir, root, registry_paths)
     add_typescript_google_adk_load_web_page_composition(ir, root, registry_paths)
+    add_typescript_a2a_card_endpoint_composition(ir, root, registry_paths)
+    add_python_adk_a2a_card_endpoint_policy(ir, root, registry_paths)
     propagate_python_class_network_helpers(
         ir,
         root,

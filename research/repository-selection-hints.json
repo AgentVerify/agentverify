@@ -29,7 +29,15 @@
     ],
     "google/adk-js": [
       "core/src/tools/load_web_page.ts",
-      "core/src/tools/function_tool.ts"
+      "core/src/tools/function_tool.ts",
+      "core/src/a2a/a2a_remote_agent.ts",
+      "core/src/a2a/agent_card.ts"
+    ],
+    "google/adk-python": [
+      "src/google/adk/agents/remote_a2a_agent.py"
+    ],
+    "google-gemini/gemini-cli": [
+      "packages/core/src/agents/a2a-client-manager.ts"
     ]
   }
 }

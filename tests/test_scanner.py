@@ -1883,6 +1883,222 @@ def test_typescript_google_adk_fetch_preserves_preflight_dns_residual(
         )
 
 
+def test_typescript_a2a_remote_cards_preserve_endpoint_authority_and_transport(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/typescript_a2a_card_endpoint"
+    ir = scan_repository(root)
+    capabilities = [
+        item
+        for item in ir.components
+        if item.kind == "capability" and item.name == "a2a-rpc"
+    ]
+    assert [
+        (item.evidence.path, item.evidence.line, item.attributes["analysis"])
+        for item in capabilities
+    ] == [
+        (
+            "a2a_remote_agent.ts",
+            26,
+            "typescript-adk-a2a-card-endpoint-composition",
+        ),
+        (
+            "gemini_manager.ts",
+            60,
+            "typescript-gemini-a2a-card-endpoint-composition",
+        ),
+    ]
+    assert capabilities[0].attributes == {
+        "scope": "production",
+        "frontend": "typescript",
+        "protocol": "a2a",
+        "dynamic_origin": False,
+        "origin_authority": "remote-agent-card",
+        "remote_card_endpoint_scope": "unconstrained",
+        "analysis": "typescript-adk-a2a-card-endpoint-composition",
+        "card_source_scope": "configuration-object-url-or-local-file",
+        "card_fetch_scope": "sdk-default-resolver",
+        "rpc_origin_scope": "remote-card-controlled",
+        "rpc_scheme_scope": "remote-card-controlled",
+        "advertised_interface_scope": "sdk-selected",
+        "redirect_scope": "sdk-default-unresolved",
+        "dns_scope": "sdk-default-unresolved",
+        "proxy_scope": "sdk-default-unresolved",
+        "transport_scope": "sdk-client-factory",
+        "endpoint_policy": "absent-on-proven-path",
+        "resolver_path": "agent_card.ts",
+        "resolver_line": 5,
+    }
+    assert capabilities[1].attributes == {
+        "scope": "production",
+        "frontend": "typescript",
+        "protocol": "a2a",
+        "dynamic_origin": False,
+        "origin_authority": "remote-agent-card",
+        "remote_card_endpoint_scope": "unconstrained",
+        "analysis": "typescript-gemini-a2a-card-endpoint-composition",
+        "card_source_scope": "configured-url-or-inline-json",
+        "card_fetch_scope": "unauthenticated-first-auth-retry",
+        "rpc_origin_scope": "remote-card-controlled",
+        "rpc_scheme_scope": "remote-card-controlled-grpc-allows-insecure",
+        "advertised_interface_scope": "sdk-selected",
+        "redirect_scope": "sdk-default-unresolved",
+        "dns_scope": "dispatcher-default-unpinned",
+        "proxy_scope": "configuration-dependent",
+        "transport_scope": "undici-agent-or-proxy",
+        "endpoint_policy": "absent-on-proven-path",
+    }
+    assert [
+        (finding.rule_id, finding.evidence.path, finding.evidence.line)
+        for finding in ir.findings
+        if finding.rule_id == "AV-A2A001"
+    ] == [
+        ("AV-A2A001", "a2a_remote_agent.ts", 26),
+        ("AV-A2A001", "gemini_manager.ts", 60),
+    ]
+    assert all(
+        finding.ir_path == ("protocol:A2A", "capability:a2a-rpc")
+        and finding.analysis["protocol"] == "A2A"
+        for finding in ir.findings
+        if finding.rule_id == "AV-A2A001"
+    )
+    assert not any(
+        finding.rule_id == "AV-A2A001" and finding.evidence.path == "raw.ts"
+        for finding in ir.findings
+    )
+
+    without_resolver = scan_repository(
+        root,
+        selected_paths=["a2a_remote_agent.ts"],
+    )
+    assert not any(
+        item.attributes.get("analysis")
+        == "typescript-adk-a2a-card-endpoint-composition"
+        for item in without_resolver.components
+    )
+
+    for name, relative, before, after, analysis in (
+        (
+            "a2a-fixed-resolver",
+            "agent_card.ts",
+            "resolver.resolve(source)",
+            "resolver.resolve('https://fixed.example/card')",
+            "typescript-adk-a2a-card-endpoint-composition",
+        ),
+        (
+            "a2a-fixed-card",
+            "a2a_remote_agent.ts",
+            "factory.createFromAgentCard(this.card)",
+            "factory.createFromAgentCard({url: 'https://fixed.example/rpc'})",
+            "typescript-adk-a2a-card-endpoint-composition",
+        ),
+        (
+            "a2a-intervening-validator",
+            "a2a_remote_agent.ts",
+            "this.card = await resolveAgentCard(this.a2aConfig.agentCard);",
+            "this.card = await resolveAgentCard(this.a2aConfig.agentCard);\n      await validateCardOrigin(this.card);",
+            "typescript-adk-a2a-card-endpoint-composition",
+        ),
+        (
+            "a2a-wrong-resolver-import",
+            "a2a_remote_agent.ts",
+            "from './agent_card.js'",
+            "from './raw.js'",
+            "typescript-adk-a2a-card-endpoint-composition",
+        ),
+        (
+            "gemini-fixed-card",
+            "gemini_manager.ts",
+            "factory.createFromAgentCard(agentCard)",
+            "factory.createFromAgentCard({url: 'https://fixed.example/rpc'})",
+            "typescript-gemini-a2a-card-endpoint-composition",
+        ),
+        (
+            "gemini-unproven-dispatcher",
+            "gemini_manager.ts",
+            "dispatcher: this.a2aDispatcher",
+            "dispatcher: undefined",
+            "typescript-gemini-a2a-card-endpoint-composition",
+        ),
+        (
+            "gemini-intervening-validator",
+            "gemini_manager.ts",
+            "const agentCard = normalizeAgentCard(rawCard);",
+            "const agentCard = normalizeAgentCard(rawCard);\n    validateCardOrigin(agentCard, options);",
+            "typescript-gemini-a2a-card-endpoint-composition",
+        ),
+    ):
+        incomplete = tmp_path / name
+        shutil.copytree(root, incomplete)
+        source_path = incomplete / relative
+        source = source_path.read_text(encoding="utf-8")
+        assert before in source
+        source_path.write_text(source.replace(before, after), encoding="utf-8")
+        incomplete_ir = scan_repository(incomplete)
+        assert not any(
+            item.attributes.get("analysis") == analysis
+            for item in incomplete_ir.components
+        )
+
+
+def test_python_a2a_card_policy_requires_all_interfaces_and_dominating_validation(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/python_a2a_card_endpoint"
+    ir = scan_repository(root)
+    edges = [
+        edge
+        for edge in ir.relationships
+        if edge.target_kind == "control"
+        and edge.target_name == "a2a-card-rpc-origin-policy"
+    ]
+    assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [
+        ("remote_a2a_agent.py", 41),
+        ("remote_a2a_agent.py", 48),
+    ]
+    assert all(
+        edge.attributes["analysis"]
+        == "python-google-adk-a2a-card-endpoint-policy"
+        and edge.attributes["rpc_origin_scope"] == "same-origin-with-card-source"
+        and edge.attributes["rpc_scheme_scope"] == "https-or-loopback-http"
+        and edge.attributes["advertised_interface_scope"] == "all-rpc-urls"
+        and edge.attributes["enforcement_mode"] == "always-on-for-network-cards"
+        and edge.attributes["control_line"] == 21
+        for edge in edges
+    )
+    assert not any(finding.rule_id == "AV-A2A001" for finding in ir.findings)
+
+    for name, before, after in (
+        (
+            "a2a-primary-only",
+            "_compat.agent_card_rpc_urls(agent_card)",
+            "[_compat.agent_card_url(agent_card)]",
+        ),
+        (
+            "a2a-cross-origin-allowed",
+            "card_origin != source_origin",
+            "card_origin == source_origin",
+        ),
+        (
+            "a2a-http-allowed",
+            'parsed_card.scheme.lower() != "https"',
+            'parsed_card.scheme.lower() == "https"',
+        ),
+    ):
+        incomplete = tmp_path / name
+        shutil.copytree(root, incomplete)
+        source_path = incomplete / "remote_a2a_agent.py"
+        source = source_path.read_text(encoding="utf-8")
+        assert before in source
+        source_path.write_text(source.replace(before, after), encoding="utf-8")
+        incomplete_ir = scan_repository(incomplete)
+        assert not any(
+            edge.target_kind == "control"
+            and edge.target_name == "a2a-card-rpc-origin-policy"
+            for edge in incomplete_ir.relationships
+        )
+
+
 def test_typescript_network_helper_summaries_map_object_parameters_and_multiline_aliases(
     tmp_path: Path,
 ) -> None:

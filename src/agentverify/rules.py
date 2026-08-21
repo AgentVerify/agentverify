@@ -196,6 +196,23 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                 )
         if (
             component.kind == "capability"
+            and component.name == "a2a-rpc"
+            and component.attributes.get("remote_card_endpoint_scope") == "unconstrained"
+        ):
+            ir.findings.append(
+                make_finding(
+                    ir,
+                    component,
+                    "AV-A2A001",
+                    "high",
+                    "medium",
+                    "A remotely fetched A2A AgentCard can select a downstream RPC origin",
+                    "Before constructing the A2A client, require every advertised RPC interface to use HTTPS (except an explicit loopback development policy) and the same origin as the card source; also constrain redirects and egress.",
+                    "review",
+                )
+            )
+        if (
+            component.kind == "capability"
             and component.name == "shell-execution"
             and component.attributes.get("builtin_tool")
             and component.attributes.get("execution_environment") == "local"

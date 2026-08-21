@@ -103,11 +103,11 @@ unresolved. Exact module-level `urllib.request.urlopen` imports and aliases now 
 shadowing and module rebinding invalidate the API proof.
 Exact same-function Python `urlparse`/`urlsplit` guards now add a control edge only when immutable
 tool-origin data is rejected outside a static scheme and hostname set before the request. Redirect
-disabling is recorded separately; DNS and other redirect states stay unresolved. Schema v38 finds
+disabling is recorded separately; DNS and other redirect states stay unresolved. Schema v39 finds
 zero such controls on the Python corpus reviews, making the absence visible without calling every review
 SSRF. A same-file TypeScript validator summary now resolves MCP Servers' scheme allowlist and
 environment-backed exact/subdomain predicate, while preserving its empty hostname default as open.
-Schema v38 separately proves two CrewAI loader calls through a locally defined `safe_get` transport:
+Schema v39 separately proves two CrewAI loader calls through a locally defined `safe_get` transport:
 both validate every redirect hop, pin the connected peer after DNS checks, disable proxies, and are
 enabled by default. The `CREWAI_TOOLS_ALLOW_UNSAFE_PATHS` opt-out and
 `CREWAI_TOOLS_FORCE_SAFE_PATHS` override remain explicit governance state. Next resolve normalized
@@ -129,6 +129,18 @@ and disabled redirects, but unpinned global fetch with a DNS-rebinding residual.
 beyond these exact request-object, `node-fetch`, and `FunctionTool` shapes to client instances,
 general fetch/Undici transports, and runtime egress controls.
 
+## P1 — A2A AgentCard endpoint provenance
+
+`AV-A2A001` distinguishes configured card discovery from the downstream origin selected by a
+remotely supplied AgentCard. Exact TypeScript compositions cover Google ADK JS and Gemini CLI; both
+pass the resolved card into `ClientFactory` without a proven source-origin binding. Gemini's edge
+also preserves its Undici agent/proxy choice, unpinned DNS state, and insecure-gRPC possibility.
+Google ADK Python is the guarded counterexample: both cached and per-invocation client paths validate
+every advertised RPC interface, require HTTPS except explicit loopback development, and bind it to
+the network card source origin before client construction. Next generalize across A2A SDK versions,
+custom client factories, redirect policy, and authenticated-card replacement without converting
+configuration-controlled card URLs into model-controlled SSRF findings.
+
 ## P1 — consequential-action audit coverage
 
 Lexically scoped OpenTelemetry spans now create action-level control edges, without treating imports
@@ -138,8 +150,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 311 pinned positive/negative locations, with 224 separately
-scored IR relationship labels. Schema-v38 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 320 pinned positive/negative locations, with 233 separately
+scored IR relationship labels. Schema-v39 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

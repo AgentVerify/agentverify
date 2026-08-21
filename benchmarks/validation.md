@@ -75,12 +75,18 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
   same-file global-fetch helper with fail-closed address preflight and disabled redirects; missing
   imports, fixed inputs, automatic redirects, incomplete DNS/address checks, and mapped-IP bypasses
   withhold the edge.
+- `cases/typescript_a2a_card_endpoint`: two remote-card flows reach `ClientFactory`: ADK JS through
+  an import-proven resolver and Gemini through an Undici agent/proxy dispatcher. Fixed cards, fixed
+  resolver inputs, wrong imports, and unproven dispatchers withhold the corresponding edge.
+- `cases/python_a2a_card_endpoint`: cached and per-invocation client creation are both dominated by
+  all-interface HTTPS/loopback and same-origin validation. Primary-interface-only, reversed-origin,
+  and permissive-scheme mutations withhold the policy edge.
 
 ## Full-corpus engine benchmark
 
 The 2026-08-22 default scan covered 70 source-bearing repositories plus one docs-only upstream
-snapshot. It parsed 10,749 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,473 relationships, and completed in 131.48 seconds on the development machine. Three parse
+snapshot. It parsed 10,750 selected Python/TypeScript/JavaScript files plus 155 configuration files,
+resolved 1,479 relationships, and completed in 135.45 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -88,13 +94,13 @@ so the benchmark records zero suppressed findings.
 The locked collector prioritizes manifests, production SSRF/URL-safety sources, and then general
 security/agent/tool/MCP sources within the 220-file cap. It adds at most 20 local source files:
 versioned audited evidence hints plus Python imports reached from MCP forwarding or source-proven
-URL-security call sites, all charged against the same cap. This refresh materialized 154 dependency files across 14
+URL-security call sites, all charged against the same cap. This refresh materialized 155 dependency files across 15
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v38 carries both the 154-file total and the
-14-repository coverage.
+dependency count per repository; engine schema v39 carries both the 155-file total and the
+15-repository coverage.
 
-Engine benchmark schema v38 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v39 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It also publishes Python and TypeScript initial-origin control coverage
 plus source-proven Python and TypeScript secure transports, with redirect, DNS, proxy, configured
@@ -103,16 +109,22 @@ excludes arbitrary agent/tool display names from the summary. The resulting
 framework/provider/protocol/capability coverage and unsupported syntax are published in
 `docs/frontend-coverage.md`; presence counts are discovery observations, not recall measurements.
 
-The benchmark now also measures identity coverage: 8,740 agent/tool component observations carry
-module-qualified IDs. Of 2,946 relationship endpoints, 1,932 carry symbol IDs and 1,930 resolve to an
-observed component (1,675 Python and 255 TypeScript). Schema v38 records 325 same-scope and 14
+Schema v39 adds A2A endpoint provenance as a separate authority class: four exact client-construction
+paths comprise two unconstrained remote-card-selected TypeScript origins and two same-origin-
+constrained ADK Python paths. The guarded paths validate every advertised interface; the Gemini path
+also records its Undici agent/proxy transport. These metrics do not count configured card URLs as
+model-controlled AV-NET001 origins.
+
+The benchmark now also measures identity coverage: 8,743 agent/tool component observations carry
+module-qualified IDs. Of 2,958 relationship endpoints, 1,936 carry symbol IDs and 1,934 resolve to an
+observed component (1,677 Python and 257 TypeScript). Schema v39 records 325 same-scope and 14
 module-scope targets resolved from a single direct definition that appears before the Agent
 constructor. It also records 23 repeated-binding targets still withheld because the scope contains
 multiple definitions. The two unmatched IDs are explicit Python re-export targets; capability,
 control, and taxonomy endpoints intentionally remain evidence observations.
 
-Schema-v38 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
-resolves 1,930 endpoints by symbol ID, 467 by exact evidence location, and 18 by a unique display
+Schema-v39 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
+resolves 1,934 endpoints by symbol ID, 475 by exact evidence location, and 18 by a unique display
 name; 32 remain ambiguous and 499 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
@@ -634,13 +646,13 @@ and a literal `privileged=True` keyword.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 311 exact labels across all nine enabled rules: 172 positives and 139
+`benchmarks/truthset.json` contains 320 exact labels across all ten enabled rules: 176 positives and 144
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
-Compose/Kubernetes/Docker SDK settings. All 311 currently pass; each rule's seed precision and recall
+Compose/Kubernetes/Docker SDK settings. All 320 currently pass; each rule's seed precision and recall
 are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified source
 text at the exact pinned line, preventing a missing or drifting location from passing silently.
 
@@ -702,7 +714,9 @@ request negative. Five configurable pinned-network labels cover two local and tw
 an ordinary request negative. Three TypeScript configurable-composition labels cover local and n8n
 edges plus raw Axios. Three Flowise request-object labels and three Flowise `secureFetch` labels each
 cover local and pinned governed paths plus an unrelated same-named helper. Three Google ADK labels
-cover local and pinned preflight-only paths plus an ordinary same-named helper. All 224 IR
+cover local and pinned preflight-only paths plus an ordinary same-named helper. Nine A2A endpoint
+labels cover two local and two pinned unconstrained TypeScript paths, four guarded ADK Python paths,
+and a trusted local-card negative. All 233 IR
 labels pass:
 three approval positives/four negatives,
 two audit positives/two negatives, two import positives/one negative, three TypeScript graph
@@ -720,7 +734,8 @@ imported-class-network positives/five negatives, five urllib-network positives/t
 Python network-origin-control positives/seven negatives, two TypeScript network-origin-policy
 positives/five negatives, four Python secure-network-helper positives/two negatives, and two
 imported-registry positives/three negatives, plus four proxy-conditional secure-network positives/one
-negative, plus four configurable pinned-network positives/one negative, plus two TypeScript
+negative, plus four configurable pinned-network positives/one negative, plus eight A2A endpoint
+provenance positives/one negative, plus two TypeScript
 configurable-composition positives/one negative, plus two Flowise request-object positives/one
 negative, two Flowise `secureFetch` positives/one negative, and two Google ADK fetch positives/one
 negative.

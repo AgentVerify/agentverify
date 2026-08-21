@@ -3047,6 +3047,94 @@
         "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
         "attributes":{"helper_line":286,"redirect_scope":"disabled","dns_scope":"preflight-only-rebinding-residual","proxy_scope":"unresolved","transport_scope":"global-fetch-unpinned","enforcement_default":"enabled","escape_hatch":"none","enforcement_mode":"always-on","ipv4_mapped_ipv6":"normalized"}
       }
+    },
+    {
+      "id": "typescript-adk-a2a-card-endpoint-local",
+      "target": {"kind":"local","path":"cases/typescript_a2a_card_endpoint"},
+      "check_id": "IR-A2A-CARD-ENDPOINT-PROVENANCE",
+      "path": "a2a_remote_agent.ts", "line": 26, "expected": true,
+      "relationship": {
+        "source_kind":"protocol","source_name":"A2A","relation":"uses","target_kind":"capability","target_name":"a2a-rpc",
+        "attributes":{"analysis":"typescript-adk-a2a-card-endpoint-composition","remote_card_endpoint_scope":"unconstrained","rpc_origin_scope":"remote-card-controlled","transport_scope":"sdk-client-factory","endpoint_policy":"absent-on-proven-path"}
+      }
+    },
+    {
+      "id": "typescript-gemini-a2a-card-endpoint-local",
+      "target": {"kind":"local","path":"cases/typescript_a2a_card_endpoint"},
+      "check_id": "IR-A2A-CARD-ENDPOINT-PROVENANCE",
+      "path": "gemini_manager.ts", "line": 60, "expected": true,
+      "relationship": {
+        "source_kind":"protocol","source_name":"A2A","relation":"uses","target_kind":"capability","target_name":"a2a-rpc",
+        "attributes":{"analysis":"typescript-gemini-a2a-card-endpoint-composition","remote_card_endpoint_scope":"unconstrained","rpc_origin_scope":"remote-card-controlled","dns_scope":"dispatcher-default-unpinned","proxy_scope":"configuration-dependent","transport_scope":"undici-agent-or-proxy","endpoint_policy":"absent-on-proven-path"}
+      }
+    },
+    {
+      "id": "typescript-local-card-endpoint-negative",
+      "target": {"kind":"local","path":"cases/typescript_a2a_card_endpoint"},
+      "check_id": "IR-A2A-CARD-ENDPOINT-PROVENANCE",
+      "path": "raw.ts", "line": 5, "expected": false,
+      "source_contains": "createFromAgentCard(card)",
+      "relationship": {"source_kind":"protocol","source_name":"A2A","relation":"uses","target_kind":"capability","target_name":"a2a-rpc"}
+    },
+    {
+      "id": "python-adk-a2a-card-policy-local-per-invocation",
+      "target": {"kind":"local","path":"cases/python_a2a_card_endpoint"},
+      "check_id": "IR-A2A-CARD-ENDPOINT-PROVENANCE",
+      "path": "remote_a2a_agent.py", "line": 41, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"a2a-rpc","relation":"governed-by","target_kind":"control","target_name":"a2a-card-rpc-origin-policy",
+        "attributes":{"analysis":"python-google-adk-a2a-card-endpoint-policy","rpc_origin_scope":"same-origin-with-card-source","rpc_scheme_scope":"https-or-loopback-http","advertised_interface_scope":"all-rpc-urls","enforcement_mode":"always-on-for-network-cards","control_line":21}
+      }
+    },
+    {
+      "id": "python-adk-a2a-card-policy-local-shared",
+      "target": {"kind":"local","path":"cases/python_a2a_card_endpoint"},
+      "check_id": "IR-A2A-CARD-ENDPOINT-PROVENANCE",
+      "path": "remote_a2a_agent.py", "line": 48, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"a2a-rpc","relation":"governed-by","target_kind":"control","target_name":"a2a-card-rpc-origin-policy",
+        "attributes":{"analysis":"python-google-adk-a2a-card-endpoint-policy","rpc_origin_scope":"same-origin-with-card-source","rpc_scheme_scope":"https-or-loopback-http","advertised_interface_scope":"all-rpc-urls","enforcement_mode":"always-on-for-network-cards","control_line":21}
+      }
+    },
+    {
+      "id": "typescript-adk-a2a-card-endpoint-real",
+      "target": {"kind":"repository","repository":"google/adk-js","commit":"5ee247e677393bfd8751fdd871f2220448807649"},
+      "check_id": "IR-A2A-CARD-ENDPOINT-PROVENANCE",
+      "path": "core/src/a2a/a2a_remote_agent.ts", "line": 143, "expected": true,
+      "relationship": {
+        "source_kind":"protocol","source_name":"A2A","relation":"uses","target_kind":"capability","target_name":"a2a-rpc",
+        "attributes":{"analysis":"typescript-adk-a2a-card-endpoint-composition","remote_card_endpoint_scope":"unconstrained","rpc_origin_scope":"remote-card-controlled","transport_scope":"sdk-client-factory","endpoint_policy":"absent-on-proven-path","resolver_line":29}
+      }
+    },
+    {
+      "id": "typescript-gemini-a2a-card-endpoint-real",
+      "target": {"kind":"repository","repository":"google-gemini/gemini-cli","commit":"30573d2e4d85bdc2c0ae8218c377cd410336da77"},
+      "check_id": "IR-A2A-CARD-ENDPOINT-PROVENANCE",
+      "path": "packages/core/src/agents/a2a-client-manager.ts", "line": 168, "expected": true,
+      "relationship": {
+        "source_kind":"protocol","source_name":"A2A","relation":"uses","target_kind":"capability","target_name":"a2a-rpc",
+        "attributes":{"analysis":"typescript-gemini-a2a-card-endpoint-composition","remote_card_endpoint_scope":"unconstrained","rpc_origin_scope":"remote-card-controlled","dns_scope":"dispatcher-default-unpinned","proxy_scope":"configuration-dependent","transport_scope":"undici-agent-or-proxy","endpoint_policy":"absent-on-proven-path"}
+      }
+    },
+    {
+      "id": "python-adk-a2a-card-policy-real-per-invocation",
+      "target": {"kind":"repository","repository":"google/adk-python","commit":"775c1bd36e205eec65e207ad29fdc4cf2184e47e"},
+      "check_id": "IR-A2A-CARD-ENDPOINT-PROVENANCE",
+      "path": "src/google/adk/agents/remote_a2a_agent.py", "line": 985, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"a2a-rpc","relation":"governed-by","target_kind":"control","target_name":"a2a-card-rpc-origin-policy",
+        "attributes":{"analysis":"python-google-adk-a2a-card-endpoint-policy","rpc_origin_scope":"same-origin-with-card-source","rpc_scheme_scope":"https-or-loopback-http","advertised_interface_scope":"all-rpc-urls","enforcement_mode":"always-on-for-network-cards","control_line":907}
+      }
+    },
+    {
+      "id": "python-adk-a2a-card-policy-real-shared",
+      "target": {"kind":"repository","repository":"google/adk-python","commit":"775c1bd36e205eec65e207ad29fdc4cf2184e47e"},
+      "check_id": "IR-A2A-CARD-ENDPOINT-PROVENANCE",
+      "path": "src/google/adk/agents/remote_a2a_agent.py", "line": 1007, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"a2a-rpc","relation":"governed-by","target_kind":"control","target_name":"a2a-card-rpc-origin-policy",
+        "attributes":{"analysis":"python-google-adk-a2a-card-endpoint-policy","rpc_origin_scope":"same-origin-with-card-source","rpc_scheme_scope":"https-or-loopback-http","advertised_interface_scope":"all-rpc-urls","enforcement_mode":"always-on-for-network-cards","control_line":907}
+      }
     }
   ]
 }

@@ -57,6 +57,14 @@ dynamic query is materially different from allowing the tool parameter to choose
 host. Destination analysis must preserve that distinction and eventually combine hostname policy,
 DNS resolution, redirects, proxies, and runtime egress controls.
 
+## A2A card → negotiated RPC endpoint
+
+Remote-agent configuration often names an AgentCard location, not the final RPC origin. The card can
+advertise one or more transport endpoints, and an SDK client factory negotiates among them. A secure
+composition therefore binds every network-supplied endpoint to the card source origin and an allowed
+scheme before client construction. A deployment-controlled card URL is not model-controlled SSRF,
+but an unconstrained remotely supplied card is still a distinct downstream-origin authority.
+
 ## Approval gates and bypasses
 
 Approval may apply per tool, per argument pattern, per session, or only to destructive operations.

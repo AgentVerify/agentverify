@@ -1,9 +1,17 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T16:27:26.417544+00:00",
-  "labels": 311,
-  "passed": 311,
+  "generated_at": "2026-08-21T16:59:25.943570+00:00",
+  "labels": 320,
+  "passed": 320,
   "metrics": {
+    "AV-A2A001": {
+      "tp": 4,
+      "fp": 0,
+      "tn": 5,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
     "AV-APPROVAL001": {
       "tp": 14,
       "fp": 0,
@@ -2873,6 +2881,87 @@
       "rule_id": "AV-NET001",
       "expected": true,
       "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "a2a-adk-js-remote-card-local-review",
+      "rule_id": "AV-A2A001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "a2a-gemini-remote-card-local-review",
+      "rule_id": "AV-A2A001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "a2a-local-trusted-card-local-negative",
+      "rule_id": "AV-A2A001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "a2a-adk-python-per-invocation-local-negative",
+      "rule_id": "AV-A2A001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "a2a-adk-python-shared-local-negative",
+      "rule_id": "AV-A2A001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "a2a-adk-js-remote-card-real-review",
+      "rule_id": "AV-A2A001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "a2a-gemini-remote-card-real-review",
+      "rule_id": "AV-A2A001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "a2a-adk-python-per-invocation-real-negative",
+      "rule_id": "AV-A2A001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "a2a-adk-python-shared-real-negative",
+      "rule_id": "AV-A2A001",
+      "expected": false,
+      "observed": false,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

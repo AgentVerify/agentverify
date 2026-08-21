@@ -46,6 +46,27 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
         and edge.evidence.line == component.evidence.line
     ]
     if not tool_edges:
+        protocol_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "protocol"
+            and edge.relation == "uses"
+            and edge.target_kind == "capability"
+            and edge.target_name == component.name
+            and edge.evidence.path == component.evidence.path
+            and edge.evidence.line == component.evidence.line
+        ]
+        if protocol_edges:
+            protocol = min(
+                protocol_edges,
+                key=lambda edge: (edge.source_id or "", edge.source_name),
+            ).source_name
+            return (f"protocol:{protocol}", f"capability:{component.name}"), {
+                "protocol": protocol,
+                "governing_controls": capability_controls,
+                "governing_control_effects": capability_control_effects,
+                "approval_coverage": "unresolved",
+            }
         return (f"capability:{component.name}",), {
             "governing_controls": capability_controls,
             "governing_control_effects": capability_control_effects,

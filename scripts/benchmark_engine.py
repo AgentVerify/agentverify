@@ -229,6 +229,23 @@ def main() -> int:
             and edge.target_name == "network-origin-policy"
             and edge.evidence.path.endswith((".ts", ".tsx", ".js", ".jsx"))
         ]
+        a2a_rpc_capabilities = [
+            item
+            for item in ir.components
+            if item.kind == "capability"
+            and item.name == "a2a-rpc"
+            and item.attributes.get("scope") == "production"
+        ]
+        a2a_card_origin_controls = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "capability"
+            and edge.source_name == "a2a-rpc"
+            and edge.relation == "governed-by"
+            and edge.target_kind == "control"
+            and edge.target_name == "a2a-card-rpc-origin-policy"
+            and edge.attributes.get("scope") == "production"
+        ]
         typescript_network_helper_capabilities = [
             item
             for item in ir.components
@@ -659,6 +676,35 @@ def main() -> int:
                     for edge in typescript_secure_network_controls
                 ),
             },
+            "a2a_endpoint_provenance": {
+                "total": len(a2a_rpc_capabilities),
+                "remote_card_unconstrained": sum(
+                    item.attributes.get("remote_card_endpoint_scope") == "unconstrained"
+                    for item in a2a_rpc_capabilities
+                ),
+                "same_origin_constrained": sum(
+                    item.attributes.get("remote_card_endpoint_scope")
+                    == "same-origin-constrained"
+                    for item in a2a_rpc_capabilities
+                ),
+                "typescript": sum(
+                    item.attributes.get("frontend") == "typescript"
+                    for item in a2a_rpc_capabilities
+                ),
+                "python": sum(
+                    item.attributes.get("frontend") == "python"
+                    for item in a2a_rpc_capabilities
+                ),
+                "undici_agent_or_proxy": sum(
+                    item.attributes.get("transport_scope") == "undici-agent-or-proxy"
+                    for item in a2a_rpc_capabilities
+                ),
+                "all_interfaces_validated": sum(
+                    edge.attributes.get("advertised_interface_scope") == "all-rpc-urls"
+                    for edge in a2a_card_origin_controls
+                ),
+                "origin_control_edges": len(a2a_card_origin_controls),
+            },
             "path_boundary_controls": {
                 "python": len(python_path_boundary_edges),
                 "typescript": len(typescript_path_boundary_edges),
@@ -761,7 +807,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 38,
+        "schema_version": 39,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -986,6 +1032,19 @@ def main() -> int:
                     "ipv4_mapped_ipv6_normalized",
                     "domain_hitl_independent",
                     "no_escape_hatch",
+                )
+            },
+            "a2a_endpoint_provenance": {
+                name: sum(result["a2a_endpoint_provenance"][name] for result in successful)
+                for name in (
+                    "total",
+                    "remote_card_unconstrained",
+                    "same_origin_constrained",
+                    "typescript",
+                    "python",
+                    "undici_agent_or_proxy",
+                    "all_interfaces_validated",
+                    "origin_control_edges",
                 )
             },
             "path_boundary_controls": {

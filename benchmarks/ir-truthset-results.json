@@ -1,9 +1,17 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T16:28:19.416413+00:00",
-  "labels": 224,
-  "passed": 224,
+  "generated_at": "2026-08-21T17:00:28.735265+00:00",
+  "labels": 233,
+  "passed": 233,
   "metrics": {
+    "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
+      "tp": 8,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
     "IR-APPROVAL-CONTROL": {
       "tp": 3,
       "fp": 0,
@@ -2280,6 +2288,87 @@
     {
       "id": "typescript-google-adk-load-web-page-real",
       "check_id": "IR-TS-GOOGLE-ADK-LOAD-WEB-PAGE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-adk-a2a-card-endpoint-local",
+      "check_id": "IR-A2A-CARD-ENDPOINT-PROVENANCE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-gemini-a2a-card-endpoint-local",
+      "check_id": "IR-A2A-CARD-ENDPOINT-PROVENANCE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-local-card-endpoint-negative",
+      "check_id": "IR-A2A-CARD-ENDPOINT-PROVENANCE",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-adk-a2a-card-policy-local-per-invocation",
+      "check_id": "IR-A2A-CARD-ENDPOINT-PROVENANCE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-adk-a2a-card-policy-local-shared",
+      "check_id": "IR-A2A-CARD-ENDPOINT-PROVENANCE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-adk-a2a-card-endpoint-real",
+      "check_id": "IR-A2A-CARD-ENDPOINT-PROVENANCE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-gemini-a2a-card-endpoint-real",
+      "check_id": "IR-A2A-CARD-ENDPOINT-PROVENANCE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-adk-a2a-card-policy-real-per-invocation",
+      "check_id": "IR-A2A-CARD-ENDPOINT-PROVENANCE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-adk-a2a-card-policy-real-shared",
+      "check_id": "IR-A2A-CARD-ENDPOINT-PROVENANCE",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

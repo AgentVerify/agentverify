@@ -39,6 +39,11 @@ never imported or executed.
 - `typescript_google_adk_secure_fetch`: Google ADK's `FunctionTool` validates a model URL and every
   preflight DNS answer before unpinned global `fetch`; redirects are disabled and the DNS-rebinding
   residual remains explicit.
+- `typescript_a2a_card_endpoint`: ADK JS and Gemini compositions preserve remotely supplied
+  AgentCard authority at SDK client construction; fixed/local cards, wrong imports, and unproven
+  transports stay negative.
+- `python_a2a_card_endpoint`: both ADK client-construction paths are governed by all-interface
+  HTTPS/loopback and same-origin validation; incomplete predicates withhold the control.
 - `sandbox_boundary`: Compose and Kubernetes host/privilege boundaries plus explicit safe negatives.
 - `constant_eval`: constant Python evaluation negative case.
 - `python_browser_evaluate`: exact Playwright `Page` annotations and immutable aliases prove dynamic
