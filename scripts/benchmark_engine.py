@@ -39,6 +39,7 @@ def main() -> int:
             "repository": repository,
             "status": "ok",
             "files_scanned": ir.files_scanned,
+            "config_files_scanned": ir.config_files_scanned,
             "components": dict(sorted(Counter(item.kind for item in ir.components).items())),
             "relationships": len(ir.relationships),
             "findings": dict(sorted(Counter(item.rule_id for item in ir.findings).items())),
@@ -61,6 +62,7 @@ def main() -> int:
                 result["repository"] for result in successful if result["files_scanned"] == 0
             ],
             "files_scanned": sum(result["files_scanned"] for result in successful),
+            "config_files_scanned": sum(result["config_files_scanned"] for result in successful),
             "relationships": sum(result["relationships"] for result in successful),
             "parse_warnings": sum(result["parse_warnings"] for result in successful),
             "findings": dict(

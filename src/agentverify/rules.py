@@ -62,6 +62,25 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                     "Pass a fixed argv list with shell=False, or strictly validate and allowlist the command.",
                 )
             )
+        if component.kind == "sandbox-boundary":
+            messages = {
+                "docker-socket": "A container mounts the host Docker socket",
+                "privileged-container": "A container runs in privileged mode",
+                "host-network": "A container shares the host network namespace",
+                "root-host-mount": "A container mounts the host filesystem root",
+            }
+            ir.findings.append(
+                make_finding(
+                    ir,
+                    component,
+                    "AV-SANDBOX001",
+                    "high",
+                    "high",
+                    messages.get(component.name, "A container crosses a host isolation boundary"),
+                    "Remove the host boundary, or replace it with a narrowly scoped least-privilege interface.",
+                    "review",
+                )
+            )
         if (
             component.kind == "capability"
             and component.name == "code-execution"
@@ -92,7 +111,11 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                     "review",
                 )
             )
-        if component.kind == "capability" and component.name == "mcp-tool-forwarding":
+        if (
+            component.kind == "capability"
+            and component.name == "mcp-tool-forwarding"
+            and not component.attributes.get("allowlist_guard")
+        ):
             ir.findings.append(
                 make_finding(
                     ir,

@@ -77,6 +77,8 @@ def render_text(ir: RepositoryIR) -> str:
         "AgentVerify Report",
         f"Root: {ir.root}",
         f"Files scanned: {ir.files_scanned}",
+        f"Configuration files scanned: {ir.config_files_scanned}",
+        f"Suppressed findings: {ir.suppressed_findings}",
         "",
         "AI Components:",
     ]
@@ -100,7 +102,10 @@ def render_text(ir: RepositoryIR) -> str:
         lines.append("  No findings")
     for finding in ir.findings:
         lines += [
-            f"  {finding.severity.upper()} {finding.rule_id} [{finding.confidence}]",
+            (
+                f"  {finding.severity.upper()} {finding.rule_id} "
+                f"[{finding.confidence}; {finding.result_kind}]"
+            ),
             f"    {finding.message}",
             f"    {finding.evidence.path}:{finding.evidence.line}",
         ]

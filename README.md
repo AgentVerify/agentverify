@@ -17,13 +17,15 @@ agentverify scan ./project
 agentverify scan ./project --format json
 agentverify scan ./project --format sarif
 agentverify scan ./project --fail-on high
+agentverify scan ./project --fail-on high --fail-on-kind any
 agentverify scan ./project --include-tests
+agentverify scan ./project --baseline previous-agentverify.json
 ```
 
 Example finding:
 
 ```text
-HIGH AV-EXEC001 [high]
+HIGH AV-EXEC001 [high; finding]
   A dynamic command is executed through a system shell
   agent.py:13
   Path: agent:operator -> tool:run_task -> capability:shell-execution
@@ -39,6 +41,7 @@ HIGH AV-EXEC001 [high]
 - [`docs/roadmap.md`](docs/roadmap.md) — impact × frequency × feasibility priorities
 - [`docs/detection-rules.md`](docs/detection-rules.md) — rule contracts and validation gates
 - [`docs/architecture.md`](docs/architecture.md) — Agent IR, graph analysis, and uncertainty model
+- [`docs/backlog.md`](docs/backlog.md) — prioritized issue-ready future work
 - [`benchmarks/engine-results.json`](benchmarks/engine-results.json) — full-corpus engine metrics
 
 SARIF output includes stable fingerprints, source locations, severity, remediation, Agent IR paths,

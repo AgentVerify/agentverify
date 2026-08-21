@@ -1,0 +1,7 @@
+services:
+  # Do not mount /var/run/docker.sock here.
+  agent:
+    read_only: true
+    network_mode: none
+    volumes:
+      - ./workspace:/workspace:ro

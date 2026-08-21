@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
+from . import __version__
 from .report import render_json, render_sarif, render_text
 from .scanner import scan_repository
 
@@ -14,15 +16,48 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="agentverify", description="Analyze AI agent applications"
     )
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     subparsers = parser.add_subparsers(dest="command", required=True)
     scan = subparsers.add_parser("scan", help="scan a repository")
     scan.add_argument("path", type=Path)
     scan.add_argument("--format", choices=("text", "json", "sarif"), default="text")
     scan.add_argument("--fail-on", choices=("none", "medium", "high"), default="none")
     scan.add_argument(
+        "--fail-on-kind",
+        choices=("finding", "review", "any"),
+        default="finding",
+        help="result kind considered by --fail-on (default: finding)",
+    )
+    scan.add_argument(
         "--include-tests", action="store_true", help="include findings from test and fixture paths"
     )
+    scan.add_argument(
+        "--baseline",
+        type=Path,
+        help="suppress fingerprints present in a previous AgentVerify JSON or SARIF report",
+    )
     return parser
+
+
+def baseline_fingerprints(path: Path) -> set[str]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if isinstance(payload, list):
+        return {str(item) for item in payload}
+    if not isinstance(payload, dict):
+        raise TypeError("baseline must be a JSON object or fingerprint list")
+    if isinstance(payload.get("findings"), list):
+        return {
+            str(item["fingerprint"])
+            for item in payload["findings"]
+            if isinstance(item, dict) and item.get("fingerprint")
+        }
+    fingerprints = set()
+    for run in payload.get("runs", []):
+        for result in run.get("results", []):
+            values = result.get("partialFingerprints", {})
+            if values.get("agentverify/v1"):
+                fingerprints.add(str(values["agentverify/v1"]))
+    return fingerprints
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -31,6 +66,15 @@ def main(argv: list[str] | None = None) -> int:
         print(f"agentverify: not a directory: {args.path}", file=sys.stderr)
         return 2
     ir = scan_repository(args.path, include_tests=args.include_tests)
+    if args.baseline:
+        try:
+            known = baseline_fingerprints(args.baseline)
+        except (OSError, json.JSONDecodeError, TypeError, ValueError) as error:
+            print(f"agentverify: invalid baseline: {error}", file=sys.stderr)
+            return 2
+        original_count = len(ir.findings)
+        ir.findings = [finding for finding in ir.findings if finding.fingerprint not in known]
+        ir.suppressed_findings = original_count - len(ir.findings)
     try:
         report = {
             "json": render_json,
@@ -40,10 +84,16 @@ def main(argv: list[str] | None = None) -> int:
         print(report, end="")
     except BrokenPipeError:
         return 0
-    severities = {finding.severity for finding in ir.findings}
-    if args.fail_on == "high" and "high" in severities:
-        return 1
-    if args.fail_on == "medium" and severities & {"medium", "high"}:
+    considered = [
+        finding
+        for finding in ir.findings
+        if args.fail_on_kind == "any" or finding.result_kind == args.fail_on_kind
+    ]
+    severity_rank = {"info": 0, "low": 1, "medium": 2, "high": 3}
+    if args.fail_on != "none" and any(
+        severity_rank.get(finding.severity, 0) >= severity_rank[args.fail_on]
+        for finding in considered
+    ):
         return 1
     return 0
 

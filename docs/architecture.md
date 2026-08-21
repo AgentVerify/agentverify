@@ -37,6 +37,8 @@ would overstate certainty. Future symbol tables will add module-qualified identi
 
 Control analysis reports `present` only for a resolved governing edge. It reports `unresolved` when
 coverage cannot be proven and never silently converts missing lexical evidence into “control absent.”
+The first policy resolver recognizes same-function MCP tool-name allowlists that reject unknown tools
+before forwarding; indirect policy remains unresolved.
 
 ## Safety boundary
 

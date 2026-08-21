@@ -5,6 +5,8 @@ from pathlib import Path
 import pytest
 
 from agentverify import cli
+from agentverify.report import render_json
+from agentverify.scanner import scan_repository
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -15,3 +17,28 @@ def test_cli_handles_closed_output_pipe(monkeypatch: pytest.MonkeyPatch) -> None
 
     monkeypatch.setattr("builtins.print", closed_pipe)
     assert cli.main(["scan", str(ROOT / "examples/safe_agent")]) == 0
+
+
+def test_review_does_not_fail_by_default_but_can_be_opted_in(capsys) -> None:
+    path = str(ROOT / "cases/python_auto_approval")
+
+    assert cli.main(["scan", path, "--fail-on", "high"]) == 0
+    assert cli.main(["scan", path, "--fail-on", "high", "--fail-on-kind", "any"]) == 1
+    capsys.readouterr()
+
+
+def test_json_baseline_suppresses_known_fingerprint(tmp_path: Path, capsys) -> None:
+    target = ROOT / "cases/python_dangerous"
+    baseline = tmp_path / "baseline.json"
+    baseline.write_text(render_json(scan_repository(target)), encoding="utf-8")
+
+    assert cli.main(["scan", str(target), "--baseline", str(baseline)]) == 0
+    output = capsys.readouterr().out
+    assert "Suppressed findings: 1" in output
+    assert "No findings" in output
+
+
+def test_version(capsys) -> None:
+    with pytest.raises(SystemExit, match="0"):
+        cli.main(["--version"])
+    assert capsys.readouterr().out.strip() == "agentverify 0.1.0"

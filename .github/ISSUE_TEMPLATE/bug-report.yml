@@ -1,0 +1,37 @@
+name: Bug report
+description: Report a false positive, false negative, crash, or unsafe output
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: dropdown
+    id: class
+    attributes:
+      label: Bug class
+      options: [False positive, False negative, Crash, Performance, Unsafe output, Other]
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: AgentVerify version or commit
+    validations:
+      required: true
+  - type: textarea
+    id: reproducer
+    attributes:
+      label: Minimal reproducer and command
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+

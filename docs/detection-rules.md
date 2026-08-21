@@ -15,8 +15,8 @@ coverage to justify them.
 | AV-APPROVAL001 | review | high | Enabled auto-approve or skip-confirmation path | 12 default-scope engine candidates |
 | AV-APPROVAL002 | finding | high | Reachable destructive action has no governing approval edge | Requires graph/config resolution |
 | AV-FS001 | review | high | Agent tool writes to a dynamic filesystem path | 16 default-scope matches across 6 repositories |
-| AV-MCP002 | review | high | Dynamic MCP tool name and arguments are forwarded to a server | 37 default-scope matches across 20 repositories |
-| AV-SANDBOX001 | warning | high | Code/shell tool runs locally or in a container with a dangerous host boundary | Requires mount/network/socket resolution |
+| AV-MCP002 | review | high | Dynamic MCP tool name and arguments are forwarded to a server | 36 default-scope matches across 20 repositories after policy resolution |
+| AV-SANDBOX001 | review | high | Container exposes Docker socket, privileged mode, host network, or root mount | 7 matches across 6 repositories |
 | AV-AUDIT001 | warning | medium | Consequential action has no attributable durable audit edge | Requires action-level data flow |
 
 ## Rule contract

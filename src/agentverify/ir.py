@@ -51,6 +51,8 @@ class Finding:
 class RepositoryIR:
     root: str
     files_scanned: int = 0
+    config_files_scanned: int = 0
+    suppressed_findings: int = 0
     components: list[Component] = field(default_factory=list)
     relationships: list[Relationship] = field(default_factory=list)
     findings: list[Finding] = field(default_factory=list)

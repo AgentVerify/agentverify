@@ -87,9 +87,17 @@ def test_dynamic_mcp_forwarding_but_not_fixed_tool_call() -> None:
         for item in ir.components
         if item.kind == "capability" and item.name == "mcp-tool-forwarding"
     ]
-    assert len(forwarding) == 1
+    assert len(forwarding) == 2
     assert [finding.rule_id for finding in ir.findings] == ["AV-MCP002"]
     assert ir.findings[0].result_kind == "review"
+    guarded = next(item for item in forwarding if item.attributes["allowlist_guard"])
+    assert guarded.evidence.line == 18
+    assert any(
+        item.source_kind == "capability"
+        and item.relation == "governed-by"
+        and item.target_name == "tool-allowlist"
+        for item in ir.relationships
+    )
 
 
 def test_browser_and_external_action_capabilities_are_linked() -> None:
@@ -130,6 +138,33 @@ def test_dynamic_writable_tool_path_but_not_fixed_path_is_reviewed() -> None:
     assert filesystem_findings[0].result_kind == "review"
 
 
+def test_container_host_boundaries_but_not_safe_compose_are_reviewed() -> None:
+    ir = scan_repository(ROOT / "cases/sandbox_boundary")
+
+    findings = [finding for finding in ir.findings if finding.rule_id == "AV-SANDBOX001"]
+    assert {finding.message for finding in findings} == {
+        "A container mounts the host Docker socket",
+        "A container runs in privileged mode",
+        "A container shares the host network namespace",
+        "A container mounts the host filesystem root",
+    }
+    assert ir.config_files_scanned == 2
+    assert all(finding.result_kind == "review" for finding in findings)
+
+
+def test_delegation_expands_transitive_capability_path() -> None:
+    ir = scan_repository(ROOT / "cases/delegation")
+
+    assert ir.findings[0].ir_path == (
+        "agent:coordinator",
+        "agent:worker",
+        "tool:run_command",
+        "capability:shell-execution",
+    )
+    assert ir.findings[0].analysis["direct_agents"] == ["worker"]
+    assert ir.findings[0].analysis["reachable_agents"] == ["coordinator", "worker"]
+
+
 def test_test_scope_findings_are_opt_in() -> None:
     default_ir = scan_repository(ROOT / "cases/test_scope")
     complete_ir = scan_repository(ROOT / "cases/test_scope", include_tests=True)
@@ -142,7 +177,10 @@ def test_test_scope_findings_are_opt_in() -> None:
 
 
 def test_regex_exec_is_not_code_or_shell_execution(tmp_path: Path) -> None:
-    (tmp_path / "parser.ts").write_text("const match = pattern.exec(line);\n", encoding="utf-8")
+    (tmp_path / "parser.ts").write_text(
+        "const match = pattern.exec(line);\nconst score = engine.eval(line);\n",
+        encoding="utf-8",
+    )
     (tmp_path / "parser.py").write_text("match = pattern.exec(line)\n", encoding="utf-8")
 
     ir = scan_repository(tmp_path)

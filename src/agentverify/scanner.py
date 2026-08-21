@@ -114,6 +114,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.path = path
         self.lines = lines
         self.current_tool: str | None = None
+        self.allowlisted_names: set[str] = set()
         self.has_mcp_import = any(
             module == "mcp" or module.startswith("mcp.") or "modelcontextprotocol" in module
             for module in imported_modules
@@ -168,6 +169,8 @@ class PythonVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        previous_allowlisted_names = self.allowlisted_names
+        self.allowlisted_names = self.function_allowlisted_names(node)
         decorators = {
             dotted_name(decorator.func)
             if isinstance(decorator, ast.Call)
@@ -205,8 +208,25 @@ class PythonVisitor(ast.NodeVisitor):
             self.current_tool = previous_tool
         else:
             self.generic_visit(node)
+        self.allowlisted_names = previous_allowlisted_names
 
     visit_AsyncFunctionDef = visit_FunctionDef
+
+    @staticmethod
+    def function_allowlisted_names(node: ast.FunctionDef | ast.AsyncFunctionDef) -> set[str]:
+        guarded = set()
+        for statement in node.body:
+            if not isinstance(statement, ast.If) or not isinstance(statement.test, ast.Compare):
+                continue
+            comparison = statement.test
+            if (
+                isinstance(comparison.left, ast.Name)
+                and len(comparison.ops) == 1
+                and isinstance(comparison.ops[0], ast.NotIn)
+                and any(isinstance(child, (ast.Raise, ast.Return)) for child in statement.body)
+            ):
+                guarded.add(comparison.left.id)
+        return guarded
 
     def visit_Call(self, node: ast.Call) -> None:
         call_name = dotted_name(node.func)
@@ -312,11 +332,15 @@ class PythonVisitor(ast.NodeVisitor):
                 elif keyword.arg in {"arguments", "params"}:
                     arguments = keyword.value
             if tool_name is not None and not isinstance(tool_name, ast.Constant):
+                allowlist_guard = (
+                    isinstance(tool_name, ast.Name) and tool_name.id in self.allowlisted_names
+                )
                 attributes = {
                     "api": call_name,
                     "dynamic_tool_name": True,
                     "dynamic_arguments": arguments is not None
                     and not isinstance(arguments, ast.Dict),
+                    "allowlist_guard": allowlist_guard,
                     "scope": source_scope(self.path),
                 }
                 self.ir.add_component(
@@ -330,6 +354,18 @@ class PythonVisitor(ast.NodeVisitor):
                             "uses",
                             "capability",
                             "mcp-tool-forwarding",
+                            self.ev(node),
+                        )
+                    )
+                if allowlist_guard:
+                    self.ir.add_component(Component("control", "tool-allowlist", self.ev(node)))
+                    self.ir.add_relationship(
+                        Relationship(
+                            "capability",
+                            "mcp-tool-forwarding",
+                            "governed-by",
+                            "control",
+                            "tool-allowlist",
                             self.ev(node),
                         )
                     )
@@ -470,6 +506,8 @@ TS_MCP_DYNAMIC_CALL = re.compile(
 TS_FILESYSTEM_WRITE = re.compile(
     r"\b(?:writeFile|unlink|rm|rmdir|mkdir)(?:Sync)?\s*\(\s*([^,\n)]+)"
 )
+TS_DYNAMIC_EVAL = re.compile(r"(?<![\w$.])eval\s*\(|\bnew\s+Function\s*\(")
+CONTAINER_CONFIG_SUFFIXES = {".yml", ".yaml"}
 
 
 def line_at(text: str, offset: int) -> int:
@@ -613,7 +651,7 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                     "dynamic_command": True,
                 },
             )
-        if re.search(r"\b(eval|new Function)\s*\(", line):
+        if TS_DYNAMIC_EVAL.search(line):
             add_typescript_capability(
                 ir,
                 relative,
@@ -724,6 +762,48 @@ def scan_mcp_config(ir: RepositoryIR, root: Path, path: Path) -> None:
         ir.add_component(Component("mcp-server", name, Evidence(relative, 1, name), attributes))
 
 
+def is_container_config(path: Path) -> bool:
+    return path.suffix.lower() in CONTAINER_CONFIG_SUFFIXES and (
+        "compose" in path.name.lower() or ".devcontainer" in path.parts
+    )
+
+
+def scan_container_config(ir: RepositoryIR, root: Path, path: Path) -> None:
+    relative = path.relative_to(root).as_posix()
+    try:
+        lines = path.read_text(encoding="utf-8-sig", errors="ignore").splitlines()
+    except OSError as error:
+        ir.errors.append(f"{relative}: {error}")
+        return
+    host_path_pending = False
+    for line_number, line in enumerate(lines, start=1):
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            host_path_pending = False
+            continue
+        boundary = None
+        if "/var/run/docker.sock" in stripped:
+            boundary = "docker-socket"
+        elif re.match(r"^privileged\s*:\s*true\s*(?:#.*)?$", stripped, re.IGNORECASE):
+            boundary = "privileged-container"
+        elif re.match(r"^network_mode\s*:\s*['\"]?host['\"]?\s*(?:#.*)?$", stripped):
+            boundary = "host-network"
+        elif re.match(r"^-\s*['\"]?/\s*:", stripped) or (
+            host_path_pending and re.match(r"^path\s*:\s*['\"]?/['\"]?\s*(?:#.*)?$", stripped)
+        ):
+            boundary = "root-host-mount"
+        host_path_pending = bool(re.match(r"^hostPath\s*:\s*$", stripped))
+        if boundary:
+            ir.add_component(
+                Component(
+                    "sandbox-boundary",
+                    boundary,
+                    Evidence(relative, line_number, stripped[:240]),
+                    {"scope": source_scope(relative)},
+                )
+            )
+
+
 def scan_repository(root: Path, *, include_tests: bool = False) -> RepositoryIR:
     root = root.resolve()
     ir = RepositoryIR(str(root))
@@ -750,6 +830,10 @@ def scan_repository(root: Path, *, include_tests: bool = False) -> RepositoryIR:
             continue
         if path.name in {"mcp.json", ".mcp.json", "claude_desktop_config.json"}:
             scan_mcp_config(ir, root, path)
+            ir.config_files_scanned += 1
+        if is_container_config(path):
+            scan_container_config(ir, root, path)
+            ir.config_files_scanned += 1
         if path.suffix.lower() not in SOURCE_SUFFIXES:
             continue
         try:

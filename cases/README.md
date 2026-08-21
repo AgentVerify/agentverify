@@ -12,5 +12,6 @@ never imported or executed.
 - `external_actions`: browser, network, and consequential external-action graph inventory.
 - `typescript_eval`: TypeScript dynamic evaluation with a resolved agent/tool path.
 - `filesystem_scope`: dynamic writable tool path plus fixed-path negative case.
+- `sandbox_boundary`: four unsafe container boundaries plus a safe compose negative case.
 - `test_scope`: findings are suppressed by default and enabled with `--include-tests`.
 - `../examples/safe_agent`: near-miss showing fixed argv is inventory-only.

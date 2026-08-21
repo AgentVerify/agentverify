@@ -1,0 +1,40 @@
+name: Detection rule proposal
+description: Propose an evidence-backed AgentVerify rule
+title: "[Rule]: "
+labels: ["rule", "research-needed"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Recurring problem
+      description: Describe the agent behavior or trust-boundary problem.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Real repository evidence
+      description: Include immutable commit links and explain reachability or impact.
+    validations:
+      required: true
+  - type: dropdown
+    id: result-kind
+    attributes:
+      label: Proposed result kind
+      options: [inventory, review, finding]
+    validations:
+      required: true
+  - type: textarea
+    id: detection
+    attributes:
+      label: Detection and negative cases
+      description: Explain the IR facts, relationships, controls, and near misses involved.
+    validations:
+      required: true
+  - type: textarea
+    id: remediation
+    attributes:
+      label: Remediation
+    validations:
+      required: true
+

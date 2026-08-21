@@ -25,8 +25,8 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 ## Full-corpus engine benchmark
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
-snapshot. It parsed 8,840 selected Python/TypeScript/JavaScript files, resolved 1,591 relationships,
-and completed in 19.17 seconds on the development machine. Two syntax warnings were isolated and
+snapshot. It parsed 8,840 selected Python/TypeScript/JavaScript files plus 40 configuration files,
+resolved 1,592 relationships, and completed in 19.34 seconds on the development machine. Two syntax warnings were isolated and
 reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them.
 
@@ -39,7 +39,7 @@ The remaining candidates are explicit policy assignments or an `--auto-approve` 
 ## AV-MCP002 — dynamic MCP forwarding
 
 The rule requires an MCP import plus a non-literal tool name. A fixed tool name is the negative
-regression. The full benchmark reports 37 default-scope forwarding sites across 20 repositories.
+regression. The full benchmark reports 36 default-scope forwarding sites across 20 repositories.
 Hand-reviewed pinned examples include:
 
 - [CrewAI client](https://github.com/crewAIInc/crewAI/blob/456c67d7c27923ed3c3dca202c6f56651d8e6063/lib/crewai/src/crewai/mcp/client.py#L599)
@@ -51,6 +51,10 @@ These are legitimate protocol boundaries in framework code and are therefore `re
 later policy-resolution pass will suppress sites governed by a resolved allowlist rather than
 claiming that the forwarding operation itself is unsafe.
 
+That policy pass now handles a same-function `not in` guard followed by `raise`/`return`. It resolves
+and suppresses CAMEL's [registered-tool guard](https://github.com/camel-ai/camel/blob/473388d36390b22e0df31e25b7b2d50db55310d2/camel/utils/mcp_client.py#L1054)
+before the dynamic call, while retaining the forwarding capability and a `tool-allowlist` control edge.
+
 ## AV-FS001 — dynamic writable tool path
 
 The rule requires a writable dynamic path inside a resolved tool; ordinary application writes and
@@ -59,3 +63,17 @@ repositories. A hand-reviewed case is ArcadeAI's
 [local-filesystem MCP `write_file`](https://github.com/ArcadeAI/arcade-ai/blob/597debaa1593b54172061ce36a414cc29aa8fc6a/examples/mcp_servers/local_filesystem/src/local_filesystem/tools.py#L154),
 which resolves a caller-provided path before writing. No workspace-root constraint is visible in the
 tool function, but the result remains `review` because enclosing server policy is unresolved.
+
+## AV-SANDBOX001 — container/host boundary
+
+The rule found seven default-scope boundary crossings across six repositories. It reports development
+and production configuration alike but retains their source path so policy can distinguish them.
+Hand-reviewed examples include:
+
+- [AutoGen devcontainer Docker socket](https://github.com/microsoft/autogen/blob/027ecf0a379bcc1d09956d46d12d44a3ad9cee14/.devcontainer/docker-compose.yml#L11)
+- [Langflow deployment Docker socket](https://github.com/langflow-ai/langflow/blob/09ef6b2b7119e35a6787fc249f916f8b47b28615/deploy/docker-compose.yml#L10)
+- [Bytebot privileged container](https://github.com/bytebot-ai/bytebot/blob/3d37894ce07ef8d8b40adc7fd309ad96c2a71313/docker/docker-compose.yml#L15)
+- [AutoGPT read-only Docker socket mount](https://github.com/Significant-Gravitas/AutoGPT/blob/601093ddfe23a3d58a9c8f4a208bd49b203ee612/autogpt_platform/db/docker/docker-compose.yml#L471)
+
+A read-only Docker socket mount is still reported because the Docker API can create privileged
+workloads even when the socket file itself is mounted read-only.
