@@ -177,6 +177,16 @@ def main() -> int:
             (item.evidence.path, item.evidence.line)
             for item in python_imported_class_network_helpers
         }
+        python_urllib_network = [
+            item
+            for item in ir.components
+            if item.kind == "capability"
+            and item.name == "network"
+            and item.attributes.get("canonical_api") == "urllib.request.urlopen"
+        ]
+        python_urllib_network_locations = {
+            (item.evidence.path, item.evidence.line) for item in python_urllib_network
+        }
         typescript_network_helper_capabilities = [
             item
             for item in ir.components
@@ -404,6 +414,20 @@ def main() -> int:
                     for edge in ir.relationships
                 ),
             },
+            "python_urllib_network": {
+                "capabilities": len(python_urllib_network),
+                "dynamic_origins": sum(
+                    bool(item.attributes.get("dynamic_origin"))
+                    for item in python_urllib_network
+                ),
+                "capability_edges": sum(
+                    edge.target_kind == "capability"
+                    and edge.target_name == "network"
+                    and (edge.evidence.path, edge.evidence.line)
+                    in python_urllib_network_locations
+                    for edge in ir.relationships
+                ),
+            },
             "path_boundary_controls": {
                 "python": len(python_path_boundary_edges),
                 "typescript": len(typescript_path_boundary_edges),
@@ -506,7 +530,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 27,
+        "schema_version": 28,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -642,6 +666,10 @@ def main() -> int:
                     for result in successful
                 )
                 for name in ("capabilities", "dynamic_origins", "callees", "capability_edges")
+            },
+            "python_urllib_network": {
+                name: sum(result["python_urllib_network"][name] for result in successful)
+                for name in ("capabilities", "dynamic_origins", "capability_edges")
             },
             "path_boundary_controls": {
                 name: sum(result["path_boundary_controls"][name] for result in successful)

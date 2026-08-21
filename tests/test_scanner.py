@@ -745,8 +745,29 @@ def test_parameter_controlled_http_origin_is_reported_but_fixed_host_is_not() ->
     assert network[7]["dynamic_origin"] is True
     assert network[12]["dynamic_origin"] is False
     assert network[17]["dynamic_origin"] is False
+    assert network[31] == {
+        "scope": "production",
+        "api": "urlrequest.urlopen",
+        "canonical_api": "urllib.request.urlopen",
+        "dynamic_origin": True,
+    }
+    assert network[37] == {
+        "scope": "production",
+        "api": "open_url",
+        "canonical_api": "urllib.request.urlopen",
+        "dynamic_origin": True,
+    }
+    assert network[43] == {
+        "scope": "production",
+        "api": "request_alias.urlopen",
+        "canonical_api": "urllib.request.urlopen",
+        "dynamic_origin": False,
+    }
+    assert sorted(network) == [7, 12, 17, 31, 37, 43]
     assert [(finding.rule_id, finding.evidence.line) for finding in ir.findings] == [
-        ("AV-NET001", 7)
+        ("AV-NET001", 7),
+        ("AV-NET001", 31),
+        ("AV-NET001", 37),
     ]
     finding = ir.findings[0]
     assert finding.result_kind == "review"
@@ -755,6 +776,18 @@ def test_parameter_controlled_http_origin_is_reported_but_fixed_host_is_not() ->
         "tool:fetch_url",
         "capability:network",
     )
+    assert {
+        (edge.source_name, edge.evidence.line)
+        for edge in ir.relationships
+        if edge.target_kind == "capability" and edge.target_name == "network"
+    } == {
+        ("fetch_url", 7),
+        ("search", 12),
+        ("status", 17),
+        ("urllib_direct", 31),
+        ("urllib_request", 37),
+        ("urllib_fixed_request", 43),
+    }
 
 
 def test_dynamic_http_origin_tracks_aliases_and_keyword_url(tmp_path: Path) -> None:

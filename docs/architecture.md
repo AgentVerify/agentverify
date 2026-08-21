@@ -75,7 +75,15 @@ recognized network call, a bounded summary records which formal parameters can c
 tool calls map positional and destructured-object arguments back to those parameters. `AV-NET001`
 consumes only this origin-specific attribute; it does not equate a dynamic path or query on a fixed
 host with a dynamic destination. URL parsing guards, redirects, DNS, proxies, imported/transitive
-helpers, arrow functions, and request-object data flow remain unresolved.
+helpers, arrow functions, and general client request-object data flow remain unresolved.
+
+The Python frontend also recognizes `urllib.request.urlopen` only through an exact module-level
+`urllib`/`urllib.request` import, `from urllib import request`, or named `urlopen` import. Aliases are
+canonicalized to the stdlib API, while module rebinding or any same-function binding with the same
+root withholds the proof. A direct import-proven `Request(url)` passed inline or through
+statement-ordered local assignment is unwrapped to its original URL before origin classification,
+so a fixed scheme and host are not lost behind the request object. Custom openers, locally imported
+bindings, assigned opener aliases, and Request factories remain unresolved.
 
 A repository prepass builds bounded Python network summaries for unique top-level free functions in
 selected files. A summary records direct recognized HTTP calls and the formal parameters that can

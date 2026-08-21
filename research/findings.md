@@ -19,7 +19,7 @@ The initial matcher found `shell=True` in eight repositories. Reviewable example
 
 The links are locked corpus snapshots; only an explicit collector `--refresh` pins newer commits.
 
-Filesystem mutation is broader than `open()` and `write_text()`. Schema v27 resolves 448 Python
+Filesystem mutation is broader than `open()` and `write_text()`. Schema v28 resolves 448 Python
 filesystem mutations in selected files: 179 creates, 190 deletes, 46 copies, and 33 moves. The move
 inventory includes 20 `Path.rename`/`Path.replace` calls proven through explicit constructors or
 immutable Path-derived bindings, including ChatDev's
@@ -31,7 +31,7 @@ Examples. Newly exposed cases include ArcadeAI's
 and its [conditional `copy`/`copy2` callable](https://github.com/ArcadeAI/arcade-ai/blob/597debaa1593b54172061ce36a414cc29aa8fc6a/examples/mcp_servers/local_filesystem/src/local_filesystem/tools.py#L329-L331),
 and CrewAI Examples'
 [`copytree` destination](https://github.com/crewAIInc/crewAI-examples/blob/da94a91e691e1cf5b3151416bb15b5b62729bea8/crews/landing_page_generator/src/landing_page_generator/tools/template_tools.py#L86-L90).
-That copy and three sibling sinks rely on `str(resolved).startswith(str(root))`; schema v27 preserves
+That copy and three sibling sinks rely on `str(resolved).startswith(str(root))`; schema v28 preserves
 the checks as weak, non-suppressing control edges because string prefixes do not enforce path-component
 boundaries. AV-FS002 takes precedence at those sinks and recommends `Path.is_relative_to`,
 `Path.relative_to`, or `os.path.commonpath`.
@@ -46,7 +46,7 @@ The IR records the destination—not the source—as the governed path for two-p
 are resolved only when unshadowed; string `.replace()` calls and caller-shadowed `shutil` names are
 regression negatives.
 
-Browser-page evaluation is a separate execution boundary. Schema v27 inventories 80
+Browser-page evaluation is a separate execution boundary. Schema v28 inventories 80
 import-context `.evaluate(...)` calls across the corpus but marks only one as directly controlled by
 a tool parameter: Skyvern's registered
 [`skyvern_evaluate`](https://github.com/Skyvern-AI/skyvern/blob/486c8975e9864a53037d4701b781f8619e698c40/skyvern/cli/mcp_tools/browser.py#L2458).
@@ -56,7 +56,7 @@ only normalized numeric intermediates. Literal scripts and ordinary `.evaluate` 
 browser-import context are also pinned negatives; dynamic syntax alone is not treated as tool flow.
 
 Decorator provenance materially changes reachability. Exact MetaGPT and Qwen-Agent `register_tool`
-imports recover 56 registry tools—five functions and 51 classes—and 24 capability edges from 34
+imports recover 56 registry tools—five functions and 51 classes—and 26 capability edges from 34
 resolved entrypoints. MetaGPT's literal class `include_functions` and Qwen's literal name plus direct
 `call` method keep helper methods out of the graph. The added reachability exposes four MetaGPT
 filesystem reviews and two Qwen network-origin reviews. Rebound aliases, unrelated decorators,
@@ -91,7 +91,7 @@ name matching from inventing this control.
 Five more calls bind a tool source through an escaping callback: three browser-use actions are
 registered and two ArcadeAI wrappers are returned. Equivalent retry closures in the MCP Python SDK
 and FastMCP do not qualify because the public caller still selects the name for each operation.
-Schema v27 therefore reports five instance and five closure fixed-binding edges, without suppressing
+Schema v28 therefore reports five instance and five closure fixed-binding edges, without suppressing
 any review.
 
 FastMCP adds an interprocedural routing fact: its middleware recursion reaches a same-class callee
@@ -106,7 +106,7 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the 284-label truth set.
+rule observations are pinned in the 291-label truth set.
 
 ## 3. Approval exists, but bypass behavior recurs
 
@@ -140,7 +140,7 @@ repository-wide “filesystem safe” flag. Its configured root scope remains un
 is retained rather than treating the presence of validation as sufficient policy.
 ChatDev contributes the Python exception form: its local-tool creation route resolves a candidate,
 calls [`target_path.relative_to(tools_dir)`](https://github.com/OpenBMB/ChatDev/blob/4fb2db0ea90375ce1059f44fe03ffbd191a7a169/server/routes/tools.py#L58),
-and terminates the `ValueError` handler before writing. Schema v27 records this as a distinct
+and terminates the `ValueError` handler before writing. Schema v28 records this as a distinct
 `Path.relative_to` control edge with unresolved root scope; handlers that continue are not controls.
 OpenAI Agents Python demonstrates the interprocedural variant: its `_resolve()` helper returns the
 same checked Path to create, update, and delete callers. Three sink edges retain the helper's exact
@@ -165,13 +165,13 @@ framework-qualified factories, not a growing bag of identifier regexes.
 ## 7. Governance exports need evidence-local identity
 
 Display-name-only AI BOM resolution produced 1,299 ambiguous relationship endpoints in the pinned
-corpus. The current schema resolves 400 endpoints by exact relationship evidence. Reused Python
+corpus. The current schema resolves 408 endpoints by exact relationship evidence. Reused Python
 and TypeScript bindings were a second identity failure: one file-level ID could describe many
 constructor occurrences. Occurrence-qualified IDs resolve all 688 source agent/tool ambiguities, and
 141 unsafe target IDs become unresolved instead of pointing at multiple assets. Intermediate
 benchmark schema v5 recorded all 289 target references whose duplicated raw binding ID was withheld.
-Schema v27 resolves only single direct definitions that appear earlier in the same Python lexical or
-module scope: 325 same-scope and 14 module-scope edges. The final export resolves 1,925 endpoints by
+Schema v28 resolves only single direct definitions that appear earlier in the same Python lexical or
+module scope: 325 same-scope and 14 module-scope edges. The final export resolves 1,927 endpoints by
 symbol ID and 17 by unique display name; 30 remain ambiguous, all tool targets, and 500 unresolved.
 A governance export that collapses those references
 by name would silently attach controls or risks to the wrong asset.
@@ -193,13 +193,19 @@ Four additional Qwen paths propagate that proof through registered classes: thre
 newly summarized `DocParser` on the second graph iteration. The class pass requires a unique
 single-entrypoint tool and an exact imported constructor; fixed arguments remain inventory, and
 mutation, `setattr`, shadowing, module-qualified calls, and rebound constructors are pinned negatives.
+Schema v28 also inventories 22 exact `urllib.request.urlopen` calls. Two are reachable from Qwen's
+registered weather tools. Both wrap a fixed `https://ali-weather.showapi.com` URL with dynamic query
+data in `Request` objects, so preserving the constructor's original URL produces exact inventory
+edges without adding reviews. Module or named aliases are import-proven; local shadowing and rebound
+openers are withheld.
 The first four accept arbitrary HTTP destinations; Goose checks the scheme but does not constrain the
 host. MCP Servers has an optional environment-configured hostname allowlist, but its empty default
 permits arbitrary HTTP/HTTPS origins; size and timeout limits constrain impact rather than
 destination. A
 [fixed Devpost origin with a dynamic search query](https://github.com/microsoft/ai-agents-for-beginners/blob/01777b05e8afeba6bf5a6dbe74cc2293372d3693/11-agentic-protocols/code_samples/github-mcp/app.py#L118)
 and the SDK's [fixed weather host with a dynamic query](https://github.com/modelcontextprotocol/typescript-sdk/blob/3924de99df834302d89f5997a1b64ca268282284/examples/guides/get-started/firstServer.examples.ts#L20-L40)
-are real negatives. Qwen's fixed AMap host is another: fixed-origin state survives an immutable
+are real negatives. Qwen's fixed AMap host and two urllib weather Request objects are additional
+negatives: fixed-origin state survives an immutable
 instance field and `.format(...)`, so a dynamic query does not become a dynamic destination. This
 small but high-impact set supports a narrow review rule, not a claim that
 every variable URL is SSRF.

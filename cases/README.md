@@ -13,7 +13,8 @@ never imported or executed.
 - `external_actions`: browser, network, and consequential external-action graph inventory.
 - `typescript_eval`: TypeScript dynamic evaluation with a resolved agent/tool path.
 - `filesystem_scope`: dynamic writable tool path plus fixed-path negative case.
-- `network_dynamic_origin`: parameter-controlled HTTP origin plus fixed-origin negatives.
+- `network_dynamic_origin`: parameter-controlled Requests and import-proven urllib origins, urllib
+  `Request` objects, fixed-origin inventory, and shadowed/rebound opener negatives.
 - `sandbox_boundary`: Compose and Kubernetes host/privilege boundaries plus explicit safe negatives.
 - `constant_eval`: constant Python evaluation negative case.
 - `approval_safe`: disabled auto-approval negative case.

@@ -95,7 +95,9 @@ controls a recognized HTTP origin; local rebinding, nested helpers, and module-o
 unresolved. Single-entrypoint registered classes now propagate that proven behavior through exact
 direct construction or immutable constructor-bound fields for up to four graph layers. Mutable
 fields, module-qualified constructors, ambiguous classes, and rebound/shadowed constructors remain
-unresolved. Next
+unresolved. Exact module-level `urllib.request.urlopen` imports and aliases now add network inventory;
+`Request(url)` is unwrapped so a fixed host plus a dynamic query stays inventory-only, while local
+shadowing and module rebinding invalidate the API proof. Next
 resolve URL parsing/normalization guards, hostname allowlists, DNS rebinding defenses, proxy policy,
 and egress controls before treating a review as a demonstrated SSRF path. Add imported, arrow-assigned,
 and transitive helper summaries, deeper alias propagation, and equivalent Axios request-object handling.
@@ -109,8 +111,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 284 pinned positive/negative locations, with 165 separately
-scored IR relationship labels. Schema-v27 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 291 pinned positive/negative locations, with 172 separately
+scored IR relationship labels. Schema-v28 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

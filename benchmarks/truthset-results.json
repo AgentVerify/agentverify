@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T12:42:22.641843+00:00",
-  "labels": 284,
-  "passed": 284,
+  "generated_at": "2026-08-21T12:57:15.531735+00:00",
+  "labels": 291,
+  "passed": 291,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 14,
@@ -61,9 +61,9 @@
       "recall": 1.0
     },
     "AV-NET001": {
-      "tp": 23,
+      "tp": 25,
       "fp": 0,
-      "tn": 24,
+      "tn": 29,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -2627,6 +2627,69 @@
     },
     {
       "id": "net-imported-class-mixed-field-local-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-urllib-direct-local",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-urllib-request-local",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-urllib-fixed-request-local-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-urllib-shadowed-local-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-urllib-rebound-local-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-qwen-urllib-area-fixed-real-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-qwen-urllib-hour-fixed-real-negative",
       "rule_id": "AV-NET001",
       "expected": false,
       "observed": false,

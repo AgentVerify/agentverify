@@ -177,6 +177,28 @@ def python_http_origin_is_dynamic(
     return re.match(r"^https?://[^/?#]+", prefix, re.IGNORECASE) is None
 
 
+def python_urllib_request_url(
+    node: ast.AST | None,
+    request_constructors: set[str],
+) -> ast.AST | None:
+    """Unwrap an import-proven urllib Request to its original URL expression."""
+    if not (
+        isinstance(node, ast.Call)
+        and dotted_name(node.func) in request_constructors
+    ):
+        return node
+    if node.args:
+        return node.args[0]
+    return next(
+        (
+            keyword.value
+            for keyword in node.keywords
+            if keyword.arg in {"url", "full_url"}
+        ),
+        None,
+    )
+
+
 def component_from_import(ir: RepositoryIR, module: str, evidence: Evidence) -> None:
     for kind, signatures in IMPORT_SIGNATURES.items():
         for name, prefixes in signatures.items():
@@ -1743,6 +1765,8 @@ class PythonVisitor(ast.NodeVisitor):
         module_rebound_names: set[str],
         path_constructors: set[str],
         filesystem_api_aliases: dict[str, str],
+        urllib_openers: set[str],
+        urllib_request_constructors: set[str],
     ) -> None:
         self.ir = ir
         self.root = root
@@ -1773,6 +1797,8 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_filesystem_callable_calls: list[dict[int, str]] = []
         self.function_path_bindings: list[dict[str, str]] = []
         self.function_path_constructors: list[set[str]] = []
+        self.urllib_openers = urllib_openers
+        self.urllib_request_constructors = urllib_request_constructors
         self.function_stack: list[str] = []
         self.function_depth = 0
         self.imported_symbol_paths: dict[str, str] = {}
@@ -1997,8 +2023,12 @@ class PythonVisitor(ast.NodeVisitor):
                 if isinstance(target, ast.Name):
                     self.network_helper_bindings.pop(target.id, None)
         if self.current_tool:
-            dynamic_origin = python_http_origin_is_dynamic(
+            origin_value = python_urllib_request_url(
                 node.value,
+                self.urllib_request_constructors,
+            )
+            dynamic_origin = python_http_origin_is_dynamic(
+                origin_value,
                 self.dynamic_http_origin_names,
                 self.static_http_prefixes,
             )
@@ -2006,7 +2036,7 @@ class PythonVisitor(ast.NodeVisitor):
                 python_expression_names(node.value) & self.dynamic_tool_input_names
             )
             static_http_prefix = python_static_url_prefix(
-                node.value, self.static_http_prefixes
+                origin_value, self.static_http_prefixes
             )
             for target in node.targets:
                 if not isinstance(target, ast.Name):
@@ -2179,6 +2209,18 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_fixed_binding_sources.append(self.fixed_function_parameter_bindings(node))
         self.function_escaping_children.append(self.escaping_nested_function_names(node))
         local_bindings = python_function_local_bindings(node)
+        previous_urllib_openers = self.urllib_openers
+        previous_urllib_request_constructors = self.urllib_request_constructors
+        self.urllib_openers = {
+            opener
+            for opener in self.urllib_openers
+            if opener.split(".", 1)[0] not in local_bindings
+        }
+        self.urllib_request_constructors = {
+            constructor
+            for constructor in self.urllib_request_constructors
+            if constructor.split(".", 1)[0] not in local_bindings
+        }
         function_path_constructors = {
             constructor
             for constructor in self.path_constructors
@@ -2367,6 +2409,8 @@ class PythonVisitor(ast.NodeVisitor):
         self.approval_environment_flags = previous_approval_environment_flags
         self.static_http_prefixes = previous_static_http_prefixes
         self.network_helper_bindings = previous_network_helper_bindings
+        self.urllib_openers = previous_urllib_openers
+        self.urllib_request_constructors = previous_urllib_request_constructors
 
     visit_AsyncFunctionDef = visit_FunctionDef
 
@@ -3820,6 +3864,36 @@ class PythonVisitor(ast.NodeVisitor):
             )
             if short_name.lower() in {"post", "put", "patch", "delete"}:
                 self.add_capability("external-action", node, {"api": call_name})
+        if call_name in self.urllib_openers:
+            raw_url_expression = (
+                node.args[0]
+                if node.args
+                else next(
+                    (
+                        keyword.value
+                        for keyword in node.keywords
+                        if keyword.arg == "url"
+                    ),
+                    None,
+                )
+            )
+            url_expression = python_urllib_request_url(
+                raw_url_expression,
+                self.urllib_request_constructors,
+            )
+            self.add_capability(
+                "network",
+                node,
+                {
+                    "api": call_name,
+                    "canonical_api": "urllib.request.urlopen",
+                    "dynamic_origin": python_http_origin_is_dynamic(
+                        url_expression,
+                        self.dynamic_http_origin_names,
+                        self.static_http_prefixes,
+                    ),
+                },
+            )
         if helper := self.imported_network_helper(node):
             summary, arguments = helper
             self.add_capability(
@@ -3968,6 +4042,44 @@ def scan_python(
         alias: canonical
         for alias, canonical in filesystem_api_aliases.items()
         if alias.split(".", 1)[0] not in module_rebound_names
+    }
+    urllib_openers: set[str] = set()
+    urllib_request_constructors: set[str] = set()
+    for statement in tree.body:
+        if isinstance(statement, ast.Import):
+            for alias in statement.names:
+                if alias.name == "urllib.request":
+                    binding = alias.asname or alias.name
+                    urllib_openers.add(f"{binding}.urlopen")
+                    urllib_request_constructors.add(f"{binding}.Request")
+                elif alias.name == "urllib":
+                    binding = alias.asname or alias.name
+                    urllib_openers.add(f"{binding}.request.urlopen")
+                    urllib_request_constructors.add(f"{binding}.request.Request")
+        elif isinstance(statement, ast.ImportFrom):
+            if statement.module == "urllib":
+                for alias in statement.names:
+                    if alias.name != "request":
+                        continue
+                    binding = alias.asname or alias.name
+                    urllib_openers.add(f"{binding}.urlopen")
+                    urllib_request_constructors.add(f"{binding}.Request")
+            elif statement.module == "urllib.request":
+                for alias in statement.names:
+                    binding = alias.asname or alias.name
+                    if alias.name == "urlopen":
+                        urllib_openers.add(binding)
+                    elif alias.name == "Request":
+                        urllib_request_constructors.add(binding)
+    urllib_openers = {
+        opener
+        for opener in urllib_openers
+        if opener.split(".", 1)[0] not in module_rebound_names
+    }
+    urllib_request_constructors = {
+        constructor
+        for constructor in urllib_request_constructors
+        if constructor.split(".", 1)[0] not in module_rebound_names
     }
     registry_decorator_origins = {
         "metagpt.tools.tool_registry": "MetaGPT",
@@ -4232,6 +4344,8 @@ def scan_python(
         module_rebound_names=module_rebound_names,
         path_constructors=path_constructors,
         filesystem_api_aliases=filesystem_api_aliases,
+        urllib_openers=urllib_openers,
+        urllib_request_constructors=urllib_request_constructors,
     ).visit(tree)
 
 

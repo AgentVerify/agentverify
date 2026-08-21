@@ -2558,6 +2558,57 @@
       "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
       "path": "pkg/class_tools.py", "line": 87, "expected": true,
       "relationship": {"source_kind":"tool","source_name":"mixed_field_loader","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-urllib-direct-local",
+      "target": {"kind":"local","path":"cases/network_dynamic_origin"},
+      "check_id": "IR-PY-URLLIB-NETWORK",
+      "path": "agent.py", "line": 31, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"urllib_direct","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-urllib-request-local",
+      "target": {"kind":"local","path":"cases/network_dynamic_origin"},
+      "check_id": "IR-PY-URLLIB-NETWORK",
+      "path": "agent.py", "line": 37, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"urllib_request","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-urllib-fixed-request-local",
+      "target": {"kind":"local","path":"cases/network_dynamic_origin"},
+      "check_id": "IR-PY-URLLIB-NETWORK",
+      "path": "agent.py", "line": 43, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"urllib_fixed_request","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-urllib-shadowed-local-negative",
+      "target": {"kind":"local","path":"cases/network_dynamic_origin"},
+      "check_id": "IR-PY-URLLIB-NETWORK",
+      "path": "agent.py", "line": 49, "expected": false,
+      "source_contains": "open_url(url)",
+      "relationship": {"source_kind":"tool","source_name":"urllib_shadowed","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-urllib-rebound-local-negative",
+      "target": {"kind":"local","path":"cases/network_dynamic_origin"},
+      "check_id": "IR-PY-URLLIB-NETWORK",
+      "path": "agent.py", "line": 54, "expected": false,
+      "source_contains": "changed_urlopen(url)",
+      "relationship": {"source_kind":"tool","source_name":"urllib_rebound","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-urllib-qwen-area-fixed-real",
+      "target": {"kind":"repository","repository":"QwenLM/Qwen-Agent","commit":"31a4d36d123688581a9e9744427272b33ce940e0"},
+      "check_id": "IR-PY-URLLIB-NETWORK",
+      "path": "examples/qwen2vl_assistant_tooluse.py", "line": 165, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"area_to_weather","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-urllib-qwen-hour-fixed-real",
+      "target": {"kind":"repository","repository":"QwenLM/Qwen-Agent","commit":"31a4d36d123688581a9e9744427272b33ce940e0"},
+      "check_id": "IR-PY-URLLIB-NETWORK",
+      "path": "examples/qwen2vl_assistant_tooluse.py", "line": 201, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"weather_hour24","relation":"uses","target_kind":"capability","target_name":"network"}
     }
   ]
 }

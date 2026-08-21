@@ -54,12 +54,15 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
   nested helpers, module calls, rebound imports/clients, and local reassignment remain unresolved.
   Single-entrypoint class cases cover direct construction, immutable fields, two-hop propagation,
   fixed inputs, mutation, `setattr`, shadowing, module-qualified calls, and rebound constructors.
+- `cases/network_dynamic_origin`: import-proven urllib module/named aliases cover direct URLs and
+  `Request(url)` objects; fixed hosts remain inventory while local shadowing and module rebinding
+  withhold the opener identity.
 
 ## Full-corpus engine benchmark
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,729 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,439 relationships, and completed in 103.88 seconds on the development machine. Three parse
+resolved 1,441 relationships, and completed in 104.39 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -68,9 +71,9 @@ The locked collector preserves the original 220-file root selection and adds at 
 imports reached from MCP forwarding files. This refresh materialized 135 dependency files across 11
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v2 records the dependency count per
-repository; engine schema v27 carries both the 135-file total and the 11-repository coverage.
+repository; engine schema v28 carries both the 135-file total and the 11-repository coverage.
 
-Engine benchmark schema v27 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v28 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It intentionally
 excludes arbitrary agent/tool display names from the summary. The resulting
@@ -78,15 +81,15 @@ framework/provider/protocol/capability coverage and unsupported syntax are publi
 `docs/frontend-coverage.md`; presence counts are discovery observations, not recall measurements.
 
 The benchmark now also measures identity coverage: 8,737 agent/tool component observations carry
-module-qualified IDs. Of 2,878 relationship endpoints, 1,927 carry symbol IDs and 1,925 resolve to an
-observed component (1,674 Python and 251 TypeScript). Schema v27 records 325 same-scope and 14
+module-qualified IDs. Of 2,882 relationship endpoints, 1,929 carry symbol IDs and 1,927 resolve to an
+observed component (1,676 Python and 251 TypeScript). Schema v28 records 325 same-scope and 14
 module-scope targets resolved from a single direct definition that appears before the Agent
 constructor. It also records 23 repeated-binding targets still withheld because the scope contains
 multiple definitions. The two unmatched IDs are explicit Python re-export targets; capability,
 control, and taxonomy endpoints intentionally remain evidence observations.
 
-Schema-v27 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
-resolves 1,925 endpoints by symbol ID, 406 by exact evidence location, and 17 by a unique display
+Schema-v28 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
+resolves 1,927 endpoints by symbol ID, 408 by exact evidence location, and 17 by a unique display
 name; 30 remain ambiguous and 500 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
@@ -127,7 +130,7 @@ registrars, wildcard imports, and unrelated `.tool` methods remain unresolved.
 
 Import-proven registry decorators recover another 56 Python tools: five functions and 51 classes,
 with 35 observations from MetaGPT and 21 from Qwen-Agent. Thirty-four have resolved callable
-entrypoints and yield 24 exact capability edges after imported-helper propagation. MetaGPT functions use their decorated body;
+entrypoints and yield 26 exact capability edges after imported-helper and urllib propagation. MetaGPT functions use their decorated body;
 MetaGPT classes expose only direct methods named by a literal `include_functions=[...]`; Qwen classes
 require a literal registered name and one direct `call` method. The class remains the tool identity,
 so method capabilities do not create duplicate tool components. Exact module provenance and
@@ -165,10 +168,10 @@ module-qualified calls, inheritance, and more than four iterations remain unreso
 The TypeScript frontend now reads only balanced top-level entries from literal Agent tool arrays. It
 resolves OpenAI `tool`, `toolNamespace`, built-in tool factories, inline/assigned `asTool` adapters,
 and Cline `createTool`. Import-aware discovery now also resolves generic/Mastra object-property
-tools plus MCP `registerTool` names and callback spans. Schema v27 records 27 Mastra factory tools,
+tools plus MCP `registerTool` names and callback spans. Schema v28 records 27 Mastra factory tools,
 264 MCP registrations, 70 object-property tools (the factory/property categories overlap), and ten
 exact registration-to-capability edges. Four of those edges come from bounded same-file network
-helper summaries: three Mastra static methods and one MCP Servers free function. Schema v27 also
+helper summaries: three Mastra static methods and one MCP Servers free function. Schema v28 also
 records one imported TypeScript path-boundary control edge. The full sample
 contains 95 structure-backed agent edges: 14 delegations and 81 tool edges, all with targets that
 resolve to observed components. The prior token heuristic could
@@ -303,7 +306,7 @@ three wrappers through its action registry, while ArcadeAI returns two LangChain
 carry `binding_scope: closure` and `policy_effect: binds-tool-source-per-closure`. Merely nesting a
 function does not qualify: the MCP Python SDK and FastMCP retry helpers are invoked within the same
 caller-selected operation, so their names remain uncontrolled. A rebound parameter is likewise
-unresolved. Schema v27 publishes the resulting fixed-binding split as five instance edges and five
+unresolved. Schema v28 publishes the resulting fixed-binding split as five instance edges and five
 closure edges; all ten remain AV-MCP002 reviews.
 
 FastMCP contributes a second `tool-registry` edge through a same-class method summary. Its middleware
@@ -317,7 +320,7 @@ The bounded dependency closure now selects the MCP Python SDK's `tools` package 
 `ToolManager` body. `MCPServer.__init__` binds `self._tool_manager` once to that imported class;
 `ToolManager.call_tool` resolves `get_tool(name)` and raises before execution when absent. This adds
 the third `tool-registry` edge with `summary: imported-class-method`. Local negatives cover a mutable
-manager attribute, a fallback manager, and a rebound imported constructor. Schema v27 distinguishes
+manager attribute, a fallback manager, and a rebound imported constructor. Schema v28 distinguishes
 one same-function lookup, one same-class method summary, and one imported-class summary; all three
 retain their AV-MCP002 reviews as routing-only discovery controls rather than authorization
 allowlists.
@@ -376,7 +379,7 @@ rebound methods, async/generator helpers, opaque path transforms, continuing han
 reassigned returns, try `else`/`finally` mutation, conditional construction preludes, caller
 reassignment, and parent writes remain unresolved.
 
-Schema v27 therefore records five Python and one TypeScript boundary edges, all with unresolved root
+Schema v28 therefore records five Python and one TypeScript boundary edges, all with unresolved root
 scope in the pinned corpus. Four Python edges use `Path.relative_to`; three are same-class return
 summaries. The helper distinction and summary provenance are explicit.
 
@@ -392,7 +395,7 @@ calls before assignment, conditional rebinding to an unknown wrapper, and copy/d
 negative. A fixed destination and two boundary-guarded copies are local negatives; shadowed imports
 and string `.replace()` remain explicit near misses.
 
-Schema v27 additionally resolves 20 `Path.rename`/`Path.replace` moves: two renames and 18 replaces.
+Schema v28 additionally resolves 20 `Path.rename`/`Path.replace` moves: two renames and 18 replaces.
 Receivers require an explicit unshadowed constructor, an exact Path annotation, or a single immutable
 local derived from one. DeepAgents contributes 18 real atomic replacement calls; these are inventory,
 not AV-FS001 reviews, because they are not reached from resolved tools. Conditional, reassigned,
@@ -453,10 +456,18 @@ repositories:
   through `SimpleDocParser.call`; `retrieval` reaches it through the newly summarized
   `DocParser.call`. Exact class and tool identities make the second hop explicit.
 
+Schema v28 separately inventories 22 import-proven `urllib.request.urlopen` calls. Two occur in
+Qwen's registered `area_to_weather` and `weather_hour24` tools and therefore receive exact tool
+edges. Both construct `Request` objects from a fixed `https://ali-weather.showapi.com` origin plus
+tool-controlled query data, so unwrapping the Request's URL keeps them inventory-only. The other 20
+calls are outside resolved tool bodies and do not create tool reachability. Exact module-level
+imports or aliases are required; rebinding and same-function shadowing invalidate the symbol proof.
+
 Pinned negatives include a [fixed Devpost origin](https://github.com/microsoft/ai-agents-for-beginners/blob/01777b05e8afeba6bf5a6dbe74cc2293372d3693/11-agentic-protocols/code_samples/github-mcp/app.py#L118),
 the MCP SDK's [fixed weather API](https://github.com/modelcontextprotocol/typescript-sdk/blob/3924de99df834302d89f5997a1b64ca268282284/examples/guides/get-started/firstServer.examples.ts#L20-L40),
 Vercel's [literal PDF URL](https://github.com/vercel/ai/blob/f607a129c0298870038b398dbcba57ff041114f6/examples/ai-e2e-next/tool/fetch-pdf-tool.ts#L5-L12),
-and Qwen's fixed AMap endpoint formatted with a dynamic query. Python fixed-origin facts propagate
+and Qwen's two fixed urllib weather endpoints plus fixed AMap endpoint formatted with a dynamic
+query. Python fixed-origin facts propagate
 through unique module constants and immutable `self` fields, concatenation, and `.format(...)`.
 Results remain `review`: URL validation, redirects, DNS rebinding, proxies, and runtime egress policy
 are not yet resolved.
@@ -486,13 +497,13 @@ and a literal `privileged=True` keyword.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 284 exact labels across all nine enabled rules: 158 positives and 126
+`benchmarks/truthset.json` contains 291 exact labels across all nine enabled rules: 160 positives and 131
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
-Compose/Kubernetes/Docker SDK settings. All 284 currently pass; each rule's seed precision and recall
+Compose/Kubernetes/Docker SDK settings. All 291 currently pass; each rule's seed precision and recall
 are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified source
 text at the exact pinned line, preventing a missing or drifting location from passing silently.
 
@@ -540,7 +551,9 @@ exact tool-to-browser-page execution edges and an ordinary-method negative. Thir
 registry-tool labels cover eight exact MetaGPT/Qwen capability edges and five provenance,
 entrypoint, or receiver negatives. Eleven imported Python function-network labels cover six exact
 tool edges and five nested, module-qualified, or rebound negatives. Fifteen imported class-network
-labels cover ten direct/bound/multihop or fixed-field edges and five mutable or ambiguous negatives. All 165 IR
+labels cover ten direct/bound/multihop or fixed-field edges and five mutable or ambiguous negatives.
+Seven urllib labels cover two local dynamic origins, one local fixed origin, two local binding
+negatives, and two pinned Qwen fixed-origin tool edges. All 172 IR
 labels pass:
 three approval positives/four negatives,
 two audit positives/two negatives, two import positives/one negative, three TypeScript graph
@@ -550,6 +563,8 @@ six path-prefix positives/two negatives,
 12 filesystem-mutation positives/seven
 negatives, two MCP-registry positives/one negative, three
 fixed-instance positives/one negative, two closure positives/two negatives, two method-registry
-positives/one negative, two browser-evaluation positives/one negative, eight Python registry-tool
+positives/one negative, four post-registration positives/three negatives, three transparent-wrapper
+positives/three negatives, two browser-evaluation positives/one negative, eight Python registry-tool
 positives/five negatives, six Python imported-network positives/five negatives, ten Python
-imported-class-network positives/five negatives, and two imported-registry positives/three negatives.
+imported-class-network positives/five negatives, five urllib-network positives/two negatives, and
+two imported-registry positives/three negatives.
