@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v22
+framework, wrapper, or configuration path. Counts come from schema-v23
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -33,11 +33,11 @@ Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK
 (40), Anthropic (17), and Azure OpenAI (11). These counts overlap and are lower than research-wide lexical signals
 because the engine requires supported selected files and more specific syntax.
 
-Across the selected snapshot, 8,659 agent/tool observations have module-qualified symbol IDs. Of
+Across the selected snapshot, 8,681 agent/tool observations have module-qualified symbol IDs. Of
 2,818 relationship endpoint observations, 1,897 carry IDs and 1,895 resolve to an observed component
 (1,644 Python and 251 TypeScript); the two unmatched IDs are explicit Python re-export targets.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
-edges resolve exactly. In Python files with repeated identities, schema v22 records 325 same-scope and
+edges resolve exactly. In Python files with repeated identities, schema v23 records 325 same-scope and
 14 module-scope single-definition resolutions, plus 23 `ambiguous-repeated-binding` references that
 remain withheld.
 Capability/control taxonomy endpoints intentionally lack
@@ -67,12 +67,15 @@ terminating `ValueError` handler. The OpenAI helper's checked return is consumed
 unlink. All six pinned roots are dynamically configured, so their scope remains explicit and
 unresolved and none suppresses a review.
 
-The Python frontend also resolves 93 Skyvern tools registered after definition through exact
+The Python frontend also resolves all 115 Skyvern tools registered after definition through exact
 `mcp.tool(...)(function)` applications. Every target is reached through one immutable relative
-import and one unique module-level function definition. Those tools create only 15 exact capability
-edges—14 browser actions and one filesystem mutation—so inventory expansion is kept separate from
-finding volume. Wrapper expressions, nested calls, rebound imports or registrars, wildcard imports,
-and non-FastMCP factories remain unresolved.
+import and one unique module-level function definition. Ninety-three registrations are direct; 22
+pass through proven metadata-preserving forwarders, totaling 23 wrapper layers because one tool has
+a two-wrapper chain. The wrappers must use `functools.wraps` and directly forward `*args, **kwargs`
+to the wrapped callable. All 115 tools create only 15 exact capability edges—14 browser actions and
+one filesystem mutation—so inventory expansion is kept separate from finding volume. Opaque or
+branch-only wrappers, rebound imports or registrars, wildcard imports, and non-FastMCP factories
+remain unresolved.
 
 Four additional Python edges record exact string-prefix checks at CrewAI Examples sinks. They target
 `path-prefix-check`, carry `weak-string-prefix-validation`, and never satisfy path-boundary policy.
@@ -80,7 +83,7 @@ Two checks govern both a parent-directory creation and its write/copy action. Th
 `AV-FS002` result explains the sibling-prefix weakness without duplicating `AV-FS001` at the same
 sink.
 
-Schema v22 records 14 exact MCP-forwarding control edges: one explicit allowlist, three discovery
+Schema v23 records 14 exact MCP-forwarding control edges: one explicit allowlist, three discovery
 registries, and ten fixed bindings. The fixed-binding edges split evenly between constructor-bound
 instance sources and escaping returned/registered closures. Same-operation retry closures do not
 qualify. The ten bindings and discovery registries retain their reviews; only the explicit allowlist
@@ -157,7 +160,7 @@ subset.
 
 ## Quality interpretation
 
-The 236-label rule truth set and 117-label IR relationship set are curated regression suites. They
+The 242-label rule truth set and 123-label IR relationship set are curated regression suites. They
 guard known positives and negatives; they are not an unbiased accuracy estimate. A future holdout
 must be sampled separately across the categories above, externally reviewed, and kept sealed while
 rules change. Until then, precision/recall values apply only to the published seed labels.

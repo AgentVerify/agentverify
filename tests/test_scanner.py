@@ -1333,13 +1333,19 @@ def test_python_post_definition_tool_registration_is_exact_and_cross_file() -> N
     ir = scan_repository(ROOT / "cases/python_post_registration")
 
     tools = {item.name: item for item in ir.components if item.kind == "tool"}
-    assert set(tools) == {"imported_write", "local_write"}
+    assert set(tools) == {
+        "direct_wrapped_write",
+        "factory_wrapped_write",
+        "imported_write",
+        "local_write",
+        "nested_wrapped_write",
+    }
     assert tools["imported_write"].attributes == {
         "decorators": [],
         "needs_approval": True,
         "registration": "post-definition",
         "registration_path": "app/server.py",
-        "registration_line": 22,
+        "registration_line": 31,
         "registrar": "mcp.tool",
         "resolution": "relative-import-single-definition",
     }
@@ -1347,13 +1353,31 @@ def test_python_post_definition_tool_registration_is_exact_and_cross_file() -> N
     assert tools["local_write"].attributes["resolution"] == (
         "same-module-single-definition"
     )
+    assert tools["direct_wrapped_write"].attributes["wrappers"] == ["transparent"]
+    assert tools["factory_wrapped_write"].attributes["wrappers"] == ["configured"]
+    assert tools["nested_wrapped_write"].attributes["wrappers"] == [
+        "transparent",
+        "transparent",
+    ]
+    assert all(
+        tools[name].attributes["wrapper_summary"]
+        == "metadata-preserving-forwarder"
+        for name in (
+            "direct_wrapped_write",
+            "factory_wrapped_write",
+            "nested_wrapped_write",
+        )
+    )
     assert {
         (edge.source_name, edge.relation, edge.target_name, edge.evidence.path, edge.evidence.line)
         for edge in ir.relationships
     } == {
-        ("imported_write", "governed-by", "human-approval", "app/server.py", 22),
+        ("imported_write", "governed-by", "human-approval", "app/server.py", 31),
         ("imported_write", "uses", "filesystem", "app/tools.py", 5),
-        ("local_write", "uses", "filesystem", "app/server.py", 14),
+        ("local_write", "uses", "filesystem", "app/server.py", 23),
+        ("direct_wrapped_write", "uses", "filesystem", "app/tools.py", 21),
+        ("factory_wrapped_write", "uses", "filesystem", "app/tools.py", 25),
+        ("nested_wrapped_write", "uses", "filesystem", "app/tools.py", 29),
     }
     assert [
         (
@@ -1365,8 +1389,11 @@ def test_python_post_definition_tool_registration_is_exact_and_cross_file() -> N
         )
         for finding in ir.findings
     ] == [
-        ("AV-FS001", "app/server.py", 14, "local_write", "unresolved"),
+        ("AV-FS001", "app/server.py", 23, "local_write", "unresolved"),
         ("AV-FS001", "app/tools.py", 5, "imported_write", "present"),
+        ("AV-FS001", "app/tools.py", 21, "direct_wrapped_write", "unresolved"),
+        ("AV-FS001", "app/tools.py", 25, "factory_wrapped_write", "unresolved"),
+        ("AV-FS001", "app/tools.py", 29, "nested_wrapped_write", "unresolved"),
     ]
 
 

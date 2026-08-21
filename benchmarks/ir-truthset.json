@@ -2064,7 +2064,7 @@
       "target": {"kind": "local", "path": "cases/python_post_registration"},
       "check_id": "IR-PY-POST-REGISTRATION",
       "path": "app/server.py",
-      "line": 14,
+      "line": 23,
       "expected": true,
       "relationship": {
         "source_kind": "tool",
@@ -2079,7 +2079,7 @@
       "target": {"kind": "local", "path": "cases/python_post_registration"},
       "check_id": "IR-PY-POST-REGISTRATION",
       "path": "app/server.py",
-      "line": 22,
+      "line": 31,
       "expected": true,
       "relationship": {
         "source_kind": "tool",
@@ -2148,6 +2148,96 @@
       "relationship": {
         "source_kind": "tool",
         "source_name": "skyvern_state_save",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-transparent-wrapper-local",
+      "target": {"kind": "local", "path": "cases/python_post_registration"},
+      "check_id": "IR-PY-TRANSPARENT-WRAPPER",
+      "path": "app/tools.py",
+      "line": 21,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "direct_wrapped_write",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-decorator-factory-wrapper-local",
+      "target": {"kind": "local", "path": "cases/python_post_registration"},
+      "check_id": "IR-PY-TRANSPARENT-WRAPPER",
+      "path": "app/tools.py",
+      "line": 25,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "factory_wrapped_write",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-nested-transparent-wrapper-local",
+      "target": {"kind": "local", "path": "cases/python_post_registration"},
+      "check_id": "IR-PY-TRANSPARENT-WRAPPER",
+      "path": "app/tools.py",
+      "line": 29,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "nested_wrapped_write",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-misleading-wrapper-local-negative",
+      "target": {"kind": "local", "path": "cases/python_post_registration"},
+      "check_id": "IR-PY-TRANSPARENT-WRAPPER",
+      "path": "app/tools.py",
+      "line": 33,
+      "expected": false,
+      "source_contains": "Path(path).write_text",
+      "relationship": {
+        "source_kind": "tool",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-branch-only-wrapper-local-negative",
+      "target": {"kind": "local", "path": "cases/python_post_registration"},
+      "check_id": "IR-PY-TRANSPARENT-WRAPPER",
+      "path": "app/tools.py",
+      "line": 37,
+      "expected": false,
+      "source_contains": "Path(path).write_text",
+      "relationship": {
+        "source_kind": "tool",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-deferred-wrapper-local-negative",
+      "target": {"kind": "local", "path": "cases/python_post_registration"},
+      "check_id": "IR-PY-TRANSPARENT-WRAPPER",
+      "path": "app/tools.py",
+      "line": 41,
+      "expected": false,
+      "source_contains": "Path(path).write_text",
+      "relationship": {
+        "source_kind": "tool",
         "relation": "uses",
         "target_kind": "capability",
         "target_name": "filesystem"

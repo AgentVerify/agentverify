@@ -297,6 +297,7 @@ class PythonToolRegistration:
     registrar: str
     resolution: str
     needs_approval: bool
+    wrappers: tuple[str, ...] = ()
 
 
 @dataclass
@@ -2124,6 +2125,13 @@ class PythonVisitor(ast.NodeVisitor):
                         "resolution": registration.resolution,
                     }
                 )
+                if registration.wrappers:
+                    attributes.update(
+                        {
+                            "wrappers": list(registration.wrappers),
+                            "wrapper_summary": "metadata-preserving-forwarder",
+                        }
+                    )
             self.ir.add_component(
                 Component(
                     "tool",
@@ -6075,6 +6083,125 @@ def build_python_tool_registrations(
             ):
                 definitions[(path, statement.name)] = statement
 
+    def returned_nested_function(
+        container: ast.FunctionDef | ast.AsyncFunctionDef,
+    ) -> ast.FunctionDef | ast.AsyncFunctionDef | None:
+        returns = [statement for statement in container.body if isinstance(statement, ast.Return)]
+        if len(returns) != 1 or returns[0] is not container.body[-1]:
+            return None
+        returned = returns[0].value
+        if not isinstance(returned, ast.Name):
+            return None
+        matches = [
+            statement
+            for statement in container.body
+            if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and statement.name == returned.id
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    def wrapper_forwarded_parameter(
+        path: str,
+        container: ast.FunctionDef | ast.AsyncFunctionDef,
+    ) -> str | None:
+        if container.decorator_list or any(
+            isinstance(candidate, (ast.Yield, ast.YieldFrom))
+            for candidate in ast.walk(container)
+        ):
+            return None
+        wrapper = returned_nested_function(container)
+        if wrapper is None or wrapper.args.vararg is None or wrapper.args.kwarg is None:
+            return None
+        tree = parsed[path][0]
+        direct_imports = [
+            statement
+            for statement in tree.body
+            if isinstance(statement, (ast.Import, ast.ImportFrom))
+        ]
+        functools_modules = {
+            alias.asname or alias.name.split(".", 1)[0]
+            for statement in direct_imports
+            if isinstance(statement, ast.Import)
+            for alias in statement.names
+            if alias.name == "functools"
+            and binding_counts[path][alias.asname or alias.name] == 1
+        }
+        wraps_names = {
+            alias.asname or alias.name
+            for statement in direct_imports
+            if isinstance(statement, ast.ImportFrom)
+            and statement.module == "functools"
+            for alias in statement.names
+            if alias.name == "wraps"
+            and binding_counts[path][alias.asname or alias.name] == 1
+        }
+        positional = [*container.args.posonlyargs, *container.args.args]
+        candidates = []
+        for parameter in positional:
+            expected_decorators = {
+                f"{module}.wraps" for module in functools_modules
+            } | wraps_names
+            if not (
+                len(wrapper.decorator_list) == 1
+                and isinstance(wrapper.decorator_list[0], ast.Call)
+                and dotted_name(wrapper.decorator_list[0].func) in expected_decorators
+                and len(wrapper.decorator_list[0].args) == 1
+                and not wrapper.decorator_list[0].keywords
+                and isinstance(wrapper.decorator_list[0].args[0], ast.Name)
+                and wrapper.decorator_list[0].args[0].id == parameter.arg
+            ):
+                continue
+            if any(
+                isinstance(candidate, ast.Name)
+                and candidate.id == parameter.arg
+                and isinstance(candidate.ctx, (ast.Store, ast.Del))
+                for statement in container.body
+                for candidate in ast.walk(statement)
+            ):
+                continue
+            forwarded = False
+            for statement in wrapper.body:
+                if isinstance(statement, ast.Raise):
+                    break
+                value: ast.AST | None = None
+                if isinstance(statement, (ast.Assign, ast.AnnAssign, ast.Expr, ast.Return)):
+                    value = statement.value
+                if isinstance(value, ast.Await):
+                    value = value.value
+                if not isinstance(value, ast.Call):
+                    if isinstance(statement, ast.Return):
+                        break
+                    continue
+                if (
+                    isinstance(value.func, ast.Name)
+                    and value.func.id == parameter.arg
+                    and len(value.args) == 1
+                    and isinstance(value.args[0], ast.Starred)
+                    and isinstance(value.args[0].value, ast.Name)
+                    and value.args[0].value.id == wrapper.args.vararg.arg
+                    and len(value.keywords) == 1
+                    and value.keywords[0].arg is None
+                    and isinstance(value.keywords[0].value, ast.Name)
+                    and value.keywords[0].value.id == wrapper.args.kwarg.arg
+                ):
+                    forwarded = True
+                    break
+                if isinstance(statement, ast.Return):
+                    break
+            if forwarded:
+                candidates.append(parameter.arg)
+        return candidates[0] if len(candidates) == 1 else None
+
+    transparent_wrappers: dict[tuple[str, str], int] = {}
+    for key, definition in definitions.items():
+        path, _ = key
+        if wrapper_forwarded_parameter(path, definition) is not None:
+            transparent_wrappers[key] = 1
+            continue
+        decorator = returned_nested_function(definition)
+        if decorator and wrapper_forwarded_parameter(path, decorator) is not None:
+            transparent_wrappers[key] = 2
+
     proposals: dict[tuple[str, str], list[PythonToolRegistration]] = defaultdict(list)
     for path, (tree, lines) in parsed.items():
         imports = module_imports(tree)
@@ -6156,7 +6283,7 @@ def build_python_tool_registrations(
             if not isinstance(statement, ast.Expr) or not isinstance(statement.value, ast.Call):
                 continue
             outer = statement.value
-            if len(outer.args) != 1 or outer.keywords or not isinstance(outer.args[0], ast.Name):
+            if len(outer.args) != 1 or outer.keywords:
                 continue
             if not isinstance(outer.func, ast.Call):
                 continue
@@ -6170,20 +6297,70 @@ def build_python_tool_registrations(
             registrar = decorator.func.value.id
             if registrar not in servers or servers[registrar] >= statement.lineno:
                 continue
-            local_name = outer.args[0].id
-            target: tuple[str, str] | None = None
-            resolution = "same-module-single-definition"
-            imported = imported_targets.get(local_name, [])
-            if len(imported) == 1 and imported[0][2] < statement.lineno:
-                target = (imported[0][0], imported[0][1])
-                resolution = "relative-import-single-definition"
-            elif (
-                (path, local_name) in definitions
-                and definitions[(path, local_name)].lineno < statement.lineno
-            ):
-                target = (path, local_name)
-            if target not in definitions:
+
+            def resolve_name(
+                name: str,
+                imported_bindings: dict[
+                    str, list[tuple[str, str, int]]
+                ] = imported_targets,
+                current_path: str = path,
+                before_line: int = statement.lineno,
+            ) -> tuple[tuple[str, str], str] | None:
+                imported = imported_bindings.get(name, [])
+                if len(imported) == 1 and imported[0][2] < before_line:
+                    return (
+                        (imported[0][0], imported[0][1]),
+                        "relative-import-single-definition",
+                    )
+                if (
+                    (current_path, name) in definitions
+                    and definitions[(current_path, name)].lineno < before_line
+                ):
+                    return (current_path, name), "same-module-single-definition"
+                return None
+
+            def resolve_registered_target(
+                expression: ast.AST,
+                depth: int = 0,
+            ) -> tuple[tuple[str, str], str, tuple[str, ...]] | None:
+                if depth > 4:
+                    return None
+                if isinstance(expression, ast.Name):
+                    resolved = resolve_name(expression.id)
+                    return (*resolved, ()) if resolved else None
+                if not isinstance(expression, ast.Call) or expression.keywords:
+                    return None
+                wrapper_name: str | None = None
+                expected_depth = 0
+                if isinstance(expression.func, ast.Name):
+                    wrapper_name = expression.func.id
+                    expected_depth = 1
+                elif (
+                    isinstance(expression.func, ast.Call)
+                    and isinstance(expression.func.func, ast.Name)
+                ):
+                    wrapper_name = expression.func.func.id
+                    expected_depth = 2
+                if wrapper_name is None or len(expression.args) != 1:
+                    return None
+                resolved_wrapper = resolve_name(wrapper_name)
+                if resolved_wrapper is None:
+                    return None
+                wrapper_key = resolved_wrapper[0]
+                if transparent_wrappers.get(wrapper_key) != expected_depth:
+                    return None
+                resolved_target = resolve_registered_target(
+                    expression.args[0], depth + 1
+                )
+                if resolved_target is None:
+                    return None
+                target, resolution, wrappers = resolved_target
+                return target, resolution, (wrapper_name, *wrappers)
+
+            resolved_target = resolve_registered_target(outer.args[0])
+            if resolved_target is None:
                 continue
+            target, resolution, wrappers = resolved_target
             needs_approval = any(
                 keyword.arg in {"needs_approval", "require_approval"}
                 and isinstance(keyword.value, ast.Constant)
@@ -6196,6 +6373,7 @@ def build_python_tool_registrations(
                     f"{registrar}.tool",
                     resolution,
                     needs_approval,
+                    wrappers,
                 )
             )
 

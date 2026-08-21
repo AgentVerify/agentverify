@@ -258,6 +258,14 @@ def main() -> int:
             },
             "python_tool_registrations": {
                 "post_definition": len(python_post_registered_tools),
+                "transparent_wrapped": sum(
+                    bool(item.attributes.get("wrappers"))
+                    for item in python_post_registered_tools
+                ),
+                "wrapper_layers": sum(
+                    len(item.attributes.get("wrappers", []))
+                    for item in python_post_registered_tools
+                ),
                 "relative_import": sum(
                     item.attributes.get("resolution")
                     == "relative-import-single-definition"
@@ -380,7 +388,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 22,
+        "schema_version": 23,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -482,6 +490,8 @@ def main() -> int:
                 name: sum(result["python_tool_registrations"][name] for result in successful)
                 for name in (
                     "post_definition",
+                    "transparent_wrapped",
+                    "wrapper_layers",
                     "relative_import",
                     "same_module",
                     "approval_enabled",

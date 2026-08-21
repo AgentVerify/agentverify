@@ -49,8 +49,12 @@ FastMCP instance, and the target must be one uniquely bound same-module definiti
 relative import leading to a unique module-level definition. The resulting tool keeps definition
 evidence and a module-qualified ID while recording registration path, line, registrar, resolution
 basis, and literal approval metadata. Exact IDs allow registration-site controls to govern a
-cross-file tool body. Wrapper expressions, nested registrations, rebound bindings, wildcard imports,
-duplicate registrations, and unrelated `.tool` factories remain unresolved.
+cross-file tool body. A bounded wrapper summary follows direct wrappers and decorator factories only
+when their returned callback uses `functools.wraps` for exactly one callable parameter and directly
+forwards its own `*args, **kwargs` to that parameter. Wrapper chains are capped at four layers and
+record every wrapper name on the tool. Metadata-only or branch-only wrappers, nested registrations,
+rebound bindings, wildcard imports, duplicate registrations, and unrelated `.tool` factories remain
+unresolved.
 
 Within decorated Python tools and structurally resolved TypeScript execution callbacks, tool
 parameters begin as potential dynamic HTTP origins. Direct assignment aliases preserve that state,
