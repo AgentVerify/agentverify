@@ -4042,6 +4042,60 @@ def test_python_agent_helper_returns_require_exact_same_class_flow() -> None:
         }
 
 
+def test_python_typed_tool_parameters_require_callsite_constructor_consensus() -> None:
+    ir = scan_repository(ROOT / "cases/python_typed_tool_parameter")
+    edges = {
+        edge.evidence.line: edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent"
+        and edge.relation == "uses"
+        and edge.target_kind == "tool"
+        and edge.target_name == "tool"
+    }
+
+    assert edges[5].target_id == "py:app.py#tool:tool@4"
+    assert edges[5].attributes == {
+        "target_identity": "typed-parameter-callsite-consensus"
+    }
+    for line in (23, 33, 42, 50, 62, 72, 81, 90, 99, 112, 121, 131, 145):
+        assert edges[line].target_id is None
+        assert edges[line].attributes == {
+            "target_identity": "ambiguous-repeated-binding"
+        }
+
+    parameter = next(
+        component
+        for component in ir.components
+        if component.symbol_id == "py:app.py#tool:tool@4"
+    )
+    assert parameter.name == "ApplyPatchTool parameter tool@4"
+    assert parameter.evidence.line == 4
+    assert parameter.attributes == {
+        "binding": "typed-parameter",
+        "constructor": "ApplyPatchTool",
+        "callsite_proof": "same-module-constructor-consensus",
+        "verified_call_sites": 3,
+        "callsite_target_ids": [
+            "py:app.py#tool:ApplyPatchTool@19",
+            "py:app.py#tool:patch",
+            "py:app.py#tool:tool@9",
+        ],
+        "scope": "production",
+    }
+    inline_edge = next(
+        edge
+        for edge in ir.relationships
+        if edge.evidence.path == "inline_only.py"
+        and edge.evidence.line == 5
+        and edge.source_kind == "agent"
+        and edge.target_name == "patch"
+    )
+    assert inline_edge.target_id == "py:inline_only.py#tool:patch@4"
+    assert inline_edge.attributes == {
+        "target_identity": "typed-parameter-callsite-consensus"
+    }
+
+
 def test_relative_typescript_import_resolves_cross_file_tool_path() -> None:
     ir = scan_repository(ROOT / "cases/imported_ts_tool")
 

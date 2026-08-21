@@ -79,6 +79,10 @@ never imported or executed.
 - `python_agent_helper_return`: exact same-class helpers propagate a direct or tuple-returned Agent
   into Crew composition; conditional, reassigned, transformed, cross-branch, rebound-helper, and
   external-receiver flows remain unresolved.
+- `python_typed_tool_parameter`: an import-proven OpenAI built-in tool annotation plus unanimous
+  same-module positional, keyword, and inline constructor call sites creates an exact parameter
+  binding; mismatched, reassigned, uncalled, rebound/import-redefined, class-body or nested-scope
+  shadowed, union-typed, and wrong-annotation forms remain unresolved.
 - `typescript_a2a_card_endpoint`: ADK JS and Gemini compositions preserve remotely supplied
   AgentCard authority at SDK client construction; fixed/local cards, wrong imports, and unproven
   transports stay negative.

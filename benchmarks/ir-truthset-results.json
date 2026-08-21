@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T21:55:39.429491+00:00",
-  "labels": 322,
-  "passed": 322,
+  "generated_at": "2026-08-21T22:28:58.084327+00:00",
+  "labels": 340,
+  "passed": 340,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -264,6 +264,14 @@
       "tp": 3,
       "fp": 0,
       "tn": 3,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-TYPED-TOOL-PARAMETER": {
+      "tp": 16,
+      "fp": 0,
+      "tn": 2,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -3282,6 +3290,168 @@
     {
       "id": "python-agent-helper-crewai-tuple-async-real",
       "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-typed-tool-parameter-local",
+      "check_id": "IR-PY-TYPED-TOOL-PARAMETER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-typed-tool-parameter-concrete-id-negative",
+      "check_id": "IR-PY-TYPED-TOOL-PARAMETER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-typed-tool-parameter-mismatch-unresolved",
+      "check_id": "IR-PY-TYPED-TOOL-PARAMETER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-typed-tool-parameter-reassigned-unresolved",
+      "check_id": "IR-PY-TYPED-TOOL-PARAMETER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-typed-tool-parameter-uncalled-unresolved",
+      "check_id": "IR-PY-TYPED-TOOL-PARAMETER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-typed-tool-parameter-rebound-helper-unresolved",
+      "check_id": "IR-PY-TYPED-TOOL-PARAMETER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-typed-tool-parameter-shadowed-constructor-unresolved",
+      "check_id": "IR-PY-TYPED-TOOL-PARAMETER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-typed-tool-parameter-wrong-annotation-unresolved",
+      "check_id": "IR-PY-TYPED-TOOL-PARAMETER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-typed-tool-parameter-union-unresolved",
+      "check_id": "IR-PY-TYPED-TOOL-PARAMETER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-typed-tool-parameter-shadowed-helper-unresolved",
+      "check_id": "IR-PY-TYPED-TOOL-PARAMETER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-typed-tool-parameter-reassigned-argument-unresolved",
+      "check_id": "IR-PY-TYPED-TOOL-PARAMETER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-typed-tool-parameter-openai-real",
+      "check_id": "IR-PY-TYPED-TOOL-PARAMETER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-typed-tool-parameter-openai-old-ambiguity-negative",
+      "check_id": "IR-PY-TYPED-TOOL-PARAMETER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-typed-tool-parameter-inline-only-local",
+      "check_id": "IR-PY-TYPED-TOOL-PARAMETER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-typed-tool-parameter-import-rebound-unresolved",
+      "check_id": "IR-PY-TYPED-TOOL-PARAMETER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-typed-tool-parameter-class-body-shadow-unresolved",
+      "check_id": "IR-PY-TYPED-TOOL-PARAMETER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-typed-tool-parameter-nested-helper-shadow-unresolved",
+      "check_id": "IR-PY-TYPED-TOOL-PARAMETER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-typed-tool-parameter-nested-constructor-shadow-unresolved",
+      "check_id": "IR-PY-TYPED-TOOL-PARAMETER",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

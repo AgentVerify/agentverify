@@ -1,6 +1,6 @@
 {
-  "schema_version": 53,
-  "generated_at": "2026-08-21T22:00:09.688670+00:00",
+  "schema_version": 54,
+  "generated_at": "2026-08-21T22:32:47.959882+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -21,23 +21,24 @@
     "repositories_with_dependency_expansion": 18,
     "config_files_scanned": 155,
     "relationships": 1527,
-    "symbolized_components": 8927,
-    "identified_symbol_endpoints": 2174,
-    "resolved_symbol_endpoints": 2174,
+    "symbolized_components": 8928,
+    "identified_symbol_endpoints": 2175,
+    "resolved_symbol_endpoints": 2175,
     "unmatched_identified_symbol_endpoints": 0,
-    "ambiguous_repeated_binding_targets": 1,
+    "ambiguous_repeated_binding_targets": 0,
     "resolved_binding_targets_by_basis": {
       "block-dominating-definition": 20,
       "lexical-single-definition": 311,
-      "same-class-helper-return": 3
+      "same-class-helper-return": 3,
+      "typed-parameter-callsite-consensus": 1
     },
     "relationship_endpoints": 3054,
     "bom_endpoint_resolutions": {
       "ambiguous": 29,
       "evidence-location": 521,
-      "symbol-id": 2174,
+      "symbol-id": 2175,
       "unique-display-name": 15,
-      "unresolved": 315
+      "unresolved": 314
     },
     "bom_ambiguous_endpoints_by_side_kind": {
       "source:control": 1,
@@ -46,7 +47,7 @@
       "target:tool": 21
     },
     "resolved_symbol_endpoints_by_frontend": {
-      "py": 1915,
+      "py": 1916,
       "ts": 259
     },
     "typescript_graph": {
@@ -105,6 +106,13 @@
     "python_agent_helper_returns": {
       "resolved_edges": 3,
       "unique_agent_targets": 2,
+      "non_test_edges": 0
+    },
+    "python_typed_tool_parameters": {
+      "parameter_bindings": 1,
+      "resolved_edges": 1,
+      "verified_call_sites": 10,
+      "concrete_targets": 10,
       "non_test_edges": 0
     },
     "python_browser_evaluate": {
@@ -517,7 +525,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 183.0703
+    "elapsed_seconds": 183.9898
   },
   "repositories": [
     {
@@ -610,6 +618,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -793,7 +808,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8993
+      "elapsed_seconds": 2.9004
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -892,6 +907,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -1080,7 +1102,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.9148
+      "elapsed_seconds": 4.062
     },
     {
       "repository": "langchain-ai/langchain",
@@ -1176,6 +1198,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -1357,7 +1386,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2252
+      "elapsed_seconds": 1.2246
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -1457,6 +1486,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -1646,7 +1682,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.3574
+      "elapsed_seconds": 5.3231
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -1751,6 +1787,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -1936,7 +1979,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.26
+      "elapsed_seconds": 0.2641
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -2045,6 +2088,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -2243,7 +2293,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.9755
+      "elapsed_seconds": 6.136
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -2356,6 +2406,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 3,
         "unique_agent_targets": 2,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -2558,7 +2615,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.9118
+      "elapsed_seconds": 3.884
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -2664,6 +2721,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -2859,7 +2923,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3295
+      "elapsed_seconds": 0.3407
     },
     {
       "repository": "microsoft/autogen",
@@ -2961,6 +3025,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -3151,7 +3222,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9301
+      "elapsed_seconds": 0.9203
     },
     {
       "repository": "microsoft/agent-framework",
@@ -3237,6 +3308,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -3418,7 +3496,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0433
+      "elapsed_seconds": 0.0382
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -3518,6 +3596,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -3708,7 +3793,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1429
+      "elapsed_seconds": 0.1466
     },
     {
       "repository": "openai/openai-agents-python",
@@ -3728,7 +3813,7 @@
         "model": 14,
         "protocol": 41,
         "provider": 118,
-        "tool": 355
+        "tool": 356
       },
       "component_names": {
         "capability": [
@@ -3760,16 +3845,17 @@
         ]
       },
       "relationships": 623,
-      "symbolized_components": 1297,
-      "identified_symbol_endpoints": 938,
-      "resolved_symbol_endpoints": 938,
+      "symbolized_components": 1298,
+      "identified_symbol_endpoints": 939,
+      "resolved_symbol_endpoints": 939,
       "unmatched_identified_symbol_endpoints": 0,
-      "ambiguous_repeated_binding_targets": 1,
+      "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {
-        "lexical-single-definition": 201
+        "lexical-single-definition": 201,
+        "typed-parameter-callsite-consensus": 1
       },
       "resolved_symbol_endpoints_by_frontend": {
-        "py": 938,
+        "py": 939,
         "ts": 0
       },
       "typescript_graph": {
@@ -3828,6 +3914,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 1,
+        "resolved_edges": 1,
+        "verified_call_sites": 10,
+        "concrete_targets": 10,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -4015,9 +4108,9 @@
       "bom_endpoint_resolutions": {
         "ambiguous": 11,
         "evidence-location": 194,
-        "symbol-id": 938,
+        "symbol-id": 939,
         "unique-display-name": 9,
-        "unresolved": 94
+        "unresolved": 93
       },
       "bom_ambiguous_endpoints_by_side_kind": {
         "target:tool": 11
@@ -4030,7 +4123,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.0324
+      "elapsed_seconds": 7.1604
     },
     {
       "repository": "openai/openai-agents-js",
@@ -4147,6 +4240,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -4334,7 +4434,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9966
+      "elapsed_seconds": 0.9915
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -4442,6 +4542,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -4635,7 +4742,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 14.5575
+      "elapsed_seconds": 14.7084
     },
     {
       "repository": "google/adk-python",
@@ -4745,6 +4852,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -4940,7 +5054,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.15
+      "elapsed_seconds": 5.2357
     },
     {
       "repository": "google/adk-js",
@@ -5041,6 +5155,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -5229,7 +5350,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.6093
+      "elapsed_seconds": 3.5934
     },
     {
       "repository": "huggingface/smolagents",
@@ -5333,6 +5454,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -5530,7 +5658,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7416
+      "elapsed_seconds": 1.7081
     },
     {
       "repository": "agno-agi/agno",
@@ -5629,6 +5757,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -5821,7 +5956,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4392
+      "elapsed_seconds": 0.4292
     },
     {
       "repository": "camel-ai/camel",
@@ -5925,6 +6060,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -6125,7 +6267,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.5213
+      "elapsed_seconds": 3.5372
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -6219,6 +6361,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -6505,6 +6654,13 @@
         "unique_agent_targets": 0,
         "non_test_edges": 0
       },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
+        "non_test_edges": 0
+      },
       "python_browser_evaluate": {
         "total": 0,
         "dynamic": 0,
@@ -6684,7 +6840,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9934
+      "elapsed_seconds": 0.9868
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -6789,6 +6945,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -6987,7 +7150,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8466
+      "elapsed_seconds": 1.8611
     },
     {
       "repository": "InternLM/lagent",
@@ -7091,6 +7254,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -7285,7 +7455,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8413
+      "elapsed_seconds": 0.8404
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -7380,6 +7550,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -7578,7 +7755,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4601
+      "elapsed_seconds": 1.4596
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -7680,6 +7857,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -7878,7 +8062,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9873
+      "elapsed_seconds": 2.0193
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -7976,6 +8160,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -8171,7 +8362,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2681
+      "elapsed_seconds": 1.2728
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -8272,6 +8463,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -8463,7 +8661,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.2765
+      "elapsed_seconds": 4.475
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -8559,6 +8757,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -8749,7 +8954,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5471
+      "elapsed_seconds": 1.555
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -8849,277 +9054,11 @@
         "unique_agent_targets": 0,
         "non_test_edges": 0
       },
-      "python_browser_evaluate": {
-        "total": 0,
-        "dynamic": 0,
-        "receiver_proven": 0,
-        "receiver_proofs": {}
-      },
-      "python_imported_network_helpers": {
-        "capabilities": 0,
-        "dynamic_origins": 0,
-        "helpers": 0,
-        "capability_edges": 0
-      },
-      "python_imported_class_network_helpers": {
-        "capabilities": 0,
-        "dynamic_origins": 0,
-        "callees": 0,
-        "capability_edges": 0
-      },
-      "python_urllib_network": {
-        "capabilities": 0,
-        "dynamic_origins": 0,
-        "capability_edges": 0
-      },
-      "python_network_origin_controls": {
-        "total": 0,
-        "redirects_disabled": 0,
-        "redirects_unresolved": 0,
-        "dns_unresolved": 0
-      },
-      "python_secure_network_controls": {
-        "total": 0,
-        "enabled_default": 0,
-        "configured_opt_out": 0,
-        "redirects_validated": 0,
-        "redirects_disabled": 0,
-        "dns_connection_pinned": 0,
-        "dns_connection_pinned_unless_proxied": 0,
-        "dns_connection_pinned_when_enforced": 0,
-        "proxies_disabled": 0,
-        "proxies_environment_or_caller_dependent": 0,
-        "proxies_disabled_when_enforced": 0,
-        "redirects_disabled_default_validated_when_enabled": 0,
-        "configured_allowlist_and_loopback_exemption": 0,
-        "no_escape_hatch": 0
-      },
-      "typescript_axios_instance_network": {
-        "capabilities": 0,
-        "dynamic_origins": 0,
-        "absolute_override_allowed": 0,
-        "absolute_override_disabled": 0,
-        "capability_edges": 0
-      },
-      "typescript_composio_cli_upload": {
-        "capabilities": 0,
-        "dynamic_origins": 0,
-        "capability_edges": 0,
-        "raw_global_fetch": 0,
-        "destination_policy_absent": 0
-      },
-      "typescript_google_adk_openapi_rest_tool": {
-        "capabilities": 0,
-        "configured_origins": 0,
-        "tool_edges": 0,
-        "origin_policy_edges": 0,
-        "segment_encoded": 0
-      },
-      "python_openai_mcp_approval_default": {
-        "settings": 0,
-        "disabled_default": 0,
-        "agent_server_edges": 0,
-        "configured_by_edges": 0
-      },
-      "python_google_adk_bigquery_audit": {
-        "available_controls": 0,
-        "deployed_controls": 0,
-        "production_deployments": 0,
-        "test_deployments": 0,
-        "storage_capabilities": 0,
-        "disabled_settings": 0,
-        "agent_control_edges": 0,
-        "external_action_control_edges": 0,
-        "storage_edges": 0
-      },
-      "python_skyvern_action_history": {
-        "deployed_controls": 0,
-        "production_deployments": 0,
-        "best_effort_controls": 0,
-        "actor_attribution_unresolved": 0,
-        "storage_capabilities": 0,
-        "agent_control_edges": 0,
-        "tool_control_edges": 0,
-        "external_action_control_edges": 0,
-        "storage_edges": 0
-      },
-      "typescript_network_origin_controls": {
-        "total": 0,
-        "configured_optional": 0,
-        "default_open": 0,
-        "dns_unresolved": 0
-      },
-      "typescript_secure_network_controls": {
-        "total": 0,
-        "enabled_default": 0,
-        "disabled_default": 0,
-        "configured_opt_in": 0,
-        "configured_opt_out": 0,
-        "runtime_conditional": 0,
-        "bounded_redirect_hooks": 0,
-        "redirects_validated": 0,
-        "redirects_disabled": 0,
-        "redirects_direct_connection_filtered": 0,
-        "secure_lookup_configured": 0,
-        "dns_connection_pinned_unless_proxied": 0,
-        "dns_connection_pinned": 0,
-        "dns_preflight_only_rebinding_residual": 0,
-        "dns_connection_time_filtered_unless_proxied": 0,
-        "dns_connection_pinned_unless_configured_route": 0,
-        "proxy_unresolved": 0,
-        "proxy_environment_dependent": 0,
-        "proxy_pinned_agent": 0,
-        "proxy_caller_global_or_environment_dependent": 0,
-        "fixed_caller_config": 0,
-        "caller_agent_overridden": 0,
-        "global_fetch_unpinned": 0,
-        "imported_axios_client_instance": 0,
-        "configured_address_allowlist": 0,
-        "undici_pinned_dispatcher_unless_configured_route": 0,
-        "edge_runtime_fail_closed": 0,
-        "edge_runtime_unguarded_fetch": 0,
-        "configured_route_residual": 0,
-        "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0,
-        "no_escape_hatch": 0
-      },
-      "a2a_endpoint_provenance": {
-        "total": 0,
-        "remote_card_unconstrained": 0,
-        "same_origin_constrained": 0,
-        "typescript": 0,
-        "python": 0,
-        "undici_agent_or_proxy": 0,
-        "all_interfaces_validated": 0,
-        "origin_control_edges": 0
-      },
-      "path_boundary_controls": {
-        "python": 0,
-        "typescript": 0,
-        "python_relative_to": 0,
-        "python_helper_returns": 0,
-        "constrained": 0,
-        "unresolved": 0
-      },
-      "path_prefix_checks": {
-        "python": 0,
-        "weak_string_prefix": 0
-      },
-      "python_filesystem_mutations": {
-        "total": 0,
-        "callable_aliases": 0,
-        "pathlib_methods": 0,
-        "dynamic_paths": 0,
-        "guarded": 0,
-        "operations": {},
-        "apis": {}
-      },
-      "mcp_forwarding_controls": {},
-      "mcp_fixed_binding_scopes": {},
-      "mcp_registry_control_sources": {},
-      "resolved_import_edges": 0,
-      "resolved_import_edges_by_frontend": {
-        "python": 0,
-        "typescript": 0
-      },
-      "bom_endpoint_resolutions": {},
-      "bom_ambiguous_endpoints_by_side_kind": {},
-      "findings": {},
-      "suppressed_findings": 0,
-      "parse_warnings": 0,
-      "parse_warning_details": [],
-      "elapsed_seconds": 1.0019
-    },
-    {
-      "repository": "letta-ai/letta-code",
-      "category": "coding-agent",
-      "status": "ok",
-      "files_scanned": 219,
-      "dependency_files_materialized": 0,
-      "config_files_scanned": 0,
-      "components": {
-        "capability": 247,
-        "mcp": 3,
-        "model": 66,
-        "protocol": 8
-      },
-      "component_names": {
-        "capability": [
-          "filesystem",
-          "network",
-          "shell-execution"
-        ],
-        "protocol": [
-          "MCP"
-        ]
-      },
-      "relationships": 0,
-      "symbolized_components": 0,
-      "identified_symbol_endpoints": 0,
-      "resolved_symbol_endpoints": 0,
-      "unmatched_identified_symbol_endpoints": 0,
-      "ambiguous_repeated_binding_targets": 0,
-      "resolved_binding_targets_by_basis": {},
-      "resolved_symbol_endpoints_by_frontend": {
-        "py": 0,
-        "ts": 0
-      },
-      "typescript_graph": {
-        "agent_edges": 0,
-        "agent_delegations": 0,
-        "agent_tool_edges": 0,
-        "resolved_agent_tool_edges": 0
-      },
-      "typescript_tool_registrations": {
-        "mastra_create_tool": 0,
-        "mcp_register_tool": 0,
-        "object_property_tools": 0,
-        "capability_edges": 0,
-        "network_helper_edges": 0,
-        "path_boundary_edges": 0
-      },
-      "python_tool_registrations": {
-        "post_definition": 0,
-        "transparent_wrapped": 0,
-        "wrapper_layers": 0,
-        "relative_import": 0,
-        "same_module": 0,
-        "approval_enabled": 0,
-        "capability_edges": 0
-      },
-      "python_registry_tools": {
-        "total": 0,
-        "functions": 0,
-        "classes": 0,
-        "resolved_entrypoints": 0,
-        "metagpt": 0,
-        "qwen_agent": 0,
-        "capability_edges": 0
-      },
-      "python_computer_tools": {
-        "instances": 0,
-        "non_test_instances": 0,
-        "local_execution": 0,
-        "safety_check_handlers_configured": 0,
-        "capability_edges": 0,
-        "resolved_agent_edges": 0
-      },
-      "python_agent_referenced_tools": {
-        "instances": 0,
-        "non_test_instances": 0,
-        "capability_edges": 0,
-        "resolved_agent_edges": 0
-      },
-      "python_function_tool_wrappers": {
-        "instances": 0,
-        "non_test_instances": 0,
-        "approval_enabled": 0,
-        "capability_edges": 0,
-        "resolved_agent_edges": 0
-      },
-      "python_agent_helper_returns": {
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
         "resolved_edges": 0,
-        "unique_agent_targets": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -9301,7 +9240,287 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.6541
+      "elapsed_seconds": 0.9886
+    },
+    {
+      "repository": "letta-ai/letta-code",
+      "category": "coding-agent",
+      "status": "ok",
+      "files_scanned": 219,
+      "dependency_files_materialized": 0,
+      "config_files_scanned": 0,
+      "components": {
+        "capability": 247,
+        "mcp": 3,
+        "model": 66,
+        "protocol": 8
+      },
+      "component_names": {
+        "capability": [
+          "filesystem",
+          "network",
+          "shell-execution"
+        ],
+        "protocol": [
+          "MCP"
+        ]
+      },
+      "relationships": 0,
+      "symbolized_components": 0,
+      "identified_symbol_endpoints": 0,
+      "resolved_symbol_endpoints": 0,
+      "unmatched_identified_symbol_endpoints": 0,
+      "ambiguous_repeated_binding_targets": 0,
+      "resolved_binding_targets_by_basis": {},
+      "resolved_symbol_endpoints_by_frontend": {
+        "py": 0,
+        "ts": 0
+      },
+      "typescript_graph": {
+        "agent_edges": 0,
+        "agent_delegations": 0,
+        "agent_tool_edges": 0,
+        "resolved_agent_tool_edges": 0
+      },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0,
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
+      },
+      "python_tool_registrations": {
+        "post_definition": 0,
+        "transparent_wrapped": 0,
+        "wrapper_layers": 0,
+        "relative_import": 0,
+        "same_module": 0,
+        "approval_enabled": 0,
+        "capability_edges": 0
+      },
+      "python_registry_tools": {
+        "total": 0,
+        "functions": 0,
+        "classes": 0,
+        "resolved_entrypoints": 0,
+        "metagpt": 0,
+        "qwen_agent": 0,
+        "capability_edges": 0
+      },
+      "python_computer_tools": {
+        "instances": 0,
+        "non_test_instances": 0,
+        "local_execution": 0,
+        "safety_check_handlers_configured": 0,
+        "capability_edges": 0,
+        "resolved_agent_edges": 0
+      },
+      "python_agent_referenced_tools": {
+        "instances": 0,
+        "non_test_instances": 0,
+        "capability_edges": 0,
+        "resolved_agent_edges": 0
+      },
+      "python_function_tool_wrappers": {
+        "instances": 0,
+        "non_test_instances": 0,
+        "approval_enabled": 0,
+        "capability_edges": 0,
+        "resolved_agent_edges": 0
+      },
+      "python_agent_helper_returns": {
+        "resolved_edges": 0,
+        "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_browser_evaluate": {
+        "total": 0,
+        "dynamic": 0,
+        "receiver_proven": 0,
+        "receiver_proofs": {}
+      },
+      "python_imported_network_helpers": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "helpers": 0,
+        "capability_edges": 0
+      },
+      "python_imported_class_network_helpers": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "callees": 0,
+        "capability_edges": 0
+      },
+      "python_urllib_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0
+      },
+      "python_network_origin_controls": {
+        "total": 0,
+        "redirects_disabled": 0,
+        "redirects_unresolved": 0,
+        "dns_unresolved": 0
+      },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "redirects_disabled": 0,
+        "dns_connection_pinned": 0,
+        "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
+        "no_escape_hatch": 0
+      },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
+      "python_skyvern_action_history": {
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "best_effort_controls": 0,
+        "actor_attribution_unresolved": 0,
+        "storage_capabilities": 0,
+        "agent_control_edges": 0,
+        "tool_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
+      "typescript_network_origin_controls": {
+        "total": 0,
+        "configured_optional": 0,
+        "default_open": 0,
+        "dns_unresolved": 0
+      },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "runtime_conditional": 0,
+        "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
+        "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
+        "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
+        "dns_connection_pinned_unless_configured_route": 0,
+        "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
+        "proxy_caller_global_or_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
+        "undici_pinned_dispatcher_unless_configured_route": 0,
+        "edge_runtime_fail_closed": 0,
+        "edge_runtime_unguarded_fetch": 0,
+        "configured_route_residual": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
+      },
+      "a2a_endpoint_provenance": {
+        "total": 0,
+        "remote_card_unconstrained": 0,
+        "same_origin_constrained": 0,
+        "typescript": 0,
+        "python": 0,
+        "undici_agent_or_proxy": 0,
+        "all_interfaces_validated": 0,
+        "origin_control_edges": 0
+      },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "python_relative_to": 0,
+        "python_helper_returns": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
+      "path_prefix_checks": {
+        "python": 0,
+        "weak_string_prefix": 0
+      },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "callable_aliases": 0,
+        "pathlib_methods": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
+      "mcp_forwarding_controls": {},
+      "mcp_fixed_binding_scopes": {},
+      "mcp_registry_control_sources": {},
+      "resolved_import_edges": 0,
+      "resolved_import_edges_by_frontend": {
+        "python": 0,
+        "typescript": 0
+      },
+      "bom_endpoint_resolutions": {},
+      "bom_ambiguous_endpoints_by_side_kind": {},
+      "findings": {},
+      "suppressed_findings": 0,
+      "parse_warnings": 0,
+      "parse_warning_details": [],
+      "elapsed_seconds": 4.669
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -9406,6 +9625,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -9602,7 +9828,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2605
+      "elapsed_seconds": 1.2748
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -9699,6 +9925,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -9895,7 +10128,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.5793
+      "elapsed_seconds": 2.5719
     },
     {
       "repository": "mastra-ai/mastra",
@@ -9998,6 +10231,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -10185,7 +10425,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.691
+      "elapsed_seconds": 2.6651
     },
     {
       "repository": "vercel/ai",
@@ -10283,6 +10523,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -10469,7 +10716,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9225
+      "elapsed_seconds": 2.9071
     },
     {
       "repository": "cline/cline",
@@ -10571,6 +10818,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -10758,7 +11012,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.0555
+      "elapsed_seconds": 4.041
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -10855,278 +11109,11 @@
         "unique_agent_targets": 0,
         "non_test_edges": 0
       },
-      "python_browser_evaluate": {
-        "total": 0,
-        "dynamic": 0,
-        "receiver_proven": 0,
-        "receiver_proofs": {}
-      },
-      "python_imported_network_helpers": {
-        "capabilities": 0,
-        "dynamic_origins": 0,
-        "helpers": 0,
-        "capability_edges": 0
-      },
-      "python_imported_class_network_helpers": {
-        "capabilities": 0,
-        "dynamic_origins": 0,
-        "callees": 0,
-        "capability_edges": 0
-      },
-      "python_urllib_network": {
-        "capabilities": 0,
-        "dynamic_origins": 0,
-        "capability_edges": 0
-      },
-      "python_network_origin_controls": {
-        "total": 0,
-        "redirects_disabled": 0,
-        "redirects_unresolved": 0,
-        "dns_unresolved": 0
-      },
-      "python_secure_network_controls": {
-        "total": 0,
-        "enabled_default": 0,
-        "configured_opt_out": 0,
-        "redirects_validated": 0,
-        "redirects_disabled": 0,
-        "dns_connection_pinned": 0,
-        "dns_connection_pinned_unless_proxied": 0,
-        "dns_connection_pinned_when_enforced": 0,
-        "proxies_disabled": 0,
-        "proxies_environment_or_caller_dependent": 0,
-        "proxies_disabled_when_enforced": 0,
-        "redirects_disabled_default_validated_when_enabled": 0,
-        "configured_allowlist_and_loopback_exemption": 0,
-        "no_escape_hatch": 0
-      },
-      "typescript_axios_instance_network": {
-        "capabilities": 0,
-        "dynamic_origins": 0,
-        "absolute_override_allowed": 0,
-        "absolute_override_disabled": 0,
-        "capability_edges": 0
-      },
-      "typescript_composio_cli_upload": {
-        "capabilities": 0,
-        "dynamic_origins": 0,
-        "capability_edges": 0,
-        "raw_global_fetch": 0,
-        "destination_policy_absent": 0
-      },
-      "typescript_google_adk_openapi_rest_tool": {
-        "capabilities": 0,
-        "configured_origins": 0,
-        "tool_edges": 0,
-        "origin_policy_edges": 0,
-        "segment_encoded": 0
-      },
-      "python_openai_mcp_approval_default": {
-        "settings": 0,
-        "disabled_default": 0,
-        "agent_server_edges": 0,
-        "configured_by_edges": 0
-      },
-      "python_google_adk_bigquery_audit": {
-        "available_controls": 0,
-        "deployed_controls": 0,
-        "production_deployments": 0,
-        "test_deployments": 0,
-        "storage_capabilities": 0,
-        "disabled_settings": 0,
-        "agent_control_edges": 0,
-        "external_action_control_edges": 0,
-        "storage_edges": 0
-      },
-      "python_skyvern_action_history": {
-        "deployed_controls": 0,
-        "production_deployments": 0,
-        "best_effort_controls": 0,
-        "actor_attribution_unresolved": 0,
-        "storage_capabilities": 0,
-        "agent_control_edges": 0,
-        "tool_control_edges": 0,
-        "external_action_control_edges": 0,
-        "storage_edges": 0
-      },
-      "typescript_network_origin_controls": {
-        "total": 0,
-        "configured_optional": 0,
-        "default_open": 0,
-        "dns_unresolved": 0
-      },
-      "typescript_secure_network_controls": {
-        "total": 0,
-        "enabled_default": 0,
-        "disabled_default": 0,
-        "configured_opt_in": 0,
-        "configured_opt_out": 0,
-        "runtime_conditional": 0,
-        "bounded_redirect_hooks": 0,
-        "redirects_validated": 0,
-        "redirects_disabled": 0,
-        "redirects_direct_connection_filtered": 0,
-        "secure_lookup_configured": 0,
-        "dns_connection_pinned_unless_proxied": 0,
-        "dns_connection_pinned": 0,
-        "dns_preflight_only_rebinding_residual": 0,
-        "dns_connection_time_filtered_unless_proxied": 0,
-        "dns_connection_pinned_unless_configured_route": 0,
-        "proxy_unresolved": 0,
-        "proxy_environment_dependent": 0,
-        "proxy_pinned_agent": 0,
-        "proxy_caller_global_or_environment_dependent": 0,
-        "fixed_caller_config": 0,
-        "caller_agent_overridden": 0,
-        "global_fetch_unpinned": 0,
-        "imported_axios_client_instance": 0,
-        "configured_address_allowlist": 0,
-        "undici_pinned_dispatcher_unless_configured_route": 0,
-        "edge_runtime_fail_closed": 0,
-        "edge_runtime_unguarded_fetch": 0,
-        "configured_route_residual": 0,
-        "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0,
-        "no_escape_hatch": 0
-      },
-      "a2a_endpoint_provenance": {
-        "total": 0,
-        "remote_card_unconstrained": 0,
-        "same_origin_constrained": 0,
-        "typescript": 0,
-        "python": 0,
-        "undici_agent_or_proxy": 0,
-        "all_interfaces_validated": 0,
-        "origin_control_edges": 0
-      },
-      "path_boundary_controls": {
-        "python": 0,
-        "typescript": 0,
-        "python_relative_to": 0,
-        "python_helper_returns": 0,
-        "constrained": 0,
-        "unresolved": 0
-      },
-      "path_prefix_checks": {
-        "python": 0,
-        "weak_string_prefix": 0
-      },
-      "python_filesystem_mutations": {
-        "total": 0,
-        "callable_aliases": 0,
-        "pathlib_methods": 0,
-        "dynamic_paths": 0,
-        "guarded": 0,
-        "operations": {},
-        "apis": {}
-      },
-      "mcp_forwarding_controls": {},
-      "mcp_fixed_binding_scopes": {},
-      "mcp_registry_control_sources": {},
-      "resolved_import_edges": 0,
-      "resolved_import_edges_by_frontend": {
-        "python": 0,
-        "typescript": 0
-      },
-      "bom_endpoint_resolutions": {},
-      "bom_ambiguous_endpoints_by_side_kind": {},
-      "findings": {},
-      "suppressed_findings": 0,
-      "parse_warnings": 0,
-      "parse_warning_details": [],
-      "elapsed_seconds": 4.3849
-    },
-    {
-      "repository": "continuedev/continue",
-      "category": "coding-agent",
-      "status": "ok",
-      "files_scanned": 186,
-      "dependency_files_materialized": 0,
-      "config_files_scanned": 0,
-      "components": {
-        "capability": 21,
-        "mcp": 4,
-        "model": 4,
-        "protocol": 18
-      },
-      "component_names": {
-        "capability": [
-          "external-action",
-          "filesystem",
-          "network",
-          "shell-execution"
-        ],
-        "protocol": [
-          "MCP"
-        ]
-      },
-      "relationships": 0,
-      "symbolized_components": 0,
-      "identified_symbol_endpoints": 0,
-      "resolved_symbol_endpoints": 0,
-      "unmatched_identified_symbol_endpoints": 0,
-      "ambiguous_repeated_binding_targets": 0,
-      "resolved_binding_targets_by_basis": {},
-      "resolved_symbol_endpoints_by_frontend": {
-        "py": 0,
-        "ts": 0
-      },
-      "typescript_graph": {
-        "agent_edges": 0,
-        "agent_delegations": 0,
-        "agent_tool_edges": 0,
-        "resolved_agent_tool_edges": 0
-      },
-      "typescript_tool_registrations": {
-        "mastra_create_tool": 0,
-        "mcp_register_tool": 0,
-        "object_property_tools": 0,
-        "capability_edges": 0,
-        "network_helper_edges": 0,
-        "path_boundary_edges": 0
-      },
-      "python_tool_registrations": {
-        "post_definition": 0,
-        "transparent_wrapped": 0,
-        "wrapper_layers": 0,
-        "relative_import": 0,
-        "same_module": 0,
-        "approval_enabled": 0,
-        "capability_edges": 0
-      },
-      "python_registry_tools": {
-        "total": 0,
-        "functions": 0,
-        "classes": 0,
-        "resolved_entrypoints": 0,
-        "metagpt": 0,
-        "qwen_agent": 0,
-        "capability_edges": 0
-      },
-      "python_computer_tools": {
-        "instances": 0,
-        "non_test_instances": 0,
-        "local_execution": 0,
-        "safety_check_handlers_configured": 0,
-        "capability_edges": 0,
-        "resolved_agent_edges": 0
-      },
-      "python_agent_referenced_tools": {
-        "instances": 0,
-        "non_test_instances": 0,
-        "capability_edges": 0,
-        "resolved_agent_edges": 0
-      },
-      "python_function_tool_wrappers": {
-        "instances": 0,
-        "non_test_instances": 0,
-        "approval_enabled": 0,
-        "capability_edges": 0,
-        "resolved_agent_edges": 0
-      },
-      "python_agent_helper_returns": {
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
         "resolved_edges": 0,
-        "unique_agent_targets": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -11308,7 +11295,288 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7076
+      "elapsed_seconds": 4.3684
+    },
+    {
+      "repository": "continuedev/continue",
+      "category": "coding-agent",
+      "status": "ok",
+      "files_scanned": 186,
+      "dependency_files_materialized": 0,
+      "config_files_scanned": 0,
+      "components": {
+        "capability": 21,
+        "mcp": 4,
+        "model": 4,
+        "protocol": 18
+      },
+      "component_names": {
+        "capability": [
+          "external-action",
+          "filesystem",
+          "network",
+          "shell-execution"
+        ],
+        "protocol": [
+          "MCP"
+        ]
+      },
+      "relationships": 0,
+      "symbolized_components": 0,
+      "identified_symbol_endpoints": 0,
+      "resolved_symbol_endpoints": 0,
+      "unmatched_identified_symbol_endpoints": 0,
+      "ambiguous_repeated_binding_targets": 0,
+      "resolved_binding_targets_by_basis": {},
+      "resolved_symbol_endpoints_by_frontend": {
+        "py": 0,
+        "ts": 0
+      },
+      "typescript_graph": {
+        "agent_edges": 0,
+        "agent_delegations": 0,
+        "agent_tool_edges": 0,
+        "resolved_agent_tool_edges": 0
+      },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0,
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
+      },
+      "python_tool_registrations": {
+        "post_definition": 0,
+        "transparent_wrapped": 0,
+        "wrapper_layers": 0,
+        "relative_import": 0,
+        "same_module": 0,
+        "approval_enabled": 0,
+        "capability_edges": 0
+      },
+      "python_registry_tools": {
+        "total": 0,
+        "functions": 0,
+        "classes": 0,
+        "resolved_entrypoints": 0,
+        "metagpt": 0,
+        "qwen_agent": 0,
+        "capability_edges": 0
+      },
+      "python_computer_tools": {
+        "instances": 0,
+        "non_test_instances": 0,
+        "local_execution": 0,
+        "safety_check_handlers_configured": 0,
+        "capability_edges": 0,
+        "resolved_agent_edges": 0
+      },
+      "python_agent_referenced_tools": {
+        "instances": 0,
+        "non_test_instances": 0,
+        "capability_edges": 0,
+        "resolved_agent_edges": 0
+      },
+      "python_function_tool_wrappers": {
+        "instances": 0,
+        "non_test_instances": 0,
+        "approval_enabled": 0,
+        "capability_edges": 0,
+        "resolved_agent_edges": 0
+      },
+      "python_agent_helper_returns": {
+        "resolved_edges": 0,
+        "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_browser_evaluate": {
+        "total": 0,
+        "dynamic": 0,
+        "receiver_proven": 0,
+        "receiver_proofs": {}
+      },
+      "python_imported_network_helpers": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "helpers": 0,
+        "capability_edges": 0
+      },
+      "python_imported_class_network_helpers": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "callees": 0,
+        "capability_edges": 0
+      },
+      "python_urllib_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0
+      },
+      "python_network_origin_controls": {
+        "total": 0,
+        "redirects_disabled": 0,
+        "redirects_unresolved": 0,
+        "dns_unresolved": 0
+      },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "redirects_disabled": 0,
+        "dns_connection_pinned": 0,
+        "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
+        "no_escape_hatch": 0
+      },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
+      "python_skyvern_action_history": {
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "best_effort_controls": 0,
+        "actor_attribution_unresolved": 0,
+        "storage_capabilities": 0,
+        "agent_control_edges": 0,
+        "tool_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
+      "typescript_network_origin_controls": {
+        "total": 0,
+        "configured_optional": 0,
+        "default_open": 0,
+        "dns_unresolved": 0
+      },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "runtime_conditional": 0,
+        "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
+        "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
+        "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
+        "dns_connection_pinned_unless_configured_route": 0,
+        "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
+        "proxy_caller_global_or_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
+        "undici_pinned_dispatcher_unless_configured_route": 0,
+        "edge_runtime_fail_closed": 0,
+        "edge_runtime_unguarded_fetch": 0,
+        "configured_route_residual": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
+      },
+      "a2a_endpoint_provenance": {
+        "total": 0,
+        "remote_card_unconstrained": 0,
+        "same_origin_constrained": 0,
+        "typescript": 0,
+        "python": 0,
+        "undici_agent_or_proxy": 0,
+        "all_interfaces_validated": 0,
+        "origin_control_edges": 0
+      },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "python_relative_to": 0,
+        "python_helper_returns": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
+      "path_prefix_checks": {
+        "python": 0,
+        "weak_string_prefix": 0
+      },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "callable_aliases": 0,
+        "pathlib_methods": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
+      "mcp_forwarding_controls": {},
+      "mcp_fixed_binding_scopes": {},
+      "mcp_registry_control_sources": {},
+      "resolved_import_edges": 0,
+      "resolved_import_edges_by_frontend": {
+        "python": 0,
+        "typescript": 0
+      },
+      "bom_endpoint_resolutions": {},
+      "bom_ambiguous_endpoints_by_side_kind": {},
+      "findings": {},
+      "suppressed_findings": 0,
+      "parse_warnings": 0,
+      "parse_warning_details": [],
+      "elapsed_seconds": 2.6978
     },
     {
       "repository": "Aider-AI/aider",
@@ -11398,6 +11666,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -11596,7 +11871,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0816
+      "elapsed_seconds": 3.1546
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -11685,6 +11960,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -11876,7 +12158,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 1.0351
+      "elapsed_seconds": 1.0128
     },
     {
       "repository": "plandex-ai/plandex",
@@ -11954,6 +12236,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -12135,7 +12424,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0487
+      "elapsed_seconds": 0.0458
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -12227,6 +12516,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -12414,7 +12710,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5076
+      "elapsed_seconds": 1.5252
     },
     {
       "repository": "stitionai/devika",
@@ -12509,6 +12805,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -12696,7 +12999,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3837
+      "elapsed_seconds": 0.4005
     },
     {
       "repository": "block/goose",
@@ -12789,6 +13092,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -12979,7 +13289,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 6.0297
+      "elapsed_seconds": 6.0071
     },
     {
       "repository": "bytedance/trae-agent",
@@ -13085,6 +13395,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -13283,7 +13600,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8305
+      "elapsed_seconds": 0.8264
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -13379,6 +13696,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -13566,7 +13890,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.4833
+      "elapsed_seconds": 6.4169
     },
     {
       "repository": "openai/codex",
@@ -13651,6 +13975,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -13838,7 +14169,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7252
+      "elapsed_seconds": 0.7616
     },
     {
       "repository": "browser-use/browser-use",
@@ -13944,6 +14275,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -14145,7 +14483,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.3702
+      "elapsed_seconds": 4.44
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -14261,6 +14599,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -14463,7 +14808,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.9562
+      "elapsed_seconds": 9.0045
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -14561,6 +14906,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -14755,7 +15107,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8784
+      "elapsed_seconds": 0.8709
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -14850,6 +15202,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -15033,7 +15392,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3947
+      "elapsed_seconds": 1.382
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -15131,6 +15490,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -15322,7 +15688,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3859
+      "elapsed_seconds": 1.3868
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -15427,6 +15793,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -15617,7 +15990,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7421
+      "elapsed_seconds": 2.7753
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -15715,6 +16088,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -15901,7 +16281,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.1362
+      "elapsed_seconds": 4.0889
     },
     {
       "repository": "github/github-mcp-server",
@@ -15989,6 +16369,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -16170,7 +16557,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0512
+      "elapsed_seconds": 0.0464
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -16261,6 +16648,13 @@
         "unique_agent_targets": 0,
         "non_test_edges": 0
       },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
+        "non_test_edges": 0
+      },
       "python_browser_evaluate": {
         "total": 0,
         "dynamic": 0,
@@ -16440,7 +16834,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1166
+      "elapsed_seconds": 0.1165
     },
     {
       "repository": "awslabs/mcp",
@@ -16536,6 +16930,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -16725,7 +17126,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.4004
+      "elapsed_seconds": 2.3711
     },
     {
       "repository": "docker/mcp-gateway",
@@ -16814,6 +17215,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -16997,7 +17405,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.039
+      "elapsed_seconds": 0.036
     },
     {
       "repository": "jlowin/fastmcp",
@@ -17094,6 +17502,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -17287,7 +17702,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8074
+      "elapsed_seconds": 2.9061
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -17365,6 +17780,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -17546,7 +17968,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0346
+      "elapsed_seconds": 0.0332
     },
     {
       "repository": "langflow-ai/langflow",
@@ -17652,6 +18074,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -17841,7 +18270,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4308
+      "elapsed_seconds": 3.4728
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -17937,6 +18366,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -18126,7 +18562,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.9319
+      "elapsed_seconds": 3.88
     },
     {
       "repository": "langgenius/dify",
@@ -18207,6 +18643,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -18388,7 +18831,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9281
+      "elapsed_seconds": 1.9335
     },
     {
       "repository": "n8n-io/n8n",
@@ -18492,6 +18935,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -18681,7 +19131,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8251
+      "elapsed_seconds": 2.8092
     },
     {
       "repository": "activepieces/activepieces",
@@ -18788,6 +19238,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -18979,7 +19436,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8107
+      "elapsed_seconds": 1.8085
     },
     {
       "repository": "simstudioai/sim",
@@ -19066,6 +19523,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -19247,7 +19711,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.3963
+      "elapsed_seconds": 5.3988
     },
     {
       "repository": "composiohq/composio",
@@ -19360,6 +19824,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -19551,7 +20022,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0358
+      "elapsed_seconds": 2.031
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -19660,6 +20131,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -19859,7 +20337,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9424
+      "elapsed_seconds": 2.9488
     },
     {
       "repository": "e2b-dev/E2B",
@@ -19947,263 +20425,11 @@
         "unique_agent_targets": 0,
         "non_test_edges": 0
       },
-      "python_browser_evaluate": {
-        "total": 0,
-        "dynamic": 0,
-        "receiver_proven": 0,
-        "receiver_proofs": {}
-      },
-      "python_imported_network_helpers": {
-        "capabilities": 0,
-        "dynamic_origins": 0,
-        "helpers": 0,
-        "capability_edges": 0
-      },
-      "python_imported_class_network_helpers": {
-        "capabilities": 0,
-        "dynamic_origins": 0,
-        "callees": 0,
-        "capability_edges": 0
-      },
-      "python_urllib_network": {
-        "capabilities": 0,
-        "dynamic_origins": 0,
-        "capability_edges": 0
-      },
-      "python_network_origin_controls": {
-        "total": 0,
-        "redirects_disabled": 0,
-        "redirects_unresolved": 0,
-        "dns_unresolved": 0
-      },
-      "python_secure_network_controls": {
-        "total": 0,
-        "enabled_default": 0,
-        "configured_opt_out": 0,
-        "redirects_validated": 0,
-        "redirects_disabled": 0,
-        "dns_connection_pinned": 0,
-        "dns_connection_pinned_unless_proxied": 0,
-        "dns_connection_pinned_when_enforced": 0,
-        "proxies_disabled": 0,
-        "proxies_environment_or_caller_dependent": 0,
-        "proxies_disabled_when_enforced": 0,
-        "redirects_disabled_default_validated_when_enabled": 0,
-        "configured_allowlist_and_loopback_exemption": 0,
-        "no_escape_hatch": 0
-      },
-      "typescript_axios_instance_network": {
-        "capabilities": 0,
-        "dynamic_origins": 0,
-        "absolute_override_allowed": 0,
-        "absolute_override_disabled": 0,
-        "capability_edges": 0
-      },
-      "typescript_composio_cli_upload": {
-        "capabilities": 0,
-        "dynamic_origins": 0,
-        "capability_edges": 0,
-        "raw_global_fetch": 0,
-        "destination_policy_absent": 0
-      },
-      "typescript_google_adk_openapi_rest_tool": {
-        "capabilities": 0,
-        "configured_origins": 0,
-        "tool_edges": 0,
-        "origin_policy_edges": 0,
-        "segment_encoded": 0
-      },
-      "python_openai_mcp_approval_default": {
-        "settings": 0,
-        "disabled_default": 0,
-        "agent_server_edges": 0,
-        "configured_by_edges": 0
-      },
-      "python_google_adk_bigquery_audit": {
-        "available_controls": 0,
-        "deployed_controls": 0,
-        "production_deployments": 0,
-        "test_deployments": 0,
-        "storage_capabilities": 0,
-        "disabled_settings": 0,
-        "agent_control_edges": 0,
-        "external_action_control_edges": 0,
-        "storage_edges": 0
-      },
-      "python_skyvern_action_history": {
-        "deployed_controls": 0,
-        "production_deployments": 0,
-        "best_effort_controls": 0,
-        "actor_attribution_unresolved": 0,
-        "storage_capabilities": 0,
-        "agent_control_edges": 0,
-        "tool_control_edges": 0,
-        "external_action_control_edges": 0,
-        "storage_edges": 0
-      },
-      "typescript_network_origin_controls": {
-        "total": 0,
-        "configured_optional": 0,
-        "default_open": 0,
-        "dns_unresolved": 0
-      },
-      "typescript_secure_network_controls": {
-        "total": 0,
-        "enabled_default": 0,
-        "disabled_default": 0,
-        "configured_opt_in": 0,
-        "configured_opt_out": 0,
-        "runtime_conditional": 0,
-        "bounded_redirect_hooks": 0,
-        "redirects_validated": 0,
-        "redirects_disabled": 0,
-        "redirects_direct_connection_filtered": 0,
-        "secure_lookup_configured": 0,
-        "dns_connection_pinned_unless_proxied": 0,
-        "dns_connection_pinned": 0,
-        "dns_preflight_only_rebinding_residual": 0,
-        "dns_connection_time_filtered_unless_proxied": 0,
-        "dns_connection_pinned_unless_configured_route": 0,
-        "proxy_unresolved": 0,
-        "proxy_environment_dependent": 0,
-        "proxy_pinned_agent": 0,
-        "proxy_caller_global_or_environment_dependent": 0,
-        "fixed_caller_config": 0,
-        "caller_agent_overridden": 0,
-        "global_fetch_unpinned": 0,
-        "imported_axios_client_instance": 0,
-        "configured_address_allowlist": 0,
-        "undici_pinned_dispatcher_unless_configured_route": 0,
-        "edge_runtime_fail_closed": 0,
-        "edge_runtime_unguarded_fetch": 0,
-        "configured_route_residual": 0,
-        "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0,
-        "no_escape_hatch": 0
-      },
-      "a2a_endpoint_provenance": {
-        "total": 0,
-        "remote_card_unconstrained": 0,
-        "same_origin_constrained": 0,
-        "typescript": 0,
-        "python": 0,
-        "undici_agent_or_proxy": 0,
-        "all_interfaces_validated": 0,
-        "origin_control_edges": 0
-      },
-      "path_boundary_controls": {
-        "python": 0,
-        "typescript": 0,
-        "python_relative_to": 0,
-        "python_helper_returns": 0,
-        "constrained": 0,
-        "unresolved": 0
-      },
-      "path_prefix_checks": {
-        "python": 0,
-        "weak_string_prefix": 0
-      },
-      "python_filesystem_mutations": {
-        "total": 0,
-        "callable_aliases": 0,
-        "pathlib_methods": 0,
-        "dynamic_paths": 0,
-        "guarded": 0,
-        "operations": {},
-        "apis": {}
-      },
-      "mcp_forwarding_controls": {},
-      "mcp_fixed_binding_scopes": {},
-      "mcp_registry_control_sources": {},
-      "resolved_import_edges": 0,
-      "resolved_import_edges_by_frontend": {
-        "python": 0,
-        "typescript": 0
-      },
-      "bom_endpoint_resolutions": {},
-      "bom_ambiguous_endpoints_by_side_kind": {},
-      "findings": {},
-      "suppressed_findings": 0,
-      "parse_warnings": 0,
-      "parse_warning_details": [],
-      "elapsed_seconds": 2.4387
-    },
-    {
-      "repository": "daytonaio/daytona",
-      "category": "sandbox",
-      "status": "ok",
-      "files_scanned": 0,
-      "dependency_files_materialized": 0,
-      "config_files_scanned": 0,
-      "components": {},
-      "component_names": {},
-      "relationships": 0,
-      "symbolized_components": 0,
-      "identified_symbol_endpoints": 0,
-      "resolved_symbol_endpoints": 0,
-      "unmatched_identified_symbol_endpoints": 0,
-      "ambiguous_repeated_binding_targets": 0,
-      "resolved_binding_targets_by_basis": {},
-      "resolved_symbol_endpoints_by_frontend": {
-        "py": 0,
-        "ts": 0
-      },
-      "typescript_graph": {
-        "agent_edges": 0,
-        "agent_delegations": 0,
-        "agent_tool_edges": 0,
-        "resolved_agent_tool_edges": 0
-      },
-      "typescript_tool_registrations": {
-        "mastra_create_tool": 0,
-        "mcp_register_tool": 0,
-        "object_property_tools": 0,
-        "capability_edges": 0,
-        "network_helper_edges": 0,
-        "path_boundary_edges": 0
-      },
-      "python_tool_registrations": {
-        "post_definition": 0,
-        "transparent_wrapped": 0,
-        "wrapper_layers": 0,
-        "relative_import": 0,
-        "same_module": 0,
-        "approval_enabled": 0,
-        "capability_edges": 0
-      },
-      "python_registry_tools": {
-        "total": 0,
-        "functions": 0,
-        "classes": 0,
-        "resolved_entrypoints": 0,
-        "metagpt": 0,
-        "qwen_agent": 0,
-        "capability_edges": 0
-      },
-      "python_computer_tools": {
-        "instances": 0,
-        "non_test_instances": 0,
-        "local_execution": 0,
-        "safety_check_handlers_configured": 0,
-        "capability_edges": 0,
-        "resolved_agent_edges": 0
-      },
-      "python_agent_referenced_tools": {
-        "instances": 0,
-        "non_test_instances": 0,
-        "capability_edges": 0,
-        "resolved_agent_edges": 0
-      },
-      "python_function_tool_wrappers": {
-        "instances": 0,
-        "non_test_instances": 0,
-        "approval_enabled": 0,
-        "capability_edges": 0,
-        "resolved_agent_edges": 0
-      },
-      "python_agent_helper_returns": {
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
         "resolved_edges": 0,
-        "unique_agent_targets": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -20385,7 +20611,273 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0012
+      "elapsed_seconds": 2.3939
+    },
+    {
+      "repository": "daytonaio/daytona",
+      "category": "sandbox",
+      "status": "ok",
+      "files_scanned": 0,
+      "dependency_files_materialized": 0,
+      "config_files_scanned": 0,
+      "components": {},
+      "component_names": {},
+      "relationships": 0,
+      "symbolized_components": 0,
+      "identified_symbol_endpoints": 0,
+      "resolved_symbol_endpoints": 0,
+      "unmatched_identified_symbol_endpoints": 0,
+      "ambiguous_repeated_binding_targets": 0,
+      "resolved_binding_targets_by_basis": {},
+      "resolved_symbol_endpoints_by_frontend": {
+        "py": 0,
+        "ts": 0
+      },
+      "typescript_graph": {
+        "agent_edges": 0,
+        "agent_delegations": 0,
+        "agent_tool_edges": 0,
+        "resolved_agent_tool_edges": 0
+      },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0,
+        "network_helper_edges": 0,
+        "path_boundary_edges": 0
+      },
+      "python_tool_registrations": {
+        "post_definition": 0,
+        "transparent_wrapped": 0,
+        "wrapper_layers": 0,
+        "relative_import": 0,
+        "same_module": 0,
+        "approval_enabled": 0,
+        "capability_edges": 0
+      },
+      "python_registry_tools": {
+        "total": 0,
+        "functions": 0,
+        "classes": 0,
+        "resolved_entrypoints": 0,
+        "metagpt": 0,
+        "qwen_agent": 0,
+        "capability_edges": 0
+      },
+      "python_computer_tools": {
+        "instances": 0,
+        "non_test_instances": 0,
+        "local_execution": 0,
+        "safety_check_handlers_configured": 0,
+        "capability_edges": 0,
+        "resolved_agent_edges": 0
+      },
+      "python_agent_referenced_tools": {
+        "instances": 0,
+        "non_test_instances": 0,
+        "capability_edges": 0,
+        "resolved_agent_edges": 0
+      },
+      "python_function_tool_wrappers": {
+        "instances": 0,
+        "non_test_instances": 0,
+        "approval_enabled": 0,
+        "capability_edges": 0,
+        "resolved_agent_edges": 0
+      },
+      "python_agent_helper_returns": {
+        "resolved_edges": 0,
+        "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_browser_evaluate": {
+        "total": 0,
+        "dynamic": 0,
+        "receiver_proven": 0,
+        "receiver_proofs": {}
+      },
+      "python_imported_network_helpers": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "helpers": 0,
+        "capability_edges": 0
+      },
+      "python_imported_class_network_helpers": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "callees": 0,
+        "capability_edges": 0
+      },
+      "python_urllib_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0
+      },
+      "python_network_origin_controls": {
+        "total": 0,
+        "redirects_disabled": 0,
+        "redirects_unresolved": 0,
+        "dns_unresolved": 0
+      },
+      "python_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "configured_opt_out": 0,
+        "redirects_validated": 0,
+        "redirects_disabled": 0,
+        "dns_connection_pinned": 0,
+        "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned_when_enforced": 0,
+        "proxies_disabled": 0,
+        "proxies_environment_or_caller_dependent": 0,
+        "proxies_disabled_when_enforced": 0,
+        "redirects_disabled_default_validated_when_enabled": 0,
+        "configured_allowlist_and_loopback_exemption": 0,
+        "no_escape_hatch": 0
+      },
+      "typescript_axios_instance_network": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "absolute_override_allowed": 0,
+        "absolute_override_disabled": 0,
+        "capability_edges": 0
+      },
+      "typescript_composio_cli_upload": {
+        "capabilities": 0,
+        "dynamic_origins": 0,
+        "capability_edges": 0,
+        "raw_global_fetch": 0,
+        "destination_policy_absent": 0
+      },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
+      "python_google_adk_bigquery_audit": {
+        "available_controls": 0,
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "test_deployments": 0,
+        "storage_capabilities": 0,
+        "disabled_settings": 0,
+        "agent_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
+      "python_skyvern_action_history": {
+        "deployed_controls": 0,
+        "production_deployments": 0,
+        "best_effort_controls": 0,
+        "actor_attribution_unresolved": 0,
+        "storage_capabilities": 0,
+        "agent_control_edges": 0,
+        "tool_control_edges": 0,
+        "external_action_control_edges": 0,
+        "storage_edges": 0
+      },
+      "typescript_network_origin_controls": {
+        "total": 0,
+        "configured_optional": 0,
+        "default_open": 0,
+        "dns_unresolved": 0
+      },
+      "typescript_secure_network_controls": {
+        "total": 0,
+        "enabled_default": 0,
+        "disabled_default": 0,
+        "configured_opt_in": 0,
+        "configured_opt_out": 0,
+        "runtime_conditional": 0,
+        "bounded_redirect_hooks": 0,
+        "redirects_validated": 0,
+        "redirects_disabled": 0,
+        "redirects_direct_connection_filtered": 0,
+        "secure_lookup_configured": 0,
+        "dns_connection_pinned_unless_proxied": 0,
+        "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
+        "dns_connection_time_filtered_unless_proxied": 0,
+        "dns_connection_pinned_unless_configured_route": 0,
+        "proxy_unresolved": 0,
+        "proxy_environment_dependent": 0,
+        "proxy_pinned_agent": 0,
+        "proxy_caller_global_or_environment_dependent": 0,
+        "fixed_caller_config": 0,
+        "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
+        "imported_axios_client_instance": 0,
+        "configured_address_allowlist": 0,
+        "undici_pinned_dispatcher_unless_configured_route": 0,
+        "edge_runtime_fail_closed": 0,
+        "edge_runtime_unguarded_fetch": 0,
+        "configured_route_residual": 0,
+        "ipv4_mapped_ipv6_normalized": 0,
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
+      },
+      "a2a_endpoint_provenance": {
+        "total": 0,
+        "remote_card_unconstrained": 0,
+        "same_origin_constrained": 0,
+        "typescript": 0,
+        "python": 0,
+        "undici_agent_or_proxy": 0,
+        "all_interfaces_validated": 0,
+        "origin_control_edges": 0
+      },
+      "path_boundary_controls": {
+        "python": 0,
+        "typescript": 0,
+        "python_relative_to": 0,
+        "python_helper_returns": 0,
+        "constrained": 0,
+        "unresolved": 0
+      },
+      "path_prefix_checks": {
+        "python": 0,
+        "weak_string_prefix": 0
+      },
+      "python_filesystem_mutations": {
+        "total": 0,
+        "callable_aliases": 0,
+        "pathlib_methods": 0,
+        "dynamic_paths": 0,
+        "guarded": 0,
+        "operations": {},
+        "apis": {}
+      },
+      "mcp_forwarding_controls": {},
+      "mcp_fixed_binding_scopes": {},
+      "mcp_registry_control_sources": {},
+      "resolved_import_edges": 0,
+      "resolved_import_edges_by_frontend": {
+        "python": 0,
+        "typescript": 0
+      },
+      "bom_endpoint_resolutions": {},
+      "bom_ambiguous_endpoints_by_side_kind": {},
+      "findings": {},
+      "suppressed_findings": 0,
+      "parse_warnings": 0,
+      "parse_warning_details": [],
+      "elapsed_seconds": 0.0002
     },
     {
       "repository": "AgentOps-AI/agentops",
@@ -20486,6 +20978,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -20673,7 +21172,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5356
+      "elapsed_seconds": 1.5368
     },
     {
       "repository": "traceloop/openllmetry",
@@ -20784,6 +21283,13 @@
       "python_agent_helper_returns": {
         "resolved_edges": 0,
         "unique_agent_targets": 0,
+        "non_test_edges": 0
+      },
+      "python_typed_tool_parameters": {
+        "parameter_bindings": 0,
+        "resolved_edges": 0,
+        "verified_call_sites": 0,
+        "concrete_targets": 0,
         "non_test_edges": 0
       },
       "python_browser_evaluate": {
@@ -20974,7 +21480,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6084
+      "elapsed_seconds": 2.6782
     }
   ]
 }

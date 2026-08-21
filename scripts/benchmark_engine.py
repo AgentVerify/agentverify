@@ -91,6 +91,7 @@ def main() -> int:
                 "lexical-single-definition",
                 "module-single-definition",
                 "same-class-helper-return",
+                "typed-parameter-callsite-consensus",
             }
         )
         if any(
@@ -113,7 +114,49 @@ def main() -> int:
             raise RuntimeError(
                 f"{repository}: same-class Agent helper return lacks an exact Agent edge"
             )
+        python_typed_tool_parameter_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.attributes.get("target_identity")
+            == "typed-parameter-callsite-consensus"
+        ]
+        python_typed_tool_parameters = [
+            component
+            for component in ir.components
+            if component.kind == "tool"
+            and component.attributes.get("binding") == "typed-parameter"
+        ]
+        if any(
+            edge.source_kind != "agent"
+            or edge.target_kind != "tool"
+            or edge.target_id is None
+            for edge in python_typed_tool_parameter_edges
+        ):
+            raise RuntimeError(
+                f"{repository}: typed tool parameter lacks an exact Agent-to-tool edge"
+            )
+        typed_tool_parameter_ids = {
+            component.symbol_id
+            for component in python_typed_tool_parameters
+            if component.symbol_id is not None
+        }
+        if any(
+            edge.target_id not in typed_tool_parameter_ids
+            for edge in python_typed_tool_parameter_edges
+        ):
+            raise RuntimeError(
+                f"{repository}: typed tool parameter edge lacks a parameter component"
+            )
         component_symbol_ids = {item.symbol_id for item in ir.components if item.symbol_id}
+        typed_tool_concrete_ids = {
+            target_id
+            for component in python_typed_tool_parameters
+            for target_id in component.attributes.get("callsite_target_ids", [])
+        }
+        if not typed_tool_concrete_ids <= component_symbol_ids:
+            raise RuntimeError(
+                f"{repository}: typed tool parameter records a missing concrete target"
+            )
         relationship_symbol_ids = [
             symbol_id
             for edge in ir.relationships
@@ -668,6 +711,28 @@ def main() -> int:
                     not edge.evidence.path.startswith("tests/")
                     and "/tests/" not in edge.evidence.path
                     for edge in python_agent_helper_return_edges
+                ),
+            },
+            "python_typed_tool_parameters": {
+                "parameter_bindings": len(python_typed_tool_parameters),
+                "resolved_edges": len(python_typed_tool_parameter_edges),
+                "verified_call_sites": sum(
+                    int(component.attributes.get("verified_call_sites", 0))
+                    for component in python_typed_tool_parameters
+                ),
+                "concrete_targets": len(
+                    {
+                        target_id
+                        for component in python_typed_tool_parameters
+                        for target_id in component.attributes.get(
+                            "callsite_target_ids", []
+                        )
+                    }
+                ),
+                "non_test_edges": sum(
+                    not edge.evidence.path.startswith("tests/")
+                    and "/tests/" not in edge.evidence.path
+                    for edge in python_typed_tool_parameter_edges
                 ),
             },
             "python_browser_evaluate": {
@@ -1309,7 +1374,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 53,
+        "schema_version": 54,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -1475,6 +1540,19 @@ def main() -> int:
                 for name in (
                     "resolved_edges",
                     "unique_agent_targets",
+                    "non_test_edges",
+                )
+            },
+            "python_typed_tool_parameters": {
+                name: sum(
+                    result["python_typed_tool_parameters"][name]
+                    for result in successful
+                )
+                for name in (
+                    "parameter_bindings",
+                    "resolved_edges",
+                    "verified_call_sites",
+                    "concrete_targets",
                     "non_test_edges",
                 )
             },

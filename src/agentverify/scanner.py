@@ -2469,7 +2469,13 @@ class PythonVisitor(ast.NodeVisitor):
                     return dominating if repeated else (dominating[0], None)
                 return symbol_id, "lexical-single-definition" if repeated else None
         if dominating:
-            return dominating if repeated else (dominating[0], None)
+            return (
+                dominating
+                if repeated
+                or dominating[1]
+                in {"same-class-helper-return", "typed-parameter-callsite-consensus"}
+                else (dominating[0], None)
+            )
         if (
             scope
             and (scope, name) not in self.scope_bound_names
@@ -5309,6 +5315,288 @@ def scan_python(
         if wrapper := wrapped_tool_assignments.get(id(node)):
             definition_symbol_ids[id(wrapper.function)] = symbol_id
 
+    builtin_tool_type_candidates: dict[str, set[str]] = defaultdict(set)
+    for statement in tree.body:
+        if isinstance(statement, ast.ImportFrom) and statement.module in {
+            "agents",
+            "agents.tool",
+        }:
+            for alias in statement.names:
+                if alias.name in BUILTIN_TOOL_CAPABILITIES:
+                    builtin_tool_type_candidates[alias.asname or alias.name].add(
+                        alias.name
+                    )
+        elif isinstance(statement, ast.Import):
+            for alias in statement.names:
+                if alias.name == "agents":
+                    prefix = alias.asname or "agents"
+                elif alias.name == "agents.tool":
+                    prefix = alias.asname or "agents.tool"
+                else:
+                    continue
+                for constructor in BUILTIN_TOOL_CAPABILITIES:
+                    builtin_tool_type_candidates[f"{prefix}.{constructor}"].add(
+                        constructor
+                    )
+    builtin_tool_types = {
+        binding: next(iter(constructors))
+        for binding, constructors in builtin_tool_type_candidates.items()
+        if len(constructors) == 1
+        and binding.split(".", 1)[0] not in module_rebound_names
+    }
+    function_local_bindings_cache: dict[int, set[str]] = {}
+
+    enclosing_function_cache: dict[
+        int, ast.FunctionDef | ast.AsyncFunctionDef | None
+    ] = {}
+
+    def enclosing_function(
+        node: ast.AST,
+    ) -> ast.FunctionDef | ast.AsyncFunctionDef | None:
+        if id(node) in enclosing_function_cache:
+            return enclosing_function_cache[id(node)]
+        parent = parent_by_id.get(id(node))
+        while parent is not None and not isinstance(
+            parent, (ast.FunctionDef, ast.AsyncFunctionDef)
+        ):
+            parent = parent_by_id.get(id(parent))
+        function = (
+            parent
+            if isinstance(parent, (ast.FunctionDef, ast.AsyncFunctionDef))
+            else None
+        )
+        enclosing_function_cache[id(node)] = function
+        return function
+
+    def function_local_bindings(
+        function: ast.FunctionDef | ast.AsyncFunctionDef | None,
+    ) -> set[str]:
+        if function is None:
+            return set()
+        if id(function) not in function_local_bindings_cache:
+            function_local_bindings_cache[id(function)] = python_function_local_bindings(
+                function
+            )
+        return function_local_bindings_cache[id(function)]
+
+    def enclosed_by_lambda(node: ast.AST) -> bool:
+        parent = parent_by_id.get(id(node))
+        while parent is not None:
+            if isinstance(parent, ast.Lambda):
+                return True
+            if isinstance(parent, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                return False
+            parent = parent_by_id.get(id(parent))
+        return False
+
+    def shadowed_in_enclosing_functions(node: ast.AST, name: str) -> bool:
+        parent = parent_by_id.get(id(node))
+        while parent is not None:
+            if isinstance(parent, (ast.FunctionDef, ast.AsyncFunctionDef)) and (
+                name in function_local_bindings(parent)
+            ):
+                return True
+            parent = parent_by_id.get(id(parent))
+        return False
+
+    def builtin_tool_constructor(
+        call: ast.Call,
+    ) -> str | None:
+        call_name = dotted_name(call.func)
+        constructor = builtin_tool_types.get(call_name)
+        if (
+            constructor is None
+            or call_name.rsplit(".", 1)[-1] != constructor
+            or enclosed_by_lambda(call)
+            or shadowed_in_enclosing_functions(call, call_name.split(".", 1)[0])
+        ):
+            return None
+        return constructor
+
+    def call_argument_for_parameter(
+        function: ast.FunctionDef | ast.AsyncFunctionDef,
+        parameter: ast.arg,
+        call: ast.Call,
+    ) -> ast.AST | None:
+        if any(isinstance(argument, ast.Starred) for argument in call.args) or any(
+            keyword.arg is None for keyword in call.keywords
+        ):
+            return None
+        keyword_values = [
+            keyword.value for keyword in call.keywords if keyword.arg == parameter.arg
+        ]
+        if len(keyword_values) > 1:
+            return None
+        if parameter in function.args.posonlyargs and keyword_values:
+            return None
+        positional = (*function.args.posonlyargs, *function.args.args)
+        if parameter in positional:
+            index = positional.index(parameter)
+            if index < len(call.args):
+                return None if keyword_values else call.args[index]
+        return keyword_values[0] if len(keyword_values) == 1 else None
+
+    def concrete_builtin_tool_argument(
+        expression: ast.AST,
+        call: ast.Call,
+    ) -> tuple[str, str] | None:
+        constructor_call: ast.Call | None = None
+        if isinstance(expression, ast.Call):
+            constructor_call = expression
+        elif isinstance(expression, ast.Name):
+            block = enclosing_statement_block(call)
+            if block is None:
+                return None
+            statements, call_index = block
+            mutations = [
+                statement
+                for statement in statements[:call_index]
+                if expression.id in statement_mutations(statement)
+            ]
+            if len(mutations) != 1:
+                return None
+            assignment = mutations[0]
+            if not (
+                isinstance(assignment, ast.Assign)
+                and len(assignment.targets) == 1
+                and isinstance(assignment.targets[0], ast.Name)
+                and assignment.targets[0].id == expression.id
+                and isinstance(assignment.value, ast.Call)
+            ):
+                return None
+            constructor_call = assignment.value
+        constructor = builtin_tool_constructor(constructor_call)
+        if constructor is None:
+            return None
+        symbol_id = call_symbol_ids.get(id(constructor_call)) or source_symbol(
+            "py", relative, "tool", f"{constructor}@{constructor_call.lineno}"
+        )
+        return constructor, symbol_id
+
+    direct_name_calls: dict[str, list[ast.Call]] = defaultdict(list)
+    agent_calls_by_function: dict[int, list[ast.Call]] = defaultdict(list)
+    for candidate in (node for node in nodes if isinstance(node, ast.Call)):
+        if isinstance(candidate.func, ast.Name):
+            direct_name_calls[candidate.func.id].append(candidate)
+        if (
+            dotted_name(candidate.func).rsplit(".", 1)[-1] in AGENT_CALLS
+            and (owner := enclosing_function(candidate))
+        ):
+            agent_calls_by_function[id(owner)].append(candidate)
+
+    typed_tool_parameter_resolutions: list[tuple[ast.Call, str, str]] = []
+    typed_tool_parameter_components: list[Component] = []
+    top_level_functions = [
+        statement
+        for statement in tree.body
+        if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef))
+    ]
+
+    def resolves_to_top_level_function(
+        call: ast.Call,
+        function: ast.FunctionDef | ast.AsyncFunctionDef,
+    ) -> bool:
+        if enclosed_by_lambda(call):
+            return False
+        if enclosing_function(call):
+            return not shadowed_in_enclosing_functions(call, function.name)
+        parent = parent_by_id.get(id(call))
+        while parent is not None:
+            if isinstance(parent, ast.ClassDef):
+                return False
+            parent = parent_by_id.get(id(parent))
+        return call.lineno > function.lineno
+
+    for function in top_level_functions:
+        if (
+            function.decorator_list
+            or module_mutation_counts[function.name] != 1
+            or function.name in module_rebound_names
+        ):
+            continue
+        direct_calls = [
+            candidate
+            for candidate in direct_name_calls.get(function.name, [])
+            if resolves_to_top_level_function(candidate, function)
+        ]
+        if not direct_calls:
+            continue
+        parameters = (
+            *function.args.posonlyargs,
+            *function.args.args,
+            *function.args.kwonlyargs,
+        )
+        for parameter in parameters:
+            annotation = dotted_name(parameter.annotation) if parameter.annotation else ""
+            declared_constructor = builtin_tool_types.get(annotation)
+            if declared_constructor is None or any(
+                parameter.arg in statement_mutations(statement)
+                for statement in function.body
+            ):
+                continue
+            concrete_targets: list[str] = []
+            call_sites_valid = True
+            for call in direct_calls:
+                argument = call_argument_for_parameter(function, parameter, call)
+                concrete = (
+                    concrete_builtin_tool_argument(argument, call)
+                    if argument is not None
+                    else None
+                )
+                if concrete is None or concrete[0] != declared_constructor:
+                    call_sites_valid = False
+                    break
+                concrete_targets.append(concrete[1])
+            if not call_sites_valid:
+                continue
+            agent_calls = [
+                candidate
+                for candidate in agent_calls_by_function.get(id(function), [])
+                if any(
+                    keyword.arg == "tools"
+                    and isinstance(keyword.value, (ast.List, ast.Tuple))
+                    and any(
+                        isinstance(value, ast.Name) and value.id == parameter.arg
+                        for value in keyword.value.elts
+                    )
+                    for keyword in candidate.keywords
+                )
+            ]
+            if not agent_calls:
+                continue
+            parameter_id = source_symbol(
+                "py", relative, "tool", f"{parameter.arg}@{parameter.lineno}"
+            )
+            typed_tool_parameter_components.append(
+                Component(
+                    "tool",
+                    (
+                        f"{declared_constructor} parameter "
+                        f"{parameter.arg}@{parameter.lineno}"
+                    ),
+                    Evidence(
+                        relative,
+                        parameter.lineno,
+                        excerpt(text.splitlines(), parameter.lineno),
+                    ),
+                    {
+                        "binding": "typed-parameter",
+                        "constructor": declared_constructor,
+                        "callsite_proof": "same-module-constructor-consensus",
+                        "verified_call_sites": len(direct_calls),
+                        "callsite_target_ids": sorted(set(concrete_targets)),
+                        "scope": source_scope(relative),
+                    },
+                    parameter_id,
+                )
+            )
+            typed_tool_parameter_resolutions.extend(
+                (agent_call, parameter.arg, parameter_id)
+                for agent_call in agent_calls
+            )
+    for component in typed_tool_parameter_components:
+        ir.add_component(component)
+
     def agent_call_symbol_id(call: ast.Call) -> str:
         name = dotted_name(call.func).rsplit(".", 1)[-1]
         for keyword in call.keywords:
@@ -5468,7 +5756,13 @@ def scan_python(
         key for key, candidates in symbol_candidates.items() if len(candidates) > 1
     }
     scoped_symbol_candidates: dict[tuple[tuple[str, ...], str, str], list[tuple[int, str]]] = {}
-    dominating_symbol_ids: dict[tuple[int, str, str], tuple[str, str]] = {}
+    dominating_symbol_ids: dict[tuple[int, str, str], tuple[str, str]] = {
+        (id(call), "tool", parameter): (
+            symbol_id,
+            "typed-parameter-callsite-consensus",
+        )
+        for call, parameter, symbol_id in typed_tool_parameter_resolutions
+    }
     scope_bound_names: set[tuple[tuple[str, ...], str]] = set()
     node_scopes: dict[int, tuple[str, ...]] = {}
     if symbol_candidates:

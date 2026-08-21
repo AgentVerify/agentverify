@@ -13,7 +13,7 @@ decorated-tool bindings now receive occurrence-qualified IDs for exact source ed
 references are scope-aware for unique and repeated names; repeated targets resolve for a single
 direct, earlier definition in the same lexical/module scope, plus an exact single-mutation definition
 that dominates use in the same branch/with body.
-Schema v53 additionally inventories 15 import-proven OpenAI Agents Python `ComputerTool` instances
+Schema v54 additionally inventories 15 import-proven OpenAI Agents Python `ComputerTool` instances
 and resolves ten agent links to them, including three formerly ambiguous repeated bindings. Literal
 Python Agent tool lists now recover 150 exact same-block callable definitions and 162 Agent links,
 including the PydanticAI direct-function target; 83 definitions are outside test paths and seven
@@ -22,13 +22,15 @@ helper-return, wrapper-factory, or tuple-unpack forms remained unresolved. Impor
 `function_tool(function)` assignments now recover 12 exact wrapper tools and Agent edges, including
 the two repeated SDK targets; three enable approval and all occur under tests. Exact same-class
 direct/tuple Agent-return summaries resolve three CrewAI composition edges to two source Agent
-definitions. The only ambiguous repeated corpus target is a typed `ApplyPatchTool` parameter;
-cross-branch, forward, parameter, conditional/transformed return, external-receiver,
-shadowed-factory, lambda, and reassigned fixture cases stay withheld. Next resolve that typed
-parameter only when the annotation and call-site argument identity agree, then add broader
-branch/reassignment
-dataflow and resolve Python/TS package re-exports, wildcard imports, other wrapper factories, and
-type-driven symbols.
+definitions. The final repeated-binding miss now resolves through an occurrence-qualified typed
+parameter only when its OpenAI built-in annotation is import-proven and every direct same-module
+call site supplies the same exact constructor type. The pinned `ApplyPatchTool` helper records ten
+verified call sites and ten concrete target IDs without selecting one runtime instance or inheriting
+instance-specific policy. No `ambiguous-repeated-binding` target remains in the pinned corpus;
+cross-branch, forward, inconsistent/untyped parameters, conditional/transformed returns, external
+receivers, shadowed factories, lambdas, and reassigned fixture cases stay withheld. Next add broader
+branch/reassignment dataflow and resolve Python/TS package re-exports, wildcard imports, other
+wrapper factories, and type-driven symbols.
 Preserve unresolved state for ambiguity and validate on larger real monorepository graphs.
 
 Exact module-level Python `mcp.tool(...)(function)` applications now resolve through unique local or
@@ -187,8 +189,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 342 pinned positive/negative locations, with 322 separately
-scored IR relationship labels. Schema-v53 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 342 pinned positive/negative locations, with 340 separately
+scored IR relationship labels. Schema-v54 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

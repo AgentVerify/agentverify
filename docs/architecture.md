@@ -52,8 +52,8 @@ function are each sole earlier same-block mutations, and the function is passed 
 positional argument. Literal approval on the wrapper is retained. This block-local proof takes
 precedence over a broader lexical candidate, while any local binding prevents fallback to a
 same-named module definition. Cross-branch definitions, reassignments, forward definitions,
-parameters, tool-helper returns, lambdas, multiply wrapped functions, wrapper tuple unpacking, and
-shadowed factories remain unresolved.
+unproven parameters, tool-helper returns, lambdas, multiply wrapped functions, wrapper tuple
+unpacking, and shadowed factories remain unresolved.
 Package re-exports, wildcard imports, dynamic lookups, conditional tool expressions, and other
 wrapper-factory forms
 remain unresolved.
@@ -66,6 +66,16 @@ the selected Agent binding must be the sole mutation before composition. The edg
 `target_identity: same-class-helper-return`. Conditional or multiple returns, transformed or
 reassigned values, rebound helper/receiver names, external receivers, and cross-branch unpacking
 remain unresolved.
+
+Typed OpenAI built-in tool parameters use a separate call-site consensus proof. The helper must be a
+unique, undecorated top-level function; the annotation must resolve through an unshadowed `agents` or
+`agents.tool` import; the parameter cannot be reassigned; and every direct same-module positional or
+keyword call must pass either the matching constructor inline or a sole same-block binding of that
+constructor. AgentVerify creates an occurrence-qualified parameter tool component and records the
+set of verified concrete constructor IDs on it. It does not inherit any one instance's approval or
+execution policy. Missing, mismatched, starred, rebound, shadowed, union-typed, or reassigned flows
+remain unresolved. The Agent edge records
+`target_identity: typed-parameter-callsite-consensus`.
 
 A repository prepass also resolves direct module-level Python
 `server.tool(...)(function)` decorator applications. The registrar must be a uniquely bound
