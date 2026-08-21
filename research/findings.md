@@ -83,10 +83,14 @@ framework-qualified factories, not a growing bag of identifier regexes.
 ## 7. Governance exports need evidence-local identity
 
 Display-name-only AI BOM resolution produced 1,299 ambiguous relationship endpoints in the pinned
-corpus. Exact relationship locations safely resolve 295 capability/control endpoints, while symbol
-IDs resolve another 908. The remaining 1,004 ambiguous endpoints are agent/tool references without a
-unique target identity and must stay explicit. A governance export that collapses those references by
-name would silently attach controls or risks to the wrong asset.
+corpus. Exact relationship locations safely resolve 295 capability/control endpoints. Reused Python
+and TypeScript bindings were a second identity failure: one file-level ID could describe many
+constructor occurrences. Occurrence-qualified IDs resolve all 688 source agent/tool ambiguities, and
+141 unsafe target IDs become unresolved instead of pointing at multiple assets. Benchmark schema v5
+also records all 289 target references whose duplicated raw binding ID was withheld. The final export
+has 175 ambiguous endpoints, all targets (38 agent and 137 tool), and 621 unresolved endpoints. A
+governance export that collapses those references by name would silently attach controls or risks to
+the wrong asset.
 
 ## Limitations
 

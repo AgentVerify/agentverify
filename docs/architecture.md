@@ -89,6 +89,12 @@ endpoints expose symbol-ID, evidence-location, unique-display-name, ambiguous, o
 identity instead of collapsing same-named assets. It is a lossless AgentVerify format, not a claim of
 CycloneDX or SPDX conformance.
 
+Source-symbol IDs are module-qualified. When a Python or TypeScript file constructs multiple
+agents/tools through the same binding, each definition receives an `@line` occurrence suffix so its
+own outgoing edges stay exact. References to a repeated binding do not inherit one arbitrary
+occurrence; they carry `target_identity: ambiguous-repeated-binding` and remain unresolved until
+assignment-sensitive dataflow is implemented.
+
 Policy evaluation is a post-baseline reporting stage, not a rule filter. Gates count matching
 fingerprints by rule, result kind, and minimum severity; findings remain in every output. JSON, text,
 AI BOM, and SARIF retain the policy file digest and per-gate decision evidence.

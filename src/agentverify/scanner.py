@@ -7,6 +7,7 @@ import json
 import os
 import re
 import warnings
+from collections import Counter
 from datetime import UTC, date, datetime
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
@@ -177,7 +178,9 @@ class PythonVisitor(ast.NodeVisitor):
         imported_modules: set[str],
         module_paths: dict[str, str],
         local_symbol_ids: dict[tuple[str, str], str],
+        ambiguous_local_symbols: set[tuple[str, str]],
         call_symbol_ids: dict[int, str],
+        definition_symbol_ids: dict[int, str],
     ) -> None:
         self.ir = ir
         self.root = root
@@ -200,7 +203,9 @@ class PythonVisitor(ast.NodeVisitor):
         self.imported_symbol_names: dict[str, str] = {}
         self.module_paths = module_paths
         self.local_symbol_ids = local_symbol_ids
+        self.ambiguous_local_symbols = ambiguous_local_symbols
         self.call_symbol_ids = call_symbol_ids
+        self.definition_symbol_ids = definition_symbol_ids
         self.has_mcp_import = any(
             module == "mcp" or module.startswith("mcp.") or "modelcontextprotocol" in module
             for module in imported_modules
@@ -426,8 +431,10 @@ class PythonVisitor(ast.NodeVisitor):
         }
         if decorators & TOOL_DECORATORS or any(name.endswith(".tool") for name in decorators):
             qualified_name = ".".join([*self.class_stack, node.name])
-            tool_id = self.local_symbol_ids.get(("tool", qualified_name)) or source_symbol(
-                "py", self.path, "tool", qualified_name
+            tool_id = (
+                self.definition_symbol_ids.get(id(node))
+                or self.local_symbol_ids.get(("tool", qualified_name))
+                or source_symbol("py", self.path, "tool", qualified_name)
             )
             needs_approval = False
             for decorator in node.decorator_list:
@@ -855,6 +862,11 @@ class PythonVisitor(ast.NodeVisitor):
                             target_id = source_symbol(
                                 "py", imported_path, target_kind, resolved_name
                             )
+                        elif target_id is None and (
+                            target_kind,
+                            target_name,
+                        ) in self.ambiguous_local_symbols:
+                            attributes["target_identity"] = "ambiguous-repeated-binding"
                         self.ir.add_relationship(
                             Relationship(
                                 "agent",
@@ -1064,6 +1076,8 @@ def scan_python(
     } | {node.module or "" for node in nodes if isinstance(node, ast.ImportFrom)}
     symbol_candidates: dict[tuple[str, str], set[str]] = {}
     call_symbol_ids: dict[int, str] = {}
+    definition_symbol_ids: dict[int, str] = {}
+    decorated_tools: list[tuple[ast.FunctionDef | ast.AsyncFunctionDef, str]] = []
 
     def collect_definitions(statements: list[ast.stmt], class_stack: tuple[str, ...] = ()) -> None:
         for node in statements:
@@ -1080,12 +1094,22 @@ def scan_python(
             }
             if decorators & TOOL_DECORATORS or any(name.endswith(".tool") for name in decorators):
                 qualified_name = ".".join([*class_stack, node.name])
-                symbol_id = source_symbol("py", relative, "tool", qualified_name)
-                symbol_candidates.setdefault(("tool", qualified_name), set()).add(symbol_id)
-                symbol_candidates.setdefault(("tool", node.name), set()).add(symbol_id)
+                decorated_tools.append((node, qualified_name))
             collect_definitions(node.body, class_stack)
 
     collect_definitions(tree.body)
+    definition_counts = Counter(qualified_name for _, qualified_name in decorated_tools)
+    for node, qualified_name in decorated_tools:
+        identity = (
+            f"{qualified_name}@{node.lineno}"
+            if definition_counts[qualified_name] > 1
+            else qualified_name
+        )
+        symbol_id = source_symbol("py", relative, "tool", identity)
+        symbol_candidates.setdefault(("tool", qualified_name), set()).add(symbol_id)
+        symbol_candidates.setdefault(("tool", node.name), set()).add(symbol_id)
+        definition_symbol_ids[id(node)] = symbol_id
+    assigned_constructors: list[tuple[ast.Assign, str, str]] = []
     for node in nodes:
         if (
             isinstance(node, ast.Assign)
@@ -1103,13 +1127,24 @@ def scan_python(
                 else None
             )
             if kind:
-                symbol_id = source_symbol("py", relative, kind, binding)
-                symbol_candidates.setdefault((kind, binding), set()).add(symbol_id)
-                call_symbol_ids[id(node.value)] = symbol_id
+                assigned_constructors.append((node, kind, binding))
+    assignment_counts = Counter((kind, binding) for _, kind, binding in assigned_constructors)
+    for node, kind, binding in assigned_constructors:
+        identity = (
+            f"{binding}@{node.lineno}"
+            if assignment_counts[(kind, binding)] > 1
+            else binding
+        )
+        symbol_id = source_symbol("py", relative, kind, identity)
+        symbol_candidates.setdefault((kind, binding), set()).add(symbol_id)
+        call_symbol_ids[id(node.value)] = symbol_id
     local_symbol_ids = {
         key: next(iter(candidates))
         for key, candidates in symbol_candidates.items()
         if len(candidates) == 1
+    }
+    ambiguous_local_symbols = {
+        key for key, candidates in symbol_candidates.items() if len(candidates) > 1
     }
     PythonVisitor(
         ir,
@@ -1119,7 +1154,9 @@ def scan_python(
         imported_modules=imported_modules,
         module_paths=module_paths,
         local_symbol_ids=local_symbol_ids,
+        ambiguous_local_symbols=ambiguous_local_symbols,
         call_symbol_ids=call_symbol_ids,
+        definition_symbol_ids=definition_symbol_ids,
     ).visit(tree)
 
 
@@ -1596,7 +1633,9 @@ def typescript_graph(
         **typescript_named_import_bindings(text, "@openai/agents-extensions"),
     }
     cline_imports = typescript_named_import_bindings(text, "@cline/sdk")
-    for match in TS_TOOL_ASSIGNMENT.finditer(code):
+    tool_matches = list(TS_TOOL_ASSIGNMENT.finditer(code))
+    tool_assignment_counts = Counter(match.group(1) for match in tool_matches)
+    for match in tool_matches:
         tool_name = match.group(1)
         local_factory = match.group(2)
         constructor = openai_imports.get(
@@ -1616,8 +1655,14 @@ def typescript_graph(
         end_line = line_at(text, end)
         body = text[opening + 1 : end - 1]
         ev = Evidence(relative, start_line, excerpt(lines, start_line))
-        tool_id = source_symbol("ts", relative, "tool", tool_name)
-        local_tool_ids[tool_name] = tool_id
+        tool_identity = (
+            f"{tool_name}@{start_line}"
+            if tool_assignment_counts[tool_name] > 1
+            else tool_name
+        )
+        tool_id = source_symbol("ts", relative, "tool", tool_identity)
+        if tool_assignment_counts[tool_name] == 1:
+            local_tool_ids[tool_name] = tool_id
         if is_openai_builtin:
             add_typescript_tool_observation(
                 ir,
@@ -1669,6 +1714,7 @@ def typescript_graph(
             tool_by_line[line_number] = (tool_name, tool_id)
 
     agent_matches = list(TS_AGENT_ASSIGNMENT.finditer(code))
+    agent_assignment_counts = Counter(match.group(1) for match in agent_matches)
     agent_tool_bindings = {
         match.group(1): match.group(2) for match in TS_AGENT_TOOL_ASSIGNMENT.finditer(code)
     }
@@ -1681,10 +1727,16 @@ def typescript_graph(
         end = typescript_balanced_end(code, opening, "(", ")") or len(text)
         body = text[opening + 1 : end - 1]
         agent_name = typescript_object_string_property(body, "name") or variable_name
-        agent_id = source_symbol("ts", relative, "agent", variable_name)
+        agent_identity = (
+            f"{variable_name}@{start_line}"
+            if agent_assignment_counts[variable_name] > 1
+            else variable_name
+        )
+        agent_id = source_symbol("ts", relative, "agent", agent_identity)
         ev = Evidence(relative, start_line, excerpt(lines, start_line))
         ir.add_component(Component("agent", agent_name, ev, {"constructor": "Agent"}, agent_id))
-        local_agents[variable_name] = (agent_name, agent_id)
+        if agent_assignment_counts[variable_name] == 1:
+            local_agents[variable_name] = (agent_name, agent_id)
         agent_bodies.append((match, opening + 1, body, agent_name, agent_id))
 
     for match, body_offset, body, agent_name, agent_id in agent_bodies:
@@ -1704,6 +1756,8 @@ def typescript_graph(
                 if target_variable := agent_tool_bindings.get(tool_name):
                     target = local_agents.get(target_variable)
                     target_name, target_id = target if target else (target_variable, None)
+                    if agent_assignment_counts[target_variable] > 1:
+                        attributes["target_identity"] = "ambiguous-repeated-binding"
                     ir.add_relationship(
                         Relationship(
                             "agent",
@@ -1722,6 +1776,8 @@ def typescript_graph(
                 if imported := imported_symbols.get(tool_name):
                     attributes.update({"target_path": imported[0], "target_name": imported[1]})
                     target_id = source_symbol("ts", imported[0], "tool", imported[1])
+                elif tool_assignment_counts[tool_name] > 1:
+                    attributes["target_identity"] = "ambiguous-repeated-binding"
                 ir.add_relationship(
                     Relationship(
                         "agent",
@@ -1741,6 +1797,8 @@ def typescript_graph(
                 variable_name = as_tool.group(1)
                 target = local_agents.get(variable_name)
                 target_name, target_id = target if target else (variable_name, None)
+                if agent_assignment_counts[variable_name] > 1:
+                    attributes["target_identity"] = "ambiguous-repeated-binding"
                 ir.add_relationship(
                     Relationship(
                         "agent",

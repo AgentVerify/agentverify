@@ -36,29 +36,32 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,594 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,354 relationships, and completed in 37.08 seconds on the development machine. Three parse warnings were isolated and
+resolved 1,354 relationships, and completed in 37.24 seconds on the development machine. Three parse warnings were isolated and
 reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
 
-Engine benchmark schema v4 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v5 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, and TypeScript graph precision measures. It intentionally
 excludes arbitrary agent/tool display names from the summary. The resulting
 framework/provider/protocol/capability coverage and unsupported syntax are published in
 `docs/frontend-coverage.md`; presence counts are discovery observations, not recall measurements.
 
 The benchmark now also measures identity coverage: 8,204 agent/tool component observations carry
-module-qualified IDs. Of 2,708 relationship endpoints, 1,887 carry symbol IDs and 1,885 resolve to an
-observed component (1,651 Python and 234 TypeScript). The two unmatched IDs are explicit Python
-re-export targets; capability, control, and taxonomy endpoints intentionally remain evidence
-observations without source-symbol IDs.
+module-qualified IDs. Of 2,708 relationship endpoints, 1,598 carry symbol IDs and 1,596 resolve to an
+observed component (1,362 Python and 234 TypeScript). Schema v5 records 289
+`ambiguous-repeated-binding` targets that previously inherited a duplicated file-local binding ID and
+now omit it until assignment-sensitive dataflow can resolve the target. The two unmatched IDs are
+explicit Python re-export targets; capability, control, and taxonomy endpoints intentionally remain
+evidence observations.
 
-Schema-v4 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
-resolves 908 endpoints by symbol ID, 300 by exact evidence location, and 16 by a unique display name;
-1,004 remain ambiguous and 480 unresolved. Before evidence-local resolution, 1,299 were ambiguous.
-The 295 removed ambiguities are all capability/control endpoints whose relationship evidence points
-to exactly one asset. Remaining ambiguous endpoints are agent/tool references, so the resolver does
-not use a nearby source location to invent a cross-file target identity.
+Schema-v5 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
+resolves 1,596 endpoints by symbol ID, 300 by exact evidence location, and 16 by a unique display
+name; 175 remain ambiguous and 621 unresolved. Before evidence-local and occurrence-qualified
+resolution, 1,299 were ambiguous. Exact locations resolve 295 capability/control endpoints. Unique
+occurrence IDs then resolve all 688 formerly ambiguous source agent/tool endpoints; 141 unsafe target
+IDs become explicitly unresolved. All remaining ambiguity is on agent/tool targets, so the resolver
+does not use a nearby source location to invent a cross-file identity.
 
 The Python frontend resolves unambiguous absolute imports rooted at the repository, `src/`, or
 `python/`, plus relative modules that map to exactly one sibling package file. It found five imported

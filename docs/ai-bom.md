@@ -67,6 +67,12 @@ that enforce policy should prefer `symbol-id`, then `evidence-location`, and tre
 when their target is missing or duplicated. The same principle applies to
 `unresolved_policy_asset_ids`: a missing proof is not silently converted into an absent control.
 
+Repeated Python and TypeScript constructor bindings receive occurrence-qualified symbol IDs such as
+`#agent:agent@42` for their direct source edges. A later reference to a repeated binding does not pick
+an occurrence by name; its relationship attributes record
+`target_identity: ambiguous-repeated-binding`, and without assignment-sensitive evidence that target
+stays ambiguous or unresolved.
+
 Selected-path scans remain partial. Their metadata records `scan_scope: selected-paths` and the exact
 filters; baseline output does not claim that omitted fingerprints are resolved.
 

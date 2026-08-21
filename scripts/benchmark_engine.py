@@ -59,6 +59,15 @@ def main() -> int:
             if relationship[side]["resolution"] == "ambiguous"
         )
         imported_edges = [edge for edge in ir.relationships if edge.attributes.get("target_path")]
+        repeated_binding_targets = [
+            edge
+            for edge in ir.relationships
+            if edge.attributes.get("target_identity") == "ambiguous-repeated-binding"
+        ]
+        if any(edge.target_id is not None for edge in repeated_binding_targets):
+            raise RuntimeError(
+                f"{repository}: ambiguous repeated-binding target carries a symbol ID"
+            )
         component_symbol_ids = {item.symbol_id for item in ir.components if item.symbol_id}
         relationship_symbol_ids = [
             symbol_id
@@ -96,6 +105,7 @@ def main() -> int:
             "unmatched_identified_symbol_endpoints": sum(
                 symbol_id not in component_symbol_ids for symbol_id in relationship_symbol_ids
             ),
+            "ambiguous_repeated_binding_targets": len(repeated_binding_targets),
             "resolved_symbol_endpoints_by_frontend": {
                 frontend: sum(
                     symbol_id.startswith(f"{frontend}:") and symbol_id in component_symbol_ids
@@ -133,7 +143,7 @@ def main() -> int:
         print(f"[{index:>2}/{len(repositories)}] {repository}: {ir.files_scanned} files")
     successful = [result for result in results if result["status"] == "ok"]
     payload = {
-        "schema_version": 4,
+        "schema_version": 5,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "summary": {
@@ -155,6 +165,9 @@ def main() -> int:
             ),
             "unmatched_identified_symbol_endpoints": sum(
                 result["unmatched_identified_symbol_endpoints"] for result in successful
+            ),
+            "ambiguous_repeated_binding_targets": sum(
+                result["ambiguous_repeated_binding_targets"] for result in successful
             ),
             "relationship_endpoints": 2 * sum(result["relationships"] for result in successful),
             "bom_endpoint_resolutions": dict(

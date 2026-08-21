@@ -186,6 +186,96 @@ operator = Agent(name="operator", tools=[shell])
     assert finding.analysis["direct_agents"] == ["operator"]
 
 
+def test_repeated_python_bindings_get_occurrence_qualified_symbol_ids(tmp_path: Path) -> None:
+    (tmp_path / "agent.py").write_text(
+        """from agents import Agent, ShellTool
+
+def first():
+    shell = ShellTool(executor=object())
+    agent = Agent(name="shared", tools=[shell])
+    return agent
+
+def second():
+    shell = ShellTool(executor=object())
+    agent = Agent(name="shared", tools=[shell])
+    return agent
+""",
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+    agents = [component for component in ir.components if component.kind == "agent"]
+    edges = [
+        edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent" and edge.target_kind == "tool"
+    ]
+    assert {component.symbol_id for component in agents} == {
+        "py:agent.py#agent:agent@5",
+        "py:agent.py#agent:agent@10",
+    }
+    assert {edge.source_id for edge in edges} == {component.symbol_id for component in agents}
+    assert all(edge.target_id is None for edge in edges)
+    assert all(
+        edge.attributes["target_identity"] == "ambiguous-repeated-binding"
+        for edge in edges
+    )
+
+    bom = json.loads(render_bom(ir))
+    source_endpoints = [
+        relationship["source"]
+        for relationship in bom["relationships"]
+        if relationship["source"]["kind"] == "agent"
+    ]
+    assert source_endpoints
+    assert all(endpoint["resolution"] == "symbol-id" for endpoint in source_endpoints)
+    assert len({endpoint["asset_id"] for endpoint in source_endpoints}) == 2
+    target_endpoints = [
+        relationship["target"]
+        for relationship in bom["relationships"]
+        if relationship["source"]["kind"] == "agent"
+    ]
+    assert all(endpoint["resolution"] == "unresolved" for endpoint in target_endpoints)
+
+
+def test_repeated_python_tool_definitions_get_occurrence_qualified_ids(tmp_path: Path) -> None:
+    (tmp_path / "tools.py").write_text(
+        """from agents import function_tool
+
+def first():
+    @function_tool(needs_approval=True)
+    def approval_tool():
+        return "first"
+    return approval_tool
+
+def second():
+    @function_tool(needs_approval=True)
+    def approval_tool():
+        return "second"
+    return approval_tool
+""",
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+    tools = [component for component in ir.components if component.kind == "tool"]
+    approval_edges = [
+        edge for edge in ir.relationships if edge.relation == "governed-by"
+    ]
+    assert {component.symbol_id for component in tools} == {
+        "py:tools.py#tool:approval_tool@5",
+        "py:tools.py#tool:approval_tool@11",
+    }
+    assert {edge.source_id for edge in approval_edges} == {
+        component.symbol_id for component in tools
+    }
+    bom = json.loads(render_bom(ir))
+    assert all(
+        relationship["source"]["resolution"] == "symbol-id"
+        for relationship in bom["relationships"]
+    )
+
+
 def test_default_disabled_local_shell_is_reviewed_but_hosted_shell_is_not(tmp_path: Path) -> None:
     (tmp_path / "agent.py").write_text(
         """from agents import Agent, ShellTool
@@ -440,6 +530,43 @@ def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> Non
     )
     assert [finding.rule_id for finding in ir.findings] == ["AV-APPROVAL002"]
     assert ir.findings[0].ir_path[:2] == ("agent:operator", "tool:assignedShell")
+
+
+def test_repeated_typescript_agent_bindings_get_occurrence_qualified_ids(tmp_path: Path) -> None:
+    (tmp_path / "agent.ts").write_text(
+        """import { Agent, tool } from "@openai/agents";
+function first() {
+  const repeatedTool = tool({ name: "first" });
+  const agent = new Agent({ name: "shared", tools: [repeatedTool] });
+  return agent;
+}
+function second() {
+  const repeatedTool = tool({ name: "second" });
+  const agent = new Agent({ name: "shared", tools: [repeatedTool] });
+  return agent;
+}
+""",
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+    agents = [component for component in ir.components if component.kind == "agent"]
+    edges = [edge for edge in ir.relationships if edge.source_kind == "agent"]
+    assert {component.symbol_id for component in agents} == {
+        "ts:agent.ts#agent:agent@4",
+        "ts:agent.ts#agent:agent@9",
+    }
+    assert {edge.source_id for edge in edges} == {component.symbol_id for component in agents}
+    assert all(edge.target_id is None for edge in edges)
+    assert all(
+        edge.attributes["target_identity"] == "ambiguous-repeated-binding"
+        for edge in edges
+    )
+    bom = json.loads(render_bom(ir))
+    assert all(
+        relationship["source"]["resolution"] == "symbol-id"
+        for relationship in bom["relationships"]
+    )
 
 
 def test_typescript_builtin_options_variable_stays_unresolved(tmp_path: Path) -> None:

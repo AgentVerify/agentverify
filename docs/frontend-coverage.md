@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v4
+framework, wrapper, or configuration path. Counts come from schema-v5
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -34,16 +34,20 @@ Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK
 because the engine requires supported selected files and more specific syntax.
 
 Across the selected snapshot, 8,204 agent/tool observations have module-qualified symbol IDs. Of
-2,708 relationship endpoint observations, 1,887 carry IDs and 1,885 resolve to an observed component
-(1,651 Python and 234 TypeScript); the two unmatched IDs are explicit Python re-export targets.
-Capability/control taxonomy endpoints intentionally lack source-symbol IDs, so the endpoint fraction
-is inventory coverage rather than an accuracy or recall metric.
+2,708 relationship endpoint observations, 1,598 carry IDs and 1,596 resolve to an observed component
+(1,362 Python and 234 TypeScript); the two unmatched IDs are explicit Python re-export targets.
+Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
+edges resolve exactly, while schema v5 records 289 `ambiguous-repeated-binding` target references
+that previously carried a duplicated file-local ID and now omit it until assignment-sensitive
+dataflow can identify the target. Capability/control taxonomy endpoints intentionally lack
+source-symbol IDs, so the endpoint fraction is inventory coverage rather than an accuracy or recall
+metric.
 
-The native AI BOM 1.1 resolver independently classifies all 2,708 endpoints: 908 by symbol ID, 300
-by exact relationship evidence, 16 by a unique display name, 1,004 as ambiguous, and 480 as
-unresolved. Evidence-local resolution removed all 295 capability/control ambiguities from the prior
-resolver. Remaining ambiguity is confined to agent/tool references without a unique symbol or target
-location.
+The native AI BOM 1.1 resolver independently classifies all 2,708 endpoints: 1,596 by symbol ID, 300
+by exact relationship evidence, 16 by a unique display name, 175 as ambiguous, and 621 as unresolved.
+Evidence-local resolution removed 295 capability/control ambiguities; occurrence-qualified bindings
+then removed all 688 source agent/tool ambiguities. The remaining 38 agent and 137 tool ambiguities
+are targets without a unique symbol or target location.
 
 The TypeScript graph contains 95 structure-backed agent edges: 14 agent-as-tool delegations and 81
 agent-to-tool edges. All 81 tool endpoints resolve to an observed component. This replaces a prior
@@ -54,8 +58,8 @@ spurious tool edges.
 
 | Frontend | Implemented observations and resolution |
 |---|---|
-| Python AST | Imports; known agent/model constructors; tool decorators; literal tool/handoff lists; module- and class-qualified agent/tool IDs; shell, eval, filesystem, HTTP, browser, MCP, and Docker SDK calls; absolute and filesystem-relative tool imports; literal approval decorators; OpenAI Agents `ShellTool`/`ApplyPatchTool`/`CustomTool` approval constructors; env-backed auto-approval flags with direct true-return branches and same-class approval short circuits; statement-ordered MCP rejection guards and internal tool-registry routing lookups; lexically scoped OpenTelemetry spans. |
-| TypeScript/JavaScript structural lexical | Known imports/providers; balanced top-level `new Agent({tools: [...]})` entries; `tool(...)`, `functionTool(...)`, `toolNamespace(...)`, OpenAI built-ins, Cline `createTool(...)`, and assigned/inline `asTool(...)`; module-qualified agent/tool IDs; named relative imports and aliases; child-process and Bun `sh -c` calls with literal/dynamic distinction; direct eval; filesystem calls; MCP forwarding object shapes; literal tool approval settings; inline and module-flag env-backed auto-approval branches. Comments and string contents are masked before policy matching. |
+| Python AST | Imports; known agent/model constructors; tool decorators; literal tool/handoff lists; module-, class-, and repeated-occurrence-qualified agent/tool IDs; shell, eval, filesystem, HTTP, browser, MCP, and Docker SDK calls; absolute and filesystem-relative tool imports; literal approval decorators; OpenAI Agents `ShellTool`/`ApplyPatchTool`/`CustomTool` approval constructors; env-backed auto-approval flags with direct true-return branches and same-class approval short circuits; statement-ordered MCP rejection guards and internal tool-registry routing lookups; lexically scoped OpenTelemetry spans. |
+| TypeScript/JavaScript structural lexical | Known imports/providers; balanced top-level `new Agent({tools: [...]})` entries; `tool(...)`, `functionTool(...)`, `toolNamespace(...)`, OpenAI built-ins, Cline `createTool(...)`, and assigned/inline `asTool(...)`; module- and repeated-occurrence-qualified agent/tool IDs; named relative imports and aliases; child-process and Bun `sh -c` calls with literal/dynamic distinction; direct eval; filesystem calls; MCP forwarding object shapes; literal tool approval settings; inline and module-flag env-backed auto-approval branches. Comments and string contents are masked before policy matching. |
 | MCP JSON | Common `mcpServers` configuration, transport/command/URL, redacted arguments, and environment-variable names. Configuration is read as data; servers are never launched. |
 | Container configuration | Compose/devcontainer Docker socket, privileged/host network/root mounts; Kubernetes/Helm privileged, host namespace, privilege escalation, service-account token, and `hostPath`; literal privileged Python Docker SDK calls. |
 
