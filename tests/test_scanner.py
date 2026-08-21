@@ -59,6 +59,27 @@ def test_approval_control_governs_privileged_tool() -> None:
     assert ir.findings[0].analysis["governing_controls"] == ["human-approval"]
 
 
+def test_typescript_literal_approval_governs_only_its_tool() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_approved")
+
+    shell_findings = [finding for finding in ir.findings if finding.rule_id == "AV-EXEC001"]
+    coverage = {
+        finding.analysis["tool"]: finding.analysis["approval_coverage"]
+        for finding in shell_findings
+    }
+    assert coverage == {
+        "approvedCommand": "present",
+        "conditionalCommand": "unresolved",
+        "disabledApproval": "unresolved",
+    }
+    assert all(finding.ir_path[0] == "agent:operator" for finding in shell_findings)
+    assert {
+        (item.source_name, item.relation, item.target_name)
+        for item in ir.relationships
+        if item.source_kind == "tool" and item.target_kind == "control"
+    } == {("approvedCommand", "governed-by", "human-approval")}
+
+
 def test_python_enabled_auto_approval_is_review_candidate() -> None:
     ir = scan_repository(ROOT / "cases/python_auto_approval")
 

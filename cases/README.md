@@ -6,6 +6,7 @@ never imported or executed.
 - `python_dangerous`: OpenAI Agents SDK inventory plus `AV-EXEC001`.
 - `typescript_mcp`: OpenAI Agents SDK, MCP client/server inventory, plus `AV-APPROVAL001`.
 - `python_approved`: privileged tool with a resolved human-approval control edge.
+- `typescript_approved`: literal per-tool approval plus unresolved conditional/disabled forms.
 - `python_auto_approval`: Python truthy auto-approval review candidate.
 - `model_providers`: Anthropic and Azure OpenAI provider/model attribution.
 - `mcp_forwarder`: dynamic MCP forwarding positive case plus fixed-tool negative case.

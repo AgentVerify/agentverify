@@ -21,14 +21,21 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 - `cases/python_dangerous/agent.py`: positive dynamic string plus `shell=True`.
 - `examples/safe_agent/agent.py`: negative fixed argv plus default `shell=False`.
 - `cases/typescript_mcp`: MCP inventory and approval-bypass candidate.
+- `cases/typescript_approved`: literal TypeScript tool approval resolves a governing control, while
+  callback and disabled forms remain unresolved.
 
 ## Full-corpus engine benchmark
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 8,840 selected Python/TypeScript/JavaScript files plus 40 configuration files,
-resolved 1,592 relationships, and completed in 19.34 seconds on the development machine. Two syntax warnings were isolated and
+resolved 1,593 relationships, and completed in 19.72 seconds on the development machine. Two syntax warnings were isolated and
 reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them.
+
+The approval-policy resolver found a literal `needsApproval: true` in the pinned OpenAI Agents JS
+[human-in-the-loop example](https://github.com/openai/openai-agents-js/blob/0b944370c6fe019ac5b08364ca013826cd7d0668/examples/docs/human-in-the-loop/toolApprovalDefinition.ts#L11)
+and attached a tool-to-control edge. The adjacent callback form remains unresolved because its result
+depends on invocation arguments.
 
 During validation, import-aware shell resolution reduced Cline's TypeScript dynamic-shell candidates
 from 16 to zero after proving the matches were `RegExp.exec()`, not `child_process.exec()`. Truthy

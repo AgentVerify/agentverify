@@ -491,6 +491,7 @@ TS_CHILD_PROCESS_IMPORT = re.compile(
 )
 TS_TOOL_ASSIGNMENT = re.compile(r"\b(?:const|let)\s+(\w+)\s*=\s*(?:tool|functionTool)\s*\(")
 TS_AGENT_ASSIGNMENT = re.compile(r"\b(?:const|let)\s+(\w+)\s*=\s*new\s+Agent\s*\(")
+TS_LITERAL_APPROVAL = re.compile(r"\bneedsApproval\s*:\s*true\b")
 TS_AUTO_APPROVAL_ENABLED = re.compile(
     r"\b(?:autoApprove|auto_approve|skipConfirmation|dangerouslySkip\w*)\b"
     r"\s*(?:=|:)\s*(?:true|['\"](?:1|true|all)['\"])",
@@ -539,6 +540,60 @@ def balanced_call_end(text: str, opening_parenthesis: int) -> int:
     return len(text)
 
 
+def typescript_code_mask(text: str) -> str:
+    """Mask comments and string contents while preserving offsets and newlines."""
+    masked = list(text)
+    index = 0
+    state = "code"
+    quote = ""
+    while index < len(text):
+        character = text[index]
+        following = text[index + 1] if index + 1 < len(text) else ""
+        if state == "code":
+            if character == "/" and following == "/":
+                masked[index] = masked[index + 1] = " "
+                index += 2
+                state = "line-comment"
+                continue
+            if character == "/" and following == "*":
+                masked[index] = masked[index + 1] = " "
+                index += 2
+                state = "block-comment"
+                continue
+            if character in {"'", '"', "`"}:
+                masked[index] = " "
+                quote = character
+                state = "string"
+        elif state == "line-comment":
+            if character == "\n":
+                state = "code"
+            else:
+                masked[index] = " "
+        elif state == "block-comment":
+            if character == "*" and following == "/":
+                masked[index] = masked[index + 1] = " "
+                index += 2
+                state = "code"
+                continue
+            if character != "\n":
+                masked[index] = " "
+        else:
+            if character == "\\":
+                masked[index] = " "
+                if index + 1 < len(text):
+                    if text[index + 1] != "\n":
+                        masked[index + 1] = " "
+                    index += 2
+                    continue
+            elif character == quote:
+                masked[index] = " "
+                state = "code"
+            elif character != "\n":
+                masked[index] = " "
+        index += 1
+    return "".join(masked)
+
+
 def typescript_graph(
     ir: RepositoryIR, relative: str, text: str, lines: list[str]
 ) -> dict[int, str]:
@@ -548,8 +603,31 @@ def typescript_graph(
         start_line = line_at(text, match.start())
         end = balanced_call_end(text, text.find("(", match.start(), match.end()))
         end_line = line_at(text, end)
+        body = text[match.end() : end]
+        approval_match = TS_LITERAL_APPROVAL.search(typescript_code_mask(body))
         ev = Evidence(relative, start_line, excerpt(lines, start_line))
-        ir.add_component(Component("tool", tool_name, ev, {"constructor": "tool"}))
+        ir.add_component(
+            Component(
+                "tool",
+                tool_name,
+                ev,
+                {"constructor": "tool", "needs_approval": approval_match is not None},
+            )
+        )
+        if approval_match:
+            approval_line = line_at(text, match.end() + approval_match.start())
+            approval_ev = Evidence(relative, approval_line, excerpt(lines, approval_line))
+            ir.add_component(Component("control", "human-approval", approval_ev))
+            ir.add_relationship(
+                Relationship(
+                    "tool",
+                    tool_name,
+                    "governed-by",
+                    "control",
+                    "human-approval",
+                    approval_ev,
+                )
+            )
         for line_number in range(start_line, end_line + 1):
             tool_by_line[line_number] = tool_name
     for match in TS_AGENT_ASSIGNMENT.finditer(text):
