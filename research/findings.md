@@ -19,17 +19,22 @@ The initial matcher found `shell=True` in eight repositories. Reviewable example
 
 The links are locked corpus snapshots; only an explicit collector `--refresh` pins newer commits.
 
-Filesystem mutation is broader than `open()` and `write_text()`. Schema v20 resolves 448 Python
+Filesystem mutation is broader than `open()` and `write_text()`. Schema v21 resolves 448 Python
 filesystem mutations in selected files: 179 creates, 190 deletes, 46 copies, and 33 moves. The move
 inventory includes 20 `Path.rename`/`Path.replace` calls proven through explicit constructors or
 immutable Path-derived bindings, including ChatDev's
 [`source_path.rename(target_path)`](https://github.com/OpenBMB/ChatDev/blob/4fb2db0ea90375ce1059f44fe03ffbd191a7a169/server/services/workflow_storage.py#L137).
-Exact tool reachability narrows this inventory to 25 AV-FS001 reviews across
-eight repositories. Newly exposed cases include ArcadeAI's
+Exact tool reachability narrows this inventory to 25 filesystem reviews across eight repositories:
+21 generic AV-FS001 sites across seven repositories and four specialized AV-FS002 sites in CrewAI
+Examples. Newly exposed cases include ArcadeAI's
 [`os.replace`/`shutil.move` destination branches](https://github.com/ArcadeAI/arcade-ai/blob/597debaa1593b54172061ce36a414cc29aa8fc6a/examples/mcp_servers/local_filesystem/src/local_filesystem/tools.py#L287-L301)
 and its [conditional `copy`/`copy2` callable](https://github.com/ArcadeAI/arcade-ai/blob/597debaa1593b54172061ce36a414cc29aa8fc6a/examples/mcp_servers/local_filesystem/src/local_filesystem/tools.py#L329-L331),
 and CrewAI Examples'
 [`copytree` destination](https://github.com/crewAIInc/crewAI-examples/blob/da94a91e691e1cf5b3151416bb15b5b62729bea8/crews/landing_page_generator/src/landing_page_generator/tools/template_tools.py#L86-L90).
+That copy and three sibling sinks rely on `str(resolved).startswith(str(root))`; schema v21 preserves
+the checks as weak, non-suppressing control edges because string prefixes do not enforce path-component
+boundaries. AV-FS002 takes precedence at those sinks and recommends `Path.is_relative_to`,
+`Path.relative_to`, or `os.path.commonpath`.
 The IR records the destination—not the source—as the governed path for two-path APIs. Import aliases
 are resolved only when unshadowed; string `.replace()` calls and caller-shadowed `shutil` names are
 regression negatives.
@@ -62,7 +67,7 @@ name matching from inventing this control.
 Five more calls bind a tool source through an escaping callback: three browser-use actions are
 registered and two ArcadeAI wrappers are returned. Equivalent retry closures in the MCP Python SDK
 and FastMCP do not qualify because the public caller still selects the name for each operation.
-Schema v20 therefore reports five instance and five closure fixed-binding edges, without suppressing
+Schema v21 therefore reports five instance and five closure fixed-binding edges, without suppressing
 any review.
 
 FastMCP adds an interprocedural routing fact: its middleware recursion reaches a same-class callee
@@ -77,7 +82,7 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the 228-label truth set.
+rule observations are pinned in the 230-label truth set.
 
 ## 3. Approval exists, but bypass behavior recurs
 
@@ -111,7 +116,7 @@ repository-wide “filesystem safe” flag. Its configured root scope remains un
 is retained rather than treating the presence of validation as sufficient policy.
 ChatDev contributes the Python exception form: its local-tool creation route resolves a candidate,
 calls [`target_path.relative_to(tools_dir)`](https://github.com/OpenBMB/ChatDev/blob/4fb2db0ea90375ce1059f44fe03ffbd191a7a169/server/routes/tools.py#L58),
-and terminates the `ValueError` handler before writing. Schema v20 records this as a distinct
+and terminates the `ValueError` handler before writing. Schema v21 records this as a distinct
 `Path.relative_to` control edge with unresolved root scope; handlers that continue are not controls.
 OpenAI Agents Python demonstrates the interprocedural variant: its `_resolve()` helper returns the
 same checked Path to create, update, and delete callers. Three sink edges retain the helper's exact

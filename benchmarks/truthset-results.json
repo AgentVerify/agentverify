@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T10:41:18.178365+00:00",
-  "labels": 228,
-  "passed": 228,
+  "generated_at": "2026-08-21T10:54:47.941310+00:00",
+  "labels": 230,
+  "passed": 230,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 14,
@@ -37,9 +37,17 @@
       "recall": 1.0
     },
     "AV-FS001": {
-      "tp": 44,
+      "tp": 38,
       "fp": 0,
       "tn": 33,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "AV-FS002": {
+      "tp": 6,
+      "fp": 0,
+      "tn": 2,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -1025,8 +1033,8 @@
       "passed": true
     },
     {
-      "id": "filesystem-crewai-parent-real",
-      "rule_id": "AV-FS001",
+      "id": "filesystem-crewai-prefix-parent-real",
+      "rule_id": "AV-FS002",
       "expected": true,
       "observed": true,
       "anchor_ok": true,
@@ -1034,8 +1042,8 @@
       "passed": true
     },
     {
-      "id": "filesystem-crewai-open-real",
-      "rule_id": "AV-FS001",
+      "id": "filesystem-crewai-prefix-open-real",
+      "rule_id": "AV-FS002",
       "expected": true,
       "observed": true,
       "anchor_ok": true,
@@ -1043,8 +1051,8 @@
       "passed": true
     },
     {
-      "id": "filesystem-crewai-template-real",
-      "rule_id": "AV-FS001",
+      "id": "filesystem-crewai-prefix-template-real",
+      "rule_id": "AV-FS002",
       "expected": true,
       "observed": true,
       "anchor_ok": true,
@@ -1134,9 +1142,27 @@
     },
     {
       "id": "filesystem-python-prefix-check-local-positive",
-      "rule_id": "AV-FS001",
+      "rule_id": "AV-FS002",
       "expected": true,
       "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-prefix-after-write-local-negative",
+      "rule_id": "AV-FS002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-separator-aware-prefix-local-negative",
+      "rule_id": "AV-FS002",
+      "expected": false,
+      "observed": false,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true
@@ -1368,7 +1394,7 @@
     },
     {
       "id": "filesystem-python-prefix-copy-local-positive",
-      "rule_id": "AV-FS001",
+      "rule_id": "AV-FS002",
       "expected": true,
       "observed": true,
       "anchor_ok": true,
@@ -1556,8 +1582,8 @@
       "passed": true
     },
     {
-      "id": "filesystem-crewai-copytree-real",
-      "rule_id": "AV-FS001",
+      "id": "filesystem-crewai-prefix-copytree-real",
+      "rule_id": "AV-FS002",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

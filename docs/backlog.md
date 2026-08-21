@@ -33,6 +33,10 @@ handlers, mixed try bodies, and parent writes remain negative. Unique same-class
 propagate an exact checked-and-returned Path into callers while preserving unresolved root scope;
 duplicate/rebound methods, opaque transforms, and changed return values remain negative. Next add
 bounded imported helper summaries and root-scope resolution without trusting semantic names.
+Exact Python `str(resolved).startswith(str(root))` guards now remain non-suppressing weak-control
+edges and receive the specialized `AV-FS002` review; checks after a sink and separator-aware forms
+remain negative. Next recognize additional component-aware weak patterns only when a real reachable
+sink justifies them.
 Python filesystem inventory now models canonical and import-aliased `os`/`shutil` create, copy,
 move, replace, and delete calls, using the destination rather than the source for two-path APIs.
 Statement-ordered local callable aliases now cover direct assignments, conditional expressions, and
@@ -86,8 +90,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 228 pinned positive/negative locations, with 102 separately
-scored IR relationship labels. Schema-v20 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 230 pinned positive/negative locations, with 110 separately
+scored IR relationship labels. Schema-v21 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

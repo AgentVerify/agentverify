@@ -91,6 +91,15 @@ try `else` or `finally` block disqualifies it. These edges carry `summary: same-
 configured member roots unresolved, so the summary records validation without inventing a narrow
 policy or suppressing `AV-FS001`.
 
+The same flow engine records an exact `str(resolved).startswith(str(root))` predicate separately as
+`path-prefix-check`, never as `path-boundary`. It follows parameter taint through tuple unpacking and
+self-derived string assignments, preserves unresolved `root / input` joins until an explicit
+`resolve()`, and propagates a check out of a try only when continuing handlers cannot bypass it.
+The weak edge carries `policy_effect: weak-string-prefix-validation`: string prefixes do not compare
+path components and can admit sibling-prefix targets. `AV-FS002` takes precedence over the generic
+`AV-FS001` review at those exact sinks. Checks after the action and separator-aware expressions do
+not match this specialized contract.
+
 Python filesystem mutation calls preserve API semantics in Agent IR. Canonical and top-level
 import-aliased `os`/`shutil` functions resolve only while their bindings remain unshadowed. One-path
 create/delete APIs use their target argument; copy, move, rename, and replace APIs use the

@@ -14,7 +14,8 @@ coverage to justify them.
 | AV-EXEC002 | finding | high | Dynamic input reaches an evaluator/interpreter | 43 repositories have code-execution signals |
 | AV-APPROVAL001 | review | high | Enabled auto-approve or skip-confirmation path | 15 default-scope engine candidates after semantic-name and approval-flow filtering |
 | AV-APPROVAL002 | review | high | Reachable local OpenAI Agents Python/TypeScript shell tool uses the SDK's disabled approval policy | 2 default-scope matches in the pinned SDK examples |
-| AV-FS001 | review | high | Agent tool writes, copies, moves, or deletes a dynamic filesystem path without a proven narrow path-boundary control | 25 default-scope matches across 8 repositories |
+| AV-FS001 | review | high | Agent tool writes, copies, moves, or deletes a dynamic filesystem path without a proven narrow path-boundary control | 21 default-scope matches across 7 repositories after specialized prefix-check classification |
+| AV-FS002 | review | high | Agent tool relies on `str(resolved).startswith(str(root))` as a filesystem boundary check | 4 default-scope matches in CrewAI Examples |
 | AV-NET001 | review | high | Agent tool sends an HTTP request to a parameter-controlled origin | 5 default-scope matches across 5 repositories |
 | AV-MCP002 | review | high | Dynamic MCP tool name and arguments are forwarded to a server | 49 default-scope matches across 23 repositories after policy resolution |
 | AV-SANDBOX001 | review | high | Container/Kubernetes workload or Docker SDK call exposes a host, privilege, or service-account boundary | 19 matches across 9 repositories |

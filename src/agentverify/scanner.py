@@ -278,6 +278,7 @@ class PythonPathBoundaryProof:
     strict_descendant: bool
     helper: str
     summary: str | None = None
+    strength: str = "strong"
 
 
 @dataclass(frozen=True)
@@ -296,6 +297,7 @@ class PythonPathState:
     roots: dict[str, str]
     candidates: dict[str, str]
     guards: dict[str, PythonPathBoundaryProof]
+    unresolved_candidates: dict[str, str]
 
     def clone(self) -> PythonPathState:
         return PythonPathState(
@@ -303,6 +305,7 @@ class PythonPathState:
             dict(self.roots),
             dict(self.candidates),
             dict(self.guards),
+            dict(self.unresolved_candidates),
         )
 
 
@@ -775,6 +778,36 @@ def python_path_root_scope(expression: ast.AST, path_constructors: set[str]) -> 
     return "constrained" if absolute and not filesystem_root else "unresolved"
 
 
+def python_unresolved_candidate_root(
+    expression: ast.AST,
+    state: PythonPathState,
+    path_constructors: set[str],
+) -> str | None:
+    """Resolve an unresolved `root / dynamic_input` path join to its root."""
+    if isinstance(expression, ast.BinOp) and isinstance(expression.op, ast.Div):
+        left_names = python_expression_names(expression.left)
+        roots = left_names & state.roots.keys()
+        if len(roots) != 1:
+            return None
+        root = next(iter(roots))
+        if not (python_expression_names(expression.right) & state.dynamic_names):
+            return None
+        return root
+    if isinstance(expression, ast.Call) and dotted_name(expression.func) in path_constructors:
+        if len(expression.args) < 2:
+            return None
+        root_names = python_expression_names(expression.args[0]) & state.roots.keys()
+        if len(root_names) != 1:
+            return None
+        if not any(
+            python_expression_names(argument) & state.dynamic_names
+            for argument in expression.args[1:]
+        ):
+            return None
+        return next(iter(root_names))
+    return None
+
+
 def python_candidate_root(
     expression: ast.AST,
     state: PythonPathState,
@@ -784,28 +817,9 @@ def python_candidate_root(
     receiver = python_resolved_path_expression(expression)
     if receiver is None:
         return None
-    if isinstance(receiver, ast.BinOp) and isinstance(receiver.op, ast.Div):
-        left_names = python_expression_names(receiver.left)
-        roots = left_names & state.roots.keys()
-        if len(roots) != 1:
-            return None
-        root = next(iter(roots))
-        if not (python_expression_names(receiver.right) & state.dynamic_names):
-            return None
-        return root
-    if isinstance(receiver, ast.Call) and dotted_name(receiver.func) in path_constructors:
-        if len(receiver.args) < 2:
-            return None
-        root_names = python_expression_names(receiver.args[0]) & state.roots.keys()
-        if len(root_names) != 1:
-            return None
-        if not any(
-            python_expression_names(argument) & state.dynamic_names
-            for argument in receiver.args[1:]
-        ):
-            return None
-        return next(iter(root_names))
-    return None
+    if isinstance(receiver, ast.Name):
+        return state.unresolved_candidates.get(receiver.id)
+    return python_unresolved_candidate_root(receiver, state, path_constructors)
 
 
 def python_boundary_predicate(
@@ -876,6 +890,55 @@ def python_boundary_predicate(
             positive and isinstance(term.ops[0], (ast.NotEq, ast.IsNot))
         ) or (not positive and isinstance(term.ops[0], (ast.Eq, ast.Is)))
     return candidate_name, root_name, positive, strict_descendant
+
+
+def python_path_prefix_predicate(
+    expression: ast.AST, state: PythonPathState
+) -> tuple[str, str, bool] | None:
+    """Recognize a path-derived string prefix test without treating it as containment."""
+
+    def prefix_call(term: ast.AST) -> ast.Call | None:
+        if (
+            isinstance(term, ast.Call)
+            and isinstance(term.func, ast.Attribute)
+            and term.func.attr == "startswith"
+            and len(term.args) == 1
+            and not term.keywords
+        ):
+            return term
+        return None
+
+    positive = True
+    call = prefix_call(expression)
+    if call is None and isinstance(expression, ast.UnaryOp) and isinstance(
+        expression.op, ast.Not
+    ):
+        call = prefix_call(expression.operand)
+        positive = False
+    if call is None:
+        return None
+
+    def stringified_name(term: ast.AST) -> str | None:
+        if (
+            isinstance(term, ast.Call)
+            and dotted_name(term.func) == "str"
+            and len(term.args) == 1
+            and not term.keywords
+            and isinstance(term.args[0], ast.Name)
+        ):
+            return term.args[0].id
+        return None
+
+    candidate = stringified_name(call.func.value)
+    root_name = stringified_name(call.args[0])
+    if (
+        candidate is None
+        or root_name is None
+        or state.candidates.get(candidate) != root_name
+        or root_name not in state.roots
+    ):
+        return None
+    return candidate, root_name, positive
 
 
 def python_block_always_terminates(statements: list[ast.stmt]) -> bool:
@@ -1273,8 +1336,16 @@ def python_path_boundary_calls(
         for alias, canonical in filesystem_api_aliases.items()
         if alias.split(".", 1)[0] not in local_bindings
     }
-    initial = PythonPathState(parameters, {}, {}, {})
+    initial = PythonPathState(parameters, {}, {}, {}, {})
     proofs: dict[int, PythonPathBoundaryProof] = {}
+
+    def install_guard(
+        state: PythonPathState, candidate: str, proof: PythonPathBoundaryProof
+    ) -> None:
+        current = state.guards.get(candidate)
+        if current is not None and current.strength == "strong" and proof.strength != "strong":
+            return
+        state.guards[candidate] = proof
 
     def record_expression(expression: ast.AST | None, state: PythonPathState) -> None:
         if expression is None:
@@ -1297,7 +1368,8 @@ def python_path_boundary_calls(
                     path_target
                     and (proof := state.guards.get(path_target[0]))
                     and (
-                        path_target[1] == 0
+                        proof.strength == "weak-prefix"
+                        or path_target[1] == 0
                         or (path_target[1] == 1 and proof.strict_descendant)
                     )
                 ):
@@ -1313,6 +1385,7 @@ def python_path_boundary_calls(
             state.roots.pop(name, None)
             state.candidates.pop(name, None)
             state.guards.pop(name, None)
+            state.unresolved_candidates.pop(name, None)
         invalid_roots = names
         invalid_candidates = {
             candidate
@@ -1322,20 +1395,32 @@ def python_path_boundary_calls(
         for candidate in invalid_candidates:
             state.candidates.pop(candidate, None)
             state.guards.pop(candidate, None)
+        invalid_unresolved_candidates = {
+            candidate
+            for candidate, root_name in state.unresolved_candidates.items()
+            if root_name in invalid_roots
+        }
+        for candidate in invalid_unresolved_candidates:
+            state.unresolved_candidates.pop(candidate, None)
 
     def apply_assignment(target: ast.AST, value: ast.AST, state: PythonPathState) -> None:
         names = python_assigned_names(target)
+        value_names = python_expression_names(value)
+        value_is_dynamic = bool(value_names & state.dynamic_names)
         invalidate(names, state)
+        if value_is_dynamic:
+            state.dynamic_names.update(names)
         if len(names) != 1:
             return
         name = next(iter(names))
-        value_names = python_expression_names(value)
-        if value_names & state.dynamic_names:
-            state.dynamic_names.add(name)
         if (scope := python_path_root_scope(value, path_constructors)) is not None:
             state.roots[name] = scope
         elif root_name := python_candidate_root(value, state, path_constructors):
             state.candidates[name] = root_name
+        elif root_name := python_unresolved_candidate_root(
+            value, state, path_constructors
+        ):
+            state.unresolved_candidates[name] = root_name
         if (
             isinstance(value, ast.Call)
             and isinstance(value.func, ast.Attribute)
@@ -1349,14 +1434,18 @@ def python_path_boundary_calls(
             )
             is not None
         ):
-            state.guards[name] = PythonPathBoundaryProof(
-                summary.evidence,
-                summary.boundary_scope,
+            install_guard(
+                state,
                 name,
-                summary.root_name,
-                False,
-                summary.helper,
-                "same-class-return",
+                PythonPathBoundaryProof(
+                    summary.evidence,
+                    summary.boundary_scope,
+                    name,
+                    summary.root_name,
+                    False,
+                    summary.helper,
+                    "same-class-return",
+                ),
             )
 
     def analyze_block(statements: list[ast.stmt], state: PythonPathState) -> PythonPathState:
@@ -1382,6 +1471,15 @@ def python_path_boundary_calls(
             if root_name in state.roots
             and all(
                 branch.candidates.get(name) == root_name for branch in branches[1:]
+            )
+        }
+        state.unresolved_candidates = {
+            name: root_name
+            for name, root_name in branches[0].unresolved_candidates.items()
+            if root_name in state.roots
+            and all(
+                branch.unresolved_candidates.get(name) == root_name
+                for branch in branches[1:]
             )
         }
         state.guards = {
@@ -1416,25 +1514,38 @@ def python_path_boundary_calls(
             return
         if isinstance(statement, ast.If):
             record_expression(statement.test, state)
-            predicate = python_boundary_predicate(statement.test, state)
+            strong_predicate = python_boundary_predicate(statement.test, state)
+            weak_predicate = (
+                None
+                if strong_predicate is not None
+                else python_path_prefix_predicate(statement.test, state)
+            )
+            predicate = strong_predicate or weak_predicate
             body_state = state.clone()
             else_state = state.clone()
             if predicate is not None:
-                candidate, root_name, positive, strict_descendant = predicate
+                candidate, root_name, positive = predicate[:3]
+                strict_descendant = (
+                    strong_predicate[3] if strong_predicate is not None else False
+                )
                 proof = PythonPathBoundaryProof(
                     Evidence(path, statement.lineno, excerpt(lines, statement.lineno)),
                     state.roots[root_name],
                     candidate,
                     root_name,
                     strict_descendant,
-                    "Path.is_relative_to",
+                    "Path.is_relative_to" if strong_predicate is not None else "str.startswith",
+                    strength="strong" if strong_predicate is not None else "weak-prefix",
                 )
-                (body_state if positive else else_state).guards[candidate] = proof
+                install_guard(body_state if positive else else_state, candidate, proof)
             analyze_block(statement.body, body_state)
             analyze_block(statement.orelse, else_state)
             propagated_continuation = False
             if predicate is not None:
-                candidate, root_name, positive, strict_descendant = predicate
+                candidate, root_name, positive = predicate[:3]
+                strict_descendant = (
+                    strong_predicate[3] if strong_predicate is not None else False
+                )
                 rejecting = statement.orelse if positive else statement.body
                 if python_block_always_terminates(rejecting):
                     continuing = body_state if positive else else_state
@@ -1446,17 +1557,31 @@ def python_path_boundary_calls(
                         state.roots = continuing.roots
                         state.candidates = continuing.candidates
                         state.guards = continuing.guards
-                        state.guards[candidate] = PythonPathBoundaryProof(
-                            Evidence(
-                                path,
-                                statement.lineno,
-                                excerpt(lines, statement.lineno),
-                            ),
-                            state.roots[root_name],
+                        state.unresolved_candidates = continuing.unresolved_candidates
+                        install_guard(
+                            state,
                             candidate,
-                            root_name,
-                            strict_descendant,
-                            "Path.is_relative_to",
+                            PythonPathBoundaryProof(
+                                Evidence(
+                                    path,
+                                    statement.lineno,
+                                    excerpt(lines, statement.lineno),
+                                ),
+                                state.roots[root_name],
+                                candidate,
+                                root_name,
+                                strict_descendant,
+                                (
+                                    "Path.is_relative_to"
+                                    if strong_predicate is not None
+                                    else "str.startswith"
+                                ),
+                                strength=(
+                                    "strong"
+                                    if strong_predicate is not None
+                                    else "weak-prefix"
+                                ),
+                            ),
                         )
                         propagated_continuation = True
             if not propagated_continuation:
@@ -1501,20 +1626,20 @@ def python_path_boundary_calls(
                 state.roots = continuing.roots
                 state.candidates = continuing.candidates
                 state.guards = continuing.guards
+                state.unresolved_candidates = continuing.unresolved_candidates
                 return
-            branches = [state.clone()]
             body_state = state.clone()
             analyze_block(statement.body, body_state)
-            branches.append(body_state)
+            else_state = body_state.clone()
+            analyze_block(statement.orelse, else_state)
+            branches = [else_state]
             for handler in statement.handlers:
                 handler_state = state.clone()
                 if handler.name:
                     invalidate({handler.name}, handler_state)
                 analyze_block(handler.body, handler_state)
-                branches.append(handler_state)
-            else_state = body_state.clone()
-            analyze_block(statement.orelse, else_state)
-            branches.append(else_state)
+                if not python_block_always_terminates(handler.body):
+                    branches.append(handler_state)
             final_states = []
             for branch in branches:
                 final_state = branch.clone()
@@ -1688,6 +1813,39 @@ class PythonVisitor(ast.NodeVisitor):
                     "root": proof.root_name,
                     "strict_descendant": proof.strict_descendant,
                     **({"summary": proof.summary} if proof.summary is not None else {}),
+                },
+            )
+        )
+
+    def add_python_path_prefix_control(
+        self, capability_node: ast.AST, proof: PythonPathBoundaryProof
+    ) -> None:
+        attributes = {
+            "scope": source_scope(self.path),
+            "policy_effect": "weak-string-prefix-validation",
+            "frontend": "python",
+            "helper": proof.helper,
+            "predicate_path": proof.evidence.path,
+            "root_scope": proof.boundary_scope,
+            "candidate": proof.candidate_name,
+            "root": proof.root_name,
+            "strength": proof.strength,
+        }
+        self.ir.add_component(
+            Component("control", "path-prefix-check", proof.evidence, attributes)
+        )
+        self.ir.add_relationship(
+            Relationship(
+                "capability",
+                "filesystem",
+                "governed-by",
+                "control",
+                "path-prefix-check",
+                self.ev(capability_node),
+                {
+                    "control_path": proof.evidence.path,
+                    "control_line": proof.evidence.line,
+                    **attributes,
                 },
             )
         )
@@ -3197,9 +3355,19 @@ class PythonVisitor(ast.NodeVisitor):
             else:
                 assert path_method is not None
                 canonical_api, filesystem_spec, path_expression, receiver_proof = path_method
-            boundary = (
+            path_control = (
                 self.function_path_boundary_calls[-1].get(id(node))
                 if self.function_path_boundary_calls
+                else None
+            )
+            boundary = (
+                path_control
+                if path_control is not None and path_control.strength == "strong"
+                else None
+            )
+            prefix_check = (
+                path_control
+                if path_control is not None and path_control.strength == "weak-prefix"
                 else None
             )
             self.add_capability(
@@ -3219,10 +3387,13 @@ class PythonVisitor(ast.NodeVisitor):
                     "path_boundary_scope": (
                         boundary.boundary_scope if boundary is not None else "unresolved"
                     ),
+                    "path_prefix_check": prefix_check is not None,
                 },
             )
             if boundary is not None:
                 self.add_python_path_boundary_control(node, boundary)
+            if prefix_check is not None:
+                self.add_python_path_prefix_control(node, prefix_check)
         elif short_name in {"open", "write_text", "write_bytes", "unlink", "rmdir", "mkdir"}:
             path_expression = node.args[0] if short_name == "open" and node.args else None
             mode_expression = node.args[1] if short_name == "open" and len(node.args) > 1 else None
@@ -3232,9 +3403,19 @@ class PythonVisitor(ast.NodeVisitor):
             mode = str(mode_expression.value) if isinstance(mode_expression, ast.Constant) else "r"
             write_access = short_name != "open" or any(flag in mode for flag in "wax+")
             dynamic_path = short_name != "open" or not isinstance(path_expression, ast.Constant)
-            boundary = (
+            path_control = (
                 self.function_path_boundary_calls[-1].get(id(node))
                 if self.function_path_boundary_calls and write_access
+                else None
+            )
+            boundary = (
+                path_control
+                if path_control is not None and path_control.strength == "strong"
+                else None
+            )
+            prefix_check = (
+                path_control
+                if path_control is not None and path_control.strength == "weak-prefix"
                 else None
             )
             self.add_capability(
@@ -3248,10 +3429,13 @@ class PythonVisitor(ast.NodeVisitor):
                     "path_boundary_scope": (
                         boundary.boundary_scope if boundary is not None else "unresolved"
                     ),
+                    "path_prefix_check": prefix_check is not None,
                 },
             )
             if boundary is not None:
                 self.add_python_path_boundary_control(node, boundary)
+            if prefix_check is not None:
+                self.add_python_path_prefix_control(node, prefix_check)
         root_name = call_name.split(".", 1)[0]
         http_method = short_name.lower() in {"get", "post", "put", "patch", "delete", "request"}
         if http_method and (

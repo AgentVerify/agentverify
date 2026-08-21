@@ -1213,6 +1213,10 @@ def test_python_path_boundary_is_ordered_branch_local_and_scope_aware() -> None:
         123: (False, "unresolved"),
         134: (False, "unresolved"),
         145: (False, "unresolved"),
+        152: (False, "unresolved"),
+        163: (False, "unresolved"),
+        176: (False, "unresolved"),
+        189: (False, "unresolved"),
     }
     assert [
         (
@@ -1235,11 +1239,26 @@ def test_python_path_boundary_is_ordered_branch_local_and_scope_aware() -> None:
         (100, 97, "restricts-filesystem-path", "constrained", "python", "Path.relative_to"),
     ]
     assert [
+        (
+            edge.evidence.line,
+            edge.attributes["control_line"],
+            edge.attributes["policy_effect"],
+            edge.attributes["strength"],
+        )
+        for edge in ir.relationships
+        if edge.source_kind == "capability"
+        and edge.relation == "governed-by"
+        and edge.target_name == "path-prefix-check"
+    ] == [
+        (32, 30, "weak-string-prefix-validation", "weak-prefix"),
+        (176, 172, "weak-string-prefix-validation", "weak-prefix"),
+    ]
+    assert [
         (finding.rule_id, finding.evidence.line, finding.analysis["tool"])
         for finding in ir.findings
     ] == [
         ("AV-FS001", 23, "positive_branch"),
-        ("AV-FS001", 32, "prefix_check"),
+        ("AV-FS002", 32, "prefix_check"),
         ("AV-FS001", 42, "reassigned_candidate"),
         ("AV-FS001", 51, "configured_root"),
         ("AV-FS001", 59, "unresolved_candidate"),
@@ -1250,6 +1269,10 @@ def test_python_path_boundary_is_ordered_branch_local_and_scope_aware() -> None:
         ("AV-FS001", 123, "relative_to_nonexclusive_try"),
         ("AV-FS001", 134, "relative_to_parent_without_strict_descendant"),
         ("AV-FS001", 145, "relative_to_rebinds_candidate"),
+        ("AV-FS001", 152, "prefix_after_write"),
+        ("AV-FS001", 163, "separator_aware_prefix"),
+        ("AV-FS002", 176, "prefix_inside_terminating_try"),
+        ("AV-FS001", 189, "prefix_inside_continuing_try"),
     ]
 
 
@@ -1404,6 +1427,13 @@ def test_python_filesystem_mutations_resolve_destinations_aliases_and_guards() -
         and edge.target_name == "path-boundary"
     ] == [(47, 45), (97, 94), (147, 145)]
     assert [
+        (edge.evidence.line, edge.attributes["control_line"])
+        for edge in ir.relationships
+        if edge.source_kind == "capability"
+        and edge.relation == "governed-by"
+        and edge.target_name == "path-prefix-check"
+    ] == [(56, 54)]
+    assert [
         (finding.rule_id, finding.evidence.line, finding.analysis["tool"])
         for finding in ir.findings
     ] == [
@@ -1412,7 +1442,7 @@ def test_python_filesystem_mutations_resolve_destinations_aliases_and_guards() -
         ("AV-FS001", 23, "replace_path"),
         ("AV-FS001", 28, "copy_file"),
         ("AV-FS001", 33, "delete_file"),
-        ("AV-FS001", 56, "weak_prefix_copy"),
+        ("AV-FS002", 56, "weak_prefix_copy"),
         ("AV-FS001", 74, "local_copy_choice"),
         ("AV-FS001", 85, "branch_copy_choice"),
         ("AV-FS001", 132, "direct_path_replace"),

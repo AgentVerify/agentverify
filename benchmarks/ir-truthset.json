@@ -758,6 +758,145 @@
       }
     },
     {
+      "id": "python-path-prefix-check-local",
+      "target": {"kind": "local", "path": "cases/python_path_boundary"},
+      "check_id": "IR-PY-PATH-PREFIX",
+      "path": "agent.py",
+      "line": 32,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-prefix-check",
+        "attributes": {
+          "control_line": 30,
+          "policy_effect": "weak-string-prefix-validation",
+          "frontend": "python",
+          "helper": "str.startswith",
+          "strength": "weak-prefix"
+        }
+      }
+    },
+    {
+      "id": "python-path-prefix-after-write-local-negative",
+      "target": {"kind": "local", "path": "cases/python_path_boundary"},
+      "check_id": "IR-PY-PATH-PREFIX",
+      "path": "agent.py",
+      "line": 152,
+      "expected": false,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-prefix-check"
+      }
+    },
+    {
+      "id": "python-path-prefix-separator-aware-local-negative",
+      "target": {"kind": "local", "path": "cases/python_path_boundary"},
+      "check_id": "IR-PY-PATH-PREFIX",
+      "path": "agent.py",
+      "line": 163,
+      "expected": false,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-prefix-check"
+      }
+    },
+    {
+      "id": "python-path-prefix-crewai-parent-real",
+      "target": {
+        "kind": "repository",
+        "repository": "crewAIInc/crewAI-examples",
+        "commit": "da94a91e691e1cf5b3151416bb15b5b62729bea8"
+      },
+      "check_id": "IR-PY-PATH-PREFIX",
+      "path": "crews/landing_page_generator/src/landing_page_generator/tools/file_tools.py",
+      "line": 69,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-prefix-check",
+        "attributes": {
+          "control_line": 58,
+          "policy_effect": "weak-string-prefix-validation",
+          "frontend": "python",
+          "helper": "str.startswith",
+          "root_scope": "unresolved",
+          "strength": "weak-prefix"
+        }
+      }
+    },
+    {
+      "id": "python-path-prefix-crewai-open-real",
+      "target": {
+        "kind": "repository",
+        "repository": "crewAIInc/crewAI-examples",
+        "commit": "da94a91e691e1cf5b3151416bb15b5b62729bea8"
+      },
+      "check_id": "IR-PY-PATH-PREFIX",
+      "path": "crews/landing_page_generator/src/landing_page_generator/tools/file_tools.py",
+      "line": 72,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-prefix-check",
+        "attributes": {"control_line": 58, "strength": "weak-prefix"}
+      }
+    },
+    {
+      "id": "python-path-prefix-crewai-parent-copy-real",
+      "target": {
+        "kind": "repository",
+        "repository": "crewAIInc/crewAI-examples",
+        "commit": "da94a91e691e1cf5b3151416bb15b5b62729bea8"
+      },
+      "check_id": "IR-PY-PATH-PREFIX",
+      "path": "crews/landing_page_generator/src/landing_page_generator/tools/template_tools.py",
+      "line": 87,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-prefix-check",
+        "attributes": {"control_line": 71, "strength": "weak-prefix"}
+      }
+    },
+    {
+      "id": "python-path-prefix-crewai-copytree-real",
+      "target": {
+        "kind": "repository",
+        "repository": "crewAIInc/crewAI-examples",
+        "commit": "da94a91e691e1cf5b3151416bb15b5b62729bea8"
+      },
+      "check_id": "IR-PY-PATH-PREFIX",
+      "path": "crews/landing_page_generator/src/landing_page_generator/tools/template_tools.py",
+      "line": 90,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-prefix-check",
+        "attributes": {"control_line": 71, "strength": "weak-prefix"}
+      }
+    },
+    {
       "id": "python-configured-root-path-boundary-local",
       "target": {"kind": "local", "path": "cases/python_path_boundary"},
       "check_id": "IR-PY-PATH-BOUNDARY",
@@ -1493,6 +1632,26 @@
         "relation": "governed-by",
         "target_kind": "control",
         "target_name": "path-boundary"
+      }
+    },
+    {
+      "id": "python-filesystem-prefix-copy-check-local",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-PATH-PREFIX",
+      "path": "agent.py",
+      "line": 56,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-prefix-check",
+        "attributes": {
+          "control_line": 54,
+          "policy_effect": "weak-string-prefix-validation",
+          "strength": "weak-prefix"
+        }
       }
     },
     {

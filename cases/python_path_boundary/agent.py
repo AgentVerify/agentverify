@@ -143,3 +143,47 @@ def relative_to_rebinds_candidate(requested_path: str) -> None:
     except ValueError:
         raise ValueError("outside workspace") from None
     candidate.write_text("candidate became relative", encoding="utf-8")
+
+
+@tool
+def prefix_after_write(requested_path: str) -> None:
+    root = Path("/srv/agent-workspace").resolve()
+    candidate = (root / requested_path).resolve()
+    candidate.write_text("check is too late", encoding="utf-8")
+    if not str(candidate).startswith(str(root)):
+        return
+
+
+@tool
+def separator_aware_prefix(requested_path: str) -> None:
+    root = Path("/srv/agent-workspace").resolve()
+    candidate = (root / requested_path).resolve()
+    if not (candidate == root or str(candidate).startswith(str(root) + "/")):
+        return
+    candidate.write_text("separator-aware near miss", encoding="utf-8")
+
+
+@tool
+def prefix_inside_terminating_try(requested_path: str) -> None:
+    root = Path("/srv/agent-workspace").resolve()
+    joined = root / requested_path
+    try:
+        candidate = joined.resolve()
+        if not str(candidate).startswith(str(root)):
+            return
+    except OSError:
+        return
+    candidate.write_text("terminating handler", encoding="utf-8")
+
+
+@tool
+def prefix_inside_continuing_try(requested_path: str) -> None:
+    root = Path("/srv/agent-workspace").resolve()
+    joined = root / requested_path
+    try:
+        candidate = joined.resolve()
+        if not str(candidate).startswith(str(root)):
+            return
+    except OSError:
+        candidate = Path(requested_path).resolve()
+    candidate.write_text("continuing handler", encoding="utf-8")

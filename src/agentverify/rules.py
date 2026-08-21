@@ -138,22 +138,35 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
             and component.name == "filesystem"
             and component.attributes.get("write_access")
             and component.attributes.get("dynamic_path")
-            and component.attributes.get("path_boundary_scope") != "constrained"
         ):
             _, context = component_context(ir, component)
             if context.get("tool"):
-                ir.findings.append(
-                    make_finding(
-                        ir,
-                        component,
-                        "AV-FS001",
-                        "high",
-                        "medium",
-                        "An agent tool writes to a dynamic filesystem path",
-                        "Constrain writes to a resolved workspace root and reject traversal outside it.",
-                        "review",
+                if component.attributes.get("path_prefix_check"):
+                    ir.findings.append(
+                        make_finding(
+                            ir,
+                            component,
+                            "AV-FS002",
+                            "high",
+                            "high",
+                            "An agent tool relies on a string-prefix filesystem boundary check",
+                            "Compare resolved path components with Path.is_relative_to(), Path.relative_to(), or os.path.commonpath() instead of string prefixes.",
+                            "review",
+                        )
                     )
-                )
+                elif component.attributes.get("path_boundary_scope") != "constrained":
+                    ir.findings.append(
+                        make_finding(
+                            ir,
+                            component,
+                            "AV-FS001",
+                            "high",
+                            "medium",
+                            "An agent tool writes to a dynamic filesystem path",
+                            "Constrain writes to a resolved workspace root and reject traversal outside it.",
+                            "review",
+                        )
+                    )
         if (
             component.kind == "capability"
             and component.name == "network"

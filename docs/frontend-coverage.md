@@ -34,17 +34,17 @@ Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK
 because the engine requires supported selected files and more specific syntax.
 
 Across the selected snapshot, 8,566 agent/tool observations have module-qualified symbol IDs. Of
-2,780 relationship endpoint observations, 1,882 carry IDs and 1,880 resolve to an observed component
+2,788 relationship endpoint observations, 1,882 carry IDs and 1,880 resolve to an observed component
 (1,629 Python and 251 TypeScript); the two unmatched IDs are explicit Python re-export targets.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
-edges resolve exactly. In Python files with repeated identities, schema v20 records 325 same-scope and
+edges resolve exactly. In Python files with repeated identities, schema v21 records 325 same-scope and
 14 module-scope single-definition resolutions, plus 23 `ambiguous-repeated-binding` references that
 remain withheld.
 Capability/control taxonomy endpoints intentionally lack
 source-symbol IDs, so the endpoint fraction is inventory coverage rather than an accuracy or recall
 metric.
 
-The native AI BOM 1.1 resolver independently classifies all 2,780 endpoints: 1,880 by symbol ID, 353
+The native AI BOM 1.1 resolver independently classifies all 2,788 endpoints: 1,880 by symbol ID, 361
 by exact relationship evidence, 17 by a unique display name, 30 as ambiguous, and 500 as unresolved.
 Evidence-local resolution removes capability/control ambiguities; occurrence-qualified bindings
 resolve repeated source agent/tool observations, and conservative lexical resolution removes further
@@ -67,7 +67,13 @@ terminating `ValueError` handler. The OpenAI helper's checked return is consumed
 unlink. All six pinned roots are dynamically configured, so their scope remains explicit and
 unresolved and none suppresses a review.
 
-Schema v20 records 14 exact MCP-forwarding control edges: one explicit allowlist, three discovery
+Four additional Python edges record exact string-prefix checks at CrewAI Examples sinks. They target
+`path-prefix-check`, carry `weak-string-prefix-validation`, and never satisfy path-boundary policy.
+Two checks govern both a parent-directory creation and its write/copy action. The specialized
+`AV-FS002` result explains the sibling-prefix weakness without duplicating `AV-FS001` at the same
+sink.
+
+Schema v21 records 14 exact MCP-forwarding control edges: one explicit allowlist, three discovery
 registries, and ten fixed bindings. The fixed-binding edges split evenly between constructor-bound
 instance sources and escaping returned/registered closures. Same-operation retry closures do not
 qualify. The ten bindings and discovery registries retain their reviews; only the explicit allowlist
@@ -79,7 +85,8 @@ one is reached through a statement-ordered local callable alias and 20 are `Path
 methods with explicit or immutable receiver proof. That
 inventory count is intentionally broader than AV-FS001, which additionally requires an exact tool
 edge. Expanded sinks add seven tool reviews—six in ArcadeAI and one in CrewAI Examples—raising
-AV-FS001 to 25 sites across the same eight repositories. No pinned mutation
+the combined filesystem queue to 25 sites across eight repositories. Four CrewAI Examples sinks are
+specialized as AV-FS002, leaving 21 AV-FS001 sites across seven repositories. No pinned mutation
 destination has a statically narrow guard, so the corpus records zero guarded calls in this API
 subset.
 
@@ -87,7 +94,7 @@ subset.
 
 | Frontend | Implemented observations and resolution |
 |---|---|
-| Python AST | Imports; known agent/model constructors; tool decorators; literal tool/handoff lists; module-, class-, and repeated-occurrence-qualified agent/tool IDs; shell, eval, filesystem, HTTP, browser, MCP, and Docker SDK calls; canonical, top-level import-aliased, and statement-ordered local callable-aliased `os`/`shutil` create/copy/move/delete mutations with compatible branch merging, destination roles, and rebinding invalidation; `Path.rename`/`replace` moves through explicit constructors, exact annotations, or immutable derived locals; tool-parameter HTTP origins with direct alias propagation and fixed-host discrimination; absolute and filesystem-relative tool imports; literal approval decorators; OpenAI Agents `ShellTool`/`ApplyPatchTool`/`CustomTool` approval constructors; env-backed auto-approval flags with direct true-return branches and same-class approval short circuits; statement-ordered MCP rejection guards, internal tool-registry routing lookups, same-class rejecting registry-method summaries with literal boolean path selection, immutable constructor-bound imported registry summaries through exact package reexports, constructor-only fixed tool bindings through direct attributes or pure accessors, unchanged captured parameters in returned/registered callbacks, same-function resolved `pathlib.Path.is_relative_to()` or fail-closed `relative_to()` exception boundaries, and exact same-class checked-Path return summaries with dominance and reassignment invalidation; lexically scoped OpenTelemetry spans. |
+| Python AST | Imports; known agent/model constructors; tool decorators; literal tool/handoff lists; module-, class-, and repeated-occurrence-qualified agent/tool IDs; shell, eval, filesystem, HTTP, browser, MCP, and Docker SDK calls; canonical, top-level import-aliased, and statement-ordered local callable-aliased `os`/`shutil` create/copy/move/delete mutations with compatible branch merging, destination roles, and rebinding invalidation; `Path.rename`/`replace` moves through explicit constructors, exact annotations, or immutable derived locals; tool-parameter HTTP origins with direct alias propagation and fixed-host discrimination; absolute and filesystem-relative tool imports; literal approval decorators; OpenAI Agents `ShellTool`/`ApplyPatchTool`/`CustomTool` approval constructors; env-backed auto-approval flags with direct true-return branches and same-class approval short circuits; statement-ordered MCP rejection guards, internal tool-registry routing lookups, same-class rejecting registry-method summaries with literal boolean path selection, immutable constructor-bound imported registry summaries through exact package reexports, constructor-only fixed tool bindings through direct attributes or pure accessors, unchanged captured parameters in returned/registered callbacks, same-function resolved `pathlib.Path.is_relative_to()` or fail-closed `relative_to()` exception boundaries, exact same-class checked-Path return summaries, and non-suppressing string-prefix path checks with dominance and reassignment invalidation; lexically scoped OpenTelemetry spans. |
 | TypeScript/JavaScript structural lexical | Known imports/providers; balanced top-level `new Agent({tools: [...]})` entries; `tool(...)`, `functionTool(...)`, `toolNamespace(...)`, OpenAI built-ins, Cline and import-aliased Mastra `createTool(...)`, MCP `registerTool(...)`, and assigned/inline `asTool(...)`; module- and repeated-occurrence-qualified agent/tool IDs; named relative imports and aliases; execution-callback parameter origins for global `fetch` and Axios verbs with direct alias/fixed-host discrimination; bounded summaries for uniquely named same-file free/static network helpers, object-parameter mapping, and multiline destructuring aliases; imported filesystem guards whose nested predicate normalizes both paths, uses separator-aware root containment, and rejects before the write, with suppression only for statically narrow literal roots; child-process and Bun `sh -c` calls with literal/dynamic distinction; direct eval; filesystem calls; MCP forwarding object shapes; literal tool approval settings; inline and module-flag env-backed auto-approval branches. Comments, strings, and regex literals are masked before policy matching. |
 | MCP JSON | Common `mcpServers` configuration, transport/command/URL, redacted arguments, and environment-variable names. Configuration is read as data; servers are never launched. |
 | Container configuration | Compose/devcontainer Docker socket, privileged/host network/root mounts; Kubernetes/Helm privileged, host namespace, privilege escalation, service-account token, and `hostPath`; literal privileged Python Docker SDK calls. |
@@ -121,8 +128,9 @@ subset.
   undecorated same-class helpers that return the exact resolved value after a fail-closed check.
   Imported/transitive helpers, duplicate or rebound methods, async/generator helpers, opaque path
   transforms, conditional construction preludes, try `else`/`finally` blocks, module/class root-scope
-  inference, nonexclusive or continuing exception guards, prefix comparisons, unresolved candidates,
-  and cross-branch aliases remain unresolved. Configured roots
+  inference, nonexclusive or continuing exception guards, non-exact prefix expressions, unresolved
+  candidates, and cross-branch aliases remain unresolved. Exact `str(Path).startswith(str(root))`
+  checks are reported as weak controls rather than boundaries. Configured roots
   create a control edge but do not suppress `AV-FS001` until their narrow scope is proven.
 - Python filesystem mutation resolution covers direct module calls, top-level import aliases, and
   statement-ordered direct/conditional local callable aliases with compatible branch merging.
@@ -140,7 +148,7 @@ subset.
 
 ## Quality interpretation
 
-The 228-label rule truth set and 102-label IR relationship set are curated regression suites. They
+The 230-label rule truth set and 110-label IR relationship set are curated regression suites. They
 guard known positives and negatives; they are not an unbiased accuracy estimate. A future holdout
 must be sampled separately across the categories above, externally reviewed, and kept sealed while
 rules change. Until then, precision/recall values apply only to the published seed labels.

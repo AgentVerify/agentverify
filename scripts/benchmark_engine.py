@@ -153,6 +153,16 @@ def main() -> int:
         python_path_boundary_edges = [
             edge for edge in path_boundary_edges if edge.evidence.path.endswith(".py")
         ]
+        python_path_prefix_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "capability"
+            and edge.source_name == "filesystem"
+            and edge.relation == "governed-by"
+            and edge.target_kind == "control"
+            and edge.target_name == "path-prefix-check"
+            and edge.evidence.path.endswith(".py")
+        ]
         python_filesystem_mutations = [
             item
             for item in ir.components
@@ -256,6 +266,13 @@ def main() -> int:
                     for edge in path_boundary_edges
                 ),
             },
+            "path_prefix_checks": {
+                "python": len(python_path_prefix_edges),
+                "weak_string_prefix": sum(
+                    edge.attributes.get("strength") == "weak-prefix"
+                    for edge in python_path_prefix_edges
+                ),
+            },
             "python_filesystem_mutations": {
                 "total": len(python_filesystem_mutations),
                 "callable_aliases": sum(
@@ -331,7 +348,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 20,
+        "schema_version": 21,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -439,6 +456,10 @@ def main() -> int:
                     "constrained",
                     "unresolved",
                 )
+            },
+            "path_prefix_checks": {
+                name: sum(result["path_prefix_checks"][name] for result in successful)
+                for name in ("python", "weak_string_prefix")
             },
             "python_filesystem_mutations": {
                 "total": sum(
