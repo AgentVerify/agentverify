@@ -9,7 +9,8 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
     """Resolve direct agent/tool/control context for a capability observation.
 
     Name-only cross-file resolution would overstate certainty, so a capability edge must share the
-    component's source location. Tool and agent references are then resolved by their explicit names.
+    component's source location. Tool and agent references prefer module-qualified symbol IDs and
+    retain a conservative location-aware fallback for older or partially resolved IR.
     """
     if component.kind != "capability":
         return (), {}
@@ -25,21 +26,30 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
     ]
     if not tool_edges:
         return (f"capability:{component.name}",), {"approval_coverage": "unresolved"}
-    tool_name = min(edge.source_name for edge in tool_edges)
-    direct_agents = sorted(
-        {
-            edge.source_name
-            for edge in ir.relationships
-            if edge.source_kind == "agent"
-            and edge.relation == "uses"
-            and edge.target_kind == "tool"
-            and (edge.target_name == tool_name or edge.attributes.get("target_name") == tool_name)
-            and (
-                edge.evidence.path == component.evidence.path
-                or edge.attributes.get("target_path") == component.evidence.path
+    tool_edge = min(tool_edges, key=lambda edge: (edge.source_id or "", edge.source_name))
+    tool_name = tool_edge.source_name
+    tool_id = tool_edge.source_id
+    direct_agent_edges = [
+        edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent"
+        and edge.relation == "uses"
+        and edge.target_kind == "tool"
+        and (
+            (tool_id is not None and edge.target_id == tool_id)
+            or (
+                (tool_id is None or edge.target_id is None)
+                and (
+                    edge.target_name == tool_name or edge.attributes.get("target_name") == tool_name
+                )
+                and (
+                    edge.evidence.path == component.evidence.path
+                    or edge.attributes.get("target_path") == component.evidence.path
+                )
             )
-        }
-    )
+        )
+    ]
+    direct_agents = sorted({edge.source_name for edge in direct_agent_edges})
     controls = sorted(
         {
             edge.target_name
@@ -48,6 +58,10 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
                 (
                     edge.source_kind == "tool"
                     and edge.source_name == tool_name
+                    and (
+                        (tool_id is not None and edge.source_id == tool_id)
+                        or (tool_id is None or edge.source_id is None)
+                    )
                     and edge.evidence.path == component.evidence.path
                 )
                 or (
@@ -61,27 +75,42 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
             and edge.target_kind == "control"
         }
     )
-    delegation_parents: dict[str, set[str]] = {}
+    delegation_parents: dict[str, set[tuple[str, str]]] = {}
     for edge in ir.relationships:
         if (
             edge.source_kind == "agent"
             and edge.relation == "delegates-to"
             and edge.target_kind == "agent"
         ):
-            delegation_parents.setdefault(edge.target_name, set()).add(edge.source_name)
+            target_key = edge.target_id or f"name:{edge.target_name}"
+            source_key = edge.source_id or f"name:{edge.source_name}"
+            delegation_parents.setdefault(target_key, set()).add((source_key, edge.source_name))
 
-    def expand_to_root(agent: str, seen: frozenset[str]) -> list[list[str]]:
-        parents = sorted(delegation_parents.get(agent, set()) - set(seen))
+    def expand_to_root(agent_key: str, agent_name: str, seen: frozenset[str]) -> list[list[str]]:
+        parents = sorted(
+            (
+                parent
+                for parent in delegation_parents.get(agent_key, set())
+                if parent[0] not in seen
+            ),
+            key=lambda parent: (parent[1], parent[0]),
+        )
         if not parents:
-            return [[agent]]
+            return [[agent_name]]
         paths = []
-        for parent in parents:
-            for parent_path in expand_to_root(parent, seen | {parent}):
-                paths.append([*parent_path, agent])
+        for parent_key, parent_name in parents:
+            for parent_path in expand_to_root(parent_key, parent_name, seen | {parent_key}):
+                paths.append([*parent_path, agent_name])
         return paths
 
     agent_paths = [
-        path for agent in direct_agents for path in expand_to_root(agent, frozenset({agent}))
+        path
+        for edge in direct_agent_edges
+        for path in expand_to_root(
+            edge.source_id or f"name:{edge.source_name}",
+            edge.source_name,
+            frozenset({edge.source_id or f"name:{edge.source_name}"}),
+        )
     ]
     selected_agent_path = (
         min(agent_paths, key=lambda path: (len(path), path)) if agent_paths else []

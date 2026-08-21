@@ -109,6 +109,7 @@
         "kind": {"type": "string"},
         "name": {"type": "string"},
         "attributes": {"type": "object"},
+        "symbol_id": {"type": "string"},
         "evidence": {"$ref": "#/$defs/evidence"}
       }
     },
@@ -119,13 +120,20 @@
       "properties": {
         "kind": {"type": "string"},
         "name": {"type": "string"},
-        "resolution": {"enum": ["unique-display-name", "ambiguous", "unresolved"]},
+        "resolution": {
+          "enum": ["symbol-id", "unique-display-name", "ambiguous", "unresolved"]
+        },
+        "symbol_id": {"type": "string"},
         "asset_id": {"type": "string", "pattern": "^avc-[0-9a-f]{20}$"},
         "candidate_asset_ids": {"$ref": "#/$defs/idList"}
       },
       "allOf": [
         {
-          "if": {"properties": {"resolution": {"const": "unique-display-name"}}},
+          "if": {
+            "properties": {
+              "resolution": {"enum": ["symbol-id", "unique-display-name"]}
+            }
+          },
           "then": {
             "required": ["asset_id"],
             "not": {"required": ["candidate_asset_ids"]}

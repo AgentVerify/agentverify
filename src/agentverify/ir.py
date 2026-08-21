@@ -20,6 +20,7 @@ class Component:
     name: str
     evidence: Evidence
     attributes: dict[str, Any] = field(default_factory=dict)
+    symbol_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -31,6 +32,8 @@ class Relationship:
     target_name: str
     evidence: Evidence
     attributes: dict[str, Any] = field(default_factory=dict)
+    source_id: str | None = None
+    target_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -74,9 +77,15 @@ class RepositoryIR:
     errors: list[str] = field(default_factory=list)
 
     def add_component(self, component: Component) -> None:
-        key = (component.kind, component.name, component.evidence.path, component.evidence.line)
+        key = (
+            component.kind,
+            component.name,
+            component.evidence.path,
+            component.evidence.line,
+            component.symbol_id,
+        )
         if key not in {
-            (item.kind, item.name, item.evidence.path, item.evidence.line)
+            (item.kind, item.name, item.evidence.path, item.evidence.line, item.symbol_id)
             for item in self.components
         }:
             self.components.append(component)
@@ -90,6 +99,8 @@ class RepositoryIR:
             relationship.target_name,
             relationship.evidence.path,
             relationship.evidence.line,
+            relationship.source_id,
+            relationship.target_id,
         )
         if key not in {
             (
@@ -100,6 +111,8 @@ class RepositoryIR:
                 item.target_name,
                 item.evidence.path,
                 item.evidence.line,
+                item.source_id,
+                item.target_id,
             )
             for item in self.relationships
         }:

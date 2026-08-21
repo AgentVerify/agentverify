@@ -33,12 +33,17 @@ Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK
 (16), and Azure OpenAI (10). These counts overlap and are lower than research-wide lexical signals
 because the engine requires supported selected files and more specific syntax.
 
+Across the selected snapshot, 8,175 agent/tool observations have module-qualified symbol IDs. Of
+3,748 relationship endpoint observations, 2,354 have resolved IDs (1,653 Python and 701 TypeScript).
+The remainder includes capability/control taxonomy endpoints as well as unresolved source symbols, so
+this is inventory coverage rather than an accuracy or recall metric.
+
 ## Implemented syntax
 
 | Frontend | Implemented observations and resolution |
 |---|---|
-| Python AST | Imports; known agent/model constructors; tool decorators; literal tool/handoff lists; shell, eval, filesystem, HTTP, browser, MCP, and Docker SDK calls; absolute and filesystem-relative tool imports; literal approval decorators; OpenAI Agents `ShellTool`/`ApplyPatchTool`/`CustomTool` approval constructors; statement-ordered MCP rejection guards; lexically scoped OpenTelemetry spans. |
-| TypeScript/JavaScript lexical | Known imports/providers; `tool(...)`/`functionTool(...)`; `new Agent({tools: [...]})`; named relative imports and aliases; child-process calls with literal/dynamic distinction; direct eval; filesystem calls; MCP forwarding object shapes; literal `needsApproval: true` and auto-approval settings. Comments and string contents are masked before policy matching. |
+| Python AST | Imports; known agent/model constructors; tool decorators; literal tool/handoff lists; module- and class-qualified agent/tool IDs; shell, eval, filesystem, HTTP, browser, MCP, and Docker SDK calls; absolute and filesystem-relative tool imports; literal approval decorators; OpenAI Agents `ShellTool`/`ApplyPatchTool`/`CustomTool` approval constructors; statement-ordered MCP rejection guards; lexically scoped OpenTelemetry spans. |
+| TypeScript/JavaScript lexical | Known imports/providers; `tool(...)`/`functionTool(...)`; `new Agent({tools: [...]})`; module-qualified agent/tool IDs; named relative imports and aliases; child-process calls with literal/dynamic distinction; direct eval; filesystem calls; MCP forwarding object shapes; literal `needsApproval: true` and auto-approval settings. Comments and string contents are masked before policy matching. |
 | MCP JSON | Common `mcpServers` configuration, transport/command/URL, redacted arguments, and environment-variable names. Configuration is read as data; servers are never launched. |
 | Container configuration | Compose/devcontainer Docker socket, privileged/host network/root mounts; Kubernetes/Helm privileged, host namespace, privilege escalation, service-account token, and `hostPath`; literal privileged Python Docker SDK calls. |
 
@@ -53,7 +58,7 @@ because the engine requires supported selected files and more specific syntax.
   engine's provider taxonomy.
 - Python package re-exports, wildcard imports, dynamically selected symbols, alias constructors,
   imported policy objects, callback approval results, and branch-local allowlist proofs remain
-  unresolved. Display identities are not yet fully module-qualified.
+  unresolved. Framework/provider/capability names remain taxonomies rather than source symbols.
 - The TypeScript frontend is not an AST/type-checker. Computed properties, object spreads, wrapper
   factories, complex nested tool arrays, CommonJS alias flows, callback approval policies, and
   type-driven resolution can be missed. Its cross-file resolver found zero qualifying real edges in

@@ -161,6 +161,31 @@ def test_builtin_tool_names_require_openai_agents_import(tmp_path: Path) -> None
     )
 
 
+def test_assigned_builtin_tool_uses_binding_identity_for_agent_context(tmp_path: Path) -> None:
+    (tmp_path / "agent.py").write_text(
+        """from agents import Agent, ShellTool
+
+shell = ShellTool(executor=object(), needs_approval=False)
+operator = Agent(name="operator", tools=[shell])
+""",
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    tool = next(component for component in ir.components if component.kind == "tool")
+    edge = next(
+        relationship
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent" and relationship.target_kind == "tool"
+    )
+    finding = next(finding for finding in ir.findings if finding.rule_id == "AV-APPROVAL002")
+    assert tool.symbol_id == edge.target_id == "py:agent.py#tool:shell"
+    assert edge.source_id == "py:agent.py#agent:operator"
+    assert finding.ir_path[:2] == ("agent:operator", "tool:ShellTool@3")
+    assert finding.analysis["direct_agents"] == ["operator"]
+
+
 def test_default_disabled_local_shell_is_reviewed_but_hosted_shell_is_not(tmp_path: Path) -> None:
     (tmp_path / "agent.py").write_text(
         """from agents import Agent, ShellTool
@@ -391,6 +416,23 @@ def test_same_named_cross_file_edges_do_not_leak_into_context() -> None:
     assert finding.analysis["direct_agents"] == ["operator"]
     assert finding.analysis["approval_coverage"] == "unresolved"
     assert finding.analysis["governing_controls"] == []
+    tool_symbols = {
+        component.evidence.path: component.symbol_id
+        for component in ir.components
+        if component.kind == "tool" and component.name == "run_command"
+    }
+    assert tool_symbols == {
+        "approved.py": "py:approved.py#tool:run_command",
+        "dangerous.py": "py:dangerous.py#tool:run_command",
+    }
+    operator_edge = next(
+        edge
+        for edge in ir.relationships
+        if edge.source_name == "operator" and edge.relation == "uses"
+    )
+    approval_edge = next(edge for edge in ir.relationships if edge.relation == "governed-by")
+    assert operator_edge.target_id == tool_symbols["dangerous.py"]
+    assert approval_edge.source_id == tool_symbols["approved.py"]
 
 
 def test_relative_python_tool_import_resolves_only_existing_sibling_module() -> None:
@@ -404,12 +446,14 @@ def test_relative_python_tool_import_resolves_only_existing_sibling_module() -> 
         and edge.target_name == "run_command"
     )
     assert operator_edge.attributes == {"target_path": "pkg/tools.py"}
+    assert operator_edge.target_id == "py:pkg/tools.py#tool:run_command"
     unresolved_edge = next(
         edge
         for edge in ir.relationships
         if edge.source_kind == "agent" and edge.source_name == "unresolved"
     )
     assert unresolved_edge.attributes == {}
+    assert unresolved_edge.target_id is None
 
 
 def test_local_import_resolves_cross_file_agent_tool_path() -> None:
@@ -429,6 +473,12 @@ def test_local_import_resolves_cross_file_agent_tool_path() -> None:
         if edge.source_kind == "agent" and edge.target_name == "run_command"
     )
     assert agent_edge.attributes["target_path"] == "tools.py"
+    tool = next(
+        component
+        for component in ir.components
+        if component.kind == "tool" and component.evidence.path == "tools.py"
+    )
+    assert agent_edge.target_id == tool.symbol_id == "py:tools.py#tool:run_command"
 
 
 def test_relative_typescript_import_resolves_cross_file_tool_path() -> None:
@@ -449,6 +499,12 @@ def test_relative_typescript_import_resolves_cross_file_tool_path() -> None:
     )
     assert agent_edge.attributes["target_path"] == "tools.ts"
     assert agent_edge.attributes["target_name"] == "runCommand"
+    tool = next(
+        component
+        for component in ir.components
+        if component.kind == "tool" and component.evidence.path == "tools.ts"
+    )
+    assert agent_edge.target_id == tool.symbol_id == "ts:tools.ts#tool:runCommand"
 
 
 def test_typescript_import_outside_root_or_ambiguous_stays_unresolved(tmp_path: Path) -> None:
@@ -726,6 +782,8 @@ def test_native_ai_bom_is_deterministic_evidence_first_and_schema_shaped() -> No
 def test_native_ai_bom_does_not_hide_ambiguous_display_names() -> None:
     bom = json.loads(render_bom(scan_repository(ROOT / "cases/symbol_collision")))
 
+    assert len({asset["id"] for asset in bom["assets"]}) == len(bom["assets"])
+    assert len({edge["id"] for edge in bom["relationships"]}) == len(bom["relationships"])
     run_command_endpoints = [
         endpoint
         for relationship in bom["relationships"]
@@ -733,8 +791,13 @@ def test_native_ai_bom_does_not_hide_ambiguous_display_names() -> None:
         if endpoint["kind"] == "tool" and endpoint["name"] == "run_command"
     ]
     assert run_command_endpoints
-    assert all(endpoint["resolution"] == "ambiguous" for endpoint in run_command_endpoints)
-    assert all(len(endpoint["candidate_asset_ids"]) == 2 for endpoint in run_command_endpoints)
+    resolutions = [endpoint["resolution"] for endpoint in run_command_endpoints]
+    assert resolutions.count("symbol-id") == 3
+    assert resolutions.count("ambiguous") == 1
+    ambiguous = next(
+        endpoint for endpoint in run_command_endpoints if endpoint["resolution"] == "ambiguous"
+    )
+    assert len(ambiguous["candidate_asset_ids"]) == 2
 
 
 def test_native_ai_bom_does_not_embed_checkout_path(tmp_path: Path) -> None:

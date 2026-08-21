@@ -25,17 +25,20 @@ Components represent frameworks, providers, agents, tools, MCP servers, capabili
 control settings. Relationships currently represent `uses`, `delegates-to`, `contains-control`, and
 `governed-by` edges. Every object carries source path, line, and excerpt evidence.
 
-Names are intentionally not treated as globally unique. Capability-to-tool resolution requires the
-relationship and capability observation to share a source location; name-only cross-file inference
-would overstate certainty. Agent-to-tool and tool-to-control context is likewise restricted to the
-capability's source file, preventing same-named definitions in separate modules from leaking
-reachability or control coverage. Unambiguous absolute Python
+Names are intentionally not treated as globally unique. Python and TypeScript agent/tool definitions
+carry stable frontend-and-module-qualified `symbol_id` values; relationships carry `source_id` and
+`target_id` when resolution succeeds. Context analysis prefers those IDs and falls back to the older
+location-gated display-name logic only for unresolved syntax. Capability-to-tool resolution still
+requires the relationship and capability observation to share a source location, preventing
+same-named definitions in separate modules from leaking reachability or control coverage.
+Unambiguous absolute Python
 `from local_module import tool` references and filesystem-resolved relative imports point to an exact
 repository file and can safely form cross-file agent paths. TypeScript named imports resolve when a
 relative module maps to exactly one in-repository `.ts`, `.tsx`, `.js`, or `.jsx` file; aliases retain
 the original exported name. Imports that escape the scan root, target missing files, or have multiple
-candidate files remain unresolved. Future symbol tables will replace display-name identities with
-module-qualified symbols and resolve package re-exports.
+candidate files remain unresolved. Python class methods use class-qualified IDs, and assigned agent
+or built-in-tool instances use their binding name. Package re-exports, wildcard imports, dynamic
+lookups, and several wrapper-factory forms remain unresolved.
 
 ## Result kinds and uncertainty
 

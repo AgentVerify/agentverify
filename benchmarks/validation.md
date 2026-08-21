@@ -31,7 +31,7 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,594 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,874 relationships, and completed in 25.23 seconds on the development machine. Three parse warnings were isolated and
+resolved 1,874 relationships, and completed in 23.88 seconds on the development machine. Three parse warnings were isolated and
 reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -40,6 +40,11 @@ Engine benchmark schema v2 retains stable component-name taxonomies and category
 counts. It intentionally excludes arbitrary agent/tool display names from the summary. The resulting
 framework/provider/protocol/capability coverage and unsupported syntax are published in
 `docs/frontend-coverage.md`; presence counts are discovery observations, not recall measurements.
+
+The benchmark now also measures identity coverage: 8,175 agent/tool component observations carry
+module-qualified IDs, and 2,354 of 3,748 relationship endpoint observations carry resolved IDs
+(1,653 Python and 701 TypeScript). This endpoint fraction is not a resolver recall score: capability,
+control, and taxonomy endpoints intentionally remain evidence observations without source-symbol IDs.
 
 The Python frontend resolves unambiguous absolute imports rooted at the repository, `src/`, or
 `python/`, plus relative modules that map to exactly one sibling package file. It found five imported
@@ -50,6 +55,12 @@ Two are newly resolved relative imports: the
 and [CrewAI-LangGraph draft tool](https://github.com/crewAIInc/crewAI-examples/blob/da94a91e691e1cf5b3151416bb15b5b62729bea8/integrations/CrewAI-LangGraph/src/crew/agents.py#L44).
 Missing files, path escapes, and duplicate absolute module names remain unresolved rather than
 falling back to name-only inference.
+
+Resolved agent/tool components and relationships now carry frontend-and-module-qualified symbol IDs.
+The import truth labels verify both target paths and target IDs, including CrewAI-LangGraph's
+`py:integrations/CrewAI-LangGraph/src/crew/tools.py#tool:CreateDraftTool.create_draft` class method.
+The same-name collision fixture proves that the approved and dangerous `run_command` definitions do
+not share reachability or control coverage.
 
 The TypeScript resolver applies the same conservative rule to relative named imports, including the
 common `.js`-specifier-to-`.ts` source mapping and aliases. The selected corpus snapshot currently has

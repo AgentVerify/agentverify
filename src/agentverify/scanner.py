@@ -86,6 +86,10 @@ def source_scope(path: str) -> str:
     return "production"
 
 
+def source_symbol(frontend: str, path: str, kind: str, name: str) -> str:
+    return f"{frontend}:{path}#{kind}:{name}"
+
+
 def dotted_name(node: ast.AST) -> str:
     if isinstance(node, ast.Name):
         return node.id
@@ -125,17 +129,24 @@ class PythonVisitor(ast.NodeVisitor):
         *,
         imported_modules: set[str],
         module_paths: dict[str, str],
+        local_symbol_ids: dict[tuple[str, str], str],
+        call_symbol_ids: dict[int, str],
     ) -> None:
         self.ir = ir
         self.root = root
         self.path = path
         self.lines = lines
         self.current_tool: str | None = None
+        self.current_tool_id: str | None = None
+        self.class_stack: list[str] = []
         self.active_audit_controls: list[Evidence] = []
         self.http_client_names: set[str] = set()
         self.allowlisted_names: set[str] = set()
         self.imported_symbol_paths: dict[str, str] = {}
+        self.imported_symbol_names: dict[str, str] = {}
         self.module_paths = module_paths
+        self.local_symbol_ids = local_symbol_ids
+        self.call_symbol_ids = call_symbol_ids
         self.has_mcp_import = any(
             module == "mcp" or module.startswith("mcp.") or "modelcontextprotocol" in module
             for module in imported_modules
@@ -161,7 +172,15 @@ class PythonVisitor(ast.NodeVisitor):
         self.ir.add_component(Component("capability", name, self.ev(node), values))
         if self.current_tool:
             self.ir.add_relationship(
-                Relationship("tool", self.current_tool, "uses", "capability", name, self.ev(node))
+                Relationship(
+                    "tool",
+                    self.current_tool,
+                    "uses",
+                    "capability",
+                    name,
+                    self.ev(node),
+                    source_id=self.current_tool_id,
+                )
             )
             for control_evidence in self.active_audit_controls:
                 self.ir.add_relationship(
@@ -212,7 +231,9 @@ class PythonVisitor(ast.NodeVisitor):
                     if len(resolved) == 1:
                         target = resolved[0].as_posix()
             if target:
-                self.imported_symbol_paths[alias.asname or alias.name] = target
+                local_name = alias.asname or alias.name
+                self.imported_symbol_paths[local_name] = target
+                self.imported_symbol_names[local_name] = alias.name
         if node.module == "openai":
             imported = {alias.name for alias in node.names}
             if any(name.startswith("Azure") for name in imported):
@@ -263,6 +284,10 @@ class PythonVisitor(ast.NodeVisitor):
             for decorator in node.decorator_list
         }
         if decorators & TOOL_DECORATORS or any(name.endswith(".tool") for name in decorators):
+            qualified_name = ".".join([*self.class_stack, node.name])
+            tool_id = self.local_symbol_ids.get(("tool", qualified_name)) or source_symbol(
+                "py", self.path, "tool", qualified_name
+            )
             needs_approval = False
             for decorator in node.decorator_list:
                 if isinstance(decorator, ast.Call):
@@ -278,25 +303,47 @@ class PythonVisitor(ast.NodeVisitor):
                     node.name,
                     self.ev(node),
                     {"decorators": sorted(decorators), "needs_approval": needs_approval},
+                    tool_id,
                 )
             )
             if needs_approval:
                 self.ir.add_component(Component("control", "human-approval", self.ev(node)))
                 self.ir.add_relationship(
                     Relationship(
-                        "tool", node.name, "governed-by", "control", "human-approval", self.ev(node)
+                        "tool",
+                        node.name,
+                        "governed-by",
+                        "control",
+                        "human-approval",
+                        self.ev(node),
+                        source_id=tool_id,
                     )
                 )
             previous_tool = self.current_tool
+            previous_tool_id = self.current_tool_id
             self.current_tool = node.name
+            self.current_tool_id = tool_id
             self.visit_function_statements(node)
             self.current_tool = previous_tool
+            self.current_tool_id = previous_tool_id
         else:
             self.visit_function_statements(node)
         self.allowlisted_names = previous_allowlisted_names
         self.http_client_names = previous_http_client_names
 
     visit_AsyncFunctionDef = visit_FunctionDef
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        for decorator in node.decorator_list:
+            self.visit(decorator)
+        for base in node.bases:
+            self.visit(base)
+        for keyword in node.keywords:
+            self.visit(keyword.value)
+        self.class_stack.append(node.name)
+        for statement in node.body:
+            self.visit(statement)
+        self.class_stack.pop()
 
     def visit_function_statements(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> None:
         for decorator in node.decorator_list:
@@ -357,6 +404,7 @@ class PythonVisitor(ast.NodeVisitor):
                     "action-trace",
                     evidence,
                     {"durability": "unresolved"},
+                    source_id=self.current_tool_id,
                 )
             )
             self.active_audit_controls.append(evidence)
@@ -387,6 +435,9 @@ class PythonVisitor(ast.NodeVisitor):
         short_name = call_name.rsplit(".", 1)[-1]
         if self.has_openai_agents_import and short_name in BUILTIN_TOOL_CAPABILITIES:
             tool_name = f"{short_name}@{node.lineno}"
+            tool_id = self.call_symbol_ids.get(id(node)) or source_symbol(
+                "py", self.path, "tool", tool_name
+            )
             approval_state = "disabled-default"
             approval_source = "sdk-default"
             approval_handler = "none"
@@ -440,6 +491,7 @@ class PythonVisitor(ast.NodeVisitor):
                         "execution_environment": execution_environment,
                         "scope": source_scope(self.path),
                     },
+                    tool_id,
                 )
             )
             for capability in BUILTIN_TOOL_CAPABILITIES[short_name]:
@@ -460,7 +512,15 @@ class PythonVisitor(ast.NodeVisitor):
                     Component("capability", capability, self.ev(node), attributes)
                 )
                 self.ir.add_relationship(
-                    Relationship("tool", tool_name, "uses", "capability", capability, self.ev(node))
+                    Relationship(
+                        "tool",
+                        tool_name,
+                        "uses",
+                        "capability",
+                        capability,
+                        self.ev(node),
+                        source_id=tool_id,
+                    )
                 )
             if approval_state == "enabled":
                 self.ir.add_component(Component("control", "human-approval", approval_evidence))
@@ -472,6 +532,7 @@ class PythonVisitor(ast.NodeVisitor):
                         "control",
                         "human-approval",
                         approval_evidence,
+                        source_id=tool_id,
                     )
                 )
         if self.has_docker_import and call_name.endswith(".containers.run"):
@@ -543,8 +604,11 @@ class PythonVisitor(ast.NodeVisitor):
             for keyword in node.keywords:
                 if keyword.arg == "name" and isinstance(keyword.value, ast.Constant):
                     name = str(keyword.value.value)
+            agent_id = self.call_symbol_ids.get(id(node)) or source_symbol(
+                "py", self.path, "agent", f"{name}@{node.lineno}"
+            )
             self.ir.add_component(
-                Component("agent", name, self.ev(node), {"constructor": call_name})
+                Component("agent", name, self.ev(node), {"constructor": call_name}, agent_id)
             )
             for keyword in node.keywords:
                 if keyword.arg == "model" and isinstance(keyword.value, ast.Constant):
@@ -567,10 +631,12 @@ class PythonVisitor(ast.NodeVisitor):
                     target_kind = "tool" if keyword.arg == "tools" else "agent"
                     relation = "uses" if target_kind == "tool" else "delegates-to"
                     target_name = dotted_name(value)
+                    target_id = self.local_symbol_ids.get((target_kind, target_name))
                     if isinstance(value, ast.Call) and dotted_name(value.func).endswith(".as_tool"):
                         target_name = dotted_name(value.func).removesuffix(".as_tool")
                         target_kind = "agent"
                         relation = "delegates-to"
+                        target_id = self.local_symbol_ids.get(("agent", target_name))
                     elif (
                         self.has_openai_agents_import
                         and isinstance(value, ast.Call)
@@ -578,13 +644,22 @@ class PythonVisitor(ast.NodeVisitor):
                     ):
                         constructor = dotted_name(value.func).rsplit(".", 1)[-1]
                         target_name = f"{constructor}@{value.lineno}"
+                        target_id = self.call_symbol_ids.get(id(value)) or source_symbol(
+                            "py", self.path, "tool", target_name
+                        )
                     if target_name:
                         attributes = {}
+                        root_name, separator, suffix = target_name.partition(".")
                         imported_path = self.imported_symbol_paths.get(
                             target_name
-                        ) or self.imported_symbol_paths.get(target_name.split(".", 1)[0])
+                        ) or self.imported_symbol_paths.get(root_name)
                         if imported_path:
                             attributes["target_path"] = imported_path
+                            original = self.imported_symbol_names.get(root_name, root_name)
+                            resolved_name = f"{original}.{suffix}" if separator else original
+                            target_id = source_symbol(
+                                "py", imported_path, target_kind, resolved_name
+                            )
                         self.ir.add_relationship(
                             Relationship(
                                 "agent",
@@ -594,6 +669,8 @@ class PythonVisitor(ast.NodeVisitor):
                                 target_name,
                                 self.ev(node),
                                 attributes,
+                                source_id=agent_id,
+                                target_id=target_id,
                             )
                         )
         if short_name in {"FastMCP", "ClientSession", "StdioServerParameters"}:
@@ -632,6 +709,7 @@ class PythonVisitor(ast.NodeVisitor):
                             "capability",
                             "mcp-tool-forwarding",
                             self.ev(node),
+                            source_id=self.current_tool_id,
                         )
                     )
                 if allowlist_guard:
@@ -677,6 +755,7 @@ class PythonVisitor(ast.NodeVisitor):
                         "capability",
                         "shell-execution",
                         self.ev(node),
+                        source_id=self.current_tool_id,
                     )
                 )
         if call_name in {"eval", "exec"}:
@@ -703,6 +782,7 @@ class PythonVisitor(ast.NodeVisitor):
                         "capability",
                         "code-execution",
                         self.ev(node),
+                        source_id=self.current_tool_id,
                     )
                 )
         if short_name in {"open", "write_text", "write_bytes", "unlink", "rmdir", "mkdir"}:
@@ -754,12 +834,59 @@ def scan_python(
     except SyntaxError as error:
         ir.errors.append(f"{relative}:{error.lineno}: {error.msg}")
         return
+    nodes = list(ast.walk(tree))
     imported_modules = {
-        alias.name
-        for node in ast.walk(tree)
-        if isinstance(node, ast.Import)
-        for alias in node.names
-    } | {node.module or "" for node in ast.walk(tree) if isinstance(node, ast.ImportFrom)}
+        alias.name for node in nodes if isinstance(node, ast.Import) for alias in node.names
+    } | {node.module or "" for node in nodes if isinstance(node, ast.ImportFrom)}
+    symbol_candidates: dict[tuple[str, str], set[str]] = {}
+    call_symbol_ids: dict[int, str] = {}
+
+    def collect_definitions(statements: list[ast.stmt], class_stack: tuple[str, ...] = ()) -> None:
+        for node in statements:
+            if isinstance(node, ast.ClassDef):
+                collect_definitions(node.body, (*class_stack, node.name))
+                continue
+            if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                continue
+            decorators = {
+                dotted_name(decorator.func)
+                if isinstance(decorator, ast.Call)
+                else dotted_name(decorator)
+                for decorator in node.decorator_list
+            }
+            if decorators & TOOL_DECORATORS or any(name.endswith(".tool") for name in decorators):
+                qualified_name = ".".join([*class_stack, node.name])
+                symbol_id = source_symbol("py", relative, "tool", qualified_name)
+                symbol_candidates.setdefault(("tool", qualified_name), set()).add(symbol_id)
+                symbol_candidates.setdefault(("tool", node.name), set()).add(symbol_id)
+            collect_definitions(node.body, class_stack)
+
+    collect_definitions(tree.body)
+    for node in nodes:
+        if (
+            isinstance(node, ast.Assign)
+            and isinstance(node.value, ast.Call)
+            and len(node.targets) == 1
+            and isinstance(node.targets[0], ast.Name)
+        ):
+            binding = node.targets[0].id
+            short_name = dotted_name(node.value.func).rsplit(".", 1)[-1]
+            kind = (
+                "agent"
+                if short_name in AGENT_CALLS
+                else "tool"
+                if short_name in BUILTIN_TOOL_CAPABILITIES
+                else None
+            )
+            if kind:
+                symbol_id = source_symbol("py", relative, kind, binding)
+                symbol_candidates.setdefault((kind, binding), set()).add(symbol_id)
+                call_symbol_ids[id(node.value)] = symbol_id
+    local_symbol_ids = {
+        key: next(iter(candidates))
+        for key, candidates in symbol_candidates.items()
+        if len(candidates) == 1
+    }
     PythonVisitor(
         ir,
         root,
@@ -767,6 +894,8 @@ def scan_python(
         text.splitlines(),
         imported_modules=imported_modules,
         module_paths=module_paths,
+        local_symbol_ids=local_symbol_ids,
+        call_symbol_ids=call_symbol_ids,
     ).visit(tree)
 
 
@@ -917,8 +1046,9 @@ def typescript_graph(
     text: str,
     lines: list[str],
     imported_symbols: dict[str, tuple[str, str]],
-) -> dict[int, str]:
-    tool_by_line: dict[int, str] = {}
+) -> dict[int, tuple[str, str]]:
+    tool_by_line: dict[int, tuple[str, str]] = {}
+    local_tool_ids: dict[str, str] = {}
     for match in TS_TOOL_ASSIGNMENT.finditer(text):
         tool_name = match.group(1)
         start_line = line_at(text, match.start())
@@ -927,12 +1057,15 @@ def typescript_graph(
         body = text[match.end() : end]
         approval_match = TS_LITERAL_APPROVAL.search(typescript_code_mask(body))
         ev = Evidence(relative, start_line, excerpt(lines, start_line))
+        tool_id = source_symbol("ts", relative, "tool", tool_name)
+        local_tool_ids[tool_name] = tool_id
         ir.add_component(
             Component(
                 "tool",
                 tool_name,
                 ev,
                 {"constructor": "tool", "needs_approval": approval_match is not None},
+                tool_id,
             )
         )
         if approval_match:
@@ -947,10 +1080,11 @@ def typescript_graph(
                     "control",
                     "human-approval",
                     approval_ev,
+                    source_id=tool_id,
                 )
             )
         for line_number in range(start_line, end_line + 1):
-            tool_by_line[line_number] = tool_name
+            tool_by_line[line_number] = (tool_name, tool_id)
     for match in TS_AGENT_ASSIGNMENT.finditer(text):
         variable_name = match.group(1)
         start_line = line_at(text, match.start())
@@ -958,16 +1092,29 @@ def typescript_graph(
         body = text[match.end() : end]
         name_match = re.search(r"\bname\s*:\s*['\"]([^'\"]+)['\"]", body)
         agent_name = name_match.group(1) if name_match else variable_name
+        agent_id = source_symbol("ts", relative, "agent", variable_name)
         ev = Evidence(relative, start_line, excerpt(lines, start_line))
-        ir.add_component(Component("agent", agent_name, ev, {"constructor": "Agent"}))
+        ir.add_component(Component("agent", agent_name, ev, {"constructor": "Agent"}, agent_id))
         tools_match = re.search(r"\btools\s*:\s*\[([^\]]*)\]", body, re.DOTALL)
         if tools_match:
             for tool_name in re.findall(r"\b[A-Za-z_$][\w$]*\b", tools_match.group(1)):
                 attributes = {}
+                target_id = local_tool_ids.get(tool_name)
                 if imported := imported_symbols.get(tool_name):
                     attributes.update({"target_path": imported[0], "target_name": imported[1]})
+                    target_id = source_symbol("ts", imported[0], "tool", imported[1])
                 ir.add_relationship(
-                    Relationship("agent", agent_name, "uses", "tool", tool_name, ev, attributes)
+                    Relationship(
+                        "agent",
+                        agent_name,
+                        "uses",
+                        "tool",
+                        tool_name,
+                        ev,
+                        attributes,
+                        source_id=agent_id,
+                        target_id=target_id,
+                    )
                 )
     return tool_by_line
 
@@ -1026,14 +1173,25 @@ def add_typescript_capability(
     relative: str,
     line_number: int,
     evidence: Evidence,
-    tool_by_line: dict[int, str],
+    tool_by_line: dict[int, tuple[str, str]],
     name: str,
     attributes: dict | None = None,
 ) -> None:
     values = {"scope": source_scope(relative), **(attributes or {})}
     ir.add_component(Component("capability", name, evidence, values))
-    if tool_name := tool_by_line.get(line_number):
-        ir.add_relationship(Relationship("tool", tool_name, "uses", "capability", name, evidence))
+    if tool := tool_by_line.get(line_number):
+        tool_name, tool_id = tool
+        ir.add_relationship(
+            Relationship(
+                "tool",
+                tool_name,
+                "uses",
+                "capability",
+                name,
+                evidence,
+                source_id=tool_id,
+            )
+        )
 
 
 def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None:
@@ -1070,8 +1228,15 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
             }[match.group(1)]
             ir.add_component(Component("model", match.group(2), ev, {"provider": provider}))
         if line_number not in structured_agent_lines and (match := TS_AGENT.search(line)):
+            name = match.group(1)
             ir.add_component(
-                Component("agent", match.group(1), ev, {"constructor": match.group(1)})
+                Component(
+                    "agent",
+                    name,
+                    ev,
+                    {"constructor": name},
+                    source_symbol("ts", relative, "agent", f"{name}@{line_number}"),
+                )
             )
         if match := TS_MCP.search(line):
             ir.add_component(Component("mcp", match.group(1), ev, {"constructor": match.group(1)}))

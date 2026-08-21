@@ -34,7 +34,8 @@ The top-level document contains:
   suppressions, baseline summary, and policy decision summary. `root` is always `.` and evidence
   paths are relative to it, so local checkout paths are not disclosed.
 - `assets`: every Agent IR component with a stable `avc-*` ID, kind, display name, attributes, and
-  exact path/line/excerpt evidence.
+  exact path/line/excerpt evidence. Source-defined agents and tools also retain their Agent IR
+  `symbol_id`.
 - `relationships`: sorted `avr-*` graph observations with evidence and source/target identity status.
 - `governance`: control and sandbox-boundary asset IDs, assets carrying unresolved policy values, and
   risk counts by rule, result kind, and severity.
@@ -49,14 +50,15 @@ byte-for-byte identical BOM output.
 
 AgentVerify does not pretend display names are globally unique. A relationship endpoint is marked:
 
+- `symbol-id` when its module-qualified Agent IR ID resolves to exactly one observed asset;
 - `unique-display-name` when exactly one matching observed asset exists;
 - `ambiguous` with all candidate asset IDs when multiple observations share that kind and name;
 - `unresolved` when no matching asset observation exists.
 
-`unique-display-name` is an inventory property, not a proof of module-qualified identity. Consumers
-that enforce policy should treat `ambiguous` and `unresolved` endpoints as review requirements. The
-same principle applies to `unresolved_policy_asset_ids`: a missing proof is not silently converted
-into an absent control.
+`unique-display-name` is an inventory fallback, not a proof of module-qualified identity. Consumers
+that enforce policy should prefer `symbol-id` and treat `ambiguous` and `unresolved` endpoints as
+review requirements. The same principle applies to `unresolved_policy_asset_ids`: a missing proof is
+not silently converted into an absent control.
 
 Selected-path scans remain partial. Their metadata records `scan_scope: selected-paths` and the exact
 filters; baseline output does not claim that omitted fingerprints are resolved.

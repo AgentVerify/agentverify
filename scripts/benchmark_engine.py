@@ -59,6 +59,18 @@ def main() -> int:
                 if any(item.kind == kind for item in ir.components)
             },
             "relationships": len(ir.relationships),
+            "symbolized_components": sum(bool(item.symbol_id) for item in ir.components),
+            "resolved_symbol_endpoints": sum(
+                bool(edge.source_id) + bool(edge.target_id) for edge in ir.relationships
+            ),
+            "resolved_symbol_endpoints_by_frontend": {
+                frontend: sum(
+                    bool(symbol_id and symbol_id.startswith(f"{frontend}:"))
+                    for edge in ir.relationships
+                    for symbol_id in (edge.source_id, edge.target_id)
+                )
+                for frontend in ("py", "ts")
+            },
             "resolved_import_edges": len(imported_edges),
             "resolved_import_edges_by_frontend": {
                 "python": sum(edge.evidence.path.endswith(".py") for edge in imported_edges),
@@ -90,6 +102,18 @@ def main() -> int:
             "files_scanned": sum(result["files_scanned"] for result in successful),
             "config_files_scanned": sum(result["config_files_scanned"] for result in successful),
             "relationships": sum(result["relationships"] for result in successful),
+            "symbolized_components": sum(result["symbolized_components"] for result in successful),
+            "resolved_symbol_endpoints": sum(
+                result["resolved_symbol_endpoints"] for result in successful
+            ),
+            "relationship_endpoints": 2 * sum(result["relationships"] for result in successful),
+            "resolved_symbol_endpoints_by_frontend": {
+                frontend: sum(
+                    result["resolved_symbol_endpoints_by_frontend"][frontend]
+                    for result in successful
+                )
+                for frontend in ("py", "ts")
+            },
             "resolved_import_edges": sum(result["resolved_import_edges"] for result in successful),
             "resolved_import_edges_by_frontend": {
                 frontend: sum(
@@ -115,11 +139,7 @@ def main() -> int:
                     )
                 )
                 for kind in sorted(
-                    {
-                        kind
-                        for result in successful
-                        for kind in result["component_names"]
-                    }
+                    {kind for result in successful for kind in result["component_names"]}
                 )
             },
             "category_coverage": {
@@ -132,9 +152,7 @@ def main() -> int:
                     },
                 }
                 for category in sorted({result["category"] for result in successful})
-                if (
-                    rows := [result for result in successful if result["category"] == category]
-                )
+                if (rows := [result for result in successful if result["category"] == category])
             },
             "elapsed_seconds": round(time.perf_counter() - started, 4),
         },

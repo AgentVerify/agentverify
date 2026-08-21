@@ -44,7 +44,13 @@ def _evidence_dict(evidence: Evidence) -> dict[str, object]:
 def _component_id(component: Component) -> str:
     return _stable_id(
         "avc",
-        (component.kind, component.name, component.evidence.path, component.evidence.line),
+        (
+            component.kind,
+            component.name,
+            component.evidence.path,
+            component.evidence.line,
+            component.symbol_id,
+        ),
     )
 
 
@@ -59,6 +65,8 @@ def _relationship_id(relationship: Relationship) -> str:
             relationship.target_name,
             relationship.evidence.path,
             relationship.evidence.line,
+            relationship.source_id,
+            relationship.target_id,
         ),
     )
 
@@ -77,6 +85,7 @@ def render_bom(ir: RepositoryIR) -> str:
             item.name,
             item.evidence.path,
             item.evidence.line,
+            item.symbol_id or "",
         ),
     )
     assets = [
@@ -86,18 +95,32 @@ def render_bom(ir: RepositoryIR) -> str:
             "name": component.name,
             "attributes": component.attributes,
             "evidence": _evidence_dict(component.evidence),
+            **({"symbol_id": component.symbol_id} if component.symbol_id else {}),
         }
         for component in ordered_components
     ]
     assets_by_display_name: dict[tuple[str, str], list[str]] = {}
+    assets_by_symbol_id: dict[str, list[str]] = {}
     for component in ordered_components:
         assets_by_display_name.setdefault((component.kind, component.name), []).append(
             _component_id(component)
         )
+        if component.symbol_id:
+            assets_by_symbol_id.setdefault(component.symbol_id, []).append(_component_id(component))
 
-    def endpoint(kind: str, name: str) -> dict[str, object]:
-        candidates = sorted(assets_by_display_name.get((kind, name), []))
+    def endpoint(kind: str, name: str, symbol_id: str | None) -> dict[str, object]:
         value: dict[str, object] = {"kind": kind, "name": name}
+        if symbol_id:
+            value["symbol_id"] = symbol_id
+            candidates = sorted(assets_by_symbol_id.get(symbol_id, []))
+            if len(candidates) == 1:
+                value.update({"resolution": "symbol-id", "asset_id": candidates[0]})
+            elif candidates:
+                value.update({"resolution": "ambiguous", "candidate_asset_ids": candidates})
+            else:
+                value["resolution"] = "unresolved"
+            return value
+        candidates = sorted(assets_by_display_name.get((kind, name), []))
         if len(candidates) == 1:
             value.update({"resolution": "unique-display-name", "asset_id": candidates[0]})
         elif candidates:
@@ -116,14 +139,20 @@ def render_bom(ir: RepositoryIR) -> str:
             item.target_name,
             item.evidence.path,
             item.evidence.line,
+            item.source_id or "",
+            item.target_id or "",
         ),
     )
     relationships = [
         {
             "id": _relationship_id(relationship),
-            "source": endpoint(relationship.source_kind, relationship.source_name),
+            "source": endpoint(
+                relationship.source_kind, relationship.source_name, relationship.source_id
+            ),
             "relation": relationship.relation,
-            "target": endpoint(relationship.target_kind, relationship.target_name),
+            "target": endpoint(
+                relationship.target_kind, relationship.target_name, relationship.target_id
+            ),
             "attributes": relationship.attributes,
             "evidence": _evidence_dict(relationship.evidence),
         }

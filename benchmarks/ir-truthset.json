@@ -85,6 +85,7 @@
         "relation": "uses",
         "target_kind": "tool",
         "target_name": "run_command",
+        "target_id": "py:pkg/tools.py#tool:run_command",
         "attributes": {"target_path": "pkg/tools.py"}
       }
     },
@@ -122,6 +123,7 @@
         "relation": "uses",
         "target_kind": "tool",
         "target_name": "CreateDraftTool.create_draft",
+        "target_id": "py:integrations/CrewAI-LangGraph/src/crew/tools.py#tool:CreateDraftTool.create_draft",
         "attributes": {
           "target_path": "integrations/CrewAI-LangGraph/src/crew/tools.py"
         }
@@ -137,6 +139,7 @@
       "relationship": {
         "source_kind": "tool",
         "source_name": "ShellTool@11",
+        "source_id": "py:agent.py#tool:ShellTool@11",
         "relation": "governed-by",
         "target_kind": "control",
         "target_name": "human-approval"
@@ -204,6 +207,7 @@
       "relationship": {
         "source_kind": "tool",
         "source_name": "ShellTool@117",
+        "source_id": "py:examples/tools/shell_human_in_the_loop.py#tool:ShellTool@117",
         "relation": "governed-by",
         "target_kind": "control",
         "target_name": "human-approval"

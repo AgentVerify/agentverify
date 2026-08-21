@@ -5,10 +5,11 @@ the local repository has an approved remote.
 
 ## P0 — module-qualified symbols and graph identities
 
-Absolute and relative Python imports now attach exact target paths, while name collisions remain
-location-gated. Next replace display-name agent/tool identities with module-qualified symbols and a
-TypeScript AST frontend, then resolve package re-exports. Preserve unresolved state for ambiguity and
-validate on larger real monorepository graphs.
+Python and TypeScript agent/tool components now carry module-qualified IDs, including Python class
+methods and assigned built-in tool instances. Import, reachability, delegation, and control edges
+carry exact endpoint IDs when resolved; legacy syntax stays location-gated. Next resolve package
+re-exports, wildcard imports, wrapper factories, and type-driven TypeScript symbols. Preserve
+unresolved state for ambiguity and validate on larger real monorepository graphs.
 
 ## P0 — configuration and policy resolution
 
