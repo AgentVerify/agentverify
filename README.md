@@ -43,6 +43,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`docs/architecture.md`](docs/architecture.md) — Agent IR, graph analysis, and uncertainty model
 - [`docs/backlog.md`](docs/backlog.md) — prioritized issue-ready future work
 - [`benchmarks/engine-results.json`](benchmarks/engine-results.json) — full-corpus engine metrics
+- [`benchmarks/truthset.json`](benchmarks/truthset.json) — exact hand-labeled positives and negatives
 
 SARIF output includes stable fingerprints, source locations, severity, remediation, Agent IR paths,
 and resolved/unresolved control context for code-scanning integrations.
@@ -52,6 +53,8 @@ Reproduce the corpus analysis:
 ```console
 python3 scripts/collect_repositories.py
 python3 scripts/render_repositories.py
+PYTHONPATH=src python3 scripts/benchmark_engine.py
+PYTHONPATH=src python3 scripts/evaluate_truthset.py
 ```
 
 ## Development

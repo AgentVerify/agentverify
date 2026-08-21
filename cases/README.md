@@ -13,5 +13,7 @@ never imported or executed.
 - `typescript_eval`: TypeScript dynamic evaluation with a resolved agent/tool path.
 - `filesystem_scope`: dynamic writable tool path plus fixed-path negative case.
 - `sandbox_boundary`: four unsafe container boundaries plus a safe compose negative case.
+- `constant_eval`: constant Python evaluation negative case.
+- `approval_safe`: disabled auto-approval negative case.
 - `test_scope`: findings are suppressed by default and enabled with `--include-tests`.
 - `../examples/safe_agent`: near-miss showing fixed argv is inventory-only.

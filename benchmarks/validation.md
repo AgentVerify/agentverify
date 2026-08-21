@@ -77,3 +77,14 @@ Hand-reviewed examples include:
 
 A read-only Docker socket mount is still reported because the Docker API can create privileged
 workloads even when the socket file itself is mounted read-only.
+
+## Seed truth-set metrics
+
+`benchmarks/truthset.json` contains 25 exact labels across all six enabled rules. Labels mix local
+positive/negative fixtures, immutable real positives, a real CAMEL allowlist negative, fixed-name MCP,
+fixed-path filesystem, fixed-argv shell, constant-eval, disabled auto-approval, and commented safe
+compose cases. All 25 currently pass; each rule's seed precision and recall are 1.0.
+
+This is a curated regression seed, not an unbiased estimate of ecosystem precision or recall. The
+next benchmark milestone is at least 100 independently reviewed labels sampled from unmatched as well
+as matched corpus locations.

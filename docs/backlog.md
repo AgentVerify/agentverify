@@ -34,7 +34,7 @@ attributable records.
 
 ## P1 — benchmark truth set
 
-Hand-label at least 100 positive/negative locations across the pinned corpus. Publish per-rule
+Expand the 25-label seed to at least 100 positive/negative locations across the pinned corpus. Publish per-rule
 precision, recall, unsupported syntax, and framework coverage. Keep discovery sampling metrics
 separate from detection-quality metrics.
 
@@ -42,4 +42,3 @@ separate from detection-quality metrics.
 
 Add GitHub code-scanning upload documentation, SARIF category support, changed-files mode, baseline
 diff summaries, inline suppressions with reasons/expiry, and an official pre-commit hook.
-

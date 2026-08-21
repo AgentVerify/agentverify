@@ -1,0 +1,258 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-21T03:12:36.806493+00:00",
+  "labels": 25,
+  "passed": 25,
+  "metrics": {
+    "AV-APPROVAL001": {
+      "tp": 3,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "AV-EXEC001": {
+      "tp": 3,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "AV-EXEC002": {
+      "tp": 4,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "AV-FS001": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "AV-MCP002": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 3,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "AV-SANDBOX001": {
+      "tp": 3,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    }
+  },
+  "outcomes": [
+    {
+      "id": "exec-shell-case-positive",
+      "rule_id": "AV-EXEC001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-fixed-argv-negative",
+      "rule_id": "AV-EXEC001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-aider-real",
+      "rule_id": "AV-EXEC001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-trae-real",
+      "rule_id": "AV-EXEC001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-ts-positive",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-constant-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-smolagents-real",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-qwen-exec-real",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-qwen-eval-real",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-python-positive",
+      "rule_id": "AV-APPROVAL001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-false-negative",
+      "rule_id": "AV-APPROVAL001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-cline-global-real",
+      "rule_id": "AV-APPROVAL001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-cline-safe-list-real",
+      "rule_id": "AV-APPROVAL001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-forward-positive",
+      "rule_id": "AV-MCP002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-fixed-name-negative",
+      "rule_id": "AV-MCP002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-guarded-negative",
+      "rule_id": "AV-MCP002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-crewai-real",
+      "rule_id": "AV-MCP002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-camel-guarded-real-negative",
+      "rule_id": "AV-MCP002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-dynamic-positive",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-fixed-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-arcade-real",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-privileged-positive",
+      "rule_id": "AV-SANDBOX001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-comment-negative",
+      "rule_id": "AV-SANDBOX001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-langflow-real",
+      "rule_id": "AV-SANDBOX001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-bytebot-real",
+      "rule_id": "AV-SANDBOX001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "passed": true
+    }
+  ]
+}
