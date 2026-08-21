@@ -36,12 +36,12 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,594 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,354 relationships, and completed in 36.75 seconds on the development machine. Three parse warnings were isolated and
+resolved 1,354 relationships, and completed in 37.08 seconds on the development machine. Three parse warnings were isolated and
 reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
 
-Engine benchmark schema v3 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v4 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, and TypeScript graph precision measures. It intentionally
 excludes arbitrary agent/tool display names from the summary. The resulting
 framework/provider/protocol/capability coverage and unsupported syntax are published in
@@ -52,6 +52,13 @@ module-qualified IDs. Of 2,708 relationship endpoints, 1,887 carry symbol IDs an
 observed component (1,651 Python and 234 TypeScript). The two unmatched IDs are explicit Python
 re-export targets; capability, control, and taxonomy endpoints intentionally remain evidence
 observations without source-symbol IDs.
+
+Schema-v4 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
+resolves 908 endpoints by symbol ID, 300 by exact evidence location, and 16 by a unique display name;
+1,004 remain ambiguous and 480 unresolved. Before evidence-local resolution, 1,299 were ambiguous.
+The 295 removed ambiguities are all capability/control endpoints whose relationship evidence points
+to exactly one asset. Remaining ambiguous endpoints are agent/tool references, so the resolver does
+not use a nearby source location to invent a cross-file target identity.
 
 The Python frontend resolves unambiguous absolute imports rooted at the repository, `src/`, or
 `python/`, plus relative modules that map to exactly one sibling package file. It found five imported

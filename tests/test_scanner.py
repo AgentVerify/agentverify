@@ -939,7 +939,7 @@ def test_native_ai_bom_is_deterministic_evidence_first_and_schema_shaped() -> No
     Draft202012Validator(schema).validate(bom)
     assert set(bom) == set(schema["required"])
     assert bom["bom_format"] == "AgentVerify AI BOM"
-    assert bom["spec_version"] == "1.0"
+    assert bom["spec_version"] == "1.1"
     assert bom["metadata"]["root"] == "."
     assert bom["metadata"]["scan_scope"] == "repository"
     assert len({asset["id"] for asset in bom["assets"]}) == len(bom["assets"])
@@ -980,6 +980,28 @@ def test_native_ai_bom_does_not_hide_ambiguous_display_names() -> None:
         endpoint for endpoint in run_command_endpoints if endpoint["resolution"] == "ambiguous"
     )
     assert len(ambiguous["candidate_asset_ids"]) == 2
+
+
+def test_native_ai_bom_resolves_relationship_endpoints_by_exact_evidence() -> None:
+    bom = json.loads(render_bom(scan_repository(ROOT / "cases/mcp_forwarder")))
+
+    registry_edge = next(
+        relationship
+        for relationship in bom["relationships"]
+        if relationship["evidence"]["line"] == 36
+        and relationship["target"]["name"] == "tool-registry"
+    )
+    assert registry_edge["source"]["resolution"] == "evidence-location"
+    assert registry_edge["target"]["resolution"] == "evidence-location"
+    assert (
+        registry_edge["source"]["resolution_path"],
+        registry_edge["source"]["resolution_line"],
+    ) == ("proxy.py", 36)
+    assert (
+        registry_edge["target"]["resolution_path"],
+        registry_edge["target"]["resolution_line"],
+    ) == ("proxy.py", 35)
+    assert registry_edge["source"]["asset_id"] != registry_edge["target"]["asset_id"]
 
 
 def test_native_ai_bom_does_not_embed_checkout_path(tmp_path: Path) -> None:

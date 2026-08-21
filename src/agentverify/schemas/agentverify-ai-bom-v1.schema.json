@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "AgentVerify AI BOM 1.0",
+  "title": "AgentVerify AI BOM 1.1",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -14,7 +14,7 @@
   ],
   "properties": {
     "bom_format": {"const": "AgentVerify AI BOM"},
-    "spec_version": {"const": "1.0"},
+    "spec_version": {"const": "1.1"},
     "metadata": {
       "type": "object",
       "additionalProperties": false,
@@ -121,22 +121,36 @@
         "kind": {"type": "string"},
         "name": {"type": "string"},
         "resolution": {
-          "enum": ["symbol-id", "unique-display-name", "ambiguous", "unresolved"]
+          "enum": ["symbol-id", "evidence-location", "unique-display-name", "ambiguous", "unresolved"]
         },
         "symbol_id": {"type": "string"},
         "asset_id": {"type": "string", "pattern": "^avc-[0-9a-f]{20}$"},
-        "candidate_asset_ids": {"$ref": "#/$defs/idList"}
+        "candidate_asset_ids": {"$ref": "#/$defs/idList"},
+        "resolution_path": {"type": "string"},
+        "resolution_line": {"type": "integer", "minimum": 1}
       },
       "allOf": [
         {
           "if": {
             "properties": {
-              "resolution": {"enum": ["symbol-id", "unique-display-name"]}
+              "resolution": {"enum": ["symbol-id", "evidence-location", "unique-display-name"]}
             }
           },
           "then": {
             "required": ["asset_id"],
             "not": {"required": ["candidate_asset_ids"]}
+          }
+        },
+        {
+          "if": {"properties": {"resolution": {"const": "evidence-location"}}},
+          "then": {"required": ["resolution_path", "resolution_line"]},
+          "else": {
+            "not": {
+              "anyOf": [
+                {"required": ["resolution_path"]},
+                {"required": ["resolution_line"]}
+              ]
+            }
           }
         },
         {

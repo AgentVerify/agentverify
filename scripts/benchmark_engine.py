@@ -10,6 +10,7 @@ from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
 
+from agentverify.report import render_bom
 from agentverify.scanner import scan_repository
 
 PUBLISHED_NAME_KINDS = {
@@ -45,6 +46,18 @@ def main() -> int:
             continue
         repo_started = time.perf_counter()
         ir = scan_repository(checkout)
+        bom = json.loads(render_bom(ir))
+        bom_endpoint_resolutions = Counter(
+            endpoint["resolution"]
+            for relationship in bom["relationships"]
+            for endpoint in (relationship["source"], relationship["target"])
+        )
+        bom_ambiguous_endpoints = Counter(
+            f"{side}:{relationship[side]['kind']}"
+            for relationship in bom["relationships"]
+            for side in ("source", "target")
+            if relationship[side]["resolution"] == "ambiguous"
+        )
         imported_edges = [edge for edge in ir.relationships if edge.attributes.get("target_path")]
         component_symbol_ids = {item.symbol_id for item in ir.components if item.symbol_id}
         relationship_symbol_ids = [
@@ -108,6 +121,8 @@ def main() -> int:
                     for edge in imported_edges
                 ),
             },
+            "bom_endpoint_resolutions": dict(sorted(bom_endpoint_resolutions.items())),
+            "bom_ambiguous_endpoints_by_side_kind": dict(sorted(bom_ambiguous_endpoints.items())),
             "findings": dict(sorted(Counter(item.rule_id for item in ir.findings).items())),
             "suppressed_findings": ir.suppressed_findings,
             "parse_warnings": len(ir.errors),
@@ -118,7 +133,7 @@ def main() -> int:
         print(f"[{index:>2}/{len(repositories)}] {repository}: {ir.files_scanned} files")
     successful = [result for result in results if result["status"] == "ok"]
     payload = {
-        "schema_version": 3,
+        "schema_version": 4,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "summary": {
@@ -142,6 +157,25 @@ def main() -> int:
                 result["unmatched_identified_symbol_endpoints"] for result in successful
             ),
             "relationship_endpoints": 2 * sum(result["relationships"] for result in successful),
+            "bom_endpoint_resolutions": dict(
+                sorted(
+                    sum(
+                        (Counter(result["bom_endpoint_resolutions"]) for result in successful),
+                        Counter(),
+                    ).items()
+                )
+            ),
+            "bom_ambiguous_endpoints_by_side_kind": dict(
+                sorted(
+                    sum(
+                        (
+                            Counter(result["bom_ambiguous_endpoints_by_side_kind"])
+                            for result in successful
+                        ),
+                        Counter(),
+                    ).items()
+                )
+            ),
             "resolved_symbol_endpoints_by_frontend": {
                 frontend: sum(
                     result["resolved_symbol_endpoints_by_frontend"][frontend]
@@ -202,6 +236,13 @@ def main() -> int:
         },
         "repositories": results,
     }
+    summary = payload["summary"]
+    if sum(summary["bom_endpoint_resolutions"].values()) != summary["relationship_endpoints"]:
+        raise RuntimeError("AI BOM endpoint resolution counts do not cover every relationship")
+    if sum(summary["bom_ambiguous_endpoints_by_side_kind"].values()) != summary[
+        "bom_endpoint_resolutions"
+    ].get("ambiguous", 0):
+        raise RuntimeError("AI BOM ambiguous endpoint breakdown does not match its total")
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(payload["summary"], indent=2))

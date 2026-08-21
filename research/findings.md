@@ -80,6 +80,14 @@ shell path. OpenAI Agents JS similarly expresses multi-agent delegation through 
 assigned `asTool()` adapters. Frontend coverage therefore needs conservative structural parsing plus
 framework-qualified factories, not a growing bag of identifier regexes.
 
+## 7. Governance exports need evidence-local identity
+
+Display-name-only AI BOM resolution produced 1,299 ambiguous relationship endpoints in the pinned
+corpus. Exact relationship locations safely resolve 295 capability/control endpoints, while symbol
+IDs resolve another 908. The remaining 1,004 ambiguous endpoints are agent/tool references without a
+unique target identity and must stay explicit. A governance export that collapses those references by
+name would silently attach controls or risks to the wrong asset.
+
 ## Limitations
 
 - The collector is presence-based and scans a bounded subset of files.

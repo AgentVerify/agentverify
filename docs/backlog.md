@@ -46,7 +46,7 @@ records can be distinguished from instrumentation alone.
 ## P1 — benchmark truth set
 
 The curated regression set has reached 151 pinned positive/negative locations, with 21 separately
-scored IR relationship labels. Schema-v3 engine results and `docs/frontend-coverage.md` publish
+scored IR relationship labels. Schema-v4 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.
@@ -64,7 +64,9 @@ without weakening strict unknown-field validation.
 
 ## P2 — AI BOM standards adapters
 
-The native schema-backed AI BOM now preserves assets, relationships, evidence, governance summaries,
-risks, and ambiguous identities without information loss. Next design separately validated CycloneDX
+The native schema-backed AI BOM 1.1 now preserves assets, relationships, evidence, governance
+summaries, risks, and ambiguous identities without information loss. Exact relationship evidence
+resolves capability/control endpoints while genuinely ambiguous agent/tool references remain explicit.
+Next design separately validated CycloneDX
 and SPDX AI-profile adapters. Map only concepts supported by the target specification and retain a
 link to the native evidence graph rather than presenting agent-specific extensions as standard fields.

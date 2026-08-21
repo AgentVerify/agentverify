@@ -13,6 +13,9 @@ It is native to AgentVerify and does not claim CycloneDX or SPDX conformance.
 The `schema` command reads the copy bundled in the installed wheel, so validators do not need a
 source checkout.
 
+The current format version is 1.1. Version 1.1 adds evidence-local relationship endpoint resolution;
+the filename remains `v1` because the major schema contract is unchanged.
+
 ## Why a native format
 
 [CycloneDX 1.7](https://cyclonedx.org/specification/overview/) can represent software, services,
@@ -51,14 +54,18 @@ byte-for-byte identical BOM output.
 AgentVerify does not pretend display names are globally unique. A relationship endpoint is marked:
 
 - `symbol-id` when its module-qualified Agent IR ID resolves to exactly one observed asset;
+- `evidence-location` when an endpoint without a symbol ID uniquely matches the relationship's exact
+  path and line (or an explicit control location carried by the edge); the endpoint records that
+  basis as `resolution_path` and `resolution_line`;
 - `unique-display-name` when exactly one matching observed asset exists;
 - `ambiguous` with all candidate asset IDs when multiple observations share that kind and name;
 - `unresolved` when no matching asset observation exists.
 
 `unique-display-name` is an inventory fallback, not a proof of module-qualified identity. Consumers
-that enforce policy should prefer `symbol-id` and treat `ambiguous` and `unresolved` endpoints as
-review requirements. The same principle applies to `unresolved_policy_asset_ids`: a missing proof is
-not silently converted into an absent control.
+that enforce policy should prefer `symbol-id`, then `evidence-location`, and treat `ambiguous` and
+`unresolved` endpoints as review requirements. Symbol IDs never fall back to coincidental locations
+when their target is missing or duplicated. The same principle applies to
+`unresolved_policy_asset_ids`: a missing proof is not silently converted into an absent control.
 
 Selected-path scans remain partial. Their metadata records `scan_scope: selected-paths` and the exact
 filters; baseline output does not claim that omitted fingerprints are resolved.

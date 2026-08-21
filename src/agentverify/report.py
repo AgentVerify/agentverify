@@ -101,14 +101,29 @@ def render_bom(ir: RepositoryIR) -> str:
     ]
     assets_by_display_name: dict[tuple[str, str], list[str]] = {}
     assets_by_symbol_id: dict[str, list[str]] = {}
+    assets_by_evidence_location: dict[tuple[str, str, str, int], list[str]] = {}
     for component in ordered_components:
         assets_by_display_name.setdefault((component.kind, component.name), []).append(
             _component_id(component)
         )
         if component.symbol_id:
             assets_by_symbol_id.setdefault(component.symbol_id, []).append(_component_id(component))
+        assets_by_evidence_location.setdefault(
+            (
+                component.kind,
+                component.name,
+                component.evidence.path,
+                component.evidence.line,
+            ),
+            [],
+        ).append(_component_id(component))
 
-    def endpoint(kind: str, name: str, symbol_id: str | None) -> dict[str, object]:
+    def endpoint(
+        kind: str,
+        name: str,
+        symbol_id: str | None,
+        location: tuple[str, int],
+    ) -> dict[str, object]:
         value: dict[str, object] = {"kind": kind, "name": name}
         if symbol_id:
             value["symbol_id"] = symbol_id
@@ -119,6 +134,25 @@ def render_bom(ir: RepositoryIR) -> str:
                 value.update({"resolution": "ambiguous", "candidate_asset_ids": candidates})
             else:
                 value["resolution"] = "unresolved"
+            return value
+        location_candidates = sorted(assets_by_evidence_location.get((kind, name, *location), []))
+        if len(location_candidates) == 1:
+            value.update(
+                {
+                    "resolution": "evidence-location",
+                    "asset_id": location_candidates[0],
+                    "resolution_path": location[0],
+                    "resolution_line": location[1],
+                }
+            )
+            return value
+        if location_candidates:
+            value.update(
+                {
+                    "resolution": "ambiguous",
+                    "candidate_asset_ids": location_candidates,
+                }
+            )
             return value
         candidates = sorted(assets_by_display_name.get((kind, name), []))
         if len(candidates) == 1:
@@ -143,21 +177,37 @@ def render_bom(ir: RepositoryIR) -> str:
             item.target_id or "",
         ),
     )
-    relationships = [
-        {
-            "id": _relationship_id(relationship),
-            "source": endpoint(
-                relationship.source_kind, relationship.source_name, relationship.source_id
-            ),
-            "relation": relationship.relation,
-            "target": endpoint(
-                relationship.target_kind, relationship.target_name, relationship.target_id
-            ),
-            "attributes": relationship.attributes,
-            "evidence": _evidence_dict(relationship.evidence),
-        }
-        for relationship in ordered_relationships
-    ]
+    relationships = []
+    for relationship in ordered_relationships:
+        target_path = relationship.evidence.path
+        target_line = relationship.evidence.line
+        if (
+            relationship.target_kind == "control"
+            and isinstance(relationship.attributes.get("control_path"), str)
+            and isinstance(relationship.attributes.get("control_line"), int)
+        ):
+            target_path = relationship.attributes["control_path"]
+            target_line = relationship.attributes["control_line"]
+        relationships.append(
+            {
+                "id": _relationship_id(relationship),
+                "source": endpoint(
+                    relationship.source_kind,
+                    relationship.source_name,
+                    relationship.source_id,
+                    (relationship.evidence.path, relationship.evidence.line),
+                ),
+                "relation": relationship.relation,
+                "target": endpoint(
+                    relationship.target_kind,
+                    relationship.target_name,
+                    relationship.target_id,
+                    (target_path, target_line),
+                ),
+                "attributes": relationship.attributes,
+                "evidence": _evidence_dict(relationship.evidence),
+            }
+        )
 
     unresolved_policy_assets = sorted(
         asset["id"]
@@ -192,7 +242,7 @@ def render_bom(ir: RepositoryIR) -> str:
     ]
     payload = {
         "bom_format": "AgentVerify AI BOM",
-        "spec_version": "1.0",
+        "spec_version": "1.1",
         "metadata": {
             "generator": {"name": "AgentVerify", "version": __version__},
             "root": ".",

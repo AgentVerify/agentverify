@@ -103,7 +103,7 @@ def test_cli_prints_bundled_bom_schema(capsys) -> None:
 
     schema = __import__("json").loads(capsys.readouterr().out)
     Draft202012Validator.check_schema(schema)
-    assert schema["title"] == "AgentVerify AI BOM 1.0"
+    assert schema["title"] == "AgentVerify AI BOM 1.1"
 
 
 def test_cli_prints_bundled_policy_schema(capsys) -> None:

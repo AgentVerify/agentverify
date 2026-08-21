@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v3
+framework, wrapper, or configuration path. Counts come from schema-v4
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -38,6 +38,12 @@ Across the selected snapshot, 8,204 agent/tool observations have module-qualifie
 (1,651 Python and 234 TypeScript); the two unmatched IDs are explicit Python re-export targets.
 Capability/control taxonomy endpoints intentionally lack source-symbol IDs, so the endpoint fraction
 is inventory coverage rather than an accuracy or recall metric.
+
+The native AI BOM 1.1 resolver independently classifies all 2,708 endpoints: 908 by symbol ID, 300
+by exact relationship evidence, 16 by a unique display name, 1,004 as ambiguous, and 480 as
+unresolved. Evidence-local resolution removed all 295 capability/control ambiguities from the prior
+resolver. Remaining ambiguity is confined to agent/tool references without a unique symbol or target
+location.
 
 The TypeScript graph contains 95 structure-backed agent edges: 14 agent-as-tool delegations and 81
 agent-to-tool edges. All 81 tool endpoints resolve to an observed component. This replaces a prior
