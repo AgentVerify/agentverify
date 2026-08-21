@@ -43,12 +43,13 @@ built-ins, inline/assigned agent adapters, and Cline inline tools without treati
 symbols. Package re-exports, wildcard imports, dynamic lookups, conditional tool expressions, and
 unrecognized wrapper-factory forms remain unresolved.
 
-Within a decorated Python tool, function parameters begin as potential dynamic HTTP origins. Direct
-assignment aliases preserve that state, while reassignment to a literal or a URL expression whose
-literal prefix contains a complete HTTP scheme and host clears it. `AV-NET001` consumes only this
-origin-specific attribute; it does not equate a dynamic path or query on a fixed host with a dynamic
-destination. URL parsing guards, redirects, DNS, proxies, and TypeScript parameter flow remain
-unresolved.
+Within decorated Python tools and structurally resolved TypeScript execution callbacks, tool
+parameters begin as potential dynamic HTTP origins. Direct assignment aliases preserve that state,
+while reassignment to a literal or a URL expression whose literal prefix contains a complete HTTP
+scheme and host clears it. The TypeScript frontend also resolves unique module string constants used
+as a template prefix. `AV-NET001` consumes only this origin-specific attribute; it does not equate a
+dynamic path or query on a fixed host with a dynamic destination. URL parsing guards, redirects, DNS,
+proxies, local helper summaries, and request-object data flow remain unresolved.
 
 ## Result kinds and uncertainty
 

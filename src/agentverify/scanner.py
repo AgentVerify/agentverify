@@ -7,7 +7,7 @@ import json
 import os
 import re
 import warnings
-from collections import Counter
+from collections import Counter, defaultdict
 from datetime import UTC, date, datetime
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
@@ -1332,6 +1332,12 @@ TS_CHILD_PROCESS_IMPORT = re.compile(
     re.DOTALL,
 )
 TS_TOOL_ASSIGNMENT = re.compile(r"\b(?:const|let)\s+(\w+)\s*=\s*([A-Za-z_$][\w$]*)\s*\(")
+TS_TOOL_PROPERTY = re.compile(
+    r"\b([A-Za-z_$][\w$]*)\s*:\s*([A-Za-z_$][\w$]*)\s*\("
+)
+TS_MCP_TOOL_REGISTRATION = re.compile(
+    r"\b([A-Za-z_$][\w$]*)\.registerTool\s*\("
+)
 TS_AGENT_TOOL_ASSIGNMENT = re.compile(
     r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*"
     r"([A-Za-z_$][\w$]*)\.asTool\s*\("
@@ -1580,6 +1586,33 @@ def typescript_top_level_items(text: str, start_offset: int = 0) -> list[tuple[s
     return items
 
 
+def typescript_call_arguments(text: str, start_offset: int = 0) -> list[tuple[str, int]]:
+    """Split call arguments while retaining literal-only arguments and source offsets."""
+    code = typescript_code_mask(text)
+    depths = {"(": 0, "[": 0, "{": 0}
+    closing = {")": "(", "]": "[", "}": "{"}
+    argument_start = 0
+    arguments: list[tuple[str, int]] = []
+
+    def append_argument(end: int) -> None:
+        value = text[argument_start:end]
+        leading = len(value) - len(value.lstrip())
+        value = value.strip()
+        if value:
+            arguments.append((value, start_offset + argument_start + leading))
+
+    for index, character in enumerate(code):
+        if character in depths:
+            depths[character] += 1
+        elif character in closing and depths[closing[character]]:
+            depths[closing[character]] -= 1
+        elif character == "," and not any(depths.values()):
+            append_argument(index)
+            argument_start = index + 1
+    append_argument(len(text))
+    return arguments
+
+
 def typescript_object_items(body: str, body_offset: int = 0) -> list[tuple[str, int]]:
     """Extract top-level properties from a literal object passed as a call argument."""
     code = typescript_code_mask(body)
@@ -1643,6 +1676,143 @@ def typescript_named_import_bindings(text: str, module_prefix: str) -> dict[str,
             local = parts[2] if len(parts) >= 3 and parts[1] == "as" else original
             bindings[local] = original
     return bindings
+
+
+def typescript_literal_string_bindings(text: str) -> dict[str, str]:
+    """Resolve direct module-local const/let string bindings outside comments and strings."""
+    code = typescript_code_mask(text)
+    candidates: dict[str, list[str]] = defaultdict(list)
+    pattern = re.compile(
+        r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*(['\"])(.*?)\2",
+        re.DOTALL,
+    )
+    for match in pattern.finditer(text):
+        if code[match.start() : match.start(1)].strip():
+            candidates[match.group(1)].append(match.group(3))
+    return {name: values[0] for name, values in candidates.items() if len(values) == 1}
+
+
+def typescript_destructured_names(parameter: str) -> set[str]:
+    """Return local binding names from one shallow object-destructuring parameter."""
+    code = typescript_code_mask(parameter)
+    opening = code.find("{")
+    if opening < 0:
+        return set()
+    end = typescript_balanced_end(code, opening, "{", "}")
+    if end is None:
+        return set()
+    names = set()
+    for item, _ in typescript_call_arguments(parameter[opening + 1 : end - 1]):
+        value = item.lstrip(".").split("=", 1)[0].strip()
+        if ":" in value:
+            value = value.split(":", 1)[1].strip()
+        if match := re.match(r"[A-Za-z_$][\w$]*", value):
+            names.add(match.group(0))
+    return names
+
+
+def typescript_callback_parameter_names(expression: str) -> set[str]:
+    """Extract model-input roots from a direct arrow/function callback expression."""
+    code = typescript_code_mask(expression)
+    arrow = code.find("=>")
+    prefix = expression[:arrow].strip() if arrow >= 0 else expression.strip()
+    prefix = re.sub(r"^async\s+", "", prefix).strip()
+    if prefix.startswith("("):
+        prefix_code = typescript_code_mask(prefix)
+        end = typescript_balanced_end(prefix_code, 0, "(", ")")
+        if end is None:
+            return set()
+        parameters = typescript_call_arguments(prefix[1 : end - 1])
+        first = parameters[0][0] if parameters else ""
+    else:
+        first = prefix.split(":", 1)[0].strip()
+    if first.lstrip().startswith("{"):
+        return typescript_destructured_names(first)
+    match = re.match(r"[A-Za-z_$][\w$]*", first)
+    return {match.group(0)} if match else set()
+
+
+def typescript_tool_parameter_names(call_body: str, constructor: str) -> set[str]:
+    """Extract the first execution-callback parameter for a supported tool form."""
+    if constructor == "registerTool":
+        arguments = typescript_call_arguments(call_body)
+        return (
+            typescript_callback_parameter_names(arguments[2][0])
+            if len(arguments) >= 3
+            else set()
+        )
+    if execute := typescript_object_property_expression(call_body, "execute"):
+        return typescript_callback_parameter_names(execute)
+    code = typescript_code_mask(call_body)
+    if match := re.search(r"\b(?:async\s+)?execute\s*\(", code):
+        opening = code.find("(", match.start(), match.end())
+        end = typescript_balanced_end(code, opening, "(", ")")
+        if end is not None:
+            return typescript_callback_parameter_names(
+                f"({call_body[opening + 1 : end - 1]}) =>"
+            )
+    return set()
+
+
+def typescript_static_url_prefix(
+    expression: str, literal_bindings: dict[str, str]
+) -> str:
+    value = expression.strip()
+    if match := re.match(r"(['\"])(.*?)\1", value, re.DOTALL):
+        return match.group(2)
+    if value.startswith("`"):
+        content = value[1:]
+        if not content.startswith("${"):
+            return content.split("${", 1)[0]
+        if match := re.match(r"\$\{\s*([A-Za-z_$][\w$]*)\s*\}(.*)", content, re.DOTALL):
+            return literal_bindings.get(match.group(1), "") + match.group(2).split("${", 1)[0]
+    if match := re.match(r"([A-Za-z_$][\w$]*)\b", value):
+        return literal_bindings.get(match.group(1), "")
+    return ""
+
+
+def typescript_expression_names(expression: str) -> set[str]:
+    value = expression.strip()
+    if value.startswith("`"):
+        return set(
+            re.findall(
+                r"(?<![\w$])[A-Za-z_$][\w$]*",
+                " ".join(re.findall(r"\$\{(.*?)\}", value, re.DOTALL)),
+            )
+        )
+    code = typescript_code_mask(value)
+    return set(re.findall(r"(?<![\w$])[A-Za-z_$][\w$]*", code))
+
+
+def typescript_http_origin_is_dynamic(
+    expression: str,
+    dynamic_names: set[str],
+    literal_bindings: dict[str, str],
+) -> bool:
+    if not typescript_expression_names(expression) & dynamic_names:
+        return False
+    prefix = typescript_static_url_prefix(expression, literal_bindings)
+    return re.match(r"^https?://[^/?#]+", prefix, re.IGNORECASE) is None
+
+
+def typescript_network_calls(text: str) -> dict[int, list[tuple[str, str]]]:
+    """Return recognized global fetch/Axios calls with their first URL argument."""
+    code = typescript_code_mask(text)
+    pattern = re.compile(
+        r"(?<![\w$.])fetch\s*\(|\baxios\.(get|post|put|patch|delete)\s*\("
+    )
+    calls: dict[int, list[tuple[str, str]]] = defaultdict(list)
+    for match in pattern.finditer(code):
+        opening = code.find("(", match.start(), match.end())
+        end = typescript_balanced_end(code, opening, "(", ")")
+        if end is None:
+            continue
+        arguments = typescript_call_arguments(text[opening + 1 : end - 1])
+        if not arguments:
+            continue
+        api = f"axios.{match.group(1)}" if match.group(1) else "fetch"
+        calls[line_at(text, match.start())].append((api, arguments[0][0]))
+    return calls
 
 
 def typescript_call_parts(expression: str) -> tuple[str, str, int] | None:
@@ -1780,14 +1950,89 @@ def typescript_first_argument_is_literal(argument_text: str) -> bool:
     return False
 
 
+def typescript_is_generic_tool_factory(
+    local_factory: str,
+    constructor: str,
+    cline_imports: dict[str, str],
+    mastra_imports: dict[str, str],
+) -> bool:
+    return (
+        constructor in TS_GENERIC_TOOL_FACTORIES
+        or (local_factory in cline_imports and constructor == "createTool")
+        or (local_factory in mastra_imports and constructor == "createTool")
+    )
+
+
+def add_typescript_generic_tool(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    text: str,
+    tool_by_line: dict[int, tuple[str, str]],
+    tool_input_names: dict[str, set[str]],
+    tool_name: str,
+    tool_id: str,
+    constructor: str,
+    body: str,
+    body_offset: int,
+    call_offset: int,
+    call_end: int,
+    attributes: dict | None = None,
+) -> None:
+    """Add a generic factory-backed tool and map its callback/configuration span."""
+    start_line = line_at(text, call_offset)
+    evidence = Evidence(relative, start_line, excerpt(lines, start_line))
+    approval_match = (
+        TS_LITERAL_APPROVAL.search(typescript_code_mask(body))
+        if constructor != "toolNamespace"
+        and typescript_object_property_expression(body, "needsApproval") == "true"
+        else None
+    )
+    ir.add_component(
+        Component(
+            "tool",
+            tool_name,
+            evidence,
+            {
+                "constructor": constructor,
+                "needs_approval": approval_match is not None,
+                **(attributes or {}),
+            },
+            tool_id,
+        )
+    )
+    tool_input_names[tool_id] = typescript_tool_parameter_names(body, constructor)
+    if approval_match:
+        approval_line = line_at(text, body_offset + approval_match.start())
+        approval_evidence = Evidence(
+            relative, approval_line, excerpt(lines, approval_line)
+        )
+        ir.add_component(Component("control", "human-approval", approval_evidence))
+        ir.add_relationship(
+            Relationship(
+                "tool",
+                tool_name,
+                "governed-by",
+                "control",
+                "human-approval",
+                approval_evidence,
+                source_id=tool_id,
+            )
+        )
+    for line_number in range(start_line, line_at(text, call_end) + 1):
+        tool_by_line[line_number] = (tool_name, tool_id)
+
+
 def typescript_graph(
     ir: RepositoryIR,
     relative: str,
     text: str,
     lines: list[str],
     imported_symbols: dict[str, tuple[str, str]],
-) -> dict[int, tuple[str, str]]:
+) -> tuple[dict[int, tuple[str, str]], dict[str, set[str]]]:
     tool_by_line: dict[int, tuple[str, str]] = {}
+    tool_input_names: dict[str, set[str]] = {}
     local_tool_ids: dict[str, str] = {}
     code = typescript_code_mask(text)
     openai_imports = {
@@ -1795,16 +2040,67 @@ def typescript_graph(
         **typescript_named_import_bindings(text, "@openai/agents-extensions"),
     }
     cline_imports = typescript_named_import_bindings(text, "@cline/sdk")
+    mastra_imports = typescript_named_import_bindings(text, "@mastra/core/tools")
+    literal_bindings = typescript_literal_string_bindings(text)
+    has_mcp_import = "@modelcontextprotocol/" in text or bool(
+        re.search(r"from\s+['\"][^'\"]*mcp[^'\"]*['\"]", text, re.IGNORECASE)
+    )
     tool_matches = list(TS_TOOL_ASSIGNMENT.finditer(code))
     tool_assignment_counts = Counter(match.group(1) for match in tool_matches)
+    property_matches = []
+    for match in TS_TOOL_PROPERTY.finditer(code):
+        local_factory = match.group(2)
+        constructor = openai_imports.get(
+            local_factory,
+            cline_imports.get(local_factory, mastra_imports.get(local_factory, local_factory)),
+        )
+        if typescript_is_generic_tool_factory(
+            local_factory, constructor, cline_imports, mastra_imports
+        ):
+            property_matches.append((match, constructor))
+    registration_matches = [
+        match
+        for match in TS_MCP_TOOL_REGISTRATION.finditer(code)
+        if has_mcp_import
+        and (
+            "server" in match.group(1).lower()
+            or "mcp" in match.group(1).lower()
+            or match.group(1) == "s"
+        )
+    ]
+
+    def registration_name(match: re.Match[str]) -> str:
+        opening = code.find("(", match.start(), match.end())
+        end = typescript_balanced_end(code, opening, "(", ")") or len(text)
+        body = text[opening + 1 : end - 1]
+        direct_literal = re.match(r"\s*(['\"])(.*?)\1\s*(?:,|$)", body, re.DOTALL)
+        if direct_literal:
+            return direct_literal.group(2)
+        identifier = re.match(
+            r"\s*([A-Za-z_$][\w$]*)\s*(?:,|$)",
+            typescript_code_mask(body),
+        )
+        if identifier and (literal := literal_bindings.get(identifier.group(1))):
+            return literal
+        return f"registerTool@{line_at(text, match.start())}"
+
+    registration_names = {
+        match.start(): registration_name(match) for match in registration_matches
+    }
+    tool_identity_counts = Counter(
+        [match.group(1) for match in tool_matches]
+        + [match.group(1) for match, _ in property_matches]
+        + list(registration_names.values())
+    )
     for match in tool_matches:
         tool_name = match.group(1)
         local_factory = match.group(2)
         constructor = openai_imports.get(
-            local_factory, cline_imports.get(local_factory, local_factory)
+            local_factory,
+            cline_imports.get(local_factory, mastra_imports.get(local_factory, local_factory)),
         )
-        is_generic = constructor in TS_GENERIC_TOOL_FACTORIES or (
-            local_factory in cline_imports and constructor == "createTool"
+        is_generic = typescript_is_generic_tool_factory(
+            local_factory, constructor, cline_imports, mastra_imports
         )
         is_openai_builtin = (
             local_factory in openai_imports and constructor in TS_OPENAI_BUILTIN_TOOL_CAPABILITIES
@@ -1816,10 +2112,9 @@ def typescript_graph(
         end = typescript_balanced_end(code, opening, "(", ")") or len(text)
         end_line = line_at(text, end)
         body = text[opening + 1 : end - 1]
-        ev = Evidence(relative, start_line, excerpt(lines, start_line))
         tool_identity = (
             f"{tool_name}@{start_line}"
-            if tool_assignment_counts[tool_name] > 1
+            if tool_identity_counts[tool_name] > 1
             else tool_name
         )
         tool_id = source_symbol("ts", relative, "tool", tool_identity)
@@ -1839,41 +2134,80 @@ def typescript_graph(
                 body_offset=opening + 1,
             )
         else:
-            approval_match = (
-                TS_LITERAL_APPROVAL.search(typescript_code_mask(body))
-                if constructor != "toolNamespace"
-                and typescript_object_property_expression(body, "needsApproval") == "true"
-                else None
+            add_typescript_generic_tool(
+                ir,
+                relative=relative,
+                lines=lines,
+                text=text,
+                tool_by_line=tool_by_line,
+                tool_input_names=tool_input_names,
+                tool_name=tool_name,
+                tool_id=tool_id,
+                constructor=constructor,
+                body=body,
+                body_offset=opening + 1,
+                call_offset=match.start(),
+                call_end=end,
             )
-            ir.add_component(
-                Component(
-                    "tool",
-                    tool_name,
-                    ev,
-                    {
-                        "constructor": constructor,
-                        "needs_approval": approval_match is not None,
-                    },
-                    tool_id,
-                )
-            )
-            if approval_match:
-                approval_line = line_at(text, opening + 1 + approval_match.start())
-                approval_ev = Evidence(relative, approval_line, excerpt(lines, approval_line))
-                ir.add_component(Component("control", "human-approval", approval_ev))
-                ir.add_relationship(
-                    Relationship(
-                        "tool",
-                        tool_name,
-                        "governed-by",
-                        "control",
-                        "human-approval",
-                        approval_ev,
-                        source_id=tool_id,
-                    )
-                )
-        for line_number in range(start_line, end_line + 1):
-            tool_by_line[line_number] = (tool_name, tool_id)
+        if is_openai_builtin:
+            for line_number in range(start_line, end_line + 1):
+                tool_by_line[line_number] = (tool_name, tool_id)
+
+    for match, constructor in property_matches:
+        tool_name = match.group(1)
+        opening = code.find("(", match.start(), match.end())
+        end = typescript_balanced_end(code, opening, "(", ")") or len(text)
+        start_line = line_at(text, match.start())
+        tool_identity = (
+            f"{tool_name}@{start_line}"
+            if tool_identity_counts[tool_name] > 1
+            else tool_name
+        )
+        tool_id = source_symbol("ts", relative, "tool", tool_identity)
+        add_typescript_generic_tool(
+            ir,
+            relative=relative,
+            lines=lines,
+            text=text,
+            tool_by_line=tool_by_line,
+            tool_input_names=tool_input_names,
+            tool_name=tool_name,
+            tool_id=tool_id,
+            constructor=constructor,
+            body=text[opening + 1 : end - 1],
+            body_offset=opening + 1,
+            call_offset=match.start(),
+            call_end=end,
+            attributes={"binding": "object-property"},
+        )
+
+    for match in registration_matches:
+        tool_name = registration_names[match.start()]
+        opening = code.find("(", match.start(), match.end())
+        end = typescript_balanced_end(code, opening, "(", ")") or len(text)
+        start_line = line_at(text, match.start())
+        tool_identity = (
+            f"{tool_name}@{start_line}"
+            if tool_identity_counts[tool_name] > 1
+            else tool_name
+        )
+        tool_id = source_symbol("ts", relative, "tool", tool_identity)
+        add_typescript_generic_tool(
+            ir,
+            relative=relative,
+            lines=lines,
+            text=text,
+            tool_by_line=tool_by_line,
+            tool_input_names=tool_input_names,
+            tool_name=tool_name,
+            tool_id=tool_id,
+            constructor="registerTool",
+            body=text[opening + 1 : end - 1],
+            body_offset=opening + 1,
+            call_offset=match.start(),
+            call_end=end,
+            attributes={"protocol": "MCP", "registry": match.group(1)},
+        )
 
     agent_matches = list(TS_AGENT_ASSIGNMENT.finditer(code))
     agent_assignment_counts = Counter(match.group(1) for match in agent_matches)
@@ -1980,13 +2314,16 @@ def typescript_graph(
                 continue
             local_factory, call_body, relative_body_offset = call
             constructor = openai_imports.get(
-                local_factory, cline_imports.get(local_factory, local_factory)
+                local_factory,
+                cline_imports.get(
+                    local_factory, mastra_imports.get(local_factory, local_factory)
+                ),
             )
             call_line = line_at(text, item_offset)
             tool_name = f"{constructor}@{call_line}"
             target_id = None
-            if constructor in TS_GENERIC_TOOL_FACTORIES or (
-                local_factory in cline_imports and constructor == "createTool"
+            if typescript_is_generic_tool_factory(
+                local_factory, constructor, cline_imports, mastra_imports
             ):
                 target_id = source_symbol("ts", relative, "tool", tool_name)
                 ir.add_component(
@@ -1997,6 +2334,9 @@ def typescript_graph(
                         {"constructor": constructor, "inline": True},
                         target_id,
                     )
+                )
+                tool_input_names[target_id] = typescript_tool_parameter_names(
+                    call_body, constructor
                 )
                 call_end_offset = item_offset + len(expression)
                 for line_number in range(call_line, line_at(text, call_end_offset) + 1):
@@ -2034,7 +2374,7 @@ def typescript_graph(
                     target_id=target_id,
                 )
             )
-    return tool_by_line
+    return tool_by_line, tool_input_names
 
 
 def resolve_typescript_imports(root: Path, path: Path, text: str) -> dict[str, tuple[str, str]]:
@@ -2116,7 +2456,14 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
     relative = path.relative_to(root).as_posix()
     lines = text.splitlines()
     imported_symbols = resolve_typescript_imports(root, path, text)
-    tool_by_line = typescript_graph(ir, relative, text, lines, imported_symbols)
+    tool_by_line, tool_input_names = typescript_graph(
+        ir, relative, text, lines, imported_symbols
+    )
+    dynamic_names_by_tool = {
+        tool_id: set(names) for tool_id, names in tool_input_names.items()
+    }
+    literal_bindings = typescript_literal_string_bindings(text)
+    network_calls = typescript_network_calls(text)
     shell_bindings = child_process_bindings(text)
     has_mcp_import = "@modelcontextprotocol/" in text or re.search(
         r"from\s+['\"][^'\"]*mcp[^'\"]*['\"]", text, re.IGNORECASE
@@ -2147,6 +2494,33 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
     for line_number, line in enumerate(lines, start=1):
         ev = Evidence(relative, line_number, line.strip()[:240])
         code_line = typescript_code_mask(line)
+        dynamic_names: set[str] = set()
+        if tool := tool_by_line.get(line_number):
+            dynamic_names = dynamic_names_by_tool.setdefault(tool[1], set())
+            if destructuring := re.search(
+                r"\b(?:const|let)\s*\{([^}]*)\}\s*=\s*([^;]+)", code_line
+            ):
+                source_expression = line[
+                    destructuring.start(2) : destructuring.end(2)
+                ]
+                if typescript_expression_names(source_expression) & dynamic_names:
+                    dynamic_names.update(
+                        typescript_destructured_names(
+                            "{" + line[destructuring.start(1) : destructuring.end(1)] + "}"
+                        )
+                    )
+            elif assignment := re.search(
+                r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)"
+                r"(?:\s*:[^=]+)?\s*=",
+                code_line,
+            ):
+                value = line[assignment.end() :].rstrip().removesuffix(";").rstrip()
+                if typescript_http_origin_is_dynamic(
+                    value, dynamic_names, literal_bindings
+                ):
+                    dynamic_names.add(assignment.group(1))
+                else:
+                    dynamic_names.discard(assignment.group(1))
         for match in TS_IMPORT.finditer(line):
             component_from_import(ir, match.group(1), ev)
         for match in TS_MODEL_SETTING.finditer(line):
@@ -2229,8 +2603,21 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                     "dynamic_path": not path_argument.startswith(("'", '"', "`")),
                 },
             )
-        if re.search(r"\b(?:fetch|axios\.(?:get|post|put|patch|delete))\s*\(", code_line):
-            add_typescript_capability(ir, relative, line_number, ev, tool_by_line, "network")
+        for api, url_expression in network_calls.get(line_number, []):
+            add_typescript_capability(
+                ir,
+                relative,
+                line_number,
+                ev,
+                tool_by_line,
+                "network",
+                {
+                    "api": api,
+                    "dynamic_origin": typescript_http_origin_is_dynamic(
+                        url_expression, dynamic_names, literal_bindings
+                    ),
+                },
+            )
         if re.search(r"\baxios\.(?:post|put|patch|delete)\s*\(", code_line) or (
             re.search(r"\bmethod\s*:", code_line)
             and re.search(

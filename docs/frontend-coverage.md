@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v7
+framework, wrapper, or configuration path. Counts come from schema-v8
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -33,18 +33,18 @@ Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK
 (40), Anthropic (16), and Azure OpenAI (10). These counts overlap and are lower than research-wide lexical signals
 because the engine requires supported selected files and more specific syntax.
 
-Across the selected snapshot, 8,204 agent/tool observations have module-qualified symbol IDs. Of
-2,696 relationship endpoint observations, 1,858 carry IDs and 1,856 resolve to an observed component
-(1,622 Python and 234 TypeScript); the two unmatched IDs are explicit Python re-export targets.
+Across the selected snapshot, 8,549 agent/tool observations have module-qualified symbol IDs. Of
+2,722 relationship endpoint observations, 1,871 carry IDs and 1,869 resolve to an observed component
+(1,622 Python and 247 TypeScript); the two unmatched IDs are explicit Python re-export targets.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
-edges resolve exactly. In Python files with repeated identities, schema v7 records 325 same-scope and
+edges resolve exactly. In Python files with repeated identities, schema v8 records 325 same-scope and
 14 module-scope single-definition resolutions, plus 23 `ambiguous-repeated-binding` references that
 remain withheld.
 Capability/control taxonomy endpoints intentionally lack
 source-symbol IDs, so the endpoint fraction is inventory coverage rather than an accuracy or recall
 metric.
 
-The native AI BOM 1.1 resolver independently classifies all 2,696 endpoints: 1,856 by symbol ID, 293
+The native AI BOM 1.1 resolver independently classifies all 2,722 endpoints: 1,869 by symbol ID, 306
 by exact relationship evidence, 17 by a unique display name, 30 as ambiguous, and 500 as unresolved.
 Evidence-local resolution removes capability/control ambiguities; occurrence-qualified bindings
 resolve repeated source agent/tool observations, and conservative lexical resolution removes further
@@ -55,12 +55,17 @@ agent-to-tool edges. All 81 tool endpoints resolve to an observed component. Thi
 token-level array heuristic that could turn words inside callbacks, strings, or nested options into
 spurious tool edges.
 
+Import-aware factory/registration discovery adds 27 Mastra `createTool` observations, 264 MCP
+`registerTool` observations, 70 generic/Mastra object-property tools, and six exact
+callback-to-capability edges; the factory/property categories overlap. Literal or uniquely bound
+registration names become symbol identities; unknown names retain occurrence-qualified fallbacks.
+
 ## Implemented syntax
 
 | Frontend | Implemented observations and resolution |
 |---|---|
 | Python AST | Imports; known agent/model constructors; tool decorators; literal tool/handoff lists; module-, class-, and repeated-occurrence-qualified agent/tool IDs; shell, eval, filesystem, HTTP, browser, MCP, and Docker SDK calls; tool-parameter HTTP origins with direct alias propagation and fixed-host discrimination; absolute and filesystem-relative tool imports; literal approval decorators; OpenAI Agents `ShellTool`/`ApplyPatchTool`/`CustomTool` approval constructors; env-backed auto-approval flags with direct true-return branches and same-class approval short circuits; statement-ordered MCP rejection guards and internal tool-registry routing lookups; lexically scoped OpenTelemetry spans. |
-| TypeScript/JavaScript structural lexical | Known imports/providers; balanced top-level `new Agent({tools: [...]})` entries; `tool(...)`, `functionTool(...)`, `toolNamespace(...)`, OpenAI built-ins, Cline `createTool(...)`, and assigned/inline `asTool(...)`; module- and repeated-occurrence-qualified agent/tool IDs; named relative imports and aliases; child-process and Bun `sh -c` calls with literal/dynamic distinction; direct eval; filesystem calls; MCP forwarding object shapes; literal tool approval settings; inline and module-flag env-backed auto-approval branches. Comments and string contents are masked before policy matching. |
+| TypeScript/JavaScript structural lexical | Known imports/providers; balanced top-level `new Agent({tools: [...]})` entries; `tool(...)`, `functionTool(...)`, `toolNamespace(...)`, OpenAI built-ins, Cline and import-aliased Mastra `createTool(...)`, MCP `registerTool(...)`, and assigned/inline `asTool(...)`; module- and repeated-occurrence-qualified agent/tool IDs; named relative imports and aliases; execution-callback parameter origins for global `fetch` and Axios verbs with direct alias/fixed-host discrimination; child-process and Bun `sh -c` calls with literal/dynamic distinction; direct eval; filesystem calls; MCP forwarding object shapes; literal tool approval settings; inline and module-flag env-backed auto-approval branches. Comments and string contents are masked before policy matching. |
 | MCP JSON | Common `mcpServers` configuration, transport/command/URL, redacted arguments, and environment-variable names. Configuration is read as data; servers are never launched. |
 | Container configuration | Compose/devcontainer Docker socket, privileged/host network/root mounts; Kubernetes/Helm privileged, host namespace, privilege escalation, service-account token, and `hostPath`; literal privileged Python Docker SDK calls. |
 
@@ -81,8 +86,8 @@ spurious tool edges.
   callback approval results, and type-driven resolution can be missed. Its relative-import resolver
   found zero qualifying real edges in this selected snapshot and is currently regression-validated
   separately from the 81 resolved local tool edges.
-- TypeScript network calls are inventory-only: callback parameter flow and fixed-origin
-  discrimination for `fetch`/Axios are not implemented.
+- TypeScript network flow is callback-local. Calls through local/imported helpers, Axios request
+  objects, computed callback properties, redirects, and hostname-validation helpers remain unresolved.
 - Helm templates are not rendered. Kubernetes RBAC, NetworkPolicy, pod scheduling, and the contents
   or sensitivity of mounted paths are not inferred. Compose environment interpolation is not
   evaluated.
@@ -93,7 +98,7 @@ spurious tool edges.
 
 ## Quality interpretation
 
-The 157-label rule truth set and 21-label IR relationship set are curated regression suites. They
+The 166-label rule truth set and 30-label IR relationship set are curated regression suites. They
 guard known positives and negatives; they are not an unbiased accuracy estimate. A future holdout
 must be sampled separately across the categories above, externally reviewed, and kept sealed while
 rules change. Until then, precision/recall values apply only to the published seed labels.

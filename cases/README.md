@@ -21,4 +21,5 @@ never imported or executed.
 - `symbol_collision`: same-named cross-file tools cannot leak agents or controls into a finding.
 - `imported_tool`: a local Python import resolves an agent to a tool defined in another module.
 - `imported_ts_tool`: a relative TypeScript import resolves an aliased tool across modules.
+- `typescript_tool_registrations`: import-aware Mastra object-property tools and MCP `registerTool` callbacks.
 - `../examples/safe_agent`: near-miss showing fixed argv is inventory-only.

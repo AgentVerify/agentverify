@@ -95,12 +95,14 @@ by name would silently attach controls or risks to the wrong asset.
 
 ## 8. Dynamic network origin is rarer but high impact
 
-Only two default-scope tool paths in the bounded corpus pass a tool parameter directly to an HTTP
+Three default-scope tool paths in the bounded corpus pass a tool parameter directly to an HTTP
 origin: [Goose's Wikipedia MCP tool](https://github.com/block/goose/blob/48d480f91163bbcdc0f69f01befa3841a93a1d3e/examples/mcp-wiki/src/mcp_wiki/server.py#L29)
-and [AgentOps' smolagents webpage tool](https://github.com/AgentOps-AI/agentops/blob/f8e907b92dabe47232978023fdcb01e2a7d4b752/examples/smolagents/multi_smolagents_system.py#L73).
-Both accept arbitrary HTTP destinations; Goose checks the scheme but does not constrain the host. A
+and [AgentOps' smolagents webpage tool](https://github.com/AgentOps-AI/agentops/blob/f8e907b92dabe47232978023fdcb01e2a7d4b752/examples/smolagents/multi_smolagents_system.py#L73),
+plus the MCP TypeScript SDK's [registered `fetch-data` tool](https://github.com/modelcontextprotocol/typescript-sdk/blob/3924de99df834302d89f5997a1b64ca268282284/packages/server/src/server/mcp.examples.ts#L130-L138).
+All accept arbitrary HTTP destinations; Goose checks the scheme but does not constrain the host. A
 [fixed Devpost origin with a dynamic search query](https://github.com/microsoft/ai-agents-for-beginners/blob/01777b05e8afeba6bf5a6dbe74cc2293372d3693/11-agentic-protocols/code_samples/github-mcp/app.py#L118)
-is a real negative. This small but high-impact set supports a narrow review rule, not a claim that
+and the SDK's [fixed weather host with a dynamic query](https://github.com/modelcontextprotocol/typescript-sdk/blob/3924de99df834302d89f5997a1b64ca268282284/examples/guides/get-started/firstServer.examples.ts#L20-L40)
+are real negatives. This small but high-impact set supports a narrow review rule, not a claim that
 every variable URL is SSRF.
 
 ## Limitations

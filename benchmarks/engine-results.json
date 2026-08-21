@@ -1,6 +1,6 @@
 {
-  "schema_version": 7,
-  "generated_at": "2026-08-21T06:57:57.042974+00:00",
+  "schema_version": 8,
+  "generated_at": "2026-08-21T07:25:34.468910+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -13,21 +13,21 @@
     ],
     "files_scanned": 10594,
     "config_files_scanned": 155,
-    "relationships": 1348,
-    "symbolized_components": 8204,
-    "identified_symbol_endpoints": 1858,
-    "resolved_symbol_endpoints": 1856,
+    "relationships": 1361,
+    "symbolized_components": 8549,
+    "identified_symbol_endpoints": 1871,
+    "resolved_symbol_endpoints": 1869,
     "unmatched_identified_symbol_endpoints": 2,
     "ambiguous_repeated_binding_targets": 23,
     "resolved_binding_targets_by_basis": {
       "lexical-single-definition": 325,
       "module-single-definition": 14
     },
-    "relationship_endpoints": 2696,
+    "relationship_endpoints": 2722,
     "bom_endpoint_resolutions": {
       "ambiguous": 30,
-      "evidence-location": 293,
-      "symbol-id": 1856,
+      "evidence-location": 306,
+      "symbol-id": 1869,
       "unique-display-name": 17,
       "unresolved": 500
     },
@@ -36,13 +36,19 @@
     },
     "resolved_symbol_endpoints_by_frontend": {
       "py": 1622,
-      "ts": 234
+      "ts": 247
     },
     "typescript_graph": {
       "agent_edges": 95,
       "agent_delegations": 14,
       "agent_tool_edges": 81,
       "resolved_agent_tool_edges": 81
+    },
+    "typescript_tool_registrations": {
+      "mastra_create_tool": 27,
+      "mcp_register_tool": 264,
+      "object_property_tools": 70,
+      "capability_edges": 6
     },
     "resolved_import_edges": 5,
     "resolved_import_edges_by_frontend": {
@@ -56,9 +62,9 @@
       "AV-APPROVAL002": 2,
       "AV-EXEC001": 21,
       "AV-EXEC002": 49,
-      "AV-FS001": 16,
+      "AV-FS001": 18,
       "AV-MCP002": 43,
-      "AV-NET001": 2,
+      "AV-NET001": 3,
       "AV-SANDBOX001": 19
     },
     "finding_repositories": {
@@ -66,9 +72,9 @@
       "AV-APPROVAL002": 1,
       "AV-EXEC001": 11,
       "AV-EXEC002": 14,
-      "AV-FS001": 6,
+      "AV-FS001": 8,
       "AV-MCP002": 22,
-      "AV-NET001": 2,
+      "AV-NET001": 3,
       "AV-SANDBOX001": 9
     },
     "observed_component_names": {
@@ -87,7 +93,7 @@
       },
       "control": {
         "action-trace": 1,
-        "human-approval": 2,
+        "human-approval": 3,
         "tool-allowlist": 1,
         "tool-registry": 1
       },
@@ -232,7 +238,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 39.3441
+    "elapsed_seconds": 49.8593
   },
   "repositories": [
     {
@@ -274,6 +280,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -287,7 +299,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.749
+      "elapsed_seconds": 1.2161
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -335,6 +347,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -346,7 +364,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7515
+      "elapsed_seconds": 0.7703
     },
     {
       "repository": "langchain-ai/langchain",
@@ -391,6 +409,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -402,7 +426,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2585
+      "elapsed_seconds": 0.258
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -451,6 +475,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -462,7 +492,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2339
+      "elapsed_seconds": 1.2
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -516,6 +546,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -527,7 +563,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0532
+      "elapsed_seconds": 0.0533
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -585,6 +621,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -603,7 +645,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0157
+      "elapsed_seconds": 1.0081
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -658,6 +700,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 2,
       "resolved_import_edges_by_frontend": {
         "python": 2,
@@ -675,7 +723,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7507
+      "elapsed_seconds": 0.7428
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -726,6 +774,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 3,
       "resolved_import_edges_by_frontend": {
         "python": 3,
@@ -743,7 +797,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0788
+      "elapsed_seconds": 0.0724
     },
     {
       "repository": "microsoft/autogen",
@@ -794,6 +848,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -810,7 +870,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2257
+      "elapsed_seconds": 0.2214
     },
     {
       "repository": "microsoft/agent-framework",
@@ -845,6 +905,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -856,7 +922,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0159
+      "elapsed_seconds": 0.0136
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -905,6 +971,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -921,7 +993,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0303
+      "elapsed_seconds": 0.0279
     },
     {
       "repository": "openai/openai-agents-python",
@@ -986,6 +1058,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -1008,7 +1086,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5526
+      "elapsed_seconds": 1.5884
     },
     {
       "repository": "openai/openai-agents-js",
@@ -1074,6 +1152,12 @@
         "agent_tool_edges": 79,
         "resolved_agent_tool_edges": 79
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -1091,7 +1175,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3006
+      "elapsed_seconds": 0.4461
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -1146,6 +1230,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -1166,7 +1256,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.5654
+      "elapsed_seconds": 3.5383
     },
     {
       "repository": "google/adk-python",
@@ -1213,6 +1303,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -1227,7 +1323,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8976
+      "elapsed_seconds": 0.8911
     },
     {
       "repository": "google/adk-js",
@@ -1236,7 +1332,7 @@
       "files_scanned": 197,
       "config_files_scanned": 0,
       "components": {
-        "capability": 72,
+        "capability": 71,
         "mcp": 3,
         "model": 83,
         "protocol": 7
@@ -1269,6 +1365,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -1280,7 +1382,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.051
+      "elapsed_seconds": 1.6136
     },
     {
       "repository": "huggingface/smolagents",
@@ -1333,6 +1435,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -1349,7 +1457,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3122
+      "elapsed_seconds": 0.3111
     },
     {
       "repository": "agno-agi/agno",
@@ -1394,6 +1502,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -1408,7 +1522,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1227
+      "elapsed_seconds": 0.1181
     },
     {
       "repository": "camel-ai/camel",
@@ -1461,6 +1575,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -1477,7 +1597,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5637
+      "elapsed_seconds": 0.5796
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -1520,6 +1640,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -1534,7 +1660,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0466
+      "elapsed_seconds": 0.0429
     },
     {
       "repository": "run-llama/llama_index",
@@ -1583,6 +1709,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -1594,7 +1726,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.206
+      "elapsed_seconds": 0.2048
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -1647,6 +1779,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -1661,7 +1799,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.343
+      "elapsed_seconds": 0.3695
     },
     {
       "repository": "InternLM/lagent",
@@ -1710,6 +1848,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -1724,7 +1868,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1657
+      "elapsed_seconds": 0.17
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -1767,6 +1911,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -1781,7 +1931,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.269
+      "elapsed_seconds": 0.2712
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -1828,6 +1978,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -1842,7 +1998,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3811
+      "elapsed_seconds": 0.3899
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -1889,6 +2045,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -1902,7 +2064,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2434
+      "elapsed_seconds": 0.2491
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -1912,7 +2074,7 @@
       "config_files_scanned": 4,
       "components": {
         "agent": 3,
-        "capability": 117,
+        "capability": 116,
         "protocol": 2,
         "provider": 14,
         "sandbox-boundary": 1
@@ -1952,6 +2114,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -1966,7 +2134,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7993
+      "elapsed_seconds": 0.7696
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -2011,6 +2179,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -2024,7 +2198,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3385
+      "elapsed_seconds": 0.4195
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -2071,6 +2245,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -2082,7 +2262,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2823
+      "elapsed_seconds": 0.3948
     },
     {
       "repository": "letta-ai/letta-code",
@@ -2123,6 +2303,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -2134,7 +2320,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1785
+      "elapsed_seconds": 1.9815
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -2188,6 +2374,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -2207,7 +2399,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2531
+      "elapsed_seconds": 0.2515
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -2249,6 +2441,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -2262,7 +2460,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4908
+      "elapsed_seconds": 0.4975
     },
     {
       "repository": "mastra-ai/mastra",
@@ -2272,11 +2470,12 @@
       "config_files_scanned": 2,
       "components": {
         "agent": 12,
-        "capability": 89,
+        "capability": 84,
         "framework": 3,
         "model": 7,
         "protocol": 4,
-        "provider": 1
+        "provider": 1,
+        "tool": 26
       },
       "component_names": {
         "capability": [
@@ -2296,62 +2495,8 @@
           "OpenAI"
         ]
       },
-      "relationships": 0,
-      "symbolized_components": 12,
-      "identified_symbol_endpoints": 0,
-      "resolved_symbol_endpoints": 0,
-      "unmatched_identified_symbol_endpoints": 0,
-      "ambiguous_repeated_binding_targets": 0,
-      "resolved_binding_targets_by_basis": {},
-      "resolved_symbol_endpoints_by_frontend": {
-        "py": 0,
-        "ts": 0
-      },
-      "typescript_graph": {
-        "agent_edges": 0,
-        "agent_delegations": 0,
-        "agent_tool_edges": 0,
-        "resolved_agent_tool_edges": 0
-      },
-      "resolved_import_edges": 0,
-      "resolved_import_edges_by_frontend": {
-        "python": 0,
-        "typescript": 0
-      },
-      "bom_endpoint_resolutions": {},
-      "bom_ambiguous_endpoints_by_side_kind": {},
-      "findings": {},
-      "suppressed_findings": 0,
-      "parse_warnings": 0,
-      "parse_warning_details": [],
-      "elapsed_seconds": 0.6497
-    },
-    {
-      "repository": "vercel/ai",
-      "category": "framework",
-      "status": "ok",
-      "files_scanned": 165,
-      "config_files_scanned": 0,
-      "components": {
-        "capability": 29,
-        "model": 43,
-        "provider": 18,
-        "tool": 8
-      },
-      "component_names": {
-        "capability": [
-          "code-execution",
-          "external-action",
-          "filesystem",
-          "network"
-        ],
-        "provider": [
-          "Anthropic",
-          "OpenAI"
-        ]
-      },
       "relationships": 1,
-      "symbolized_components": 8,
+      "symbolized_components": 38,
       "identified_symbol_endpoints": 1,
       "resolved_symbol_endpoints": 1,
       "unmatched_identified_symbol_endpoints": 0,
@@ -2367,6 +2512,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 26,
+        "mcp_register_tool": 0,
+        "object_property_tools": 15,
+        "capability_edges": 1
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -2378,12 +2529,81 @@
       },
       "bom_ambiguous_endpoints_by_side_kind": {},
       "findings": {
+        "AV-FS001": 1
+      },
+      "suppressed_findings": 0,
+      "parse_warnings": 0,
+      "parse_warning_details": [],
+      "elapsed_seconds": 1.1065
+    },
+    {
+      "repository": "vercel/ai",
+      "category": "framework",
+      "status": "ok",
+      "files_scanned": 165,
+      "config_files_scanned": 0,
+      "components": {
+        "capability": 29,
+        "control": 8,
+        "model": 43,
+        "provider": 18,
+        "tool": 56
+      },
+      "component_names": {
+        "capability": [
+          "code-execution",
+          "external-action",
+          "filesystem",
+          "network"
+        ],
+        "control": [
+          "human-approval"
+        ],
+        "provider": [
+          "Anthropic",
+          "OpenAI"
+        ]
+      },
+      "relationships": 9,
+      "symbolized_components": 56,
+      "identified_symbol_endpoints": 9,
+      "resolved_symbol_endpoints": 9,
+      "unmatched_identified_symbol_endpoints": 0,
+      "ambiguous_repeated_binding_targets": 0,
+      "resolved_binding_targets_by_basis": {},
+      "resolved_symbol_endpoints_by_frontend": {
+        "py": 0,
+        "ts": 9
+      },
+      "typescript_graph": {
+        "agent_edges": 0,
+        "agent_delegations": 0,
+        "agent_tool_edges": 0,
+        "resolved_agent_tool_edges": 0
+      },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 48,
+        "capability_edges": 0
+      },
+      "resolved_import_edges": 0,
+      "resolved_import_edges_by_frontend": {
+        "python": 0,
+        "typescript": 0
+      },
+      "bom_endpoint_resolutions": {
+        "evidence-location": 9,
+        "symbol-id": 9
+      },
+      "bom_ambiguous_endpoints_by_side_kind": {},
+      "findings": {
         "AV-EXEC002": 1
       },
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7372
+      "elapsed_seconds": 1.2302
     },
     {
       "repository": "cline/cline",
@@ -2434,6 +2654,12 @@
         "agent_tool_edges": 1,
         "resolved_agent_tool_edges": 1
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 1,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 1
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -2451,7 +2677,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0366
+      "elapsed_seconds": 1.7071
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -2495,6 +2721,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -2506,7 +2738,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.175
+      "elapsed_seconds": 1.8874
     },
     {
       "repository": "continuedev/continue",
@@ -2515,7 +2747,7 @@
       "files_scanned": 186,
       "config_files_scanned": 0,
       "components": {
-        "capability": 22,
+        "capability": 21,
         "mcp": 4,
         "model": 4,
         "protocol": 18
@@ -2548,6 +2780,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -2559,7 +2797,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.765
+      "elapsed_seconds": 1.1856
     },
     {
       "repository": "Aider-AI/aider",
@@ -2597,6 +2835,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -2610,7 +2854,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5738
+      "elapsed_seconds": 0.6863
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -2619,7 +2863,7 @@
       "files_scanned": 102,
       "config_files_scanned": 3,
       "components": {
-        "capability": 70
+        "capability": 68
       },
       "component_names": {
         "capability": [
@@ -2647,6 +2891,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -2662,7 +2912,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 0.1875
+      "elapsed_seconds": 0.1883
     },
     {
       "repository": "plandex-ai/plandex",
@@ -2689,6 +2939,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -2700,7 +2956,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0157
+      "elapsed_seconds": 0.0152
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -2741,6 +2997,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -2752,7 +3014,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3134
+      "elapsed_seconds": 0.3354
     },
     {
       "repository": "stitionai/devika",
@@ -2795,6 +3057,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -2806,7 +3074,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0806
+      "elapsed_seconds": 0.09
     },
     {
       "repository": "block/goose",
@@ -2818,7 +3086,7 @@
         "capability": 16,
         "mcp": 4,
         "protocol": 15,
-        "tool": 4
+        "tool": 11
       },
       "component_names": {
         "capability": [
@@ -2832,7 +3100,7 @@
         ]
       },
       "relationships": 2,
-      "symbolized_components": 4,
+      "symbolized_components": 11,
       "identified_symbol_endpoints": 2,
       "resolved_symbol_endpoints": 2,
       "unmatched_identified_symbol_endpoints": 0,
@@ -2847,6 +3115,12 @@
         "agent_delegations": 0,
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
+      },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 7,
+        "capability_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -2869,7 +3143,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 0.5725
+      "elapsed_seconds": 0.9461
     },
     {
       "repository": "bytedance/trae-agent",
@@ -2920,6 +3194,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -2935,7 +3215,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1566
+      "elapsed_seconds": 0.1583
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -2948,7 +3228,7 @@
         "mcp": 1,
         "model": 47,
         "protocol": 23,
-        "tool": 6
+        "tool": 7
       },
       "component_names": {
         "capability": [
@@ -2962,7 +3242,7 @@
         ]
       },
       "relationships": 0,
-      "symbolized_components": 6,
+      "symbolized_components": 7,
       "identified_symbol_endpoints": 0,
       "resolved_symbol_endpoints": 0,
       "unmatched_identified_symbol_endpoints": 0,
@@ -2978,6 +3258,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 1,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -2991,7 +3277,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7606
+      "elapsed_seconds": 2.8126
     },
     {
       "repository": "openai/codex",
@@ -3025,6 +3311,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -3036,7 +3328,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1311
+      "elapsed_seconds": 0.1309
     },
     {
       "repository": "browser-use/browser-use",
@@ -3087,6 +3379,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -3101,7 +3399,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7503
+      "elapsed_seconds": 0.7687
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -3159,6 +3457,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -3173,7 +3477,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3223
+      "elapsed_seconds": 1.3157
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -3220,6 +3524,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -3233,7 +3543,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1863
+      "elapsed_seconds": 0.2224
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -3277,6 +3587,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -3290,7 +3606,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4169
+      "elapsed_seconds": 0.6231
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -3302,7 +3618,8 @@
         "capability": 116,
         "mcp": 6,
         "model": 1,
-        "protocol": 95
+        "protocol": 95,
+        "tool": 42
       },
       "component_names": {
         "capability": [
@@ -3314,16 +3631,16 @@
           "MCP"
         ]
       },
-      "relationships": 0,
-      "symbolized_components": 0,
-      "identified_symbol_endpoints": 0,
-      "resolved_symbol_endpoints": 0,
+      "relationships": 1,
+      "symbolized_components": 42,
+      "identified_symbol_endpoints": 1,
+      "resolved_symbol_endpoints": 1,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
         "py": 0,
-        "ts": 0
+        "ts": 1
       },
       "typescript_graph": {
         "agent_edges": 0,
@@ -3331,18 +3648,29 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 42,
+        "object_property_tools": 0,
+        "capability_edges": 1
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
         "typescript": 0
       },
-      "bom_endpoint_resolutions": {},
+      "bom_endpoint_resolutions": {
+        "evidence-location": 1,
+        "symbol-id": 1
+      },
       "bom_ambiguous_endpoints_by_side_kind": {},
-      "findings": {},
+      "findings": {
+        "AV-FS001": 1
+      },
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3311
+      "elapsed_seconds": 0.5463
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -3396,6 +3724,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -3411,7 +3745,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5321
+      "elapsed_seconds": 0.4962
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -3420,11 +3754,12 @@
       "files_scanned": 167,
       "config_files_scanned": 0,
       "components": {
-        "capability": 150,
+        "capability": 52,
         "mcp": 444,
         "model": 9,
         "protocol": 309,
-        "provider": 2
+        "provider": 2,
+        "tool": 214
       },
       "component_names": {
         "capability": [
@@ -3440,16 +3775,16 @@
           "OpenAI"
         ]
       },
-      "relationships": 0,
-      "symbolized_components": 0,
-      "identified_symbol_endpoints": 0,
-      "resolved_symbol_endpoints": 0,
+      "relationships": 3,
+      "symbolized_components": 214,
+      "identified_symbol_endpoints": 3,
+      "resolved_symbol_endpoints": 3,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
         "py": 0,
-        "ts": 0
+        "ts": 3
       },
       "typescript_graph": {
         "agent_edges": 0,
@@ -3457,18 +3792,29 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 214,
+        "object_property_tools": 0,
+        "capability_edges": 3
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
         "typescript": 0
       },
-      "bom_endpoint_resolutions": {},
+      "bom_endpoint_resolutions": {
+        "evidence-location": 3,
+        "symbol-id": 3
+      },
       "bom_ambiguous_endpoints_by_side_kind": {},
-      "findings": {},
+      "findings": {
+        "AV-NET001": 1
+      },
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0075
+      "elapsed_seconds": 1.7199
     },
     {
       "repository": "github/github-mcp-server",
@@ -3505,6 +3851,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -3516,7 +3868,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0179
+      "elapsed_seconds": 0.0178
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -3554,6 +3906,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -3565,7 +3923,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0337
+      "elapsed_seconds": 0.0495
     },
     {
       "repository": "awslabs/mcp",
@@ -3610,6 +3968,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -3623,7 +3987,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4707
+      "elapsed_seconds": 0.4428
     },
     {
       "repository": "docker/mcp-gateway",
@@ -3661,6 +4025,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -3674,7 +4044,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0138
+      "elapsed_seconds": 0.0125
     },
     {
       "repository": "jlowin/fastmcp",
@@ -3715,6 +4085,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -3728,7 +4104,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5186
+      "elapsed_seconds": 0.5092
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -3755,6 +4131,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -3766,7 +4148,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0107
+      "elapsed_seconds": 0.0112
     },
     {
       "repository": "langflow-ai/langflow",
@@ -3775,7 +4157,7 @@
       "files_scanned": 179,
       "config_files_scanned": 8,
       "components": {
-        "capability": 84,
+        "capability": 83,
         "mcp": 3,
         "protocol": 4,
         "sandbox-boundary": 1,
@@ -3813,6 +4195,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -3826,7 +4214,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7018
+      "elapsed_seconds": 0.9562
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -3866,6 +4254,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -3877,7 +4271,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9767
+      "elapsed_seconds": 1.6061
     },
     {
       "repository": "langgenius/dify",
@@ -3907,6 +4301,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -3918,7 +4318,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4099
+      "elapsed_seconds": 0.4019
     },
     {
       "repository": "n8n-io/n8n",
@@ -3928,11 +4328,12 @@
       "config_files_scanned": 3,
       "components": {
         "agent": 24,
-        "capability": 30,
+        "capability": 27,
         "mcp": 2,
         "model": 3,
         "protocol": 5,
-        "sandbox-boundary": 1
+        "sandbox-boundary": 1,
+        "tool": 1
       },
       "component_names": {
         "capability": [
@@ -3950,7 +4351,7 @@
         ]
       },
       "relationships": 0,
-      "symbolized_components": 24,
+      "symbolized_components": 25,
       "identified_symbol_endpoints": 0,
       "resolved_symbol_endpoints": 0,
       "unmatched_identified_symbol_endpoints": 0,
@@ -3965,6 +4366,12 @@
         "agent_delegations": 0,
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
+      },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 1,
+        "object_property_tools": 0,
+        "capability_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -3981,7 +4388,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7196
+      "elapsed_seconds": 1.1455
     },
     {
       "repository": "activepieces/activepieces",
@@ -3994,7 +4401,8 @@
         "mcp": 4,
         "protocol": 9,
         "provider": 5,
-        "sandbox-boundary": 2
+        "sandbox-boundary": 2,
+        "tool": 6
       },
       "component_names": {
         "capability": [
@@ -4016,7 +4424,7 @@
         ]
       },
       "relationships": 0,
-      "symbolized_components": 0,
+      "symbolized_components": 6,
       "identified_symbol_endpoints": 0,
       "resolved_symbol_endpoints": 0,
       "unmatched_identified_symbol_endpoints": 0,
@@ -4031,6 +4439,12 @@
         "agent_delegations": 0,
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
+      },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 6,
+        "object_property_tools": 0,
+        "capability_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4047,7 +4461,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5824
+      "elapsed_seconds": 0.8276
     },
     {
       "repository": "simstudioai/sim",
@@ -4083,6 +4497,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -4094,7 +4514,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.272
+      "elapsed_seconds": 2.2106
     },
     {
       "repository": "composiohq/composio",
@@ -4152,6 +4572,12 @@
         "agent_tool_edges": 1,
         "resolved_agent_tool_edges": 1
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -4169,7 +4595,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4352
+      "elapsed_seconds": 0.6187
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -4226,6 +4652,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -4243,7 +4675,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5314
+      "elapsed_seconds": 0.5369
     },
     {
       "repository": "e2b-dev/E2B",
@@ -4278,6 +4710,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -4289,7 +4727,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6002
+      "elapsed_seconds": 0.8343
     },
     {
       "repository": "daytonaio/daytona",
@@ -4315,6 +4753,12 @@
         "agent_delegations": 0,
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
+      },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
       },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
@@ -4380,6 +4824,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -4397,7 +4847,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3063
+      "elapsed_seconds": 0.3154
     },
     {
       "repository": "traceloop/openllmetry",
@@ -4455,6 +4905,12 @@
         "agent_tool_edges": 0,
         "resolved_agent_tool_edges": 0
       },
+      "typescript_tool_registrations": {
+        "mastra_create_tool": 0,
+        "mcp_register_tool": 0,
+        "object_property_tools": 0,
+        "capability_edges": 0
+      },
       "resolved_import_edges": 0,
       "resolved_import_edges_by_frontend": {
         "python": 0,
@@ -4476,7 +4932,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5124
+      "elapsed_seconds": 0.5058
     }
   ]
 }

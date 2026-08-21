@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "description": "Exact positive and negative labels for Agent IR control and import relationships; evaluated separately from finding-rule quality.",
+  "description": "Exact positive and negative labels for Agent IR control, import, tool-registration, and capability relationships; evaluated separately from finding-rule quality.",
   "labels": [
     {
       "id": "audit-local-traced-action",
@@ -336,6 +336,166 @@
         "relation": "governed-by",
         "target_kind": "control",
         "target_name": "human-approval"
+      }
+    },
+    {
+      "id": "typescript-mastra-assigned-tool-network-local",
+      "target": {"kind": "local", "path": "cases/typescript_tool_registrations"},
+      "check_id": "IR-TS-TOOL-REGISTRATION",
+      "path": "tools.ts",
+      "line": 7,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "lookup",
+        "source_id": "ts:tools.ts#tool:lookup",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "network"
+      }
+    },
+    {
+      "id": "typescript-mastra-property-tool-network-local",
+      "target": {"kind": "local", "path": "cases/typescript_tool_registrations"},
+      "check_id": "IR-TS-TOOL-REGISTRATION",
+      "path": "tools.ts",
+      "line": 14,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "requester",
+        "source_id": "ts:tools.ts#tool:requester",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "network"
+      }
+    },
+    {
+      "id": "typescript-mcp-bound-name-network-local",
+      "target": {"kind": "local", "path": "cases/typescript_tool_registrations"},
+      "check_id": "IR-TS-TOOL-REGISTRATION",
+      "path": "tools.ts",
+      "line": 22,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "download",
+        "source_id": "ts:tools.ts#tool:download",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "network"
+      }
+    },
+    {
+      "id": "typescript-mcp-literal-name-network-local",
+      "target": {"kind": "local", "path": "cases/typescript_tool_registrations"},
+      "check_id": "IR-TS-TOOL-REGISTRATION",
+      "path": "tools.ts",
+      "line": 26,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "status",
+        "source_id": "ts:tools.ts#tool:status",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "network"
+      }
+    },
+    {
+      "id": "typescript-ordinary-registry-not-mcp-local",
+      "target": {"kind": "local", "path": "cases/typescript_tool_registrations"},
+      "check_id": "IR-TS-TOOL-REGISTRATION",
+      "path": "fake.ts",
+      "line": 7,
+      "expected": false,
+      "source_contains": "registry.registerTool",
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "ordinary-registry",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "network"
+      }
+    },
+    {
+      "id": "typescript-mcp-weather-fixed-origin-real",
+      "target": {
+        "kind": "repository",
+        "repository": "modelcontextprotocol/typescript-sdk",
+        "commit": "3924de99df834302d89f5997a1b64ca268282284"
+      },
+      "check_id": "IR-TS-TOOL-REGISTRATION",
+      "path": "examples/guides/get-started/firstServer.examples.ts",
+      "line": 40,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "get-alerts",
+        "source_id": "ts:examples/guides/get-started/firstServer.examples.ts#tool:get-alerts",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "network"
+      }
+    },
+    {
+      "id": "typescript-mcp-parameter-origin-real",
+      "target": {
+        "kind": "repository",
+        "repository": "modelcontextprotocol/typescript-sdk",
+        "commit": "3924de99df834302d89f5997a1b64ca268282284"
+      },
+      "check_id": "IR-TS-TOOL-REGISTRATION",
+      "path": "packages/server/src/server/mcp.examples.ts",
+      "line": 138,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "fetch-data",
+        "source_id": "ts:packages/server/src/server/mcp.examples.ts#tool:fetch-data",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "network"
+      }
+    },
+    {
+      "id": "typescript-mastra-property-filesystem-real",
+      "target": {
+        "kind": "repository",
+        "repository": "mastra-ai/mastra",
+        "commit": "1da5fb00e141b78c2148b21ee085ec24112cf2a5"
+      },
+      "check_id": "IR-TS-TOOL-REGISTRATION",
+      "path": "packages/agent-builder/src/defaults.ts",
+      "line": 474,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "writeFile",
+        "source_id": "ts:packages/agent-builder/src/defaults.ts#tool:writeFile",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "typescript-mcp-literal-filesystem-tool-real",
+      "target": {
+        "kind": "repository",
+        "repository": "modelcontextprotocol/servers",
+        "commit": "599dafc1054550a6eeb87a6545c1e1b03b3ca827"
+      },
+      "check_id": "IR-TS-TOOL-REGISTRATION",
+      "path": "src/filesystem/index.ts",
+      "line": 429,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "create_directory",
+        "source_id": "ts:src/filesystem/index.ts#tool:create_directory",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
       }
     },
     {

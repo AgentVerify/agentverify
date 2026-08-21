@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T06:58:51.577631+00:00",
-  "labels": 157,
-  "passed": 157,
+  "generated_at": "2026-08-21T07:24:20.760341+00:00",
+  "labels": 166,
+  "passed": 166,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 14,
@@ -37,7 +37,7 @@
       "recall": 1.0
     },
     "AV-FS001": {
-      "tp": 10,
+      "tp": 12,
       "fp": 0,
       "tn": 11,
       "fn": 0,
@@ -53,9 +53,9 @@
       "recall": 1.0
     },
     "AV-NET001": {
-      "tp": 3,
+      "tp": 6,
       "fp": 0,
-      "tn": 3,
+      "tn": 7,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -1061,6 +1061,24 @@
       "passed": true
     },
     {
+      "id": "filesystem-mastra-tool-property-real",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-typescript-mcp-registration-real",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
       "id": "filesystem-openhands-prev-negative",
       "rule_id": "AV-FS001",
       "expected": false,
@@ -1197,6 +1215,69 @@
     },
     {
       "id": "network-devpost-fixed-origin-real-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "network-typescript-mastra-property-local-positive",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "network-typescript-mcp-registration-local-positive",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "network-typescript-fixed-template-local-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "network-typescript-fixed-literal-local-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "network-typescript-mcp-parameter-origin-real-positive",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "network-typescript-mcp-weather-fixed-origin-real-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "network-typescript-vercel-fixed-literal-real-negative",
       "rule_id": "AV-NET001",
       "expected": false,
       "observed": false,

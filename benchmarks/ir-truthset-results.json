@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T06:58:30.053480+00:00",
-  "labels": 21,
-  "passed": 21,
+  "generated_at": "2026-08-21T07:21:58.705849+00:00",
+  "labels": 30,
+  "passed": 30,
   "metrics": {
     "IR-APPROVAL-CONTROL": {
       "tp": 3,
@@ -38,6 +38,14 @@
     },
     "IR-TS-TOOL-GRAPH": {
       "tp": 3,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-TOOL-REGISTRATION": {
+      "tp": 8,
       "fp": 0,
       "tn": 1,
       "fn": 0,
@@ -204,6 +212,87 @@
       "check_id": "IR-APPROVAL-CONTROL",
       "expected": false,
       "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-mastra-assigned-tool-network-local",
+      "check_id": "IR-TS-TOOL-REGISTRATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-mastra-property-tool-network-local",
+      "check_id": "IR-TS-TOOL-REGISTRATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-mcp-bound-name-network-local",
+      "check_id": "IR-TS-TOOL-REGISTRATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-mcp-literal-name-network-local",
+      "check_id": "IR-TS-TOOL-REGISTRATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-ordinary-registry-not-mcp-local",
+      "check_id": "IR-TS-TOOL-REGISTRATION",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-mcp-weather-fixed-origin-real",
+      "check_id": "IR-TS-TOOL-REGISTRATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-mcp-parameter-origin-real",
+      "check_id": "IR-TS-TOOL-REGISTRATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-mastra-property-filesystem-real",
+      "check_id": "IR-TS-TOOL-REGISTRATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-mcp-literal-filesystem-tool-real",
+      "check_id": "IR-TS-TOOL-REGISTRATION",
+      "expected": true,
+      "observed": true,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

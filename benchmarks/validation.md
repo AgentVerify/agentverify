@@ -31,32 +31,34 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
   assigned SDK tools, agent-as-tool delegation, approval policies, and unrelated-name negatives.
 - `cases/typescript_bun_shell`: Cline inline tools distinguish dynamic Bun `sh -c`, a fixed command,
   direct argv execution, and string-only near misses.
+- `cases/typescript_tool_registrations`: import-aware Mastra factory properties and MCP registrations
+  retain exact callback-to-capability tool identities, with string and ordinary-registry negatives.
 
 ## Full-corpus engine benchmark
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,594 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,348 relationships, and completed in 39.34 seconds on the development machine. Three parse warnings were isolated and
+resolved 1,361 relationships, and completed in 49.86 seconds on the development machine. Three parse warnings were isolated and
 reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
 
-Engine benchmark schema v7 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v8 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, and TypeScript graph precision measures. It intentionally
 excludes arbitrary agent/tool display names from the summary. The resulting
 framework/provider/protocol/capability coverage and unsupported syntax are published in
 `docs/frontend-coverage.md`; presence counts are discovery observations, not recall measurements.
 
-The benchmark now also measures identity coverage: 8,204 agent/tool component observations carry
-module-qualified IDs. Of 2,696 relationship endpoints, 1,858 carry symbol IDs and 1,856 resolve to an
-observed component (1,622 Python and 234 TypeScript). Schema v7 records 325 same-scope and 14
+The benchmark now also measures identity coverage: 8,549 agent/tool component observations carry
+module-qualified IDs. Of 2,722 relationship endpoints, 1,871 carry symbol IDs and 1,869 resolve to an
+observed component (1,622 Python and 247 TypeScript). Schema v8 records 325 same-scope and 14
 module-scope targets resolved from a single direct definition that appears before the Agent
 constructor. It also records 23 repeated-binding targets still withheld because the scope contains
 multiple definitions. The two unmatched IDs are explicit Python re-export targets; capability,
 control, and taxonomy endpoints intentionally remain evidence observations.
 
-Schema-v7 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
-resolves 1,856 endpoints by symbol ID, 293 by exact evidence location, and 17 by a unique display
+Schema-v8 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
+resolves 1,869 endpoints by symbol ID, 306 by exact evidence location, and 17 by a unique display
 name; 30 remain ambiguous and 500 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
@@ -82,8 +84,12 @@ not share reachability or control coverage.
 
 The TypeScript frontend now reads only balanced top-level entries from literal Agent tool arrays. It
 resolves OpenAI `tool`, `toolNamespace`, built-in tool factories, inline/assigned `asTool` adapters,
-and Cline `createTool`. The full sample contains 95 structure-backed agent edges: 14 delegations and
-81 tool edges, all with targets that resolve to observed components. The prior token heuristic could
+and Cline `createTool`. Import-aware discovery now also resolves generic/Mastra object-property
+tools plus MCP `registerTool` names and callback spans. Schema v8 records 27 Mastra factory tools,
+264 MCP registrations, 70 object-property tools (the factory/property categories overlap), and six
+exact registration-to-capability edges. The full sample
+contains 95 structure-backed agent edges: 14 delegations and 81 tool edges, all with targets that
+resolve to observed components. The prior token heuristic could
 turn words inside callbacks, string literals, and nested options into spurious tool edges. Relative
 named imports still apply the conservative `.js`-specifier-to-source rule; this snapshot has no
 qualifying cross-file Agent tool edge, so that part remains regression-validated only.
@@ -193,27 +199,39 @@ qualify even as routing coverage.
 ## AV-FS001 — dynamic writable tool path
 
 The rule requires a writable dynamic path inside a resolved tool; ordinary application writes and
-fixed tool paths do not trigger it. The full benchmark reports 16 default-scope sites across six
+fixed tool paths do not trigger it. The full benchmark reports 18 default-scope sites across eight
 repositories. A hand-reviewed case is ArcadeAI's
 [local-filesystem MCP `write_file`](https://github.com/ArcadeAI/arcade-ai/blob/597debaa1593b54172061ce36a414cc29aa8fc6a/examples/mcp_servers/local_filesystem/src/local_filesystem/tools.py#L154),
 which resolves a caller-provided path before writing. No workspace-root constraint is visible in the
 tool function, but the result remains `review` because enclosing server policy is unresolved.
+New TypeScript registration edges expose Mastra's
+[`writeFile` tool adapter](https://github.com/mastra-ai/mastra/blob/1da5fb00e141b78c2148b21ee085ec24112cf2a5/packages/agent-builder/src/defaults.ts#L457-L475)
+and the MCP filesystem server's
+[`create_directory` callback](https://github.com/modelcontextprotocol/servers/blob/599dafc1054550a6eeb87a6545c1e1b03b3ca827/src/filesystem/index.ts#L412-L429).
+The latter calls a path-validation helper first; helper-policy resolution is deliberately left for a
+subsequent control-flow increment, so the result remains a review rather than a demonstrated escape.
 
 ## AV-NET001 — parameter-controlled HTTP origin
 
-The Python rule requires a recognized HTTP client call inside a tool where a function parameter (or
-its direct assignment alias) determines the URL origin. A literal URL and an f-string/concatenation
-whose literal prefix already contains a complete HTTP scheme and host remain inventory-only. The full
-benchmark reports two reviews across two repositories:
+The rule requires a recognized Python HTTP client or TypeScript global `fetch`/Axios call inside a
+tool where an execution parameter (or its direct assignment alias) determines the URL origin. A
+literal URL and a template/concatenation whose resolved literal prefix already contains a complete
+HTTP scheme and host remain inventory-only. The full benchmark reports three reviews across three
+repositories:
 
 - [Goose's Wikipedia MCP tool](https://github.com/block/goose/blob/48d480f91163bbcdc0f69f01befa3841a93a1d3e/examples/mcp-wiki/src/mcp_wiki/server.py#L29)
   checks only that the URL begins with HTTP before requesting it.
 - [AgentOps' webpage tool](https://github.com/AgentOps-AI/agentops/blob/f8e907b92dabe47232978023fdcb01e2a7d4b752/examples/smolagents/multi_smolagents_system.py#L73)
   sends the tool's URL parameter directly to `requests.get`.
+- The MCP TypeScript SDK's
+  [`fetch-data` example](https://github.com/modelcontextprotocol/typescript-sdk/blob/3924de99df834302d89f5997a1b64ca268282284/packages/server/src/server/mcp.examples.ts#L130-L138)
+  passes its registered tool input directly to global `fetch`.
 
-The pinned negative is a [fixed Devpost origin](https://github.com/microsoft/ai-agents-for-beginners/blob/01777b05e8afeba6bf5a6dbe74cc2293372d3693/11-agentic-protocols/code_samples/github-mcp/app.py#L118)
-with a parameterized query. Results remain `review`: URL validation, redirects, DNS rebinding,
-proxies, and runtime egress policy are not yet resolved. TypeScript parameter flow is not implemented.
+Pinned negatives include a [fixed Devpost origin](https://github.com/microsoft/ai-agents-for-beginners/blob/01777b05e8afeba6bf5a6dbe74cc2293372d3693/11-agentic-protocols/code_samples/github-mcp/app.py#L118),
+the MCP SDK's [fixed weather API](https://github.com/modelcontextprotocol/typescript-sdk/blob/3924de99df834302d89f5997a1b64ca268282284/examples/guides/get-started/firstServer.examples.ts#L20-L40),
+and Vercel's [literal PDF URL](https://github.com/vercel/ai/blob/f607a129c0298870038b398dbcba57ff041114f6/examples/ai-e2e-next/tool/fetch-pdf-tool.ts#L5-L12).
+Results remain `review`: URL validation, redirects, DNS rebinding, proxies, and runtime egress policy
+are not yet resolved.
 
 ## AV-SANDBOX001 — container/host boundary
 
@@ -240,12 +258,12 @@ and a literal `privileged=True` keyword.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 157 exact labels across all eight enabled rules: 90 positives and 67
+`benchmarks/truthset.json` contains 166 exact labels across all eight enabled rules: 95 positives and 71
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
-Compose/Kubernetes/Docker SDK settings. All 157 currently pass; each rule's seed precision and recall
+Compose/Kubernetes/Docker SDK settings. All 166 currently pass; each rule's seed precision and recall
 are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified source
 text at the exact pinned line, preventing a missing or drifting location from passing silently.
 
@@ -268,6 +286,8 @@ Three MCP registry labels cover the local control edge, a caller-owned-map negat
 SDK SessionGroup edge. Three import labels cover a resolved relative fixture, a missing-module negative, and the pinned
 CrewAI-LangGraph draft-tool edge. Seven approval labels cover enabled, disabled, callback, and
 automatic-handler policies plus pinned Python and TypeScript OpenAI shell edges. Four TypeScript graph
-labels cover inline and assigned agent adapters, the Cline tool path, and a nested-token negative. All
-21 IR labels pass: three approval positives/four negatives, two audit positives/two negatives, two
-import positives/one negative, and three TypeScript graph positives/one negative.
+labels cover inline and assigned agent adapters, the Cline tool path, and a nested-token negative.
+Nine registration labels cover four local Mastra/MCP edges, an ordinary-registry negative, and four
+pinned Mastra/MCP capability edges. All 30 IR labels pass: three approval positives/four negatives,
+two audit positives/two negatives, two import positives/one negative, three TypeScript graph
+positives/one negative, and eight registration positives/one negative.

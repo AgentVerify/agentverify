@@ -96,6 +96,25 @@ def main() -> int:
         typescript_agent_tool_edges = [
             edge for edge in typescript_agent_edges if edge.target_kind == "tool"
         ]
+        typescript_registered_tools = [
+            item
+            for item in ir.components
+            if item.kind == "tool"
+            and item.evidence.path.endswith((".ts", ".tsx", ".js", ".jsx"))
+            and item.attributes.get("constructor") in {"createTool", "registerTool"}
+        ]
+        typescript_object_property_tools = [
+            item
+            for item in ir.components
+            if item.kind == "tool"
+            and item.evidence.path.endswith((".ts", ".tsx", ".js", ".jsx"))
+            and item.attributes.get("binding") == "object-property"
+        ]
+        typescript_structured_tool_ids = {
+            item.symbol_id
+            for item in (*typescript_registered_tools, *typescript_object_property_tools)
+            if item.symbol_id
+        }
         result = {
             "repository": repository,
             "category": row["category"],
@@ -136,6 +155,22 @@ def main() -> int:
                     edge.target_id in component_symbol_ids for edge in typescript_agent_tool_edges
                 ),
             },
+            "typescript_tool_registrations": {
+                "mastra_create_tool": sum(
+                    item.attributes.get("constructor") == "createTool"
+                    for item in typescript_registered_tools
+                ),
+                "mcp_register_tool": sum(
+                    item.attributes.get("constructor") == "registerTool"
+                    for item in typescript_registered_tools
+                ),
+                "object_property_tools": len(typescript_object_property_tools),
+                "capability_edges": sum(
+                    edge.source_id in typescript_structured_tool_ids
+                    and edge.target_kind == "capability"
+                    for edge in ir.relationships
+                ),
+            },
             "resolved_import_edges": len(imported_edges),
             "resolved_import_edges_by_frontend": {
                 "python": sum(edge.evidence.path.endswith(".py") for edge in imported_edges),
@@ -159,7 +194,7 @@ def main() -> int:
         {rule_id for result in successful for rule_id in result["findings"]}
     )
     payload = {
-        "schema_version": 7,
+        "schema_version": 8,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "summary": {
@@ -230,6 +265,17 @@ def main() -> int:
                     "agent_delegations",
                     "agent_tool_edges",
                     "resolved_agent_tool_edges",
+                )
+            },
+            "typescript_tool_registrations": {
+                name: sum(
+                    result["typescript_tool_registrations"][name] for result in successful
+                )
+                for name in (
+                    "mastra_create_tool",
+                    "mcp_register_tool",
+                    "object_property_tools",
+                    "capability_edges",
                 )
             },
             "resolved_import_edges": sum(result["resolved_import_edges"] for result in successful),

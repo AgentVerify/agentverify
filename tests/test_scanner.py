@@ -700,6 +700,104 @@ def test_cline_inline_tool_links_only_dynamic_bun_shell_execution() -> None:
     )
 
 
+def test_typescript_mastra_properties_and_mcp_registrations_have_exact_tool_spans() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_tool_registrations")
+
+    tools = {
+        item.name: item
+        for item in ir.components
+        if item.kind == "tool" and item.evidence.path == "tools.ts"
+    }
+    assert set(tools) == {"lookup", "requester", "download", "status"}
+    assert tools["lookup"].symbol_id == "ts:tools.ts#tool:lookup"
+    assert tools["requester"].attributes == {
+        "constructor": "createTool",
+        "needs_approval": False,
+        "binding": "object-property",
+    }
+    assert tools["download"].attributes == {
+        "constructor": "registerTool",
+        "needs_approval": False,
+        "protocol": "MCP",
+        "registry": "server",
+    }
+    assert tools["download"].symbol_id == "ts:tools.ts#tool:download"
+
+    network_edges = [
+        (edge.source_name, edge.evidence.line, edge.source_id)
+        for edge in ir.relationships
+        if edge.source_kind == "tool"
+        and edge.target_kind == "capability"
+        and edge.target_name == "network"
+    ]
+    assert network_edges == [
+        ("lookup", 7, "ts:tools.ts#tool:lookup"),
+        ("requester", 14, "ts:tools.ts#tool:requester"),
+        ("download", 22, "ts:tools.ts#tool:download"),
+        ("status", 26, "ts:tools.ts#tool:status"),
+    ]
+    dynamic_origins = {
+        item.evidence.line: item.attributes["dynamic_origin"]
+        for item in ir.components
+        if item.kind == "capability"
+        and item.name == "network"
+        and item.evidence.path == "tools.ts"
+    }
+    assert dynamic_origins == {7: False, 14: True, 22: True, 26: False}
+    assert [
+        (finding.rule_id, finding.evidence.line, finding.analysis["tool"])
+        for finding in ir.findings
+    ] == [
+        ("AV-NET001", 14, "requester"),
+        ("AV-NET001", 22, "download"),
+    ]
+    assert not any(item.kind == "tool" and item.evidence.path == "fake.ts" for item in ir.components)
+    assert not any(
+        item.kind == "capability"
+        and item.name == "network"
+        and item.evidence.path == "fake.ts"
+        for item in ir.components
+    )
+
+
+def test_typescript_network_origin_tracks_aliases_but_resolves_fixed_module_host(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "tools.ts").write_text(
+        """import { tool } from "ai";
+const API = "https://search.example";
+
+const requester = tool({
+  execute: async ({ url }) => {
+    const target = url;
+    return fetch(target);
+  },
+});
+
+const search = tool({
+  execute: async ({ query }) => {
+    const target = `${API}/search?q=${query}`;
+    return fetch(target);
+  },
+});
+""",
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    network = {
+        item.evidence.line: item.attributes["dynamic_origin"]
+        for item in ir.components
+        if item.kind == "capability" and item.name == "network"
+    }
+    assert network == {7: True, 14: False}
+    assert [
+        (finding.rule_id, finding.evidence.line, finding.analysis["tool"])
+        for finding in ir.findings
+    ] == [("AV-NET001", 7, "requester")]
+
+
 def test_dynamic_writable_tool_path_but_not_fixed_path_is_reviewed() -> None:
     ir = scan_repository(ROOT / "cases/filesystem_scope")
 
