@@ -70,6 +70,9 @@ PYTHONPATH=src python3 scripts/benchmark_engine.py
 PYTHONPATH=src python3 scripts/evaluate_truthset.py
 ```
 
+The collector reuses commits from `research/repository-data.json` by default. Use `--refresh` only
+when intentionally creating a new upstream snapshot; the refreshed output becomes the next lock.
+
 ## Development
 
 ```console

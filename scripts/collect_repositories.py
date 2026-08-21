@@ -185,13 +185,20 @@ def run_git(
     return completed.stdout
 
 
-def ensure_clone(repository: str, cache_dir: Path) -> Path:
+def ensure_clone(repository: str, cache_dir: Path, commit: str | None = None) -> Path:
     target = cache_dir / repository.replace("/", "--")
     url = f"https://github.com/{repository}.git"
     if not target.exists():
         run_git(["clone", "--depth=1", "--filter=blob:none", "--no-checkout", url, str(target)])
+    if commit:
+        try:
+            run_git(["cat-file", "-e", f"{commit}^{{commit}}"], cwd=target)
+        except RuntimeError:
+            run_git(["fetch", "--depth=1", "origin", commit], cwd=target, timeout=300)
+        run_git(["update-ref", "HEAD", commit], cwd=target)
     else:
         run_git(["fetch", "--depth=1", "origin", "HEAD"], cwd=target)
+        run_git(["update-ref", "HEAD", "FETCH_HEAD"], cwd=target)
     return target
 
 
@@ -277,7 +284,11 @@ def analyze_file(path: str, content: str, signals: dict[str, dict[str, list[Evid
 
 
 def collect_one(
-    row: dict[str, str], cache_dir: Path, max_files: int, max_bytes: int
+    row: dict[str, str],
+    cache_dir: Path,
+    max_files: int,
+    max_bytes: int,
+    locked_commit: str | None = None,
 ) -> RepositoryResult:
     repository = row["repository"]
     result = RepositoryResult(
@@ -289,7 +300,7 @@ def collect_one(
         status="error",
     )
     try:
-        clone = ensure_clone(repository, cache_dir)
+        clone = ensure_clone(repository, cache_dir, locked_commit)
         result.commit = run_git(["rev-parse", "HEAD"], cwd=clone).strip()
         paths = run_git(["ls-tree", "-r", "--name-only", "HEAD"], cwd=clone).splitlines()
         result.files_in_tree = len(paths)
@@ -339,18 +350,48 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--workers", type=int, default=6)
     parser.add_argument("--max-files", type=int, default=180)
     parser.add_argument("--max-bytes", type=int, default=2_000_000)
+    parser.add_argument(
+        "--lock-file",
+        type=Path,
+        default=Path("research/repository-data.json"),
+        help="reuse commits from a previous collector result when it exists",
+    )
+    parser.add_argument(
+        "--refresh",
+        action="store_true",
+        help="ignore the lock file and intentionally refresh repositories to origin HEAD",
+    )
     return parser.parse_args()
+
+
+def locked_commits(path: Path) -> dict[str, str]:
+    if not path.is_file():
+        return {}
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return {
+        item["repository"]: item["commit"]
+        for item in payload.get("repositories", [])
+        if item.get("status") == "ok" and item.get("repository") and item.get("commit")
+    }
 
 
 def main() -> int:
     args = parse_args()
     with args.corpus.open(newline="", encoding="utf-8") as handle:
         rows = list(csv.DictReader(handle))
+    commits = {} if args.refresh else locked_commits(args.lock_file)
     args.cache_dir.mkdir(parents=True, exist_ok=True)
     results: list[RepositoryResult] = []
     with ThreadPoolExecutor(max_workers=args.workers) as executor:
         futures = {
-            executor.submit(collect_one, row, args.cache_dir, args.max_files, args.max_bytes): row
+            executor.submit(
+                collect_one,
+                row,
+                args.cache_dir,
+                args.max_files,
+                args.max_bytes,
+                commits.get(row["repository"]),
+            ): row
             for row in rows
         }
         for index, future in enumerate(as_completed(futures), start=1):
@@ -367,6 +408,8 @@ def main() -> int:
             "collector": "scripts/collect_repositories.py",
             "max_files_per_repository": args.max_files,
             "max_bytes_per_repository": args.max_bytes,
+            "lock_file": None if args.refresh else str(args.lock_file),
+            "locked_repositories": sum(row["repository"] in commits for row in rows),
             "selection": "manifests, then security/agent/tool/MCP-related sources, then shallow paths",
         },
         "repositories": [asdict(result) for result in results],

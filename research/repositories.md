@@ -87,6 +87,6 @@ Signals mean code evidence was observed. Absence is not proof that a repository 
 ## Reproduce
 
 ```console
-python3 scripts/collect_repositories.py
+python3 scripts/collect_repositories.py  # reuses the recorded commit lock by default
 python3 scripts/render_repositories.py
 ```
