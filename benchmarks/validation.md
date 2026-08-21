@@ -28,7 +28,7 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,594 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,734 relationships, and completed in 25.97 seconds on the development machine. Three parse warnings were isolated and
+resolved 1,754 relationships, and completed in 25.63 seconds on the development machine. Three parse warnings were isolated and
 reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -125,3 +125,14 @@ source text at the exact pinned line, preventing a missing or drifting location 
 This is a curated regression set, not an unbiased estimate of ecosystem precision or recall. The next
 benchmark milestone is a separately sampled, externally reviewed holdout set with framework-stratified
 coverage; its labels must not drive rule implementation before evaluation.
+
+## Agent IR control-edge checks
+
+Control-edge inference is scored separately from finding rules in `benchmarks/ir-truthset.json`.
+The initial four labels pair a traced and untraced local external action with ArcadeAI's pinned
+[Gmail send span](https://github.com/ArcadeAI/arcade-ai/blob/597debaa1593b54172061ce36a414cc29aa8fc6a/examples/mcp_servers/telemetry_passback/src/telemetry_passback/server.py#L234)
+and its sibling authentication span. Only the `httpx` send at line 241 is governed by the send span;
+the authentication span at line 223 does not claim action coverage. All four labels pass. Exporter
+configuration and durable storage remain unresolved, so this inventory edge does not suppress a
+finding or enable `AV-AUDIT001`. The full corpus scan observed seven action-trace controls and five
+lexically governed HTTP capability edges, all in that ArcadeAI telemetry example.

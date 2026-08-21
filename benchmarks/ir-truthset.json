@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "description": "Exact positive and negative labels for Agent IR control relationships; evaluated separately from finding-rule quality.",
+  "labels": [
+    {
+      "id": "audit-local-traced-action",
+      "target": {"kind": "local", "path": "cases/audit_trace"},
+      "check_id": "IR-AUDIT-CONTROL",
+      "path": "agent.py",
+      "line": 11,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "external-action",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "action-trace"
+      }
+    },
+    {
+      "id": "audit-local-untraced-action",
+      "target": {"kind": "local", "path": "cases/audit_trace"},
+      "check_id": "IR-AUDIT-CONTROL",
+      "path": "agent.py",
+      "line": 16,
+      "expected": false,
+      "source_contains": "httpx.delete",
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "external-action",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "action-trace"
+      }
+    },
+    {
+      "id": "audit-arcade-traced-send-real",
+      "target": {
+        "kind": "repository",
+        "repository": "ArcadeAI/arcade-ai",
+        "commit": "597debaa1593b54172061ce36a414cc29aa8fc6a"
+      },
+      "check_id": "IR-AUDIT-CONTROL",
+      "path": "examples/mcp_servers/telemetry_passback/src/telemetry_passback/server.py",
+      "line": 241,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "external-action",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "action-trace"
+      }
+    },
+    {
+      "id": "audit-arcade-auth-span-does-not-cover-send-real",
+      "target": {
+        "kind": "repository",
+        "repository": "ArcadeAI/arcade-ai",
+        "commit": "597debaa1593b54172061ce36a414cc29aa8fc6a"
+      },
+      "check_id": "IR-AUDIT-CONTROL",
+      "path": "examples/mcp_servers/telemetry_passback/src/telemetry_passback/server.py",
+      "line": 223,
+      "expected": false,
+      "source_contains": "start_as_current_span(\"auth.validate\")",
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "external-action",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "action-trace"
+      }
+    }
+  ]
+}

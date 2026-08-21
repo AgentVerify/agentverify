@@ -22,8 +22,8 @@ Deterministic text / JSON / SARIF reports
 ## Agent IR
 
 Components represent frameworks, providers, agents, tools, MCP servers, capabilities, controls, and
-control settings. Relationships currently represent `uses`, `delegates-to`, and `governed-by` edges.
-Every object carries source path, line, and excerpt evidence.
+control settings. Relationships currently represent `uses`, `delegates-to`, `contains-control`, and
+`governed-by` edges. Every object carries source path, line, and excerpt evidence.
 
 Names are intentionally not treated as globally unique. Capability-to-tool resolution requires the
 relationship and capability observation to share a source location; name-only cross-file inference
@@ -47,6 +47,11 @@ coverage cannot be proven and never silently converts missing lexical evidence i
 The first policy resolver recognizes same-function MCP tool-name allowlists that reject unknown tools
 before forwarding. It also resolves an OpenAI Agents TypeScript function tool's literal
 `needsApproval: true` setting; callback and non-literal approval policies remain unresolved.
+
+For audit modeling, a tool capability lexically inside an OpenTelemetry
+`start_as_current_span(...)` block receives an exact capability-to-`action-trace` control edge. A
+span elsewhere in the same tool does not cover the action. The edge records exporter durability as
+unresolved: instrumentation is not proof that an attributable record reaches durable storage.
 
 ## Safety boundary
 

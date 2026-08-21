@@ -113,6 +113,8 @@ def render_text(ir: RepositoryIR) -> str:
             lines.append(f"    Path: {' -> '.join(finding.ir_path)}")
         if finding.analysis.get("approval_coverage"):
             lines.append(f"    Approval coverage: {finding.analysis['approval_coverage']}")
+        if finding.analysis.get("audit_coverage"):
+            lines.append(f"    Audit coverage: {finding.analysis['audit_coverage']}")
         lines.append(f"    Remediation: {finding.remediation}")
     if ir.suppressions:
         lines += ["", "Inline suppressions:"]

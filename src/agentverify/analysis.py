@@ -44,11 +44,21 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
         {
             edge.target_name
             for edge in ir.relationships
-            if edge.source_kind == "tool"
-            and edge.source_name == tool_name
+            if (
+                (
+                    edge.source_kind == "tool"
+                    and edge.source_name == tool_name
+                    and edge.evidence.path == component.evidence.path
+                )
+                or (
+                    edge.source_kind == "capability"
+                    and edge.source_name == component.name
+                    and edge.evidence.path == component.evidence.path
+                    and edge.evidence.line == component.evidence.line
+                )
+            )
             and edge.relation == "governed-by"
             and edge.target_kind == "control"
-            and edge.evidence.path == component.evidence.path
         }
     )
     delegation_parents: dict[str, set[str]] = {}
@@ -88,4 +98,9 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
         "tool": tool_name,
         "governing_controls": controls,
         "approval_coverage": "present" if "human-approval" in controls else "unresolved",
+        "audit_coverage": (
+            "instrumented; exporter durability unresolved"
+            if "action-trace" in controls
+            else "unresolved"
+        ),
     }

@@ -124,6 +124,8 @@ class PythonVisitor(ast.NodeVisitor):
         self.path = path
         self.lines = lines
         self.current_tool: str | None = None
+        self.active_audit_controls: list[Evidence] = []
+        self.http_client_names: set[str] = set()
         self.allowlisted_names: set[str] = set()
         self.imported_symbol_paths: dict[str, str] = {}
         self.module_paths = module_paths
@@ -138,6 +140,11 @@ class PythonVisitor(ast.NodeVisitor):
         self.has_docker_import = any(
             module == "docker" or module.startswith("docker.") for module in imported_modules
         )
+        self.has_http_import = any(
+            module == prefix or module.startswith(f"{prefix}.")
+            for module in imported_modules
+            for prefix in ("requests", "httpx", "aiohttp")
+        )
 
     def add_capability(self, name: str, node: ast.AST, attributes: dict | None = None) -> None:
         values = {"scope": source_scope(self.path), **(attributes or {})}
@@ -146,6 +153,22 @@ class PythonVisitor(ast.NodeVisitor):
             self.ir.add_relationship(
                 Relationship("tool", self.current_tool, "uses", "capability", name, self.ev(node))
             )
+            for control_evidence in self.active_audit_controls:
+                self.ir.add_relationship(
+                    Relationship(
+                        "capability",
+                        name,
+                        "governed-by",
+                        "control",
+                        "action-trace",
+                        self.ev(node),
+                        {
+                            "control_path": control_evidence.path,
+                            "control_line": control_evidence.line,
+                            "durability": "unresolved",
+                        },
+                    )
+                )
 
     def ev(self, node: ast.AST) -> Evidence:
         line = getattr(node, "lineno", 1)
@@ -175,6 +198,17 @@ class PythonVisitor(ast.NodeVisitor):
             component_from_import(self.ir, node.module or "", self.ev(node))
 
     def visit_Assign(self, node: ast.Assign) -> None:
+        if isinstance(node.value, ast.Call):
+            constructor = dotted_name(node.value.func)
+            if constructor in {
+                "httpx.Client",
+                "httpx.AsyncClient",
+                "aiohttp.ClientSession",
+                "requests.Session",
+            }:
+                self.http_client_names.update(
+                    target.id for target in node.targets if isinstance(target, ast.Name)
+                )
         if isinstance(node.value, ast.Constant) and node.value.value is True:
             for target in node.targets:
                 if APPROVAL_BYPASS_NAME.search(dotted_name(target)):
@@ -190,7 +224,9 @@ class PythonVisitor(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         previous_allowlisted_names = self.allowlisted_names
+        previous_http_client_names = self.http_client_names
         self.allowlisted_names = self.function_allowlisted_names(node)
+        self.http_client_names = set()
         decorators = {
             dotted_name(decorator.func)
             if isinstance(decorator, ast.Call)
@@ -229,8 +265,68 @@ class PythonVisitor(ast.NodeVisitor):
         else:
             self.generic_visit(node)
         self.allowlisted_names = previous_allowlisted_names
+        self.http_client_names = previous_http_client_names
 
     visit_AsyncFunctionDef = visit_FunctionDef
+
+    def visit_With(self, node: ast.With | ast.AsyncWith) -> None:
+        trace_calls = [
+            item.context_expr
+            for item in node.items
+            if isinstance(item.context_expr, ast.Call)
+            and dotted_name(item.context_expr.func).endswith(".start_as_current_span")
+        ]
+        client_names = {
+            item.optional_vars.id
+            for item in node.items
+            if isinstance(item.context_expr, ast.Call)
+            and dotted_name(item.context_expr.func)
+            in {"httpx.Client", "httpx.AsyncClient", "aiohttp.ClientSession", "requests.Session"}
+            and isinstance(item.optional_vars, ast.Name)
+        }
+        if (not self.current_tool or not trace_calls) and not client_names:
+            self.generic_visit(node)
+            return
+        for item in node.items:
+            self.visit(item.context_expr)
+            if item.optional_vars:
+                self.visit(item.optional_vars)
+        previous_http_client_names = self.http_client_names
+        self.http_client_names = self.http_client_names | client_names
+        evidence = self.ev(trace_calls[0]) if self.current_tool and trace_calls else None
+        if evidence:
+            self.ir.add_component(
+                Component(
+                    "control",
+                    "action-trace",
+                    evidence,
+                    {
+                        "instrumentation": "opentelemetry",
+                        "durability": "unresolved",
+                        "scope": source_scope(self.path),
+                        "tool": self.current_tool,
+                    },
+                )
+            )
+            self.ir.add_relationship(
+                Relationship(
+                    "tool",
+                    self.current_tool,
+                    "contains-control",
+                    "control",
+                    "action-trace",
+                    evidence,
+                    {"durability": "unresolved"},
+                )
+            )
+            self.active_audit_controls.append(evidence)
+        for statement in node.body:
+            self.visit(statement)
+        if evidence:
+            self.active_audit_controls.pop()
+        self.http_client_names = previous_http_client_names
+
+    visit_AsyncWith = visit_With
 
     @staticmethod
     def function_allowlisted_names(node: ast.FunctionDef | ast.AsyncFunctionDef) -> set[str]:
@@ -491,7 +587,10 @@ class PythonVisitor(ast.NodeVisitor):
                 },
             )
         root_name = call_name.split(".", 1)[0]
-        if root_name in {"requests", "httpx", "aiohttp"}:
+        http_method = short_name.lower() in {"get", "post", "put", "patch", "delete", "request"}
+        if root_name in {"requests", "httpx", "aiohttp"} or (
+            self.has_http_import and root_name in self.http_client_names and http_method
+        ):
             self.add_capability("network", node, {"api": call_name})
             if short_name.lower() in {"post", "put", "patch", "delete"}:
                 self.add_capability("external-action", node, {"api": call_name})

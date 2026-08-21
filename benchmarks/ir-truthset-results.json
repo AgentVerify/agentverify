@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-21T04:10:11.437390+00:00",
+  "labels": 4,
+  "passed": 4,
+  "metrics": {
+    "IR-AUDIT-CONTROL": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 2,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    }
+  },
+  "outcomes": [
+    {
+      "id": "audit-local-traced-action",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true,
+      "check_id": "IR-AUDIT-CONTROL"
+    },
+    {
+      "id": "audit-local-untraced-action",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true,
+      "check_id": "IR-AUDIT-CONTROL"
+    },
+    {
+      "id": "audit-arcade-traced-send-real",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true,
+      "check_id": "IR-AUDIT-CONTROL"
+    },
+    {
+      "id": "audit-arcade-auth-span-does-not-cover-send-real",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true,
+      "check_id": "IR-AUDIT-CONTROL"
+    }
+  ]
+}

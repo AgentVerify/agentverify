@@ -29,9 +29,10 @@ semantics. Model containment as a control attached to the exact code/shell capab
 
 ## P1 — consequential-action audit coverage
 
-Recognize framework tracing, OpenTelemetry spans, durable audit sinks, and tool middleware. Implement
-`AV-AUDIT001` only after action-level control edges can distinguish logging imports from durable,
-attributable records.
+Lexically scoped OpenTelemetry spans now create action-level control edges, without treating imports
+or sibling spans as coverage. Next recognize framework tracing and tool middleware, then resolve span
+processors/exporters to durable audit sinks. Implement `AV-AUDIT001` only when durable, attributable
+records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 

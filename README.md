@@ -42,6 +42,7 @@ HIGH AV-EXEC001 [high; finding]
   agent.py:13
   Path: agent:operator -> tool:run_task -> capability:shell-execution
   Approval coverage: unresolved
+  Audit coverage: unresolved
   Remediation: Pass a fixed argv list with shell=False, or strictly validate and allowlist the command.
 ```
 
@@ -58,6 +59,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`benchmarks/engine-results.json`](benchmarks/engine-results.json) — full-corpus engine metrics
 - [`benchmarks/truthset.json`](benchmarks/truthset.json) — exact hand-labeled positives and negatives
 - [`benchmarks/truthset-results.json`](benchmarks/truthset-results.json) — per-rule seed precision and recall
+- [`benchmarks/ir-truthset.json`](benchmarks/ir-truthset.json) — separately scored control-edge labels
 
 SARIF output includes stable fingerprints, source locations, severity, remediation, Agent IR paths,
 and resolved/unresolved control context for code-scanning integrations.
@@ -73,6 +75,8 @@ python3 scripts/collect_repositories.py
 python3 scripts/render_repositories.py
 PYTHONPATH=src python3 scripts/benchmark_engine.py
 PYTHONPATH=src python3 scripts/evaluate_truthset.py
+PYTHONPATH=src python3 scripts/evaluate_truthset.py --labels benchmarks/ir-truthset.json \
+  --output benchmarks/ir-truthset-results.json
 ```
 
 The collector reuses commits from `research/repository-data.json` by default and samples up to 220

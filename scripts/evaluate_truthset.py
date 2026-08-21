@@ -53,12 +53,21 @@ def main() -> int:
             verify_commit(path, target)
             scans[key] = scan_repository(path)
         ir = scans[key]
-        observed = any(
-            finding.rule_id == label["rule_id"]
-            and finding.evidence.path == label["path"]
-            and finding.evidence.line == label["line"]
-            for finding in ir.findings
-        )
+        metric_id = label.get("rule_id") or label["check_id"]
+        if relationship := label.get("relationship"):
+            observed = any(
+                edge.evidence.path == label["path"]
+                and edge.evidence.line == label["line"]
+                and all(getattr(edge, key) == value for key, value in relationship.items())
+                for edge in ir.relationships
+            )
+        else:
+            observed = any(
+                finding.rule_id == label["rule_id"]
+                and finding.evidence.path == label["path"]
+                and finding.evidence.line == label["line"]
+                for finding in ir.findings
+            )
         anchor_ok = True
         if anchor := label.get("anchor"):
             anchor_ok = any(
@@ -78,18 +87,17 @@ def main() -> int:
             )
         expected = bool(label["expected"])
         bucket = "tp" if expected and observed else "fn" if expected else "fp" if observed else "tn"
-        matrices[label["rule_id"]][bucket] += 1
-        outcomes.append(
-            {
-                "id": label["id"],
-                "rule_id": label["rule_id"],
-                "expected": expected,
-                "observed": observed,
-                "anchor_ok": anchor_ok,
-                "source_ok": source_ok,
-                "passed": observed == expected and anchor_ok and source_ok,
-            }
-        )
+        matrices[metric_id][bucket] += 1
+        outcome = {"id": label["id"]}
+        outcome["rule_id" if label.get("rule_id") else "check_id"] = metric_id
+        outcome.update({
+            "expected": expected,
+            "observed": observed,
+            "anchor_ok": anchor_ok,
+            "source_ok": source_ok,
+            "passed": observed == expected and anchor_ok and source_ok,
+        })
+        outcomes.append(outcome)
     metrics = {}
     for rule_id, matrix in sorted(matrices.items()):
         tp, fp, fn = matrix["tp"], matrix["fp"], matrix["fn"]

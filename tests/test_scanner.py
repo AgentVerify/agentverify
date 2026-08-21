@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from agentverify.analysis import component_context
 from agentverify.cli import main
 from agentverify.report import render_json, render_sarif, render_text
 from agentverify.scanner import scan_repository
@@ -214,6 +215,52 @@ def test_container_host_boundaries_but_not_safe_compose_are_reviewed() -> None:
         and component.attributes.get("api") == "client.containers.run"
         for component in ir.components
     )
+
+
+def test_action_trace_only_governs_capabilities_inside_the_span() -> None:
+    ir = scan_repository(ROOT / "cases/audit_trace")
+
+    trace = next(
+        component
+        for component in ir.components
+        if component.kind == "control" and component.name == "action-trace"
+    )
+    assert trace.attributes == {
+        "instrumentation": "opentelemetry",
+        "durability": "unresolved",
+        "scope": "production",
+        "tool": "send_email",
+    }
+    governed_lines = {
+        edge.evidence.line
+        for edge in ir.relationships
+        if edge.source_kind == "capability"
+        and edge.relation == "governed-by"
+        and edge.target_name == "action-trace"
+    }
+    assert governed_lines == {11}
+    assert any(
+        edge.source_kind == "tool"
+        and edge.source_name == "send_email"
+        and edge.relation == "contains-control"
+        for edge in ir.relationships
+    )
+    assert not any(
+        edge.source_kind == "capability"
+        and edge.relation == "governed-by"
+        and edge.evidence.line == 16
+        for edge in ir.relationships
+    )
+    traced_action = next(
+        component
+        for component in ir.components
+        if component.kind == "capability"
+        and component.name == "external-action"
+        and component.evidence.line == 11
+    )
+    _, analysis = component_context(ir, traced_action)
+    assert analysis["governing_controls"] == ["action-trace"]
+    assert analysis["audit_coverage"] == "instrumented; exporter durability unresolved"
 
 
 def test_delegation_expands_transitive_capability_path() -> None:
