@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T03:29:47.972088+00:00",
-  "labels": 56,
-  "passed": 56,
+  "generated_at": "2026-08-21T03:34:08.549865+00:00",
+  "labels": 100,
+  "passed": 100,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 4,
@@ -13,31 +13,31 @@
       "recall": 1.0
     },
     "AV-EXEC001": {
-      "tp": 5,
+      "tp": 10,
       "fp": 0,
-      "tn": 6,
+      "tn": 16,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
     },
     "AV-EXEC002": {
-      "tp": 9,
+      "tp": 14,
       "fp": 0,
-      "tn": 1,
+      "tn": 5,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
     },
     "AV-FS001": {
-      "tp": 5,
+      "tp": 10,
       "fp": 0,
-      "tn": 1,
+      "tn": 11,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
     },
     "AV-MCP002": {
-      "tp": 7,
+      "tp": 10,
       "fp": 0,
       "tn": 3,
       "fn": 0,
@@ -47,7 +47,7 @@
     "AV-SANDBOX001": {
       "tp": 8,
       "fp": 0,
-      "tn": 1,
+      "tn": 3,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -60,6 +60,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -68,6 +69,7 @@
       "expected": false,
       "observed": false,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -76,6 +78,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -84,6 +87,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -92,6 +96,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -100,6 +105,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -108,6 +114,7 @@
       "expected": false,
       "observed": false,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -116,6 +123,7 @@
       "expected": false,
       "observed": false,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -124,6 +132,7 @@
       "expected": false,
       "observed": false,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -132,6 +141,7 @@
       "expected": false,
       "observed": false,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -140,6 +150,142 @@
       "expected": false,
       "observed": false,
       "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-aider-commands-real",
+      "rule_id": "AV-EXEC001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-aider-run-cmd-real",
+      "rule_id": "AV-EXEC001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-metagpt-real",
+      "rule_id": "AV-EXEC001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-taskweaver-real",
+      "rule_id": "AV-EXEC001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-trae-sandbox-real",
+      "rule_id": "AV-EXEC001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-openhands-fixed-run-negative",
+      "rule_id": "AV-EXEC001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-openhands-fixed-archive-negative",
+      "rule_id": "AV-EXEC001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-openhands-fixed-check-negative",
+      "rule_id": "AV-EXEC001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-fastmcp-version-negative",
+      "rule_id": "AV-EXEC001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-fastmcp-cli-negative",
+      "rule_id": "AV-EXEC001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-fastmcp-dynamic-argv-negative",
+      "rule_id": "AV-EXEC001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-langflow-argv-negative",
+      "rule_id": "AV-EXEC001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-mcp-ts-spawn-negative",
+      "rule_id": "AV-EXEC001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-arcade-popen-negative",
+      "rule_id": "AV-EXEC001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-openhands-example-negative",
+      "rule_id": "AV-EXEC001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -148,6 +294,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -156,6 +303,7 @@
       "expected": false,
       "observed": false,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -164,6 +312,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -172,6 +321,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -180,6 +330,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -188,6 +339,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -196,6 +348,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -204,6 +357,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -212,6 +366,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -220,6 +375,88 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-camel-second-eval-real",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-camel-browser-eval-real",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-lagent-exec-real",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-lagent-eval-real",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-n8n-second-real",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-langflow-constant-test-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-composio-constant-test-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-arcade-test-scope-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-arcade-definition-test-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -228,6 +465,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -236,6 +474,7 @@
       "expected": false,
       "observed": false,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -244,6 +483,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -252,6 +492,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -260,6 +501,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -268,6 +510,7 @@
       "expected": false,
       "observed": false,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -276,6 +519,7 @@
       "expected": false,
       "observed": false,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -284,6 +528,7 @@
       "expected": false,
       "observed": false,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -292,6 +537,7 @@
       "expected": false,
       "observed": false,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -300,6 +546,7 @@
       "expected": false,
       "observed": false,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -308,6 +555,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -316,6 +564,7 @@
       "expected": false,
       "observed": false,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -324,6 +573,7 @@
       "expected": false,
       "observed": false,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -332,6 +582,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -340,6 +591,7 @@
       "expected": false,
       "observed": false,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -348,6 +600,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -356,6 +609,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -364,6 +618,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -372,6 +627,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -380,6 +636,34 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-pydantic-ai-real",
+      "rule_id": "AV-MCP002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-agentscope-real",
+      "rule_id": "AV-MCP002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-skyvern-real",
+      "rule_id": "AV-MCP002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -388,6 +672,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -396,6 +681,7 @@
       "expected": false,
       "observed": false,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -404,6 +690,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -412,6 +699,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -420,6 +708,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -428,6 +717,142 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-deepagents-first-real",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-crewai-parent-real",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-crewai-open-real",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-crewai-template-real",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-marvin-real",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-openhands-prev-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-openhands-current-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-openhands-report-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-openhands-prev-schema-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-openhands-current-schema-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-openhands-approval-report-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-openhands-export-parent-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-openhands-export-write-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-openhands-summary-parent-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-openhands-summary-write-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -436,6 +861,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -444,6 +870,7 @@
       "expected": false,
       "observed": false,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -452,6 +879,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -460,6 +888,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -468,6 +897,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -476,6 +906,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -484,6 +915,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -492,6 +924,7 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     },
     {
@@ -500,6 +933,25 @@
       "expected": true,
       "observed": true,
       "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-safe-network-negative",
+      "rule_id": "AV-SANDBOX001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "sandbox-safe-volume-negative",
+      "rule_id": "AV-SANDBOX001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
       "passed": true
     }
   ]

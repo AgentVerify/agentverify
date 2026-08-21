@@ -93,12 +93,14 @@ workloads even when the socket file itself is mounted read-only.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 56 exact labels across all six enabled rules. Labels mix local
-positive/negative fixtures, immutable real positives, a real CAMEL allowlist negative, fixed-name MCP,
-fixed-path filesystem, fixed-argv and literal TypeScript shell calls, constant-eval, non-approval skip
-flags, disabled auto-approval, and commented safe compose cases. All 56 currently pass; each rule's
-seed precision and recall are 1.0.
+`benchmarks/truthset.json` contains 100 exact labels across all six enabled rules: 56 positives and 44
+negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
+including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
+literal TypeScript shell calls, constant/test-only eval, non-approval skip flags, disabled
+auto-approval, and safe Compose settings. All 100 currently pass; each rule's seed precision and
+recall are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified
+source text at the exact pinned line, preventing a missing or drifting location from passing silently.
 
-This is a curated regression seed, not an unbiased estimate of ecosystem precision or recall. The
-next benchmark milestone is at least 100 independently reviewed labels sampled from unmatched as well
-as matched corpus locations.
+This is a curated regression set, not an unbiased estimate of ecosystem precision or recall. The next
+benchmark milestone is a separately sampled, externally reviewed holdout set with framework-stratified
+coverage; its labels must not drive rule implementation before evaluation.

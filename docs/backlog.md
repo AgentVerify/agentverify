@@ -34,9 +34,10 @@ attributable records.
 
 ## P1 — benchmark truth set
 
-Expand the 56-label seed to at least 100 positive/negative locations across the pinned corpus. Publish
-per-rule precision, recall, unsupported syntax, and framework coverage. Keep discovery sampling
-metrics separate from detection-quality metrics.
+The curated regression set has reached 100 pinned positive/negative locations. Next, create a
+separately sampled and externally reviewed holdout set, publish framework-stratified coverage and
+unsupported syntax, and keep holdout labels sealed until rule changes are complete. Keep discovery
+sampling metrics separate from detection-quality metrics.
 
 ## P2 — CI adoption workflow
 

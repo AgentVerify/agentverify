@@ -68,6 +68,14 @@ def main() -> int:
                 and component.evidence.line == label["line"]
                 for component in ir.components
             )
+        source_ok = True
+        if source_contains := label.get("source_contains"):
+            source_path = path / label["path"]
+            source_lines = source_path.read_text(encoding="utf-8-sig", errors="ignore").splitlines()
+            line_index = label["line"] - 1
+            source_ok = (
+                0 <= line_index < len(source_lines) and source_contains in source_lines[line_index]
+            )
         expected = bool(label["expected"])
         bucket = "tp" if expected and observed else "fn" if expected else "fp" if observed else "tn"
         matrices[label["rule_id"]][bucket] += 1
@@ -78,7 +86,8 @@ def main() -> int:
                 "expected": expected,
                 "observed": observed,
                 "anchor_ok": anchor_ok,
-                "passed": observed == expected and anchor_ok,
+                "source_ok": source_ok,
+                "passed": observed == expected and anchor_ok and source_ok,
             }
         )
     metrics = {}
