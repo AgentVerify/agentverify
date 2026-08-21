@@ -246,7 +246,7 @@ class PythonVisitor(ast.NodeVisitor):
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         previous_allowlisted_names = self.allowlisted_names
         previous_http_client_names = self.http_client_names
-        self.allowlisted_names = self.function_allowlisted_names(node)
+        self.allowlisted_names = set()
         self.http_client_names = set()
         decorators = {
             dotted_name(decorator.func)
@@ -281,14 +281,25 @@ class PythonVisitor(ast.NodeVisitor):
                 )
             previous_tool = self.current_tool
             self.current_tool = node.name
-            self.generic_visit(node)
+            self.visit_function_statements(node)
             self.current_tool = previous_tool
         else:
-            self.generic_visit(node)
+            self.visit_function_statements(node)
         self.allowlisted_names = previous_allowlisted_names
         self.http_client_names = previous_http_client_names
 
     visit_AsyncFunctionDef = visit_FunctionDef
+
+    def visit_function_statements(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> None:
+        for decorator in node.decorator_list:
+            self.visit(decorator)
+        for default in (*node.args.defaults, *node.args.kw_defaults):
+            if default:
+                self.visit(default)
+        for statement in node.body:
+            self.visit(statement)
+            if guarded_name := self.rejected_allowlist_name(statement):
+                self.allowlisted_names.add(guarded_name)
 
     def visit_With(self, node: ast.With | ast.AsyncWith) -> None:
         trace_calls = [
@@ -350,20 +361,18 @@ class PythonVisitor(ast.NodeVisitor):
     visit_AsyncWith = visit_With
 
     @staticmethod
-    def function_allowlisted_names(node: ast.FunctionDef | ast.AsyncFunctionDef) -> set[str]:
-        guarded = set()
-        for statement in node.body:
-            if not isinstance(statement, ast.If) or not isinstance(statement.test, ast.Compare):
-                continue
-            comparison = statement.test
-            if (
-                isinstance(comparison.left, ast.Name)
-                and len(comparison.ops) == 1
-                and isinstance(comparison.ops[0], ast.NotIn)
-                and any(isinstance(child, (ast.Raise, ast.Return)) for child in statement.body)
-            ):
-                guarded.add(comparison.left.id)
-        return guarded
+    def rejected_allowlist_name(statement: ast.stmt) -> str | None:
+        if not isinstance(statement, ast.If) or not isinstance(statement.test, ast.Compare):
+            return None
+        comparison = statement.test
+        if (
+            isinstance(comparison.left, ast.Name)
+            and len(comparison.ops) == 1
+            and isinstance(comparison.ops[0], ast.NotIn)
+            and any(isinstance(child, (ast.Raise, ast.Return)) for child in statement.body)
+        ):
+            return comparison.left.id
+        return None
 
     def visit_Call(self, node: ast.Call) -> None:
         call_name = dotted_name(node.func)

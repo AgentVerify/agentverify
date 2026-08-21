@@ -62,6 +62,7 @@
     {"id":"mcp-forward-positive","target":{"kind":"local","path":"cases/mcp_forwarder"},"rule_id":"AV-MCP002","path":"proxy.py","line":5,"expected":true},
     {"id":"mcp-fixed-name-negative","target":{"kind":"local","path":"cases/mcp_forwarder"},"rule_id":"AV-MCP002","path":"proxy.py","line":9,"expected":false,"source_contains":"call_tool(\"read_file\""},
     {"id":"mcp-guarded-negative","target":{"kind":"local","path":"cases/mcp_forwarder"},"rule_id":"AV-MCP002","path":"proxy.py","line":18,"expected":false,"anchor":{"kind":"capability","name":"mcp-tool-forwarding"}},
+    {"id":"mcp-late-guard-positive","target":{"kind":"local","path":"cases/mcp_forwarder"},"rule_id":"AV-MCP002","path":"proxy.py","line":22,"expected":true},
     {"id":"mcp-crewai-real","target":{"kind":"repository","repository":"crewAIInc/crewAI","commit":"456c67d7c27923ed3c3dca202c6f56651d8e6063"},"rule_id":"AV-MCP002","path":"lib/crewai/src/crewai/mcp/client.py","line":599,"expected":true},
     {"id":"mcp-camel-guarded-real-negative","target":{"kind":"repository","repository":"camel-ai/camel","commit":"473388d36390b22e0df31e25b7b2d50db55310d2"},"rule_id":"AV-MCP002","path":"camel/utils/mcp_client.py","line":1067,"expected":false,"anchor":{"kind":"capability","name":"mcp-tool-forwarding"}},
     {"id":"mcp-semantic-kernel-real","target":{"kind":"repository","repository":"microsoft/semantic-kernel","commit":"b39d95a34435f4c1d55dd00c86120ce118d847e1"},"rule_id":"AV-MCP002","path":"python/semantic_kernel/connectors/mcp.py","line":618,"expected":true},

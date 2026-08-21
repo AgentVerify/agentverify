@@ -16,3 +16,10 @@ async def guarded_proxy(session: ClientSession, tool_name: str, arguments: dict)
     if tool_name not in ALLOWED_TOOLS:
         raise ValueError("tool is not allowed")
     return await session.call_tool(tool_name, arguments)
+
+
+async def late_guard_proxy(session: ClientSession, tool_name: str, arguments: dict):
+    result = await session.call_tool(tool_name, arguments)
+    if tool_name not in ALLOWED_TOOLS:
+        raise ValueError("tool is not allowed")
+    return result

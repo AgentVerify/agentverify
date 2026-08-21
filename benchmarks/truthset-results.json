@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T04:20:54.696230+00:00",
-  "labels": 120,
-  "passed": 120,
+  "generated_at": "2026-08-21T04:23:24.473818+00:00",
+  "labels": 121,
+  "passed": 121,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 4,
@@ -37,7 +37,7 @@
       "recall": 1.0
     },
     "AV-MCP002": {
-      "tp": 10,
+      "tp": 11,
       "fp": 0,
       "tn": 3,
       "fn": 0,
@@ -572,6 +572,15 @@
       "rule_id": "AV-MCP002",
       "expected": false,
       "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-late-guard-positive",
+      "rule_id": "AV-MCP002",
+      "expected": true,
+      "observed": true,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

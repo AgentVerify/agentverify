@@ -28,7 +28,7 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,594 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,754 relationships, and completed in 25.64 seconds on the development machine. Three parse warnings were isolated and
+resolved 1,754 relationships, and completed in 25.19 seconds on the development machine. Three parse warnings were isolated and
 reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -80,7 +80,9 @@ These are legitimate protocol boundaries in framework code and are therefore `re
 later policy-resolution pass will suppress sites governed by a resolved allowlist rather than
 claiming that the forwarding operation itself is unsafe.
 
-That policy pass now handles a same-function `not in` guard followed by `raise`/`return`. It resolves
+That policy pass now handles a same-function `not in` guard followed by `raise`/`return`. Guards are
+applied in statement order: a rejection after the forwarding call does not govern the earlier action.
+It resolves
 and suppresses CAMEL's [registered-tool guard](https://github.com/camel-ai/camel/blob/473388d36390b22e0df31e25b7b2d50db55310d2/camel/utils/mcp_client.py#L1054)
 before the dynamic call, while retaining the forwarding capability and a `tool-allowlist` control edge.
 
@@ -118,11 +120,11 @@ and a literal `privileged=True` keyword.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 120 exact labels across all six enabled rules: 68 positives and 52
+`benchmarks/truthset.json` contains 121 exact labels across all six enabled rules: 69 positives and 52
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, non-approval skip flags, disabled
-auto-approval, and safe Compose/Kubernetes/Docker SDK settings. All 120 currently pass; each rule's seed precision and
+auto-approval, late MCP guards, and safe Compose/Kubernetes/Docker SDK settings. All 121 currently pass; each rule's seed precision and
 recall are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified
 source text at the exact pinned line, preventing a missing or drifting location from passing silently.
 

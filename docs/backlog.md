@@ -14,7 +14,9 @@ validate on larger real monorepository graphs.
 
 Resolve environment defaults, config objects, CLI flags, MCP allowlists, tool policies, and approval
 overrides into control edges. Suppress `AV-MCP002` and `AV-FS001` only when the resolved policy governs
-the exact reachable path. Keep unresolved distinct from absent.
+the exact reachable path. Same-function MCP rejection guards are statement-ordered, so later checks
+cannot govern earlier calls. Next resolve branch-local guards and imported policy objects. Keep
+unresolved distinct from absent.
 
 ## P0 — approval coverage rule
 
