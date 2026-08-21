@@ -55,6 +55,9 @@ never imported or executed.
   query, header, and body values off the spec-configured origin; segment encoding, dot-segment
   rejection, server-variable defaults, query-only credential mutation, and factory provenance are
   required for the control edge.
+- `python_openai_mcp_approval_default`: OpenAI Agents Python propagates the absent
+  `MCPServerStdio.require_approval` argument through its disabled SDK default into every discovered
+  MCP `FunctionTool`; explicit approval and broken import/binding/default propagation stay negative.
 - `typescript_a2a_card_endpoint`: ADK JS and Gemini compositions preserve remotely supplied
   AgentCard authority at SDK client construction; fixed/local cards, wrong imports, and unproven
   transports stay negative.

@@ -205,6 +205,13 @@ factory calls, enumeration of every advertised RPC URL, HTTPS-or-loopback reject
 source-origin equality. Those paths receive `a2a-card-rpc-origin-policy`; missing any stage withholds
 the control rather than inferring it from validator names.
 
+An exact OpenAI Agents Python MCP pass follows a directly imported `MCPServerStdio` context binding
+into `SandboxAgent(mcp_servers=[server])`. It verifies the SDK constructor default, `None → False`
+normalization, missing-name fallback, and propagation into `_build_wrapped_function_tool`. The IR
+records both the agent→server edge and a disabled-default `mcp-tool-approval` setting. Explicit
+approval, changed defaults, hard-coded wrapper approval, wrong imports, or a different server binding
+withhold the edge; the policy does not itself create an approval finding.
+
 A repository prepass builds bounded Python network summaries for unique top-level free functions in
 selected files. A summary records direct recognized HTTP calls and the formal parameters that can
 control their origins after fixed-prefix discrimination. At a tool call site, only an exact named

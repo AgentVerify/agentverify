@@ -12650,6 +12650,252 @@ def add_typescript_google_adk_openapi_rest_tool_flow(
     )
 
 
+def add_python_openai_agents_mcp_approval_default_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve the OpenAI Agents Python MCP approval default into an agent binding."""
+    sources: list[tuple[str, str, ast.Module]] = []
+    for path in paths:
+        if path.suffix.lower() != ".py" or not path.is_file():
+            continue
+        try:
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+            tree = ast.parse(text)
+        except (OSError, SyntaxError, ValueError):
+            continue
+        sources.append((path.relative_to(root).as_posix(), text, tree))
+
+    server_matches = [
+        item
+        for item in sources
+        if all(
+            marker in item[1]
+            for marker in (
+                "class MCPServer(",
+                "self._needs_approval_policy = self._normalize_needs_approval(",
+                "def _normalize_needs_approval(",
+                "if require_approval is None:",
+                "return False",
+                "policy.get(tool.name, False)",
+                "class MCPServerStdio(",
+                "require_approval=require_approval",
+            )
+        )
+        and len(re.findall(r"require_approval\s*:[^=\n]+?=\s*None", item[1])) >= 2
+        or all(
+            marker in item[1]
+            for marker in (
+                "class MCPServer:",
+                "self._needs_approval_policy = self._normalize_needs_approval(",
+                "def _normalize_needs_approval(",
+                "if require_approval is None:",
+                "return False",
+                "policy.get(tool.name, False)",
+                "class MCPServerStdio(MCPServer):",
+                "require_approval=None",
+                "require_approval=require_approval",
+            )
+        )
+    ]
+    util_matches = [
+        item
+        for item in sources
+        if all(
+            marker in item[1]
+            for marker in (
+                "server._get_needs_approval_for_tool(tool, agent)",
+                "_build_wrapped_function_tool(",
+                "needs_approval=needs_approval",
+            )
+        )
+    ]
+    if len(server_matches) != 1 or len(util_matches) != 1:
+        return
+    server_path, server_text, _server_tree = server_matches[0]
+    util_path, util_text, _util_tree = util_matches[0]
+    if not re.search(
+        r"if\s+require_approval\s+is\s+None\s*:\s*return\s+False",
+        server_text,
+    ) or not re.search(
+        r"needs_approval\s*(?::[^=]+)?=\s*server\._get_needs_approval_for_tool\s*\(\s*tool\s*,\s*agent\s*\)"
+        r"[\s\S]{0,1800}?_build_wrapped_function_tool\s*\([\s\S]{0,1200}?"
+        r"needs_approval\s*=\s*needs_approval",
+        util_text,
+    ):
+        return
+
+    candidates: list[tuple[str, str, ast.AsyncWith, ast.Call, str, ast.Call, str]] = []
+    for app_path, app_text, tree in sources:
+        imported_stdio = False
+        imported_agent = False
+        for statement in tree.body:
+            if not isinstance(statement, ast.ImportFrom):
+                continue
+            if statement.module == "agents.mcp":
+                imported_stdio = any(
+                    alias.name == "MCPServerStdio" and alias.asname is None
+                    for alias in statement.names
+                )
+            if statement.module == "agents.sandbox":
+                imported_agent = any(
+                    alias.name == "SandboxAgent" and alias.asname is None
+                    for alias in statement.names
+                )
+        if not (imported_stdio and imported_agent):
+            continue
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.AsyncWith) or len(node.items) != 1:
+                continue
+            item = node.items[0]
+            if (
+                not isinstance(item.context_expr, ast.Call)
+                or dotted_name(item.context_expr.func) != "MCPServerStdio"
+                or not isinstance(item.optional_vars, ast.Name)
+            ):
+                continue
+            server_call = item.context_expr
+            if any(keyword.arg == "require_approval" for keyword in server_call.keywords):
+                continue
+            server_binding = item.optional_vars.id
+            server_name = "MCPServerStdio"
+            for keyword in server_call.keywords:
+                if (
+                    keyword.arg == "name"
+                    and isinstance(keyword.value, ast.Constant)
+                    and isinstance(keyword.value.value, str)
+                ):
+                    server_name = keyword.value.value
+            for child in node.body:
+                if (
+                    not isinstance(child, ast.Assign)
+                    or len(child.targets) != 1
+                    or not isinstance(child.targets[0], ast.Name)
+                    or not isinstance(child.value, ast.Call)
+                    or dotted_name(child.value.func) != "SandboxAgent"
+                ):
+                    continue
+                agent_call = child.value
+                mcp_keyword = next(
+                    (
+                        keyword
+                        for keyword in agent_call.keywords
+                        if keyword.arg == "mcp_servers"
+                        and isinstance(keyword.value, ast.List)
+                        and len(keyword.value.elts) == 1
+                        and isinstance(keyword.value.elts[0], ast.Name)
+                        and keyword.value.elts[0].id == server_binding
+                    ),
+                    None,
+                )
+                if mcp_keyword is None:
+                    continue
+                agent_name = child.targets[0].id
+                for keyword in agent_call.keywords:
+                    if (
+                        keyword.arg == "name"
+                        and isinstance(keyword.value, ast.Constant)
+                        and isinstance(keyword.value.value, str)
+                    ):
+                        agent_name = keyword.value.value
+                candidates.append(
+                    (
+                        app_path,
+                        app_text,
+                        node,
+                        server_call,
+                        server_name,
+                        agent_call,
+                        agent_name,
+                    )
+                )
+    if len(candidates) != 1:
+        return
+    app_path, app_text, _with_node, server_call, server_name, agent_call, agent_name = (
+        candidates[0]
+    )
+    server_line = server_call.lineno
+    agent_line = agent_call.lineno
+    server_evidence = Evidence(
+        app_path,
+        server_line,
+        excerpt(app_text.splitlines(), server_line),
+    )
+    agent_evidence = Evidence(
+        app_path,
+        agent_line,
+        excerpt(app_text.splitlines(), agent_line),
+    )
+    analysis = "python-openai-agents-mcp-approval-default"
+    agent_id = source_symbol("py", app_path, "agent", "mcp_sandbox_agent")
+    ir.add_component(
+        Component(
+            "agent",
+            agent_name,
+            agent_evidence,
+            {
+                "framework": "OpenAI Agents SDK",
+                "constructor": "SandboxAgent",
+                "scope": source_scope(app_path),
+                "analysis": analysis,
+            },
+            agent_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "mcp-server",
+            server_name,
+            server_evidence,
+            {
+                "transport": "stdio",
+                "approval_policy": "disabled-default",
+                "approval_source": "sdk-default",
+                "scope": source_scope(app_path),
+                "analysis": analysis,
+            },
+        )
+    )
+    setting_attributes = {
+        "enabled": False,
+        "approval_policy": "disabled-default",
+        "approval_source": "sdk-default",
+        "policy_scope": "all-discovered-mcp-tools",
+        "missing_tool_mapping_default": "disabled",
+        "server_path": server_path,
+        "util_path": util_path,
+        "analysis": analysis,
+        "scope": source_scope(app_path),
+    }
+    ir.add_component(
+        Component("control-setting", "mcp-tool-approval", server_evidence, setting_attributes)
+    )
+    ir.add_relationship(
+        Relationship(
+            "agent",
+            agent_name,
+            "uses",
+            "mcp-server",
+            server_name,
+            agent_evidence,
+            {"analysis": analysis, "approval_policy": "disabled-default"},
+            agent_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "mcp-server",
+            server_name,
+            "configured-by",
+            "control-setting",
+            "mcp-tool-approval",
+            server_evidence,
+            setting_attributes,
+        )
+    )
+
+
 def add_typescript_a2a_card_endpoint_composition(
     ir: RepositoryIR,
     root: Path,
@@ -13178,6 +13424,7 @@ def scan_repository(
     add_typescript_google_adk_openapi_rest_tool_flow(ir, root, registry_paths)
     add_typescript_a2a_card_endpoint_composition(ir, root, registry_paths)
     add_python_adk_a2a_card_endpoint_policy(ir, root, registry_paths)
+    add_python_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)
     propagate_python_class_network_helpers(
         ir,
         root,

@@ -8,7 +8,7 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
 | 1 | Agent bill of materials: models, providers, frameworks, tools, MCP | 4 | 5 | 5 | 100 | 44 multi-provider repos; 50 with MCP; 69 with privileged capabilities |
 | 2 | Dangerous shell and code execution | 5 | 4 | 4 | 80 | 42 shell-capable repos; 8 `shell=True` candidates |
 | 3 | MCP server/tool trust-boundary analysis | 5 | 4 | 4 | 80 | 50 MCP repos; 17 generic forwarding shapes |
-| 4 | Approval coverage and bypass paths | 5 | 4 | 3 | 60 | 52 approval-positive; 18 auto-approval candidates |
+| 4 | Approval coverage and bypass paths | 5 | 4 | 3 | 60 | 52 approval-positive; 18 auto-approval candidates; one exact OpenAI Agents Python agent→MCP binding inherits the SDK's disabled approval default without being mislabeled as a destructive-capability finding |
 | 5 | Filesystem scope and destructive writes | 5 | 4 | 3 | 60 | 59 writable-filesystem repos |
 | 6 | Sandbox boundary quality | 5 | 4 | 3 | 60 | 64 sandbox-positive; mounts/network/credentials determine quality |
 | 7 | Parameter-controlled network origins | 5 | 2 | 4 | 40 | 18 reviews across 11 repositories; Composio CLI adds a schema-gated tool-argument URL upload through raw fetch, while Google ADK OpenAPI provides a fixed-origin counterexample with encoded model path segments, alongside the existing exact Python, n8n, Flowise, Google ADK load-page, Activepieces, and Composio conditional-runtime control states |

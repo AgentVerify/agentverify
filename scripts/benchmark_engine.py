@@ -254,6 +254,14 @@ def main() -> int:
             (item.evidence.path, item.evidence.line)
             for item in typescript_google_adk_openapi_rest_tool
         }
+        python_openai_mcp_approval_default = [
+            item
+            for item in ir.components
+            if item.kind == "control-setting"
+            and item.name == "mcp-tool-approval"
+            and item.attributes.get("analysis")
+            == "python-openai-agents-mcp-approval-default"
+        ]
         typescript_network_origin_controls = [
             edge
             for edge in ir.relationships
@@ -685,6 +693,31 @@ def main() -> int:
                     == "typescript-google-adk-openapi-rest-tool"
                 ),
             },
+            "python_openai_mcp_approval_default": {
+                "settings": len(python_openai_mcp_approval_default),
+                "disabled_default": sum(
+                    item.attributes.get("approval_policy") == "disabled-default"
+                    and item.attributes.get("enabled") is False
+                    for item in python_openai_mcp_approval_default
+                ),
+                "agent_server_edges": sum(
+                    edge.source_kind == "agent"
+                    and edge.relation == "uses"
+                    and edge.target_kind == "mcp-server"
+                    and edge.attributes.get("analysis")
+                    == "python-openai-agents-mcp-approval-default"
+                    for edge in ir.relationships
+                ),
+                "configured_by_edges": sum(
+                    edge.source_kind == "mcp-server"
+                    and edge.relation == "configured-by"
+                    and edge.target_kind == "control-setting"
+                    and edge.target_name == "mcp-tool-approval"
+                    and edge.attributes.get("analysis")
+                    == "python-openai-agents-mcp-approval-default"
+                    for edge in ir.relationships
+                ),
+            },
             "typescript_network_origin_controls": {
                 "total": len(typescript_network_origin_controls),
                 "configured_optional": sum(
@@ -969,7 +1002,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 43,
+        "schema_version": 44,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -1192,6 +1225,18 @@ def main() -> int:
                     "tool_edges",
                     "origin_policy_edges",
                     "segment_encoded",
+                )
+            },
+            "python_openai_mcp_approval_default": {
+                name: sum(
+                    result["python_openai_mcp_approval_default"][name]
+                    for result in successful
+                )
+                for name in (
+                    "settings",
+                    "disabled_default",
+                    "agent_server_edges",
+                    "configured_by_edges",
                 )
             },
             "typescript_network_origin_controls": {

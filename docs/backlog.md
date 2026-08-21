@@ -76,7 +76,9 @@ OpenAI Agents Python or TypeScript shell tool and its SDK approval is explicitly
 It remains a review: an executor may enforce an equivalent internal control. Promote absence to a
 finding only when the complete destructive path and executor policy are resolved. Extend coverage to
 delegated agents and other frameworks without treating callbacks or automatic handlers as absent
-controls.
+controls. The exact OpenAI Agents Python MCP composition now inventories the opposite policy state:
+an omitted `MCPServerStdio.require_approval` becomes `False` and is copied to every discovered
+`FunctionTool`. It remains non-finding inventory until a destructive MCP capability is resolved.
 
 ## P1 — sandbox containment quality
 
@@ -162,8 +164,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 334 pinned positive/negative locations, with 252 separately
-scored IR relationship labels. Schema-v43 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 336 pinned positive/negative locations, with 255 separately
+scored IR relationship labels. Schema-v44 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

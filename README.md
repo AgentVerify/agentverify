@@ -8,7 +8,7 @@ The initial research corpus contains 71 pinned repositories spanning frameworks,
 agents, MCP servers, workflow platforms, tool integrations, sandboxes, and observability systems.
 The first engine supports Python AST analysis, structure-aware TypeScript/JavaScript discovery, MCP
 configuration, framework/provider/tool inventory, deterministic JSON, and initial
-agent-security review rules. Its curated cross-rule regression set contains 334 pinned positive and
+agent-security review rules. Its curated cross-rule regression set contains 336 pinned positive and
 negative labels.
 
 ## Install and scan
@@ -75,7 +75,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`benchmarks/engine-results.json`](benchmarks/engine-results.json) — full-corpus engine metrics
 - [`benchmarks/truthset.json`](benchmarks/truthset.json) — exact hand-labeled positives and negatives
 - [`benchmarks/truthset-results.json`](benchmarks/truthset-results.json) — per-rule seed precision and recall
-- [`benchmarks/ir-truthset.json`](benchmarks/ir-truthset.json) — 252 separately scored relationship labels
+- [`benchmarks/ir-truthset.json`](benchmarks/ir-truthset.json) — 255 separately scored relationship labels
 
 SARIF output includes stable fingerprints, source locations, severity, remediation, Agent IR paths,
 and resolved/unresolved control context for code-scanning integrations.

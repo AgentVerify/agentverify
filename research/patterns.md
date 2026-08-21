@@ -94,6 +94,11 @@ Approval may apply per tool, per argument pattern, per session, or only to destr
 Auto-approve lists and skip-confirmation modes can silently widen authority. Analysis must represent
 gate scope and the configuration that bypasses it.
 
+SDK defaults are part of that policy surface. In an MCP bridge, an omitted server-level approval
+argument may be normalized once and copied into every dynamically discovered tool wrapper. The
+agent→server binding, default normalization, per-name fallback, and final wrapper assignment must all
+be proven before reporting the effective default; absence alone is not a destructive-path finding.
+
 ## Observability as a cross-cutting control
 
 Tracing and audit hooks appear at framework, model-client, runtime, and tool layers. A useful rule asks

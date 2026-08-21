@@ -2368,6 +2368,90 @@ def test_typescript_google_adk_openapi_tool_keeps_model_input_off_origin(
         )
 
 
+def test_openai_agents_python_mcp_tools_inherit_disabled_approval_default(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/python_openai_mcp_approval_default"
+    ir = scan_repository(root)
+    edges = [
+        edge
+        for edge in ir.relationships
+        if edge.attributes.get("analysis")
+        == "python-openai-agents-mcp-approval-default"
+    ]
+    assert {
+        (edge.source_kind, edge.relation, edge.target_kind, edge.target_name)
+        for edge in edges
+    } == {
+        ("agent", "uses", "mcp-server", "Reference Policy Server"),
+        ("mcp-server", "configured-by", "control-setting", "mcp-tool-approval"),
+    }
+    setting = next(
+        item
+        for item in ir.components
+        if item.kind == "control-setting"
+        and item.name == "mcp-tool-approval"
+        and item.attributes.get("analysis")
+        == "python-openai-agents-mcp-approval-default"
+    )
+    assert setting.attributes["enabled"] is False
+    assert setting.attributes["approval_policy"] == "disabled-default"
+    assert setting.attributes["policy_scope"] == "all-discovered-mcp-tools"
+    assert setting.attributes["missing_tool_mapping_default"] == "disabled"
+    assert not any(finding.rule_id == "AV-APPROVAL001" for finding in ir.findings)
+
+    for name, relative, before, after in (
+        (
+            "explicit-approval",
+            "app.py",
+            'name="Reference Policy Server",',
+            'name="Reference Policy Server", require_approval="always",',
+        ),
+        (
+            "wrong-import",
+            "app.py",
+            "from agents.mcp import MCPServerStdio",
+            "from local_mcp import MCPServerStdio",
+        ),
+        (
+            "enabled-sdk-default",
+            "server.py",
+            "require_approval=None",
+            "require_approval=True",
+        ),
+        (
+            "fail-closed-normalization",
+            "server.py",
+            "if require_approval is None:\n            return False",
+            "if require_approval is None:\n            return True",
+        ),
+        (
+            "hardcoded-wrapper-approval",
+            "util.py",
+            "needs_approval=needs_approval",
+            "needs_approval=True",
+        ),
+        (
+            "different-server-binding",
+            "app.py",
+            "mcp_servers=[server]",
+            "mcp_servers=[other_server]",
+        ),
+    ):
+        incomplete = tmp_path / name
+        shutil.copytree(root, incomplete)
+        source_path = incomplete / relative
+        source = source_path.read_text(encoding="utf-8")
+        assert before in source
+        source_path.write_text(source.replace(before, after), encoding="utf-8")
+        incomplete_ir = scan_repository(incomplete)
+        assert not any(
+            edge.attributes.get("analysis")
+            == "python-openai-agents-mcp-approval-default"
+            for edge in incomplete_ir.relationships
+        )
+
+
 def test_typescript_a2a_remote_cards_preserve_endpoint_authority_and_transport(
     tmp_path: Path,
 ) -> None:

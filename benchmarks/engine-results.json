@@ -1,6 +1,6 @@
 {
-  "schema_version": 43,
-  "generated_at": "2026-08-21T18:14:25.350064+00:00",
+  "schema_version": 44,
+  "generated_at": "2026-08-21T18:28:40.583097+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -20,22 +20,22 @@
     "dependency_files_materialized": 163,
     "repositories_with_dependency_expansion": 18,
     "config_files_scanned": 155,
-    "relationships": 1488,
-    "symbolized_components": 8746,
-    "identified_symbol_endpoints": 1938,
-    "resolved_symbol_endpoints": 1936,
+    "relationships": 1490,
+    "symbolized_components": 8747,
+    "identified_symbol_endpoints": 1939,
+    "resolved_symbol_endpoints": 1937,
     "unmatched_identified_symbol_endpoints": 2,
     "ambiguous_repeated_binding_targets": 23,
     "resolved_binding_targets_by_basis": {
       "lexical-single-definition": 325,
       "module-single-definition": 14
     },
-    "relationship_endpoints": 2976,
+    "relationship_endpoints": 2980,
     "bom_endpoint_resolutions": {
       "ambiguous": 37,
-      "evidence-location": 485,
-      "symbol-id": 1936,
-      "unique-display-name": 19,
+      "evidence-location": 487,
+      "symbol-id": 1937,
+      "unique-display-name": 20,
       "unresolved": 499
     },
     "bom_ambiguous_endpoints_by_side_kind": {
@@ -44,7 +44,7 @@
       "target:tool": 30
     },
     "resolved_symbol_endpoints_by_frontend": {
-      "py": 1677,
+      "py": 1678,
       "ts": 259
     },
     "typescript_graph": {
@@ -148,6 +148,12 @@
       "tool_edges": 1,
       "origin_policy_edges": 1,
       "segment_encoded": 1
+    },
+    "python_openai_mcp_approval_default": {
+      "settings": 1,
+      "disabled_default": 1,
+      "agent_server_edges": 1,
+      "configured_by_edges": 1
     },
     "typescript_network_origin_controls": {
       "total": 2,
@@ -314,7 +320,8 @@
         "tool-registry": 2
       },
       "control-setting": {
-        "auto-approval": 5
+        "auto-approval": 5,
+        "mcp-tool-approval": 1
       },
       "framework": {
         "AutoGen": 1,
@@ -455,7 +462,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 156.1479
+    "elapsed_seconds": 162.5545
   },
   "repositories": [
     {
@@ -590,6 +597,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -677,7 +690,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.902
+      "elapsed_seconds": 2.8804
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -818,6 +831,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -910,7 +929,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0642
+      "elapsed_seconds": 3.3168
     },
     {
       "repository": "langchain-ai/langchain",
@@ -1048,6 +1067,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1133,7 +1158,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9201
+      "elapsed_seconds": 0.9976
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -1275,6 +1300,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1368,7 +1399,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.9584
+      "elapsed_seconds": 4.3735
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -1515,6 +1546,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1604,7 +1641,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1921
+      "elapsed_seconds": 0.202
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -1755,6 +1792,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1857,7 +1900,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.5839
+      "elapsed_seconds": 4.9371
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -2010,6 +2053,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2117,7 +2166,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9251
+      "elapsed_seconds": 3.1629
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -2265,6 +2314,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2364,7 +2419,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2611
+      "elapsed_seconds": 0.2768
     },
     {
       "repository": "microsoft/autogen",
@@ -2508,6 +2563,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2602,7 +2663,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6815
+      "elapsed_seconds": 0.7584
     },
     {
       "repository": "microsoft/agent-framework",
@@ -2730,6 +2791,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2815,7 +2882,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0499
+      "elapsed_seconds": 0.0373
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -2957,6 +3024,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3051,7 +3124,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1081
+      "elapsed_seconds": 0.1158
     },
     {
       "repository": "openai/openai-agents-python",
@@ -3061,12 +3134,13 @@
       "dependency_files_materialized": 20,
       "config_files_scanned": 0,
       "components": {
-        "agent": 941,
+        "agent": 942,
         "capability": 427,
         "control": 77,
-        "control-setting": 2,
+        "control-setting": 3,
         "framework": 763,
         "mcp": 1,
+        "mcp-server": 1,
         "model": 14,
         "protocol": 41,
         "provider": 118,
@@ -3087,7 +3161,8 @@
           "path-boundary"
         ],
         "control-setting": [
-          "auto-approval"
+          "auto-approval",
+          "mcp-tool-approval"
         ],
         "framework": [
           "OpenAI Agents SDK"
@@ -3099,10 +3174,10 @@
           "OpenAI"
         ]
       },
-      "relationships": 602,
-      "symbolized_components": 1269,
-      "identified_symbol_endpoints": 893,
-      "resolved_symbol_endpoints": 893,
+      "relationships": 604,
+      "symbolized_components": 1270,
+      "identified_symbol_endpoints": 894,
+      "resolved_symbol_endpoints": 894,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 6,
       "resolved_binding_targets_by_basis": {
@@ -3110,7 +3185,7 @@
         "module-single-definition": 13
       },
       "resolved_symbol_endpoints_by_frontend": {
-        "py": 893,
+        "py": 894,
         "ts": 0
       },
       "typescript_graph": {
@@ -3213,6 +3288,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 1,
+        "disabled_default": 1,
+        "agent_server_edges": 1,
+        "configured_by_edges": 1
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3301,9 +3382,9 @@
       },
       "bom_endpoint_resolutions": {
         "ambiguous": 16,
-        "evidence-location": 174,
-        "symbol-id": 893,
-        "unique-display-name": 5,
+        "evidence-location": 176,
+        "symbol-id": 894,
+        "unique-display-name": 6,
         "unresolved": 116
       },
       "bom_ambiguous_endpoints_by_side_kind": {
@@ -3317,7 +3398,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.2416
+      "elapsed_seconds": 5.8487
     },
     {
       "repository": "openai/openai-agents-js",
@@ -3476,6 +3557,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3567,7 +3654,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0188
+      "elapsed_seconds": 0.9861
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -3715,6 +3802,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3813,7 +3906,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.5353
+      "elapsed_seconds": 12.4831
     },
     {
       "repository": "google/adk-python",
@@ -3960,6 +4053,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4055,7 +4154,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4091
+      "elapsed_seconds": 3.7304
     },
     {
       "repository": "google/adk-js",
@@ -4198,6 +4297,12 @@
         "origin_policy_edges": 1,
         "segment_encoded": 1
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 1,
         "configured_optional": 0,
@@ -4290,7 +4395,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.6334
+      "elapsed_seconds": 3.5725
     },
     {
       "repository": "huggingface/smolagents",
@@ -4436,6 +4541,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4537,7 +4648,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3128
+      "elapsed_seconds": 1.3944
     },
     {
       "repository": "agno-agi/agno",
@@ -4675,6 +4786,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4770,7 +4887,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3109
+      "elapsed_seconds": 0.3343
     },
     {
       "repository": "camel-ai/camel",
@@ -4918,6 +5035,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5020,7 +5143,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6945
+      "elapsed_seconds": 2.8642
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -5156,6 +5279,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5244,7 +5373,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1919
+      "elapsed_seconds": 0.1935
     },
     {
       "repository": "run-llama/llama_index",
@@ -5386,6 +5515,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5471,7 +5606,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7547
+      "elapsed_seconds": 0.8092
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -5618,6 +5753,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5720,7 +5861,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4588
+      "elapsed_seconds": 1.5848
     },
     {
       "repository": "InternLM/lagent",
@@ -5866,6 +6007,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5964,7 +6111,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6569
+      "elapsed_seconds": 0.739
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -6103,6 +6250,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6203,7 +6356,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1036
+      "elapsed_seconds": 1.189
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -6347,6 +6500,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6449,7 +6608,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5815
+      "elapsed_seconds": 1.6574
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -6589,6 +6748,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6688,7 +6853,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9621
+      "elapsed_seconds": 1.0474
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -6831,6 +6996,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6926,7 +7097,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.229
+      "elapsed_seconds": 3.4769
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -7064,6 +7235,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7158,7 +7335,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3103
+      "elapsed_seconds": 1.3537
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -7298,6 +7475,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7383,7 +7566,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9535
+      "elapsed_seconds": 0.9713
     },
     {
       "repository": "letta-ai/letta-code",
@@ -7517,6 +7700,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7602,7 +7791,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.6888
+      "elapsed_seconds": 4.7177
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -7749,6 +7938,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7848,7 +8043,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.957
+      "elapsed_seconds": 1.0342
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -7987,6 +8182,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8087,7 +8288,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9704
+      "elapsed_seconds": 2.1279
     },
     {
       "repository": "mastra-ai/mastra",
@@ -8232,6 +8433,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8323,7 +8530,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6918
+      "elapsed_seconds": 2.7126
     },
     {
       "repository": "vercel/ai",
@@ -8463,6 +8670,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8553,7 +8766,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9207
+      "elapsed_seconds": 2.9176
     },
     {
       "repository": "cline/cline",
@@ -8697,6 +8910,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8788,7 +9007,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.0832
+      "elapsed_seconds": 4.0345
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -8925,6 +9144,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9010,7 +9235,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.395
+      "elapsed_seconds": 4.3503
     },
     {
       "repository": "continuedev/continue",
@@ -9145,6 +9370,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9230,7 +9461,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7174
+      "elapsed_seconds": 2.679
     },
     {
       "repository": "Aider-AI/aider",
@@ -9364,6 +9595,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9464,7 +9701,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.5603
+      "elapsed_seconds": 2.6922
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -9597,6 +9834,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9690,7 +9933,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 0.7984
+      "elapsed_seconds": 0.8418
     },
     {
       "repository": "plandex-ai/plandex",
@@ -9810,6 +10053,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9895,7 +10144,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0477
+      "elapsed_seconds": 0.0461
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -10029,6 +10278,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10120,7 +10375,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1855
+      "elapsed_seconds": 1.2899
     },
     {
       "repository": "stitionai/devika",
@@ -10259,6 +10514,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10348,7 +10609,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3222
+      "elapsed_seconds": 0.333
     },
     {
       "repository": "block/goose",
@@ -10483,6 +10744,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10577,7 +10844,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 6.0782
+      "elapsed_seconds": 5.9859
     },
     {
       "repository": "bytedance/trae-agent",
@@ -10725,6 +10992,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10827,7 +11100,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6457
+      "elapsed_seconds": 0.6811
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -10965,6 +11238,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11056,7 +11335,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.5094
+      "elapsed_seconds": 6.4232
     },
     {
       "repository": "openai/codex",
@@ -11183,6 +11462,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11274,7 +11559,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5996
+      "elapsed_seconds": 0.6255
     },
     {
       "repository": "browser-use/browser-use",
@@ -11424,6 +11709,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11527,7 +11818,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4063
+      "elapsed_seconds": 3.6921
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -11683,6 +11974,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11784,7 +12081,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.7686
+      "elapsed_seconds": 7.2419
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -11926,6 +12223,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12022,7 +12325,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7298
+      "elapsed_seconds": 0.7574
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -12159,6 +12462,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12246,7 +12555,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4001
+      "elapsed_seconds": 1.3801
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -12386,6 +12695,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 1,
         "configured_optional": 1,
@@ -12481,7 +12796,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3697
+      "elapsed_seconds": 1.3619
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -12628,6 +12943,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12722,7 +13043,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.037
+      "elapsed_seconds": 2.2136
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -12862,6 +13183,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12952,7 +13279,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.1258
+      "elapsed_seconds": 4.2415
     },
     {
       "repository": "github/github-mcp-server",
@@ -13082,6 +13409,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13167,7 +13500,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0497
+      "elapsed_seconds": 0.0471
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -13298,6 +13631,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13383,7 +13722,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1188
+      "elapsed_seconds": 0.1156
     },
     {
       "repository": "awslabs/mcp",
@@ -13521,6 +13860,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13614,7 +13959,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8132
+      "elapsed_seconds": 1.9528
     },
     {
       "repository": "docker/mcp-gateway",
@@ -13745,6 +14090,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13832,7 +14183,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0368
+      "elapsed_seconds": 0.0345
     },
     {
       "repository": "jlowin/fastmcp",
@@ -13971,6 +14322,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14068,7 +14425,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1548
+      "elapsed_seconds": 2.3689
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -14188,6 +14545,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14273,7 +14636,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0347
+      "elapsed_seconds": 0.0324
     },
     {
       "repository": "langflow-ai/langflow",
@@ -14421,6 +14784,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14514,7 +14883,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0389
+      "elapsed_seconds": 3.1335
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -14652,6 +15021,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14745,7 +15120,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.9788
+      "elapsed_seconds": 3.8862
     },
     {
       "repository": "langgenius/dify",
@@ -14868,6 +15243,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14953,7 +15334,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4605
+      "elapsed_seconds": 1.5383
     },
     {
       "repository": "n8n-io/n8n",
@@ -15099,6 +15480,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -15192,7 +15579,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8108
+      "elapsed_seconds": 2.7756
     },
     {
       "repository": "activepieces/activepieces",
@@ -15341,6 +15728,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -15436,7 +15829,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.81
+      "elapsed_seconds": 1.7863
     },
     {
       "repository": "simstudioai/sim",
@@ -15565,6 +15958,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -15650,7 +16049,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.448
+      "elapsed_seconds": 5.3624
     },
     {
       "repository": "composiohq/composio",
@@ -15805,6 +16204,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -15900,7 +16305,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8727
+      "elapsed_seconds": 1.8986
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -16051,6 +16456,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -16154,7 +16565,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2074
+      "elapsed_seconds": 2.363
     },
     {
       "repository": "e2b-dev/E2B",
@@ -16282,6 +16693,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -16367,7 +16784,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1677
+      "elapsed_seconds": 2.2333
     },
     {
       "repository": "daytonaio/daytona",
@@ -16487,6 +16904,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -16572,7 +16995,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.001
+      "elapsed_seconds": 0.0002
     },
     {
       "repository": "AgentOps-AI/agentops",
@@ -16718,6 +17141,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -16809,7 +17238,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1539
+      "elapsed_seconds": 1.2464
     },
     {
       "repository": "traceloop/openllmetry",
@@ -16960,6 +17389,12 @@
         "origin_policy_edges": 0,
         "segment_encoded": 0
       },
+      "python_openai_mcp_approval_default": {
+        "settings": 0,
+        "disabled_default": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -17055,7 +17490,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9726
+      "elapsed_seconds": 2.0997
     }
   ]
 }

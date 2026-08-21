@@ -3249,6 +3249,24 @@
       "target":{"kind":"repository","repository":"google/adk-js","commit":"5ee247e677393bfd8751fdd871f2220448807649"},
       "check_id":"IR-TS-OPENAPI-ORIGIN-LOCK","path":"core/src/tools/openapi_tool/rest_api_tool.ts","line":134,"expected":true,
       "relationship":{"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-policy","attributes":{"analysis":"typescript-google-adk-openapi-rest-tool","model_path_scope":"segment-encoded"}}
+    },
+    {
+      "id":"python-openai-mcp-approval-default-local",
+      "target":{"kind":"local","path":"cases/python_openai_mcp_approval_default"},
+      "check_id":"IR-PY-OPENAI-MCP-APPROVAL-DEFAULT","path":"app.py","line":6,"expected":true,
+      "relationship":{"source_kind":"mcp-server","source_name":"Reference Policy Server","relation":"configured-by","target_kind":"control-setting","target_name":"mcp-tool-approval","attributes":{"analysis":"python-openai-agents-mcp-approval-default","approval_policy":"disabled-default"}}
+    },
+    {
+      "id":"python-openai-mcp-approval-default-raw-negative",
+      "target":{"kind":"local","path":"cases/python_openai_mcp_approval_default"},
+      "check_id":"IR-PY-OPENAI-MCP-APPROVAL-DEFAULT","path":"raw.py","line":2,"expected":false,"source_contains":"return server",
+      "relationship":{"source_kind":"mcp-server","relation":"configured-by","target_kind":"control-setting","target_name":"mcp-tool-approval"}
+    },
+    {
+      "id":"python-openai-mcp-approval-default-real",
+      "target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},
+      "check_id":"IR-PY-OPENAI-MCP-APPROVAL-DEFAULT","path":"examples/sandbox/sandbox_agent_with_tools.py","line":68,"expected":true,
+      "relationship":{"source_kind":"mcp-server","source_name":"Reference Policy Server","relation":"configured-by","target_kind":"control-setting","target_name":"mcp-tool-approval","attributes":{"analysis":"python-openai-agents-mcp-approval-default","approval_policy":"disabled-default"}}
     }
   ]
 }

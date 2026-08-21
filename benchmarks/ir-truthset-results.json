@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T18:10:57.723063+00:00",
-  "labels": 252,
-  "passed": 252,
+  "generated_at": "2026-08-21T18:25:02.994734+00:00",
+  "labels": 255,
+  "passed": 255,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -128,6 +128,14 @@
       "tp": 2,
       "fp": 0,
       "tn": 7,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-OPENAI-MCP-APPROVAL-DEFAULT": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 1,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -2580,6 +2588,33 @@
     {
       "id": "typescript-google-adk-openapi-origin-lock-real",
       "check_id": "IR-TS-OPENAPI-ORIGIN-LOCK",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-mcp-approval-default-local",
+      "check_id": "IR-PY-OPENAI-MCP-APPROVAL-DEFAULT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-mcp-approval-default-raw-negative",
+      "check_id": "IR-PY-OPENAI-MCP-APPROVAL-DEFAULT",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-mcp-approval-default-real",
+      "check_id": "IR-PY-OPENAI-MCP-APPROVAL-DEFAULT",
       "expected": true,
       "observed": true,
       "anchor_ok": true,
