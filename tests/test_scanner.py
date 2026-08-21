@@ -3504,6 +3504,7 @@ def test_google_adk_bigquery_plugin_proves_durable_attributable_action_audit() -
         and edge.target_name == "action-audit"
         for edge in ir.relationships
     )
+    assert not any(finding.rule_id == "AV-AUDIT001" for finding in ir.findings)
 
 
 def test_google_adk_audit_control_requires_the_full_framework_path(tmp_path: Path) -> None:
@@ -3630,6 +3631,24 @@ def test_skyvern_taskv3_proves_durable_execution_record_with_actor_gap() -> None
         "table": "actions",
         "durability": "durable-relational-database",
     }
+    audit_findings = [
+        finding for finding in ir.findings if finding.rule_id == "AV-AUDIT001"
+    ]
+    assert len(audit_findings) == 1
+    finding = audit_findings[0]
+    assert finding.evidence.path == "skyvern/forge/taskv3/loop.py"
+    assert finding.evidence.line == 9
+    assert finding.severity == "medium"
+    assert finding.confidence == "high"
+    assert finding.result_kind == "review"
+    assert finding.analysis["audit_coverage"] == (
+        "durable execution record; actor attribution unresolved; delivery best-effort"
+    )
+    assert not any(
+        candidate.rule_id == "AV-AUDIT001"
+        and candidate.evidence.path == "untracked.py"
+        for candidate in ir.findings
+    )
 
 
 def test_skyvern_action_record_requires_dispatch_callback_and_commit_path(

@@ -165,13 +165,14 @@ one available framework control and two test deployments, but no production depl
 best-effort with drop accounting. Skyvern Task v3 adds one production action-record deployment: its
 post-dispatch callback commits completed/failed browser-action rows with organization/workflow/task/
 step/action identity, but `created_by` is nullable and unset and persistence failures are contained.
-Next cover more framework middleware/exporters, actor identity, retention, and loss guarantees. Keep
-`AV-AUDIT001` disabled until fully attributable absence can be established across production paths.
+`AV-AUDIT001` is now enabled only for this explicit durable-record/actor-gap edge; generic untraced or
+unrecorded actions remain unresolved rather than findings. Next cover more framework middleware/
+exporters, actor identity, retention, and loss guarantees before generalizing the rule.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 336 pinned positive/negative locations, with 264 separately
-scored IR relationship labels. Schema-v46 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 340 pinned positive/negative locations, with 264 separately
+scored IR relationship labels. Schema-v47 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

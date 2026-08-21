@@ -13,7 +13,7 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
 | 6 | Sandbox boundary quality | 5 | 4 | 3 | 60 | 64 sandbox-positive; mounts/network/credentials determine quality |
 | 7 | Parameter-controlled network origins | 5 | 2 | 4 | 40 | 18 reviews across 11 repositories; Composio CLI adds a schema-gated tool-argument URL upload through raw fetch, while Google ADK OpenAPI provides a fixed-origin counterexample with encoded model path segments, alongside the existing exact Python, n8n, Flowise, Google ADK load-page, Activepieces, and Composio conditional-runtime control states |
 | 8 | A2A AgentCard endpoint provenance | 5 | 2 | 4 | 40 | Two pinned TypeScript clients accept remote-card-selected RPC origins; ADK Python supplies two guarded comparison paths |
-| 9 | Consequential-action audit coverage | 4 | 4 | 2 | 32 | 57 tracing-positive; ADK BigQuery supplies attributable test storage, and Skyvern supplies one production durable action record with unresolved actor identity |
+| 9 | Consequential-action audit coverage | 4 | 4 | 2 | 32 | 57 tracing-positive; ADK BigQuery supplies attributable test storage, while one exact Skyvern production actor gap now raises AV-AUDIT001 without generic absence inference |
 
 ## Milestone 1 — explainable discovery
 

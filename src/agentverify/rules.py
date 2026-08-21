@@ -194,6 +194,36 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                         "review",
                     )
                 )
+        if component.kind == "capability" and component.name == "external-action":
+            actor_gap_edges = [
+                edge
+                for edge in ir.relationships
+                if edge.source_kind == "capability"
+                and edge.source_name == component.name
+                and edge.relation == "governed-by"
+                and edge.target_kind == "control"
+                and edge.target_name == "durable-action-record"
+                and edge.evidence.path == component.evidence.path
+                and edge.evidence.line == component.evidence.line
+                and edge.attributes.get("durability")
+                in {"durable-relational-database", "durable-remote-database"}
+                and str(edge.attributes.get("actor_attribution", "")).startswith(
+                    "unresolved-"
+                )
+            ]
+            if actor_gap_edges:
+                ir.findings.append(
+                    make_finding(
+                        ir,
+                        component,
+                        "AV-AUDIT001",
+                        "medium",
+                        "high",
+                        "A durable production action record leaves actor attribution unresolved",
+                        "Populate and require a non-null authenticated actor identifier before committing the action record; retain execution correlation fields and surface failed writes through metrics or alerts.",
+                        "review",
+                    )
+                )
         if (
             component.kind == "capability"
             and component.name == "a2a-rpc"
