@@ -151,6 +151,14 @@ options cannot replace the pinned connection for this structural family. Its edg
 `connection-pinned`, `pinned-agent`, and `caller-agent-overridden`; changing a hop to a fixed URL,
 restoring automatic redirects, or moving an untrusted agent after the pin withholds the proof.
 
+A fourth TypeScript composition pass resolves Google ADK JS's `LOAD_WEB_PAGE` only when the selected
+`FunctionTool` definition is reached by an exact import and its URL callback maps directly into
+`loadWebPage`. The helper must reject disallowed schemes and localhost, validate every DNS answer
+against explicit IPv4/IPv6 ranges with mapped-address handling, and disable redirects before global
+fetch. Because that fetch performs a separate connection-time lookup, the control is recorded as
+preflight-only with an unpinned-transport residual. Removing any stage withholds both reachability and
+the control edge.
+
 A repository prepass builds bounded Python network summaries for unique top-level free functions in
 selected files. A summary records direct recognized HTTP calls and the formal parameters that can
 control their origins after fixed-prefix discrimination. At a tool call site, only an exact named

@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v37
+framework, wrapper, or configuration path. Counts come from schema-v38
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -33,19 +33,19 @@ Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK
 (41), Anthropic (17), and Azure OpenAI (11). These counts overlap and are lower than research-wide lexical signals
 because the engine requires supported selected files and more specific syntax.
 
-Across the selected snapshot, 8,739 agent/tool observations have module-qualified symbol IDs. Of
-2,942 relationship endpoint observations, 1,931 carry IDs and 1,929 resolve to an observed component
-(1,675 Python and 254 TypeScript); the two unmatched IDs are explicit Python re-export targets.
+Across the selected snapshot, 8,740 agent/tool observations have module-qualified symbol IDs. Of
+2,946 relationship endpoint observations, 1,932 carry IDs and 1,930 resolve to an observed component
+(1,675 Python and 255 TypeScript); the two unmatched IDs are explicit Python re-export targets.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
-edges resolve exactly. In Python files with repeated identities, schema v37 records 325 same-scope and
+edges resolve exactly. In Python files with repeated identities, schema v38 records 325 same-scope and
 14 module-scope single-definition resolutions, plus 23 `ambiguous-repeated-binding` references that
 remain withheld.
 Capability/control taxonomy endpoints intentionally lack
 source-symbol IDs, so the endpoint fraction is inventory coverage rather than an accuracy or recall
 metric.
 
-The native AI BOM 1.1 resolver independently classifies all 2,942 endpoints: 1,929 by symbol ID, 465
-by exact relationship evidence, 17 by a unique display name, 32 as ambiguous, and 499 as unresolved.
+The native AI BOM 1.1 resolver independently classifies all 2,946 endpoints: 1,930 by symbol ID, 467
+by exact relationship evidence, 18 by a unique display name, 32 as ambiguous, and 499 as unresolved.
 Evidence-local resolution removes capability/control ambiguities; occurrence-qualified bindings
 resolve repeated source agent/tool observations, and conservative lexical resolution removes further
 target ambiguities. The remaining 32 are control or tool targets without a unique local symbol or target location.
@@ -109,7 +109,7 @@ fields as an inventory-only edge.
 
 Exact same-function Python scheme and hostname rejection can govern a direct network capability as
 `network-origin-allowlist`. The proof is statement-ordered and import-proven, and records explicit
-redirect disabling separately from unresolved DNS and redirect scope. The full schema-v37 corpus run
+redirect disabling separately from unresolved DNS and redirect scope. The full schema-v38 corpus run
 finds zero qualifying controls on the Python AV-NET001 review paths; imported validators and runtime
 egress policy remain outside this bounded observation.
 
@@ -131,7 +131,7 @@ validator rejects non-HTTP(S) targets and non-public DNS results; direct connect
 adapter and verify the connected peer. The download helper disables redirects, while the upload
 helper validates every hop in its bounded manual loop. Environment or caller proxies intentionally
 bypass peer pinning, so these edges retain `dns_scope: connection-pinned-unless-proxied` and
-`proxy_scope: environment-or-caller-dependent`. Schema v37 therefore reports four enabled-default
+`proxy_scope: environment-or-caller-dependent`. Schema v38 therefore reports four enabled-default
 Python secure-network edges in this pair of families: two fully pinned/proxy-disabled and two
 proxy-conditional.
 
@@ -144,7 +144,7 @@ proxy-rejecting transports, and ordinary-client fallbacks. Five synchronous GET 
 redirects by default and validate each bounded hop when enabled; five remaining GET/POST edges reject
 automatic redirects. All ten record `dns_scope: connection-pinned-when-enforced`,
 `proxy_scope: disabled-when-enforced`, and `escape_hatch: configured-opt-out` rather than claiming
-unconditional protection. Schema v37 therefore reports 14 enabled-default Python secure-network edges:
+unconditional protection. Schema v38 therefore reports 14 enabled-default Python secure-network edges:
 two fully pinned, two proxy-conditional, and ten configurable/enforcement-conditional.
 
 One n8n TypeScript edge resolves the AI Builder `web_fetch` tool through its production composition
@@ -169,8 +169,16 @@ opt-out rather than unconditional protection. The Web Scraper tool propagates `_
 through its same-class recursive methods into `secureFetch`. That helper forces manual redirects and
 places a pinned `node-fetch` agent after the caller-option spread on every hop, so its edge records
 `dns_scope: connection-pinned`, `proxy_scope: pinned-agent`, and
-`transport_scope: caller-agent-overridden`. Schema v37 therefore reports three TypeScript secure
-network controls: one default-off n8n edge and two default-on Flowise edges.
+`transport_scope: caller-agent-overridden`.
+
+Google ADK JS contributes a fourth TypeScript secure-network edge. Its imported `FunctionTool`
+passes the model's `url` into `loadWebPage`, which restricts schemes, blocks localhost and explicit
+non-global IPv4/IPv6 ranges, validates every preflight DNS answer, normalizes mapped IPv6, and
+disables redirects. Global `fetch` resolves again at connection time, so the edge records
+`dns_scope: preflight-only-rebinding-residual`, `transport_scope: global-fetch-unpinned`, and
+`proxy_scope: unresolved`, not connection pinning. Schema v38 therefore reports four TypeScript
+secure-network controls: one default-off n8n edge, two default-on Flowise edges, and one always-on ADK
+edge with no escape hatch.
 
 Four additional Python edges record exact string-prefix checks at CrewAI Examples sinks. They target
 `path-prefix-check`, carry `weak-string-prefix-validation`, and never satisfy path-boundary policy.
@@ -178,7 +186,7 @@ Two checks govern both a parent-directory creation and its write/copy action. Th
 `AV-FS002` result explains the sibling-prefix weakness without duplicating `AV-FS001` at the same
 sink.
 
-Schema v37 records 14 exact MCP-forwarding control edges: one explicit allowlist, three discovery
+Schema v38 records 14 exact MCP-forwarding control edges: one explicit allowlist, three discovery
 registries, and ten fixed bindings. The fixed-binding edges split evenly between constructor-bound
 instance sources and escaping returned/registered closures. Same-operation retry closures do not
 qualify. The ten bindings and discovery registries retain their reviews; only the explicit allowlist
@@ -237,7 +245,7 @@ subset.
   immutable normalized environment list with an explicit empty default. Only a direct result
   assignment and immutable aliases propagate; late, rebound, nested-call, scheme-only, imported,
   default-closed, and other predicate shapes remain unresolved.
-- TypeScript secure-network composition proof recognizes three exact structural families. The n8n
+- TypeScript secure-network composition proof recognizes four exact structural families. The n8n
   family requires a literal boolean default, service-versus-passthrough ternary, two-stage guard
   propagation, LangChain tool factory, and Axios helper with custom lookup plus bounded redirect
   hooks; its proxy scope remains unresolved. The Flowise Axios family requires a CommonJS-registered `INode` class,
@@ -245,8 +253,10 @@ subset.
   default-on deny list, manual redirects, mapped-address normalization, and a pinned agent lookup;
   environment proxy routing remains conditional. The Flowise `node-fetch` family requires the exact
   `Tool` subclass, direct or one-star-barrel helper import, and three-method parameter chain plus
-  manual redirects and a post-spread pinned agent. Other dependency injection containers, request objects, client instances, global fetch or
-  Undici transports, reexports, and configuration shapes remain
+  manual redirects and a post-spread pinned agent. The Google ADK family requires the exact imported
+  `FunctionTool`, URL callback, public-address preflight, mapped-IP normalization, and disabled
+  redirects; its global fetch remains unpinned. Other dependency injection containers, request
+  objects, client instances, general global fetch or Undici transports, reexports, and configuration shapes remain
   unsupported; domain approval is kept independent from address policy.
 - Python imported network summaries cover exact named imports of unique top-level free functions and
   direct HTTP calls only. Module-qualified calls, package reexports, nested or transitive helpers,
@@ -262,7 +272,7 @@ subset.
   plus hostname rejection before the direct request. Late, partial, continuing, rebound, shadowed,
   normalized-expression, positive-branch, and imported-validator forms remain unresolved. The
   control covers the initial origin only; redirect disabling and unresolved redirect/DNS scope are
-  preserved separately. Schema v37 observes zero such controls on the Python corpus reviews.
+  preserved separately. Schema v38 observes zero such controls on the Python corpus reviews.
 - Python secure-network helper proof requires selected local source for the validator, transport,
   adapter/backend, caller, and any defaults that affect enforcement. One structural family proves
   every redirect, disables proxies, and pins all connections; another distinguishes redirect-disabled
@@ -315,7 +325,7 @@ subset.
 
 ## Quality interpretation
 
-The 308-label rule truth set and 221-label IR relationship set are curated regression suites. They
+The 311-label rule truth set and 224-label IR relationship set are curated regression suites. They
 guard known positives and negatives; they are not an unbiased accuracy estimate. A future holdout
 must be sampled separately across the categories above, externally reviewed, and kept sealed while
 rules change. Until then, precision/recall values apply only to the published seed labels.

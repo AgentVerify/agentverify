@@ -3019,6 +3019,34 @@
         "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
         "attributes":{"helper_line":235,"redirect_scope":"each-hop-validated","dns_scope":"connection-pinned","proxy_scope":"pinned-agent","transport_scope":"caller-agent-overridden","enforcement_default":"enabled","escape_hatch":"configured-opt-out","enforcement_mode":"configured-opt-out","ipv4_mapped_ipv6":"normalized"}
       }
+    },
+    {
+      "id": "typescript-google-adk-load-web-page-local",
+      "target": {"kind":"local","path":"cases/typescript_google_adk_secure_fetch"},
+      "check_id": "IR-TS-GOOGLE-ADK-LOAD-WEB-PAGE",
+      "path": "load_web_page.ts", "line": 69, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
+        "attributes":{"helper_line":58,"redirect_scope":"disabled","dns_scope":"preflight-only-rebinding-residual","proxy_scope":"unresolved","transport_scope":"global-fetch-unpinned","enforcement_default":"enabled","escape_hatch":"none","enforcement_mode":"always-on","ipv4_mapped_ipv6":"normalized"}
+      }
+    },
+    {
+      "id": "typescript-google-adk-load-web-page-raw-negative",
+      "target": {"kind":"local","path":"cases/typescript_google_adk_secure_fetch"},
+      "check_id": "IR-TS-GOOGLE-ADK-LOAD-WEB-PAGE",
+      "path": "raw.ts", "line": 2, "expected": false,
+      "source_contains": "loadWebPage(url)",
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy"}
+    },
+    {
+      "id": "typescript-google-adk-load-web-page-real",
+      "target": {"kind":"repository","repository":"google/adk-js","commit":"5ee247e677393bfd8751fdd871f2220448807649"},
+      "check_id": "IR-TS-GOOGLE-ADK-LOAD-WEB-PAGE",
+      "path": "core/src/tools/load_web_page.ts", "line": 315, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-ssrf-policy",
+        "attributes":{"helper_line":286,"redirect_scope":"disabled","dns_scope":"preflight-only-rebinding-residual","proxy_scope":"unresolved","transport_scope":"global-fetch-unpinned","enforcement_default":"enabled","escape_hatch":"none","enforcement_mode":"always-on","ipv4_mapped_ipv6":"normalized"}
+      }
     }
   ]
 }

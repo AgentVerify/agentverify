@@ -599,6 +599,10 @@ def main() -> int:
                     edge.attributes.get("redirect_scope") == "each-hop-validated"
                     for edge in typescript_secure_network_controls
                 ),
+                "redirects_disabled": sum(
+                    edge.attributes.get("redirect_scope") == "disabled"
+                    for edge in typescript_secure_network_controls
+                ),
                 "secure_lookup_configured": sum(
                     edge.attributes.get("dns_scope")
                     == "secure-lookup-configured-when-enforced"
@@ -611,6 +615,11 @@ def main() -> int:
                 ),
                 "dns_connection_pinned": sum(
                     edge.attributes.get("dns_scope") == "connection-pinned"
+                    for edge in typescript_secure_network_controls
+                ),
+                "dns_preflight_only_rebinding_residual": sum(
+                    edge.attributes.get("dns_scope")
+                    == "preflight-only-rebinding-residual"
                     for edge in typescript_secure_network_controls
                 ),
                 "proxy_unresolved": sum(
@@ -633,12 +642,20 @@ def main() -> int:
                     edge.attributes.get("transport_scope") == "caller-agent-overridden"
                     for edge in typescript_secure_network_controls
                 ),
+                "global_fetch_unpinned": sum(
+                    edge.attributes.get("transport_scope") == "global-fetch-unpinned"
+                    for edge in typescript_secure_network_controls
+                ),
                 "ipv4_mapped_ipv6_normalized": sum(
                     edge.attributes.get("ipv4_mapped_ipv6") == "normalized"
                     for edge in typescript_secure_network_controls
                 ),
                 "domain_hitl_independent": sum(
                     edge.attributes.get("approval_scope") == "domain-hitl-independent"
+                    for edge in typescript_secure_network_controls
+                ),
+                "no_escape_hatch": sum(
+                    edge.attributes.get("escape_hatch") == "none"
                     for edge in typescript_secure_network_controls
                 ),
             },
@@ -744,7 +761,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 37,
+        "schema_version": 38,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -955,16 +972,20 @@ def main() -> int:
                     "configured_opt_out",
                     "bounded_redirect_hooks",
                     "redirects_validated",
+                    "redirects_disabled",
                     "secure_lookup_configured",
                     "dns_connection_pinned_unless_proxied",
                     "dns_connection_pinned",
+                    "dns_preflight_only_rebinding_residual",
                     "proxy_unresolved",
                     "proxy_environment_dependent",
                     "proxy_pinned_agent",
                     "fixed_caller_config",
                     "caller_agent_overridden",
+                    "global_fetch_unpinned",
                     "ipv4_mapped_ipv6_normalized",
                     "domain_hitl_independent",
+                    "no_escape_hatch",
                 )
             },
             "path_boundary_controls": {

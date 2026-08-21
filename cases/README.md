@@ -36,6 +36,9 @@ never imported or executed.
 - `typescript_flowise_secure_request`: variable Flowise node URLs reach either a fixed Axios request
   object with proxy-conditional pinning or `secureFetch` with a post-spread pinned agent; both helpers
   are default-on, normalize mapped IPv6, and validate every redirect hop.
+- `typescript_google_adk_secure_fetch`: Google ADK's `FunctionTool` validates a model URL and every
+  preflight DNS answer before unpinned global `fetch`; redirects are disabled and the DNS-rebinding
+  residual remains explicit.
 - `sandbox_boundary`: Compose and Kubernetes host/privilege boundaries plus explicit safe negatives.
 - `constant_eval`: constant Python evaluation negative case.
 - `python_browser_evaluate`: exact Playwright `Page` annotations and immutable aliases prove dynamic

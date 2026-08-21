@@ -1781,6 +1781,108 @@ def test_typescript_flowise_secure_fetch_composition_overrides_caller_agent(
         )
 
 
+def test_typescript_google_adk_fetch_preserves_preflight_dns_residual(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/typescript_google_adk_secure_fetch"
+    ir = scan_repository(root)
+    edges = [
+        edge
+        for edge in ir.relationships
+        if edge.attributes.get("analysis")
+        == "typescript-google-adk-load-web-page-composition"
+    ]
+    assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [
+        ("load_web_page.ts", 69)
+    ]
+    assert edges[0].attributes == {
+        "scope": "production",
+        "policy_effect": "validates-public-addresses-preflight",
+        "frontend": "typescript",
+        "analysis": "typescript-google-adk-load-web-page-composition",
+        "initial_origin_scope": "public-addresses-preflight",
+        "redirect_scope": "disabled",
+        "dns_scope": "preflight-only-rebinding-residual",
+        "proxy_scope": "unresolved",
+        "transport_scope": "global-fetch-unpinned",
+        "enforcement_default": "enabled",
+        "escape_hatch": "none",
+        "enforcement_mode": "always-on",
+        "ipv4_mapped_ipv6": "normalized",
+        "helper_path": "load_web_page.ts",
+        "helper_line": 58,
+    }
+    assert [
+        (finding.rule_id, finding.evidence.path, finding.evidence.line)
+        for finding in ir.findings
+        if finding.rule_id == "AV-NET001"
+    ] == [("AV-NET001", "load_web_page.ts", 69)]
+    assert not any(
+        finding.rule_id == "AV-NET001" and finding.evidence.path == "raw.ts"
+        for finding in ir.findings
+    )
+    without_tool_class = scan_repository(
+        root,
+        selected_paths=["load_web_page.ts"],
+    )
+    assert not any(
+        edge.attributes.get("analysis")
+        == "typescript-google-adk-load-web-page-composition"
+        for edge in without_tool_class.relationships
+    )
+
+    for name, relative, before, after in (
+        (
+            "adk-auto-redirect",
+            "load_web_page.ts",
+            "redirect: 'manual'",
+            "redirect: 'follow'",
+        ),
+        (
+            "adk-no-preflight",
+            "load_web_page.ts",
+            "await validateResolvedAddresses(normalizeHost(parsed.hostname))",
+            "await Promise.resolve()",
+        ),
+        (
+            "adk-incomplete-address-check",
+            "load_web_page.ts",
+            "addresses.some(isBlockedAddress)",
+            "addresses.every(isBlockedAddress)",
+        ),
+        (
+            "adk-mapped-ip-bypass",
+            "load_web_page.ts",
+            "value >> 32n === 0xffffn",
+            "value >> 32n !== 0xffffn",
+        ),
+        (
+            "adk-fixed-tool-input",
+            "load_web_page.ts",
+            "execute: ({url}) => loadWebPage(url)",
+            "execute: ({url}) => loadWebPage('https://example.test')",
+        ),
+        (
+            "adk-wrong-tool-import",
+            "load_web_page.ts",
+            "from './function_tool.js'",
+            "from './raw.js'",
+        ),
+    ):
+        incomplete = tmp_path / name
+        shutil.copytree(root, incomplete)
+        source_path = incomplete / relative
+        source = source_path.read_text(encoding="utf-8")
+        assert before in source
+        source_path.write_text(source.replace(before, after), encoding="utf-8")
+        incomplete_ir = scan_repository(incomplete)
+        assert not any(
+            edge.attributes.get("analysis")
+            == "typescript-google-adk-load-web-page-composition"
+            for edge in incomplete_ir.relationships
+        )
+
+
 def test_typescript_network_helper_summaries_map_object_parameters_and_multiline_aliases(
     tmp_path: Path,
 ) -> None:

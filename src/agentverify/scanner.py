@@ -11172,6 +11172,203 @@ def add_typescript_flowise_secure_fetch_composition(
     )
 
 
+def add_typescript_google_adk_load_web_page_composition(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve Google ADK's FunctionTool through its preflight-only fetch policy."""
+    sources: dict[str, tuple[str, str]] = {}
+    for path in paths:
+        if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        sources[relative] = (text, typescript_code_mask(text))
+
+    def unique_source(*markers: str) -> tuple[str, str, str] | None:
+        matches = [
+            (relative, text, code)
+            for relative, (text, code) in sources.items()
+            if all(marker in code for marker in markers)
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    caller = unique_source(
+        "export async function loadWebPage(",
+        "export const LOAD_WEB_PAGE = new FunctionTool(",
+        "execute: ({url}) => loadWebPage(url)",
+        "await validateResolvedAddresses(normalizeHost(parsed.hostname))",
+        "const response = await fetch(url,",
+    )
+    tool_class = unique_source("export class FunctionTool<", "extends BaseTool")
+    if caller is None or tool_class is None:
+        return
+    caller_path, caller_text, caller_code = caller
+    tool_class_path, _, _ = tool_class
+    if not typescript_named_import_reaches_path(
+        root,
+        root / caller_path,
+        caller_text,
+        "FunctionTool",
+        "FunctionTool",
+        tool_class_path,
+        set(sources),
+    ):
+        return
+
+    required_text = (
+        "const ALLOWED_SCHEMES = new Set(['http:', 'https:'])",
+        "'0.0.0.0/8'",
+        "'10.0.0.0/8'",
+        "'127.0.0.0/8'",
+        "'169.254.0.0/16'",
+        "'192.168.0.0/16'",
+        "'::1/128'",
+        "'fc00::/7'",
+        "'fe80::/10'",
+        "value >> 32n === 0xffffn",
+        "const records = await lookup(hostname, {all: true})",
+        "addresses.some(isBlockedAddress)",
+        "redirect: 'manual'",
+        "name: 'load_web_page'",
+    )
+    if not all(marker in caller_text for marker in required_text):
+        return
+    if not (
+        re.search(
+            r"function\s+assertUrlAllowed\s*\(\s*url\s*:\s*string\s*\)"
+            r"[\s\S]{0,1200}new\s+URL\s*\(\s*url\s*\)"
+            r"[\s\S]{0,800}ALLOWED_SCHEMES\.has\s*\(\s*parsed\.protocol\s*\)"
+            r"[\s\S]{0,800}isBlockedHostname\s*\(\s*parsed\.hostname\s*\)",
+            caller_code,
+        )
+        and re.search(
+            r"function\s+isBlockedIpv6\s*\([^)]*\)\s*:[^{]+\{"
+            r"[\s\S]{0,1000}value\s*>>\s*32n\s*===\s*0xffffn"
+            r"[\s\S]{0,700}isBlockedIpv4\s*\(",
+            caller_code,
+        )
+        and re.search(
+            r"lookup\s*\(\s*hostname\s*,\s*\{\s*all\s*:\s*true\s*\}\s*\)"
+            r"[\s\S]{0,800}new\s+Set\s*\(\s*records\.map\s*\(",
+            caller_code,
+        )
+        and re.search(
+            r"async\s+function\s+validateResolvedAddresses\s*\(\s*hostname\s*:\s*string\s*\)"
+            r"[\s\S]{0,500}resolveHostAddresses\s*\(\s*hostname\s*\)"
+            r"[\s\S]{0,400}addresses\.some\s*\(\s*isBlockedAddress\s*\)",
+            caller_code,
+        )
+        and re.search(
+            r"export\s+async\s+function\s+loadWebPage\s*\(\s*url\s*:\s*string"
+            r"[\s\S]{0,800}assertUrlAllowed\s*\(\s*url\s*\)"
+            r"[\s\S]{0,500}validateResolvedAddresses\s*\(\s*normalizeHost\s*\(\s*parsed\.hostname\s*\)\s*\)"
+            r"[\s\S]{0,500}fetch\s*\(\s*url\s*,\s*\{",
+            caller_code,
+        )
+        and re.search(
+            r"new\s+FunctionTool\s*\(\s*\{[\s\S]{0,1200}parameters\s*:\s*z\.object\s*\(\s*\{"
+            r"[\s\S]{0,300}url\s*:\s*z\.string\s*\(\)"
+            r"[\s\S]{0,500}execute\s*:\s*\(\s*\{\s*url\s*\}\s*\)\s*=>\s*loadWebPage\s*\(\s*url\s*\)",
+            caller_code,
+        )
+    ):
+        return
+
+    call_match = re.search(
+        r"execute\s*:\s*\(\s*\{\s*url\s*\}\s*\)\s*=>\s*"
+        r"loadWebPage\s*\(\s*url\s*\)",
+        caller_code,
+    )
+    tool_match = re.search(r"\bLOAD_WEB_PAGE\s*=\s*new\s+FunctionTool\b", caller_code)
+    helper_match = re.search(r"\bexport\s+async\s+function\s+loadWebPage\b", caller_code)
+    if call_match is None or tool_match is None or helper_match is None:
+        return
+    call_line = line_at(caller_text, call_match.start())
+    tool_line = line_at(caller_text, tool_match.start())
+    helper_line = line_at(caller_text, helper_match.start())
+    evidence = Evidence(caller_path, call_line, excerpt(caller_text.splitlines(), call_line))
+    control_evidence = Evidence(
+        caller_path,
+        helper_line,
+        excerpt(caller_text.splitlines(), helper_line),
+    )
+    tool_id = f"ts:{caller_path}#tool:load_web_page"
+    attributes = {
+        "scope": source_scope(caller_path),
+        "policy_effect": "validates-public-addresses-preflight",
+        "frontend": "typescript",
+        "analysis": "typescript-google-adk-load-web-page-composition",
+        "initial_origin_scope": "public-addresses-preflight",
+        "redirect_scope": "disabled",
+        "dns_scope": "preflight-only-rebinding-residual",
+        "proxy_scope": "unresolved",
+        "transport_scope": "global-fetch-unpinned",
+        "enforcement_default": "enabled",
+        "escape_hatch": "none",
+        "enforcement_mode": "always-on",
+        "ipv4_mapped_ipv6": "normalized",
+        "helper_path": caller_path,
+        "helper_line": helper_line,
+    }
+    ir.add_component(
+        Component(
+            "tool",
+            "load_web_page",
+            Evidence(caller_path, tool_line, excerpt(caller_text.splitlines(), tool_line)),
+            {
+                "constructor": "google-adk-function-tool",
+                "framework": "google-adk",
+                "entrypoint": "loadWebPage",
+                "url_input": "url",
+            },
+            tool_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "capability",
+            "network",
+            evidence,
+            {
+                "scope": source_scope(caller_path),
+                "api": "loadWebPage",
+                "dynamic_origin": True,
+                "summary": "google-adk-function-tool-helper",
+                "helper_path": caller_path,
+                "helper_line": helper_line,
+            },
+        )
+    )
+    ir.add_component(Component("control", "network-ssrf-policy", control_evidence, attributes))
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            "load_web_page",
+            "uses",
+            "capability",
+            "network",
+            evidence,
+            source_id=tool_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "capability",
+            "network",
+            "governed-by",
+            "control",
+            "network-ssrf-policy",
+            evidence,
+            attributes,
+        )
+    )
+
+
 def repository_files(root: Path) -> list[Path]:
     paths = []
     for directory, directory_names, file_names in os.walk(root, followlinks=False):
@@ -11314,6 +11511,7 @@ def scan_repository(
     add_typescript_configurable_ssrf_composition(ir, root, registry_paths)
     add_typescript_flowise_secure_request_composition(ir, root, registry_paths)
     add_typescript_flowise_secure_fetch_composition(ir, root, registry_paths)
+    add_typescript_google_adk_load_web_page_composition(ir, root, registry_paths)
     propagate_python_class_network_helpers(
         ir,
         root,

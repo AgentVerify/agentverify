@@ -1,6 +1,6 @@
 {
-  "schema_version": 37,
-  "generated_at": "2026-08-21T16:16:18.153161+00:00",
+  "schema_version": 38,
+  "generated_at": "2026-08-21T16:30:34.871315+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -20,22 +20,22 @@
     "dependency_files_materialized": 154,
     "repositories_with_dependency_expansion": 14,
     "config_files_scanned": 155,
-    "relationships": 1471,
-    "symbolized_components": 8739,
-    "identified_symbol_endpoints": 1931,
-    "resolved_symbol_endpoints": 1929,
+    "relationships": 1473,
+    "symbolized_components": 8740,
+    "identified_symbol_endpoints": 1932,
+    "resolved_symbol_endpoints": 1930,
     "unmatched_identified_symbol_endpoints": 2,
     "ambiguous_repeated_binding_targets": 23,
     "resolved_binding_targets_by_basis": {
       "lexical-single-definition": 325,
       "module-single-definition": 14
     },
-    "relationship_endpoints": 2942,
+    "relationship_endpoints": 2946,
     "bom_endpoint_resolutions": {
       "ambiguous": 32,
-      "evidence-location": 465,
-      "symbol-id": 1929,
-      "unique-display-name": 17,
+      "evidence-location": 467,
+      "symbol-id": 1930,
+      "unique-display-name": 18,
       "unresolved": 499
     },
     "bom_ambiguous_endpoints_by_side_kind": {
@@ -44,7 +44,7 @@
     },
     "resolved_symbol_endpoints_by_frontend": {
       "py": 1675,
-      "ts": 254
+      "ts": 255
     },
     "typescript_graph": {
       "agent_edges": 95,
@@ -134,23 +134,27 @@
       "dns_unresolved": 1
     },
     "typescript_secure_network_controls": {
-      "total": 3,
-      "enabled_default": 2,
+      "total": 4,
+      "enabled_default": 3,
       "disabled_default": 1,
       "configured_opt_in": 1,
       "configured_opt_out": 2,
       "bounded_redirect_hooks": 1,
       "redirects_validated": 2,
+      "redirects_disabled": 1,
       "secure_lookup_configured": 1,
       "dns_connection_pinned_unless_proxied": 1,
       "dns_connection_pinned": 1,
-      "proxy_unresolved": 1,
+      "dns_preflight_only_rebinding_residual": 1,
+      "proxy_unresolved": 2,
       "proxy_environment_dependent": 1,
       "proxy_pinned_agent": 1,
       "fixed_caller_config": 1,
       "caller_agent_overridden": 1,
-      "ipv4_mapped_ipv6_normalized": 2,
-      "domain_hitl_independent": 1
+      "global_fetch_unpinned": 1,
+      "ipv4_mapped_ipv6_normalized": 3,
+      "domain_hitl_independent": 1,
+      "no_escape_hatch": 1
     },
     "path_boundary_controls": {
       "python": 5,
@@ -223,7 +227,7 @@
       "AV-FS001": 26,
       "AV-FS002": 4,
       "AV-MCP002": 49,
-      "AV-NET001": 16,
+      "AV-NET001": 17,
       "AV-SANDBOX001": 19
     },
     "finding_repositories": {
@@ -234,7 +238,7 @@
       "AV-FS001": 9,
       "AV-FS002": 1,
       "AV-MCP002": 23,
-      "AV-NET001": 9,
+      "AV-NET001": 10,
       "AV-SANDBOX001": 9
     },
     "observed_component_names": {
@@ -256,7 +260,7 @@
         "fixed-tool-binding": 6,
         "human-approval": 3,
         "network-origin-policy": 1,
-        "network-ssrf-policy": 5,
+        "network-ssrf-policy": 6,
         "path-boundary": 4,
         "path-prefix-check": 1,
         "tool-allowlist": 1,
@@ -403,7 +407,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 126.9912
+    "elapsed_seconds": 131.4811
   },
   "repositories": [
     {
@@ -531,16 +535,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -579,7 +587,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8376
+      "elapsed_seconds": 1.977
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -713,16 +721,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -766,7 +778,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9552
+      "elapsed_seconds": 2.9796
     },
     {
       "repository": "langchain-ai/langchain",
@@ -897,16 +909,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -943,7 +959,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8852
+      "elapsed_seconds": 0.8984
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -1078,16 +1094,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -1132,7 +1152,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.871
+      "elapsed_seconds": 3.9018
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -1272,16 +1292,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -1322,7 +1346,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1831
+      "elapsed_seconds": 0.1867
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -1466,16 +1490,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -1529,7 +1557,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.4585
+      "elapsed_seconds": 4.4405
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -1675,16 +1703,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -1743,7 +1775,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8317
+      "elapsed_seconds": 2.8181
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -1884,16 +1916,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -1944,7 +1980,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2493
+      "elapsed_seconds": 0.2485
     },
     {
       "repository": "microsoft/autogen",
@@ -2081,16 +2117,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -2136,7 +2176,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6682
+      "elapsed_seconds": 0.6648
     },
     {
       "repository": "microsoft/agent-framework",
@@ -2257,16 +2297,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -2303,7 +2347,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0386
+      "elapsed_seconds": 0.0403
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -2438,16 +2482,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -2493,7 +2541,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1071
+      "elapsed_seconds": 0.1058
     },
     {
       "repository": "openai/openai-agents-python",
@@ -2648,16 +2696,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 3,
@@ -2713,7 +2765,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.1523
+      "elapsed_seconds": 5.1353
     },
     {
       "repository": "openai/openai-agents-js",
@@ -2865,16 +2917,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -2917,7 +2973,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6545
+      "elapsed_seconds": 0.6933
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -3058,16 +3114,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -3117,7 +3177,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.318
+      "elapsed_seconds": 11.2863
     },
     {
       "repository": "google/adk-python",
@@ -3250,16 +3310,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -3305,7 +3369,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2987
+      "elapsed_seconds": 3.3363
     },
     {
       "repository": "google/adk-js",
@@ -3315,10 +3379,12 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 0,
       "components": {
-        "capability": 71,
+        "capability": 72,
+        "control": 1,
         "mcp": 3,
         "model": 83,
-        "protocol": 7
+        "protocol": 7,
+        "tool": 1
       },
       "component_names": {
         "capability": [
@@ -3327,20 +3393,23 @@
           "network",
           "shell-execution"
         ],
+        "control": [
+          "network-ssrf-policy"
+        ],
         "protocol": [
           "MCP"
         ]
       },
-      "relationships": 0,
-      "symbolized_components": 0,
-      "identified_symbol_endpoints": 0,
-      "resolved_symbol_endpoints": 0,
+      "relationships": 2,
+      "symbolized_components": 1,
+      "identified_symbol_endpoints": 1,
+      "resolved_symbol_endpoints": 1,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
         "py": 0,
-        "ts": 0
+        "ts": 1
       },
       "typescript_graph": {
         "agent_edges": 0,
@@ -3426,23 +3495,27 @@
         "dns_unresolved": 0
       },
       "typescript_secure_network_controls": {
-        "total": 0,
-        "enabled_default": 0,
+        "total": 1,
+        "enabled_default": 1,
         "disabled_default": 0,
         "configured_opt_in": 0,
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 1,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
-        "proxy_unresolved": 0,
+        "dns_preflight_only_rebinding_residual": 1,
+        "proxy_unresolved": 1,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
-        "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "global_fetch_unpinned": 1,
+        "ipv4_mapped_ipv6_normalized": 1,
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 1
       },
       "path_boundary_controls": {
         "python": 0,
@@ -3473,13 +3546,19 @@
         "python": 0,
         "typescript": 0
       },
-      "bom_endpoint_resolutions": {},
+      "bom_endpoint_resolutions": {
+        "evidence-location": 2,
+        "symbol-id": 1,
+        "unique-display-name": 1
+      },
       "bom_ambiguous_endpoints_by_side_kind": {},
-      "findings": {},
+      "findings": {
+        "AV-NET001": 1
+      },
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3091
+      "elapsed_seconds": 2.5718
     },
     {
       "repository": "huggingface/smolagents",
@@ -3618,16 +3697,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -3680,7 +3763,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2833
+      "elapsed_seconds": 1.3413
     },
     {
       "repository": "agno-agi/agno",
@@ -3811,16 +3894,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -3867,7 +3954,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2869
+      "elapsed_seconds": 0.299
     },
     {
       "repository": "camel-ai/camel",
@@ -4008,16 +4095,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -4071,7 +4162,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6397
+      "elapsed_seconds": 2.7151
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -4200,16 +4291,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -4249,7 +4344,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1715
+      "elapsed_seconds": 0.1738
     },
     {
       "repository": "run-llama/llama_index",
@@ -4384,16 +4479,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -4430,7 +4529,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.724
+      "elapsed_seconds": 0.7363
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -4570,16 +4669,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -4633,7 +4736,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3665
+      "elapsed_seconds": 1.3936
     },
     {
       "repository": "InternLM/lagent",
@@ -4772,16 +4875,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -4831,7 +4938,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6224
+      "elapsed_seconds": 0.6325
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -4963,16 +5070,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -5024,7 +5135,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.065
+      "elapsed_seconds": 1.0823
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -5161,16 +5272,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 1,
@@ -5224,7 +5339,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4624
+      "elapsed_seconds": 1.49
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -5357,16 +5472,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -5417,7 +5536,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9387
+      "elapsed_seconds": 0.9535
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -5553,16 +5672,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -5609,7 +5732,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0974
+      "elapsed_seconds": 3.1037
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -5740,16 +5863,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -5795,7 +5922,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0824
+      "elapsed_seconds": 1.1289
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -5928,16 +6055,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -5974,7 +6105,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6488
+      "elapsed_seconds": 0.7065
     },
     {
       "repository": "letta-ai/letta-code",
@@ -6101,16 +6232,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -6147,7 +6282,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9331
+      "elapsed_seconds": 3.187
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -6287,16 +6422,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -6347,7 +6486,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9195
+      "elapsed_seconds": 0.9269
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -6479,16 +6618,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -6540,7 +6683,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9007
+      "elapsed_seconds": 1.9204
     },
     {
       "repository": "mastra-ai/mastra",
@@ -6678,16 +6821,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -6730,7 +6877,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7352
+      "elapsed_seconds": 1.879
     },
     {
       "repository": "vercel/ai",
@@ -6863,16 +7010,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -6914,7 +7065,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8496
+      "elapsed_seconds": 2.0062
     },
     {
       "repository": "cline/cline",
@@ -7051,16 +7202,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -7103,7 +7258,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.5432
+      "elapsed_seconds": 2.7746
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -7233,16 +7388,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -7279,7 +7438,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7644
+      "elapsed_seconds": 3.0094
     },
     {
       "repository": "continuedev/continue",
@@ -7407,16 +7566,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -7453,7 +7616,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7386
+      "elapsed_seconds": 1.8748
     },
     {
       "repository": "Aider-AI/aider",
@@ -7580,16 +7743,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -7641,7 +7808,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3206
+      "elapsed_seconds": 2.3634
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -7767,16 +7934,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -7821,7 +7992,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 0.7645
+      "elapsed_seconds": 0.7762
     },
     {
       "repository": "plandex-ai/plandex",
@@ -7934,16 +8105,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -7980,7 +8155,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0333
+      "elapsed_seconds": 0.0357
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -8107,16 +8282,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -8159,7 +8338,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.09
+      "elapsed_seconds": 1.116
     },
     {
       "repository": "stitionai/devika",
@@ -8291,16 +8470,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -8341,7 +8524,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2825
+      "elapsed_seconds": 0.2924
     },
     {
       "repository": "block/goose",
@@ -8469,16 +8652,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -8524,7 +8711,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 2.7223
+      "elapsed_seconds": 3.2059
     },
     {
       "repository": "bytedance/trae-agent",
@@ -8665,16 +8852,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -8728,7 +8919,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6331
+      "elapsed_seconds": 0.6396
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -8857,16 +9048,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -8905,7 +9100,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.1308
+      "elapsed_seconds": 4.4876
     },
     {
       "repository": "openai/codex",
@@ -9025,16 +9220,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -9077,7 +9276,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5756
+      "elapsed_seconds": 0.5804
     },
     {
       "repository": "browser-use/browser-use",
@@ -9220,16 +9419,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -9284,7 +9487,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3358
+      "elapsed_seconds": 3.4205
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -9433,16 +9636,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -9495,7 +9702,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.4877
+      "elapsed_seconds": 6.5897
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -9630,16 +9837,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -9687,7 +9898,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6367
+      "elapsed_seconds": 0.6559
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -9817,16 +10028,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -9865,7 +10080,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9138
+      "elapsed_seconds": 0.9735
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -9998,16 +10213,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -10054,7 +10273,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0001
+      "elapsed_seconds": 1.0145
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -10194,16 +10413,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -10249,7 +10472,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0261
+      "elapsed_seconds": 2.05
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -10382,16 +10605,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -10433,7 +10660,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6448
+      "elapsed_seconds": 2.8662
     },
     {
       "repository": "github/github-mcp-server",
@@ -10556,16 +10783,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -10602,7 +10833,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0326
+      "elapsed_seconds": 0.0352
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -10726,16 +10957,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -10772,7 +11007,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0722
+      "elapsed_seconds": 0.0809
     },
     {
       "repository": "awslabs/mcp",
@@ -10903,16 +11138,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -10957,7 +11196,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7938
+      "elapsed_seconds": 1.8159
     },
     {
       "repository": "docker/mcp-gateway",
@@ -11081,16 +11320,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -11129,7 +11372,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0266
+      "elapsed_seconds": 0.0286
     },
     {
       "repository": "jlowin/fastmcp",
@@ -11261,16 +11504,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 1,
@@ -11319,7 +11566,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1167
+      "elapsed_seconds": 2.1329
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -11432,16 +11679,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -11478,7 +11729,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0241
+      "elapsed_seconds": 0.0255
     },
     {
       "repository": "langflow-ai/langflow",
@@ -11619,16 +11870,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -11673,7 +11928,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3976
+      "elapsed_seconds": 2.4907
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -11804,16 +12059,20 @@
         "configured_opt_out": 2,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 2,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 1,
         "dns_connection_pinned": 1,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 1,
         "proxy_pinned_agent": 1,
         "fixed_caller_config": 1,
         "caller_agent_overridden": 1,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 2,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -11858,7 +12117,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.4611
+      "elapsed_seconds": 2.667
     },
     {
       "repository": "langgenius/dify",
@@ -11974,16 +12233,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -12020,7 +12283,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3879
+      "elapsed_seconds": 1.3931
     },
     {
       "repository": "n8n-io/n8n",
@@ -12159,16 +12422,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 1,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 1,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 1,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 1
+        "domain_hitl_independent": 1,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -12213,7 +12480,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7947
+      "elapsed_seconds": 1.928
     },
     {
       "repository": "activepieces/activepieces",
@@ -12351,16 +12618,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -12401,7 +12672,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1836
+      "elapsed_seconds": 1.2695
     },
     {
       "repository": "simstudioai/sim",
@@ -12523,16 +12794,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -12569,7 +12844,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3704
+      "elapsed_seconds": 3.6446
     },
     {
       "repository": "composiohq/composio",
@@ -12717,16 +12992,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -12769,7 +13048,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2679
+      "elapsed_seconds": 1.345
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -12913,16 +13192,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -12977,7 +13260,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1504
+      "elapsed_seconds": 2.1635
     },
     {
       "repository": "e2b-dev/E2B",
@@ -13098,16 +13381,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -13144,7 +13431,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6303
+      "elapsed_seconds": 1.74
     },
     {
       "repository": "daytonaio/daytona",
@@ -13257,16 +13544,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -13442,16 +13733,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -13494,7 +13789,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.152
+      "elapsed_seconds": 1.1413
     },
     {
       "repository": "traceloop/openllmetry",
@@ -13638,16 +13933,20 @@
         "configured_opt_out": 0,
         "bounded_redirect_hooks": 0,
         "redirects_validated": 0,
+        "redirects_disabled": 0,
         "secure_lookup_configured": 0,
         "dns_connection_pinned_unless_proxied": 0,
         "dns_connection_pinned": 0,
+        "dns_preflight_only_rebinding_residual": 0,
         "proxy_unresolved": 0,
         "proxy_environment_dependent": 0,
         "proxy_pinned_agent": 0,
         "fixed_caller_config": 0,
         "caller_agent_overridden": 0,
+        "global_fetch_unpinned": 0,
         "ipv4_mapped_ipv6_normalized": 0,
-        "domain_hitl_independent": 0
+        "domain_hitl_independent": 0,
+        "no_escape_hatch": 0
       },
       "path_boundary_controls": {
         "python": 0,
@@ -13694,7 +13993,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9368
+      "elapsed_seconds": 1.8888
     }
   ]
 }

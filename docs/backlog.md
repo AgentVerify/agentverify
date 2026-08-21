@@ -24,7 +24,7 @@ package reexports and additional wrapper forms without falling back to display-n
 Python browser-page execution now inventories import-gated `.evaluate(...)` calls and promotes only
 direct tool-parameter/alias script flow. Dynamic calls additionally require an exact Playwright
 receiver annotation, one immutable alias of that parameter, or Skyvern's exact imported `get_page`
-factory result. Schema v37 proves seven of 80 corpus receivers; the other 73 fixed-script observations
+factory result. Schema v38 proves seven of 80 corpus receivers; the other 73 fixed-script observations
 retain explicit unresolved state. Skyvern contributes 30 evaluator observations but one finding;
 normalized numeric scroll JavaScript remains inventory-only. Next resolve constructor-bound page
 fields, locator chains, sanitizer and bounded builder summaries, imported helper flow, and other
@@ -103,11 +103,11 @@ unresolved. Exact module-level `urllib.request.urlopen` imports and aliases now 
 shadowing and module rebinding invalidate the API proof.
 Exact same-function Python `urlparse`/`urlsplit` guards now add a control edge only when immutable
 tool-origin data is rejected outside a static scheme and hostname set before the request. Redirect
-disabling is recorded separately; DNS and other redirect states stay unresolved. Schema v37 finds
+disabling is recorded separately; DNS and other redirect states stay unresolved. Schema v38 finds
 zero such controls on the Python corpus reviews, making the absence visible without calling every review
 SSRF. A same-file TypeScript validator summary now resolves MCP Servers' scheme allowlist and
 environment-backed exact/subdomain predicate, while preserving its empty hostname default as open.
-Schema v37 separately proves two CrewAI loader calls through a locally defined `safe_get` transport:
+Schema v38 separately proves two CrewAI loader calls through a locally defined `safe_get` transport:
 both validate every redirect hop, pin the connected peer after DNS checks, disable proxies, and are
 enabled by default. The `CREWAI_TOOLS_ALLOW_UNSAFE_PATHS` opt-out and
 `CREWAI_TOOLS_FORCE_SAFE_PATHS` override remain explicit governance state. Next resolve normalized
@@ -123,9 +123,11 @@ unresolved and independent domain HITL does not satisfy address policy. Flowise'
 now resolves its variable URL through a fixed Axios request object into a default-on helper that
 normalizes mapped addresses, validates each redirect, and pins direct DNS; environment proxy routing
 and the explicit opt-out remain residuals. Its Web Scraper path also resolves through `secureFetch`,
-whose post-spread pinned agent overrides caller transport options on every validated hop. Next
-generalize beyond these exact request-object and `node-fetch` shapes to client instances, global
-fetch/Undici transports, and runtime egress controls.
+whose post-spread pinned agent overrides caller transport options on every validated hop. Google ADK
+JS's `LOAD_WEB_PAGE` now preserves the opposite transport state: always-on public-address preflight
+and disabled redirects, but unpinned global fetch with a DNS-rebinding residual. Next generalize
+beyond these exact request-object, `node-fetch`, and `FunctionTool` shapes to client instances,
+general fetch/Undici transports, and runtime egress controls.
 
 ## P1 — consequential-action audit coverage
 
@@ -136,8 +138,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 308 pinned positive/negative locations, with 221 separately
-scored IR relationship labels. Schema-v37 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 311 pinned positive/negative locations, with 224 separately
+scored IR relationship labels. Schema-v38 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

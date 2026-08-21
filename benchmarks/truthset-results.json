@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T16:13:18.462480+00:00",
-  "labels": 308,
-  "passed": 308,
+  "generated_at": "2026-08-21T16:27:26.417544+00:00",
+  "labels": 311,
+  "passed": 311,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 14,
@@ -61,9 +61,9 @@
       "recall": 1.0
     },
     "AV-NET001": {
-      "tp": 34,
+      "tp": 36,
       "fp": 0,
-      "tn": 32,
+      "tn": 33,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -2042,6 +2042,33 @@
     },
     {
       "id": "network-flowise-web-scraper-real-review",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "network-typescript-google-adk-load-web-page-local-review",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "network-typescript-google-adk-load-web-page-raw-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "network-google-adk-load-web-page-real-review",
       "rule_id": "AV-NET001",
       "expected": true,
       "observed": true,

@@ -26,6 +26,10 @@
       "packages/components/nodes/agentflow/HTTP/HTTP.ts",
       "packages/components/nodes/tools/WebScraperTool/WebScraperTool.ts",
       "packages/components/src/index.ts"
+    ],
+    "google/adk-js": [
+      "core/src/tools/load_web_page.ts",
+      "core/src/tools/function_tool.ts"
     ]
   }
 }

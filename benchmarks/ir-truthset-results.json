@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T16:14:07.486509+00:00",
-  "labels": 221,
-  "passed": 221,
+  "generated_at": "2026-08-21T16:28:19.416413+00:00",
+  "labels": 224,
+  "passed": 224,
   "metrics": {
     "IR-APPROVAL-CONTROL": {
       "tp": 3,
@@ -213,6 +213,14 @@
       "recall": 1.0
     },
     "IR-TS-FLOWISE-SECURE-REQUEST": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-GOOGLE-ADK-LOAD-WEB-PAGE": {
       "tp": 2,
       "fp": 0,
       "tn": 1,
@@ -2245,6 +2253,33 @@
     {
       "id": "typescript-flowise-secure-fetch-real",
       "check_id": "IR-TS-FLOWISE-SECURE-FETCH",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-google-adk-load-web-page-local",
+      "check_id": "IR-TS-GOOGLE-ADK-LOAD-WEB-PAGE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-google-adk-load-web-page-raw-negative",
+      "check_id": "IR-TS-GOOGLE-ADK-LOAD-WEB-PAGE",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-google-adk-load-web-page-real",
+      "check_id": "IR-TS-GOOGLE-ADK-LOAD-WEB-PAGE",
       "expected": true,
       "observed": true,
       "anchor_ok": true,
