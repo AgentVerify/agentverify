@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T23:26:09.146763+00:00",
-  "labels": 355,
-  "passed": 355,
+  "generated_at": "2026-08-21T23:48:18.479234+00:00",
+  "labels": 371,
+  "passed": 371,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -192,6 +192,14 @@
       "tp": 6,
       "fp": 0,
       "tn": 5,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-LITERAL-TOOL-BINDING": {
+      "tp": 16,
+      "fp": 0,
+      "tn": 0,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -3135,6 +3143,150 @@
     {
       "id": "python-direct-callable-pydantic-real",
       "check_id": "IR-PY-DIRECT-CALLABLE-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-literal-tool-module-constructor-local",
+      "check_id": "IR-PY-LITERAL-TOOL-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-literal-tool-module-callable-local",
+      "check_id": "IR-PY-LITERAL-TOOL-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-literal-tool-local-constructor-local",
+      "check_id": "IR-PY-LITERAL-TOOL-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-literal-tool-inline-import-local",
+      "check_id": "IR-PY-LITERAL-TOOL-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-literal-tool-inline-subclass-local",
+      "check_id": "IR-PY-LITERAL-TOOL-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-literal-tool-context-local",
+      "check_id": "IR-PY-LITERAL-TOOL-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-literal-tool-reassigned-unresolved",
+      "check_id": "IR-PY-LITERAL-TOOL-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-literal-tool-unproven-factory-unresolved",
+      "check_id": "IR-PY-LITERAL-TOOL-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-literal-tool-ambiguous-import-unresolved",
+      "check_id": "IR-PY-LITERAL-TOOL-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-literal-tool-nested-context-unresolved",
+      "check_id": "IR-PY-LITERAL-TOOL-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-literal-tool-agno-inline-real",
+      "check_id": "IR-PY-LITERAL-TOOL-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-literal-tool-agno-assigned-real",
+      "check_id": "IR-PY-LITERAL-TOOL-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-literal-tool-agno-context-real",
+      "check_id": "IR-PY-LITERAL-TOOL-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-literal-tool-crewai-module-real",
+      "check_id": "IR-PY-LITERAL-TOOL-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-literal-tool-google-toolset-real",
+      "check_id": "IR-PY-LITERAL-TOOL-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-literal-tool-marvin-module-callable-real",
+      "check_id": "IR-PY-LITERAL-TOOL-BINDING",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

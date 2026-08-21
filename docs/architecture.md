@@ -51,15 +51,22 @@ reads only direct properties and top-level tool-array entries; it models OpenAI 
 built-ins, inline/assigned agent adapters, and Cline inline tools without treating nested tokens as
 symbols. Python constructor and callable bindings gain a target ID inside a `with`, branch, or other
 statement body only when one exact assignment or function definition is the sole same-block mutation
-before use. Literal Agent `tools=[name]` entries promote the exact preceding callable definition to a
-tool and record its registration site. A wrapper assignment can additionally preserve that body when
+before use. Literal Agent `tools=[...]` entries establish tool role, while identity requires an exact
+local proof. A callable or constructor assignment may be the sole earlier same-block definition, or
+an immutable module-level definition visible without local shadowing. Constructor results additionally
+require one immutable import from a module whose path establishes a tool namespace; a local class is
+eligible only with an exact imported tool base. Inline constructors receive occurrence-qualified tool
+IDs. A direct `with`/`async with` binding is accepted only when the Agent statement is directly in
+that body and no preceding mutation intervenes. AgentVerify does not infer capabilities from the
+constructor spelling. A wrapper assignment can additionally preserve a callable body when
 the factory is an unshadowed `function_tool` import from `agents` or `agents.tool`, the wrapper and
 function are each sole earlier same-block mutations, and the function is passed as the wrapper's sole
 positional argument. Literal approval on the wrapper is retained. This block-local proof takes
 precedence over a broader lexical candidate, while any local binding prevents fallback to a
 same-named module definition. Cross-branch definitions, reassignments, forward definitions,
-unproven parameters, tool-helper returns, lambdas, multiply wrapped functions, wrapper tuple
-unpacking, and shadowed factories remain unresolved.
+unproven parameters, arbitrary factories/builtins, ambiguous or rebound constructor imports, nested
+or reassigned context bindings, tool-helper returns, lambdas, multiply wrapped functions, wrapper
+tuple unpacking, and shadowed factories remain unresolved.
 Package re-exports, wildcard imports, dynamic lookups, conditional tool expressions, and other
 wrapper-factory forms
 remain unresolved.

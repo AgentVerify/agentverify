@@ -93,6 +93,8 @@ def main() -> int:
                 "same-class-helper-return",
                 "imported-class-factory-return",
                 "contextual-imported-class-factory-return",
+                "literal-tools-list-context-manager",
+                "literal-tools-list-inline-constructor",
                 "typed-parameter-callsite-consensus",
                 "contextual-absolute-import-single-export",
             }
@@ -729,6 +731,29 @@ def main() -> int:
             },
             "python_agent_referenced_tools": {
                 "instances": len(python_agent_referenced_tools),
+                "callables": sum(
+                    item.attributes.get("binding") is None
+                    for item in python_agent_referenced_tools
+                ),
+                "constructor_bindings": sum(
+                    item.attributes.get("binding")
+                    == "literal-tools-list-constructor"
+                    for item in python_agent_referenced_tools
+                ),
+                "inline_constructors": sum(
+                    item.attributes.get("binding")
+                    == "literal-tools-list-inline-constructor"
+                    for item in python_agent_referenced_tools
+                ),
+                "context_manager_bindings": sum(
+                    item.attributes.get("binding")
+                    == "literal-tools-list-context-manager"
+                    for item in python_agent_referenced_tools
+                ),
+                "module_single_definitions": sum(
+                    item.attributes.get("resolution") == "module-single-definition"
+                    for item in python_agent_referenced_tools
+                ),
                 "non_test_instances": sum(
                     not item.evidence.path.startswith("tests/")
                     and "/tests/" not in item.evidence.path
@@ -1447,7 +1472,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 56,
+        "schema_version": 57,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -1587,6 +1612,11 @@ def main() -> int:
                 )
                 for name in (
                     "instances",
+                    "callables",
+                    "constructor_bindings",
+                    "inline_constructors",
+                    "context_manager_bindings",
+                    "module_single_definitions",
                     "non_test_instances",
                     "capability_edges",
                     "resolved_agent_edges",

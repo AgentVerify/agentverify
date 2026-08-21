@@ -4059,6 +4059,76 @@ def test_python_function_tool_wrappers_require_import_and_same_block_proof() -> 
     assert finding.analysis["approval_coverage"] == "present"
 
 
+def test_literal_tool_bindings_require_role_and_exact_local_identity() -> None:
+    ir = scan_repository(ROOT / "cases/python_literal_tool_bindings")
+    edges = {
+        (edge.source_name, edge.target_name): edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent" and edge.target_kind == "tool"
+    }
+
+    assert edges[("module-bindings", "module_tools")].target_id == (
+        "py:positive.py#tool:module_tools"
+    )
+    assert edges[("module-bindings", "module_callable")].target_id == (
+        "py:positive.py#tool:module_callable"
+    )
+    assert edges[("local-binding", "local_tools")].target_id == (
+        "py:positive.py#tool:local_tools"
+    )
+    assert edges[("inline-binding", "InlineTools@31")].target_id == (
+        "py:positive.py#tool:InlineTools@31"
+    )
+    assert edges[("inline-binding", "InlineTools@31")].attributes == {
+        "target_identity": "literal-tools-list-inline-constructor"
+    }
+    assert edges[("inline-binding", "LocalToolkit@31")].target_id == (
+        "py:positive.py#tool:LocalToolkit@31"
+    )
+    assert edges[("context-binding", "context_tools")].target_id == (
+        "py:positive.py#tool:context_tools"
+    )
+    assert edges[("context-binding", "context_tools")].attributes == {
+        "target_identity": "literal-tools-list-context-manager"
+    }
+
+    unresolved_agents = {
+        "reassigned-binding",
+        "cross-branch-binding",
+        "parameter-binding",
+        "unproven-factory",
+        "unproven-builtin",
+        "ambiguous-constructor",
+        "shadowed-constructor",
+        "reassigned-context",
+        "nested-context",
+        "callable-rebound",
+    }
+    assert all(
+        edges[(agent_name, "rebound_callable" if agent_name == "callable-rebound" else "tools")]
+        .target_id
+        is None
+        for agent_name in unresolved_agents
+    )
+
+    components = {
+        component.symbol_id: component
+        for component in ir.components
+        if component.kind == "tool"
+    }
+    assert components["py:positive.py#tool:module_tools"].attributes == {
+        "binding": "literal-tools-list-constructor",
+        "constructor": "ImportedTools",
+        "registration": "agent-tool-reference",
+        "registration_line": 17,
+        "resolution": "module-single-definition",
+        "scope": "production",
+    }
+    assert components["py:positive.py#tool:module_callable"].attributes[
+        "resolution"
+    ] == "module-single-definition"
+
+
 def test_python_agent_helper_returns_require_exact_same_class_flow() -> None:
     ir = scan_repository(ROOT / "cases/python_agent_helper_return")
     edges = {

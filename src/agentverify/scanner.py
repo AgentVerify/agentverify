@@ -2204,8 +2204,9 @@ class PythonVisitor(ast.NodeVisitor):
         node_scopes: dict[int, tuple[str, ...]],
         call_symbol_ids: dict[int, str],
         definition_symbol_ids: dict[int, str],
-        referenced_tool_functions: dict[int, ast.Call],
+        referenced_tool_functions: dict[int, tuple[ast.Call, str]],
         wrapped_tool_functions: dict[int, PythonFunctionToolWrapper],
+        inline_usage_tool_calls: dict[int, tuple[str, str]],
         decorated_tool_exports: dict[tuple[str, str], str],
         imported_agent_factory_target_paths: dict[str, str],
         registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
@@ -2278,6 +2279,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.definition_symbol_ids = definition_symbol_ids
         self.referenced_tool_functions = referenced_tool_functions
         self.wrapped_tool_functions = wrapped_tool_functions
+        self.inline_usage_tool_calls = inline_usage_tool_calls
         self.decorated_tool_exports = decorated_tool_exports
         self.imported_agent_factory_target_paths = imported_agent_factory_target_paths
         self.registry_class_exports = registry_class_exports
@@ -2536,6 +2538,7 @@ class PythonVisitor(ast.NodeVisitor):
                 in {
                     "imported-class-factory-return",
                     "contextual-imported-class-factory-return",
+                    "literal-tools-list-context-manager",
                 }
                 else (dominating[0], None)
             )
@@ -3032,8 +3035,8 @@ class PythonVisitor(ast.NodeVisitor):
                     {
                         "registration": "agent-tool-reference",
                         "registration_path": self.path,
-                        "registration_line": tool_reference.lineno,
-                        "resolution": "same-block-single-definition",
+                        "registration_line": tool_reference[0].lineno,
+                        "resolution": tool_reference[1],
                     }
                 )
             if active_class_tool is None:
@@ -4102,6 +4105,13 @@ class PythonVisitor(ast.NodeVisitor):
                         target_id = self.call_symbol_ids.get(id(value)) or source_symbol(
                             "py", self.path, "tool", target_name
                         )
+                        target_identity = None
+                    elif (
+                        isinstance(value, ast.Call)
+                        and (inline_tool := self.inline_usage_tool_calls.get(id(value)))
+                    ):
+                        target_name, target_id = inline_tool
+                        target_identity = "literal-tools-list-inline-constructor"
                     if target_name:
                         attributes = {}
                         root_name, separator, suffix = target_name.partition(".")
@@ -5232,8 +5242,123 @@ def scan_python(
             return None
         return registrar
 
-    referenced_tool_functions: dict[int, ast.Call] = {}
+    import_binding_counts: Counter[str] = Counter()
+    tool_constructor_import_candidates: dict[str, list[ast.ImportFrom]] = defaultdict(list)
+    for statement in (candidate for candidate in nodes if isinstance(candidate, ast.ImportFrom)):
+        module_parts = re.split(r"[._]", statement.module or "")
+        for alias in statement.names:
+            local_name = alias.asname or alias.name
+            import_binding_counts[local_name] += 1
+            if any("tool" in part.lower() for part in module_parts):
+                tool_constructor_import_candidates[local_name].append(statement)
+    for statement in (candidate for candidate in nodes if isinstance(candidate, ast.Import)):
+        import_binding_counts.update(
+            alias.asname or alias.name.split(".", 1)[0]
+            for alias in statement.names
+        )
+
+    nonimport_binding_counts: Counter[str] = Counter()
+    for candidate in nodes:
+        if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
+            nonimport_binding_counts[candidate.id] += 1
+        elif isinstance(candidate, ast.arg):
+            nonimport_binding_counts[candidate.arg] += 1
+        elif isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            nonimport_binding_counts[candidate.name] += 1
+    imported_tool_constructors = {
+        name: imports[0]
+        for name, imports in tool_constructor_import_candidates.items()
+        if len(imports) == 1
+        and import_binding_counts[name] == 1
+        and nonimport_binding_counts[name] == 0
+    }
+    local_tool_constructor_classes = {
+        statement.name
+        for statement in tree.body
+        if isinstance(statement, ast.ClassDef)
+        and not statement.decorator_list
+        and module_mutation_counts[statement.name] == 1
+        and any(
+            isinstance(base, ast.Name) and base.id in imported_tool_constructors
+            for base in statement.bases
+        )
+    }
+
+    def usage_proven_tool_constructor(call: ast.Call) -> bool:
+        if not isinstance(call.func, ast.Name):
+            return False
+        constructor = call.func.id
+        if constructor in local_tool_constructor_classes:
+            return True
+        imported_at = imported_tool_constructors.get(constructor)
+        return imported_at is not None and imported_at.lineno < call.lineno
+
+    module_tool_definitions: dict[str, list[ast.stmt]] = defaultdict(list)
+    for statement in tree.body:
+        if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if module_mutation_counts[statement.name] == 1:
+                module_tool_definitions[statement.name].append(statement)
+            continue
+        if not (
+            isinstance(statement, ast.Assign)
+            and len(statement.targets) == 1
+            and isinstance(statement.targets[0], ast.Name)
+            and isinstance(statement.value, ast.Call)
+        ):
+            continue
+        binding = statement.targets[0].id
+        if module_mutation_counts[binding] == 1:
+            module_tool_definitions[binding].append(statement)
+
+    def shadowed_tool_reference(node: ast.AST, name: str) -> bool:
+        parent = parent_by_id.get(id(node))
+        while parent is not None:
+            if isinstance(parent, (ast.FunctionDef, ast.AsyncFunctionDef)) and (
+                name in python_function_local_bindings(parent)
+            ):
+                return True
+            parent = parent_by_id.get(id(parent))
+        return False
+
+    def direct_context_tool_binding(
+        call: ast.Call,
+        name: str,
+    ) -> tuple[ast.With | ast.AsyncWith, ast.Call] | None:
+        current: ast.AST = call
+        while parent := parent_by_id.get(id(current)):
+            if isinstance(parent, (ast.With, ast.AsyncWith)) and current in parent.body:
+                if not isinstance(current, (ast.Assign, ast.AnnAssign, ast.Expr, ast.Return)):
+                    return None
+                use_index = parent.body.index(current)
+                if any(
+                    name in statement_mutations(statement)
+                    for statement in parent.body[:use_index]
+                ):
+                    return None
+                matches = [
+                    item.context_expr
+                    for item in parent.items
+                    if isinstance(item.optional_vars, ast.Name)
+                    and item.optional_vars.id == name
+                    and isinstance(item.context_expr, ast.Call)
+                ]
+                return (parent, matches[0]) if len(matches) == 1 else None
+            if isinstance(parent, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                return None
+            current = parent
+        return None
+
+    referenced_tool_functions: dict[int, tuple[ast.Call, str]] = {}
+    usage_tool_assignments: dict[int, tuple[ast.Assign, ast.Call, str]] = {}
+    inline_usage_tool_candidates: dict[int, tuple[ast.Call, ast.Call]] = {}
+    context_usage_tool_bindings: dict[
+        tuple[int, str], tuple[ast.With | ast.AsyncWith, ast.Call, list[ast.Call]]
+    ] = {}
     wrapper_candidates: dict[int, PythonFunctionToolWrapper] = {}
+    openai_agents_context = any(
+        module == "agents" or module.startswith("agents.")
+        for module in imported_modules
+    )
     for call in (
         candidate
         for candidate in nodes
@@ -5248,6 +5373,22 @@ def scan_python(
             if keyword.arg != "tools" or not isinstance(keyword.value, (ast.List, ast.Tuple)):
                 continue
             for value in keyword.value.elts:
+                if isinstance(value, ast.Call):
+                    call_name = dotted_name(value.func)
+                    short_name = call_name.rsplit(".", 1)[-1]
+                    if (
+                        call_name
+                        and not call_name.endswith(".as_tool")
+                        and usage_proven_tool_constructor(value)
+                        and not (
+                            openai_agents_context
+                            and short_name in BUILTIN_TOOL_CAPABILITIES
+                        )
+                    ):
+                        inline_usage_tool_candidates.setdefault(
+                            id(value), (value, call)
+                        )
+                    continue
                 if not isinstance(value, ast.Name):
                     continue
                 mutations = [
@@ -5255,14 +5396,53 @@ def scan_python(
                     for statement in statements[:use_index]
                     if value.id in statement_mutations(statement)
                 ]
-                if len(mutations) != 1:
+                resolution = "same-block-single-definition"
+                definition: ast.stmt | None = mutations[0] if len(mutations) == 1 else None
+                if not mutations:
+                    if context_binding := direct_context_tool_binding(call, value.id):
+                        context_node, context_call = context_binding
+                        if not usage_proven_tool_constructor(context_call):
+                            continue
+                        key = (id(context_node), value.id)
+                        existing = context_usage_tool_bindings.get(key)
+                        if existing is None:
+                            context_usage_tool_bindings[key] = (
+                                context_node,
+                                context_call,
+                                [call],
+                            )
+                        else:
+                            existing[2].append(call)
+                        continue
+                    if not shadowed_tool_reference(call, value.id):
+                        module_definitions = [
+                            candidate
+                            for candidate in module_tool_definitions.get(value.id, [])
+                            if candidate.lineno < call.lineno
+                        ]
+                        if len(module_definitions) == 1:
+                            definition = module_definitions[0]
+                            resolution = "module-single-definition"
+                if definition is None:
                     continue
-                definition = mutations[0]
                 if isinstance(definition, (ast.FunctionDef, ast.AsyncFunctionDef)) and (
                     definition.name == value.id
                 ):
-                    referenced_tool_functions.setdefault(id(definition), call)
+                    referenced_tool_functions.setdefault(
+                        id(definition), (call, resolution)
+                    )
                     continue
+                if (
+                    isinstance(definition, ast.Assign)
+                    and len(definition.targets) == 1
+                    and isinstance(definition.targets[0], ast.Name)
+                    and definition.targets[0].id == value.id
+                    and isinstance(definition.value, ast.Call)
+                    and usage_proven_tool_constructor(definition.value)
+                ):
+                    usage_tool_assignments.setdefault(
+                        id(definition), (definition, call, resolution)
+                    )
                 if not (
                     isinstance(definition, ast.Assign)
                     and len(definition.targets) == 1
@@ -5314,6 +5494,11 @@ def scan_python(
     }
     wrapped_tool_assignments = {
         id(wrapper.assignment): wrapper for wrapper in wrapped_tool_functions.values()
+    }
+    usage_tool_assignments = {
+        assignment_id: reference
+        for assignment_id, reference in usage_tool_assignments.items()
+        if assignment_id not in wrapped_tool_assignments
     }
     symbol_candidates: dict[tuple[str, str], set[str]] = {}
     call_symbol_ids: dict[int, str] = {}
@@ -5407,6 +5592,7 @@ def scan_python(
                 else "tool"
                 if short_name in BUILTIN_TOOL_CAPABILITIES
                 or id(node) in wrapped_tool_assignments
+                or id(node) in usage_tool_assignments
                 else None
             )
             if kind:
@@ -5419,6 +5605,108 @@ def scan_python(
         call_symbol_ids[id(node.value)] = symbol_id
         if wrapper := wrapped_tool_assignments.get(id(node)):
             definition_symbol_ids[id(wrapper.function)] = symbol_id
+
+    usage_tool_assignment_ids = set(usage_tool_assignments)
+    for node, kind, binding in assigned_constructors:
+        if id(node) not in usage_tool_assignment_ids or kind != "tool":
+            continue
+        constructor = dotted_name(node.value.func)
+        if (
+            openai_agents_context
+            and constructor.rsplit(".", 1)[-1] in BUILTIN_TOOL_CAPABILITIES
+        ):
+            continue
+        symbol_id = call_symbol_ids[id(node.value)]
+        ir.add_component(
+            Component(
+                "tool",
+                binding,
+                Evidence(relative, node.lineno, excerpt(text.splitlines(), node.lineno)),
+                {
+                    "binding": "literal-tools-list-constructor",
+                    "constructor": constructor,
+                    "registration": "agent-tool-reference",
+                    "registration_line": usage_tool_assignments[id(node)][1].lineno,
+                    "resolution": usage_tool_assignments[id(node)][2],
+                    "scope": source_scope(relative),
+                },
+                symbol_id,
+            )
+        )
+
+    inline_usage_tool_calls: dict[int, tuple[str, str]] = {}
+    inline_name_counts = Counter(
+        (dotted_name(call.func).rsplit(".", 1)[-1], call.lineno)
+        for call, _agent_call in inline_usage_tool_candidates.values()
+    )
+    for call, agent_call in inline_usage_tool_candidates.values():
+        constructor = dotted_name(call.func)
+        short_name = constructor.rsplit(".", 1)[-1]
+        occurrence = f"{short_name}@{call.lineno}"
+        if inline_name_counts[(short_name, call.lineno)] > 1:
+            occurrence = f"{occurrence}:{call.col_offset}"
+        symbol_id = source_symbol("py", relative, "tool", occurrence)
+        inline_usage_tool_calls[id(call)] = (occurrence, symbol_id)
+        call_symbol_ids[id(call)] = symbol_id
+        ir.add_component(
+            Component(
+                "tool",
+                occurrence,
+                Evidence(relative, call.lineno, excerpt(text.splitlines(), call.lineno)),
+                {
+                    "binding": "literal-tools-list-inline-constructor",
+                    "constructor": constructor,
+                    "registration": "agent-tool-reference",
+                    "registration_line": agent_call.lineno,
+                    "resolution": "literal-inline-constructor",
+                    "scope": source_scope(relative),
+                },
+                symbol_id,
+            )
+        )
+
+    context_usage_tool_resolutions: list[tuple[ast.Call, str, str]] = []
+    context_binding_counts = Counter(
+        name for _node_id, name in context_usage_tool_bindings
+    )
+    for (_node_id, binding), (
+        context_node,
+        context_call,
+        agent_calls,
+    ) in context_usage_tool_bindings.items():
+        identity = (
+            f"{binding}@{context_node.lineno}"
+            if context_binding_counts[binding] > 1
+            else binding
+        )
+        symbol_id = source_symbol("py", relative, "tool", identity)
+        symbol_candidates.setdefault(("tool", binding), set()).add(symbol_id)
+        call_symbol_ids[id(context_call)] = symbol_id
+        ir.add_component(
+            Component(
+                "tool",
+                identity,
+                Evidence(
+                    relative,
+                    context_node.lineno,
+                    excerpt(text.splitlines(), context_node.lineno),
+                ),
+                {
+                    "binding": "literal-tools-list-context-manager",
+                    "constructor": dotted_name(context_call.func),
+                    "registration": "agent-tool-reference",
+                    "registration_lines": sorted(
+                        {agent_call.lineno for agent_call in agent_calls}
+                    ),
+                    "resolution": "direct-context-manager-binding",
+                    "scope": source_scope(relative),
+                },
+                symbol_id,
+            )
+        )
+        context_usage_tool_resolutions.extend(
+            (agent_call, binding, symbol_id) for agent_call in agent_calls
+        )
 
     builtin_tool_type_candidates: dict[str, set[str]] = defaultdict(set)
     for statement in tree.body:
@@ -5975,6 +6263,15 @@ def scan_python(
         )
         for call, parameter, symbol_id in typed_tool_parameter_resolutions
     }
+    dominating_symbol_ids.update(
+        {
+            (id(call), "tool", binding): (
+                symbol_id,
+                "literal-tools-list-context-manager",
+            )
+            for call, binding, symbol_id in context_usage_tool_resolutions
+        }
+    )
     scope_bound_names: set[tuple[tuple[str, ...], str]] = set()
     node_scopes: dict[int, tuple[str, ...]] = {}
     if symbol_candidates:
@@ -6129,6 +6426,7 @@ def scan_python(
         definition_symbol_ids=definition_symbol_ids,
         referenced_tool_functions=referenced_tool_functions,
         wrapped_tool_functions=wrapped_tool_functions,
+        inline_usage_tool_calls=inline_usage_tool_calls,
         decorated_tool_exports=decorated_tool_exports,
         imported_agent_factory_target_paths=imported_agent_factory_target_paths,
         registry_class_exports=registry_class_exports,
