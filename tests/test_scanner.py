@@ -3794,6 +3794,22 @@ def test_local_import_resolves_cross_file_agent_tool_path() -> None:
     assert agent_edge.target_id == tool.symbol_id == "py:tools.py#tool:run_command"
 
 
+def test_python_local_bindings_do_not_inherit_module_import_identity() -> None:
+    ir = scan_repository(ROOT / "cases/python_import_shadowing")
+    edges = {
+        edge.evidence.line: edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent" and edge.target_name == "tool"
+    }
+
+    assert edges[4].attributes == {"target_path": "pkg/__init__.py"}
+    assert edges[4].target_id == "py:pkg/__init__.py#tool:tool"
+    assert edges[8].attributes == {}
+    assert edges[8].target_id is None
+    assert edges[13].attributes == {}
+    assert edges[13].target_id is None
+
+
 def test_relative_typescript_import_resolves_cross_file_tool_path() -> None:
     ir = scan_repository(ROOT / "cases/imported_ts_tool")
 

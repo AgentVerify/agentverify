@@ -171,8 +171,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 340 pinned positive/negative locations, with 264 separately
-scored IR relationship labels. Schema-v47 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 340 pinned positive/negative locations, with 269 separately
+scored IR relationship labels. Schema-v48 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

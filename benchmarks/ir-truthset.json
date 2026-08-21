@@ -3321,6 +3321,36 @@
       "target":{"kind":"repository","repository":"Skyvern-AI/skyvern","commit":"486c8975e9864a53037d4701b781f8619e698c40"},
       "check_id":"IR-PY-SKYVERN-ACTION-HISTORY","path":"skyvern/forge/agent.py","line":1358,"expected":true,
       "relationship":{"source_kind":"agent","source_name":"Skyvern Task v3 agent loop","relation":"governed-by","target_kind":"control","target_name":"durable-action-record","attributes":{"analysis":"python-skyvern-taskv3-action-history","deployment_state":"enabled","actor_attribution":"unresolved-created-by-nullable-and-unset"}}
+    },
+    {
+      "id":"python-import-shadow-direct-local-negative",
+      "target":{"kind":"local","path":"cases/python_import_shadowing"},
+      "check_id":"IR-PY-IMPORT-SHADOWING","path":"app.py","line":4,"expected":false,"source_contains":"direct = Agent",
+      "relationship":{"source_kind":"agent","relation":"uses","target_kind":"tool","target_name":"tool","target_id":null}
+    },
+    {
+      "id":"python-import-shadow-parameter-local",
+      "target":{"kind":"local","path":"cases/python_import_shadowing"},
+      "check_id":"IR-PY-IMPORT-SHADOWING","path":"app.py","line":8,"expected":true,
+      "relationship":{"source_kind":"agent","relation":"uses","target_kind":"tool","target_name":"tool","target_id":null}
+    },
+    {
+      "id":"python-import-shadow-assignment-local",
+      "target":{"kind":"local","path":"cases/python_import_shadowing"},
+      "check_id":"IR-PY-IMPORT-SHADOWING","path":"app.py","line":13,"expected":true,
+      "relationship":{"source_kind":"agent","relation":"uses","target_kind":"tool","target_name":"tool","target_id":null}
+    },
+    {
+      "id":"python-import-shadow-assignment-crewai-real",
+      "target":{"kind":"repository","repository":"crewAIInc/crewAI","commit":"456c67d7c27923ed3c3dca202c6f56651d8e6063"},
+      "check_id":"IR-PY-IMPORT-SHADOWING","path":"lib/crewai/tests/tools/test_base_tool.py","line":221,"expected":true,
+      "relationship":{"source_kind":"agent","relation":"uses","target_kind":"tool","target_name":"tool","target_id":null}
+    },
+    {
+      "id":"python-import-shadow-parameter-crewai-real",
+      "target":{"kind":"repository","repository":"crewAIInc/crewAI","commit":"456c67d7c27923ed3c3dca202c6f56651d8e6063"},
+      "check_id":"IR-PY-IMPORT-SHADOWING","path":"lib/crewai/tests/tools/test_structured_tool.py","line":331,"expected":true,
+      "relationship":{"source_kind":"agent","relation":"uses","target_kind":"tool","target_name":"tool","target_id":null}
     }
   ]
 }

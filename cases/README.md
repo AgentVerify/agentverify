@@ -62,6 +62,8 @@ never imported or executed.
   BigQuery analytics plugin to one tool action while retaining an explicit disabled near miss.
 - `python_skyvern_action_history`: Skyvern Task v3 records post-dispatch browser actions in a
   committed SQLAlchemy table while preserving best-effort delivery and unresolved actor attribution.
+- `python_import_shadowing`: a package import remains available for direct use while function
+  parameters and assignments with the same name retain local, unresolved identity.
 - `typescript_a2a_card_endpoint`: ADK JS and Gemini compositions preserve remotely supplied
   AgentCard authority at SDK client construction; fixed/local cards, wrong imports, and unproven
   transports stay negative.

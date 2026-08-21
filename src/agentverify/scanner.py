@@ -2455,11 +2455,17 @@ class PythonVisitor(ast.NodeVisitor):
             return self.local_symbol_ids.get((kind, name)), None
         return None, None
 
+    def invalidate_imported_symbol(self, name: str) -> None:
+        self.imported_symbol_paths.pop(name, None)
+        self.imported_symbol_names.pop(name, None)
+
     def visit_Import(self, node: ast.Import) -> None:
         for alias in node.names:
+            local_name = alias.asname or alias.name.split(".", 1)[0]
+            self.invalidate_imported_symbol(local_name)
             if not self.class_stack or self.function_depth > 0:
                 self.network_helper_bindings.pop(
-                    alias.asname or alias.name.split(".", 1)[0], None
+                    local_name, None
                 )
             component_from_import(self.ir, alias.name, self.ev(node))
 
@@ -2564,6 +2570,10 @@ class PythonVisitor(ast.NodeVisitor):
                 if name.startswith("self.") and self.class_approval_environment_flags:
                     self.class_approval_environment_flags[-1][name] = environment_names
         self.generic_visit(node)
+        if not self.class_stack or self.function_depth > 0:
+            for target in node.targets:
+                if isinstance(target, ast.Name):
+                    self.invalidate_imported_symbol(target.id)
 
     def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
         if (
@@ -2571,6 +2581,10 @@ class PythonVisitor(ast.NodeVisitor):
         ) and isinstance(node.target, ast.Name):
             self.network_helper_bindings.pop(node.target.id, None)
         self.generic_visit(node)
+        if (
+            not self.class_stack or self.function_depth > 0
+        ) and isinstance(node.target, ast.Name):
+            self.invalidate_imported_symbol(node.target.id)
 
     def visit_AugAssign(self, node: ast.AugAssign) -> None:
         if (
@@ -2578,11 +2592,16 @@ class PythonVisitor(ast.NodeVisitor):
         ) and isinstance(node.target, ast.Name):
             self.network_helper_bindings.pop(node.target.id, None)
         self.generic_visit(node)
+        if (
+            not self.class_stack or self.function_depth > 0
+        ) and isinstance(node.target, ast.Name):
+            self.invalidate_imported_symbol(node.target.id)
 
     def visit_Delete(self, node: ast.Delete) -> None:
         if not self.class_stack or self.function_depth > 0:
             for target in node.targets:
                 if isinstance(target, ast.Name):
+                    self.invalidate_imported_symbol(target.id)
                     self.network_helper_bindings.pop(target.id, None)
         self.generic_visit(node)
 
@@ -2655,6 +2674,7 @@ class PythonVisitor(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         if not self.class_stack or self.function_depth > 0:
+            self.invalidate_imported_symbol(node.name)
             self.network_helper_bindings.pop(node.name, None)
         previous_allowlisted_names = self.allowlisted_names
         previous_allowlist_evidence = self.allowlist_evidence
@@ -2688,6 +2708,18 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_fixed_binding_sources.append(self.fixed_function_parameter_bindings(node))
         self.function_escaping_children.append(self.escaping_nested_function_names(node))
         local_bindings = python_function_local_bindings(node)
+        previous_imported_symbol_paths = self.imported_symbol_paths
+        previous_imported_symbol_names = self.imported_symbol_names
+        self.imported_symbol_paths = {
+            name: target
+            for name, target in self.imported_symbol_paths.items()
+            if name not in local_bindings
+        }
+        self.imported_symbol_names = {
+            name: original
+            for name, original in self.imported_symbol_names.items()
+            if name not in local_bindings
+        }
         previous_urllib_openers = self.urllib_openers
         previous_urllib_request_constructors = self.urllib_request_constructors
         self.urllib_openers = {
@@ -2928,6 +2960,8 @@ class PythonVisitor(ast.NodeVisitor):
         self.approval_environment_flags = previous_approval_environment_flags
         self.static_http_prefixes = previous_static_http_prefixes
         self.network_helper_bindings = previous_network_helper_bindings
+        self.imported_symbol_paths = previous_imported_symbol_paths
+        self.imported_symbol_names = previous_imported_symbol_names
         self.urllib_openers = previous_urllib_openers
         self.urllib_request_constructors = previous_urllib_request_constructors
 
@@ -2935,6 +2969,7 @@ class PythonVisitor(ast.NodeVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         if not self.class_stack or self.function_depth > 0:
+            self.invalidate_imported_symbol(node.name)
             self.network_helper_bindings.pop(node.name, None)
         registry_tool = self.registry_class_tools.get(id(node))
         active_registry_tool: tuple[PythonRegistryTool, str] | None = None

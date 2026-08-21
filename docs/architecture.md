@@ -33,7 +33,10 @@ requires the relationship and capability observation to share a source location,
 same-named definitions in separate modules from leaking reachability or control coverage.
 Unambiguous absolute Python
 `from local_module import tool` references and filesystem-resolved relative imports point to an exact
-repository file and can safely form cross-file agent paths. TypeScript named imports resolve when a
+repository file and can safely form cross-file agent paths. Function parameters and local
+assignments/imports are scope-isolated: a same-named local binding cannot inherit a module import's
+target ID, and an explicit function-local import is restored only within that function. TypeScript
+named imports resolve when a
 relative module maps to exactly one in-repository `.ts`, `.tsx`, `.js`, or `.jsx` file; aliases retain
 the original exported name. Imports that escape the scan root, target missing files, or have multiple
 candidate files remain unresolved. Python class methods use class-qualified IDs, and assigned agent

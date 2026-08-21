@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T19:29:19.885717+00:00",
-  "labels": 264,
-  "passed": 264,
+  "generated_at": "2026-08-21T20:02:55.557893+00:00",
+  "labels": 269,
+  "passed": 269,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -110,6 +110,14 @@
     },
     "IR-PY-GOOGLE-ADK-BIGQUERY-AUDIT": {
       "tp": 3,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-IMPORT-SHADOWING": {
+      "tp": 4,
       "fp": 0,
       "tn": 1,
       "fn": 0,
@@ -2712,6 +2720,51 @@
     {
       "id": "python-skyvern-action-agent-real",
       "check_id": "IR-PY-SKYVERN-ACTION-HISTORY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-import-shadow-direct-local-negative",
+      "check_id": "IR-PY-IMPORT-SHADOWING",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-import-shadow-parameter-local",
+      "check_id": "IR-PY-IMPORT-SHADOWING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-import-shadow-assignment-local",
+      "check_id": "IR-PY-IMPORT-SHADOWING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-import-shadow-assignment-crewai-real",
+      "check_id": "IR-PY-IMPORT-SHADOWING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-import-shadow-parameter-crewai-real",
+      "check_id": "IR-PY-IMPORT-SHADOWING",
       "expected": true,
       "observed": true,
       "anchor_ok": true,
