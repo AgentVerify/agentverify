@@ -380,6 +380,11 @@ tool callbacks, and the BigQuery Agent Analytics Storage Write API. It emits a
 `durable-action-audit` control only for enabled literal/default configurations and records event,
 agent, user, session, invocation, and tool attribution. Delivery remains best-effort with explicit
 drop accounting; nonliteral filters/configuration and incomplete framework source paths are withheld.
+Skyvern Task v3 is modeled separately as `durable-action-record`: the resolver follows a
+billable/recordable tool dispatch into the round callback and then through `create_action` to an
+SQLAlchemy commit on the `actions` table. It preserves organization/workflow/task/step/action
+correlation and completed/failed status, but does not upgrade the record to a fully attributable
+audit because `created_by` is nullable and unset and persistence exceptions are contained.
 
 ## Safety boundary
 

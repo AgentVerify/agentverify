@@ -286,6 +286,22 @@ def main() -> int:
             and item.attributes.get("analysis")
             == "python-google-adk-bigquery-action-audit"
         ]
+        python_skyvern_action_history_controls = [
+            item
+            for item in ir.components
+            if item.kind == "control"
+            and item.name == "durable-action-record"
+            and item.attributes.get("analysis")
+            == "python-skyvern-taskv3-action-history"
+        ]
+        python_skyvern_action_history_storage = [
+            item
+            for item in ir.components
+            if item.kind == "capability"
+            and item.name == "audit-storage"
+            and item.attributes.get("analysis")
+            == "python-skyvern-taskv3-action-history"
+        ]
         typescript_network_origin_controls = [
             edge
             for edge in ir.relationships
@@ -793,6 +809,57 @@ def main() -> int:
                     for edge in ir.relationships
                 ),
             },
+            "python_skyvern_action_history": {
+                "deployed_controls": len(python_skyvern_action_history_controls),
+                "production_deployments": sum(
+                    item.attributes.get("scope") == "production"
+                    for item in python_skyvern_action_history_controls
+                ),
+                "best_effort_controls": sum(
+                    item.attributes.get("delivery") == "best-effort-post-action"
+                    for item in python_skyvern_action_history_controls
+                ),
+                "actor_attribution_unresolved": sum(
+                    item.attributes.get("actor_attribution")
+                    == "unresolved-created-by-nullable-and-unset"
+                    for item in python_skyvern_action_history_controls
+                ),
+                "storage_capabilities": len(python_skyvern_action_history_storage),
+                "agent_control_edges": sum(
+                    edge.source_kind == "agent"
+                    and edge.relation == "governed-by"
+                    and edge.target_name == "durable-action-record"
+                    and edge.attributes.get("analysis")
+                    == "python-skyvern-taskv3-action-history"
+                    for edge in ir.relationships
+                ),
+                "tool_control_edges": sum(
+                    edge.source_kind == "tool"
+                    and edge.relation == "governed-by"
+                    and edge.target_name == "durable-action-record"
+                    and edge.attributes.get("analysis")
+                    == "python-skyvern-taskv3-action-history"
+                    for edge in ir.relationships
+                ),
+                "external_action_control_edges": sum(
+                    edge.source_kind == "capability"
+                    and edge.source_name == "external-action"
+                    and edge.relation == "governed-by"
+                    and edge.target_name == "durable-action-record"
+                    and edge.attributes.get("analysis")
+                    == "python-skyvern-taskv3-action-history"
+                    for edge in ir.relationships
+                ),
+                "storage_edges": sum(
+                    edge.source_kind == "control"
+                    and edge.source_name == "durable-action-record"
+                    and edge.relation == "exports-to"
+                    and edge.target_name == "audit-storage"
+                    and edge.attributes.get("analysis")
+                    == "python-skyvern-taskv3-action-history"
+                    for edge in ir.relationships
+                ),
+            },
             "typescript_network_origin_controls": {
                 "total": len(typescript_network_origin_controls),
                 "configured_optional": sum(
@@ -1077,7 +1144,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 45,
+        "schema_version": 46,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -1327,6 +1394,23 @@ def main() -> int:
                     "storage_capabilities",
                     "disabled_settings",
                     "agent_control_edges",
+                    "external_action_control_edges",
+                    "storage_edges",
+                )
+            },
+            "python_skyvern_action_history": {
+                name: sum(
+                    result["python_skyvern_action_history"][name]
+                    for result in successful
+                )
+                for name in (
+                    "deployed_controls",
+                    "production_deployments",
+                    "best_effort_controls",
+                    "actor_attribution_unresolved",
+                    "storage_capabilities",
+                    "agent_control_edges",
+                    "tool_control_edges",
                     "external_action_control_edges",
                     "storage_edges",
                 )

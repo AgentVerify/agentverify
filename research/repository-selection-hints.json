@@ -59,6 +59,13 @@
       "packages/server/api/src/app/agents/mcp-tool-validator.ts",
       "packages/server/utils/src/mcp-transport.ts",
       "packages/server/utils/src/safe-http.ts"
+    ],
+    "Skyvern-AI/skyvern": [
+      "skyvern/cli/core/browser_ops.py",
+      "skyvern/cli/core/guards.py",
+      "skyvern/forge/sdk/db/models.py",
+      "skyvern/forge/sdk/db/repositories/workflow_parameters.py",
+      "skyvern/forge/taskv3/loop.py"
     ]
   }
 }

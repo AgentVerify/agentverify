@@ -3291,6 +3291,36 @@
       "target":{"kind":"repository","repository":"google/adk-python","commit":"775c1bd36e205eec65e207ad29fdc4cf2184e47e"},
       "check_id":"IR-PY-GOOGLE-ADK-BIGQUERY-AUDIT","path":"tests/unittests/plugins/test_bigquery_agent_analytics_plugin.py","line":6385,"expected":true,
       "relationship":{"source_kind":"agent","source_name":"regular_agent","relation":"governed-by","target_kind":"control","target_name":"durable-action-audit","attributes":{"analysis":"python-google-adk-bigquery-action-audit","deployment_state":"enabled","policy_effect":"records-attributable-tool-actions"}}
+    },
+    {
+      "id":"python-skyvern-action-record-local",
+      "target":{"kind":"local","path":"cases/python_skyvern_action_history"},
+      "check_id":"IR-PY-SKYVERN-ACTION-HISTORY","path":"skyvern/forge/taskv3/loop.py","line":9,"expected":true,
+      "relationship":{"source_kind":"capability","source_name":"external-action","relation":"governed-by","target_kind":"control","target_name":"durable-action-record","attributes":{"analysis":"python-skyvern-taskv3-action-history","durability":"durable-relational-database","delivery":"best-effort-post-action","actor_attribution":"unresolved-created-by-nullable-and-unset"}}
+    },
+    {
+      "id":"python-skyvern-action-record-untracked-local-negative",
+      "target":{"kind":"local","path":"cases/python_skyvern_action_history"},
+      "check_id":"IR-PY-SKYVERN-ACTION-HISTORY","path":"untracked.py","line":7,"expected":false,"source_contains":"requests.post",
+      "relationship":{"source_kind":"capability","source_name":"external-action","relation":"governed-by","target_kind":"control","target_name":"durable-action-record"}
+    },
+    {
+      "id":"python-skyvern-action-record-real",
+      "target":{"kind":"repository","repository":"Skyvern-AI/skyvern","commit":"486c8975e9864a53037d4701b781f8619e698c40"},
+      "check_id":"IR-PY-SKYVERN-ACTION-HISTORY","path":"skyvern/forge/taskv3/loop.py","line":559,"expected":true,
+      "relationship":{"source_kind":"capability","source_name":"external-action","relation":"governed-by","target_kind":"control","target_name":"durable-action-record","attributes":{"analysis":"python-skyvern-taskv3-action-history","policy_effect":"records-executed-browser-actions","failure_behavior":"persistence-errors-contained"}}
+    },
+    {
+      "id":"python-skyvern-action-storage-real",
+      "target":{"kind":"repository","repository":"Skyvern-AI/skyvern","commit":"486c8975e9864a53037d4701b781f8619e698c40"},
+      "check_id":"IR-PY-SKYVERN-ACTION-HISTORY","path":"skyvern/forge/sdk/db/repositories/workflow_parameters.py","line":1197,"expected":true,
+      "relationship":{"source_kind":"control","source_name":"durable-action-record","relation":"exports-to","target_kind":"capability","target_name":"audit-storage","attributes":{"analysis":"python-skyvern-taskv3-action-history","sink":"sqlalchemy-actions-table","durability":"durable-relational-database"}}
+    },
+    {
+      "id":"python-skyvern-action-agent-real",
+      "target":{"kind":"repository","repository":"Skyvern-AI/skyvern","commit":"486c8975e9864a53037d4701b781f8619e698c40"},
+      "check_id":"IR-PY-SKYVERN-ACTION-HISTORY","path":"skyvern/forge/agent.py","line":1358,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Skyvern Task v3 agent loop","relation":"governed-by","target_kind":"control","target_name":"durable-action-record","attributes":{"analysis":"python-skyvern-taskv3-action-history","deployment_state":"enabled","actor_attribution":"unresolved-created-by-nullable-and-unset"}}
     }
   ]
 }

@@ -8,6 +8,8 @@ from .ir import Component, RepositoryIR
 def _audit_coverage(controls: set[str] | list[str]) -> str:
     if "durable-action-audit" in controls:
         return "durable and attributable; delivery best-effort"
+    if "durable-action-record" in controls:
+        return "durable execution record; actor attribution unresolved; delivery best-effort"
     if "action-trace" in controls:
         return "instrumented; exporter durability unresolved"
     return "unresolved"

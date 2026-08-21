@@ -13458,6 +13458,248 @@ def add_python_google_adk_bigquery_audit_flow(
                         )
 
 
+def add_python_skyvern_action_history_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve Skyvern Task v3 actions into its committed SQL action history."""
+    sources: dict[str, str] = {}
+    for path in paths:
+        if path.suffix.lower() != ".py" or not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+            ast.parse(text, filename=relative)
+        except (OSError, SyntaxError, ValueError):
+            continue
+        sources[relative] = text
+
+    required_paths = {
+        "loop": "skyvern/forge/taskv3/loop.py",
+        "agent": "skyvern/forge/agent.py",
+        "repository": "skyvern/forge/sdk/db/repositories/workflow_parameters.py",
+        "model": "skyvern/forge/sdk/db/models.py",
+    }
+    if not all(path in sources for path in required_paths.values()):
+        return
+    loop_path = required_paths["loop"]
+    agent_path = required_paths["agent"]
+    repository_path = required_paths["repository"]
+    model_path = required_paths["model"]
+    loop_text = sources[loop_path]
+    agent_text = sources[agent_path]
+    repository_text = sources[repository_path]
+    model_text = sources[model_path]
+
+    loop_markers = (
+        "async def run_agent_tool_loop(",
+        "result = await spec.handler(args)",
+        "if spec is not None and (spec.billable or spec.recordable):",
+        "round_actions.append((tool_name, args, result.status == \"ok\"))",
+        "if round_actions and on_action_round is not None:",
+        "await on_action_round(round_actions)",
+        'LOG.warning("taskv3 on_action_round callback failed"',
+    )
+    if not all(marker in loop_text for marker in loop_markers):
+        return
+    agent_markers = (
+        "async def _on_action_round(",
+        "for name, args, succeeded in round_actions:",
+        "status=ActionStatus.completed if succeeded else ActionStatus.failed",
+        "organization_id=task.organization_id",
+        "workflow_run_id=task.workflow_run_id",
+        "task_id=task.task_id",
+        "step_id=step.step_id",
+        "action_order=len(v3_persisted_actions)",
+        "await app.DATABASE.workflow_params.create_action(action=action)",
+        'LOG.warning("task_v3 failed to persist action row"',
+        "outcome = await run_task_v3_agent_loop(",
+        "on_action_round=_on_action_round",
+    )
+    if not all(marker in agent_text for marker in agent_markers):
+        return
+    repository_markers = (
+        '@db_operation("create_action")',
+        "async def create_action(self, action:",
+        "raw_action_payload = action.model_dump()",
+        "new_action = ActionModel(",
+        "action_json=raw_action_payload",
+        "session.add(new_action)",
+        "await session.commit()",
+        "await session.refresh(new_action)",
+        "return hydrate_action(new_action)",
+    )
+    if not all(marker in repository_text for marker in repository_markers):
+        return
+    model_markers = (
+        "class ActionModel(Base):",
+        '__tablename__ = "actions"',
+        "action_id = Column(String, primary_key=True",
+        "action_type = Column(String, nullable=False)",
+        "organization_id = Column(String, nullable=True)",
+        "workflow_run_id = Column(String, nullable=True)",
+        "task_id = Column(String, nullable=False",
+        "step_id = Column(String, nullable=False)",
+        "step_order = Column(Integer, nullable=False)",
+        "action_order = Column(Integer, nullable=False)",
+        "status = Column(String, nullable=False)",
+        "action_json = Column(JSON, nullable=True)",
+        "screenshot_artifact_id = Column(String, nullable=True)",
+        "created_by = Column(String, nullable=True)",
+    )
+    if not all(marker in model_text for marker in model_markers):
+        return
+
+    handler_offset = loop_text.find("result = await spec.handler(args)")
+    callback_offset = agent_text.find(
+        "await app.DATABASE.workflow_params.create_action(action=action)"
+    )
+    agent_offset = agent_text.find("outcome = await run_task_v3_agent_loop(")
+    create_action_offset = repository_text.find("async def create_action(self, action:")
+    commit_offset = repository_text.find("await session.commit()", create_action_offset)
+    if min(handler_offset, callback_offset, agent_offset, commit_offset) < 0:
+        return
+    loop_lines = loop_text.splitlines()
+    agent_lines = agent_text.splitlines()
+    repository_lines = repository_text.splitlines()
+    handler_line = line_at(loop_text, handler_offset)
+    callback_line = line_at(agent_text, callback_offset)
+    agent_line = line_at(agent_text, agent_offset)
+    commit_line = line_at(repository_text, commit_offset)
+    handler_evidence = Evidence(
+        loop_path, handler_line, excerpt(loop_lines, handler_line)
+    )
+    callback_evidence = Evidence(
+        agent_path, callback_line, excerpt(agent_lines, callback_line)
+    )
+    agent_evidence = Evidence(agent_path, agent_line, excerpt(agent_lines, agent_line))
+    storage_evidence = Evidence(
+        repository_path,
+        commit_line,
+        excerpt(repository_lines, commit_line),
+    )
+    analysis = "python-skyvern-taskv3-action-history"
+    agent_name = "Skyvern Task v3 agent loop"
+    tool_name = "Task v3 recordable action dispatch"
+    agent_id = source_symbol("py", agent_path, "agent", "skyvern-task-v3-loop")
+    tool_id = source_symbol("py", loop_path, "tool", "recordable-action-dispatch")
+    control_attributes: dict[str, object] = {
+        "analysis": analysis,
+        "framework": "skyvern-task-v3",
+        "deployment_state": "enabled",
+        "scope": source_scope(agent_path),
+        "durability": "durable-relational-database",
+        "delivery": "best-effort-post-action",
+        "record_states": ["completed", "failed"],
+        "attribution_fields": [
+            "action_id",
+            "organization_id",
+            "workflow_run_id",
+            "task_id",
+            "step_id",
+            "action_type",
+            "status",
+            "step_order",
+            "action_order",
+        ],
+        "actor_attribution": "unresolved-created-by-nullable-and-unset",
+        "failure_behavior": "persistence-errors-contained",
+        "policy_effect": "records-executed-browser-actions",
+        "loop_path": loop_path,
+        "repository_path": repository_path,
+        "model_path": model_path,
+    }
+    capability_attributes = {
+        "analysis": analysis,
+        "scope": source_scope(loop_path),
+        "operation": "billable-or-recordable-browser-action",
+        "dispatch": "post-model-tool-selection",
+    }
+    storage_attributes = {
+        "analysis": analysis,
+        "scope": source_scope(repository_path),
+        "api": "SQLAlchemy AsyncSession.commit",
+        "sink": "sqlalchemy-actions-table",
+        "table": "actions",
+        "durability": "durable-relational-database",
+    }
+    ir.add_component(
+        Component("agent", agent_name, agent_evidence, {"framework": "Skyvern"}, agent_id)
+    )
+    ir.add_component(Component("tool", tool_name, handler_evidence, {}, tool_id))
+    ir.add_component(
+        Component("capability", "external-action", handler_evidence, capability_attributes)
+    )
+    ir.add_component(
+        Component(
+            "control",
+            "durable-action-record",
+            callback_evidence,
+            control_attributes,
+        )
+    )
+    ir.add_component(
+        Component("capability", "audit-storage", storage_evidence, storage_attributes)
+    )
+    ir.add_relationship(
+        Relationship(
+            "agent",
+            agent_name,
+            "uses",
+            "tool",
+            tool_name,
+            agent_evidence,
+            {"analysis": analysis},
+            source_id=agent_id,
+            target_id=tool_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            tool_name,
+            "uses",
+            "capability",
+            "external-action",
+            handler_evidence,
+            capability_attributes,
+            source_id=tool_id,
+        )
+    )
+    for source_kind, source_name, evidence, source_id in (
+        ("agent", agent_name, agent_evidence, agent_id),
+        ("tool", tool_name, callback_evidence, tool_id),
+        ("capability", "external-action", handler_evidence, None),
+    ):
+        ir.add_relationship(
+            Relationship(
+                source_kind,
+                source_name,
+                "governed-by",
+                "control",
+                "durable-action-record",
+                evidence,
+                control_attributes,
+                source_id=source_id,
+            )
+        )
+    ir.add_relationship(
+        Relationship(
+            "control",
+            "durable-action-record",
+            "exports-to",
+            "capability",
+            "audit-storage",
+            storage_evidence,
+            {**control_attributes, **storage_attributes},
+        )
+    )
+
+
 def add_typescript_a2a_card_endpoint_composition(
     ir: RepositoryIR,
     root: Path,
@@ -13988,6 +14230,7 @@ def scan_repository(
     add_python_adk_a2a_card_endpoint_policy(ir, root, registry_paths)
     add_python_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)
     add_python_google_adk_bigquery_audit_flow(ir, root, registry_paths)
+    add_python_skyvern_action_history_flow(ir, root, registry_paths)
     propagate_python_class_network_helpers(
         ir,
         root,

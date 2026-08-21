@@ -1,6 +1,6 @@
 # Repository corpus
 
-Generated at `2026-08-21T18:44:00.151270+00:00` from `scripts/collect_repositories.py`.
+Generated at `2026-08-21T19:17:59.439446+00:00` from `scripts/collect_repositories.py`.
 
 ## Method
 

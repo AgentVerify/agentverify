@@ -60,6 +60,8 @@ never imported or executed.
   MCP `FunctionTool`; explicit approval and broken import/binding/default propagation stay negative.
 - `python_google_adk_bigquery_audit`: Google ADK Runner composition attaches its default-enabled
   BigQuery analytics plugin to one tool action while retaining an explicit disabled near miss.
+- `python_skyvern_action_history`: Skyvern Task v3 records post-dispatch browser actions in a
+  committed SQLAlchemy table while preserving best-effort delivery and unresolved actor attribution.
 - `typescript_a2a_card_endpoint`: ADK JS and Gemini compositions preserve remotely supplied
   AgentCard authority at SDK client construction; fixed/local cards, wrong imports, and unproven
   transports stay negative.

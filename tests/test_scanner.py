@@ -3585,6 +3585,106 @@ def test_google_adk_audit_control_withholds_mutable_or_filtered_compositions(
         )
 
 
+def test_skyvern_taskv3_proves_durable_execution_record_with_actor_gap() -> None:
+    ir = scan_repository(ROOT / "cases/python_skyvern_action_history")
+
+    action = next(
+        component
+        for component in ir.components
+        if component.kind == "capability"
+        and component.name == "external-action"
+        and component.attributes.get("analysis")
+        == "python-skyvern-taskv3-action-history"
+    )
+    path, analysis = component_context(ir, action)
+    assert path == (
+        "agent:Skyvern Task v3 agent loop",
+        "tool:Task v3 recordable action dispatch",
+        "capability:external-action",
+    )
+    assert analysis["governing_controls"] == ["durable-action-record"]
+    assert analysis["audit_coverage"] == (
+        "durable execution record; actor attribution unresolved; delivery best-effort"
+    )
+    control = next(
+        component
+        for component in ir.components
+        if component.kind == "control" and component.name == "durable-action-record"
+    )
+    assert control.attributes["deployment_state"] == "enabled"
+    assert control.attributes["scope"] == "production"
+    assert control.attributes["actor_attribution"] == (
+        "unresolved-created-by-nullable-and-unset"
+    )
+    assert control.attributes["failure_behavior"] == "persistence-errors-contained"
+    storage = next(
+        component
+        for component in ir.components
+        if component.kind == "capability" and component.name == "audit-storage"
+    )
+    assert storage.attributes == {
+        "analysis": "python-skyvern-taskv3-action-history",
+        "scope": "production",
+        "api": "SQLAlchemy AsyncSession.commit",
+        "sink": "sqlalchemy-actions-table",
+        "table": "actions",
+        "durability": "durable-relational-database",
+    }
+
+
+def test_skyvern_action_record_requires_dispatch_callback_and_commit_path(
+    tmp_path: Path,
+) -> None:
+    source = ROOT / "cases/python_skyvern_action_history"
+    mutations = (
+        (
+            "skyvern/forge/taskv3/loop.py",
+            "result = await spec.handler(args)",
+            'result = ToolResult(status="unknown")',
+        ),
+        (
+            "skyvern/forge/taskv3/loop.py",
+            "await on_action_round(round_actions)",
+            "await observe_round(round_actions)",
+        ),
+        (
+            "skyvern/forge/agent.py",
+            "on_action_round=_on_action_round",
+            "on_action_round=None",
+        ),
+        (
+            "skyvern/forge/agent.py",
+            "await app.DATABASE.workflow_params.create_action(action=action)",
+            "await app.DATABASE.workflow_params.preview_action(action=action)",
+        ),
+        (
+            "skyvern/forge/sdk/db/repositories/workflow_parameters.py",
+            "await session.commit()",
+            "await session.flush()",
+        ),
+        (
+            "skyvern/forge/sdk/db/models.py",
+            "created_by = Column(String, nullable=True)",
+            "created_by = Column(String, nullable=False)",
+        ),
+    )
+    for index, (relative, before, after) in enumerate(mutations):
+        incomplete = tmp_path / str(index)
+        shutil.copytree(source, incomplete)
+        target = incomplete / relative
+        text = target.read_text(encoding="utf-8")
+        assert before in text
+        target.write_text(text.replace(before, after, 1), encoding="utf-8")
+
+        ir = scan_repository(incomplete)
+
+        assert not any(
+            component.attributes.get("analysis")
+            == "python-skyvern-taskv3-action-history"
+            for component in ir.components
+        )
+
+
 def test_delegation_expands_transitive_capability_path() -> None:
     ir = scan_repository(ROOT / "cases/delegation")
 
