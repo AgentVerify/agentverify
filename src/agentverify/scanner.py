@@ -55,6 +55,11 @@ MODEL_CONSTRUCTORS = {
     "Anthropic": {"Anthropic", "AsyncAnthropic", "ChatAnthropic"},
     "Azure OpenAI": {"AzureOpenAI", "AsyncAzureOpenAI", "AzureChatOpenAI"},
 }
+BUILTIN_TOOL_CAPABILITIES = {
+    "ShellTool": ("shell-execution",),
+    "ApplyPatchTool": ("filesystem",),
+    "CustomTool": ("external-action",),
+}
 APPROVAL_BYPASS_NAME = re.compile(
     r"(?:^|[._])(?:\w+_)*auto_?approve$|"
     r"(?:^|[._])(?:skip_?confirmation|dangerously_?skip_?(?:permissions?|confirmation|approval))$",
@@ -141,6 +146,9 @@ class PythonVisitor(ast.NodeVisitor):
         )
         self.has_docker_import = any(
             module == "docker" or module.startswith("docker.") for module in imported_modules
+        )
+        self.has_openai_agents_import = any(
+            module == "agents" or module.startswith("agents.") for module in imported_modules
         )
         self.has_http_import = any(
             module == prefix or module.startswith(f"{prefix}.")
@@ -377,6 +385,63 @@ class PythonVisitor(ast.NodeVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         call_name = dotted_name(node.func)
         short_name = call_name.rsplit(".", 1)[-1]
+        if self.has_openai_agents_import and short_name in BUILTIN_TOOL_CAPABILITIES:
+            tool_name = f"{short_name}@{node.lineno}"
+            approval_state = "unresolved"
+            approval_handler = "none"
+            approval_evidence = self.ev(node)
+            for keyword in node.keywords:
+                if keyword.arg in {"needs_approval", "require_approval"}:
+                    approval_evidence = self.ev(keyword.value)
+                    if isinstance(keyword.value, ast.Constant) and keyword.value.value is True:
+                        approval_state = "enabled"
+                    elif isinstance(keyword.value, ast.Constant) and keyword.value.value is False:
+                        approval_state = "disabled"
+                elif keyword.arg == "on_approval" and not (
+                    isinstance(keyword.value, ast.Constant) and keyword.value.value is None
+                ):
+                    approval_handler = "configured"
+            if approval_state == "enabled" and approval_handler == "configured":
+                approval_state = "unresolved-handler"
+            self.ir.add_component(
+                Component(
+                    "tool",
+                    tool_name,
+                    self.ev(node),
+                    {
+                        "constructor": call_name,
+                        "approval_handler": approval_handler,
+                        "approval_policy": approval_state,
+                        "scope": source_scope(self.path),
+                    },
+                )
+            )
+            for capability in BUILTIN_TOOL_CAPABILITIES[short_name]:
+                attributes = {
+                    "api": call_name,
+                    "builtin_tool": True,
+                    "scope": source_scope(self.path),
+                }
+                if capability == "shell-execution":
+                    attributes.update({"shell": False, "dynamic_command": False})
+                self.ir.add_component(
+                    Component("capability", capability, self.ev(node), attributes)
+                )
+                self.ir.add_relationship(
+                    Relationship("tool", tool_name, "uses", "capability", capability, self.ev(node))
+                )
+            if approval_state == "enabled":
+                self.ir.add_component(Component("control", "human-approval", approval_evidence))
+                self.ir.add_relationship(
+                    Relationship(
+                        "tool",
+                        tool_name,
+                        "governed-by",
+                        "control",
+                        "human-approval",
+                        approval_evidence,
+                    )
+                )
         if self.has_docker_import and call_name.endswith(".containers.run"):
             for keyword in node.keywords:
                 if (
@@ -474,6 +539,13 @@ class PythonVisitor(ast.NodeVisitor):
                         target_name = dotted_name(value.func).removesuffix(".as_tool")
                         target_kind = "agent"
                         relation = "delegates-to"
+                    elif (
+                        self.has_openai_agents_import
+                        and isinstance(value, ast.Call)
+                        and dotted_name(value.func).rsplit(".", 1)[-1] in BUILTIN_TOOL_CAPABILITIES
+                    ):
+                        constructor = dotted_name(value.func).rsplit(".", 1)[-1]
+                        target_name = f"{constructor}@{value.lineno}"
                     if target_name:
                         attributes = {}
                         imported_path = self.imported_symbol_paths.get(
@@ -1285,11 +1357,7 @@ def scan_repository(
         ir.path_filters = [selector.as_posix() for selector in selectors]
     for path in paths:
         relative_path = path.relative_to(root)
-        if (
-            path.is_symlink()
-            or not path.is_file()
-            or set(relative_path.parts) & SKIP_DIRECTORIES
-        ):
+        if path.is_symlink() or not path.is_file() or set(relative_path.parts) & SKIP_DIRECTORIES:
             continue
         if selectors is not None and not any(
             relative_path == selector or selector in relative_path.parents for selector in selectors

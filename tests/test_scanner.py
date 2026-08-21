@@ -89,6 +89,70 @@ def test_python_enabled_auto_approval_is_review_candidate() -> None:
     assert ir.findings[0].result_kind == "review"
 
 
+def test_builtin_tool_constructor_approval_is_instance_scoped() -> None:
+    ir = scan_repository(ROOT / "cases/builtin_tool_approval")
+
+    tools = {
+        component.name: component.attributes["approval_policy"]
+        for component in ir.components
+        if component.kind == "tool"
+    }
+    assert tools == {
+        "ShellTool@11": "enabled",
+        "ApplyPatchTool@12": "disabled",
+        "CustomTool@13": "unresolved",
+        "ShellTool@16": "unresolved-handler",
+    }
+    controls = {
+        edge.source_name
+        for edge in ir.relationships
+        if edge.source_kind == "tool"
+        and edge.relation == "governed-by"
+        and edge.target_name == "human-approval"
+    }
+    assert controls == {"ShellTool@11"}
+    agent_tools = {
+        edge.target_name
+        for edge in ir.relationships
+        if edge.source_kind == "agent" and edge.source_name == "operator"
+    }
+    assert agent_tools == set(tools)
+    shell = next(
+        component
+        for component in ir.components
+        if component.kind == "capability"
+        and component.name == "shell-execution"
+        and component.evidence.line == 11
+    )
+    path, analysis = component_context(ir, shell)
+    assert path == ("agent:operator", "tool:ShellTool@11", "capability:shell-execution")
+    assert analysis["approval_coverage"] == "present"
+
+    handled_shell = next(
+        component
+        for component in ir.components
+        if component.kind == "tool" and component.name == "ShellTool@16"
+    )
+    assert handled_shell.attributes["approval_handler"] == "configured"
+
+
+def test_builtin_tool_names_require_openai_agents_import(tmp_path: Path) -> None:
+    (tmp_path / "unrelated.py").write_text(
+        "ShellTool(executor=object(), needs_approval=True)\n", encoding="utf-8"
+    )
+
+    ir = scan_repository(tmp_path)
+
+    assert not any(
+        component.kind == "tool" and component.name.startswith("ShellTool@")
+        for component in ir.components
+    )
+    assert not any(
+        edge.target_kind == "control" and edge.target_name == "human-approval"
+        for edge in ir.relationships
+    )
+
+
 def test_non_approval_skip_and_status_flags_are_not_bypasses(tmp_path: Path) -> None:
     (tmp_path / "flags.py").write_text(
         """_sampling_auto_approved_warning_logged = True

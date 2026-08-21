@@ -37,7 +37,7 @@ because the engine requires supported selected files and more specific syntax.
 
 | Frontend | Implemented observations and resolution |
 |---|---|
-| Python AST | Imports; known agent/model constructors; tool decorators; literal tool/handoff lists; shell, eval, filesystem, HTTP, browser, MCP, and Docker SDK calls; absolute and filesystem-relative tool imports; literal approval decorators; statement-ordered MCP rejection guards; lexically scoped OpenTelemetry spans. |
+| Python AST | Imports; known agent/model constructors; tool decorators; literal tool/handoff lists; shell, eval, filesystem, HTTP, browser, MCP, and Docker SDK calls; absolute and filesystem-relative tool imports; literal approval decorators; OpenAI Agents `ShellTool`/`ApplyPatchTool`/`CustomTool` approval constructors; statement-ordered MCP rejection guards; lexically scoped OpenTelemetry spans. |
 | TypeScript/JavaScript lexical | Known imports/providers; `tool(...)`/`functionTool(...)`; `new Agent({tools: [...]})`; named relative imports and aliases; child-process calls with literal/dynamic distinction; direct eval; filesystem calls; MCP forwarding object shapes; literal `needsApproval: true` and auto-approval settings. Comments and string contents are masked before policy matching. |
 | MCP JSON | Common `mcpServers` configuration, transport/command/URL, redacted arguments, and environment-variable names. Configuration is read as data; servers are never launched. |
 | Container configuration | Compose/devcontainer Docker socket, privileged/host network/root mounts; Kubernetes/Helm privileged, host namespace, privilege escalation, service-account token, and `hostPath`; literal privileged Python Docker SDK calls. |
@@ -52,8 +52,8 @@ because the engine requires supported selected files and more specific syntax.
 - Google, Bedrock, and other model providers are not yet promoted from research signals into the
   engine's provider taxonomy.
 - Python package re-exports, wildcard imports, dynamically selected symbols, alias constructors,
-  imported policy objects, and branch-local allowlist proofs remain unresolved. Display identities
-  are not yet fully module-qualified.
+  imported policy objects, callback approval results, and branch-local allowlist proofs remain
+  unresolved. Display identities are not yet fully module-qualified.
 - The TypeScript frontend is not an AST/type-checker. Computed properties, object spreads, wrapper
   factories, complex nested tool arrays, CommonJS alias flows, callback approval policies, and
   type-driven resolution can be missed. Its cross-file resolver found zero qualifying real edges in
@@ -68,7 +68,7 @@ because the engine requires supported selected files and more specific syntax.
 
 ## Quality interpretation
 
-The 121-label rule truth set and seven-label IR relationship set are curated regression suites. They
+The 121-label rule truth set and 12-label IR relationship set are curated regression suites. They
 guard known positives and negatives; they are not an unbiased accuracy estimate. A future holdout
 must be sampled separately across the categories above, externally reviewed, and kept sealed while
 rules change. Until then, precision/recall values apply only to the published seed labels.

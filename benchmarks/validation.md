@@ -23,12 +23,15 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 - `cases/typescript_mcp`: MCP inventory and approval-bypass candidate.
 - `cases/typescript_approved`: literal TypeScript tool approval resolves a governing control, while
   callback and disabled forms remain unresolved.
+- `cases/builtin_tool_approval`: OpenAI Agents Python built-in tool instances preserve enabled,
+  disabled, callback, and auto-handler approval policies without leaking controls between same-named
+  tools.
 
 ## Full-corpus engine benchmark
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,594 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,754 relationships, and completed in 25.28 seconds on the development machine. Three parse warnings were isolated and
+resolved 1,874 relationships, and completed in 25.13 seconds on the development machine. Three parse warnings were isolated and
 reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -57,6 +60,15 @@ The approval-policy resolver found a literal `needsApproval: true` in the pinned
 [human-in-the-loop example](https://github.com/openai/openai-agents-js/blob/0b944370c6fe019ac5b08364ca013826cd7d0668/examples/docs/human-in-the-loop/toolApprovalDefinition.ts#L11)
 and attached a tool-to-control edge. The adjacent callback form remains unresolved because its result
 depends on invocation arguments.
+
+For Python, files importing the OpenAI Agents SDK now inventory `ShellTool`, `ApplyPatchTool`, and
+`CustomTool` instances with line-scoped identities. A literal `needs_approval=True` with no automatic
+handler creates an exact tool-to-control edge, while `False`, omitted values, callbacks, and a
+configured `on_approval` handler retain disabled or unresolved state. The pinned SDK's
+[shell HITL example](https://github.com/openai/openai-agents-python/blob/17ba331bb0ad1622a4ff4ecdc914c77118075dad/examples/tools/shell_human_in_the_loop.py#L117)
+is the real positive: `ShellTool@117` is governed by the literal policy at line 119. Requiring an
+`agents` import prevents unrelated application classes with the same constructor names from being
+promoted into Agent IR.
 
 During validation, import-aware shell resolution reduced Cline's TypeScript dynamic-shell candidates
 from 16 to zero after proving the matches were `RegExp.exec()`, not `child_process.exec()`. Truthy
@@ -149,5 +161,7 @@ finding or enable `AV-AUDIT001`. The full corpus scan observed seven action-trac
 lexically governed HTTP capability edges, all in that ArcadeAI telemetry example.
 
 Three import labels cover a resolved relative fixture, a missing-module negative, and the pinned
-CrewAI-LangGraph draft-tool edge. All seven IR labels pass: two audit positives/two negatives and two
-import positives/one negative.
+CrewAI-LangGraph draft-tool edge. Five approval labels cover enabled, disabled, callback, and
+automatic-handler local policies plus the pinned OpenAI shell edge. All 12 IR labels pass: two
+approval positives/three negatives, two audit positives/two negatives, and two import positives/one
+negative.

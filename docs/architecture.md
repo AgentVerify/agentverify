@@ -47,7 +47,11 @@ Control analysis reports `present` only for a resolved governing edge. It report
 coverage cannot be proven and never silently converts missing lexical evidence into “control absent.”
 The first policy resolver recognizes same-function MCP tool-name allowlists that reject unknown tools
 before forwarding. It also resolves an OpenAI Agents TypeScript function tool's literal
-`needsApproval: true` setting; callback and non-literal approval policies remain unresolved.
+`needsApproval: true` setting. For Python files importing the OpenAI Agents SDK, literal
+`needs_approval=True` on `ShellTool`, `ApplyPatchTool`, and `CustomTool` creates an instance-scoped
+tool-to-control edge when no automatic approval handler is configured; literal false is recorded as
+disabled. Callback, omitted, handler-controlled, and other non-literal approval policies remain
+unresolved.
 
 For audit modeling, a tool capability lexically inside an OpenTelemetry
 `start_as_current_span(...)` block receives an exact capability-to-`action-trace` control edge. A

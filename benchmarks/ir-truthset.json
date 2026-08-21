@@ -126,6 +126,88 @@
           "target_path": "integrations/CrewAI-LangGraph/src/crew/tools.py"
         }
       }
+    },
+    {
+      "id": "approval-builtin-local-enabled",
+      "target": {"kind": "local", "path": "cases/builtin_tool_approval"},
+      "check_id": "IR-APPROVAL-CONTROL",
+      "path": "agent.py",
+      "line": 11,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "ShellTool@11",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "human-approval"
+      }
+    },
+    {
+      "id": "approval-builtin-local-disabled",
+      "target": {"kind": "local", "path": "cases/builtin_tool_approval"},
+      "check_id": "IR-APPROVAL-CONTROL",
+      "path": "agent.py",
+      "line": 12,
+      "expected": false,
+      "source_contains": "needs_approval=False",
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "ApplyPatchTool@12",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "human-approval"
+      }
+    },
+    {
+      "id": "approval-builtin-local-callback-unresolved",
+      "target": {"kind": "local", "path": "cases/builtin_tool_approval"},
+      "check_id": "IR-APPROVAL-CONTROL",
+      "path": "agent.py",
+      "line": 13,
+      "expected": false,
+      "source_contains": "CustomTool(",
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "CustomTool@13",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "human-approval"
+      }
+    },
+    {
+      "id": "approval-builtin-local-handler-unresolved",
+      "target": {"kind": "local", "path": "cases/builtin_tool_approval"},
+      "check_id": "IR-APPROVAL-CONTROL",
+      "path": "agent.py",
+      "line": 16,
+      "expected": false,
+      "source_contains": "on_approval=conditional_approval",
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "ShellTool@16",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "human-approval"
+      }
+    },
+    {
+      "id": "approval-builtin-openai-shell-real",
+      "target": {
+        "kind": "repository",
+        "repository": "openai/openai-agents-python",
+        "commit": "17ba331bb0ad1622a4ff4ecdc914c77118075dad"
+      },
+      "check_id": "IR-APPROVAL-CONTROL",
+      "path": "examples/tools/shell_human_in_the_loop.py",
+      "line": 119,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "ShellTool@117",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "human-approval"
+      }
     }
   ]
 }
