@@ -9,9 +9,12 @@ Python and TypeScript agent/tool components now carry module-qualified IDs, incl
 methods, built-in tools, tool namespaces, and Cline/OpenAI inline factories. The structure-aware
 TypeScript tools-array reader resolves all 81 observed agent-to-tool edges and 14 agent-as-tool
 delegations in the pinned sample without treating nested tokens as tools. Repeated constructor and
-decorated-tool bindings now receive occurrence-qualified IDs for exact source edges; repeated target
-references resolve only for a single direct, earlier definition in the same Python lexical/module
-scope. Next add branch- and reassignment-sensitive dataflow, then resolve Python/TS package re-exports,
+decorated-tool bindings now receive occurrence-qualified IDs for exact source edges. Repeated target
+references resolve for a single direct, earlier definition in the same Python lexical/module scope,
+plus an exact single-mutation constructor assignment that dominates use in the same branch/with body.
+Schema v49 resolves 13 additional CrewAI edges while leaving 10 parameter, helper-return, factory,
+tuple-unpack, cross-branch, and reassigned targets unresolved. Next add broader branch- and
+reassignment-sensitive dataflow, then resolve Python/TS package re-exports,
 wildcard imports, unrecognized wrapper factories, and type-driven symbols.
 Preserve unresolved state for ambiguity and validate on larger real monorepository graphs.
 
@@ -171,8 +174,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 340 pinned positive/negative locations, with 269 separately
-scored IR relationship labels. Schema-v48 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 340 pinned positive/negative locations, with 280 separately
+scored IR relationship labels. Schema-v49 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

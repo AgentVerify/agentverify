@@ -74,8 +74,12 @@ Repeated Python and TypeScript constructor bindings receive occurrence-qualified
 an occurrence by name. In files with repeated identities, Python references resolve when one direct
 definition in the same lexical or module scope appears earlier, recording
 `target_identity: lexical-single-definition` or
-`module-single-definition`. Reassignments record `ambiguous-repeated-binding`; forward and otherwise
-unproven references remain ambiguous or unresolved.
+`module-single-definition`. A nested statement block can additionally record
+`block-dominating-definition` when one exact constructor assignment is the binding's sole mutation
+before use in that block. This proof wins over a broader lexical candidate, and a locally bound name
+cannot fall back to a same-named module definition. Reassignments, cross-branch definitions,
+parameters, helper returns, and otherwise unproven references record
+`ambiguous-repeated-binding` or remain unresolved.
 
 Selected-path scans remain partial. Their metadata records `scan_scope: selected-paths` and the exact
 filters; baseline output does not claim that omitted fingerprints are resolved.

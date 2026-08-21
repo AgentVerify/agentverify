@@ -2135,6 +2135,8 @@ class PythonVisitor(ast.NodeVisitor):
         local_symbol_ids: dict[tuple[str, str], str],
         ambiguous_local_symbols: set[tuple[str, str]],
         scoped_symbol_ids: dict[tuple[tuple[str, ...], str, str], tuple[int, str]],
+        dominating_symbol_ids: dict[tuple[int, str, str], tuple[str, str]],
+        scope_bound_names: set[tuple[tuple[str, ...], str]],
         node_scopes: dict[int, tuple[str, ...]],
         call_symbol_ids: dict[int, str],
         definition_symbol_ids: dict[int, str],
@@ -2200,6 +2202,8 @@ class PythonVisitor(ast.NodeVisitor):
         self.local_symbol_ids = local_symbol_ids
         self.ambiguous_local_symbols = ambiguous_local_symbols
         self.scoped_symbol_ids = scoped_symbol_ids
+        self.dominating_symbol_ids = dominating_symbol_ids
+        self.scope_bound_names = scope_bound_names
         self.node_scopes = node_scopes
         self.call_symbol_ids = call_symbol_ids
         self.definition_symbol_ids = definition_symbol_ids
@@ -2441,11 +2445,20 @@ class PythonVisitor(ast.NodeVisitor):
         self, kind: str, name: str, node: ast.AST
     ) -> tuple[str | None, str | None]:
         scope = self.node_scopes.get(id(node), ())
+        dominating = self.dominating_symbol_ids.get((id(node), kind, name))
         if scoped := self.scoped_symbol_ids.get((scope, kind, name)):
             definition_line, symbol_id = scoped
             if definition_line < getattr(node, "lineno", 1):
+                if dominating and dominating[0] != symbol_id:
+                    return dominating
                 return symbol_id, "lexical-single-definition"
-        if scope and (module_symbol := self.scoped_symbol_ids.get(((), kind, name))):
+        if dominating:
+            return dominating
+        if (
+            scope
+            and (scope, name) not in self.scope_bound_names
+            and (module_symbol := self.scoped_symbol_ids.get(((), kind, name)))
+        ):
             definition_line, symbol_id = module_symbol
             if definition_line < getattr(node, "lineno", 1):
                 return symbol_id, "module-single-definition"
@@ -5022,6 +5035,8 @@ def scan_python(
         key for key, candidates in symbol_candidates.items() if len(candidates) > 1
     }
     scoped_symbol_candidates: dict[tuple[tuple[str, ...], str, str], list[tuple[int, str]]] = {}
+    dominating_symbol_ids: dict[tuple[int, str, str], tuple[str, str]] = {}
+    scope_bound_names: set[tuple[tuple[str, ...], str]] = set()
     node_scopes: dict[int, tuple[str, ...]] = {}
     if ambiguous_local_symbols:
         parent_by_id = {
@@ -5053,6 +5068,20 @@ def scan_python(
             )
         ]
         node_scopes = {id(node): lexical_scope(node) for node in scope_nodes}
+        for node in nodes:
+            scope = lexical_scope(node)
+            if not scope:
+                continue
+            if isinstance(node, ast.Name) and isinstance(node.ctx, (ast.Store, ast.Del)):
+                scope_bound_names.add((scope, node.id))
+            elif isinstance(node, ast.arg):
+                scope_bound_names.add((scope, node.arg))
+            elif isinstance(node, ast.alias):
+                scope_bound_names.add((scope, node.asname or node.name.split(".", 1)[0]))
+            elif isinstance(
+                node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
+            ) or (isinstance(node, ast.ExceptHandler) and node.name):
+                scope_bound_names.add((scope, node.name))
         for node, qualified_name in decorated_tools:
             if not isinstance(
                 parent_by_id.get(id(node)),
@@ -5079,6 +5108,91 @@ def scan_python(
             scoped_symbol_candidates.setdefault((node_scopes[id(node)], kind, binding), []).append(
                 (node.lineno, call_symbol_ids[id(node.value)])
             )
+
+        def enclosing_statement_block(node: ast.AST) -> tuple[list[ast.stmt], int] | None:
+            current = node
+            while parent := parent_by_id.get(id(current)):
+                for _field, value in ast.iter_fields(parent):
+                    if not isinstance(value, list):
+                        continue
+                    for index, item in enumerate(value):
+                        if item is current and isinstance(item, ast.stmt):
+                            return value, index
+                current = parent
+            return None
+
+        mutation_cache: dict[int, set[str]] = {}
+
+        def statement_mutations(statement: ast.stmt) -> set[str]:
+            if id(statement) in mutation_cache:
+                return mutation_cache[id(statement)]
+            mutations: set[str] = set()
+
+            def collect(candidate: ast.AST) -> None:
+                if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                    mutations.add(candidate.name)
+                    return
+                if isinstance(candidate, (ast.Import, ast.ImportFrom)):
+                    mutations.update(
+                        alias.asname or alias.name.split(".", 1)[0]
+                        for alias in candidate.names
+                    )
+                    return
+                if isinstance(candidate, ast.ExceptHandler) and candidate.name:
+                    mutations.add(candidate.name)
+                if isinstance(candidate, ast.Name) and isinstance(
+                    candidate.ctx, (ast.Store, ast.Del)
+                ):
+                    mutations.add(candidate.id)
+                for child in ast.iter_child_nodes(candidate):
+                    collect(child)
+
+            collect(statement)
+            mutation_cache[id(statement)] = mutations
+            return mutations
+
+        constructor_by_statement = {
+            id(node): (kind, binding, call_symbol_ids[id(node.value)])
+            for node, kind, binding in assigned_constructors
+        }
+        for call in (
+            candidate
+            for candidate in nodes
+            if isinstance(candidate, ast.Call)
+            and dotted_name(candidate.func).rsplit(".", 1)[-1] in AGENT_CALLS
+        ):
+            block = enclosing_statement_block(call)
+            if block is None:
+                continue
+            statements, use_index = block
+            references: set[tuple[str, str]] = set()
+            for keyword in call.keywords:
+                if keyword.arg not in {"tools", "handoffs", "agents"} or not isinstance(
+                    keyword.value, (ast.List, ast.Tuple)
+                ):
+                    continue
+                for value in keyword.value.elts:
+                    kind = "tool" if keyword.arg == "tools" else "agent"
+                    name = dotted_name(value)
+                    if isinstance(value, ast.Call) and dotted_name(value.func).endswith(".as_tool"):
+                        kind = "agent"
+                        name = dotted_name(value.func).removesuffix(".as_tool")
+                    if (kind, name) in ambiguous_local_symbols:
+                        references.add((kind, name))
+            for kind, name in references:
+                mutations = [
+                    statement
+                    for statement in statements[:use_index]
+                    if name in statement_mutations(statement)
+                ]
+                if len(mutations) != 1:
+                    continue
+                definition = constructor_by_statement.get(id(mutations[0]))
+                if definition and definition[:2] == (kind, name):
+                    dominating_symbol_ids[(id(call), kind, name)] = (
+                        definition[2],
+                        "block-dominating-definition",
+                    )
     scoped_symbol_ids = {
         key: candidates[0]
         for key, candidates in scoped_symbol_candidates.items()
@@ -5094,6 +5208,8 @@ def scan_python(
         local_symbol_ids=local_symbol_ids,
         ambiguous_local_symbols=ambiguous_local_symbols,
         scoped_symbol_ids=scoped_symbol_ids,
+        dominating_symbol_ids=dominating_symbol_ids,
+        scope_bound_names=scope_bound_names,
         node_scopes=node_scopes,
         call_symbol_ids=call_symbol_ids,
         definition_symbol_ids=definition_symbol_ids,

@@ -64,6 +64,9 @@ never imported or executed.
   committed SQLAlchemy table while preserving best-effort delivery and unresolved actor attribution.
 - `python_import_shadowing`: a package import remains available for direct use while function
   parameters and assignments with the same name retain local, unresolved identity.
+- `python_block_dominance`: repeated agent bindings resolve only when an exact constructor assignment
+  is the sole same-block mutation before use; local block definitions override broader lexical/module
+  candidates, while cross-branch and reassigned bindings stay unresolved.
 - `typescript_a2a_card_endpoint`: ADK JS and Gemini compositions preserve remotely supplied
   AgentCard authority at SDK client construction; fixed/local cards, wrong imports, and unproven
   transports stay negative.

@@ -86,7 +86,11 @@ def main() -> int:
             edge.attributes["target_identity"]
             for edge in ir.relationships
             if edge.attributes.get("target_identity")
-            in {"lexical-single-definition", "module-single-definition"}
+            in {
+                "block-dominating-definition",
+                "lexical-single-definition",
+                "module-single-definition",
+            }
         )
         if any(
             edge.target_id is None
@@ -1144,7 +1148,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 48,
+        "schema_version": 49,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {

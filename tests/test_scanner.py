@@ -3810,6 +3810,30 @@ def test_python_local_bindings_do_not_inherit_module_import_identity() -> None:
     assert edges[13].target_id is None
 
 
+def test_python_repeated_bindings_require_same_block_dominance() -> None:
+    ir = scan_repository(ROOT / "cases/python_block_dominance")
+    edges = {
+        edge.evidence.line: edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent"
+        and edge.source_name == "Crew"
+        and edge.target_name == "agent"
+    }
+
+    assert edges[10].attributes == {"target_identity": "block-dominating-definition"}
+    assert edges[10].target_id == "py:app.py#agent:agent@9"
+    assert edges[16].attributes == {"target_identity": "block-dominating-definition"}
+    assert edges[16].target_id == "py:app.py#agent:agent@15"
+    assert edges[22].attributes == {"target_identity": "ambiguous-repeated-binding"}
+    assert edges[22].target_id is None
+    assert edges[29].attributes == {"target_identity": "ambiguous-repeated-binding"}
+    assert edges[29].target_id is None
+    assert edges[35].attributes == {"target_identity": "block-dominating-definition"}
+    assert edges[35].target_id == "py:app.py#agent:agent@34"
+    assert edges[42].attributes == {"target_identity": "block-dominating-definition"}
+    assert edges[42].target_id == "py:app.py#agent:agent@41"
+
+
 def test_relative_typescript_import_resolves_cross_file_tool_path() -> None:
     ir = scan_repository(ROOT / "cases/imported_ts_tool")
 
