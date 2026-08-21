@@ -303,6 +303,8 @@
     {"id":"net-urllib-shadowed-local-negative","target":{"kind":"local","path":"cases/network_dynamic_origin"},"rule_id":"AV-NET001","path":"agent.py","line":49,"expected":false,"source_contains":"open_url(url)"},
     {"id":"net-urllib-rebound-local-negative","target":{"kind":"local","path":"cases/network_dynamic_origin"},"rule_id":"AV-NET001","path":"agent.py","line":54,"expected":false,"source_contains":"changed_urlopen(url)"},
     {"id":"net-qwen-urllib-area-fixed-real-negative","target":{"kind":"repository","repository":"QwenLM/Qwen-Agent","commit":"31a4d36d123688581a9e9744427272b33ce940e0"},"rule_id":"AV-NET001","path":"examples/qwen2vl_assistant_tooluse.py","line":165,"expected":false,"anchor":{"kind":"capability","name":"network"}},
-    {"id":"net-qwen-urllib-hour-fixed-real-negative","target":{"kind":"repository","repository":"QwenLM/Qwen-Agent","commit":"31a4d36d123688581a9e9744427272b33ce940e0"},"rule_id":"AV-NET001","path":"examples/qwen2vl_assistant_tooluse.py","line":201,"expected":false,"anchor":{"kind":"capability","name":"network"}}
+    {"id":"net-qwen-urllib-hour-fixed-real-negative","target":{"kind":"repository","repository":"QwenLM/Qwen-Agent","commit":"31a4d36d123688581a9e9744427272b33ce940e0"},"rule_id":"AV-NET001","path":"examples/qwen2vl_assistant_tooluse.py","line":201,"expected":false,"anchor":{"kind":"capability","name":"network"}},
+    {"id":"net-origin-guarded-local-review","target":{"kind":"local","path":"cases/network_dynamic_origin"},"rule_id":"AV-NET001","path":"guards.py","line":13,"expected":true},
+    {"id":"net-origin-guarded-alias-local-review","target":{"kind":"local","path":"cases/network_dynamic_origin"},"rule_id":"AV-NET001","path":"guards.py","line":22,"expected":true}
   ]
 }

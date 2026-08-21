@@ -24,7 +24,7 @@ package reexports and additional wrapper forms without falling back to display-n
 Python browser-page execution now inventories import-gated `.evaluate(...)` calls and promotes only
 direct tool-parameter/alias script flow. Dynamic calls additionally require an exact Playwright
 receiver annotation, one immutable alias of that parameter, or Skyvern's exact imported `get_page`
-factory result. Schema v29 proves seven of 80 corpus receivers; the other 73 fixed-script observations
+factory result. Schema v30 proves seven of 80 corpus receivers; the other 73 fixed-script observations
 retain explicit unresolved state. Skyvern contributes 30 evaluator observations but one finding;
 normalized numeric scroll JavaScript remains inventory-only. Next resolve constructor-bound page
 fields, locator chains, sanitizer and bounded builder summaries, imported helper flow, and other
@@ -101,7 +101,11 @@ fields, module-qualified constructors, ambiguous classes, and rebound/shadowed c
 unresolved. Exact module-level `urllib.request.urlopen` imports and aliases now add network inventory;
 `Request(url)` is unwrapped so a fixed host plus a dynamic query stays inventory-only, while local
 shadowing and module rebinding invalidate the API proof. Next
-resolve URL parsing/normalization guards, hostname allowlists, DNS rebinding defenses, proxy policy,
+Exact same-function Python `urlparse`/`urlsplit` guards now add a control edge only when immutable
+tool-origin data is rejected outside a static scheme and hostname set before the request. Redirect
+disabling is recorded separately; DNS and other redirect states stay unresolved. Schema v30 finds
+zero such controls on the 13 corpus reviews, making the absence visible without calling every review
+SSRF. Next resolve normalized predicates and imported validators, DNS rebinding defenses, proxy policy,
 and egress controls before treating a review as a demonstrated SSRF path. Add imported, arrow-assigned,
 and transitive helper summaries, deeper alias propagation, and equivalent Axios request-object handling.
 
@@ -114,8 +118,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 296 pinned positive/negative locations, with 180 separately
-scored IR relationship labels. Schema-v29 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 298 pinned positive/negative locations, with 189 separately
+scored IR relationship labels. Schema-v30 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

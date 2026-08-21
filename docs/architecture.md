@@ -74,8 +74,15 @@ as a template prefix. For a uniquely named same-file free function or static met
 recognized network call, a bounded summary records which formal parameters can control the origin;
 tool calls map positional and destructured-object arguments back to those parameters. `AV-NET001`
 consumes only this origin-specific attribute; it does not equate a dynamic path or query on a fixed
-host with a dynamic destination. URL parsing guards, redirects, DNS, proxies, imported/transitive
-helpers, arrow functions, and general client request-object data flow remain unresolved.
+host with a dynamic destination. A separate Python proof recognizes exact module-level
+`urllib.parse.urlparse`/`urlsplit` imports, an immutable parse result derived from a tool parameter or
+one direct alias, and fail-closed scheme plus hostname rejection before the request. Static nonempty
+literal collections may be local or immutable module constants. The resulting
+`network-origin-allowlist` control constrains only the initial origin: explicit redirect disabling is
+recorded, while redirect behavior and DNS scope otherwise stay unresolved. These controls enrich the
+review path but do not suppress `AV-NET001` or claim SSRF prevention. Positive branches, helper-based
+validators, normalized hostname expressions, redirects, DNS, proxies, imported/transitive helpers,
+arrow functions, and general client request-object data flow remain unresolved.
 
 The Python frontend also recognizes `urllib.request.urlopen` only through an exact module-level
 `urllib`/`urllib.request` import, `from urllib import request`, or named `urlopen` import. Aliases are

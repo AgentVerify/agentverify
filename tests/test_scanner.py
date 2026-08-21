@@ -740,7 +740,9 @@ def test_parameter_controlled_http_origin_is_reported_but_fixed_host_is_not() ->
     network = {
         item.evidence.line: item.attributes
         for item in ir.components
-        if item.kind == "capability" and item.name == "network"
+        if item.kind == "capability"
+        and item.name == "network"
+        and item.evidence.path == "agent.py"
     }
     assert network[7]["dynamic_origin"] is True
     assert network[12]["dynamic_origin"] is False
@@ -764,7 +766,11 @@ def test_parameter_controlled_http_origin_is_reported_but_fixed_host_is_not() ->
         "dynamic_origin": False,
     }
     assert sorted(network) == [7, 12, 17, 31, 37, 43]
-    assert [(finding.rule_id, finding.evidence.line) for finding in ir.findings] == [
+    assert [
+        (finding.rule_id, finding.evidence.line)
+        for finding in ir.findings
+        if finding.evidence.path == "agent.py"
+    ] == [
         ("AV-NET001", 7),
         ("AV-NET001", 31),
         ("AV-NET001", 37),
@@ -787,7 +793,75 @@ def test_parameter_controlled_http_origin_is_reported_but_fixed_host_is_not() ->
         ("urllib_direct", 31),
         ("urllib_request", 37),
         ("urllib_fixed_request", 43),
+        ("guarded_fetch", 13),
+        ("guarded_alias_fetch", 22),
+        ("late_guard", 27),
+        ("scheme_only", 39),
+        ("continuing_guard", 47),
+        ("rebound_parser", 56),
+        ("shadowed_parser", 65),
+        ("mutable_host_policy", 76),
+        ("rejection_branch_request", 83),
     }
+
+
+def test_python_network_origin_guards_require_fail_closed_scheme_and_host_checks() -> None:
+    ir = scan_repository(ROOT / "cases/network_dynamic_origin")
+
+    guarded = {
+        item.evidence.line: item.attributes
+        for item in ir.components
+        if item.kind == "capability"
+        and item.name == "network"
+        and item.evidence.path == "guards.py"
+        and item.attributes.get("network_origin_guard")
+    }
+    assert sorted(guarded) == [13, 22]
+    assert guarded[13]["initial_origin_scope"] == "allowlisted"
+    assert guarded[22]["initial_origin_scope"] == "allowlisted"
+    controls = [
+        item
+        for item in ir.components
+        if item.kind == "control" and item.name == "network-origin-allowlist"
+    ]
+    assert [(item.evidence.path, item.evidence.line) for item in controls] == [
+        ("guards.py", 11),
+        ("guards.py", 20),
+    ]
+    assert controls[0].attributes == {
+        "scope": "production",
+        "policy_effect": "restricts-initial-http-origin",
+        "frontend": "python",
+        "parser": "urlsplit",
+        "url": "url",
+        "schemes": ["https"],
+        "hosts": ["api.example.com", "cdn.example.com"],
+        "initial_origin_scope": "allowlisted",
+        "redirect_scope": "disabled",
+        "dns_scope": "unresolved",
+    }
+    assert controls[1].attributes["redirect_scope"] == "unresolved"
+    governed_lines = {
+        edge.evidence.line
+        for edge in ir.relationships
+        if edge.source_kind == "capability"
+        and edge.source_name == "network"
+        and edge.relation == "governed-by"
+        and edge.target_kind == "control"
+        and edge.target_name == "network-origin-allowlist"
+    }
+    assert governed_lines == {13, 22}
+    guarded_finding = next(
+        finding
+        for finding in ir.findings
+        if finding.rule_id == "AV-NET001"
+        and finding.evidence.path == "guards.py"
+        and finding.evidence.line == 13
+    )
+    assert guarded_finding.result_kind == "review"
+    assert guarded_finding.analysis["governing_controls"] == [
+        "network-origin-allowlist"
+    ]
 
 
 def test_dynamic_http_origin_tracks_aliases_and_keyword_url(tmp_path: Path) -> None:

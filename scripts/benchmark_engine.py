@@ -187,6 +187,16 @@ def main() -> int:
         python_urllib_network_locations = {
             (item.evidence.path, item.evidence.line) for item in python_urllib_network
         }
+        python_network_origin_controls = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "capability"
+            and edge.source_name == "network"
+            and edge.relation == "governed-by"
+            and edge.target_kind == "control"
+            and edge.target_name == "network-origin-allowlist"
+            and edge.evidence.path.endswith(".py")
+        ]
         typescript_network_helper_capabilities = [
             item
             for item in ir.components
@@ -441,6 +451,21 @@ def main() -> int:
                     for edge in ir.relationships
                 ),
             },
+            "python_network_origin_controls": {
+                "total": len(python_network_origin_controls),
+                "redirects_disabled": sum(
+                    edge.attributes.get("redirect_scope") == "disabled"
+                    for edge in python_network_origin_controls
+                ),
+                "redirects_unresolved": sum(
+                    edge.attributes.get("redirect_scope") != "disabled"
+                    for edge in python_network_origin_controls
+                ),
+                "dns_unresolved": sum(
+                    edge.attributes.get("dns_scope") == "unresolved"
+                    for edge in python_network_origin_controls
+                ),
+            },
             "path_boundary_controls": {
                 "python": len(python_path_boundary_edges),
                 "typescript": len(typescript_path_boundary_edges),
@@ -543,7 +568,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 29,
+        "schema_version": 30,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -694,6 +719,18 @@ def main() -> int:
             "python_urllib_network": {
                 name: sum(result["python_urllib_network"][name] for result in successful)
                 for name in ("capabilities", "dynamic_origins", "capability_edges")
+            },
+            "python_network_origin_controls": {
+                name: sum(
+                    result["python_network_origin_controls"][name]
+                    for result in successful
+                )
+                for name in (
+                    "total",
+                    "redirects_disabled",
+                    "redirects_unresolved",
+                    "dns_unresolved",
+                )
             },
             "path_boundary_controls": {
                 name: sum(result["path_boundary_controls"][name] for result in successful)

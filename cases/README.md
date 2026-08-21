@@ -14,7 +14,9 @@ never imported or executed.
 - `typescript_eval`: TypeScript dynamic evaluation with a resolved agent/tool path.
 - `filesystem_scope`: dynamic writable tool path plus fixed-path negative case.
 - `network_dynamic_origin`: parameter-controlled Requests and import-proven urllib origins, urllib
-  `Request` objects, fixed-origin inventory, and shadowed/rebound opener negatives.
+  `Request` objects, fixed-origin inventory, shadowed/rebound opener negatives, and exact fail-closed
+  scheme/hostname controls versus late, partial, continuing, rebound, shadowed, mutable-policy, and
+  rejection-branch-sink non-controls.
 - `sandbox_boundary`: Compose and Kubernetes host/privilege boundaries plus explicit safe negatives.
 - `constant_eval`: constant Python evaluation negative case.
 - `python_browser_evaluate`: exact Playwright `Page` annotations and immutable aliases prove dynamic

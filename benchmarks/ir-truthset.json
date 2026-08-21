@@ -2611,6 +2611,75 @@
       "relationship": {"source_kind":"tool","source_name":"weather_hour24","relation":"uses","target_kind":"capability","target_name":"network"}
     },
     {
+      "id": "python-network-origin-guard-local",
+      "target": {"kind":"local","path":"cases/network_dynamic_origin"},
+      "check_id": "IR-PY-NETWORK-ORIGIN-GUARD",
+      "path": "guards.py", "line": 13, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-allowlist",
+        "attributes":{"control_line":11,"initial_origin_scope":"allowlisted","redirect_scope":"disabled","dns_scope":"unresolved"}
+      }
+    },
+    {
+      "id": "python-network-origin-alias-guard-local",
+      "target": {"kind":"local","path":"cases/network_dynamic_origin"},
+      "check_id": "IR-PY-NETWORK-ORIGIN-GUARD",
+      "path": "guards.py", "line": 22, "expected": true,
+      "relationship": {
+        "source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-allowlist",
+        "attributes":{"control_line":20,"initial_origin_scope":"allowlisted","redirect_scope":"unresolved","dns_scope":"unresolved"}
+      }
+    },
+    {
+      "id": "python-network-origin-late-guard-local-negative",
+      "target": {"kind":"local","path":"cases/network_dynamic_origin"},
+      "check_id": "IR-PY-NETWORK-ORIGIN-GUARD",
+      "path": "guards.py", "line": 27, "expected": false,
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-allowlist"}
+    },
+    {
+      "id": "python-network-origin-scheme-only-local-negative",
+      "target": {"kind":"local","path":"cases/network_dynamic_origin"},
+      "check_id": "IR-PY-NETWORK-ORIGIN-GUARD",
+      "path": "guards.py", "line": 39, "expected": false,
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-allowlist"}
+    },
+    {
+      "id": "python-network-origin-continuing-guard-local-negative",
+      "target": {"kind":"local","path":"cases/network_dynamic_origin"},
+      "check_id": "IR-PY-NETWORK-ORIGIN-GUARD",
+      "path": "guards.py", "line": 47, "expected": false,
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-allowlist"}
+    },
+    {
+      "id": "python-network-origin-rebound-parser-local-negative",
+      "target": {"kind":"local","path":"cases/network_dynamic_origin"},
+      "check_id": "IR-PY-NETWORK-ORIGIN-GUARD",
+      "path": "guards.py", "line": 56, "expected": false,
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-allowlist"}
+    },
+    {
+      "id": "python-network-origin-shadowed-parser-local-negative",
+      "target": {"kind":"local","path":"cases/network_dynamic_origin"},
+      "check_id": "IR-PY-NETWORK-ORIGIN-GUARD",
+      "path": "guards.py", "line": 65, "expected": false,
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-allowlist"}
+    },
+    {
+      "id": "python-network-origin-mutable-host-policy-local-negative",
+      "target": {"kind":"local","path":"cases/network_dynamic_origin"},
+      "check_id": "IR-PY-NETWORK-ORIGIN-GUARD",
+      "path": "guards.py", "line": 76, "expected": false,
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-allowlist"}
+    },
+    {
+      "id": "python-network-origin-rejection-branch-sink-local-negative",
+      "target": {"kind":"local","path":"cases/network_dynamic_origin"},
+      "check_id": "IR-PY-NETWORK-ORIGIN-GUARD",
+      "path": "guards.py", "line": 83, "expected": false,
+      "relationship": {"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-allowlist"}
+    },
+    {
       "id": "python-browser-receiver-annotated-local",
       "target": {"kind":"local","path":"cases/python_browser_evaluate"},
       "check_id": "IR-PY-BROWSER-RECEIVER",

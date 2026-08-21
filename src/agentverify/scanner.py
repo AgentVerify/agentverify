@@ -341,6 +341,15 @@ class PythonPathBoundaryProof:
 
 
 @dataclass(frozen=True)
+class PythonNetworkOriginProof:
+    evidence: Evidence
+    url_name: str
+    parser_name: str
+    schemes: tuple[str, ...]
+    hosts: tuple[str, ...]
+
+
+@dataclass(frozen=True)
 class PythonPathHelperSummary:
     parameter_index: int
     parameter_name: str
@@ -589,6 +598,199 @@ def python_browser_receiver_proofs(
         receiver = candidate.func.value.id
         if (proof := bindings.get(receiver)) and binding_lines[receiver] < candidate.lineno:
             proofs[id(candidate)] = proof
+    return proofs
+
+
+def python_network_origin_guard_proofs(
+    node: ast.FunctionDef | ast.AsyncFunctionDef,
+    path: str,
+    lines: list[str],
+    url_parser_names: set[str],
+    module_literal_string_sets: dict[str, tuple[str, ...]],
+) -> dict[int, PythonNetworkOriginProof]:
+    """Resolve fail-closed scheme and hostname allowlists before direct URL calls."""
+    parameters = {
+        argument.arg
+        for argument in (*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs)
+        if argument.arg not in {"self", "cls"}
+    }
+    if not parameters or not url_parser_names:
+        return {}
+
+    mutation_counts: Counter[str] = Counter()
+
+    def collect_mutations(candidate: ast.AST) -> None:
+        if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
+            return
+        if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
+            mutation_counts[candidate.id] += 1
+        for child in ast.iter_child_nodes(candidate):
+            collect_mutations(child)
+
+    for statement in node.body:
+        collect_mutations(statement)
+    if any(mutation_counts[name] for name in parameters):
+        parameters = {name for name in parameters if mutation_counts[name] == 0}
+    if not parameters:
+        return {}
+
+    literal_sets = dict(module_literal_string_sets)
+    url_aliases = {name: name for name in parameters}
+    parsed_urls: dict[str, tuple[str, str]] = {}
+    guarded: dict[str, dict[str, tuple[str, ...] | Evidence]] = {}
+    proofs: dict[int, PythonNetworkOriginProof] = {}
+
+    def literal_strings(expression: ast.AST) -> tuple[str, ...] | None:
+        if isinstance(expression, ast.Name):
+            return literal_sets.get(expression.id)
+        if not isinstance(expression, (ast.List, ast.Tuple, ast.Set)):
+            return None
+        values = tuple(
+            element.value
+            for element in expression.elts
+            if isinstance(element, ast.Constant)
+            and isinstance(element.value, str)
+        )
+        return tuple(sorted(set(values))) if len(values) == len(expression.elts) else None
+
+    def guard_terms(expression: ast.AST) -> list[tuple[str, str, tuple[str, ...]]]:
+        if isinstance(expression, ast.BoolOp) and isinstance(expression.op, ast.Or):
+            return [term for value in expression.values for term in guard_terms(value)]
+        if not (
+            isinstance(expression, ast.Compare)
+            and len(expression.ops) == 1
+            and len(expression.comparators) == 1
+            and isinstance(expression.left, ast.Attribute)
+            and isinstance(expression.left.value, ast.Name)
+            and expression.left.attr in {"scheme", "hostname"}
+        ):
+            return []
+        parser_name = expression.left.value.id
+        operator = expression.ops[0]
+        comparator = expression.comparators[0]
+        values: tuple[str, ...] | None = None
+        if isinstance(operator, ast.NotIn):
+            values = literal_strings(comparator)
+        elif (
+            isinstance(operator, ast.NotEq)
+            and isinstance(comparator, ast.Constant)
+            and isinstance(comparator.value, str)
+        ):
+            values = (comparator.value,)
+        if not values:
+            return []
+        normalized = tuple(sorted(set(values)))
+        if any(value != value.lower().rstrip(".") for value in normalized):
+            return []
+        if expression.left.attr == "scheme":
+            if any(value not in {"http", "https"} for value in normalized):
+                return []
+        elif any(
+            not value
+            or value.startswith(".")
+            or any(character in value for character in "/*:@[]")
+            for value in normalized
+        ):
+            return []
+        return [(parser_name, expression.left.attr, normalized)]
+
+    def lexical_calls(statement: ast.stmt) -> list[ast.Call]:
+        calls: list[ast.Call] = []
+
+        def collect(candidate: ast.AST) -> None:
+            if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
+                return
+            if isinstance(candidate, ast.Call):
+                calls.append(candidate)
+            for child in ast.iter_child_nodes(candidate):
+                collect(child)
+
+        collect(statement)
+        return calls
+
+    def call_url_name(call: ast.Call) -> str | None:
+        call_name = dotted_name(call.func)
+        short_name = call_name.rsplit(".", 1)[-1].lower()
+        expression: ast.AST | None = None
+        if short_name == "request" and len(call.args) > 1:
+            expression = call.args[1]
+        elif call.args:
+            expression = call.args[0]
+        for keyword in call.keywords:
+            if keyword.arg == "url":
+                expression = keyword.value
+        return expression.id if isinstance(expression, ast.Name) else None
+
+    for statement in node.body:
+        if isinstance(statement, (ast.Assign, ast.AnnAssign)):
+            targets = statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+            value = statement.value
+            if len(targets) == 1 and isinstance(targets[0], ast.Name) and value is not None:
+                target = targets[0].id
+                static_values = literal_strings(value)
+                if (
+                    mutation_counts[target] == 1
+                    and isinstance(value, ast.Tuple)
+                    and static_values
+                ):
+                    literal_sets[target] = static_values
+                if (
+                    mutation_counts[target] == 1
+                    and isinstance(value, ast.Name)
+                    and value.id in url_aliases
+                ):
+                    url_aliases[target] = url_aliases[value.id]
+                if (
+                    mutation_counts[target] == 1
+                    and isinstance(value, ast.Call)
+                    and dotted_name(value.func) in url_parser_names
+                    and value.args
+                    and isinstance(value.args[0], ast.Name)
+                    and value.args[0].id in url_aliases
+                ):
+                    parsed_urls[target] = (
+                        url_aliases[value.args[0].id],
+                        dotted_name(value.func),
+                    )
+        for call in lexical_calls(statement):
+            url_name = call_url_name(call)
+            if url_name not in url_aliases:
+                continue
+            source_name = url_aliases[url_name]
+            matches = [
+                (parser_name, parser_call, state)
+                for parser_name, (parsed_source, parser_call) in parsed_urls.items()
+                if parsed_source == source_name
+                and (state := guarded.get(parser_name)) is not None
+                and isinstance(state.get("scheme"), tuple)
+                and isinstance(state.get("hostname"), tuple)
+                and isinstance(state.get("evidence"), Evidence)
+            ]
+            if len(matches) != 1:
+                continue
+            parser_name, parser_call, state = matches[0]
+            proofs[id(call)] = PythonNetworkOriginProof(
+                state["evidence"],
+                source_name,
+                parser_call,
+                state["scheme"],
+                state["hostname"],
+            )
+        if (
+            isinstance(statement, ast.If)
+            and python_block_always_terminates(statement.body)
+            and not statement.orelse
+        ):
+            terms = guard_terms(statement.test)
+            for parser_name, field, values in terms:
+                if parser_name not in parsed_urls:
+                    continue
+                state = guarded.setdefault(parser_name, {})
+                state[field] = values
+                state.setdefault(
+                    "evidence",
+                    Evidence(path, statement.lineno, excerpt(lines, statement.lineno)),
+                )
     return proofs
 
 
@@ -1932,6 +2134,8 @@ class PythonVisitor(ast.NodeVisitor):
         urllib_request_constructors: set[str],
         browser_type_names: set[str],
         browser_page_factories: set[str],
+        url_parser_names: set[str],
+        module_literal_string_sets: dict[str, tuple[str, ...]],
     ) -> None:
         self.ir = ir
         self.root = root
@@ -1963,10 +2167,13 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_path_bindings: list[dict[str, str]] = []
         self.function_path_constructors: list[set[str]] = []
         self.function_browser_receiver_proofs: list[dict[int, str]] = []
+        self.function_network_origin_guards: list[dict[int, PythonNetworkOriginProof]] = []
         self.urllib_openers = urllib_openers
         self.urllib_request_constructors = urllib_request_constructors
         self.browser_type_names = browser_type_names
         self.browser_page_factories = browser_page_factories
+        self.url_parser_names = url_parser_names
+        self.module_literal_string_sets = module_literal_string_sets
         self.function_stack: list[str] = []
         self.function_depth = 0
         self.imported_symbol_paths: dict[str, str] = {}
@@ -2113,6 +2320,48 @@ class PythonVisitor(ast.NodeVisitor):
                 "governed-by",
                 "control",
                 "path-prefix-check",
+                self.ev(capability_node),
+                {
+                    "control_path": proof.evidence.path,
+                    "control_line": proof.evidence.line,
+                    **attributes,
+                },
+            )
+        )
+
+    def add_python_network_origin_control(
+        self, capability_node: ast.Call, proof: PythonNetworkOriginProof
+    ) -> None:
+        redirect_scope = "unresolved"
+        for keyword in capability_node.keywords:
+            if (
+                keyword.arg in {"allow_redirects", "follow_redirects"}
+                and isinstance(keyword.value, ast.Constant)
+                and keyword.value.value is False
+            ):
+                redirect_scope = "disabled"
+        attributes = {
+            "scope": source_scope(self.path),
+            "policy_effect": "restricts-initial-http-origin",
+            "frontend": "python",
+            "parser": proof.parser_name,
+            "url": proof.url_name,
+            "schemes": list(proof.schemes),
+            "hosts": list(proof.hosts),
+            "initial_origin_scope": "allowlisted",
+            "redirect_scope": redirect_scope,
+            "dns_scope": "unresolved",
+        }
+        self.ir.add_component(
+            Component("control", "network-origin-allowlist", proof.evidence, attributes)
+        )
+        self.ir.add_relationship(
+            Relationship(
+                "capability",
+                "network",
+                "governed-by",
+                "control",
+                "network-origin-allowlist",
                 self.ev(capability_node),
                 {
                     "control_path": proof.evidence.path,
@@ -2408,6 +2657,25 @@ class PythonVisitor(ast.NodeVisitor):
             if self.has_browser_import
             else {}
         )
+        function_url_parsers = {
+            parser
+            for parser in self.url_parser_names
+            if parser.split(".", 1)[0] not in local_bindings
+        }
+        function_literal_string_sets = {
+            name: values
+            for name, values in self.module_literal_string_sets.items()
+            if name not in local_bindings
+        }
+        self.function_network_origin_guards.append(
+            python_network_origin_guard_proofs(
+                node,
+                self.path,
+                self.lines,
+                function_url_parsers,
+                function_literal_string_sets,
+            )
+        )
         function_path_constructors = {
             constructor
             for constructor in self.path_constructors
@@ -2594,6 +2862,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_path_bindings.pop()
         self.function_path_constructors.pop()
         self.function_browser_receiver_proofs.pop()
+        self.function_network_origin_guards.pop()
         self.approval_environment_flags = previous_approval_environment_flags
         self.static_http_prefixes = previous_static_http_prefixes
         self.network_helper_bindings = previous_network_helper_bindings
@@ -4053,6 +4322,16 @@ class PythonVisitor(ast.NodeVisitor):
             for keyword in node.keywords:
                 if keyword.arg == "url":
                     url_expression = keyword.value
+            origin_guard = (
+                self.function_network_origin_guards[-1].get(id(node))
+                if self.function_network_origin_guards
+                else None
+            )
+            if (
+                origin_guard is not None
+                and origin_guard.url_name not in self.dynamic_http_origin_names
+            ):
+                origin_guard = None
             self.add_capability(
                 "network",
                 node,
@@ -4063,8 +4342,18 @@ class PythonVisitor(ast.NodeVisitor):
                         self.dynamic_http_origin_names,
                         self.static_http_prefixes,
                     ),
+                    **(
+                        {
+                            "network_origin_guard": True,
+                            "initial_origin_scope": "allowlisted",
+                        }
+                        if origin_guard is not None
+                        else {}
+                    ),
                 },
             )
+            if origin_guard is not None:
+                self.add_python_network_origin_control(node, origin_guard)
             if short_name.lower() in {"post", "put", "patch", "delete"}:
                 self.add_capability("external-action", node, {"api": call_name})
         if call_name in self.urllib_openers:
@@ -4084,6 +4373,16 @@ class PythonVisitor(ast.NodeVisitor):
                 raw_url_expression,
                 self.urllib_request_constructors,
             )
+            origin_guard = (
+                self.function_network_origin_guards[-1].get(id(node))
+                if self.function_network_origin_guards
+                else None
+            )
+            if (
+                origin_guard is not None
+                and origin_guard.url_name not in self.dynamic_http_origin_names
+            ):
+                origin_guard = None
             self.add_capability(
                 "network",
                 node,
@@ -4095,8 +4394,18 @@ class PythonVisitor(ast.NodeVisitor):
                         self.dynamic_http_origin_names,
                         self.static_http_prefixes,
                     ),
+                    **(
+                        {
+                            "network_origin_guard": True,
+                            "initial_origin_scope": "allowlisted",
+                        }
+                        if origin_guard is not None
+                        else {}
+                    ),
                 },
             )
+            if origin_guard is not None:
+                self.add_python_network_origin_control(node, origin_guard)
         if helper := self.imported_network_helper(node):
             summary, arguments = helper
             self.add_capability(
@@ -4164,24 +4473,32 @@ def scan_python(
         for alias in node.names
     }
     module_mutations: set[str] = set()
+    module_mutation_counts: Counter[str] = Counter()
 
     def collect_module_mutations(candidate: ast.AST) -> None:
         if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
             module_mutations.add(candidate.name)
+            module_mutation_counts[candidate.name] += 1
             return
         if isinstance(candidate, (ast.Import, ast.ImportFrom, ast.Lambda)):
             return
         if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
             module_mutations.add(candidate.id)
+            module_mutation_counts[candidate.id] += 1
         for child in ast.iter_child_nodes(candidate):
             collect_module_mutations(child)
 
     for statement in tree.body:
         if not isinstance(statement, (ast.Import, ast.ImportFrom)):
             collect_module_mutations(statement)
-    module_mutations.update(
-        name for candidate in nodes if isinstance(candidate, ast.Global) for name in candidate.names
-    )
+    module_global_mutations = {
+        name
+        for candidate in nodes
+        if isinstance(candidate, ast.Global)
+        for name in candidate.names
+    }
+    module_mutations.update(module_global_mutations)
+    module_mutation_counts.update(module_global_mutations)
     module_rebound_names = imported_bindings & module_mutations
     module_assignment_counts = Counter(
         target.id
@@ -4205,6 +4522,42 @@ def scan_python(
         prefix = python_static_url_prefix(statement.value, module_static_http_prefixes)
         if prefix:
             module_static_http_prefixes[target] = prefix
+
+    def literal_string_collection(expression: ast.AST) -> tuple[str, ...] | None:
+        container: ast.AST
+        if (
+            isinstance(expression, ast.Call)
+            and dotted_name(expression.func) == "frozenset"
+            and dotted_name(expression.func) not in module_mutations
+            and len(expression.args) == 1
+            and not expression.keywords
+        ):
+            container = expression.args[0]
+        elif isinstance(expression, ast.Tuple):
+            container = expression
+        else:
+            return None
+        if not isinstance(container, (ast.List, ast.Tuple, ast.Set)):
+            return None
+        values = tuple(
+            element.value
+            for element in container.elts
+            if isinstance(element, ast.Constant)
+            and isinstance(element.value, str)
+        )
+        return tuple(sorted(set(values))) if len(values) == len(container.elts) else None
+
+    module_literal_string_sets: dict[str, tuple[str, ...]] = {}
+    for statement in tree.body:
+        if not isinstance(statement, (ast.Assign, ast.AnnAssign)):
+            continue
+        targets = statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+        if len(targets) != 1 or not isinstance(targets[0], ast.Name):
+            continue
+        target = targets[0].id
+        values = literal_string_collection(statement.value)
+        if module_mutation_counts[target] == 1 and values:
+            module_literal_string_sets[target] = values
     path_constructors = {
         alias.asname or alias.name
         for statement in tree.body
@@ -4332,6 +4685,36 @@ def scan_python(
         constructor
         for constructor in urllib_request_constructors
         if constructor.split(".", 1)[0] not in module_rebound_names
+    }
+    url_parser_names: set[str] = set()
+    for statement in tree.body:
+        if isinstance(statement, ast.Import):
+            for alias in statement.names:
+                binding = alias.asname or alias.name
+                if alias.name == "urllib":
+                    url_parser_names.update(
+                        {f"{binding}.parse.urlparse", f"{binding}.parse.urlsplit"}
+                    )
+                elif alias.name == "urllib.parse":
+                    url_parser_names.update(
+                        {f"{binding}.urlparse", f"{binding}.urlsplit"}
+                    )
+        elif isinstance(statement, ast.ImportFrom):
+            if statement.module == "urllib":
+                for alias in statement.names:
+                    if alias.name == "parse":
+                        binding = alias.asname or alias.name
+                        url_parser_names.update(
+                            {f"{binding}.urlparse", f"{binding}.urlsplit"}
+                        )
+            elif statement.module == "urllib.parse":
+                for alias in statement.names:
+                    if alias.name in {"urlparse", "urlsplit"}:
+                        url_parser_names.add(alias.asname or alias.name)
+    url_parser_names = {
+        parser
+        for parser in url_parser_names
+        if parser.split(".", 1)[0] not in module_rebound_names
     }
     registry_decorator_origins = {
         "metagpt.tools.tool_registry": "MetaGPT",
@@ -4600,6 +4983,8 @@ def scan_python(
         urllib_request_constructors=urllib_request_constructors,
         browser_type_names=browser_type_names,
         browser_page_factories=browser_page_factories,
+        url_parser_names=url_parser_names,
+        module_literal_string_sets=module_literal_string_sets,
     ).visit(tree)
 
 
