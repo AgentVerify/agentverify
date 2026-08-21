@@ -300,6 +300,94 @@ def test_typescript_dynamic_eval_is_linked_and_reported() -> None:
     )
 
 
+def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_structured_tools")
+
+    tools = {
+        component.name: component for component in ir.components if component.kind == "tool"
+    }
+    assert set(tools) == {
+        "applyPatchTool@33",
+        "assignedShell",
+        "namespaceTools",
+        "safeTool",
+    }
+    assert tools["assignedShell"].attributes["approval_policy"] == "disabled-explicit"
+    assert tools["assignedShell"].attributes["execution_environment"] == "local"
+    assert tools["applyPatchTool@33"].attributes["approval_policy"] == "enabled"
+
+    operator_edges = [
+        edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent" and edge.source_name == "operator"
+    ]
+    assert {
+        (edge.relation, edge.target_kind, edge.target_name) for edge in operator_edges
+    } == {
+        ("delegates-to", "agent", "worker"),
+        ("uses", "tool", "applyPatchTool@33"),
+        ("uses", "tool", "assignedShell"),
+        ("uses", "tool", "namespaceTools"),
+        ("uses", "tool", "safeTool"),
+        ("uses", "tool", "unknownFactory"),
+        ("uses", "tool", "unrelatedShellTool"),
+    }
+    assert not {
+        "async",
+        "description",
+        "do",
+        "return",
+        "toolName",
+        "words",
+    } & {edge.target_name for edge in operator_edges}
+    assert next(edge for edge in operator_edges if edge.target_name == "worker").target_id == (
+        "ts:agent.ts#agent:worker"
+    )
+    assert next(
+        edge for edge in operator_edges if edge.target_name == "unrelatedShellTool"
+    ).target_id is None
+    assert [finding.rule_id for finding in ir.findings] == ["AV-APPROVAL002"]
+    assert ir.findings[0].ir_path[:2] == ("agent:operator", "tool:assignedShell")
+
+
+def test_typescript_builtin_options_variable_stays_unresolved(tmp_path: Path) -> None:
+    (tmp_path / "agent.ts").write_text(
+        """import { Agent, shellTool } from "@openai/agents";
+const options = loadPolicyAtRuntime();
+const agent = new Agent({ name: "operator", tools: [shellTool(options)] });
+""",
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    tool = next(component for component in ir.components if component.kind == "tool")
+    assert tool.attributes["approval_policy"] == "unresolved"
+    assert tool.attributes["execution_environment"] == "unresolved"
+    assert not ir.findings
+
+
+def test_cline_inline_tool_links_only_dynamic_bun_shell_execution() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_bun_shell")
+
+    shell = [
+        component
+        for component in ir.components
+        if component.kind == "capability" and component.name == "shell-execution"
+    ]
+    assert [(component.evidence.line, component.attributes["dynamic_command"]) for component in shell] == [
+        (8, True),
+        (12, False),
+    ]
+    assert [finding.rule_id for finding in ir.findings] == ["AV-EXEC001"]
+    assert ir.findings[0].evidence.line == 8
+    assert ir.findings[0].ir_path == (
+        "agent:operator",
+        "tool:createTool@6",
+        "capability:shell-execution",
+    )
+
+
 def test_dynamic_writable_tool_path_but_not_fixed_path_is_reviewed() -> None:
     ir = scan_repository(ROOT / "cases/filesystem_scope")
 

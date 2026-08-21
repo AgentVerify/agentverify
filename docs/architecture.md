@@ -37,8 +37,11 @@ repository file and can safely form cross-file agent paths. TypeScript named imp
 relative module maps to exactly one in-repository `.ts`, `.tsx`, `.js`, or `.jsx` file; aliases retain
 the original exported name. Imports that escape the scan root, target missing files, or have multiple
 candidate files remain unresolved. Python class methods use class-qualified IDs, and assigned agent
-or built-in-tool instances use their binding name. Package re-exports, wildcard imports, dynamic
-lookups, and several wrapper-factory forms remain unresolved.
+or built-in-tool instances use their binding name. The TypeScript frontend balances delimiters and
+reads only direct properties and top-level tool-array entries; it models OpenAI tool namespaces,
+built-ins, inline/assigned agent adapters, and Cline inline tools without treating nested tokens as
+symbols. Package re-exports, wildcard imports, dynamic lookups, conditional tool expressions, and
+unrecognized wrapper-factory forms remain unresolved.
 
 ## Result kinds and uncertainty
 
@@ -49,8 +52,9 @@ lookups, and several wrapper-factory forms remain unresolved.
 Control analysis reports `present` only for a resolved governing edge. It reports `unresolved` when
 coverage cannot be proven and never silently converts missing lexical evidence into “control absent.”
 The first policy resolver recognizes same-function MCP tool-name allowlists that reject unknown tools
-before forwarding. It also resolves an OpenAI Agents TypeScript function tool's literal
-`needsApproval: true` setting. For Python files importing the OpenAI Agents SDK, literal
+before forwarding. It also resolves literal approval on OpenAI Agents TypeScript function and
+built-in tools, preserving local versus hosted shell execution. For Python files importing the
+OpenAI Agents SDK, literal
 `needs_approval=True` on `ShellTool`, `ApplyPatchTool`, and `CustomTool` creates an instance-scoped
 tool-to-control edge when no automatic approval handler is configured; literal false is recorded as
 explicitly disabled. An omitted value records the SDK's documented disabled default. Callback,
@@ -74,8 +78,9 @@ and AgentVerify does not infer that a chart value governs a workload unless that
 explicitly resolved.
 
 The native AI BOM serializes the same evidence graph with stable observation IDs. Relationship
-endpoints expose unique-display-name, ambiguous, or unresolved identity instead of collapsing
-same-named assets. It is a lossless AgentVerify format, not a claim of CycloneDX or SPDX conformance.
+endpoints expose symbol-ID, unique-display-name, ambiguous, or unresolved identity instead of
+collapsing same-named assets. It is a lossless AgentVerify format, not a claim of CycloneDX or SPDX
+conformance.
 
 Policy evaluation is a post-baseline reporting stage, not a rule filter. Gates count matching
 fingerprints by rule, result kind, and minimum severity; findings remain in every output. JSON, text,

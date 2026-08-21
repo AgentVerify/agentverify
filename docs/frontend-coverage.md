@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v2
+framework, wrapper, or configuration path. Counts come from schema-v3
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -14,7 +14,7 @@ kind. Categories and signature kinds can overlap.
 |---|---:|---:|---:|---:|---:|---:|
 | autonomous-agent | 3 | 3 | 2 | 3 | 1 | 3 |
 | browser-agent | 3 | 3 | 2 | 3 | 2 | 3 |
-| coding-agent | 15 | 15 | 0 | 5 | 8 | 14 |
+| coding-agent | 15 | 15 | 1 | 5 | 8 | 14 |
 | computer-agent | 1 | 1 | 0 | 1 | 0 | 1 |
 | examples | 2 | 2 | 2 | 2 | 1 | 2 |
 | framework | 22 | 22 | 13 | 17 | 19 | 21 |
@@ -26,24 +26,30 @@ kind. Categories and signature kinds can overlap.
 | visual-platform | 4 | 4 | 1 | 0 | 1 | 4 |
 | workflow-agent | 3 | 3 | 1 | 3 | 1 | 3 |
 | workflow-platform | 2 | 2 | 0 | 1 | 2 | 2 |
-| **Total with observation** | **71** | **70** | **28** | **42** | **47** | **67** |
+| **Total with observation** | **71** | **70** | **29** | **42** | **47** | **67** |
 
 Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK (9), LangGraph
-(8), CrewAI (4), PydanticAI (3), and AutoGen (1). Provider observations are OpenAI (40), Anthropic
-(16), and Azure OpenAI (10). These counts overlap and are lower than research-wide lexical signals
+(8), CrewAI (4), PydanticAI (3), AutoGen (1), and Cline SDK (1). Provider observations are OpenAI
+(40), Anthropic (16), and Azure OpenAI (10). These counts overlap and are lower than research-wide lexical signals
 because the engine requires supported selected files and more specific syntax.
 
-Across the selected snapshot, 8,175 agent/tool observations have module-qualified symbol IDs. Of
-3,748 relationship endpoint observations, 2,354 have resolved IDs (1,653 Python and 701 TypeScript).
-The remainder includes capability/control taxonomy endpoints as well as unresolved source symbols, so
-this is inventory coverage rather than an accuracy or recall metric.
+Across the selected snapshot, 8,204 agent/tool observations have module-qualified symbol IDs. Of
+2,706 relationship endpoint observations, 1,887 carry IDs and 1,885 resolve to an observed component
+(1,651 Python and 234 TypeScript); the two unmatched IDs are explicit Python re-export targets.
+Capability/control taxonomy endpoints intentionally lack source-symbol IDs, so the endpoint fraction
+is inventory coverage rather than an accuracy or recall metric.
+
+The TypeScript graph contains 95 structure-backed agent edges: 14 agent-as-tool delegations and 81
+agent-to-tool edges. All 81 tool endpoints resolve to an observed component. This replaces a prior
+token-level array heuristic that could turn words inside callbacks, strings, or nested options into
+spurious tool edges.
 
 ## Implemented syntax
 
 | Frontend | Implemented observations and resolution |
 |---|---|
 | Python AST | Imports; known agent/model constructors; tool decorators; literal tool/handoff lists; module- and class-qualified agent/tool IDs; shell, eval, filesystem, HTTP, browser, MCP, and Docker SDK calls; absolute and filesystem-relative tool imports; literal approval decorators; OpenAI Agents `ShellTool`/`ApplyPatchTool`/`CustomTool` approval constructors; statement-ordered MCP rejection guards; lexically scoped OpenTelemetry spans. |
-| TypeScript/JavaScript lexical | Known imports/providers; `tool(...)`/`functionTool(...)`; `new Agent({tools: [...]})`; module-qualified agent/tool IDs; named relative imports and aliases; child-process calls with literal/dynamic distinction; direct eval; filesystem calls; MCP forwarding object shapes; literal `needsApproval: true` and auto-approval settings. Comments and string contents are masked before policy matching. |
+| TypeScript/JavaScript structural lexical | Known imports/providers; balanced top-level `new Agent({tools: [...]})` entries; `tool(...)`, `functionTool(...)`, `toolNamespace(...)`, OpenAI built-ins, Cline `createTool(...)`, and assigned/inline `asTool(...)`; module-qualified agent/tool IDs; named relative imports and aliases; child-process and Bun `sh -c` calls with literal/dynamic distinction; direct eval; filesystem calls; MCP forwarding object shapes; literal tool approval and auto-approval settings. Comments and string contents are masked before policy matching. |
 | MCP JSON | Common `mcpServers` configuration, transport/command/URL, redacted arguments, and environment-variable names. Configuration is read as data; servers are never launched. |
 | Container configuration | Compose/devcontainer Docker socket, privileged/host network/root mounts; Kubernetes/Helm privileged, host namespace, privilege escalation, service-account token, and `hostPath`; literal privileged Python Docker SDK calls. |
 
@@ -59,10 +65,11 @@ this is inventory coverage rather than an accuracy or recall metric.
 - Python package re-exports, wildcard imports, dynamically selected symbols, alias constructors,
   imported policy objects, callback approval results, and branch-local allowlist proofs remain
   unresolved. Framework/provider/capability names remain taxonomies rather than source symbols.
-- The TypeScript frontend is not an AST/type-checker. Computed properties, object spreads, wrapper
-  factories, complex nested tool arrays, CommonJS alias flows, callback approval policies, and
-  type-driven resolution can be missed. Its cross-file resolver found zero qualifying real edges in
-  this selected snapshot and is currently regression-validated only.
+- The TypeScript frontend is not an AST/type-checker. Computed property names, conditional tool
+  expressions, object-composed Agent options, unrecognized wrapper factories, CommonJS alias flows,
+  callback approval results, and type-driven resolution can be missed. Its relative-import resolver
+  found zero qualifying real edges in this selected snapshot and is currently regression-validated
+  separately from the 81 resolved local tool edges.
 - Helm templates are not rendered. Kubernetes RBAC, NetworkPolicy, pod scheduling, and the contents
   or sensitivity of mounted paths are not inferred. Compose environment interpolation is not
   evaluated.
@@ -73,7 +80,7 @@ this is inventory coverage rather than an accuracy or recall metric.
 
 ## Quality interpretation
 
-The 125-label rule truth set and 12-label IR relationship set are curated regression suites. They
+The 129-label rule truth set and 18-label IR relationship set are curated regression suites. They
 guard known positives and negatives; they are not an unbiased accuracy estimate. A future holdout
 must be sampled separately across the categories above, externally reviewed, and kept sealed while
 rules change. Until then, precision/recall values apply only to the published seed labels.

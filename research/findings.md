@@ -51,6 +51,21 @@ allowlisting in 39. These controls live in infrastructure, framework middleware,
 individual tool wrappers. The Agent IR must preserve which control governs which action instead of
 producing repository-wide flags.
 
+## 6. Tool configuration needs structure, not token matching
+
+Real TypeScript Agent configurations place tool arrays beside nested instructions, callbacks,
+schemas, and runtime options. A token-level audit of the pinned sample produced hundreds of apparent
+tool names such as `async`, `return`, and words from descriptions. Balanced top-level parsing reduces
+the observed graph to 95 evidence-backed agent edges: 14 agent-as-tool delegations and 81 tool edges,
+all 81 resolving to an observed component.
+
+Framework-specific wrappers also carry security meaning. The Cline SDK example wraps
+[`Bun.spawn(["sh", "-c", input.command])`](https://github.com/cline/cline/blob/80b3b0348e694bafc48e3dcd70154de3cf4289d9/apps/examples/cli-agent/src/index.ts#L19)
+inside an inline `createTool`; recognizing only the outer `Agent` would miss the reachable dynamic
+shell path. OpenAI Agents JS similarly expresses multi-agent delegation through both inline and
+assigned `asTool()` adapters. Frontend coverage therefore needs conservative structural parsing plus
+framework-qualified factories, not a growing bag of identifier regexes.
+
 ## Limitations
 
 - The collector is presence-based and scans a bounded subset of files.

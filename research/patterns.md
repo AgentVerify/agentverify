@@ -13,6 +13,10 @@ Frameworks express delegation as graph edges, handoffs, group chat, role-based c
 wrapped as tools. Delegation can expand effective permissions: a low-privilege coordinator may invoke
 a specialist with shell or browser access. The IR should compute transitive capabilities.
 
+In TypeScript, the wrapper itself may be inline (`worker.asTool(...)`) or assigned before it appears
+in an Agent's tools array. Both forms need to resolve back to the agent identity; treating the adapter
+as an unrelated tool hides transitive authority.
+
 ## MCP client/server indirection
 
 MCP moves tool definitions and execution outside the application process. Clients can discover tools
@@ -37,4 +41,3 @@ gate scope and the configuration that bypasses it.
 Tracing and audit hooks appear at framework, model-client, runtime, and tool layers. A useful rule asks
 whether consequential actions receive durable, attributable records—not merely whether a logging
 package is imported.
-

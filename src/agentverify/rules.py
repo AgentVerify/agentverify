@@ -187,8 +187,8 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                         "AV-APPROVAL002",
                         "high",
                         "high",
-                        f"A reachable local ShellTool has SDK approval disabled {qualifier}",
-                        "Set needs_approval=True and handle interruptions, or document and enforce an equivalent approval control inside the executor.",
+                        f"A reachable local shell tool has SDK approval disabled {qualifier}",
+                        "Enable needs_approval/needsApproval and handle interruptions, or document and enforce an equivalent approval control inside the executor.",
                         "review",
                     )
                 )

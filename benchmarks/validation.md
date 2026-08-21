@@ -8,9 +8,10 @@ Validation date: 2026-08-21. Repositories are partial checkouts pinned by
 | Repository | Commit | Selected files scanned | Findings | Representative path |
 |---|---|---:|---:|---|
 | Aider-AI/aider | `5dc9490b` | 152 | 4 | `aider/editor.py:134` |
-| bytedance/trae-agent | `e839e559` | 75 | 2 | `trae_agent/tools/bash_tool.py:44` |
-| FoundationAgents/MetaGPT | `11cdf466` | 174 | 1 | `metagpt/tools/libs/shell.py:52` |
-| SWE-agent/SWE-agent | `3ea751c0` | 102 | 1 | `sweagent/environment/repo.py:115` |
+| bytedance/trae-agent | `e839e559` | 75 | 2 | `trae_agent/agent/docker_manager.py:175` |
+| FoundationAgents/MetaGPT | `11cdf466` | 214 | 1 | `metagpt/repo_parser.py:731` |
+| SWE-agent/SWE-agent | `3ea751c0` | 102 | 1 | `tools/windowed/lib/flake8_utils.py:143` |
+| cline/cline | `80b3b034` | 187 | 1 | `apps/examples/cli-agent/src/index.ts:19` |
 
 These are pattern detections, not claims that each application is exploitable. Caller provenance,
 input constraints, containment, and approval policy determine exploitability. The rule reports the
@@ -26,25 +27,31 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 - `cases/builtin_tool_approval`: OpenAI Agents Python built-in tool instances preserve enabled,
   disabled, callback, and auto-handler approval policies without leaking controls between same-named
   tools.
+- `cases/typescript_structured_tools`: balanced tool-array parsing, namespace spreads, inline and
+  assigned SDK tools, agent-as-tool delegation, approval policies, and unrelated-name negatives.
+- `cases/typescript_bun_shell`: Cline inline tools distinguish dynamic Bun `sh -c`, a fixed command,
+  direct argv execution, and string-only near misses.
 
 ## Full-corpus engine benchmark
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,594 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,874 relationships, and completed in 23.88 seconds on the development machine. Three parse warnings were isolated and
+resolved 1,353 relationships, and completed in 29.59 seconds on the development machine. Three parse warnings were isolated and
 reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
 
-Engine benchmark schema v2 retains stable component-name taxonomies and category-level presence
-counts. It intentionally excludes arbitrary agent/tool display names from the summary. The resulting
+Engine benchmark schema v3 retains stable component-name taxonomies, category presence counts,
+matched-versus-identified endpoint counts, and TypeScript graph precision measures. It intentionally
+excludes arbitrary agent/tool display names from the summary. The resulting
 framework/provider/protocol/capability coverage and unsupported syntax are published in
 `docs/frontend-coverage.md`; presence counts are discovery observations, not recall measurements.
 
-The benchmark now also measures identity coverage: 8,175 agent/tool component observations carry
-module-qualified IDs, and 2,354 of 3,748 relationship endpoint observations carry resolved IDs
-(1,653 Python and 701 TypeScript). This endpoint fraction is not a resolver recall score: capability,
-control, and taxonomy endpoints intentionally remain evidence observations without source-symbol IDs.
+The benchmark now also measures identity coverage: 8,204 agent/tool component observations carry
+module-qualified IDs. Of 2,706 relationship endpoints, 1,887 carry symbol IDs and 1,885 resolve to an
+observed component (1,651 Python and 234 TypeScript). The two unmatched IDs are explicit Python
+re-export targets; capability, control, and taxonomy endpoints intentionally remain evidence
+observations without source-symbol IDs.
 
 The Python frontend resolves unambiguous absolute imports rooted at the repository, `src/`, or
 `python/`, plus relative modules that map to exactly one sibling package file. It found five imported
@@ -62,15 +69,19 @@ The import truth labels verify both target paths and target IDs, including CrewA
 The same-name collision fixture proves that the approved and dangerous `run_command` definitions do
 not share reachability or control coverage.
 
-The TypeScript resolver applies the same conservative rule to relative named imports, including the
-common `.js`-specifier-to-`.ts` source mapping and aliases. The selected corpus snapshot currently has
-no qualifying imported `new Agent({ tools: [...] })` edge, so this support is regression-validated but
-is not counted as observed corpus coverage. Escaping and ambiguous imports are explicit negatives.
+The TypeScript frontend now reads only balanced top-level entries from literal Agent tool arrays. It
+resolves OpenAI `tool`, `toolNamespace`, built-in tool factories, inline/assigned `asTool` adapters,
+and Cline `createTool`. The full sample contains 95 structure-backed agent edges: 14 delegations and
+81 tool edges, all with targets that resolve to observed components. The prior token heuristic could
+turn words inside callbacks, string literals, and nested options into spurious tool edges. Relative
+named imports still apply the conservative `.js`-specifier-to-source rule; this snapshot has no
+qualifying cross-file Agent tool edge, so that part remains regression-validated only.
 
-The approval-policy resolver found a literal `needsApproval: true` in the pinned OpenAI Agents JS
-[human-in-the-loop example](https://github.com/openai/openai-agents-js/blob/0b944370c6fe019ac5b08364ca013826cd7d0668/examples/docs/human-in-the-loop/toolApprovalDefinition.ts#L11)
-and attached a tool-to-control edge. The adjacent callback form remains unresolved because its result
-depends on invocation arguments.
+The approval-policy resolver attaches exact controls to inline OpenAI Agents JS tools, including the
+pinned [local shell example](https://github.com/openai/openai-agents-js/blob/0b944370c6fe019ac5b08364ca013826cd7d0668/examples/tools/local-shell.ts#L104).
+Literal true creates a control; false and the SDK default remain disabled, while callback results are
+unresolved. Hosted container shell factories are identified separately and do not trigger the local
+approval review.
 
 For Python, files importing the OpenAI Agents SDK now inventory `ShellTool`, `ApplyPatchTool`, and
 `CustomTool` instances with line-scoped identities. A literal `needs_approval=True` with no automatic
@@ -84,28 +95,31 @@ promoted into Agent IR.
 ## AV-APPROVAL002 — reachable local shell with SDK approval disabled
 
 The enabled rule is intentionally narrower than a general “missing approval” claim. It requires a
-local OpenAI Agents `ShellTool`, a direct resolved Agent-to-tool edge, and an explicit false or the
-SDK's documented false default. It reports a high-confidence `review`, not a finding, because a custom
-executor may still implement an equivalent internal approval control. Hosted shell environments,
-callback policies, automatic handlers, unresolved environments, and test paths are excluded.
+local OpenAI Agents Python `ShellTool` or TypeScript `shellTool`, a direct resolved Agent-to-tool edge,
+and an explicit false or the SDK's documented false default. It reports a high-confidence `review`,
+not a finding, because a custom executor may still implement an equivalent internal approval control.
+Hosted shell environments, callback policies, automatic handlers, unresolved environments, and test
+paths are excluded.
 
 The full benchmark reports two sites, both in the pinned SDK's
 [local shell skill example](https://github.com/openai/openai-agents-python/blob/17ba331bb0ad1622a4ff4ecdc914c77118075dad/examples/tools/local_shell_skill.py#L29).
 The paired real negative is the
 [HITL shell example](https://github.com/openai/openai-agents-python/blob/17ba331bb0ad1622a4ff4ecdc914c77118075dad/examples/tools/shell_human_in_the_loop.py#L117),
-which creates a resolved human-approval edge. The rule has two positive and two negative exact labels.
+which creates a resolved human-approval edge. OpenAI Agents JS contributes real approved-local and
+hosted-shell negatives. The rule has three positive and four negative exact labels.
 
-During validation, import-aware shell resolution reduced Cline's TypeScript dynamic-shell candidates
-from 16 to zero after proving the matches were `RegExp.exec()`, not `child_process.exec()`. Truthy
-approval-bypass matching plus test-scope filtering reduced Cline approval candidates from 41 to five.
-The remaining candidates are explicit policy assignments or an `--auto-approve` path and remain
-`review` results rather than confirmed vulnerabilities.
+During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
+to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
+path where agent input reaches
+[`Bun.spawn(["sh", "-c", input.command])`](https://github.com/cline/cline/blob/80b3b0348e694bafc48e3dcd70154de3cf4289d9/apps/examples/cli-agent/src/index.ts#L19).
+Truthy approval-bypass matching plus test-scope filtering reduced Cline approval candidates from 41
+to five; those remain review results rather than confirmed vulnerabilities.
 
 Expanding the truth set exposed two additional false-positive families. Literal TypeScript commands
 were incorrectly classified as dynamic; resolving complete string literals removed five corpus
 findings while preserving interpolated templates. Broad approval-name matching confused warning-state
 and version-check flags with human approval; requiring approval-specific names removed six review
-candidates. Corpus totals are now 20 `AV-EXEC001` findings and seven `AV-APPROVAL001` reviews.
+candidates. Corpus totals are now 21 `AV-EXEC001` findings and seven `AV-APPROVAL001` reviews.
 
 ## AV-MCP002 — dynamic MCP forwarding
 
@@ -162,11 +176,11 @@ and a literal `privileged=True` keyword.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 125 exact labels across all seven enabled rules: 71 positives and 54
+`benchmarks/truthset.json` contains 129 exact labels across all seven enabled rules: 73 positives and 56
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, non-approval skip flags, disabled
-auto-approval, late MCP guards, and safe Compose/Kubernetes/Docker SDK settings. All 125 currently pass; each rule's seed precision and
+auto-approval, late MCP guards, and safe Compose/Kubernetes/Docker SDK settings. All 129 currently pass; each rule's seed precision and
 recall are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified
 source text at the exact pinned line, preventing a missing or drifting location from passing silently.
 
@@ -186,7 +200,8 @@ finding or enable `AV-AUDIT001`. The full corpus scan observed seven action-trac
 lexically governed HTTP capability edges, all in that ArcadeAI telemetry example.
 
 Three import labels cover a resolved relative fixture, a missing-module negative, and the pinned
-CrewAI-LangGraph draft-tool edge. Five approval labels cover enabled, disabled, callback, and
-automatic-handler local policies plus the pinned OpenAI shell edge. All 12 IR labels pass: two
-approval positives/three negatives, two audit positives/two negatives, and two import positives/one
-negative.
+CrewAI-LangGraph draft-tool edge. Seven approval labels cover enabled, disabled, callback, and
+automatic-handler policies plus pinned Python and TypeScript OpenAI shell edges. Four TypeScript graph
+labels cover inline and assigned agent adapters, the Cline tool path, and a nested-token negative. All
+18 IR labels pass: three approval positives/four negatives, two audit positives/two negatives, two
+import positives/one negative, and three TypeScript graph positives/one negative.

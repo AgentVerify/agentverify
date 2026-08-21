@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T05:03:34.306861+00:00",
-  "labels": 12,
-  "passed": 12,
+  "generated_at": "2026-08-21T05:33:20.002811+00:00",
+  "labels": 18,
+  "passed": 18,
   "metrics": {
     "IR-APPROVAL-CONTROL": {
-      "tp": 2,
+      "tp": 3,
       "fp": 0,
-      "tn": 3,
+      "tn": 4,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -22,6 +22,14 @@
     },
     "IR-IMPORT-RESOLUTION": {
       "tp": 2,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-TOOL-GRAPH": {
+      "tp": 3,
       "fp": 0,
       "tn": 1,
       "fn": 0,
@@ -134,6 +142,60 @@
       "check_id": "IR-APPROVAL-CONTROL",
       "expected": true,
       "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-agent-as-tool-real",
+      "check_id": "IR-TS-TOOL-GRAPH",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-assigned-agent-tool-real",
+      "check_id": "IR-TS-TOOL-GRAPH",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-inline-tool-real",
+      "check_id": "IR-TS-TOOL-GRAPH",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-nested-token-not-tool-real",
+      "check_id": "IR-TS-TOOL-GRAPH",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-inline-shell-approval-real",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-hosted-shell-no-approval-real",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": false,
+      "observed": false,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

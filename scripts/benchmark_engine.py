@@ -46,6 +46,22 @@ def main() -> int:
         repo_started = time.perf_counter()
         ir = scan_repository(checkout)
         imported_edges = [edge for edge in ir.relationships if edge.attributes.get("target_path")]
+        component_symbol_ids = {item.symbol_id for item in ir.components if item.symbol_id}
+        relationship_symbol_ids = [
+            symbol_id
+            for edge in ir.relationships
+            for symbol_id in (edge.source_id, edge.target_id)
+            if symbol_id
+        ]
+        typescript_agent_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "agent"
+            and edge.evidence.path.endswith((".ts", ".tsx", ".js", ".jsx"))
+        ]
+        typescript_agent_tool_edges = [
+            edge for edge in typescript_agent_edges if edge.target_kind == "tool"
+        ]
         result = {
             "repository": repository,
             "category": row["category"],
@@ -60,16 +76,29 @@ def main() -> int:
             },
             "relationships": len(ir.relationships),
             "symbolized_components": sum(bool(item.symbol_id) for item in ir.components),
+            "identified_symbol_endpoints": len(relationship_symbol_ids),
             "resolved_symbol_endpoints": sum(
-                bool(edge.source_id) + bool(edge.target_id) for edge in ir.relationships
+                symbol_id in component_symbol_ids for symbol_id in relationship_symbol_ids
+            ),
+            "unmatched_identified_symbol_endpoints": sum(
+                symbol_id not in component_symbol_ids for symbol_id in relationship_symbol_ids
             ),
             "resolved_symbol_endpoints_by_frontend": {
                 frontend: sum(
-                    bool(symbol_id and symbol_id.startswith(f"{frontend}:"))
-                    for edge in ir.relationships
-                    for symbol_id in (edge.source_id, edge.target_id)
+                    symbol_id.startswith(f"{frontend}:") and symbol_id in component_symbol_ids
+                    for symbol_id in relationship_symbol_ids
                 )
                 for frontend in ("py", "ts")
+            },
+            "typescript_graph": {
+                "agent_edges": len(typescript_agent_edges),
+                "agent_delegations": sum(
+                    edge.relation == "delegates-to" for edge in typescript_agent_edges
+                ),
+                "agent_tool_edges": len(typescript_agent_tool_edges),
+                "resolved_agent_tool_edges": sum(
+                    edge.target_id in component_symbol_ids for edge in typescript_agent_tool_edges
+                ),
             },
             "resolved_import_edges": len(imported_edges),
             "resolved_import_edges_by_frontend": {
@@ -89,7 +118,7 @@ def main() -> int:
         print(f"[{index:>2}/{len(repositories)}] {repository}: {ir.files_scanned} files")
     successful = [result for result in results if result["status"] == "ok"]
     payload = {
-        "schema_version": 2,
+        "schema_version": 3,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "summary": {
@@ -103,8 +132,14 @@ def main() -> int:
             "config_files_scanned": sum(result["config_files_scanned"] for result in successful),
             "relationships": sum(result["relationships"] for result in successful),
             "symbolized_components": sum(result["symbolized_components"] for result in successful),
+            "identified_symbol_endpoints": sum(
+                result["identified_symbol_endpoints"] for result in successful
+            ),
             "resolved_symbol_endpoints": sum(
                 result["resolved_symbol_endpoints"] for result in successful
+            ),
+            "unmatched_identified_symbol_endpoints": sum(
+                result["unmatched_identified_symbol_endpoints"] for result in successful
             ),
             "relationship_endpoints": 2 * sum(result["relationships"] for result in successful),
             "resolved_symbol_endpoints_by_frontend": {
@@ -113,6 +148,15 @@ def main() -> int:
                     for result in successful
                 )
                 for frontend in ("py", "ts")
+            },
+            "typescript_graph": {
+                name: sum(result["typescript_graph"][name] for result in successful)
+                for name in (
+                    "agent_edges",
+                    "agent_delegations",
+                    "agent_tool_edges",
+                    "resolved_agent_tool_edges",
+                )
             },
             "resolved_import_edges": sum(result["resolved_import_edges"] for result in successful),
             "resolved_import_edges_by_frontend": {

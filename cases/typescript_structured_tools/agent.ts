@@ -1,0 +1,46 @@
+import {
+  Agent,
+  applyPatchTool,
+  shellTool as localShellTool,
+  tool,
+  toolNamespace,
+} from "@openai/agents";
+import { shellTool as unrelatedShellTool } from "./fake";
+
+const safeTool = tool({
+  name: "safe",
+  execute: async () => "words such as async and return are not tool names",
+});
+
+const namespaceTools = toolNamespace({
+  name: "lookup",
+  tools: [safeTool],
+});
+
+const assignedShell = localShellTool({
+  shell: { run: async () => ({ output: [] }) },
+  needsApproval: false,
+});
+
+const worker = new Agent({ name: "worker" });
+
+const operator = new Agent({
+  name: "operator",
+  tools: [
+    safeTool,
+    assignedShell,
+    ...namespaceTools,
+    applyPatchTool({
+      editor: {},
+      needsApproval: true,
+    }),
+    worker.asTool({
+      toolName: "worker_tool",
+      runOptions: { maxTurns: 3 },
+    }),
+    // A leading comment belongs to the next entry, not to an extra tool token.
+    unknownFactory({ description: "do not parse these words as tools" }),
+    unrelatedShellTool({ shell: {} }),
+    ...[conditionalTool],
+  ],
+});

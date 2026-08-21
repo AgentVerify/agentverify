@@ -6,10 +6,11 @@ the local repository has an approved remote.
 ## P0 — module-qualified symbols and graph identities
 
 Python and TypeScript agent/tool components now carry module-qualified IDs, including Python class
-methods and assigned built-in tool instances. Import, reachability, delegation, and control edges
-carry exact endpoint IDs when resolved; legacy syntax stays location-gated. Next resolve package
-re-exports, wildcard imports, wrapper factories, and type-driven TypeScript symbols. Preserve
-unresolved state for ambiguity and validate on larger real monorepository graphs.
+methods, built-in tools, tool namespaces, and Cline/OpenAI inline factories. The structure-aware
+TypeScript tools-array reader resolves all 81 observed agent-to-tool edges and 14 agent-as-tool
+delegations in the pinned sample without treating nested tokens as tools. Next resolve Python/TS
+package re-exports, wildcard imports, unrecognized wrapper factories, and type-driven symbols.
+Preserve unresolved state for ambiguity and validate on larger real monorepository graphs.
 
 ## P0 — configuration and policy resolution
 
@@ -22,10 +23,11 @@ unresolved distinct from absent.
 ## P0 — approval coverage rule
 
 `AV-APPROVAL002` now reports the narrow provable subset where an Agent directly reaches a local
-OpenAI Agents `ShellTool` and its SDK approval is explicitly or default-disabled. It remains a review:
-an executor may enforce an equivalent internal control. Promote absence to a finding only when the
-complete destructive path and executor policy are resolved. Extend coverage to delegated agents and
-other frameworks without treating callbacks or automatic handlers as absent controls.
+OpenAI Agents Python or TypeScript shell tool and its SDK approval is explicitly or default-disabled.
+It remains a review: an executor may enforce an equivalent internal control. Promote absence to a
+finding only when the complete destructive path and executor policy are resolved. Extend coverage to
+delegated agents and other frameworks without treating callbacks or automatic handlers as absent
+controls.
 
 ## P1 — sandbox containment quality
 
@@ -43,8 +45,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 125 pinned positive/negative locations, with 12 separately
-scored IR relationship labels. Schema-v2 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 129 pinned positive/negative locations, with 18 separately
+scored IR relationship labels. Schema-v3 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

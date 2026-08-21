@@ -212,6 +212,131 @@
         "target_kind": "control",
         "target_name": "human-approval"
       }
+    },
+    {
+      "id": "typescript-agent-as-tool-real",
+      "target": {
+        "kind": "repository",
+        "repository": "openai/openai-agents-js",
+        "commit": "0b944370c6fe019ac5b08364ca013826cd7d0668"
+      },
+      "check_id": "IR-TS-TOOL-GRAPH",
+      "path": "examples/agent-patterns/agents-as-tools.ts",
+      "line": 21,
+      "expected": true,
+      "relationship": {
+        "source_kind": "agent",
+        "source_name": "orchestrator_agent",
+        "source_id": "ts:examples/agent-patterns/agents-as-tools.ts#agent:orchestratorAgent",
+        "relation": "delegates-to",
+        "target_kind": "agent",
+        "target_name": "spanish_agent",
+        "target_id": "ts:examples/agent-patterns/agents-as-tools.ts#agent:spanishAgent",
+        "attributes": {"adapter": "asTool"}
+      }
+    },
+    {
+      "id": "typescript-assigned-agent-tool-real",
+      "target": {
+        "kind": "repository",
+        "repository": "openai/openai-agents-js",
+        "commit": "0b944370c6fe019ac5b08364ca013826cd7d0668"
+      },
+      "check_id": "IR-TS-TOOL-GRAPH",
+      "path": "examples/docs/tools/agentToolRunContext.ts",
+      "line": 21,
+      "expected": true,
+      "relationship": {
+        "source_kind": "agent",
+        "source_name": "Support Orchestrator",
+        "source_id": "ts:examples/docs/tools/agentToolRunContext.ts#agent:orchestrator",
+        "relation": "delegates-to",
+        "target_kind": "agent",
+        "target_name": "Billing Agent",
+        "target_id": "ts:examples/docs/tools/agentToolRunContext.ts#agent:billingAgent",
+        "attributes": {"adapter": "asTool", "binding": "billingTool"}
+      }
+    },
+    {
+      "id": "typescript-cline-inline-tool-real",
+      "target": {
+        "kind": "repository",
+        "repository": "cline/cline",
+        "commit": "80b3b0348e694bafc48e3dcd70154de3cf4289d9"
+      },
+      "check_id": "IR-TS-TOOL-GRAPH",
+      "path": "apps/examples/cli-agent/src/index.ts",
+      "line": 5,
+      "expected": true,
+      "relationship": {
+        "source_kind": "agent",
+        "source_name": "agent",
+        "source_id": "ts:apps/examples/cli-agent/src/index.ts#agent:agent",
+        "relation": "uses",
+        "target_kind": "tool",
+        "target_name": "createTool@12",
+        "target_id": "ts:apps/examples/cli-agent/src/index.ts#tool:createTool@12"
+      }
+    },
+    {
+      "id": "typescript-nested-token-not-tool-real",
+      "target": {
+        "kind": "repository",
+        "repository": "openai/openai-agents-js",
+        "commit": "0b944370c6fe019ac5b08364ca013826cd7d0668"
+      },
+      "check_id": "IR-TS-TOOL-GRAPH",
+      "path": "examples/agent-patterns/agents-as-tools.ts",
+      "line": 21,
+      "expected": false,
+      "source_contains": "const orchestratorAgent = new Agent({",
+      "relationship": {
+        "source_kind": "agent",
+        "source_name": "orchestrator_agent",
+        "relation": "uses",
+        "target_kind": "tool",
+        "target_name": "async"
+      }
+    },
+    {
+      "id": "typescript-inline-shell-approval-real",
+      "target": {
+        "kind": "repository",
+        "repository": "openai/openai-agents-js",
+        "commit": "0b944370c6fe019ac5b08364ca013826cd7d0668"
+      },
+      "check_id": "IR-APPROVAL-CONTROL",
+      "path": "examples/tools/local-shell.ts",
+      "line": 107,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "shellTool@104",
+        "source_id": "ts:examples/tools/local-shell.ts#tool:shellTool@104",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "human-approval"
+      }
+    },
+    {
+      "id": "typescript-hosted-shell-no-approval-real",
+      "target": {
+        "kind": "repository",
+        "repository": "openai/openai-agents-js",
+        "commit": "0b944370c6fe019ac5b08364ca013826cd7d0668"
+      },
+      "check_id": "IR-APPROVAL-CONTROL",
+      "path": "examples/tools/container-shell-inline-skill.ts",
+      "line": 34,
+      "expected": false,
+      "source_contains": "shellTool({",
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "shellTool@34",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "human-approval"
+      }
     }
   ]
 }

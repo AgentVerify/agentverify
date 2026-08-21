@@ -37,6 +37,7 @@ IMPORT_SIGNATURES = {
         "AutoGen": ("autogen",),
         "OpenAI Agents SDK": ("agents", "@openai/agents"),
         "PydanticAI": ("pydantic_ai",),
+        "Cline SDK": ("@cline/sdk",),
     },
     "provider": {
         "OpenAI": ("openai", "@ai-sdk/openai"),
@@ -908,7 +909,13 @@ TS_CHILD_PROCESS_IMPORT = re.compile(
     r"import\s*\{([^}]+)\}\s*from\s*['\"](?:node:)?child_process['\"]",
     re.DOTALL,
 )
-TS_TOOL_ASSIGNMENT = re.compile(r"\b(?:const|let)\s+(\w+)\s*=\s*(?:tool|functionTool)\s*\(")
+TS_TOOL_ASSIGNMENT = re.compile(
+    r"\b(?:const|let)\s+(\w+)\s*=\s*([A-Za-z_$][\w$]*)\s*\("
+)
+TS_AGENT_TOOL_ASSIGNMENT = re.compile(
+    r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*"
+    r"([A-Za-z_$][\w$]*)\.asTool\s*\("
+)
 TS_AGENT_ASSIGNMENT = re.compile(r"\b(?:const|let)\s+(\w+)\s*=\s*new\s+Agent\s*\(")
 TS_LITERAL_APPROVAL = re.compile(r"\bneedsApproval\s*:\s*true\b")
 TS_AUTO_APPROVAL_ENABLED = re.compile(
@@ -929,6 +936,25 @@ TS_FILESYSTEM_WRITE = re.compile(
     r"\b(?:writeFile|unlink|rm|rmdir|mkdir)(?:Sync)?\s*\(\s*([^,\n)]+)"
 )
 TS_DYNAMIC_EVAL = re.compile(r"(?<![\w$.])eval\s*\(|\bnew\s+Function\s*\(")
+TS_BUN_SHELL = re.compile(
+    r"\bBun\.spawn\s*\(\s*\[\s*['\"](?:sh|bash|zsh)['\"]\s*,\s*"
+    r"['\"]-c['\"]\s*,\s*([^,\]\n]+)"
+)
+TS_GENERIC_TOOL_FACTORIES = {"tool", "functionTool", "toolNamespace"}
+TS_OPENAI_BUILTIN_TOOL_CAPABILITIES = {
+    "applyPatchTool": ("filesystem",),
+    "codeInterpreterTool": ("code-execution",),
+    "computerTool": ("computer-control",),
+    "fileSearchTool": ("filesystem",),
+    "hostedMcpTool": ("mcp-access",),
+    "imageGenerationTool": ("external-action",),
+    "programmaticToolCallingTool": ("dynamic-tool-orchestration",),
+    "shellTool": ("shell-execution",),
+    "toolSearchTool": ("dynamic-tool-discovery",),
+    "webSearchTool": ("external-action",),
+    "codexTool": ("code-execution",),
+}
+TS_OPENAI_APPROVAL_BUILTINS = {"applyPatchTool", "computerTool", "shellTool"}
 CONTAINER_CONFIG_SUFFIXES = {".yml", ".yaml"}
 INLINE_SUPPRESSION = re.compile(
     r"^\s*(?:#|//)\s*agentverify:\s*ignore\s+(AV-[A-Z0-9]+)"
@@ -941,22 +967,11 @@ def line_at(text: str, offset: int) -> int:
 
 
 def balanced_call_end(text: str, opening_parenthesis: int) -> int:
+    code = typescript_code_mask(text)
     depth = 0
-    quote: str | None = None
-    escaped = False
-    for index in range(opening_parenthesis, len(text)):
-        character = text[index]
-        if quote:
-            if escaped:
-                escaped = False
-            elif character == "\\":
-                escaped = True
-            elif character == quote:
-                quote = None
-            continue
-        if character in {"'", '"', "`"}:
-            quote = character
-        elif character == "(":
+    for index in range(opening_parenthesis, len(code)):
+        character = code[index]
+        if character == "(":
             depth += 1
         elif character == ")":
             depth -= 1
@@ -1019,6 +1034,232 @@ def typescript_code_mask(text: str) -> str:
     return "".join(masked)
 
 
+def typescript_balanced_end(
+    code: str, opening_index: int, opening_character: str, closing_character: str
+) -> int | None:
+    """Return one-past the matching delimiter in already-masked TypeScript code."""
+    depth = 0
+    for index in range(opening_index, len(code)):
+        character = code[index]
+        if character == opening_character:
+            depth += 1
+        elif character == closing_character:
+            depth -= 1
+            if depth == 0:
+                return index + 1
+    return None
+
+
+def typescript_top_level_items(text: str, start_offset: int = 0) -> list[tuple[str, int]]:
+    """Split a TypeScript array body on top-level commas without tokenizing nested values."""
+    code = typescript_code_mask(text)
+    depths = {"(": 0, "[": 0, "{": 0}
+    closing = {")": "(", "]": "[", "}": "{"}
+    item_start = 0
+    items: list[tuple[str, int]] = []
+
+    def append_item(end: int) -> None:
+        code_value = code[item_start:end]
+        structural_start = re.search(r"\S", code_value)
+        if structural_start:
+            leading = structural_start.start()
+            items.append(
+                (text[item_start + leading : end].rstrip(), start_offset + item_start + leading)
+            )
+
+    for index, character in enumerate(code):
+        if character in depths:
+            depths[character] += 1
+        elif character in closing and depths[closing[character]]:
+            depths[closing[character]] -= 1
+        elif character == "," and not any(depths.values()):
+            append_item(index)
+            item_start = index + 1
+    append_item(len(text))
+    return items
+
+
+def typescript_object_items(body: str, body_offset: int = 0) -> list[tuple[str, int]]:
+    """Extract top-level properties from a literal object passed as a call argument."""
+    code = typescript_code_mask(body)
+    opening = len(code) - len(code.lstrip())
+    if opening >= len(code) or code[opening] != "{":
+        return []
+    end = typescript_balanced_end(code, opening, "{", "}")
+    if end is None:
+        return []
+    return typescript_top_level_items(
+        body[opening + 1 : end - 1], body_offset + opening + 1
+    )
+
+
+def typescript_agent_tool_items(body: str, body_offset: int) -> list[tuple[str, int]]:
+    """Extract only the top-level entries of an Agent's literal tools array."""
+    for property_text, property_offset in typescript_object_items(body, body_offset):
+        code = typescript_code_mask(property_text)
+        match = re.match(r"\s*tools\s*:\s*\[", code)
+        if not match:
+            continue
+        opening = match.end() - 1
+        end = typescript_balanced_end(code, opening, "[", "]")
+        if end is None:
+            return []
+        return typescript_top_level_items(
+            property_text[opening + 1 : end - 1], property_offset + opening + 1
+        )
+    return []
+
+
+def typescript_object_string_property(body: str, name: str) -> str | None:
+    """Resolve one direct literal string property without inspecting nested objects."""
+    value = typescript_object_property_expression(body, name)
+    if value is None:
+        return None
+    match = re.fullmatch(r"(['\"])(.*?)\1", value, re.DOTALL)
+    return match.group(2) if match else None
+
+
+def typescript_object_property_expression(body: str, name: str) -> str | None:
+    """Return one unambiguous direct property expression from a literal object."""
+    values = []
+    for property_text, _ in typescript_object_items(body):
+        match = re.match(rf"\s*{re.escape(name)}\s*:", typescript_code_mask(property_text))
+        if match:
+            values.append(property_text[match.end() :].strip())
+    return values[0] if len(values) == 1 else None
+
+
+def typescript_named_import_bindings(text: str, module_prefix: str) -> dict[str, str]:
+    """Return local-to-exported names for named imports under one module prefix."""
+    bindings: dict[str, str] = {}
+    for match in TS_NAMED_IMPORT.finditer(text):
+        module = match.group(2)
+        if module != module_prefix and not module.startswith(f"{module_prefix}/"):
+            continue
+        for imported in match.group(1).split(","):
+            parts = imported.strip().removeprefix("type ").split()
+            if not parts:
+                continue
+            original = parts[0]
+            local = parts[2] if len(parts) >= 3 and parts[1] == "as" else original
+            bindings[local] = original
+    return bindings
+
+
+def typescript_call_parts(expression: str) -> tuple[str, str, int] | None:
+    """Return a simple call's callee, argument body, and body offset within the expression."""
+    code = typescript_code_mask(expression)
+    match = re.match(r"([A-Za-z_$][\w$]*)\s*\(", code)
+    if not match:
+        return None
+    opening = code.find("(", match.start(), match.end())
+    end = typescript_balanced_end(code, opening, "(", ")")
+    if end is None or code[end:].strip():
+        return None
+    return match.group(1), expression[opening + 1 : end - 1], opening + 1
+
+
+def add_typescript_tool_observation(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    text: str,
+    lines: list[str],
+    tool_name: str,
+    tool_id: str,
+    constructor: str,
+    call_body: str,
+    call_offset: int,
+    body_offset: int,
+) -> None:
+    """Add one structure-backed TypeScript tool, its capabilities, and literal approval control."""
+    line = line_at(text, call_offset)
+    evidence = Evidence(relative, line, excerpt(lines, line))
+    literal_options = typescript_code_mask(call_body).lstrip().startswith("{")
+    approval_expression = typescript_object_property_expression(call_body, "needsApproval")
+    approval_handler_expression = typescript_object_property_expression(call_body, "onApproval")
+    if constructor not in TS_OPENAI_APPROVAL_BUILTINS:
+        approval_policy = "not-applicable"
+    elif approval_expression == "true":
+        approval_policy = "enabled"
+    elif approval_expression == "false":
+        approval_policy = "disabled-explicit"
+    elif approval_expression is not None or approval_handler_expression is not None:
+        approval_policy = "unresolved-handler"
+    elif literal_options:
+        approval_policy = "disabled-default"
+    else:
+        approval_policy = "unresolved"
+    execution_environment = "unresolved"
+    if constructor == "shellTool":
+        environment = typescript_object_property_expression(call_body, "environment")
+        environment_type = (
+            typescript_object_string_property(environment, "type") if environment else None
+        )
+        execution_environment = (
+            "hosted"
+            if environment_type and environment_type.startswith("container_")
+            else "local"
+            if literal_options
+            else "unresolved"
+        )
+    attributes = {
+        "constructor": constructor,
+        "approval_policy": approval_policy,
+        "approval_handler": (
+            "not-applicable"
+            if constructor not in TS_OPENAI_APPROVAL_BUILTINS
+            else "configured"
+            if approval_handler_expression
+            else "none"
+        ),
+        "execution_environment": execution_environment,
+        "scope": source_scope(relative),
+    }
+    ir.add_component(Component("tool", tool_name, evidence, attributes, tool_id))
+    capability_attributes = {
+        "builtin_tool": constructor,
+        "approval_policy": approval_policy,
+        "scope": source_scope(relative),
+    }
+    if constructor == "shellTool":
+        capability_attributes["execution_environment"] = execution_environment
+    if constructor == "applyPatchTool":
+        capability_attributes["write_access"] = True
+    for capability in TS_OPENAI_BUILTIN_TOOL_CAPABILITIES.get(constructor, ()):
+        ir.add_component(Component("capability", capability, evidence, capability_attributes))
+        ir.add_relationship(
+            Relationship(
+                "tool",
+                tool_name,
+                "uses",
+                "capability",
+                capability,
+                evidence,
+                source_id=tool_id,
+            )
+        )
+    if approval_expression == "true" and constructor in TS_OPENAI_APPROVAL_BUILTINS:
+        body_code = typescript_code_mask(call_body)
+        approval_match = re.search(r"\bneedsApproval\s*:\s*true\b", body_code)
+        assert approval_match is not None
+        approval_offset = body_offset + approval_match.start()
+        approval_line = line_at(text, approval_offset)
+        approval_evidence = Evidence(relative, approval_line, excerpt(lines, approval_line))
+        ir.add_component(Component("control", "human-approval", approval_evidence))
+        ir.add_relationship(
+            Relationship(
+                "tool",
+                tool_name,
+                "governed-by",
+                "control",
+                "human-approval",
+                approval_evidence,
+                source_id=tool_id,
+            )
+        )
+
+
 def typescript_first_argument_is_literal(argument_text: str) -> bool:
     """Return true only when the first call argument is one complete string literal."""
     value = argument_text.lstrip()
@@ -1049,56 +1290,133 @@ def typescript_graph(
 ) -> dict[int, tuple[str, str]]:
     tool_by_line: dict[int, tuple[str, str]] = {}
     local_tool_ids: dict[str, str] = {}
-    for match in TS_TOOL_ASSIGNMENT.finditer(text):
+    code = typescript_code_mask(text)
+    openai_imports = {
+        **typescript_named_import_bindings(text, "@openai/agents"),
+        **typescript_named_import_bindings(text, "@openai/agents-extensions"),
+    }
+    cline_imports = typescript_named_import_bindings(text, "@cline/sdk")
+    for match in TS_TOOL_ASSIGNMENT.finditer(code):
         tool_name = match.group(1)
+        local_factory = match.group(2)
+        constructor = openai_imports.get(
+            local_factory, cline_imports.get(local_factory, local_factory)
+        )
+        is_generic = constructor in TS_GENERIC_TOOL_FACTORIES or (
+            local_factory in cline_imports and constructor == "createTool"
+        )
+        is_openai_builtin = (
+            local_factory in openai_imports
+            and constructor in TS_OPENAI_BUILTIN_TOOL_CAPABILITIES
+        )
+        if not is_generic and not is_openai_builtin:
+            continue
         start_line = line_at(text, match.start())
-        end = balanced_call_end(text, text.find("(", match.start(), match.end()))
+        opening = code.find("(", match.start(), match.end())
+        end = typescript_balanced_end(code, opening, "(", ")") or len(text)
         end_line = line_at(text, end)
-        body = text[match.end() : end]
-        approval_match = TS_LITERAL_APPROVAL.search(typescript_code_mask(body))
+        body = text[opening + 1 : end - 1]
         ev = Evidence(relative, start_line, excerpt(lines, start_line))
         tool_id = source_symbol("ts", relative, "tool", tool_name)
         local_tool_ids[tool_name] = tool_id
-        ir.add_component(
-            Component(
-                "tool",
-                tool_name,
-                ev,
-                {"constructor": "tool", "needs_approval": approval_match is not None},
-                tool_id,
+        if is_openai_builtin:
+            add_typescript_tool_observation(
+                ir,
+                relative=relative,
+                text=text,
+                lines=lines,
+                tool_name=tool_name,
+                tool_id=tool_id,
+                constructor=constructor,
+                call_body=body,
+                call_offset=match.start(2),
+                body_offset=opening + 1,
             )
-        )
-        if approval_match:
-            approval_line = line_at(text, match.end() + approval_match.start())
-            approval_ev = Evidence(relative, approval_line, excerpt(lines, approval_line))
-            ir.add_component(Component("control", "human-approval", approval_ev))
-            ir.add_relationship(
-                Relationship(
+        else:
+            approval_match = (
+                TS_LITERAL_APPROVAL.search(typescript_code_mask(body))
+                if constructor != "toolNamespace"
+                and typescript_object_property_expression(body, "needsApproval") == "true"
+                else None
+            )
+            ir.add_component(
+                Component(
                     "tool",
                     tool_name,
-                    "governed-by",
-                    "control",
-                    "human-approval",
-                    approval_ev,
-                    source_id=tool_id,
+                    ev,
+                    {
+                        "constructor": constructor,
+                        "needs_approval": approval_match is not None,
+                    },
+                    tool_id,
                 )
             )
+            if approval_match:
+                approval_line = line_at(text, opening + 1 + approval_match.start())
+                approval_ev = Evidence(relative, approval_line, excerpt(lines, approval_line))
+                ir.add_component(Component("control", "human-approval", approval_ev))
+                ir.add_relationship(
+                    Relationship(
+                        "tool",
+                        tool_name,
+                        "governed-by",
+                        "control",
+                        "human-approval",
+                        approval_ev,
+                        source_id=tool_id,
+                    )
+                )
         for line_number in range(start_line, end_line + 1):
             tool_by_line[line_number] = (tool_name, tool_id)
-    for match in TS_AGENT_ASSIGNMENT.finditer(text):
+
+    agent_matches = list(TS_AGENT_ASSIGNMENT.finditer(code))
+    agent_tool_bindings = {
+        match.group(1): match.group(2) for match in TS_AGENT_TOOL_ASSIGNMENT.finditer(code)
+    }
+    local_agents: dict[str, tuple[str, str]] = {}
+    agent_bodies: list[tuple[re.Match[str], int, str, str, str]] = []
+    for match in agent_matches:
         variable_name = match.group(1)
         start_line = line_at(text, match.start())
-        end = balanced_call_end(text, text.find("(", match.start(), match.end()))
-        body = text[match.end() : end]
-        name_match = re.search(r"\bname\s*:\s*['\"]([^'\"]+)['\"]", body)
-        agent_name = name_match.group(1) if name_match else variable_name
+        opening = code.find("(", match.start(), match.end())
+        end = typescript_balanced_end(code, opening, "(", ")") or len(text)
+        body = text[opening + 1 : end - 1]
+        agent_name = typescript_object_string_property(body, "name") or variable_name
         agent_id = source_symbol("ts", relative, "agent", variable_name)
         ev = Evidence(relative, start_line, excerpt(lines, start_line))
         ir.add_component(Component("agent", agent_name, ev, {"constructor": "Agent"}, agent_id))
-        tools_match = re.search(r"\btools\s*:\s*\[([^\]]*)\]", body, re.DOTALL)
-        if tools_match:
-            for tool_name in re.findall(r"\b[A-Za-z_$][\w$]*\b", tools_match.group(1)):
-                attributes = {}
+        local_agents[variable_name] = (agent_name, agent_id)
+        agent_bodies.append((match, opening + 1, body, agent_name, agent_id))
+
+    for match, body_offset, body, agent_name, agent_id in agent_bodies:
+        ev = Evidence(relative, line_at(text, match.start()), excerpt(lines, line_at(text, match.start())))
+        for item, item_offset in typescript_agent_tool_items(body, body_offset):
+            spread = item.startswith("...")
+            expression = item[3:].lstrip() if spread else item
+            if spread:
+                item_offset += 3 + (len(item[3:]) - len(item[3:].lstrip()))
+            attributes = {"spread": True} if spread else {}
+            if identifier := re.fullmatch(
+                r"[A-Za-z_$][\w$]*", typescript_code_mask(expression).strip()
+            ):
+                tool_name = identifier.group(0)
+                if target_variable := agent_tool_bindings.get(tool_name):
+                    target = local_agents.get(target_variable)
+                    target_name, target_id = target if target else (target_variable, None)
+                    ir.add_relationship(
+                        Relationship(
+                            "agent",
+                            agent_name,
+                            "delegates-to",
+                            "agent",
+                            target_name,
+                            ev,
+                            {**attributes, "adapter": "asTool", "binding": tool_name},
+                            source_id=agent_id,
+                            target_id=target_id,
+                        )
+                    )
+                    continue
                 target_id = local_tool_ids.get(tool_name)
                 if imported := imported_symbols.get(tool_name):
                     attributes.update({"target_path": imported[0], "target_name": imported[1]})
@@ -1116,6 +1434,85 @@ def typescript_graph(
                         target_id=target_id,
                     )
                 )
+                continue
+            as_tool = re.match(r"([A-Za-z_$][\w$]*)\.asTool\s*\(", expression)
+            if as_tool and balanced_call_end(expression, expression.find("(")) == len(expression):
+                variable_name = as_tool.group(1)
+                target = local_agents.get(variable_name)
+                target_name, target_id = target if target else (variable_name, None)
+                ir.add_relationship(
+                    Relationship(
+                        "agent",
+                        agent_name,
+                        "delegates-to",
+                        "agent",
+                        target_name,
+                        ev,
+                        {**attributes, "adapter": "asTool"},
+                        source_id=agent_id,
+                        target_id=target_id,
+                    )
+                )
+                continue
+            call = typescript_call_parts(expression)
+            if not call:
+                continue
+            local_factory, call_body, relative_body_offset = call
+            constructor = openai_imports.get(
+                local_factory, cline_imports.get(local_factory, local_factory)
+            )
+            call_line = line_at(text, item_offset)
+            tool_name = f"{constructor}@{call_line}"
+            target_id = None
+            if constructor in TS_GENERIC_TOOL_FACTORIES or (
+                local_factory in cline_imports and constructor == "createTool"
+            ):
+                target_id = source_symbol("ts", relative, "tool", tool_name)
+                ir.add_component(
+                    Component(
+                        "tool",
+                        tool_name,
+                        Evidence(relative, call_line, excerpt(lines, call_line)),
+                        {"constructor": constructor, "inline": True},
+                        target_id,
+                    )
+                )
+                call_end_offset = item_offset + len(expression)
+                for line_number in range(call_line, line_at(text, call_end_offset) + 1):
+                    tool_by_line[line_number] = (tool_name, target_id)
+            elif (
+                local_factory in openai_imports
+                and constructor in TS_OPENAI_BUILTIN_TOOL_CAPABILITIES
+            ):
+                target_id = source_symbol("ts", relative, "tool", tool_name)
+                add_typescript_tool_observation(
+                    ir,
+                    relative=relative,
+                    text=text,
+                    lines=lines,
+                    tool_name=tool_name,
+                    tool_id=target_id,
+                    constructor=constructor,
+                    call_body=call_body,
+                    call_offset=item_offset,
+                    body_offset=item_offset + relative_body_offset,
+                )
+            else:
+                tool_name = local_factory
+                attributes["factory_call"] = True
+            ir.add_relationship(
+                Relationship(
+                    "agent",
+                    agent_name,
+                    "uses",
+                    "tool",
+                    tool_name,
+                    ev,
+                    attributes,
+                    source_id=agent_id,
+                    target_id=target_id,
+                )
+            )
     return tool_by_line
 
 
@@ -1213,6 +1610,7 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
     }
     for line_number, line in enumerate(lines, start=1):
         ev = Evidence(relative, line_number, line.strip()[:240])
+        code_line = typescript_code_mask(line)
         for match in TS_IMPORT.finditer(line):
             component_from_import(ir, match.group(1), ev)
         for match in TS_MODEL_SETTING.finditer(line):
@@ -1227,7 +1625,7 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                 "azure": "Azure OpenAI",
             }[match.group(1)]
             ir.add_component(Component("model", match.group(2), ev, {"provider": provider}))
-        if line_number not in structured_agent_lines and (match := TS_AGENT.search(line)):
+        if line_number not in structured_agent_lines and (match := TS_AGENT.search(code_line)):
             name = match.group(1)
             ir.add_component(
                 Component(
@@ -1238,9 +1636,10 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                     source_symbol("ts", relative, "agent", f"{name}@{line_number}"),
                 )
             )
-        if match := TS_MCP.search(line):
+        if match := TS_MCP.search(code_line):
             ir.add_component(Component("mcp", match.group(1), ev, {"constructor": match.group(1)}))
-        if (match := TS_SHELL.search(line)) and match.group(1) in shell_bindings:
+        if (match := TS_SHELL.search(code_line)) and match.group(1) in shell_bindings:
+            argument_text = line[match.start(2) : match.end(2)]
             add_typescript_capability(
                 ir,
                 relative,
@@ -1251,10 +1650,26 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                 {
                     "api": match.group(1),
                     "shell": match.group(1) in {"exec", "execSync"},
-                    "dynamic_command": not typescript_first_argument_is_literal(match.group(2)),
+                    "dynamic_command": not typescript_first_argument_is_literal(argument_text),
                 },
             )
-        if TS_DYNAMIC_EVAL.search(line):
+        if "Bun.spawn" in code_line and (match := TS_BUN_SHELL.search(line)):
+            add_typescript_capability(
+                ir,
+                relative,
+                line_number,
+                ev,
+                tool_by_line,
+                "shell-execution",
+                {
+                    "api": "Bun.spawn",
+                    "shell": True,
+                    "dynamic_command": not typescript_first_argument_is_literal(
+                        f"{match.group(1)},)"
+                    ),
+                },
+            )
+        if TS_DYNAMIC_EVAL.search(code_line):
             add_typescript_capability(
                 ir,
                 relative,
@@ -1264,8 +1679,8 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                 "code-execution",
                 {"api": "eval", "dynamic_input": True},
             )
-        if match := TS_FILESYSTEM_WRITE.search(line):
-            path_argument = match.group(1).strip()
+        if match := TS_FILESYSTEM_WRITE.search(code_line):
+            path_argument = line[match.start(1) : match.end(1)].strip()
             add_typescript_capability(
                 ir,
                 relative,
@@ -1278,17 +1693,24 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                     "dynamic_path": not path_argument.startswith(("'", '"', "`")),
                 },
             )
-        if re.search(r"\b(?:fetch|axios\.(?:get|post|put|patch|delete))\s*\(", line):
+        if re.search(r"\b(?:fetch|axios\.(?:get|post|put|patch|delete))\s*\(", code_line):
             add_typescript_capability(ir, relative, line_number, ev, tool_by_line, "network")
-        if re.search(r"\baxios\.(?:post|put|patch|delete)\s*\(", line) or re.search(
-            r"\bmethod\s*:\s*['\"](?:POST|PUT|PATCH|DELETE)['\"]", line, re.IGNORECASE
+        if re.search(r"\baxios\.(?:post|put|patch|delete)\s*\(", code_line) or (
+            re.search(r"\bmethod\s*:", code_line)
+            and re.search(
+                r"\bmethod\s*:\s*['\"](?:POST|PUT|PATCH|DELETE)['\"]",
+                line,
+                re.IGNORECASE,
+            )
         ):
             add_typescript_capability(
                 ir, relative, line_number, ev, tool_by_line, "external-action"
             )
-        if has_browser_import and re.search(r"\.(?:click|goto|fill|press|selectOption)\s*\(", line):
+        if has_browser_import and re.search(
+            r"\.(?:click|goto|fill|press|selectOption)\s*\(", code_line
+        ):
             add_typescript_capability(ir, relative, line_number, ev, tool_by_line, "browser")
-        if TS_AUTO_APPROVAL_ENABLED.search(line):
+        if TS_AUTO_APPROVAL_ENABLED.search(code_line):
             ir.add_component(
                 Component(
                     "control-setting",
@@ -1297,7 +1719,7 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                     {"enabled": True, "scope": source_scope(relative)},
                 )
             )
-        if has_mcp_import and TS_MCP_DYNAMIC_CALL.search(line):
+        if has_mcp_import and TS_MCP_DYNAMIC_CALL.search(code_line):
             add_typescript_capability(
                 ir,
                 relative,
