@@ -244,6 +244,48 @@ def test_local_import_resolves_cross_file_agent_tool_path() -> None:
     assert agent_edge.attributes["target_path"] == "tools.py"
 
 
+def test_relative_typescript_import_resolves_cross_file_tool_path() -> None:
+    ir = scan_repository(ROOT / "cases/imported_ts_tool")
+
+    finding = next(finding for finding in ir.findings if finding.rule_id == "AV-EXEC001")
+    assert finding.ir_path == (
+        "agent:operator",
+        "tool:runCommand",
+        "capability:shell-execution",
+    )
+    assert finding.analysis["direct_agents"] == ["operator"]
+    assert finding.analysis["approval_coverage"] == "present"
+    agent_edge = next(
+        edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent" and edge.target_name == "importedCommand"
+    )
+    assert agent_edge.attributes["target_path"] == "tools.ts"
+    assert agent_edge.attributes["target_name"] == "runCommand"
+
+
+def test_typescript_import_outside_root_or_ambiguous_stays_unresolved(tmp_path: Path) -> None:
+    project = tmp_path / "project"
+    project.mkdir()
+    (tmp_path / "external.ts").write_text("export const externalTool = {};\n", encoding="utf-8")
+    (project / "tools.ts").write_text("export const localTool = {};\n", encoding="utf-8")
+    (project / "tools.js").write_text("export const localTool = {};\n", encoding="utf-8")
+    (project / "agent.ts").write_text(
+        """import { Agent } from "@openai/agents";
+import { externalTool } from "../external";
+import { localTool } from "./tools";
+const agent = new Agent({ name: "operator", tools: [externalTool, localTool] });
+""",
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(project)
+
+    agent_edges = [edge for edge in ir.relationships if edge.source_kind == "agent"]
+    assert len(agent_edges) == 2
+    assert all("target_path" not in edge.attributes for edge in agent_edges)
+
+
 def test_test_scope_findings_are_opt_in() -> None:
     default_ir = scan_repository(ROOT / "cases/test_scope")
     complete_ir = scan_repository(ROOT / "cases/test_scope", include_tests=True)

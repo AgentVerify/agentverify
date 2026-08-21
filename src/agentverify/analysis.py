@@ -33,7 +33,7 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
             if edge.source_kind == "agent"
             and edge.relation == "uses"
             and edge.target_kind == "tool"
-            and edge.target_name == tool_name
+            and (edge.target_name == tool_name or edge.attributes.get("target_name") == tool_name)
             and (
                 edge.evidence.path == component.evidence.path
                 or edge.attributes.get("target_path") == component.evidence.path

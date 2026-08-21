@@ -517,6 +517,7 @@ def scan_python(
 
 
 TS_IMPORT = re.compile(r"(?:from\s+|require\s*\(\s*)['\"]([^'\"]+)['\"]")
+TS_NAMED_IMPORT = re.compile(r"\bimport\s*\{([^}]+)\}\s*from\s*['\"]([^'\"]+)['\"]", re.DOTALL)
 TS_AGENT = re.compile(r"\b(?:new\s+)?(Agent|AssistantAgent|StateGraph|Crew)\s*\(")
 TS_MCP = re.compile(r"\b(McpServer|Client|StdioClientTransport)\s*\(")
 TS_SHELL = re.compile(r"\b(exec|execSync|spawn|spawnSync)\s*\((.+)")
@@ -656,7 +657,11 @@ def typescript_first_argument_is_literal(argument_text: str) -> bool:
 
 
 def typescript_graph(
-    ir: RepositoryIR, relative: str, text: str, lines: list[str]
+    ir: RepositoryIR,
+    relative: str,
+    text: str,
+    lines: list[str],
+    imported_symbols: dict[str, tuple[str, str]],
 ) -> dict[int, str]:
     tool_by_line: dict[int, str] = {}
     for match in TS_TOOL_ASSIGNMENT.finditer(text):
@@ -703,10 +708,48 @@ def typescript_graph(
         tools_match = re.search(r"\btools\s*:\s*\[([^\]]*)\]", body, re.DOTALL)
         if tools_match:
             for tool_name in re.findall(r"\b[A-Za-z_$][\w$]*\b", tools_match.group(1)):
+                attributes = {}
+                if imported := imported_symbols.get(tool_name):
+                    attributes.update({"target_path": imported[0], "target_name": imported[1]})
                 ir.add_relationship(
-                    Relationship("agent", agent_name, "uses", "tool", tool_name, ev)
+                    Relationship("agent", agent_name, "uses", "tool", tool_name, ev, attributes)
                 )
     return tool_by_line
+
+
+def resolve_typescript_imports(root: Path, path: Path, text: str) -> dict[str, tuple[str, str]]:
+    """Resolve unambiguous named imports that stay inside the repository."""
+    resolved: dict[str, tuple[str, str]] = {}
+    suffixes = (".ts", ".tsx", ".js", ".jsx")
+    for match in TS_NAMED_IMPORT.finditer(text):
+        specifier = match.group(2)
+        if not specifier.startswith(("./", "../")):
+            continue
+        unresolved = path.parent / specifier
+        candidates = [unresolved]
+        stem = unresolved.with_suffix("") if unresolved.suffix in suffixes else unresolved
+        candidates.extend(stem.with_suffix(suffix) for suffix in suffixes)
+        candidates.extend(stem / f"index{suffix}" for suffix in suffixes)
+        existing = []
+        for candidate in candidates:
+            try:
+                canonical = candidate.resolve()
+                canonical.relative_to(root)
+            except (OSError, ValueError):
+                continue
+            if canonical.is_file() and not canonical.is_symlink() and canonical not in existing:
+                existing.append(canonical)
+        if len(existing) != 1:
+            continue
+        target = existing[0].relative_to(root).as_posix()
+        for imported in match.group(1).split(","):
+            parts = imported.strip().removeprefix("type ").split()
+            if not parts:
+                continue
+            original = parts[0]
+            local = parts[2] if len(parts) >= 3 and parts[1] == "as" else original
+            resolved[local] = (target, original)
+    return resolved
 
 
 def child_process_bindings(text: str) -> set[str]:
@@ -741,7 +784,8 @@ def add_typescript_capability(
 def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None:
     relative = path.relative_to(root).as_posix()
     lines = text.splitlines()
-    tool_by_line = typescript_graph(ir, relative, text, lines)
+    imported_symbols = resolve_typescript_imports(root, path, text)
+    tool_by_line = typescript_graph(ir, relative, text, lines, imported_symbols)
     shell_bindings = child_process_bindings(text)
     has_mcp_import = "@modelcontextprotocol/" in text or re.search(
         r"from\s+['\"][^'\"]*mcp[^'\"]*['\"]", text, re.IGNORECASE

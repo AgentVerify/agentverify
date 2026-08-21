@@ -19,4 +19,5 @@ never imported or executed.
 - `test_scope`: findings are suppressed by default and enabled with `--include-tests`.
 - `symbol_collision`: same-named cross-file tools cannot leak agents or controls into a finding.
 - `imported_tool`: a local Python import resolves an agent to a tool defined in another module.
+- `imported_ts_tool`: a relative TypeScript import resolves an aliased tool across modules.
 - `../examples/safe_agent`: near-miss showing fixed argv is inventory-only.

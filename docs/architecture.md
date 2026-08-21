@@ -31,7 +31,10 @@ would overstate certainty. Agent-to-tool and tool-to-control context is likewise
 capability's source file, preventing same-named definitions in separate modules from leaking
 reachability or control coverage. Absolute Python `from local_module import tool` references resolve
 to an exact repository file and can safely form cross-file agent paths. Future symbol tables will add
-module-qualified identities for relative Python imports and TypeScript imports.
+module-qualified identities for relative Python imports. TypeScript named imports resolve when a
+relative module maps to exactly one in-repository `.ts`, `.tsx`, `.js`, or `.jsx` file; aliases retain
+the original exported name. Imports that escape the scan root or have multiple candidate files remain
+unresolved.
 
 ## Result kinds and uncertainty
 

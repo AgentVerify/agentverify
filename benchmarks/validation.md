@@ -36,8 +36,13 @@ so the benchmark records zero suppressed findings.
 The Python module index resolves unambiguous absolute imports rooted at the repository, `src/`, or
 `python/`. It found three imported agent-to-tool edges across two pinned repositories, including
 CrewAI Examples' [markdown validator tool](https://github.com/crewAIInc/crewAI-examples/blob/da94a91e691e1cf5b3151416bb15b5b62729bea8/crews/markdown_validator/src/markdown_validator/crew.py#L3).
-Relative imports, duplicate module names, and TypeScript imports remain unresolved rather than
-falling back to name-only inference.
+Relative Python imports and duplicate module names remain unresolved rather than falling back to
+name-only inference.
+
+The TypeScript resolver applies the same conservative rule to relative named imports, including the
+common `.js`-specifier-to-`.ts` source mapping and aliases. The selected corpus snapshot currently has
+no qualifying imported `new Agent({ tools: [...] })` edge, so this support is regression-validated but
+is not counted as observed corpus coverage. Escaping and ambiguous imports are explicit negatives.
 
 The approval-policy resolver found a literal `needsApproval: true` in the pinned OpenAI Agents JS
 [human-in-the-loop example](https://github.com/openai/openai-agents-js/blob/0b944370c6fe019ac5b08364ca013826cd7d0668/examples/docs/human-in-the-loop/toolApprovalDefinition.ts#L11)
