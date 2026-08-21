@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T05:33:17.253086+00:00",
-  "labels": 129,
-  "passed": 129,
+  "generated_at": "2026-08-21T05:43:34.210694+00:00",
+  "labels": 141,
+  "passed": 141,
   "metrics": {
     "AV-APPROVAL001": {
-      "tp": 4,
+      "tp": 12,
       "fp": 0,
-      "tn": 6,
+      "tn": 10,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -562,6 +562,114 @@
       "rule_id": "AV-APPROVAL001",
       "expected": false,
       "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-env-python-direct-positive",
+      "rule_id": "AV-APPROVAL001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-env-python-status-negative",
+      "rule_id": "AV-APPROVAL001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-env-python-conditional-negative",
+      "rule_id": "AV-APPROVAL001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-env-ts-flag-positive",
+      "rule_id": "AV-APPROVAL001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-env-ts-inline-positive",
+      "rule_id": "AV-APPROVAL001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-env-ts-status-negative",
+      "rule_id": "AV-APPROVAL001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-env-ts-conditional-negative",
+      "rule_id": "AV-APPROVAL001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-env-openai-python-shell-real",
+      "rule_id": "AV-APPROVAL001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-env-openai-js-mcp-real",
+      "rule_id": "AV-APPROVAL001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-env-openai-js-computer-real",
+      "rule_id": "AV-APPROVAL001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-env-openai-js-shell-real",
+      "rule_id": "AV-APPROVAL001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-env-openai-js-patch-real",
+      "rule_id": "AV-APPROVAL001",
+      "expected": true,
+      "observed": true,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

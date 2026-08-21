@@ -66,6 +66,11 @@ APPROVAL_BYPASS_NAME = re.compile(
     r"(?:^|[._])(?:skip_?confirmation|dangerously_?skip_?(?:permissions?|confirmation|approval))$",
     re.IGNORECASE,
 )
+APPROVAL_BYPASS_ENV_NAME = re.compile(
+    r"(?:^|[._])(?:auto_?approve|auto_?approval|skip_?confirmation|"
+    r"dangerously_?skip_?(?:permissions?|confirmation|approval))(?:$|[._])",
+    re.IGNORECASE,
+)
 
 
 def excerpt(lines: list[str], line: int) -> str:
@@ -120,6 +125,46 @@ def provider_for_model(model: str) -> str:
     return "unresolved"
 
 
+def python_approval_environment_names(node: ast.AST) -> set[str]:
+    """Return semantic approval env vars compared to an explicit enabled value."""
+    names: set[str] = set()
+    enabled_values = {"1", "true", "yes", "all"}
+    for candidate in ast.walk(node):
+        if not isinstance(candidate, ast.Compare) or len(candidate.ops) != 1:
+            continue
+        if not isinstance(candidate.ops[0], ast.Eq) or len(candidate.comparators) != 1:
+            continue
+        sides = (candidate.left, candidate.comparators[0])
+        for environment_side, value_side in (sides, sides[::-1]):
+            if not (
+                isinstance(value_side, ast.Constant)
+                and isinstance(value_side.value, str)
+                and value_side.value.lower() in enabled_values
+            ):
+                continue
+            environment_name = ""
+            if isinstance(environment_side, ast.Call) and dotted_name(environment_side.func) in {
+                "os.getenv",
+                "os.environ.get",
+            }:
+                if (
+                    environment_side.args
+                    and isinstance(environment_side.args[0], ast.Constant)
+                    and isinstance(environment_side.args[0].value, str)
+                ):
+                    environment_name = environment_side.args[0].value
+            elif (
+                isinstance(environment_side, ast.Subscript)
+                and dotted_name(environment_side.value) == "os.environ"
+                and isinstance(environment_side.slice, ast.Constant)
+                and isinstance(environment_side.slice.value, str)
+            ):
+                environment_name = environment_side.slice.value
+            if environment_name and APPROVAL_BYPASS_ENV_NAME.search(environment_name):
+                names.add(environment_name)
+    return names
+
+
 class PythonVisitor(ast.NodeVisitor):
     def __init__(
         self,
@@ -143,6 +188,9 @@ class PythonVisitor(ast.NodeVisitor):
         self.active_audit_controls: list[Evidence] = []
         self.http_client_names: set[str] = set()
         self.allowlisted_names: set[str] = set()
+        self.approval_environment_flags: dict[str, set[str]] = {}
+        self.module_approval_environment_flags: dict[str, set[str]] = {}
+        self.function_depth = 0
         self.imported_symbol_paths: dict[str, str] = {}
         self.imported_symbol_names: dict[str, str] = {}
         self.module_paths = module_paths
@@ -271,13 +319,63 @@ class PythonVisitor(ast.NodeVisitor):
                             {"enabled": True, "scope": source_scope(self.path)},
                         )
                     )
+        for target in node.targets:
+            name = dotted_name(target)
+            environment_names = python_approval_environment_names(node.value)
+            if APPROVAL_BYPASS_ENV_NAME.search(name) and environment_names:
+                self.approval_environment_flags[name] = environment_names
+                if self.function_depth == 0:
+                    self.module_approval_environment_flags[name] = environment_names
+        self.generic_visit(node)
+
+    def visit_If(self, node: ast.If) -> None:
+        environment_names = python_approval_environment_names(node.test)
+        referenced_flags = {
+            name
+            for candidate in ast.walk(node.test)
+            if isinstance(candidate, (ast.Name, ast.Attribute))
+            and (name := dotted_name(candidate)) in self.approval_environment_flags
+        }
+        direct_approval_return = bool(
+            node.body
+            and isinstance(node.body[0], ast.Return)
+            and isinstance(node.body[0].value, ast.Constant)
+            and node.body[0].value.value is True
+        )
+        if direct_approval_return and (environment_names or referenced_flags):
+            self.ir.add_component(
+                Component(
+                    "control-setting",
+                    "auto-approval",
+                    self.ev(node),
+                    {
+                        "enabled": True,
+                        "source": "environment-guard",
+                        "environment_names": sorted(
+                            environment_names
+                            | {
+                                environment_name
+                                for flag in referenced_flags
+                                for environment_name in self.approval_environment_flags[flag]
+                            }
+                        ),
+                        "scope": source_scope(self.path),
+                    },
+                )
+            )
         self.generic_visit(node)
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         previous_allowlisted_names = self.allowlisted_names
         previous_http_client_names = self.http_client_names
+        previous_approval_environment_flags = self.approval_environment_flags
         self.allowlisted_names = set()
         self.http_client_names = set()
+        if self.function_depth == 0:
+            self.approval_environment_flags = self.module_approval_environment_flags.copy()
+        else:
+            self.approval_environment_flags = self.approval_environment_flags.copy()
+        self.function_depth += 1
         decorators = {
             dotted_name(decorator.func)
             if isinstance(decorator, ast.Call)
@@ -331,6 +429,8 @@ class PythonVisitor(ast.NodeVisitor):
             self.visit_function_statements(node)
         self.allowlisted_names = previous_allowlisted_names
         self.http_client_names = previous_http_client_names
+        self.function_depth -= 1
+        self.approval_environment_flags = previous_approval_environment_flags
 
     visit_AsyncFunctionDef = visit_FunctionDef
 
@@ -909,9 +1009,7 @@ TS_CHILD_PROCESS_IMPORT = re.compile(
     r"import\s*\{([^}]+)\}\s*from\s*['\"](?:node:)?child_process['\"]",
     re.DOTALL,
 )
-TS_TOOL_ASSIGNMENT = re.compile(
-    r"\b(?:const|let)\s+(\w+)\s*=\s*([A-Za-z_$][\w$]*)\s*\("
-)
+TS_TOOL_ASSIGNMENT = re.compile(r"\b(?:const|let)\s+(\w+)\s*=\s*([A-Za-z_$][\w$]*)\s*\(")
 TS_AGENT_TOOL_ASSIGNMENT = re.compile(
     r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*"
     r"([A-Za-z_$][\w$]*)\.asTool\s*\("
@@ -923,6 +1021,17 @@ TS_AUTO_APPROVAL_ENABLED = re.compile(
     r"dangerouslySkip(?:Permissions?|Confirmation|Approval)|"
     r"dangerously_skip_(?:permissions?|confirmation|approval))\b"
     r"\s*(?:=|:)\s*(?:true|['\"](?:1|true|all)['\"])",
+    re.IGNORECASE,
+)
+TS_APPROVAL_ENV_COMPARISON = re.compile(
+    r"\bprocess\.env(?:\.([A-Za-z_$][\w$]*)|\[\s*['\"]([^'\"]+)['\"]\s*\])"
+    r"\s*(?:===|==)\s*['\"](?:1|true|yes|all)['\"]",
+    re.IGNORECASE,
+)
+TS_APPROVAL_ENV_ASSIGNMENT = re.compile(
+    r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*"
+    r"process\.env(?:\.([A-Za-z_$][\w$]*)|\[\s*['\"]([^'\"]+)['\"]\s*\])"
+    r"\s*(?:===|==)\s*['\"](?:1|true|yes|all)['\"]",
     re.IGNORECASE,
 )
 TS_MODEL_SETTING = re.compile(r"\bmodel\s*:\s*['\"]([^'\"]+)['\"]")
@@ -1050,6 +1159,76 @@ def typescript_balanced_end(
     return None
 
 
+def typescript_direct_true_return(code: str, consequent_start: int) -> bool:
+    """Require an unconditional true return in the immediate TypeScript branch."""
+    cursor = consequent_start
+    while cursor < len(code) and code[cursor].isspace():
+        cursor += 1
+    if cursor >= len(code):
+        return False
+    if code[cursor] != "{":
+        return bool(re.match(r"return\s+true\b", code[cursor:]))
+    block_end = typescript_balanced_end(code, cursor, "{", "}")
+    if block_end is None:
+        return False
+    body = code[cursor + 1 : block_end - 1]
+    depth = 0
+    blocked = False
+    token = re.compile(r"[{}]|\b(?:if|switch|for|while|try|return)\b")
+    for match in token.finditer(body):
+        value = match.group(0)
+        if value == "{":
+            depth += 1
+        elif value == "}":
+            depth = max(0, depth - 1)
+        elif depth == 0 and value in {"if", "switch", "for", "while", "try"}:
+            blocked = True
+        elif depth == 0 and value == "return":
+            return not blocked and bool(re.match(r"\s+true\b", body[match.end() :]))
+    return False
+
+
+def typescript_environment_approval_guards(text: str) -> list[tuple[int, list[str]]]:
+    """Locate env-backed approval flags whose immediate branch returns true."""
+    code = typescript_code_mask(text)
+    flags: dict[str, str] = {}
+    for match in TS_APPROVAL_ENV_ASSIGNMENT.finditer(text):
+        if not code[match.start() : match.start() + len("const")].strip():
+            continue
+        if code[: match.start()].count("{") != code[: match.start()].count("}"):
+            continue
+        flag_name = match.group(1)
+        environment_name = match.group(2) or match.group(3) or ""
+        if APPROVAL_BYPASS_ENV_NAME.search(flag_name) and APPROVAL_BYPASS_ENV_NAME.search(
+            environment_name
+        ):
+            flags[flag_name] = environment_name
+
+    guards: list[tuple[int, list[str]]] = []
+    for match in re.finditer(r"\bif\s*\(", code):
+        opening = code.find("(", match.start(), match.end())
+        condition_end = typescript_balanced_end(code, opening, "(", ")")
+        if condition_end is None or not typescript_direct_true_return(code, condition_end):
+            continue
+        condition_start = opening + 1
+        condition_text = text[condition_start : condition_end - 1]
+        condition_code = code[condition_start : condition_end - 1]
+        environment_names: set[str] = set()
+        for environment_match in TS_APPROVAL_ENV_COMPARISON.finditer(condition_text):
+            absolute = condition_start + environment_match.start()
+            if not code[absolute : absolute + len("process")].strip():
+                continue
+            environment_name = environment_match.group(1) or environment_match.group(2) or ""
+            if APPROVAL_BYPASS_ENV_NAME.search(environment_name):
+                environment_names.add(environment_name)
+        for flag_name, environment_name in flags.items():
+            if re.search(rf"\b{re.escape(flag_name)}\b", condition_code):
+                environment_names.add(environment_name)
+        if environment_names:
+            guards.append((match.start(), sorted(environment_names)))
+    return guards
+
+
 def typescript_top_level_items(text: str, start_offset: int = 0) -> list[tuple[str, int]]:
     """Split a TypeScript array body on top-level commas without tokenizing nested values."""
     code = typescript_code_mask(text)
@@ -1088,9 +1267,7 @@ def typescript_object_items(body: str, body_offset: int = 0) -> list[tuple[str, 
     end = typescript_balanced_end(code, opening, "{", "}")
     if end is None:
         return []
-    return typescript_top_level_items(
-        body[opening + 1 : end - 1], body_offset + opening + 1
-    )
+    return typescript_top_level_items(body[opening + 1 : end - 1], body_offset + opening + 1)
 
 
 def typescript_agent_tool_items(body: str, body_offset: int) -> list[tuple[str, int]]:
@@ -1306,8 +1483,7 @@ def typescript_graph(
             local_factory in cline_imports and constructor == "createTool"
         )
         is_openai_builtin = (
-            local_factory in openai_imports
-            and constructor in TS_OPENAI_BUILTIN_TOOL_CAPABILITIES
+            local_factory in openai_imports and constructor in TS_OPENAI_BUILTIN_TOOL_CAPABILITIES
         )
         if not is_generic and not is_openai_builtin:
             continue
@@ -1389,7 +1565,9 @@ def typescript_graph(
         agent_bodies.append((match, opening + 1, body, agent_name, agent_id))
 
     for match, body_offset, body, agent_name, agent_id in agent_bodies:
-        ev = Evidence(relative, line_at(text, match.start()), excerpt(lines, line_at(text, match.start())))
+        ev = Evidence(
+            relative, line_at(text, match.start()), excerpt(lines, line_at(text, match.start()))
+        )
         for item, item_offset in typescript_agent_tool_items(body, body_offset):
             spread = item.startswith("...")
             expression = item[3:].lstrip() if spread else item
@@ -1608,6 +1786,21 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
         for item in ir.components
         if item.kind == "agent" and item.evidence.path == relative
     }
+    for offset, environment_names in typescript_environment_approval_guards(text):
+        line_number = line_at(text, offset)
+        ir.add_component(
+            Component(
+                "control-setting",
+                "auto-approval",
+                Evidence(relative, line_number, excerpt(lines, line_number)),
+                {
+                    "enabled": True,
+                    "source": "environment-guard",
+                    "environment_names": environment_names,
+                    "scope": source_scope(relative),
+                },
+            )
+        )
     for line_number, line in enumerate(lines, start=1):
         ev = Evidence(relative, line_number, line.strip()[:240])
         code_line = typescript_code_mask(line)

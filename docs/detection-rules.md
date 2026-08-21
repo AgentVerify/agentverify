@@ -12,7 +12,7 @@ coverage to justify them.
 | AV-MCP001 | inventory | info | Identify MCP clients, servers, transports, commands, URLs, and declared tools | MCP signals in 50/71 |
 | AV-EXEC001 | finding | high | Dynamic command executed through a system shell | 21 default-scope engine matches after literal-command and API resolution |
 | AV-EXEC002 | finding | high | Dynamic input reaches an evaluator/interpreter | 43 repositories have code-execution signals |
-| AV-APPROVAL001 | review | high | Enabled auto-approve or skip-confirmation path | 7 default-scope engine candidates after semantic-name filtering |
+| AV-APPROVAL001 | review | high | Enabled auto-approve or skip-confirmation path | 14 default-scope engine candidates after semantic-name and direct-return filtering |
 | AV-APPROVAL002 | review | high | Reachable local OpenAI Agents Python/TypeScript shell tool uses the SDK's disabled approval policy | 2 default-scope matches in the pinned SDK examples |
 | AV-FS001 | review | high | Agent tool writes to a dynamic filesystem path | 16 default-scope matches across 6 repositories |
 | AV-MCP002 | review | high | Dynamic MCP tool name and arguments are forwarded to a server | 43 default-scope matches across 22 repositories after policy resolution |

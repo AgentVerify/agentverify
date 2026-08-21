@@ -92,6 +92,32 @@ is the real positive: `ShellTool@117` is governed by the literal policy at line 
 `agents` import prevents unrelated application classes with the same constructor names from being
 promoted into Agent IR.
 
+## AV-APPROVAL001 — enabled approval-bypass path
+
+The rule reports explicit enabled auto-approval/skip-confirmation settings and environment-backed
+approval branches. Environment handling is deliberately flow-sensitive within a narrow boundary: an
+approval-specific variable such as `SHELL_AUTO_APPROVE` must be compared with an explicit enabled
+value, and the governed branch must return true directly without an intervening conditional. Python
+tracks module flags into functions and keeps local flags lexically scoped. TypeScript supports inline
+`process.env` comparisons and module-level flag assignments; comments and strings remain masked.
+
+The full benchmark now reports 14 default-scope reviews. Seven newly resolved paths are official SDK
+examples: OpenAI Agents Python's
+[shell prompt bypass](https://github.com/openai/openai-agents-python/blob/17ba331bb0ad1622a4ff4ecdc914c77118075dad/examples/tools/shell.py#L80),
+and OpenAI Agents JS examples for
+[hosted MCP approval](https://github.com/openai/openai-agents-js/blob/0b944370c6fe019ac5b08364ca013826cd7d0668/examples/mcp/hosted-mcp-on-approval.ts#L6),
+[computer use](https://github.com/openai/openai-agents-js/blob/0b944370c6fe019ac5b08364ca013826cd7d0668/examples/tools/computer-use-hitl.ts#L62),
+[local shell](https://github.com/openai/openai-agents-js/blob/0b944370c6fe019ac5b08364ca013826cd7d0668/examples/tools/local-shell.ts#L73),
+and [apply patch](https://github.com/openai/openai-agents-js/blob/0b944370c6fe019ac5b08364ca013826cd7d0668/examples/tools/apply-patch.ts#L77),
+plus two sibling HITL examples using the same flag. These are intentional examples, not vulnerability
+claims; `review` communicates that deployments should decide whether the bypass is acceptable.
+
+Regression negatives reject status variables such as `AUTO_APPROVED_WARNING`, disabled values, and
+branches that add a second safety condition before returning true. The Python apply-patch example's
+environment value flows through an instance attribute and a prompt-skipping early return, so it
+remains unresolved rather than being inferred by this direct-boolean-return pass. The rule has 12
+positive and 10 negative exact labels.
+
 ## AV-APPROVAL002 — reachable local shell with SDK approval disabled
 
 The enabled rule is intentionally narrower than a general “missing approval” claim. It requires a
@@ -119,7 +145,7 @@ Expanding the truth set exposed two additional false-positive families. Literal 
 were incorrectly classified as dynamic; resolving complete string literals removed five corpus
 findings while preserving interpolated templates. Broad approval-name matching confused warning-state
 and version-check flags with human approval; requiring approval-specific names removed six review
-candidates. Corpus totals are now 21 `AV-EXEC001` findings and seven `AV-APPROVAL001` reviews.
+candidates. Corpus totals are now 21 `AV-EXEC001` findings and 14 `AV-APPROVAL001` reviews.
 
 ## AV-MCP002 — dynamic MCP forwarding
 
@@ -176,13 +202,14 @@ and a literal `privileged=True` keyword.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 129 exact labels across all seven enabled rules: 73 positives and 56
+`benchmarks/truthset.json` contains 141 exact labels across all seven enabled rules: 81 positives and 60
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, non-approval skip flags, disabled
-auto-approval, late MCP guards, and safe Compose/Kubernetes/Docker SDK settings. All 129 currently pass; each rule's seed precision and
-recall are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified
-source text at the exact pinned line, preventing a missing or drifting location from passing silently.
+auto-approval, conditional environment guards, late MCP guards, and safe
+Compose/Kubernetes/Docker SDK settings. All 141 currently pass; each rule's seed precision and recall
+are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified source
+text at the exact pinned line, preventing a missing or drifting location from passing silently.
 
 This is a curated regression set, not an unbiased estimate of ecosystem precision or recall. The next
 benchmark milestone is a separately sampled, externally reviewed holdout set with framework-stratified

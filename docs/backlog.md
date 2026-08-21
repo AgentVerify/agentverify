@@ -45,7 +45,7 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 129 pinned positive/negative locations, with 18 separately
+The curated regression set has reached 141 pinned positive/negative locations, with 18 separately
 scored IR relationship labels. Schema-v3 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery

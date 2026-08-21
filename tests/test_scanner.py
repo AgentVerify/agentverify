@@ -239,6 +239,26 @@ const policy = { autoApprove: true };
     ]
 
 
+def test_environment_auto_approval_requires_a_direct_true_return() -> None:
+    ir = scan_repository(ROOT / "cases/approval_env_guard")
+
+    approval_findings = [finding for finding in ir.findings if finding.rule_id == "AV-APPROVAL001"]
+    assert [(finding.evidence.path, finding.evidence.line) for finding in approval_findings] == [
+        ("approval.py", 8),
+        ("approval.ts", 4),
+        ("approval.ts", 12),
+    ]
+    controls = {
+        (component.evidence.path, component.evidence.line): component.attributes
+        for component in ir.components
+        if component.kind == "control-setting" and component.name == "auto-approval"
+    }
+    assert controls[("approval.py", 8)]["environment_names"] == ["SHELL_AUTO_APPROVE"]
+    assert controls[("approval.ts", 4)]["environment_names"] == ["AUTO_APPROVE_HITL"]
+    assert controls[("approval.ts", 12)]["environment_names"] == ["SHELL_AUTO_APPROVE"]
+    assert all(attributes["source"] == "environment-guard" for attributes in controls.values())
+
+
 def test_anthropic_and_azure_model_providers() -> None:
     ir = scan_repository(ROOT / "cases/model_providers")
 
@@ -303,9 +323,7 @@ def test_typescript_dynamic_eval_is_linked_and_reported() -> None:
 def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> None:
     ir = scan_repository(ROOT / "cases/typescript_structured_tools")
 
-    tools = {
-        component.name: component for component in ir.components if component.kind == "tool"
-    }
+    tools = {component.name: component for component in ir.components if component.kind == "tool"}
     assert set(tools) == {
         "applyPatchTool@33",
         "assignedShell",
@@ -321,9 +339,7 @@ def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> Non
         for edge in ir.relationships
         if edge.source_kind == "agent" and edge.source_name == "operator"
     ]
-    assert {
-        (edge.relation, edge.target_kind, edge.target_name) for edge in operator_edges
-    } == {
+    assert {(edge.relation, edge.target_kind, edge.target_name) for edge in operator_edges} == {
         ("delegates-to", "agent", "worker"),
         ("uses", "tool", "applyPatchTool@33"),
         ("uses", "tool", "assignedShell"),
@@ -343,9 +359,10 @@ def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> Non
     assert next(edge for edge in operator_edges if edge.target_name == "worker").target_id == (
         "ts:agent.ts#agent:worker"
     )
-    assert next(
-        edge for edge in operator_edges if edge.target_name == "unrelatedShellTool"
-    ).target_id is None
+    assert (
+        next(edge for edge in operator_edges if edge.target_name == "unrelatedShellTool").target_id
+        is None
+    )
     assert [finding.rule_id for finding in ir.findings] == ["AV-APPROVAL002"]
     assert ir.findings[0].ir_path[:2] == ("agent:operator", "tool:assignedShell")
 
@@ -375,7 +392,9 @@ def test_cline_inline_tool_links_only_dynamic_bun_shell_execution() -> None:
         for component in ir.components
         if component.kind == "capability" and component.name == "shell-execution"
     ]
-    assert [(component.evidence.line, component.attributes["dynamic_command"]) for component in shell] == [
+    assert [
+        (component.evidence.line, component.attributes["dynamic_command"]) for component in shell
+    ] == [
         (8, True),
         (12, False),
     ]

@@ -38,6 +38,13 @@ vocabulary appears in 18. Some matches are deliberately safe tests or demonstrat
 production configuration. A useful analyzer must model approval scope and bypass paths rather than
 only checking whether an approval API exists.
 
+The structure-aware engine reports 14 default-scope approval-bypass reviews. Seven are explicit
+environment-enabled true-return branches in pinned OpenAI Agents Python/JavaScript examples; the
+remaining seven are enabled configuration candidates found previously. Examples are not treated as
+vulnerabilities, but they prove that deployment-time approval overrides recur in real agent code and
+need auditable policy. Status flags and branches with an additional safety condition are regression
+negatives.
+
 ## 4. Provider identity is a governance dependency
 
 OpenAI signals appear in 51 repositories, Anthropic in 37, Google in 28, Azure OpenAI in 18, and AWS

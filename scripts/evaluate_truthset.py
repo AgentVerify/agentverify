@@ -60,7 +60,10 @@ def main() -> int:
                 and edge.evidence.line == label["line"]
                 and all(
                     (
-                        all(edge.attributes.get(name) == expected for name, expected in value.items())
+                        all(
+                            edge.attributes.get(name) == expected
+                            for name, expected in value.items()
+                        )
                         if key == "attributes"
                         else getattr(edge, key) == value
                     )
@@ -97,13 +100,15 @@ def main() -> int:
         matrices[metric_id][bucket] += 1
         outcome = {"id": label["id"]}
         outcome["rule_id" if label.get("rule_id") else "check_id"] = metric_id
-        outcome.update({
-            "expected": expected,
-            "observed": observed,
-            "anchor_ok": anchor_ok,
-            "source_ok": source_ok,
-            "passed": observed == expected and anchor_ok and source_ok,
-        })
+        outcome.update(
+            {
+                "expected": expected,
+                "observed": observed,
+                "anchor_ok": anchor_ok,
+                "source_ok": source_ok,
+                "passed": observed == expected and anchor_ok and source_ok,
+            }
+        )
         outcomes.append(outcome)
     metrics = {}
     for rule_id, matrix in sorted(matrices.items()):
