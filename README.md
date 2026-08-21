@@ -53,6 +53,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`docs/roadmap.md`](docs/roadmap.md) — impact × frequency × feasibility priorities
 - [`docs/detection-rules.md`](docs/detection-rules.md) — rule contracts and validation gates
 - [`docs/architecture.md`](docs/architecture.md) — Agent IR, graph analysis, and uncertainty model
+- [`docs/code-scanning.md`](docs/code-scanning.md) — copy-ready GitHub SARIF integration
 - [`docs/backlog.md`](docs/backlog.md) — prioritized issue-ready future work
 - [`benchmarks/engine-results.json`](benchmarks/engine-results.json) — full-corpus engine metrics
 - [`benchmarks/truthset.json`](benchmarks/truthset.json) — exact hand-labeled positives and negatives
@@ -60,6 +61,10 @@ HIGH AV-EXEC001 [high; finding]
 
 SARIF output includes stable fingerprints, source locations, severity, remediation, Agent IR paths,
 and resolved/unresolved control context for code-scanning integrations.
+
+The included [GitHub code-scanning workflow](.github/workflows/code-scanning.yml) uploads results on
+pushes, pull requests, and a weekly schedule. It uses a job-scoped token and a stable SARIF category;
+see the integration guide before adding an enforcement threshold.
 
 Reproduce the corpus analysis:
 
