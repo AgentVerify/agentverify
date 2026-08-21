@@ -229,6 +229,8 @@ class PythonVisitor(ast.NodeVisitor):
         self.approval_environment_flags: dict[str, set[str]] = {}
         self.module_approval_environment_flags: dict[str, set[str]] = {}
         self.class_approval_environment_flags: list[dict[str, set[str]]] = []
+        self.class_fixed_tool_bindings: list[dict[str, Evidence]] = []
+        self.class_fixed_tool_accessors: list[dict[str, Evidence]] = []
         self.function_stack: list[str] = []
         self.function_depth = 0
         self.imported_symbol_paths: dict[str, str] = {}
@@ -572,6 +574,9 @@ class PythonVisitor(ast.NodeVisitor):
         for keyword in node.keywords:
             self.visit(keyword.value)
         self.class_stack.append(node.name)
+        fixed_bindings, fixed_accessors = self.fixed_class_tool_bindings(node)
+        self.class_fixed_tool_bindings.append(fixed_bindings)
+        self.class_fixed_tool_accessors.append(fixed_accessors)
         class_environment_flags: dict[str, set[str]] = {}
         for statement in node.body:
             if not isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -592,7 +597,80 @@ class PythonVisitor(ast.NodeVisitor):
         for statement in node.body:
             self.visit(statement)
         self.class_approval_environment_flags.pop()
+        self.class_fixed_tool_accessors.pop()
+        self.class_fixed_tool_bindings.pop()
         self.class_stack.pop()
+
+    def fixed_class_tool_bindings(
+        self, node: ast.ClassDef
+    ) -> tuple[dict[str, Evidence], dict[str, Evidence]]:
+        """Return constructor-only instance bindings and pure accessors over them."""
+        assignments: dict[str, list[tuple[ast.AST, str]]] = defaultdict(list)
+
+        def root_self_attribute(target: ast.AST) -> str | None:
+            current = target
+            while isinstance(current, ast.Attribute):
+                if isinstance(current.value, ast.Name) and current.value.id == "self":
+                    return current.attr
+                current = current.value
+            return None
+
+        for statement in node.body:
+            if not isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                continue
+            for candidate in ast.walk(statement):
+                targets: list[ast.AST] = []
+                if isinstance(candidate, ast.Assign):
+                    targets.extend(candidate.targets)
+                elif isinstance(candidate, (ast.AnnAssign, ast.AugAssign)):
+                    targets.append(candidate.target)
+                elif isinstance(candidate, ast.Delete):
+                    targets.extend(candidate.targets)
+                for target in targets:
+                    if attribute := root_self_attribute(target):
+                        assignments[attribute].append((candidate, statement.name))
+
+        fixed = {
+            attribute: self.ev(observations[0][0])
+            for attribute, observations in assignments.items()
+            if len(observations) == 1 and observations[0][1] == "__init__"
+        }
+        accessors: dict[str, Evidence] = {}
+        for statement in node.body:
+            if not isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                continue
+            positional = (*statement.args.posonlyargs, *statement.args.args)
+            if len(positional) != 1 or positional[0].arg != "self":
+                continue
+            returns = [
+                candidate
+                for candidate in ast.walk(statement)
+                if isinstance(candidate, ast.Return) and candidate.value is not None
+            ]
+            if len(returns) != 1:
+                continue
+            expression = dotted_name(returns[0].value)
+            if expression.startswith("self."):
+                root = expression.split(".", 2)[1]
+                if root in fixed:
+                    accessors[statement.name] = fixed[root]
+        return fixed, accessors
+
+    def fixed_tool_binding_evidence(self, expression: ast.AST) -> Evidence | None:
+        """Resolve an MCP name expression fixed once for the current class instance."""
+        if not self.class_fixed_tool_bindings:
+            return None
+        fixed = self.class_fixed_tool_bindings[-1]
+        accessors = self.class_fixed_tool_accessors[-1]
+        if isinstance(expression, ast.Call) and not expression.args and not expression.keywords:
+            accessor = dotted_name(expression.func)
+            if accessor.startswith("self."):
+                return accessors.get(accessor.removeprefix("self."))
+        name = dotted_name(expression)
+        if not name.startswith("self."):
+            return None
+        root = name.split(".", 2)[1]
+        return fixed.get(root) or accessors.get(root)
 
     def visit_function_statements(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> None:
         for decorator in node.decorator_list:
@@ -979,6 +1057,7 @@ class PythonVisitor(ast.NodeVisitor):
             if tool_name is not None and not isinstance(tool_name, ast.Constant):
                 guarded_name = tool_name.id if isinstance(tool_name, ast.Name) else ""
                 resolved_guard = guarded_name in self.allowlisted_names
+                binding_evidence = self.fixed_tool_binding_evidence(tool_name)
                 guard_control = self.allowlist_control_names.get(guarded_name, "tool-allowlist")
                 guard_evidence = self.allowlist_evidence.get(guarded_name)
                 allowlist_guard = resolved_guard and guard_control == "tool-allowlist"
@@ -990,6 +1069,7 @@ class PythonVisitor(ast.NodeVisitor):
                     and not isinstance(arguments, ast.Dict),
                     "allowlist_guard": allowlist_guard,
                     "registry_guard": registry_guard,
+                    "fixed_tool_binding": binding_evidence is not None,
                     "scope": source_scope(self.path),
                 }
                 if resolved_guard:
@@ -997,6 +1077,9 @@ class PythonVisitor(ast.NodeVisitor):
                     if guard_evidence:
                         attributes["guard_path"] = guard_evidence.path
                         attributes["guard_line"] = guard_evidence.line
+                if binding_evidence:
+                    attributes["binding_path"] = binding_evidence.path
+                    attributes["binding_line"] = binding_evidence.line
                 self.ir.add_component(
                     Component("capability", "mcp-tool-forwarding", self.ev(node), attributes)
                 )
@@ -1010,6 +1093,36 @@ class PythonVisitor(ast.NodeVisitor):
                             "mcp-tool-forwarding",
                             self.ev(node),
                             source_id=self.current_tool_id,
+                        )
+                    )
+                if binding_evidence:
+                    policy_effect = "binds-tool-source-per-instance"
+                    self.ir.add_component(
+                        Component(
+                            "control",
+                            "fixed-tool-binding",
+                            binding_evidence,
+                            {
+                                "scope": source_scope(self.path),
+                                "binding_scope": "instance",
+                                "policy_effect": policy_effect,
+                            },
+                        )
+                    )
+                    self.ir.add_relationship(
+                        Relationship(
+                            "capability",
+                            "mcp-tool-forwarding",
+                            "governed-by",
+                            "control",
+                            "fixed-tool-binding",
+                            self.ev(node),
+                            {
+                                "control_path": binding_evidence.path,
+                                "control_line": binding_evidence.line,
+                                "binding_scope": "instance",
+                                "policy_effect": policy_effect,
+                            },
                         )
                     )
                 if resolved_guard:

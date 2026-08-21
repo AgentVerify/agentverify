@@ -744,6 +744,93 @@
           "policy_effect": "routing-only"
         }
       }
+    },
+    {
+      "id": "mcp-fixed-instance-binding-local",
+      "target": {"kind": "local", "path": "cases/mcp_forwarder"},
+      "check_id": "IR-MCP-FIXED-BINDING",
+      "path": "proxy.py",
+      "line": 64,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "mcp-tool-forwarding",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "fixed-tool-binding",
+        "attributes": {
+          "control_path": "proxy.py",
+          "control_line": 57,
+          "binding_scope": "instance",
+          "policy_effect": "binds-tool-source-per-instance"
+        }
+      }
+    },
+    {
+      "id": "mcp-mutable-instance-binding-local-negative",
+      "target": {"kind": "local", "path": "cases/mcp_forwarder"},
+      "check_id": "IR-MCP-FIXED-BINDING",
+      "path": "proxy.py",
+      "line": 76,
+      "expected": false,
+      "source_contains": "call_tool(self._tool.name",
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "mcp-tool-forwarding",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "fixed-tool-binding"
+      }
+    },
+    {
+      "id": "mcp-agentscope-fixed-binding-real",
+      "target": {
+        "kind": "repository",
+        "repository": "agentscope-ai/agentscope",
+        "commit": "ad4d2839e8ad57b6b9dffa7b583be7bee33009fb"
+      },
+      "check_id": "IR-MCP-FIXED-BINDING",
+      "path": "src/agentscope/tool/_adapters.py",
+      "line": 330,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "mcp-tool-forwarding",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "fixed-tool-binding",
+        "attributes": {
+          "control_path": "src/agentscope/tool/_adapters.py",
+          "control_line": 270,
+          "binding_scope": "instance",
+          "policy_effect": "binds-tool-source-per-instance"
+        }
+      }
+    },
+    {
+      "id": "mcp-trae-getter-fixed-binding-real",
+      "target": {
+        "kind": "repository",
+        "repository": "bytedance/trae-agent",
+        "commit": "e839e559ac61bdd0e057c375dd1dee391fee797d"
+      },
+      "check_id": "IR-MCP-FIXED-BINDING",
+      "path": "trae_agent/tools/mcp_tool.py",
+      "line": 51,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "mcp-tool-forwarding",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "fixed-tool-binding",
+        "attributes": {
+          "control_path": "trae_agent/tools/mcp_tool.py",
+          "control_line": 12,
+          "binding_scope": "instance",
+          "policy_effect": "binds-tool-source-per-instance"
+        }
+      }
     }
   ]
 }

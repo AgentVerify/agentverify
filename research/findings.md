@@ -38,6 +38,12 @@ routing fact is represented as an Agent IR edge but does not suppress the review
 contains server-advertised tools rather than an explicit authorization policy. Caller-owned mappings
 and post-call lookups remain unresolved.
 
+Five additional calls across CrewAI, Lagent, AgentScope, and Trae bind the forwarded name once in a
+wrapper constructor. The engine records exact `fixed-tool-binding` edges—including pure property and
+getter accessors—but retains all five reviews because per-instance routing is not an authorization
+allowlist and does not constrain the argument map. A mutable local regression prevents class-wide
+name matching from inventing this control.
+
 ## 3. Approval exists, but bypass behavior recurs
 
 Human-approval vocabulary appears in 52 repositories, while auto-approval or skip-confirmation

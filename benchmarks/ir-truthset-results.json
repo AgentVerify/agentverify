@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T08:03:13.280214+00:00",
-  "labels": 40,
-  "passed": 40,
+  "generated_at": "2026-08-21T08:18:48.439395+00:00",
+  "labels": 44,
+  "passed": 44,
   "metrics": {
     "IR-APPROVAL-CONTROL": {
       "tp": 3,
@@ -22,6 +22,14 @@
     },
     "IR-IMPORT-RESOLUTION": {
       "tp": 2,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-MCP-FIXED-BINDING": {
+      "tp": 3,
       "fp": 0,
       "tn": 1,
       "fn": 0,
@@ -424,6 +432,42 @@
     {
       "id": "mcp-python-sdk-registry-control-real",
       "check_id": "IR-MCP-REGISTRY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-fixed-instance-binding-local",
+      "check_id": "IR-MCP-FIXED-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-mutable-instance-binding-local-negative",
+      "check_id": "IR-MCP-FIXED-BINDING",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-agentscope-fixed-binding-real",
+      "check_id": "IR-MCP-FIXED-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-trae-getter-fixed-binding-real",
+      "check_id": "IR-MCP-FIXED-BINDING",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

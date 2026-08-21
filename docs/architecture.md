@@ -87,6 +87,13 @@ an explicit allowlist requirement or suppress `AV-MCP002`, because a discovery r
 every tool advertised by the server. Finding analysis exposes both the governing control and its
 effect even when no Agent-to-Tool edge is resolved.
 
+A constructor-only instance attribute used directly, through a pure property, or through a
+zero-argument getter creates a `fixed-tool-binding` edge with
+`policy_effect: binds-tool-source-per-instance`. The proof is class-local and invalidated by any
+second assignment, augmented assignment, or deletion. It removes a direct call-parameter selector
+but, like a discovery registry, does not prove authorization or argument policy and therefore does
+not suppress `AV-MCP002`.
+
 For audit modeling, a tool capability lexically inside an OpenTelemetry
 `start_as_current_span(...)` block receives an exact capability-to-`action-trace` control edge. A
 span elsewhere in the same tool does not cover the action. The edge records exporter durability as

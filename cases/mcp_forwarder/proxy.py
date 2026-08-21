@@ -49,3 +49,28 @@ class LateRegistryGroup:
         result = await session.call_tool(name, arguments)
         registered_tool = self.tools[name]
         return result, registered_tool
+
+
+class BoundToolProxy:
+    def __init__(self, session: ClientSession, tool):
+        self.session = session
+        self._tool = tool
+
+    @property
+    def tool_name(self):
+        return self._tool.name
+
+    async def call(self, arguments: dict):
+        return await self.session.call_tool(self.tool_name, arguments)
+
+
+class MutableToolProxy:
+    def __init__(self, session: ClientSession, tool):
+        self.session = session
+        self._tool = tool
+
+    def replace_tool(self, tool):
+        self._tool = tool
+
+    async def call(self, arguments: dict):
+        return await self.session.call_tool(self._tool.name, arguments)

@@ -131,6 +131,14 @@ def main() -> int:
             and edge.target_kind == "control"
             and edge.target_name == "path-boundary"
         ]
+        mcp_forwarding_control_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "capability"
+            and edge.source_name == "mcp-tool-forwarding"
+            and edge.relation == "governed-by"
+            and edge.target_kind == "control"
+        ]
         result = {
             "repository": repository,
             "category": row["category"],
@@ -189,6 +197,9 @@ def main() -> int:
                 "network_helper_edges": len(typescript_network_helper_capabilities),
                 "path_boundary_edges": len(typescript_path_boundary_edges),
             },
+            "mcp_forwarding_controls": dict(
+                sorted(Counter(edge.target_name for edge in mcp_forwarding_control_edges).items())
+            ),
             "resolved_import_edges": len(imported_edges),
             "resolved_import_edges_by_frontend": {
                 "python": sum(edge.evidence.path.endswith(".py") for edge in imported_edges),
@@ -212,7 +223,7 @@ def main() -> int:
         {rule_id for result in successful for rule_id in result["findings"]}
     )
     payload = {
-        "schema_version": 10,
+        "schema_version": 11,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "summary": {
@@ -298,6 +309,17 @@ def main() -> int:
                     "path_boundary_edges",
                 )
             },
+            "mcp_forwarding_controls": dict(
+                sorted(
+                    sum(
+                        (
+                            Counter(result["mcp_forwarding_controls"])
+                            for result in successful
+                        ),
+                        Counter(),
+                    ).items()
+                )
+            ),
             "resolved_import_edges": sum(result["resolved_import_edges"] for result in successful),
             "resolved_import_edges_by_frontend": {
                 frontend: sum(

@@ -22,7 +22,10 @@ as an unrelated tool hides transitive authority.
 MCP moves tool definitions and execution outside the application process. Clients can discover tools
 dynamically and forward model-generated argument maps. Servers may expose narrow domain actions or
 broad primitives such as command execution and writable roots. Verification needs client config,
-server capability manifests, transport, authentication, and approval context.
+server capability manifests, transport, authentication, and approval context. Framework adapters
+also commonly bind one discovered tool source per wrapper instance; this removes a direct
+call-parameter selector but does not prove the source object immutable. It is weaker than an
+authorization allowlist and must remain a distinct control effect.
 
 ## Local versus isolated execution
 

@@ -445,8 +445,10 @@ def test_dynamic_mcp_forwarding_but_not_fixed_tool_call() -> None:
         for item in ir.components
         if item.kind == "capability" and item.name == "mcp-tool-forwarding"
     ]
-    assert len(forwarding) == 6
+    assert len(forwarding) == 8
     assert [finding.rule_id for finding in ir.findings] == [
+        "AV-MCP002",
+        "AV-MCP002",
         "AV-MCP002",
         "AV-MCP002",
         "AV-MCP002",
@@ -471,6 +473,7 @@ def test_dynamic_mcp_forwarding_but_not_fixed_tool_call() -> None:
         "dynamic_arguments": True,
         "allowlist_guard": False,
         "registry_guard": True,
+        "fixed_tool_binding": False,
         "scope": "production",
         "guard_control": "tool-registry",
         "guard_path": "proxy.py",
@@ -498,6 +501,31 @@ def test_dynamic_mcp_forwarding_but_not_fixed_tool_call() -> None:
     assert (
         next(item for item in forwarding if item.evidence.line == 49).attributes["allowlist_guard"]
         is False
+    )
+    bound = next(item for item in forwarding if item.evidence.line == 64)
+    assert bound.attributes["fixed_tool_binding"] is True
+    assert bound.attributes["binding_line"] == 57
+    binding_edge = next(
+        item
+        for item in ir.relationships
+        if item.evidence.line == 64 and item.target_name == "fixed-tool-binding"
+    )
+    assert binding_edge.attributes == {
+        "control_path": "proxy.py",
+        "control_line": 57,
+        "binding_scope": "instance",
+        "policy_effect": "binds-tool-source-per-instance",
+    }
+    bound_finding = next(item for item in ir.findings if item.evidence.line == 64)
+    assert bound_finding.analysis["governing_controls"] == ["fixed-tool-binding"]
+    assert bound_finding.analysis["governing_control_effects"] == {
+        "fixed-tool-binding": ["binds-tool-source-per-instance"]
+    }
+    mutable = next(item for item in forwarding if item.evidence.line == 76)
+    assert mutable.attributes["fixed_tool_binding"] is False
+    assert not any(
+        item.evidence.line == 76 and item.target_name == "fixed-tool-binding"
+        for item in ir.relationships
     )
 
 
