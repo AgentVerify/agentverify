@@ -14,6 +14,27 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
     """
     if component.kind != "capability":
         return (), {}
+    capability_control_edges = [
+        edge
+        for edge in ir.relationships
+        if edge.source_kind == "capability"
+        and edge.source_name == component.name
+        and edge.evidence.path == component.evidence.path
+        and edge.evidence.line == component.evidence.line
+        and edge.relation == "governed-by"
+        and edge.target_kind == "control"
+    ]
+    capability_controls = sorted({edge.target_name for edge in capability_control_edges})
+    capability_control_effects = {
+        control: sorted(
+            {
+                str(edge.attributes["policy_effect"])
+                for edge in capability_control_edges
+                if edge.target_name == control and edge.attributes.get("policy_effect")
+            }
+        )
+        for control in capability_controls
+    }
     tool_edges = [
         edge
         for edge in ir.relationships
@@ -25,7 +46,13 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
         and edge.evidence.line == component.evidence.line
     ]
     if not tool_edges:
-        return (f"capability:{component.name}",), {"approval_coverage": "unresolved"}
+        return (f"capability:{component.name}",), {
+            "governing_controls": capability_controls,
+            "governing_control_effects": capability_control_effects,
+            "approval_coverage": (
+                "present" if "human-approval" in capability_controls else "unresolved"
+            ),
+        }
     tool_edge = min(tool_edges, key=lambda edge: (edge.source_id or "", edge.source_name))
     tool_name = tool_edge.source_name
     tool_id = tool_edge.source_id
@@ -50,31 +77,40 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
         )
     ]
     direct_agents = sorted({edge.source_name for edge in direct_agent_edges})
-    controls = sorted(
-        {
-            edge.target_name
-            for edge in ir.relationships
-            if (
-                (
-                    edge.source_kind == "tool"
-                    and edge.source_name == tool_name
-                    and (
-                        (tool_id is not None and edge.source_id == tool_id)
-                        or (tool_id is None or edge.source_id is None)
-                    )
-                    and edge.evidence.path == component.evidence.path
+    governing_control_edges = [
+        edge
+        for edge in ir.relationships
+        if (
+            (
+                edge.source_kind == "tool"
+                and edge.source_name == tool_name
+                and (
+                    (tool_id is not None and edge.source_id == tool_id)
+                    or (tool_id is None or edge.source_id is None)
                 )
-                or (
-                    edge.source_kind == "capability"
-                    and edge.source_name == component.name
-                    and edge.evidence.path == component.evidence.path
-                    and edge.evidence.line == component.evidence.line
-                )
+                and edge.evidence.path == component.evidence.path
             )
-            and edge.relation == "governed-by"
-            and edge.target_kind == "control"
-        }
-    )
+            or (
+                edge.source_kind == "capability"
+                and edge.source_name == component.name
+                and edge.evidence.path == component.evidence.path
+                and edge.evidence.line == component.evidence.line
+            )
+        )
+        and edge.relation == "governed-by"
+        and edge.target_kind == "control"
+    ]
+    controls = sorted({edge.target_name for edge in governing_control_edges})
+    control_effects = {
+        control: sorted(
+            {
+                str(edge.attributes["policy_effect"])
+                for edge in governing_control_edges
+                if edge.target_name == control and edge.attributes.get("policy_effect")
+            }
+        )
+        for control in controls
+    }
     delegation_parents: dict[str, set[tuple[str, str]]] = {}
     for edge in ir.relationships:
         if (
@@ -126,6 +162,7 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
         "reachable_agents": reachable_agents,
         "tool": tool_name,
         "governing_controls": controls,
+        "governing_control_effects": control_effects,
         "approval_coverage": "present" if "human-approval" in controls else "unresolved",
         "audit_coverage": (
             "instrumented; exporter durability unresolved"

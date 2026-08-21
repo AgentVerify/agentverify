@@ -31,6 +31,13 @@ Representative forwarding shapes occur in
 [AutoGPT](https://github.com/Significant-Gravitas/AutoGPT). AgentVerify should resolve the configured
 server, discovered tool set, transport, authentication, argument flow, and enclosing approval policy.
 
+The structure-aware engine retains every selected dynamic forwarding capability and reports 43 for
+review. One MCP Python SDK path is now proven to be governed by an internal tool registry: two
+uncaught mapping lookups occur before forwarding, so unknown names terminate before the call. This
+routing fact is represented as an Agent IR edge but does not suppress the review, because the registry
+contains server-advertised tools rather than an explicit authorization policy. Caller-owned mappings
+and post-call lookups remain unresolved.
+
 ## 3. Approval exists, but bypass behavior recurs
 
 Human-approval vocabulary appears in 52 repositories, while auto-approval or skip-confirmation

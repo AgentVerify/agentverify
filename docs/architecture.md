@@ -60,6 +60,13 @@ tool-to-control edge when no automatic approval handler is configured; literal f
 explicitly disabled. An omitted value records the SDK's documented disabled default. Callback,
 handler-controlled, and other non-literal approval policies remain unresolved.
 
+Control presence is not automatically policy satisfaction. An uncaught lookup in an internal MCP
+tool registry creates a `tool-registry` edge because it proves the name is routable and rejects
+unknown names before forwarding. That edge carries `policy_effect: routing-only`; it does not satisfy
+an explicit allowlist requirement or suppress `AV-MCP002`, because a discovery registry can contain
+every tool advertised by the server. Finding analysis exposes both the governing control and its
+effect even when no Agent-to-Tool edge is resolved.
+
 For audit modeling, a tool capability lexically inside an OpenTelemetry
 `start_as_current_span(...)` block receives an exact capability-to-`action-trace` control edge. A
 span elsewhere in the same tool does not cover the action. The edge records exporter durability as

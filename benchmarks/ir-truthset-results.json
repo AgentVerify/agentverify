@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T05:52:42.639592+00:00",
-  "labels": 18,
-  "passed": 18,
+  "generated_at": "2026-08-21T06:05:35.099490+00:00",
+  "labels": 21,
+  "passed": 21,
   "metrics": {
     "IR-APPROVAL-CONTROL": {
       "tp": 3,
@@ -21,6 +21,14 @@
       "recall": 1.0
     },
     "IR-IMPORT-RESOLUTION": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-MCP-REGISTRY": {
       "tp": 2,
       "fp": 0,
       "tn": 1,
@@ -196,6 +204,33 @@
       "check_id": "IR-APPROVAL-CONTROL",
       "expected": false,
       "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-registry-control-local",
+      "check_id": "IR-MCP-REGISTRY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-caller-mapping-not-registry-local",
+      "check_id": "IR-MCP-REGISTRY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-python-sdk-registry-control-real",
+      "check_id": "IR-MCP-REGISTRY",
+      "expected": true,
+      "observed": true,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

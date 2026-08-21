@@ -189,6 +189,8 @@ class PythonVisitor(ast.NodeVisitor):
         self.active_audit_controls: list[Evidence] = []
         self.http_client_names: set[str] = set()
         self.allowlisted_names: set[str] = set()
+        self.allowlist_evidence: dict[str, Evidence] = {}
+        self.allowlist_control_names: dict[str, str] = {}
         self.approval_environment_flags: dict[str, set[str]] = {}
         self.module_approval_environment_flags: dict[str, set[str]] = {}
         self.class_approval_environment_flags: list[dict[str, set[str]]] = []
@@ -402,9 +404,13 @@ class PythonVisitor(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         previous_allowlisted_names = self.allowlisted_names
+        previous_allowlist_evidence = self.allowlist_evidence
+        previous_allowlist_control_names = self.allowlist_control_names
         previous_http_client_names = self.http_client_names
         previous_approval_environment_flags = self.approval_environment_flags
         self.allowlisted_names = set()
+        self.allowlist_evidence = {}
+        self.allowlist_control_names = {}
         self.http_client_names = set()
         if self.function_depth == 0:
             self.approval_environment_flags = self.module_approval_environment_flags.copy()
@@ -464,6 +470,8 @@ class PythonVisitor(ast.NodeVisitor):
         else:
             self.visit_function_statements(node)
         self.allowlisted_names = previous_allowlisted_names
+        self.allowlist_evidence = previous_allowlist_evidence
+        self.allowlist_control_names = previous_allowlist_control_names
         self.http_client_names = previous_http_client_names
         self.function_depth -= 1
         self.function_stack.pop()
@@ -511,6 +519,12 @@ class PythonVisitor(ast.NodeVisitor):
             self.visit(statement)
             if guarded_name := self.rejected_allowlist_name(statement):
                 self.allowlisted_names.add(guarded_name)
+                self.allowlist_evidence[guarded_name] = self.ev(statement)
+                self.allowlist_control_names[guarded_name] = "tool-allowlist"
+            for guarded_name in self.registry_guarded_tool_names(statement):
+                self.allowlisted_names.add(guarded_name)
+                self.allowlist_evidence[guarded_name] = self.ev(statement)
+                self.allowlist_control_names[guarded_name] = "tool-registry"
 
     def visit_With(self, node: ast.With | ast.AsyncWith) -> None:
         trace_calls = [
@@ -585,6 +599,31 @@ class PythonVisitor(ast.NodeVisitor):
         ):
             return comparison.left.id
         return None
+
+    @staticmethod
+    def registry_guarded_tool_names(statement: ast.stmt) -> set[str]:
+        """Names proven to exist by an uncaught internal tool-registry lookup."""
+        if not isinstance(statement, ast.Assign):
+            return set()
+        guarded: set[str] = set()
+        for candidate in ast.walk(statement.value):
+            if not isinstance(candidate, ast.Subscript) or not isinstance(
+                candidate.slice, ast.Name
+            ):
+                continue
+            registry_name = dotted_name(candidate.value)
+            if not registry_name.startswith("self.") or "tool" not in registry_name.lower():
+                continue
+            guarded.add(candidate.slice.id)
+            if (
+                isinstance(statement.value, ast.Attribute)
+                and statement.value.value is candidate
+                and statement.value.attr in {"name", "tool_name"}
+            ):
+                guarded.update(
+                    target.id for target in statement.targets if isinstance(target, ast.Name)
+                )
+        return guarded
 
     def visit_Call(self, node: ast.Call) -> None:
         call_name = dotted_name(node.func)
@@ -842,17 +881,26 @@ class PythonVisitor(ast.NodeVisitor):
                 elif keyword.arg in {"arguments", "params"}:
                     arguments = keyword.value
             if tool_name is not None and not isinstance(tool_name, ast.Constant):
-                allowlist_guard = (
-                    isinstance(tool_name, ast.Name) and tool_name.id in self.allowlisted_names
-                )
+                guarded_name = tool_name.id if isinstance(tool_name, ast.Name) else ""
+                resolved_guard = guarded_name in self.allowlisted_names
+                guard_control = self.allowlist_control_names.get(guarded_name, "tool-allowlist")
+                guard_evidence = self.allowlist_evidence.get(guarded_name)
+                allowlist_guard = resolved_guard and guard_control == "tool-allowlist"
+                registry_guard = resolved_guard and guard_control == "tool-registry"
                 attributes = {
                     "api": call_name,
                     "dynamic_tool_name": True,
                     "dynamic_arguments": arguments is not None
                     and not isinstance(arguments, ast.Dict),
                     "allowlist_guard": allowlist_guard,
+                    "registry_guard": registry_guard,
                     "scope": source_scope(self.path),
                 }
+                if resolved_guard:
+                    attributes["guard_control"] = guard_control
+                    if guard_evidence:
+                        attributes["guard_path"] = guard_evidence.path
+                        attributes["guard_line"] = guard_evidence.line
                 self.ir.add_component(
                     Component("capability", "mcp-tool-forwarding", self.ev(node), attributes)
                 )
@@ -868,16 +916,36 @@ class PythonVisitor(ast.NodeVisitor):
                             source_id=self.current_tool_id,
                         )
                     )
-                if allowlist_guard:
-                    self.ir.add_component(Component("control", "tool-allowlist", self.ev(node)))
+                if resolved_guard:
+                    policy_effect = (
+                        "routing-only"
+                        if guard_control == "tool-registry"
+                        else "restricts-tool-name"
+                    )
+                    self.ir.add_component(
+                        Component(
+                            "control",
+                            guard_control,
+                            guard_evidence or self.ev(node),
+                            {
+                                "scope": source_scope(self.path),
+                                "policy_effect": policy_effect,
+                            },
+                        )
+                    )
                     self.ir.add_relationship(
                         Relationship(
                             "capability",
                             "mcp-tool-forwarding",
                             "governed-by",
                             "control",
-                            "tool-allowlist",
+                            guard_control,
                             self.ev(node),
+                            {
+                                "control_path": (guard_evidence or self.ev(node)).path,
+                                "control_line": (guard_evidence or self.ev(node)).line,
+                                "policy_effect": policy_effect,
+                            },
                         )
                     )
         if call_name in {

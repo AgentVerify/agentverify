@@ -314,8 +314,14 @@ def test_dynamic_mcp_forwarding_but_not_fixed_tool_call() -> None:
         for item in ir.components
         if item.kind == "capability" and item.name == "mcp-tool-forwarding"
     ]
-    assert len(forwarding) == 3
-    assert [finding.rule_id for finding in ir.findings] == ["AV-MCP002", "AV-MCP002"]
+    assert len(forwarding) == 6
+    assert [finding.rule_id for finding in ir.findings] == [
+        "AV-MCP002",
+        "AV-MCP002",
+        "AV-MCP002",
+        "AV-MCP002",
+        "AV-MCP002",
+    ]
     assert ir.findings[0].result_kind == "review"
     guarded = next(item for item in forwarding if item.attributes["allowlist_guard"])
     assert guarded.evidence.line == 18
@@ -327,6 +333,41 @@ def test_dynamic_mcp_forwarding_but_not_fixed_tool_call() -> None:
     )
     late = next(item for item in forwarding if item.evidence.line == 22)
     assert late.attributes["allowlist_guard"] is False
+    registry_guarded = next(item for item in forwarding if item.evidence.line == 36)
+    assert registry_guarded.attributes == {
+        "api": "session.call_tool",
+        "dynamic_tool_name": True,
+        "dynamic_arguments": True,
+        "allowlist_guard": False,
+        "registry_guard": True,
+        "scope": "production",
+        "guard_control": "tool-registry",
+        "guard_path": "proxy.py",
+        "guard_line": 35,
+    }
+    registry_edge = next(
+        item
+        for item in ir.relationships
+        if item.evidence.line == 36 and item.target_name == "tool-registry"
+    )
+    assert registry_edge.attributes == {
+        "control_path": "proxy.py",
+        "control_line": 35,
+        "policy_effect": "routing-only",
+    }
+    registry_finding = next(item for item in ir.findings if item.evidence.line == 36)
+    assert registry_finding.analysis["governing_controls"] == ["tool-registry"]
+    assert registry_finding.analysis["governing_control_effects"] == {
+        "tool-registry": ["routing-only"]
+    }
+    assert (
+        next(item for item in forwarding if item.evidence.line == 41).attributes["allowlist_guard"]
+        is False
+    )
+    assert (
+        next(item for item in forwarding if item.evidence.line == 49).attributes["allowlist_guard"]
+        is False
+    )
 
 
 def test_browser_and_external_action_capabilities_are_linked() -> None:

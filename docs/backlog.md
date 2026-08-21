@@ -16,9 +16,9 @@ Preserve unresolved state for ambiguity and validate on larger real monoreposito
 
 Resolve environment defaults, config objects, CLI flags, MCP allowlists, tool policies, and approval
 overrides into control edges. Suppress `AV-MCP002` and `AV-FS001` only when the resolved policy governs
-the exact reachable path. Same-function MCP rejection guards are statement-ordered, so later checks
-cannot govern earlier calls. Next resolve branch-local guards and imported policy objects. Keep
-unresolved distinct from absent.
+the exact reachable path. Same-function MCP rejection guards and uncaught internal tool-registry
+lookups are statement-ordered, so later checks cannot govern earlier calls. Next resolve positive
+branch-local guards and imported policy objects. Keep unresolved distinct from absent.
 
 ## P0 — approval coverage rule
 
@@ -45,7 +45,7 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 147 pinned positive/negative locations, with 18 separately
+The curated regression set has reached 151 pinned positive/negative locations, with 21 separately
 scored IR relationship labels. Schema-v3 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery

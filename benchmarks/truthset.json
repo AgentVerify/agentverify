@@ -100,6 +100,10 @@
     {"id":"mcp-pydantic-ai-real","target":{"kind":"repository","repository":"pydantic/pydantic-ai","commit":"5e59fef14bd5abc86c4cfab1480c4f380542acfe"},"rule_id":"AV-MCP002","path":"pydantic_ai_slim/pydantic_ai/mcp.py","line":1361,"expected":true},
     {"id":"mcp-agentscope-real","target":{"kind":"repository","repository":"agentscope-ai/agentscope","commit":"ad4d2839e8ad57b6b9dffa7b583be7bee33009fb"},"rule_id":"AV-MCP002","path":"src/agentscope/tool/_adapters.py","line":330,"expected":true},
     {"id":"mcp-skyvern-real","target":{"kind":"repository","repository":"Skyvern-AI/skyvern","commit":"486c8975e9864a53037d4701b781f8619e698c40"},"rule_id":"AV-MCP002","path":"skyvern/forge/sdk/copilot/mcp_adapter.py","line":997,"expected":true},
+    {"id":"mcp-registry-routed-local-positive","target":{"kind":"local","path":"cases/mcp_forwarder"},"rule_id":"AV-MCP002","path":"proxy.py","line":36,"expected":true},
+    {"id":"mcp-caller-mapping-local-positive","target":{"kind":"local","path":"cases/mcp_forwarder"},"rule_id":"AV-MCP002","path":"proxy.py","line":41,"expected":true},
+    {"id":"mcp-late-registry-local-positive","target":{"kind":"local","path":"cases/mcp_forwarder"},"rule_id":"AV-MCP002","path":"proxy.py","line":49,"expected":true},
+    {"id":"mcp-python-sdk-registry-real-positive","target":{"kind":"repository","repository":"modelcontextprotocol/python-sdk","commit":"57394b0548d1e2dc2dce8d67d84985769df3b8bb"},"rule_id":"AV-MCP002","path":"src/mcp/client/session_group.py","line":241,"expected":true},
 
     {"id":"filesystem-dynamic-positive","target":{"kind":"local","path":"cases/filesystem_scope"},"rule_id":"AV-FS001","path":"agent.py","line":6,"expected":true},
     {"id":"filesystem-fixed-negative","target":{"kind":"local","path":"cases/filesystem_scope"},"rule_id":"AV-FS001","path":"agent.py","line":12,"expected":false,"anchor":{"kind":"capability","name":"filesystem"}},

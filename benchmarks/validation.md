@@ -36,7 +36,7 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-21 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,594 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,353 relationships, and completed in 29.59 seconds on the development machine. Three parse warnings were isolated and
+resolved 1,354 relationships, and completed in 36.75 seconds on the development machine. Three parse warnings were isolated and
 reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -48,7 +48,7 @@ framework/provider/protocol/capability coverage and unsupported syntax are publi
 `docs/frontend-coverage.md`; presence counts are discovery observations, not recall measurements.
 
 The benchmark now also measures identity coverage: 8,204 agent/tool component observations carry
-module-qualified IDs. Of 2,706 relationship endpoints, 1,887 carry symbol IDs and 1,885 resolve to an
+module-qualified IDs. Of 2,708 relationship endpoints, 1,887 carry symbol IDs and 1,885 resolve to an
 observed component (1,651 Python and 234 TypeScript). The two unmatched IDs are explicit Python
 re-export targets; capability, control, and taxonomy endpoints intentionally remain evidence
 observations without source-symbol IDs.
@@ -169,6 +169,16 @@ It resolves
 and suppresses CAMEL's [registered-tool guard](https://github.com/camel-ai/camel/blob/473388d36390b22e0df31e25b7b2d50db55310d2/camel/utils/mcp_client.py#L1054)
 before the dynamic call, while retaining the forwarding capability and a `tool-allowlist` control edge.
 
+The resolver also recognizes an uncaught, statement-ordered lookup through an internal `self.*tool*`
+registry. The MCP Python SDK's
+[`SessionGroup.call_tool`](https://github.com/modelcontextprotocol/python-sdk/blob/57394b0548d1e2dc2dce8d67d84985769df3b8bb/src/mcp/client/session_group.py#L239-L241)
+indexes both the tool-to-session map and the registered tool map before forwarding. An unknown name
+therefore raises before the call. AgentVerify attaches a `tool-registry` edge with the lookup
+location and explicitly marks its policy effect as `routing-only`. The review remains because this
+registry aggregates every server-advertised tool and is not an authorization allowlist. A
+caller-owned mapping, a lookup after the call, or a lookup hidden inside a caught fallback does not
+qualify even as routing coverage.
+
 ## AV-FS001 — dynamic writable tool path
 
 The rule requires a writable dynamic path inside a resolved tool; ordinary application writes and
@@ -203,12 +213,12 @@ and a literal `privileged=True` keyword.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 147 exact labels across all seven enabled rules: 83 positives and 64
+`benchmarks/truthset.json` contains 151 exact labels across all seven enabled rules: 87 positives and 64
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
-Compose/Kubernetes/Docker SDK settings. All 147 currently pass; each rule's seed precision and recall
+Compose/Kubernetes/Docker SDK settings. All 151 currently pass; each rule's seed precision and recall
 are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified source
 text at the exact pinned line, preventing a missing or drifting location from passing silently.
 
@@ -227,7 +237,8 @@ configuration and durable storage remain unresolved, so this inventory edge does
 finding or enable `AV-AUDIT001`. The full corpus scan observed seven action-trace controls and five
 lexically governed HTTP capability edges, all in that ArcadeAI telemetry example.
 
-Three import labels cover a resolved relative fixture, a missing-module negative, and the pinned
+Three MCP registry labels cover the local control edge, a caller-owned-map negative, and the pinned
+SDK SessionGroup edge. Three import labels cover a resolved relative fixture, a missing-module negative, and the pinned
 CrewAI-LangGraph draft-tool edge. Seven approval labels cover enabled, disabled, callback, and
 automatic-handler policies plus pinned Python and TypeScript OpenAI shell edges. Four TypeScript graph
 labels cover inline and assigned agent adapters, the Cline tool path, and a nested-token negative. All
