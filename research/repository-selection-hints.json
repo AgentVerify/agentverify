@@ -30,6 +30,8 @@
     "google/adk-js": [
       "core/src/tools/load_web_page.ts",
       "core/src/tools/function_tool.ts",
+      "core/src/tools/openapi_tool/auth/auth_helpers.ts",
+      "core/src/tools/openapi_tool/openapi_spec_parser/openapi_spec_parser.ts",
       "core/src/a2a/a2a_remote_agent.ts",
       "core/src/a2a/agent_card.ts"
     ],

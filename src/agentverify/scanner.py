@@ -12382,6 +12382,274 @@ def add_typescript_composio_cli_file_upload_flow(
     )
 
 
+def add_typescript_google_adk_openapi_rest_tool_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve ADK OpenAPI tools while keeping model input off the request origin."""
+    sources: list[tuple[str, str, str]] = []
+    for path in paths:
+        if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+            continue
+        try:
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        sources.append(
+            (path.relative_to(root).as_posix(), text, typescript_code_mask(text))
+        )
+
+    def unique_source(*markers: str) -> tuple[str, str, str] | None:
+        matches = [item for item in sources if all(marker in item[2] for marker in markers)]
+        return matches[0] if len(matches) == 1 else None
+
+    rest_source = unique_source(
+        "export class RestApiTool extends BaseTool",
+        "const args = request.args",
+        "prepareRequestParams(",
+        "this.endpoint",
+        "const url = applyCredential(",
+        "globalThis.fetch(url",
+        "function encodePathParamValue(",
+        "return encodeURIComponent(value)",
+        "export function prepareRequestParams(",
+        "Object.entries(args)",
+        "if (location ===",
+        "pathParams[originalName] = encodePathParamValue(",
+        "endpoint.path.replace(",
+        "Object.hasOwn(pathParams, name) ? pathParams[name] : placeholder",
+        "let url =",
+        "export function createRestApiTool(",
+        "return new RestApiTool(",
+    )
+    parser_source = unique_source(
+        "export interface OperationEndpoint",
+        "function resolveServerUrl(",
+        "return server.url.replace(",
+        "variable?.default || variable?.enum?.[0]",
+        "export class OpenApiSpecParser",
+        "const baseUrl = server ? resolveServerUrl(server) :",
+        "endpoint: {baseUrl, path, method}",
+    )
+    toolset_source = unique_source(
+        "export class OpenAPIToolset extends BaseToolset",
+        "const parser = new OpenApiSpecParser(",
+        "const parsedOperations = parser.parse(spec)",
+        "const tool = createRestApiTool(",
+        "endpoint: op.endpoint",
+        "this.tools.push(tool)",
+        "return this.tools",
+    )
+    auth_source = unique_source(
+        "export function applyCredential(",
+        "if (!credential",
+        "return url",
+        "url +=",
+    )
+    if None in {rest_source, parser_source, toolset_source, auth_source}:
+        return
+    assert rest_source is not None
+    assert parser_source is not None
+    assert toolset_source is not None
+    assert auth_source is not None
+    rest_path, rest_text, rest_code = rest_source
+    parser_path, parser_text, parser_code = parser_source
+    toolset_path, toolset_text, toolset_code = toolset_source
+    auth_path, auth_text, auth_code = auth_source
+    if (
+        not re.search(
+            r"import\s*\{[^}]*\bOperationEndpoint\b[^}]*\}\s*from\s*"
+            r"['\"]\./openapi_spec_parser/openapi_spec_parser\.js['\"]",
+            rest_text,
+        )
+        and not re.search(
+            r"import\s*\{[^}]*\bOperationEndpoint\b[^}]*\}\s*from\s*"
+            r"['\"]\./openapi_spec_parser\.js['\"]",
+            rest_text,
+        )
+    ):
+        return
+    if (
+        not re.search(
+            r"import\s*\{[^}]*\bapplyCredential\b[^}]*\}\s*from\s*"
+            r"['\"]\./auth/auth_helpers\.js['\"]",
+            rest_text,
+        )
+        and not re.search(
+            r"import\s*\{[^}]*\bapplyCredential\b[^}]*\}\s*from\s*"
+            r"['\"]\./auth_helpers\.js['\"]",
+            rest_text,
+        )
+    ):
+        return
+    if not (
+        re.search(
+            r"import\s*\{[^}]*\bOpenApiSpecParser\b[^}]*\}\s*from\s*"
+            r"['\"]\./openapi_spec_parser/openapi_spec_parser\.js['\"]",
+            toolset_text,
+        )
+        and re.search(
+            r"import\s*\{[^}]*\bcreateRestApiTool\b[^}]*\bRestApiTool\b[^}]*\}\s*"
+            r"from\s*['\"]\./rest_api_tool\.js['\"]",
+            toolset_text,
+        )
+    ) and not (
+        re.search(
+            r"import\s*\{[^}]*\bOpenApiSpecParser\b[^}]*\}\s*from\s*"
+            r"['\"]\./openapi_spec_parser\.js['\"]",
+            toolset_text,
+        )
+        and re.search(
+            r"import\s*\{[^}]*\bcreateRestApiTool\b[^}]*\bRestApiTool\b[^}]*\}\s*"
+            r"from\s*['\"]\./rest_api_tool\.js['\"]",
+            toolset_text,
+        )
+    ):
+        return
+    if (
+        re.search(r"\burl\s*=(?!=)", auth_code)
+        or "return credential" in auth_code
+        or not re.search(
+            r"url\s*\+=\s*`\$\{separator\}[^`]*\$\{encodeURIComponent\(credential\.apiKey\)\}`",
+            auth_text,
+        )
+        or not re.search(
+            r"let\s+url\s*=\s*`\$\{endpoint\.baseUrl\}\$\{resolvedPath\}`",
+            rest_text,
+        )
+        or not re.search(
+            r"if\s*\(\s*location\s*===\s*['\"]path['\"]\s*\)\s*\{\s*"
+            r"pathParams\[originalName\]\s*=\s*encodePathParamValue\s*\(",
+            rest_text,
+        )
+        or not re.search(
+            r"if\s*\(\s*value\s*===\s*['\"]\.['\"]\s*\|\|\s*"
+            r"value\s*===\s*['\"]\.\.['\"]\s*\)",
+            rest_text,
+        )
+    ):
+        return
+    fetch_matches = list(
+        re.finditer(r"\bglobalThis\.fetch\s*\(\s*url\b", rest_code)
+    )
+    run_match = re.search(
+        r"(?:override\s+)?async\s+runAsync\s*\(\s*request\b", rest_code
+    )
+    encode_match = re.search(r"function\s+encodePathParamValue\s*\(", rest_code)
+    parser_match = re.search(r"function\s+resolveServerUrl\s*\(", parser_code)
+    toolset_match = re.search(r"export\s+class\s+OpenAPIToolset\b", toolset_code)
+    if (
+        len(fetch_matches) != 1
+        or run_match is None
+        or encode_match is None
+        or parser_match is None
+        or toolset_match is None
+    ):
+        return
+    fetch_match = fetch_matches[0]
+    fetch_line = line_at(rest_text, fetch_match.start())
+    run_line = line_at(rest_text, run_match.start())
+    encode_line = line_at(rest_text, encode_match.start())
+    parser_line = line_at(parser_text, parser_match.start())
+    toolset_line = line_at(toolset_text, toolset_match.start())
+    capability_evidence = Evidence(
+        rest_path,
+        fetch_line,
+        excerpt(rest_text.splitlines(), fetch_line),
+    )
+    control_evidence = Evidence(
+        rest_path,
+        encode_line,
+        excerpt(rest_text.splitlines(), encode_line),
+    )
+    tool_name = "Google ADK RestApiTool.runAsync"
+    tool_id = source_symbol("ts", rest_path, "tool", "RestApiTool.runAsync")
+    analysis = "typescript-google-adk-openapi-rest-tool"
+    ir.add_component(
+        Component(
+            "tool",
+            tool_name,
+            Evidence(rest_path, run_line, excerpt(rest_text.splitlines(), run_line)),
+            {
+                "scope": source_scope(rest_path),
+                "entrypoint": "runAsync",
+                "factory": "OpenAPIToolset",
+                "toolset_path": toolset_path,
+                "toolset_line": toolset_line,
+                "analysis": analysis,
+            },
+            tool_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "capability",
+            "network",
+            capability_evidence,
+            {
+                "scope": source_scope(rest_path),
+                "api": "globalThis.fetch",
+                "dynamic_origin": False,
+                "configured_origin": True,
+                "origin_authority": "openapi-server-configuration",
+                "model_controlled_fields": ["path", "query", "header", "body"],
+                "summary": "google-adk-openapi-rest-tool",
+                "analysis": analysis,
+                "transport_scope": "raw-global-fetch",
+                "destination_policy": "configured-origin-unrestricted",
+                "redirect_scope": "global-fetch-default",
+                "dns_scope": "global-fetch-default",
+                "proxy_scope": "runtime-default",
+            },
+        )
+    )
+    control_attributes = {
+        "scope": source_scope(rest_path),
+        "frontend": "typescript",
+        "analysis": analysis,
+        "policy_effect": "keeps-model-input-off-http-origin",
+        "origin_authority": "openapi-server-configuration",
+        "server_url_scope": "first-openapi-server",
+        "server_variable_scope": "declared-default-or-enum",
+        "model_path_scope": "segment-encoded",
+        "dot_segment_policy": "rejected",
+        "credential_url_scope": "query-only",
+        "hostname_scope": "configured-open",
+        "enforcement_default": "enabled",
+        "escape_hatch": "none-on-proven-path",
+        "parser_path": parser_path,
+        "parser_line": parser_line,
+        "auth_path": auth_path,
+    }
+    ir.add_component(
+        Component("control", "network-origin-policy", control_evidence, control_attributes)
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            tool_name,
+            "uses",
+            "capability",
+            "network",
+            capability_evidence,
+            {"analysis": analysis},
+            tool_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "capability",
+            "network",
+            "governed-by",
+            "control",
+            "network-origin-policy",
+            capability_evidence,
+            {"control_path": rest_path, "control_line": encode_line, **control_attributes},
+        )
+    )
+
+
 def add_typescript_a2a_card_endpoint_composition(
     ir: RepositoryIR,
     root: Path,
@@ -12907,6 +13175,7 @@ def scan_repository(
     add_typescript_activepieces_safe_http_composition(ir, root, registry_paths)
     add_typescript_composio_ssrf_safe_fetch_composition(ir, root, registry_paths)
     add_typescript_composio_cli_file_upload_flow(ir, root, registry_paths)
+    add_typescript_google_adk_openapi_rest_tool_flow(ir, root, registry_paths)
     add_typescript_a2a_card_endpoint_composition(ir, root, registry_paths)
     add_python_adk_a2a_card_endpoint_policy(ir, root, registry_paths)
     propagate_python_class_network_helpers(

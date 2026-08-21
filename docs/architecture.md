@@ -185,6 +185,14 @@ URL-versus-local-file split, and final raw `fetch(url)`. The pass replaces that 
 inventory component with a dynamic network capability and a symbolized tool edge, allowing
 `AV-NET001` to report the proven tool-execution-argument origin without generalizing from filenames.
 
+The Google ADK OpenAPI pass models the fixed-origin counterpart. It follows `OpenAPIToolset` through
+`OpenApiSpecParser` and `createRestApiTool` into `RestApiTool.runAsync`, then proves that request
+arguments can affect only encoded path segments, query, headers, and body. The origin remains the
+first spec server after declared-default/enum variable expansion; `applyCredential` may append a
+query credential but cannot replace the URL. The raw global-fetch capability is inventoried with a
+`network-origin-policy` edge and `dynamic_origin: false`. Dynamic server variables, unencoded model
+paths, URL-rewriting credentials, or broken factory imports withhold the proof.
+
 The A2A endpoint-provenance passes model a different authority transition from tool-input SSRF.
 They create an `a2a-rpc` capability at SDK client construction when a network-resolved AgentCard can
 select the later RPC endpoint. The ADK JS proof requires an exact named import of its resolver and a

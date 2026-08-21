@@ -242,6 +242,18 @@ def main() -> int:
             (item.evidence.path, item.evidence.line)
             for item in typescript_composio_cli_upload
         }
+        typescript_google_adk_openapi_rest_tool = [
+            item
+            for item in ir.components
+            if item.kind == "capability"
+            and item.name == "network"
+            and item.attributes.get("analysis")
+            == "typescript-google-adk-openapi-rest-tool"
+        ]
+        typescript_google_adk_openapi_rest_tool_locations = {
+            (item.evidence.path, item.evidence.line)
+            for item in typescript_google_adk_openapi_rest_tool
+        }
         typescript_network_origin_controls = [
             edge
             for edge in ir.relationships
@@ -641,6 +653,38 @@ def main() -> int:
                     for item in typescript_composio_cli_upload
                 ),
             },
+            "typescript_google_adk_openapi_rest_tool": {
+                "capabilities": len(typescript_google_adk_openapi_rest_tool),
+                "configured_origins": sum(
+                    item.attributes.get("configured_origin") is True
+                    and item.attributes.get("dynamic_origin") is False
+                    for item in typescript_google_adk_openapi_rest_tool
+                ),
+                "tool_edges": sum(
+                    edge.source_kind == "tool"
+                    and edge.target_kind == "capability"
+                    and edge.target_name == "network"
+                    and (edge.evidence.path, edge.evidence.line)
+                    in typescript_google_adk_openapi_rest_tool_locations
+                    for edge in ir.relationships
+                ),
+                "origin_policy_edges": sum(
+                    edge.source_kind == "capability"
+                    and edge.source_name == "network"
+                    and edge.relation == "governed-by"
+                    and edge.target_kind == "control"
+                    and edge.target_name == "network-origin-policy"
+                    and edge.attributes.get("analysis")
+                    == "typescript-google-adk-openapi-rest-tool"
+                    for edge in ir.relationships
+                ),
+                "segment_encoded": sum(
+                    edge.attributes.get("model_path_scope") == "segment-encoded"
+                    for edge in ir.relationships
+                    if edge.attributes.get("analysis")
+                    == "typescript-google-adk-openapi-rest-tool"
+                ),
+            },
             "typescript_network_origin_controls": {
                 "total": len(typescript_network_origin_controls),
                 "configured_optional": sum(
@@ -925,7 +969,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 42,
+        "schema_version": 43,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -1135,6 +1179,19 @@ def main() -> int:
                     "capability_edges",
                     "raw_global_fetch",
                     "destination_policy_absent",
+                )
+            },
+            "typescript_google_adk_openapi_rest_tool": {
+                name: sum(
+                    result["typescript_google_adk_openapi_rest_tool"][name]
+                    for result in successful
+                )
+                for name in (
+                    "capabilities",
+                    "configured_origins",
+                    "tool_edges",
+                    "origin_policy_edges",
+                    "segment_encoded",
                 )
             },
             "typescript_network_origin_controls": {

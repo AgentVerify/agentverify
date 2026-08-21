@@ -3231,6 +3231,24 @@
       "target":{"kind":"repository","repository":"composiohq/composio","commit":"38899bdfa02fe10d9df65d230a67f9f5df987420"},
       "check_id":"IR-TS-COMPOSIO-CLI-UPLOAD","path":"ts/packages/cli/src/services/tool-file-uploads.ts","line":146,"expected":true,
       "relationship":{"source_kind":"tool","source_name":"Composio ToolsExecutor.execute","relation":"uses","target_kind":"capability","target_name":"network","attributes":{"analysis":"typescript-composio-cli-file-upload-flow"}}
+    },
+    {
+      "id":"typescript-google-adk-openapi-origin-lock-local",
+      "target":{"kind":"local","path":"cases/typescript_google_adk_openapi_rest_tool"},
+      "check_id":"IR-TS-OPENAPI-ORIGIN-LOCK","path":"rest_api_tool.ts","line":15,"expected":true,
+      "relationship":{"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-policy","attributes":{"analysis":"typescript-google-adk-openapi-rest-tool","model_path_scope":"segment-encoded"}}
+    },
+    {
+      "id":"typescript-google-adk-openapi-origin-lock-raw-local-negative",
+      "target":{"kind":"local","path":"cases/typescript_google_adk_openapi_rest_tool"},
+      "check_id":"IR-TS-OPENAPI-ORIGIN-LOCK","path":"raw.ts","line":1,"expected":false,"source_contains":"globalThis.fetch(url)",
+      "relationship":{"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-policy"}
+    },
+    {
+      "id":"typescript-google-adk-openapi-origin-lock-real",
+      "target":{"kind":"repository","repository":"google/adk-js","commit":"5ee247e677393bfd8751fdd871f2220448807649"},
+      "check_id":"IR-TS-OPENAPI-ORIGIN-LOCK","path":"core/src/tools/openapi_tool/rest_api_tool.ts","line":134,"expected":true,
+      "relationship":{"source_kind":"capability","source_name":"network","relation":"governed-by","target_kind":"control","target_name":"network-origin-policy","attributes":{"analysis":"typescript-google-adk-openapi-rest-tool","model_path_scope":"segment-encoded"}}
     }
   ]
 }

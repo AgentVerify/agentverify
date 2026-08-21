@@ -1,6 +1,6 @@
 {
-  "schema_version": 42,
-  "generated_at": "2026-08-21T17:59:30.582583+00:00",
+  "schema_version": 43,
+  "generated_at": "2026-08-21T18:14:25.350064+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -16,25 +16,25 @@
     "zero_source_repositories": [
       "daytonaio/daytona"
     ],
-    "files_scanned": 10756,
-    "dependency_files_materialized": 161,
-    "repositories_with_dependency_expansion": 17,
+    "files_scanned": 10758,
+    "dependency_files_materialized": 163,
+    "repositories_with_dependency_expansion": 18,
     "config_files_scanned": 155,
-    "relationships": 1486,
-    "symbolized_components": 8745,
-    "identified_symbol_endpoints": 1937,
-    "resolved_symbol_endpoints": 1935,
+    "relationships": 1488,
+    "symbolized_components": 8746,
+    "identified_symbol_endpoints": 1938,
+    "resolved_symbol_endpoints": 1936,
     "unmatched_identified_symbol_endpoints": 2,
     "ambiguous_repeated_binding_targets": 23,
     "resolved_binding_targets_by_basis": {
       "lexical-single-definition": 325,
       "module-single-definition": 14
     },
-    "relationship_endpoints": 2972,
+    "relationship_endpoints": 2976,
     "bom_endpoint_resolutions": {
       "ambiguous": 37,
-      "evidence-location": 482,
-      "symbol-id": 1935,
+      "evidence-location": 485,
+      "symbol-id": 1936,
       "unique-display-name": 19,
       "unresolved": 499
     },
@@ -45,7 +45,7 @@
     },
     "resolved_symbol_endpoints_by_frontend": {
       "py": 1677,
-      "ts": 258
+      "ts": 259
     },
     "typescript_graph": {
       "agent_edges": 95,
@@ -142,8 +142,15 @@
       "raw_global_fetch": 1,
       "destination_policy_absent": 1
     },
+    "typescript_google_adk_openapi_rest_tool": {
+      "capabilities": 1,
+      "configured_origins": 1,
+      "tool_edges": 1,
+      "origin_policy_edges": 1,
+      "segment_encoded": 1
+    },
     "typescript_network_origin_controls": {
-      "total": 1,
+      "total": 2,
       "configured_optional": 1,
       "default_open": 1,
       "dns_unresolved": 1
@@ -299,7 +306,7 @@
         "action-trace": 1,
         "fixed-tool-binding": 6,
         "human-approval": 3,
-        "network-origin-policy": 1,
+        "network-origin-policy": 2,
         "network-ssrf-policy": 7,
         "path-boundary": 4,
         "path-prefix-check": 1,
@@ -448,7 +455,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 151.8678
+    "elapsed_seconds": 156.1479
   },
   "repositories": [
     {
@@ -576,6 +583,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -663,7 +677,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8219
+      "elapsed_seconds": 2.902
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -797,6 +811,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -889,7 +910,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0959
+      "elapsed_seconds": 3.0642
     },
     {
       "repository": "langchain-ai/langchain",
@@ -1020,6 +1041,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1105,7 +1133,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9748
+      "elapsed_seconds": 0.9201
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -1240,6 +1268,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1333,7 +1368,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.9162
+      "elapsed_seconds": 3.9584
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -1473,6 +1508,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1562,7 +1604,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.189
+      "elapsed_seconds": 0.1921
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -1706,6 +1748,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -1808,7 +1857,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.541
+      "elapsed_seconds": 4.5839
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -1954,6 +2003,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2061,7 +2117,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8571
+      "elapsed_seconds": 2.9251
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -2202,6 +2258,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2301,7 +2364,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2699
+      "elapsed_seconds": 0.2611
     },
     {
       "repository": "microsoft/autogen",
@@ -2438,6 +2501,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2532,7 +2602,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6807
+      "elapsed_seconds": 0.6815
     },
     {
       "repository": "microsoft/agent-framework",
@@ -2653,6 +2723,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2738,7 +2815,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0519
+      "elapsed_seconds": 0.0499
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -2873,6 +2950,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -2967,7 +3051,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1093
+      "elapsed_seconds": 0.1081
     },
     {
       "repository": "openai/openai-agents-python",
@@ -3122,6 +3206,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3226,7 +3317,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.1683
+      "elapsed_seconds": 5.2416
     },
     {
       "repository": "openai/openai-agents-js",
@@ -3378,6 +3469,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3469,7 +3567,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9634
+      "elapsed_seconds": 1.0188
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -3610,6 +3708,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3708,7 +3813,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.4885
+      "elapsed_seconds": 11.5353
     },
     {
       "repository": "google/adk-python",
@@ -3848,6 +3953,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -3943,22 +4055,22 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.384
+      "elapsed_seconds": 3.4091
     },
     {
       "repository": "google/adk-js",
       "category": "framework",
       "status": "ok",
-      "files_scanned": 197,
-      "dependency_files_materialized": 0,
+      "files_scanned": 199,
+      "dependency_files_materialized": 2,
       "config_files_scanned": 0,
       "components": {
-        "capability": 73,
-        "control": 1,
+        "capability": 74,
+        "control": 2,
         "mcp": 3,
         "model": 83,
         "protocol": 8,
-        "tool": 1
+        "tool": 2
       },
       "component_names": {
         "capability": [
@@ -3969,6 +4081,7 @@
           "shell-execution"
         ],
         "control": [
+          "network-origin-policy",
           "network-ssrf-policy"
         ],
         "protocol": [
@@ -3976,16 +4089,16 @@
           "MCP"
         ]
       },
-      "relationships": 3,
-      "symbolized_components": 2,
-      "identified_symbol_endpoints": 2,
-      "resolved_symbol_endpoints": 2,
+      "relationships": 5,
+      "symbolized_components": 3,
+      "identified_symbol_endpoints": 3,
+      "resolved_symbol_endpoints": 3,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
         "py": 0,
-        "ts": 2
+        "ts": 3
       },
       "typescript_graph": {
         "agent_edges": 0,
@@ -4078,8 +4191,15 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 1,
+        "configured_origins": 1,
+        "tool_edges": 1,
+        "origin_policy_edges": 1,
+        "segment_encoded": 1
+      },
       "typescript_network_origin_controls": {
-        "total": 0,
+        "total": 1,
         "configured_optional": 0,
         "default_open": 0,
         "dns_unresolved": 0
@@ -4158,8 +4278,8 @@
         "typescript": 0
       },
       "bom_endpoint_resolutions": {
-        "evidence-location": 3,
-        "symbol-id": 2,
+        "evidence-location": 6,
+        "symbol-id": 3,
         "unique-display-name": 1
       },
       "bom_ambiguous_endpoints_by_side_kind": {},
@@ -4170,7 +4290,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4448
+      "elapsed_seconds": 3.6334
     },
     {
       "repository": "huggingface/smolagents",
@@ -4309,6 +4429,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4410,7 +4537,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3073
+      "elapsed_seconds": 1.3128
     },
     {
       "repository": "agno-agi/agno",
@@ -4541,6 +4668,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4636,7 +4770,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3068
+      "elapsed_seconds": 0.3109
     },
     {
       "repository": "camel-ai/camel",
@@ -4777,6 +4911,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -4879,7 +5020,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6722
+      "elapsed_seconds": 2.6945
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -5008,6 +5149,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5096,7 +5244,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1841
+      "elapsed_seconds": 0.1919
     },
     {
       "repository": "run-llama/llama_index",
@@ -5231,6 +5379,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5316,7 +5471,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7529
+      "elapsed_seconds": 0.7547
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -5456,6 +5611,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5558,7 +5720,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4102
+      "elapsed_seconds": 1.4588
     },
     {
       "repository": "InternLM/lagent",
@@ -5697,6 +5859,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -5795,7 +5964,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6388
+      "elapsed_seconds": 0.6569
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -5927,6 +6096,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6027,7 +6203,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1603
+      "elapsed_seconds": 1.1036
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -6164,6 +6340,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6266,7 +6449,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5314
+      "elapsed_seconds": 1.5815
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -6399,6 +6582,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6498,7 +6688,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9719
+      "elapsed_seconds": 0.9621
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -6634,6 +6824,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6729,7 +6926,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0974
+      "elapsed_seconds": 3.229
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -6860,6 +7057,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -6954,7 +7158,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2819
+      "elapsed_seconds": 1.3103
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -7087,6 +7291,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7172,7 +7383,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9238
+      "elapsed_seconds": 0.9535
     },
     {
       "repository": "letta-ai/letta-code",
@@ -7299,6 +7510,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7384,7 +7602,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.5157
+      "elapsed_seconds": 4.6888
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -7524,6 +7742,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7623,7 +7848,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9722
+      "elapsed_seconds": 0.957
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -7755,6 +7980,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -7855,7 +8087,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0194
+      "elapsed_seconds": 1.9704
     },
     {
       "repository": "mastra-ai/mastra",
@@ -7993,6 +8225,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8084,7 +8323,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.5878
+      "elapsed_seconds": 2.6918
     },
     {
       "repository": "vercel/ai",
@@ -8217,6 +8456,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8307,7 +8553,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8304
+      "elapsed_seconds": 2.9207
     },
     {
       "repository": "cline/cline",
@@ -8444,6 +8690,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8535,7 +8788,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.8451
+      "elapsed_seconds": 4.0832
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -8665,6 +8918,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8750,7 +9010,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.1785
+      "elapsed_seconds": 4.395
     },
     {
       "repository": "continuedev/continue",
@@ -8878,6 +9138,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -8963,7 +9230,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6213
+      "elapsed_seconds": 2.7174
     },
     {
       "repository": "Aider-AI/aider",
@@ -9090,6 +9357,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9190,7 +9464,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.5718
+      "elapsed_seconds": 2.5603
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -9316,6 +9590,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9409,7 +9690,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 0.7808
+      "elapsed_seconds": 0.7984
     },
     {
       "repository": "plandex-ai/plandex",
@@ -9522,6 +9803,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9607,7 +9895,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0432
+      "elapsed_seconds": 0.0477
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -9734,6 +10022,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -9825,7 +10120,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1914
+      "elapsed_seconds": 1.1855
     },
     {
       "repository": "stitionai/devika",
@@ -9957,6 +10252,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10046,7 +10348,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3128
+      "elapsed_seconds": 0.3222
     },
     {
       "repository": "block/goose",
@@ -10174,6 +10476,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10268,7 +10577,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 5.535
+      "elapsed_seconds": 6.0782
     },
     {
       "repository": "bytedance/trae-agent",
@@ -10409,6 +10718,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10511,7 +10827,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.632
+      "elapsed_seconds": 0.6457
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -10642,6 +10958,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10733,7 +11056,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.2276
+      "elapsed_seconds": 6.5094
     },
     {
       "repository": "openai/codex",
@@ -10853,6 +11176,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -10944,7 +11274,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5868
+      "elapsed_seconds": 0.5996
     },
     {
       "repository": "browser-use/browser-use",
@@ -11087,6 +11417,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11190,7 +11527,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.326
+      "elapsed_seconds": 3.4063
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -11339,6 +11676,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11440,7 +11784,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.455
+      "elapsed_seconds": 6.7686
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -11575,6 +11919,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11671,7 +12022,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7301
+      "elapsed_seconds": 0.7298
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -11801,6 +12152,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -11888,7 +12246,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3499
+      "elapsed_seconds": 1.4001
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -12021,6 +12379,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 1,
         "configured_optional": 1,
@@ -12116,7 +12481,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.313
+      "elapsed_seconds": 1.3697
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -12256,6 +12621,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12350,7 +12722,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9934
+      "elapsed_seconds": 2.037
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -12483,6 +12855,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12573,7 +12952,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.99
+      "elapsed_seconds": 4.1258
     },
     {
       "repository": "github/github-mcp-server",
@@ -12696,6 +13075,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12781,7 +13167,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0481
+      "elapsed_seconds": 0.0497
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -12905,6 +13291,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -12990,7 +13383,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1134
+      "elapsed_seconds": 0.1188
     },
     {
       "repository": "awslabs/mcp",
@@ -13121,6 +13514,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13214,7 +13614,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.845
+      "elapsed_seconds": 1.8132
     },
     {
       "repository": "docker/mcp-gateway",
@@ -13338,6 +13738,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13425,7 +13832,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0344
+      "elapsed_seconds": 0.0368
     },
     {
       "repository": "jlowin/fastmcp",
@@ -13557,6 +13964,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13654,7 +14068,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1404
+      "elapsed_seconds": 2.1548
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -13767,6 +14181,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -13852,7 +14273,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0321
+      "elapsed_seconds": 0.0347
     },
     {
       "repository": "langflow-ai/langflow",
@@ -13993,6 +14414,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14086,7 +14514,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9038
+      "elapsed_seconds": 3.0389
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -14217,6 +14645,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14310,7 +14745,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.7522
+      "elapsed_seconds": 3.9788
     },
     {
       "repository": "langgenius/dify",
@@ -14426,6 +14861,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14511,7 +14953,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4436
+      "elapsed_seconds": 1.4605
     },
     {
       "repository": "n8n-io/n8n",
@@ -14650,6 +15092,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14743,7 +15192,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6607
+      "elapsed_seconds": 2.8108
     },
     {
       "repository": "activepieces/activepieces",
@@ -14885,6 +15334,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -14980,7 +15436,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7242
+      "elapsed_seconds": 1.81
     },
     {
       "repository": "simstudioai/sim",
@@ -15102,6 +15558,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -15187,7 +15650,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.2152
+      "elapsed_seconds": 5.448
     },
     {
       "repository": "composiohq/composio",
@@ -15335,6 +15798,13 @@
         "raw_global_fetch": 1,
         "destination_policy_absent": 1
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -15430,7 +15900,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8021
+      "elapsed_seconds": 1.8727
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -15574,6 +16044,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -15677,7 +16154,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1495
+      "elapsed_seconds": 2.2074
     },
     {
       "repository": "e2b-dev/E2B",
@@ -15798,6 +16275,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -15883,7 +16367,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1027
+      "elapsed_seconds": 2.1677
     },
     {
       "repository": "daytonaio/daytona",
@@ -15996,6 +16480,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -16081,7 +16572,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0002
+      "elapsed_seconds": 0.001
     },
     {
       "repository": "AgentOps-AI/agentops",
@@ -16220,6 +16711,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -16311,7 +16809,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1458
+      "elapsed_seconds": 1.1539
     },
     {
       "repository": "traceloop/openllmetry",
@@ -16455,6 +16953,13 @@
         "raw_global_fetch": 0,
         "destination_policy_absent": 0
       },
+      "typescript_google_adk_openapi_rest_tool": {
+        "capabilities": 0,
+        "configured_origins": 0,
+        "tool_edges": 0,
+        "origin_policy_edges": 0,
+        "segment_encoded": 0
+      },
       "typescript_network_origin_controls": {
         "total": 0,
         "configured_optional": 0,
@@ -16550,7 +17055,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9455
+      "elapsed_seconds": 1.9726
     }
   ]
 }

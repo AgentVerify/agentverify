@@ -339,6 +339,8 @@
     {"id":"net-composio-safe-fetch-local-negative","target":{"kind":"local","path":"cases/typescript_composio_ssrf_safe_fetch"},"rule_id":"AV-NET001","path":"ToolRouterSessionFileMount.ts","line":5,"expected":false,"anchor":{"kind":"capability","name":"network"}},
     {"id":"net-composio-safe-fetch-real-negative","target":{"kind":"repository","repository":"composiohq/composio","commit":"38899bdfa02fe10d9df65d230a67f9f5df987420"},"rule_id":"AV-NET001","path":"ts/packages/core/src/models/ToolRouterSessionFileMount.ts","line":115,"expected":false,"anchor":{"kind":"capability","name":"network"}},
     {"id":"net-composio-cli-upload-local-review","target":{"kind":"local","path":"cases/typescript_composio_cli_upload"},"rule_id":"AV-NET001","path":"tool-file-uploads.ts","line":2,"expected":true},
-    {"id":"net-composio-cli-upload-real-review","target":{"kind":"repository","repository":"composiohq/composio","commit":"38899bdfa02fe10d9df65d230a67f9f5df987420"},"rule_id":"AV-NET001","path":"ts/packages/cli/src/services/tool-file-uploads.ts","line":146,"expected":true}
+    {"id":"net-composio-cli-upload-real-review","target":{"kind":"repository","repository":"composiohq/composio","commit":"38899bdfa02fe10d9df65d230a67f9f5df987420"},"rule_id":"AV-NET001","path":"ts/packages/cli/src/services/tool-file-uploads.ts","line":146,"expected":true},
+    {"id":"net-google-adk-openapi-fixed-origin-local-negative","target":{"kind":"local","path":"cases/typescript_google_adk_openapi_rest_tool"},"rule_id":"AV-NET001","path":"rest_api_tool.ts","line":15,"expected":false,"anchor":{"kind":"capability","name":"network"}},
+    {"id":"net-google-adk-openapi-fixed-origin-real-negative","target":{"kind":"repository","repository":"google/adk-js","commit":"5ee247e677393bfd8751fdd871f2220448807649"},"rule_id":"AV-NET001","path":"core/src/tools/openapi_tool/rest_api_tool.ts","line":134,"expected":false,"anchor":{"kind":"capability","name":"network"}}
   ]
 }

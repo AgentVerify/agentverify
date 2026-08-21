@@ -51,6 +51,10 @@ never imported or executed.
 - `typescript_composio_cli_upload`: Composio's schema-gated tool arguments recursively reach raw
   global fetch for URL file uploads; guarded transport, fixed arguments, broken schema gates, and
   wrong imports withhold the path.
+- `typescript_google_adk_openapi_rest_tool`: Google ADK's generated OpenAPI tool keeps model path,
+  query, header, and body values off the spec-configured origin; segment encoding, dot-segment
+  rejection, server-variable defaults, query-only credential mutation, and factory provenance are
+  required for the control edge.
 - `typescript_a2a_card_endpoint`: ADK JS and Gemini compositions preserve remotely supplied
   AgentCard authority at SDK client construction; fixed/local cards, wrong imports, and unproven
   transports stay negative.

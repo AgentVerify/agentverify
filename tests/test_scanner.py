@@ -2279,6 +2279,95 @@ def test_typescript_composio_cli_upload_resolves_tool_arguments_to_raw_fetch(
         )
 
 
+def test_typescript_google_adk_openapi_tool_keeps_model_input_off_origin(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/typescript_google_adk_openapi_rest_tool"
+    ir = scan_repository(root)
+    edges = [
+        edge
+        for edge in ir.relationships
+        if edge.attributes.get("analysis") == "typescript-google-adk-openapi-rest-tool"
+    ]
+    assert {
+        (edge.source_kind, edge.relation, edge.target_kind, edge.target_name)
+        for edge in edges
+    } == {
+        ("tool", "uses", "capability", "network"),
+        ("capability", "governed-by", "control", "network-origin-policy"),
+    }
+    assert {edge.evidence.line for edge in edges} == {15}
+    capability = next(
+        item
+        for item in ir.components
+        if item.kind == "capability"
+        and item.attributes.get("analysis") == "typescript-google-adk-openapi-rest-tool"
+    )
+    assert capability.attributes["dynamic_origin"] is False
+    assert capability.attributes["configured_origin"] is True
+    assert capability.attributes["origin_authority"] == "openapi-server-configuration"
+    control = next(
+        item
+        for item in ir.components
+        if item.kind == "control"
+        and item.attributes.get("analysis") == "typescript-google-adk-openapi-rest-tool"
+    )
+    assert control.attributes["model_path_scope"] == "segment-encoded"
+    assert control.attributes["dot_segment_policy"] == "rejected"
+    assert control.attributes["credential_url_scope"] == "query-only"
+    assert not any(finding.rule_id == "AV-NET001" for finding in ir.findings)
+
+    for name, relative, before, after in (
+        (
+            "model-controlled-base",
+            "rest_api_tool.ts",
+            "`${endpoint.baseUrl}${resolvedPath}`",
+            "`${args.url}${resolvedPath}`",
+        ),
+        (
+            "unencoded-path",
+            "rest_api_tool.ts",
+            "return encodeURIComponent(value)",
+            "return value",
+        ),
+        (
+            "raw-path-binding",
+            "rest_api_tool.ts",
+            "pathParams[originalName] = encodePathParamValue(originalName, String(argValue))",
+            "pathParams[originalName] = String(argValue)",
+        ),
+        (
+            "dynamic-server-variable",
+            "openapi_spec_parser.ts",
+            "variable?.default || variable?.enum?.[0]",
+            "process.env[name]",
+        ),
+        (
+            "credential-rewrites-url",
+            "auth_helpers.ts",
+            "url += `${separator}key=${encodeURIComponent(credential.apiKey)}`",
+            "url = credential.apiKey",
+        ),
+        (
+            "wrong-tool-factory-import",
+            "openapi_toolset.ts",
+            "from './rest_api_tool.js'",
+            "from './raw.js'",
+        ),
+    ):
+        incomplete = tmp_path / name
+        shutil.copytree(root, incomplete)
+        source_path = incomplete / relative
+        source = source_path.read_text(encoding="utf-8")
+        assert before in source
+        source_path.write_text(source.replace(before, after), encoding="utf-8")
+        incomplete_ir = scan_repository(incomplete)
+        assert not any(
+            edge.attributes.get("analysis") == "typescript-google-adk-openapi-rest-tool"
+            for edge in incomplete_ir.relationships
+        )
+
+
 def test_typescript_a2a_remote_cards_preserve_endpoint_authority_and_transport(
     tmp_path: Path,
 ) -> None:

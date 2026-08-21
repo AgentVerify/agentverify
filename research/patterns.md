@@ -74,6 +74,12 @@ argument object, identify `file_uploadable` values, and fetch URL strings before
 tool. That preprocessing is part of the tool's effective network authority even when the tool's own
 API call uses a fixed origin.
 
+Generated API tools require field-sensitive origin reasoning. An OpenAPI tool can legitimately let
+the model choose path, query, header, and body values while retaining a deployment-controlled server
+origin. That conclusion depends on segment encoding, dot-segment rejection, server-variable source,
+and credential URL behavior; the presence of a variable named `url` at the final fetch is not enough
+to call the origin model-controlled.
+
 ## A2A card → negotiated RPC endpoint
 
 Remote-agent configuration often names an AgentCard location, not the final RPC origin. The card can

@@ -135,7 +135,10 @@ backend that validates every redirect and pins an Undici dispatcher unless a cal
 is configured. Its edge backend fails closed for caller URL uploads but deliberately leaves three
 `WhereSupported` API-response transfers unguarded. The CLI's separate tool-file pipeline now proves
 an actionable gap: schema-marked `params.arguments` recursively reach raw global fetch for URL file
-inputs, producing the eighteenth AV-NET001 review. Next resolve general imported clients,
+inputs, producing the eighteenth AV-NET001 review. Google ADK's generated OpenAPI tools provide the
+configured-origin counterexample: model path values are segment-encoded with dot segments rejected,
+server variables come only from declared defaults/enums, and credential application changes headers
+or query parameters without replacing the origin. Next resolve general imported clients,
 mutated/interceptor-configured instances, other fetch/Undici dispatchers, and runtime egress controls.
 
 ## P1 — A2A AgentCard endpoint provenance
@@ -159,8 +162,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 332 pinned positive/negative locations, with 249 separately
-scored IR relationship labels. Schema-v42 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 334 pinned positive/negative locations, with 252 separately
+scored IR relationship labels. Schema-v43 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

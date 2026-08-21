@@ -87,6 +87,9 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 - `cases/typescript_composio_cli_upload`: schema-marked tool arguments recursively reach raw fetch
   for URL file inputs; guarded transport, fixed arguments, broken gates, and wrong imports withhold
   the path.
+- `cases/typescript_google_adk_openapi_rest_tool`: generated OpenAPI tools preserve a
+  spec-configured origin while encoding model path segments; dynamic server variables, unencoded
+  paths, credential URL rewrites, and broken factory imports withhold the control.
 - `cases/typescript_a2a_card_endpoint`: two remote-card flows reach `ClientFactory`: ADK JS through
   an import-proven resolver and Gemini through an Undici agent/proxy dispatcher. Fixed cards, fixed
   resolver inputs, wrong imports, and unproven dispatchers withhold the corresponding edge.
@@ -97,8 +100,8 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 ## Full-corpus engine benchmark
 
 The 2026-08-22 default scan covered 70 source-bearing repositories plus one docs-only upstream
-snapshot. It parsed 10,756 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 1,486 relationships, and completed in 151.87 seconds on the development machine. Three parse
+snapshot. It parsed 10,758 selected Python/TypeScript/JavaScript files plus 155 configuration files,
+resolved 1,488 relationships, and completed in 156.15 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -106,13 +109,13 @@ so the benchmark records zero suppressed findings.
 The locked collector prioritizes manifests, production SSRF/URL-safety sources, and then general
 security/agent/tool/MCP sources within the 220-file cap. It adds at most 20 local source files:
 versioned audited evidence hints plus Python imports reached from MCP forwarding or source-proven
-URL-security call sites, all charged against the same cap. This refresh materialized 161 dependency files across 17
+URL-security call sites, all charged against the same cap. This refresh materialized 163 dependency files across 18
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v42 carries both the 161-file total and the
-17-repository coverage.
+dependency count per repository; engine schema v43 carries both the 163-file total and the
+18-repository coverage.
 
-Engine benchmark schema v42 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v43 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It also publishes Python and TypeScript initial-origin control coverage
 plus source-proven Python and TypeScript secure transports, with redirect, DNS, proxy, configured
@@ -121,29 +124,29 @@ excludes arbitrary agent/tool display names from the summary. The resulting
 framework/provider/protocol/capability coverage and unsupported syntax are published in
 `docs/frontend-coverage.md`; presence counts are discovery observations, not recall measurements.
 
-Schema v42 retains A2A endpoint provenance as a separate authority class: four exact client-construction
+Schema v43 retains A2A endpoint provenance as a separate authority class: four exact client-construction
 paths comprise two unconstrained remote-card-selected TypeScript origins and two same-origin-
 constrained ADK Python paths. The guarded paths validate every advertised interface; the Gemini path
 also records its Undici agent/proxy transport. These metrics do not count configured card URLs as
 model-controlled AV-NET001 origins.
 
-Schema v42 also publishes immutable same-file Axios-instance metrics and the sixth TypeScript
+Schema v43 also publishes immutable same-file Axios-instance metrics and the sixth TypeScript
 secure-network composition. The corpus-level generic instance counters are zero; those syntax paths
 are fixture-validated. The selected Activepieces path contributes one imported-client capability and
 one address-filtering control with configured allowlist and environment-proxy residual metrics. Four
 Composio edges separately count configured-route pinning residuals, one edge-runtime fail-closed path,
 and three edge-runtime unguarded fallbacks.
 
-The benchmark now also measures identity coverage: 8,745 agent/tool component observations carry
-module-qualified IDs. Of 2,972 relationship endpoints, 1,937 carry symbol IDs and 1,935 resolve to an
-observed component (1,677 Python and 258 TypeScript). Schema v42 records 325 same-scope and 14
+The benchmark now also measures identity coverage: 8,746 agent/tool component observations carry
+module-qualified IDs. Of 2,976 relationship endpoints, 1,938 carry symbol IDs and 1,936 resolve to an
+observed component (1,677 Python and 259 TypeScript). Schema v43 records 325 same-scope and 14
 module-scope targets resolved from a single direct definition that appears before the Agent
 constructor. It also records 23 repeated-binding targets still withheld because the scope contains
 multiple definitions. The two unmatched IDs are explicit Python re-export targets; capability,
 control, and taxonomy endpoints intentionally remain evidence observations.
 
-Schema-v42 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
-resolves 1,935 endpoints by symbol ID, 482 by exact evidence location, and 19 by a unique display
+Schema-v43 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.1
+resolves 1,936 endpoints by symbol ID, 485 by exact evidence location, and 19 by a unique display
 name; 37 remain ambiguous and 499 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
@@ -661,6 +664,14 @@ engine emits one symbolized tool-to-network edge and one AV-NET001 review at lin
 and one negative IR labels cover local, pinned, and raw paths; guarded-fetch, fixed-argument,
 schema-gate, and wrong-import mutations withhold the edge.
 
+Schema v43 adds Google ADK JS's generated OpenAPI tool as a fixed-origin counterexample. The exact
+toolset/parser/factory chain creates `RestApiTool.runAsync`; model arguments can affect encoded path
+segments, query, headers, and body, while `endpoint.baseUrl` comes from the first spec server.
+Server variables use declared defaults or enums, dot segments are rejected, and credential handling
+only appends query data or headers. The engine emits one symbolized tool-to-network edge and one
+`network-origin-policy` edge at line 134, but no AV-NET001 review. Two positive and one negative IR
+labels plus six incomplete-composition mutations pin the distinction.
+
 Pinned negatives include a [fixed Devpost origin](https://github.com/microsoft/ai-agents-for-beginners/blob/01777b05e8afeba6bf5a6dbe74cc2293372d3693/11-agentic-protocols/code_samples/github-mcp/app.py#L118),
 the MCP SDK's [fixed weather API](https://github.com/modelcontextprotocol/typescript-sdk/blob/3924de99df834302d89f5997a1b64ca268282284/examples/guides/get-started/firstServer.examples.ts#L20-L40),
 Vercel's [literal PDF URL](https://github.com/vercel/ai/blob/f607a129c0298870038b398dbcba57ff041114f6/examples/ai-e2e-next/tool/fetch-pdf-tool.ts#L5-L12),
@@ -697,13 +708,13 @@ and a literal `privileged=True` keyword.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 332 exact labels across all ten enabled rules: 182 positives and 150
+`benchmarks/truthset.json` contains 334 exact labels across all ten enabled rules: 182 positives and 152
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
-Compose/Kubernetes/Docker SDK settings. All 332 currently pass; each rule's seed precision and recall
+Compose/Kubernetes/Docker SDK settings. All 334 currently pass; each rule's seed precision and recall
 are 1.0. Negative labels must retain either an observed Agent IR component anchor or verified source
 text at the exact pinned line, preventing a missing or drifting location from passing silently.
 
@@ -771,7 +782,8 @@ and a trusted local-card negative. Five Axios-instance labels cover four direct/
 edges and one shadowed-client negative. Three Activepieces filtering-client labels cover the local
 and pinned governed paths plus raw Axios. Five Composio conditional-runtime labels cover two local
 and two pinned governed paths plus raw fetch. Three Composio CLI upload labels cover the exact local
-and pinned schema-driven tool-argument flows plus an unrelated raw fetch. All 249 IR
+and pinned schema-driven tool-argument flows plus an unrelated raw fetch. Three Google ADK OpenAPI
+labels cover the local and pinned origin locks plus an unrelated raw global fetch. All 252 IR
 labels pass:
 three approval positives/four negatives,
 two audit positives/two negatives, two import positives/one negative, three TypeScript graph
@@ -794,5 +806,5 @@ provenance positives/one negative, plus two TypeScript
 configurable-composition positives/one negative, plus two Flowise request-object positives/one
 negative, two Flowise `secureFetch` positives/one negative, two Google ADK fetch positives/one
 negative, four Axios-instance positives/one negative, and two Activepieces filtering-client
-positives/one negative, plus four Composio conditional-runtime positives/one negative, and two
-Composio CLI upload positives/one negative.
+positives/one negative, plus four Composio conditional-runtime positives/one negative, two Composio
+CLI upload positives/one negative, and two Google ADK OpenAPI origin-lock positives/one negative.
