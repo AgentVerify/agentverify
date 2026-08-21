@@ -1490,6 +1490,39 @@ def test_python_registry_decorators_are_import_proven_and_entrypoint_scoped() ->
     ]
 
 
+def test_python_imported_network_helpers_require_exact_unrebound_imports() -> None:
+    ir = scan_repository(ROOT / "cases/python_imported_network_helper")
+
+    assert [
+        (
+            item.evidence.line,
+            item.attributes["dynamic_origin"],
+            item.attributes["summary"],
+            item.attributes["helper_path"],
+            item.attributes["helper_network_lines"],
+        )
+        for item in ir.components
+        if item.kind == "capability" and item.name == "network"
+    ] == [
+        (15, True, "imported-function", "pkg/helpers.py", [7]),
+        (16, False, "imported-function", "pkg/helpers.py", [11]),
+        (26, False, "imported-function", "pkg/helpers.py", [7]),
+    ]
+    assert [
+        (edge.source_name, edge.evidence.line)
+        for edge in ir.relationships
+        if edge.target_name == "network"
+    ] == [
+        ("remote_loader", 15),
+        ("remote_loader", 16),
+        ("fixed_loader", 26),
+    ]
+    assert [
+        (finding.rule_id, finding.evidence.path, finding.evidence.line)
+        for finding in ir.findings
+    ] == [("AV-NET001", "pkg/tools.py", 15)]
+
+
 def test_python_filesystem_mutations_resolve_destinations_aliases_and_guards() -> None:
     ir = scan_repository(ROOT / "cases/filesystem_mutations")
 

@@ -155,6 +155,17 @@ def main() -> int:
             and item.name == "code-execution"
             and item.attributes.get("execution_context") == "browser-page"
         ]
+        python_imported_network_helpers = [
+            item
+            for item in ir.components
+            if item.kind == "capability"
+            and item.name == "network"
+            and item.attributes.get("summary") == "imported-function"
+        ]
+        python_imported_network_locations = {
+            (item.evidence.path, item.evidence.line)
+            for item in python_imported_network_helpers
+        }
         typescript_network_helper_capabilities = [
             item
             for item in ir.components
@@ -338,6 +349,26 @@ def main() -> int:
                     for item in python_browser_evaluations
                 ),
             },
+            "python_imported_network_helpers": {
+                "capabilities": len(python_imported_network_helpers),
+                "dynamic_origins": sum(
+                    bool(item.attributes.get("dynamic_origin"))
+                    for item in python_imported_network_helpers
+                ),
+                "helpers": len(
+                    {
+                        (item.attributes.get("helper_path"), item.attributes.get("helper_line"))
+                        for item in python_imported_network_helpers
+                    }
+                ),
+                "capability_edges": sum(
+                    edge.target_kind == "capability"
+                    and edge.target_name == "network"
+                    and (edge.evidence.path, edge.evidence.line)
+                    in python_imported_network_locations
+                    for edge in ir.relationships
+                ),
+            },
             "path_boundary_controls": {
                 "python": len(python_path_boundary_edges),
                 "typescript": len(typescript_path_boundary_edges),
@@ -440,7 +471,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 25,
+        "schema_version": 26,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -565,6 +596,10 @@ def main() -> int:
             "python_browser_evaluate": {
                 name: sum(result["python_browser_evaluate"][name] for result in successful)
                 for name in ("total", "dynamic")
+            },
+            "python_imported_network_helpers": {
+                name: sum(result["python_imported_network_helpers"][name] for result in successful)
+                for name in ("capabilities", "dynamic_origins", "helpers", "capability_edges")
             },
             "path_boundary_controls": {
                 name: sum(result["path_boundary_controls"][name] for result in successful)

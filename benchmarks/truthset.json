@@ -269,6 +269,12 @@
     {"id":"net-qwen-fixed-format-real-negative","target":{"kind":"repository","repository":"QwenLM/Qwen-Agent","commit":"31a4d36d123688581a9e9744427272b33ce940e0"},"rule_id":"AV-NET001","path":"qwen_agent/tools/amap_weather.py","line":63,"expected":false,"anchor":{"kind":"capability","name":"network"}},
     {"id":"fs-registry-memory-open-local-negative","target":{"kind":"local","path":"cases/python_registry_tools"},"rule_id":"AV-FS001","path":"meta.py","line":32,"expected":false,"source_contains":"memory.open(name, \"w\")"},
     {"id":"fs-registry-fixed-path-local-negative","target":{"kind":"local","path":"cases/python_registry_tools"},"rule_id":"AV-FS001","path":"meta.py","line":38,"expected":false,"anchor":{"kind":"capability","name":"filesystem"}},
-    {"id":"fs-metagpt-editor-write-real","target":{"kind":"repository","repository":"FoundationAgents/MetaGPT","commit":"11cdf466d042aece04fc6cfd13b28e1a70341b1f"},"rule_id":"AV-FS001","path":"metagpt/tools/libs/editor.py","line":128,"expected":true}
+    {"id":"fs-metagpt-editor-write-real","target":{"kind":"repository","repository":"FoundationAgents/MetaGPT","commit":"11cdf466d042aece04fc6cfd13b28e1a70341b1f"},"rule_id":"AV-FS001","path":"metagpt/tools/libs/editor.py","line":128,"expected":true},
+    {"id":"net-imported-helper-local-positive","target":{"kind":"local","path":"cases/python_imported_network_helper"},"rule_id":"AV-NET001","path":"pkg/tools.py","line":15,"expected":true},
+    {"id":"net-imported-helper-fixed-origin-negative","target":{"kind":"local","path":"cases/python_imported_network_helper"},"rule_id":"AV-NET001","path":"pkg/tools.py","line":16,"expected":false,"anchor":{"kind":"capability","name":"network"}},
+    {"id":"net-imported-helper-fixed-argument-negative","target":{"kind":"local","path":"cases/python_imported_network_helper"},"rule_id":"AV-NET001","path":"pkg/tools.py","line":26,"expected":false,"anchor":{"kind":"capability","name":"network"}},
+    {"id":"net-qwen-imported-downloader-real","target":{"kind":"repository","repository":"QwenLM/Qwen-Agent","commit":"31a4d36d123688581a9e9744427272b33ce940e0"},"rule_id":"AV-NET001","path":"qwen_agent/tools/simple_doc_parser.py","line":448,"expected":true},
+    {"id":"net-imported-helper-local-rebound-negative","target":{"kind":"local","path":"cases/python_imported_network_helper"},"rule_id":"AV-NET001","path":"pkg/tools.py","line":35,"expected":false,"source_contains":"local_download(url)"},
+    {"id":"net-smolagents-imported-encoder-real","target":{"kind":"repository","repository":"huggingface/smolagents","commit":"e3a5b8994b301983b91c0325546e9dc82eab8cf0"},"rule_id":"AV-NET001","path":"examples/open_deep_research/scripts/visual_qa.py","line":164,"expected":true}
   ]
 }

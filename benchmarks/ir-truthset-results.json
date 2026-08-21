@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T12:12:33.285065+00:00",
-  "labels": 139,
-  "passed": 139,
+  "generated_at": "2026-08-21T12:26:20.028699+00:00",
+  "labels": 149,
+  "passed": 149,
   "metrics": {
     "IR-APPROVAL-CONTROL": {
       "tp": 3,
@@ -80,6 +80,14 @@
       "tp": 12,
       "fp": 0,
       "tn": 7,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-IMPORTED-NETWORK": {
+      "tp": 5,
+      "fp": 0,
+      "tn": 5,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -1411,6 +1419,96 @@
     {
       "id": "python-registry-qwen-fixed-format-real",
       "check_id": "IR-PY-REGISTRY-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-network-dynamic-local",
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-network-fixed-helper-local",
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-network-fixed-argument-local",
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-network-nested-local-negative",
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-network-rebound-alias-local-negative",
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-network-rebound-client-local-negative",
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-network-module-call-local-negative",
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-network-qwen-real",
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-network-local-rebound-negative",
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-network-smolagents-real",
+      "check_id": "IR-PY-IMPORTED-NETWORK",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

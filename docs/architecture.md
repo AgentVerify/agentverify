@@ -77,6 +77,15 @@ consumes only this origin-specific attribute; it does not equate a dynamic path 
 host with a dynamic destination. URL parsing guards, redirects, DNS, proxies, imported/transitive
 helpers, arrow functions, and request-object data flow remain unresolved.
 
+A repository prepass builds bounded Python network summaries for unique top-level free functions in
+selected files. A summary records direct recognized HTTP calls and the formal parameters that can
+control their origins after fixed-prefix discrimination. At a tool call site, only an exact named
+absolute or relative import can apply the summary; positional and keyword arguments map back to the
+controlled formals, and the capability retains the helper path and sink lines. Import state is
+function-local and statement-ordered, so reassignment, deletion, or replacement imports invalidate
+the edge. Module-object calls, reexports, nested/transitive helpers, client instances, helper-local
+aliases, and rebound HTTP clients remain unresolved rather than being inferred by name.
+
 The same Python tool-parameter state distinguishes browser-page code execution from ordinary code
 inventory. In a module importing Playwright, Selenium, or Puppeteer, an attribute
 `.evaluate(...)` call becomes a `code-execution` capability with

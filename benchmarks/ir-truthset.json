@@ -2366,6 +2366,81 @@
       "check_id": "IR-PY-REGISTRY-TOOL",
       "path": "qwen_agent/tools/amap_weather.py", "line": 63, "expected": true,
       "relationship": {"source_kind":"tool","source_name":"amap_weather","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-network-dynamic-local",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "path": "pkg/tools.py", "line": 15, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"remote_loader","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-network-fixed-helper-local",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "path": "pkg/tools.py", "line": 16, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"remote_loader","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-network-fixed-argument-local",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "path": "pkg/tools.py", "line": 26, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"fixed_loader","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-network-nested-local-negative",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "path": "pkg/tools.py", "line": 17, "expected": false,
+      "source_contains": "nested_fetch(url)",
+      "relationship": {"source_kind":"tool","source_name":"remote_loader","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-network-rebound-alias-local-negative",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "path": "pkg/tools.py", "line": 18, "expected": false,
+      "source_contains": "changed_download(url)",
+      "relationship": {"source_kind":"tool","source_name":"remote_loader","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-network-rebound-client-local-negative",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "path": "pkg/tools.py", "line": 19, "expected": false,
+      "source_contains": "rebound_client_fetch(url)",
+      "relationship": {"source_kind":"tool","source_name":"remote_loader","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-network-module-call-local-negative",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "path": "pkg/tools.py", "line": 20, "expected": false,
+      "source_contains": "helpers.fetch_url(url)",
+      "relationship": {"source_kind":"tool","source_name":"remote_loader","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-network-qwen-real",
+      "target": {"kind":"repository","repository":"QwenLM/Qwen-Agent","commit":"31a4d36d123688581a9e9744427272b33ce940e0"},
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "path": "qwen_agent/tools/simple_doc_parser.py", "line": 448, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"simple_doc_parser","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-network-local-rebound-negative",
+      "target": {"kind":"local","path":"cases/python_imported_network_helper"},
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "path": "pkg/tools.py", "line": 35, "expected": false,
+      "source_contains": "local_download(url)",
+      "relationship": {"source_kind":"tool","source_name":"local_rebound_loader","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id": "python-imported-network-smolagents-real",
+      "target": {"kind":"repository","repository":"huggingface/smolagents","commit":"e3a5b8994b301983b91c0325546e9dc82eab8cf0"},
+      "check_id": "IR-PY-IMPORTED-NETWORK",
+      "path": "examples/open_deep_research/scripts/visual_qa.py", "line": 164, "expected": true,
+      "relationship": {"source_kind":"tool","source_name":"visualizer","relation":"uses","target_kind":"capability","target_name":"network"}
     }
   ]
 }

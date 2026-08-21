@@ -253,6 +253,17 @@ class RegistryClassTarget:
     methods: dict[str, RegistryMethodSummary]
 
 
+@dataclass(frozen=True)
+class PythonNetworkHelperSummary:
+    path: str
+    name: str
+    positional_parameters: tuple[str, ...]
+    keyword_only_parameters: tuple[str, ...]
+    controlled_parameters: tuple[str, ...]
+    line: int
+    network_lines: tuple[int, ...]
+
+
 def resolve_python_import_path(
     root: Path,
     current_path: str,
@@ -1713,6 +1724,7 @@ class PythonVisitor(ast.NodeVisitor):
         call_symbol_ids: dict[int, str],
         definition_symbol_ids: dict[int, str],
         registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
+        network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
         registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
         registry_function_tools: dict[int, PythonRegistryTool],
         registry_class_tools: dict[int, PythonRegistryTool],
@@ -1754,6 +1766,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_depth = 0
         self.imported_symbol_paths: dict[str, str] = {}
         self.imported_symbol_names: dict[str, str] = {}
+        self.network_helper_bindings: dict[str, PythonNetworkHelperSummary] = {}
         self.module_paths = module_paths
         self.local_symbol_ids = local_symbol_ids
         self.ambiguous_local_symbols = ambiguous_local_symbols
@@ -1762,6 +1775,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.call_symbol_ids = call_symbol_ids
         self.definition_symbol_ids = definition_symbol_ids
         self.registry_class_exports = registry_class_exports
+        self.network_helper_summaries = network_helper_summaries
         self.registered_tool_functions = registered_tool_functions
         self.registry_function_tools = registry_function_tools
         self.registry_class_tools = registry_class_tools
@@ -1927,10 +1941,18 @@ class PythonVisitor(ast.NodeVisitor):
 
     def visit_Import(self, node: ast.Import) -> None:
         for alias in node.names:
+            if not self.class_stack or self.function_depth > 0:
+                self.network_helper_bindings.pop(
+                    alias.asname or alias.name.split(".", 1)[0], None
+                )
             component_from_import(self.ir, alias.name, self.ev(node))
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
         for alias in node.names:
+            local_name = alias.asname or alias.name
+            helper_import_scope = not self.class_stack or self.function_depth > 0
+            if helper_import_scope:
+                self.network_helper_bindings.pop(local_name, None)
             target = resolve_python_import_path(
                 self.root,
                 self.path,
@@ -1939,9 +1961,12 @@ class PythonVisitor(ast.NodeVisitor):
                 self.module_paths,
             )
             if target:
-                local_name = alias.asname or alias.name
                 self.imported_symbol_paths[local_name] = target
                 self.imported_symbol_names[local_name] = alias.name
+                if helper_import_scope and (
+                    summary := self.network_helper_summaries.get((target, alias.name))
+                ):
+                    self.network_helper_bindings[local_name] = summary
         if node.module == "openai":
             imported = {alias.name for alias in node.names}
             if any(name.startswith("Azure") for name in imported):
@@ -1956,6 +1981,10 @@ class PythonVisitor(ast.NodeVisitor):
             component_from_import(self.ir, node.module or "", self.ev(node))
 
     def visit_Assign(self, node: ast.Assign) -> None:
+        if not self.class_stack or self.function_depth > 0:
+            for target in node.targets:
+                if isinstance(target, ast.Name):
+                    self.network_helper_bindings.pop(target.id, None)
         if self.current_tool:
             dynamic_origin = python_http_origin_is_dynamic(
                 node.value,
@@ -2014,6 +2043,27 @@ class PythonVisitor(ast.NodeVisitor):
                     self.module_approval_environment_flags[name] = environment_names
                 if name.startswith("self.") and self.class_approval_environment_flags:
                     self.class_approval_environment_flags[-1][name] = environment_names
+        self.generic_visit(node)
+
+    def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
+        if (
+            not self.class_stack or self.function_depth > 0
+        ) and isinstance(node.target, ast.Name):
+            self.network_helper_bindings.pop(node.target.id, None)
+        self.generic_visit(node)
+
+    def visit_AugAssign(self, node: ast.AugAssign) -> None:
+        if (
+            not self.class_stack or self.function_depth > 0
+        ) and isinstance(node.target, ast.Name):
+            self.network_helper_bindings.pop(node.target.id, None)
+        self.generic_visit(node)
+
+    def visit_Delete(self, node: ast.Delete) -> None:
+        if not self.class_stack or self.function_depth > 0:
+            for target in node.targets:
+                if isinstance(target, ast.Name):
+                    self.network_helper_bindings.pop(target.id, None)
         self.generic_visit(node)
 
     def visit_If(self, node: ast.If) -> None:
@@ -2084,12 +2134,16 @@ class PythonVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        if not self.class_stack or self.function_depth > 0:
+            self.network_helper_bindings.pop(node.name, None)
         previous_allowlisted_names = self.allowlisted_names
         previous_allowlist_evidence = self.allowlist_evidence
         previous_allowlist_control_names = self.allowlist_control_names
         previous_http_client_names = self.http_client_names
         previous_approval_environment_flags = self.approval_environment_flags
         previous_static_http_prefixes = self.static_http_prefixes
+        previous_network_helper_bindings = self.network_helper_bindings
+        self.network_helper_bindings = dict(self.network_helper_bindings)
         self.allowlisted_names = set()
         self.allowlist_evidence = {}
         self.allowlist_control_names = {}
@@ -2301,10 +2355,13 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_path_constructors.pop()
         self.approval_environment_flags = previous_approval_environment_flags
         self.static_http_prefixes = previous_static_http_prefixes
+        self.network_helper_bindings = previous_network_helper_bindings
 
     visit_AsyncFunctionDef = visit_FunctionDef
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        if not self.class_stack or self.function_depth > 0:
+            self.network_helper_bindings.pop(node.name, None)
         registry_tool = self.registry_class_tools.get(id(node))
         active_registry_tool: tuple[PythonRegistryTool, str] | None = None
         if registry_tool is not None:
@@ -3012,6 +3069,29 @@ class PythonVisitor(ast.NodeVisitor):
                     target.id for target in statement.targets if isinstance(target, ast.Name)
                 )
         return guarded
+
+    def imported_network_helper(
+        self, node: ast.Call
+    ) -> tuple[PythonNetworkHelperSummary, list[ast.AST]] | None:
+        if self.current_tool is None or not isinstance(node.func, ast.Name):
+            return None
+        local_name = node.func.id
+        summary = self.network_helper_bindings.get(local_name)
+        if summary is None:
+            return None
+        arguments: list[ast.AST] = []
+        keywords = {
+            keyword.arg: keyword.value for keyword in node.keywords if keyword.arg is not None
+        }
+        for parameter in summary.controlled_parameters:
+            argument = keywords.get(parameter)
+            if argument is None and parameter in summary.positional_parameters:
+                index = summary.positional_parameters.index(parameter)
+                if index < len(node.args):
+                    argument = node.args[index]
+            if argument is not None:
+                arguments.append(argument)
+        return summary, arguments
 
     def visit_Call(self, node: ast.Call) -> None:
         call_name = dotted_name(node.func)
@@ -3728,6 +3808,27 @@ class PythonVisitor(ast.NodeVisitor):
             )
             if short_name.lower() in {"post", "put", "patch", "delete"}:
                 self.add_capability("external-action", node, {"api": call_name})
+        if helper := self.imported_network_helper(node):
+            summary, arguments = helper
+            self.add_capability(
+                "network",
+                node,
+                {
+                    "api": summary.name,
+                    "dynamic_origin": any(
+                        python_http_origin_is_dynamic(
+                            argument,
+                            self.dynamic_http_origin_names,
+                            self.static_http_prefixes,
+                        )
+                        for argument in arguments
+                    ),
+                    "summary": "imported-function",
+                    "helper_path": summary.path,
+                    "helper_line": summary.line,
+                    "helper_network_lines": list(summary.network_lines),
+                },
+            )
         if self.has_browser_import and short_name in {
             "click",
             "goto",
@@ -3747,6 +3848,7 @@ def scan_python(
     text: str,
     module_paths: dict[str, str],
     registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
+    network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
     registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
 ) -> None:
     relative = path.relative_to(root).as_posix()
@@ -4110,6 +4212,7 @@ def scan_python(
         call_symbol_ids=call_symbol_ids,
         definition_symbol_ids=definition_symbol_ids,
         registry_class_exports=registry_class_exports,
+        network_helper_summaries=network_helper_summaries,
         registered_tool_functions=registered_tool_functions,
         registry_function_tools=registry_function_tools,
         registry_class_tools=registry_class_tools,
@@ -6212,6 +6315,179 @@ def build_python_module_index(root: Path, paths: list[Path]) -> dict[str, str]:
     }
 
 
+def build_python_network_helper_summaries(
+    root: Path,
+    paths: list[Path],
+) -> dict[tuple[str, str], PythonNetworkHelperSummary]:
+    """Index unique top-level functions whose parameters directly control HTTP origins."""
+    summaries: dict[tuple[str, str], PythonNetworkHelperSummary] = {}
+    for path in paths:
+        if (
+            path.is_symlink()
+            or not path.is_file()
+            or path.suffix.lower() != ".py"
+            or set(path.relative_to(root).parts) & SKIP_DIRECTORIES
+        ):
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        if not any(name in text for name in ("requests", "httpx", "aiohttp")):
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", SyntaxWarning)
+                tree = ast.parse(text, filename=relative)
+        except SyntaxError:
+            continue
+        function_counts = Counter(
+            node.name
+            for node in tree.body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        )
+        module_clients = {
+            alias.asname or alias.name.split(".", 1)[0]
+            for node in tree.body
+            if isinstance(node, ast.Import)
+            for alias in node.names
+            if alias.name in {"requests", "httpx", "aiohttp"}
+        }
+        imported_methods = {
+            alias.asname or alias.name
+            for node in tree.body
+            if isinstance(node, ast.ImportFrom)
+            and node.module in {"requests", "httpx", "aiohttp"}
+            for alias in node.names
+            if alias.name.lower() in {"get", "post", "put", "patch", "delete", "request"}
+        }
+        mutated_names = {
+            node.name
+            for node in tree.body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+        } | {
+            target.id
+            for statement in tree.body
+            if isinstance(statement, (ast.Assign, ast.AnnAssign, ast.AugAssign))
+            for target in (
+                statement.targets
+                if isinstance(statement, ast.Assign)
+                else [statement.target]
+            )
+            if isinstance(target, ast.Name)
+        } | {
+            target.id
+            for statement in tree.body
+            if isinstance(statement, ast.Delete)
+            for target in statement.targets
+            if isinstance(target, ast.Name)
+        }
+        module_clients -= mutated_names
+        imported_methods -= mutated_names
+        if not module_clients and not imported_methods:
+            continue
+        assignment_counts = Counter(
+            target.id
+            for statement in tree.body
+            if isinstance(statement, (ast.Assign, ast.AnnAssign))
+            for target in (
+                statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+            )
+            if isinstance(target, ast.Name)
+        )
+        static_prefixes: dict[str, str] = {}
+        for statement in tree.body:
+            if not isinstance(statement, (ast.Assign, ast.AnnAssign)):
+                continue
+            targets = statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+            if len(targets) != 1 or not isinstance(targets[0], ast.Name):
+                continue
+            name = targets[0].id
+            if assignment_counts[name] != 1:
+                continue
+            if prefix := python_static_url_prefix(statement.value, static_prefixes):
+                static_prefixes[name] = prefix
+
+        parent_by_id = {
+            id(child): parent
+            for parent in ast.walk(tree)
+            for child in ast.iter_child_nodes(parent)
+        }
+
+        def enclosing_function(
+            candidate: ast.AST,
+            parents: dict[int, ast.AST] = parent_by_id,
+        ) -> ast.AST | None:
+            parent = parents.get(id(candidate))
+            while parent is not None:
+                if isinstance(parent, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
+                    return parent
+                parent = parents.get(id(parent))
+            return None
+
+        for function in tree.body:
+            if not isinstance(function, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                continue
+            if function_counts[function.name] != 1:
+                continue
+            positional = tuple(
+                argument.arg for argument in (*function.args.posonlyargs, *function.args.args)
+            )
+            keyword_only = tuple(argument.arg for argument in function.args.kwonlyargs)
+            parameters = set(positional) | set(keyword_only)
+            local_bindings = python_function_local_bindings(function)
+            function_clients = module_clients - local_bindings
+            function_methods = imported_methods - local_bindings
+            controlled: set[str] = set()
+            network_lines: list[int] = []
+            for call in ast.walk(function):
+                if not isinstance(call, ast.Call) or enclosing_function(call) is not function:
+                    continue
+                call_name = dotted_name(call.func)
+                root_name = call_name.split(".", 1)[0]
+                short_name = call_name.rsplit(".", 1)[-1].lower()
+                if short_name not in {"get", "post", "put", "patch", "delete", "request"}:
+                    continue
+                if not (
+                    root_name in function_clients
+                    or (isinstance(call.func, ast.Name) and call.func.id in function_methods)
+                ):
+                    continue
+                url_expression: ast.AST | None = None
+                if short_name == "request":
+                    if len(call.args) > 1:
+                        url_expression = call.args[1]
+                elif call.args:
+                    url_expression = call.args[0]
+                for keyword in call.keywords:
+                    if keyword.arg == "url":
+                        url_expression = keyword.value
+                if url_expression is None:
+                    continue
+                network_lines.append(call.lineno)
+                for parameter in parameters:
+                    if python_http_origin_is_dynamic(
+                        url_expression,
+                        {parameter},
+                        static_prefixes,
+                    ):
+                        controlled.add(parameter)
+            if network_lines:
+                summaries[(relative, function.name)] = PythonNetworkHelperSummary(
+                    relative,
+                    function.name,
+                    positional,
+                    keyword_only,
+                    tuple(sorted(controlled)),
+                    function.lineno,
+                    tuple(sorted(network_lines)),
+                )
+    return summaries
+
+
 def build_python_registry_class_exports(
     root: Path,
     paths: list[Path],
@@ -6785,6 +7061,10 @@ def scan_repository(
         registry_paths,
         module_paths,
     )
+    network_helper_summaries = build_python_network_helper_summaries(
+        root,
+        registry_paths,
+    )
     registered_tool_functions = build_python_tool_registrations(
         root,
         registry_paths,
@@ -6841,6 +7121,7 @@ def scan_repository(
                 text,
                 module_paths,
                 registry_class_exports,
+                network_helper_summaries,
                 registered_tool_functions,
             )
         else:

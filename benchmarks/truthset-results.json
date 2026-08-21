@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T12:13:12.782651+00:00",
-  "labels": 262,
-  "passed": 262,
+  "generated_at": "2026-08-21T12:26:59.900887+00:00",
+  "labels": 268,
+  "passed": 268,
   "metrics": {
     "AV-APPROVAL001": {
       "tp": 14,
@@ -61,9 +61,9 @@
       "recall": 1.0
     },
     "AV-NET001": {
-      "tp": 11,
+      "tp": 14,
       "fp": 0,
-      "tn": 14,
+      "tn": 17,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -2430,6 +2430,60 @@
     {
       "id": "fs-metagpt-editor-write-real",
       "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-imported-helper-local-positive",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-imported-helper-fixed-origin-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-imported-helper-fixed-argument-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-qwen-imported-downloader-real",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-imported-helper-local-rebound-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-smolagents-imported-encoder-real",
+      "rule_id": "AV-NET001",
       "expected": true,
       "observed": true,
       "anchor_ok": true,
