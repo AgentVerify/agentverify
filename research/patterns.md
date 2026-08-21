@@ -27,6 +27,11 @@ also commonly bind one discovered tool source per wrapper instance; this removes
 call-parameter selector but does not prove the source object immutable. It is weaker than an
 authorization allowlist and must remain a distinct control effect.
 
+Captured names require escape analysis. A callback returned from a wrapper factory or installed in a
+tool/action registry binds a source across later invocations; a retry closure created and consumed
+inside one public call does not narrow the caller's authority. Lexical nesting is not a control by
+itself.
+
 ## Local versus isolated execution
 
 Code and shell tools run directly, in local containers, or in remote sandboxes. “Sandbox present” is

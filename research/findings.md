@@ -44,6 +44,12 @@ getter accessors—but retains all five reviews because per-instance routing is 
 allowlist and does not constrain the argument map. A mutable local regression prevents class-wide
 name matching from inventing this control.
 
+Five more calls bind a tool source through an escaping callback: three browser-use actions are
+registered and two ArcadeAI wrappers are returned. Equivalent retry closures in the MCP Python SDK
+and FastMCP do not qualify because the public caller still selects the name for each operation.
+Schema v12 therefore reports five instance and five closure fixed-binding edges, without suppressing
+any review.
+
 ## 3. Approval exists, but bypass behavior recurs
 
 Human-approval vocabulary appears in 52 repositories, while auto-approval or skip-confirmation

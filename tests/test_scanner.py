@@ -445,8 +445,10 @@ def test_dynamic_mcp_forwarding_but_not_fixed_tool_call() -> None:
         for item in ir.components
         if item.kind == "capability" and item.name == "mcp-tool-forwarding"
     ]
-    assert len(forwarding) == 8
+    assert len(forwarding) == 10
     assert [finding.rule_id for finding in ir.findings] == [
+        "AV-MCP002",
+        "AV-MCP002",
         "AV-MCP002",
         "AV-MCP002",
         "AV-MCP002",
@@ -525,6 +527,26 @@ def test_dynamic_mcp_forwarding_but_not_fixed_tool_call() -> None:
     assert mutable.attributes["fixed_tool_binding"] is False
     assert not any(
         item.evidence.line == 76 and item.target_name == "fixed-tool-binding"
+        for item in ir.relationships
+    )
+    closure = next(item for item in forwarding if item.evidence.line == 81)
+    assert closure.attributes["fixed_tool_binding"] is True
+    assert closure.attributes["binding_scope"] == "closure"
+    closure_edge = next(
+        item
+        for item in ir.relationships
+        if item.evidence.line == 81 and item.target_name == "fixed-tool-binding"
+    )
+    assert closure_edge.attributes == {
+        "control_path": "proxy.py",
+        "control_line": 79,
+        "binding_scope": "closure",
+        "policy_effect": "binds-tool-source-per-closure",
+    }
+    rebound = next(item for item in forwarding if item.evidence.line == 90)
+    assert rebound.attributes["fixed_tool_binding"] is False
+    assert not any(
+        item.evidence.line == 90 and item.target_name == "fixed-tool-binding"
         for item in ir.relationships
     )
 

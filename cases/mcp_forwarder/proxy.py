@@ -74,3 +74,19 @@ class MutableToolProxy:
 
     async def call(self, arguments: dict):
         return await self.session.call_tool(self._tool.name, arguments)
+
+
+def bind_tool_closure(session: ClientSession, tool):
+    async def call(arguments: dict):
+        return await session.call_tool(tool.name, arguments)
+
+    return call
+
+
+def rebound_tool_closure(session: ClientSession, tool, replacement):
+    tool = replacement
+
+    async def call(arguments: dict):
+        return await session.call_tool(tool.name, arguments)
+
+    return call

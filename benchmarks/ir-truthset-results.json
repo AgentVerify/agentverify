@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T08:18:48.439395+00:00",
-  "labels": 44,
-  "passed": 44,
+  "generated_at": "2026-08-21T08:27:58.883267+00:00",
+  "labels": 48,
+  "passed": 48,
   "metrics": {
     "IR-APPROVAL-CONTROL": {
       "tp": 3,
@@ -24,6 +24,14 @@
       "tp": 2,
       "fp": 0,
       "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-MCP-CLOSURE-BINDING": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 2,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -470,6 +478,42 @@
       "check_id": "IR-MCP-FIXED-BINDING",
       "expected": true,
       "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-fixed-closure-binding-local",
+      "check_id": "IR-MCP-CLOSURE-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-rebound-closure-binding-local-negative",
+      "check_id": "IR-MCP-CLOSURE-BINDING",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-browser-use-registered-closure-real",
+      "check_id": "IR-MCP-CLOSURE-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-python-sdk-retry-closure-negative",
+      "check_id": "IR-MCP-CLOSURE-BINDING",
+      "expected": false,
+      "observed": false,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

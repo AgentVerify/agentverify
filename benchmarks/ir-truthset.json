@@ -831,6 +831,88 @@
           "policy_effect": "binds-tool-source-per-instance"
         }
       }
+    },
+    {
+      "id": "mcp-fixed-closure-binding-local",
+      "target": {"kind": "local", "path": "cases/mcp_forwarder"},
+      "check_id": "IR-MCP-CLOSURE-BINDING",
+      "path": "proxy.py",
+      "line": 81,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "mcp-tool-forwarding",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "fixed-tool-binding",
+        "attributes": {
+          "control_path": "proxy.py",
+          "control_line": 79,
+          "binding_scope": "closure",
+          "policy_effect": "binds-tool-source-per-closure"
+        }
+      }
+    },
+    {
+      "id": "mcp-rebound-closure-binding-local-negative",
+      "target": {"kind": "local", "path": "cases/mcp_forwarder"},
+      "check_id": "IR-MCP-CLOSURE-BINDING",
+      "path": "proxy.py",
+      "line": 90,
+      "expected": false,
+      "source_contains": "call_tool(tool.name",
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "mcp-tool-forwarding",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "fixed-tool-binding"
+      }
+    },
+    {
+      "id": "mcp-browser-use-registered-closure-real",
+      "target": {
+        "kind": "repository",
+        "repository": "browser-use/browser-use",
+        "commit": "85ddbfedf609166b2d2c76c3d80506649fee82a9"
+      },
+      "check_id": "IR-MCP-CLOSURE-BINDING",
+      "path": "browser_use/mcp/client.py",
+      "line": 324,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "mcp-tool-forwarding",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "fixed-tool-binding",
+        "attributes": {
+          "control_path": "browser_use/mcp/client.py",
+          "control_line": 248,
+          "binding_scope": "closure",
+          "policy_effect": "binds-tool-source-per-closure"
+        }
+      }
+    },
+    {
+      "id": "mcp-python-sdk-retry-closure-negative",
+      "target": {
+        "kind": "repository",
+        "repository": "modelcontextprotocol/python-sdk",
+        "commit": "57394b0548d1e2dc2dce8d67d84985769df3b8bb"
+      },
+      "check_id": "IR-MCP-CLOSURE-BINDING",
+      "path": "src/mcp/client/client.py",
+      "line": 804,
+      "expected": false,
+      "source_contains": "return await self.session.call_tool(",
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "mcp-tool-forwarding",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "fixed-tool-binding"
+      }
     }
   ]
 }

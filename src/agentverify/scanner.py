@@ -231,6 +231,8 @@ class PythonVisitor(ast.NodeVisitor):
         self.class_approval_environment_flags: list[dict[str, set[str]]] = []
         self.class_fixed_tool_bindings: list[dict[str, Evidence]] = []
         self.class_fixed_tool_accessors: list[dict[str, Evidence]] = []
+        self.function_fixed_binding_sources: list[dict[str, Evidence]] = []
+        self.function_escaping_children: list[set[str]] = []
         self.function_stack: list[str] = []
         self.function_depth = 0
         self.imported_symbol_paths: dict[str, str] = {}
@@ -488,6 +490,12 @@ class PythonVisitor(ast.NodeVisitor):
             self.approval_environment_flags = self.approval_environment_flags.copy()
         self.function_depth += 1
         self.function_stack.append(node.name)
+        self.function_fixed_binding_sources.append(
+            self.fixed_function_parameter_bindings(node)
+        )
+        self.function_escaping_children.append(
+            self.escaping_nested_function_names(node)
+        )
         decorators = {
             dotted_name(decorator.func)
             if isinstance(decorator, ast.Call)
@@ -562,6 +570,8 @@ class PythonVisitor(ast.NodeVisitor):
         self.http_client_names = previous_http_client_names
         self.function_depth -= 1
         self.function_stack.pop()
+        self.function_fixed_binding_sources.pop()
+        self.function_escaping_children.pop()
         self.approval_environment_flags = previous_approval_environment_flags
 
     visit_AsyncFunctionDef = visit_FunctionDef
@@ -656,21 +666,154 @@ class PythonVisitor(ast.NodeVisitor):
                     accessors[statement.name] = fixed[root]
         return fixed, accessors
 
-    def fixed_tool_binding_evidence(self, expression: ast.AST) -> Evidence | None:
-        """Resolve an MCP name expression fixed once for the current class instance."""
-        if not self.class_fixed_tool_bindings:
-            return None
-        fixed = self.class_fixed_tool_bindings[-1]
-        accessors = self.class_fixed_tool_accessors[-1]
-        if isinstance(expression, ast.Call) and not expression.args and not expression.keywords:
-            accessor = dotted_name(expression.func)
-            if accessor.startswith("self."):
-                return accessors.get(accessor.removeprefix("self."))
+    def fixed_function_parameter_bindings(
+        self, node: ast.FunctionDef | ast.AsyncFunctionDef
+    ) -> dict[str, Evidence]:
+        """Return parameters whose bindings are not mutated in their lexical function."""
+        parameters = {
+            argument.arg: argument
+            for argument in (
+                *node.args.posonlyargs,
+                *node.args.args,
+                *node.args.kwonlyargs,
+            )
+            if argument.arg not in {"self", "cls"}
+        }
+        if node.args.vararg:
+            parameters[node.args.vararg.arg] = node.args.vararg
+        if node.args.kwarg:
+            parameters[node.args.kwarg.arg] = node.args.kwarg
+        mutated: set[str] = set()
+
+        def collect(candidate: ast.AST) -> None:
+            if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                if candidate.name in parameters:
+                    mutated.add(candidate.name)
+                mutated.update(
+                    name
+                    for nested in ast.walk(candidate)
+                    if isinstance(nested, ast.Nonlocal)
+                    for name in nested.names
+                    if name in parameters
+                )
+                return
+            if isinstance(candidate, ast.Lambda):
+                return
+            if (
+                isinstance(candidate, ast.Name)
+                and isinstance(candidate.ctx, (ast.Store, ast.Del))
+                and candidate.id in parameters
+            ):
+                mutated.add(candidate.id)
+            if isinstance(candidate, ast.ExceptHandler) and candidate.name in parameters:
+                mutated.add(candidate.name)
+            if isinstance(candidate, (ast.Import, ast.ImportFrom)):
+                for alias in candidate.names:
+                    bound = alias.asname or alias.name.split(".", 1)[0]
+                    if bound in parameters:
+                        mutated.add(bound)
+            for child in ast.iter_child_nodes(candidate):
+                collect(child)
+
+        for statement in node.body:
+            collect(statement)
+        return {
+            name: self.ev(argument)
+            for name, argument in parameters.items()
+            if name not in mutated
+        }
+
+    @staticmethod
+    def escaping_nested_function_names(
+        node: ast.FunctionDef | ast.AsyncFunctionDef,
+    ) -> set[str]:
+        """Return nested functions returned or passed to a registration decorator."""
+        nested_names: set[str] = set()
+
+        def collect_definitions(candidate: ast.AST) -> None:
+            if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                nested_names.add(candidate.name)
+                return
+            if isinstance(candidate, (ast.Lambda, ast.ClassDef)):
+                return
+            for child in ast.iter_child_nodes(candidate):
+                collect_definitions(child)
+
+        for statement in node.body:
+            collect_definitions(statement)
+
+        escaping: set[str] = set()
+        registration_names = {"action", "add_tool", "register", "register_tool", "tool"}
+
+        def collect_escapes(candidate: ast.AST) -> None:
+            if isinstance(
+                candidate,
+                (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda, ast.ClassDef),
+            ):
+                return
+            if isinstance(candidate, ast.Return):
+                values: tuple[ast.AST, ...]
+                if isinstance(candidate.value, ast.Name):
+                    values = (candidate.value,)
+                elif isinstance(candidate.value, (ast.List, ast.Tuple, ast.Set)):
+                    values = tuple(candidate.value.elts)
+                elif isinstance(candidate.value, ast.Dict):
+                    values = tuple(candidate.value.values)
+                else:
+                    values = ()
+                escaping.update(
+                    value.id
+                    for value in values
+                    if isinstance(value, ast.Name) and value.id in nested_names
+                )
+            if isinstance(candidate, ast.Call):
+                function = (
+                    candidate.func.func
+                    if isinstance(candidate.func, ast.Call)
+                    else candidate.func
+                )
+                registration_name = dotted_name(function).rsplit(".", 1)[-1].lower()
+                if registration_name in registration_names:
+                    escaping.update(
+                        argument.id
+                        for argument in candidate.args
+                        if isinstance(argument, ast.Name) and argument.id in nested_names
+                    )
+            for child in ast.iter_child_nodes(candidate):
+                collect_escapes(child)
+
+        for statement in node.body:
+            collect_escapes(statement)
+        return escaping
+
+    def fixed_tool_binding(
+        self, expression: ast.AST
+    ) -> tuple[Evidence, str] | None:
+        """Resolve a class-instance or enclosing-closure MCP tool source."""
+        if self.class_fixed_tool_bindings:
+            fixed = self.class_fixed_tool_bindings[-1]
+            accessors = self.class_fixed_tool_accessors[-1]
+            if isinstance(expression, ast.Call) and not expression.args and not expression.keywords:
+                accessor = dotted_name(expression.func)
+                if accessor.startswith("self.") and (
+                    evidence := accessors.get(accessor.removeprefix("self."))
+                ):
+                    return evidence, "instance"
+            name = dotted_name(expression)
+            if name.startswith("self."):
+                root = name.split(".", 2)[1]
+                if evidence := fixed.get(root) or accessors.get(root):
+                    return evidence, "instance"
+
         name = dotted_name(expression)
-        if not name.startswith("self."):
-            return None
-        root = name.split(".", 2)[1]
-        return fixed.get(root) or accessors.get(root)
+        root = name.split(".", 1)[0]
+        current_function = self.function_stack[-1] if self.function_stack else ""
+        for index in range(len(self.function_fixed_binding_sources) - 2, -1, -1):
+            if current_function not in self.function_escaping_children[index]:
+                continue
+            if evidence := self.function_fixed_binding_sources[index].get(root):
+                return evidence, "closure"
+        return None
 
     def visit_function_statements(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> None:
         for decorator in node.decorator_list:
@@ -1057,7 +1200,9 @@ class PythonVisitor(ast.NodeVisitor):
             if tool_name is not None and not isinstance(tool_name, ast.Constant):
                 guarded_name = tool_name.id if isinstance(tool_name, ast.Name) else ""
                 resolved_guard = guarded_name in self.allowlisted_names
-                binding_evidence = self.fixed_tool_binding_evidence(tool_name)
+                fixed_binding = self.fixed_tool_binding(tool_name)
+                binding_evidence = fixed_binding[0] if fixed_binding else None
+                binding_scope = fixed_binding[1] if fixed_binding else None
                 guard_control = self.allowlist_control_names.get(guarded_name, "tool-allowlist")
                 guard_evidence = self.allowlist_evidence.get(guarded_name)
                 allowlist_guard = resolved_guard and guard_control == "tool-allowlist"
@@ -1080,6 +1225,7 @@ class PythonVisitor(ast.NodeVisitor):
                 if binding_evidence:
                     attributes["binding_path"] = binding_evidence.path
                     attributes["binding_line"] = binding_evidence.line
+                    attributes["binding_scope"] = binding_scope
                 self.ir.add_component(
                     Component("capability", "mcp-tool-forwarding", self.ev(node), attributes)
                 )
@@ -1096,7 +1242,7 @@ class PythonVisitor(ast.NodeVisitor):
                         )
                     )
                 if binding_evidence:
-                    policy_effect = "binds-tool-source-per-instance"
+                    policy_effect = f"binds-tool-source-per-{binding_scope}"
                     self.ir.add_component(
                         Component(
                             "control",
@@ -1104,7 +1250,7 @@ class PythonVisitor(ast.NodeVisitor):
                             binding_evidence,
                             {
                                 "scope": source_scope(self.path),
-                                "binding_scope": "instance",
+                                "binding_scope": binding_scope,
                                 "policy_effect": policy_effect,
                             },
                         )
@@ -1120,7 +1266,7 @@ class PythonVisitor(ast.NodeVisitor):
                             {
                                 "control_path": binding_evidence.path,
                                 "control_line": binding_evidence.line,
-                                "binding_scope": "instance",
+                                "binding_scope": binding_scope,
                                 "policy_effect": policy_effect,
                             },
                         )

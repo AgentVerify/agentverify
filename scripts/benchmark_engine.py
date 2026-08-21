@@ -139,6 +139,11 @@ def main() -> int:
             and edge.relation == "governed-by"
             and edge.target_kind == "control"
         ]
+        mcp_fixed_binding_edges = [
+            edge
+            for edge in mcp_forwarding_control_edges
+            if edge.target_name == "fixed-tool-binding"
+        ]
         result = {
             "repository": repository,
             "category": row["category"],
@@ -200,6 +205,14 @@ def main() -> int:
             "mcp_forwarding_controls": dict(
                 sorted(Counter(edge.target_name for edge in mcp_forwarding_control_edges).items())
             ),
+            "mcp_fixed_binding_scopes": dict(
+                sorted(
+                    Counter(
+                        str(edge.attributes.get("binding_scope", "unresolved"))
+                        for edge in mcp_fixed_binding_edges
+                    ).items()
+                )
+            ),
             "resolved_import_edges": len(imported_edges),
             "resolved_import_edges_by_frontend": {
                 "python": sum(edge.evidence.path.endswith(".py") for edge in imported_edges),
@@ -223,7 +236,7 @@ def main() -> int:
         {rule_id for result in successful for rule_id in result["findings"]}
     )
     payload = {
-        "schema_version": 11,
+        "schema_version": 12,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "summary": {
@@ -314,6 +327,17 @@ def main() -> int:
                     sum(
                         (
                             Counter(result["mcp_forwarding_controls"])
+                            for result in successful
+                        ),
+                        Counter(),
+                    ).items()
+                )
+            ),
+            "mcp_fixed_binding_scopes": dict(
+                sorted(
+                    sum(
+                        (
+                            Counter(result["mcp_fixed_binding_scopes"])
                             for result in successful
                         ),
                         Counter(),

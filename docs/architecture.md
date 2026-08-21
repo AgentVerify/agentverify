@@ -94,6 +94,12 @@ second assignment, augmented assignment, or deletion. It removes a direct call-p
 but, like a discovery registry, does not prove authorization or argument policy and therefore does
 not suppress `AV-MCP002`.
 
+The same control can carry `binding_scope: closure` when an unchanged enclosing parameter feeds a
+nested callback that escapes by being returned or passed to a recognized tool/action registration
+decorator. A retry or local helper closure invoked within the same caller-selected operation is not
+an escaping binding. Reassigning the captured parameter also invalidates the edge. This distinction
+prevents lexical nesting alone from being reported as governance.
+
 For audit modeling, a tool capability lexically inside an OpenTelemetry
 `start_as_current_span(...)` block receives an exact capability-to-`action-trace` control edge. A
 span elsewhere in the same tool does not cover the action. The edge records exporter durability as

@@ -25,9 +25,10 @@ TypeScript path guard now suppresses `AV-FS001` only when a normalized, separato
 predicate rejects before the write and its roots are a statically narrow literal set. MCP Servers'
 dynamic CLI/MCP roots retain a review plus an explicit unresolved-scope control edge. Next resolve
 positive branch-local guards, equivalent Python path boundaries, and other imported policy objects.
-Constructor-only MCP wrapper fields and pure accessors now produce fixed-binding edges while mutable
-fields remain unresolved; next add closure-captured discovery bindings and interprocedural registry
-manager summaries without treating discovery as authorization.
+Constructor-only MCP wrapper fields, pure accessors, and unchanged parameters captured by
+returned/registered callbacks now produce fixed-binding edges. Mutable fields, rebound parameters,
+and same-operation retry closures remain unresolved. Next add interprocedural registry-manager
+summaries without treating discovery as authorization.
 Keep unresolved distinct from absent.
 
 ## P0 — approval coverage rule
@@ -66,8 +67,8 @@ records can be distinguished from instrumentation alone.
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 175 pinned positive/negative locations, with 44 separately
-scored IR relationship labels. Schema-v11 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 175 pinned positive/negative locations, with 48 separately
+scored IR relationship labels. Schema-v12 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.
