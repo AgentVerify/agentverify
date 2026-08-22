@@ -41,3 +41,14 @@ class InitAnnotatedBrowser:
     @agent.tool
     async def init_class_evaluate(self, script: str):
         return await self.browser_page.evaluate(script)
+
+
+@agent.tool
+async def locator_evaluate(page: Page, selector: str, script: str):
+    return await page.locator(selector).first.evaluate(script)
+
+
+@agent.tool
+async def locator_alias_evaluate(page: Page, selector: str, script: str):
+    locator = page.get_by_test_id(selector).last
+    return await locator.evaluate(script)

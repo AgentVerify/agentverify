@@ -2917,6 +2917,22 @@
       "component":{"kind":"capability","name":"code-execution","attributes":{"execution_context":"browser-page","dynamic_input":true,"receiver_proof":"class-attribute-annotation"}}
     },
     {
+      "id":"python-browser-receiver-locator-chain-local","target":{"kind":"local","path":"cases/python_browser_evaluate"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"agent.py","line":48,"expected":true,
+      "component":{"kind":"capability","name":"code-execution","attributes":{"execution_context":"browser-page","dynamic_input":true,"receiver_proof":"playwright-derived-receiver"}}
+    },
+    {
+      "id":"python-browser-receiver-locator-alias-local","target":{"kind":"local","path":"cases/python_browser_evaluate"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"agent.py","line":54,"expected":true,
+      "component":{"kind":"capability","name":"code-execution","attributes":{"execution_context":"browser-page","dynamic_input":true,"receiver_proof":"playwright-derived-receiver"}}
+    },
+    {
+      "id":"python-browser-receiver-ordinary-locator-local-negative","target":{"kind":"local","path":"cases/python_browser_evaluate"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"ordinary.py","line":80,"expected":false,
+      "component":{"kind":"capability","name":"code-execution","attributes":{"receiver_proof":"playwright-derived-receiver"}}
+    },
+    {
+      "id":"python-browser-receiver-unknown-derivation-local-negative","target":{"kind":"local","path":"cases/python_browser_evaluate"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"ordinary.py","line":85,"expected":false,
+      "component":{"kind":"capability","name":"code-execution","attributes":{"receiver_proof":"playwright-derived-receiver"}}
+    },
+    {
       "id":"python-browser-receiver-constructor-field-local","target":{"kind":"local","path":"cases/python_browser_evaluate"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"constructor.py","line":16,"expected":true,
       "component":{"kind":"capability","name":"code-execution","attributes":{"execution_context":"browser-page","dynamic_input":true,"receiver_proof":"constructor-bound-playwright-page"}}
     },
@@ -2991,6 +3007,14 @@
     {
       "id":"python-browser-receiver-constructor-alias-devika-real","target":{"kind":"repository","repository":"stitionai/devika","commit":"80bb343cbe4a4e5f5a0ba08d2524920139baceb6"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"src/browser/interaction.py","line":238,"expected":true,
       "component":{"kind":"capability","name":"code-execution","attributes":{"execution_context":"browser-page","dynamic_input":false,"receiver_proof":"constructor-bound-playwright-page-alias","scope":"production"}}
+    },
+    {
+      "id":"python-browser-receiver-locator-chain-skyvern-real","target":{"kind":"repository","repository":"Skyvern-AI/skyvern","commit":"486c8975e9864a53037d4701b781f8619e698c40"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"skyvern/cli/mcp_tools/browser.py","line":1662,"expected":true,
+      "component":{"kind":"capability","name":"code-execution","attributes":{"execution_context":"browser-page","dynamic_input":false,"receiver_proof":"playwright-derived-receiver","scope":"production"}}
+    },
+    {
+      "id":"python-browser-receiver-chained-inventory-skyvern-real","target":{"kind":"repository","repository":"Skyvern-AI/skyvern","commit":"486c8975e9864a53037d4701b781f8619e698c40"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"skyvern/cli/core/browser_ops.py","line":503,"expected":true,
+      "component":{"kind":"capability","name":"code-execution","attributes":{"execution_context":"browser-page","dynamic_input":false,"receiver_proof":"unresolved-browser-import-context","scope":"production"}}
     },
     {
       "id": "python-secure-network-helper-local",

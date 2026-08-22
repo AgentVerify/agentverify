@@ -97,7 +97,7 @@ Preserve unresolved state for ambiguity and validate on larger real monoreposito
 
 Exact module-level Python `mcp.tool(...)(function)` applications now resolve through unique local or
 relative-imported definitions when both registrar and target bindings are immutable. The pinned
-Skyvern module contributes 115 recovered tools and 21 capability edges. Twenty-two tools pass through
+Skyvern module contributes 115 recovered tools and 22 capability edges. Twenty-two tools pass through
 structurally proven metadata-preserving forwarders, including one two-wrapper chain. Next support
 package reexports and additional wrapper forms without falling back to display-name matching.
 
@@ -110,9 +110,14 @@ Schema v87 additionally proves 13 Devika receivers through an exact imported Pla
 straight-line browser/context construction, one immutable `self.page` assignment in `__init__`, and
 one immutable local alias. Thirty-five of 80 corpus receivers are now proven and the other 45
 fixed-script observations retain explicit unresolved state. Conditional, later, repeated, near-factory,
-and shadowed-factory bindings remain negative. Skyvern contributes 30 evaluator observations but one
-finding; normalized numeric scroll JavaScript remains inventory-only. Next resolve inherited fields,
-locator chains, sanitizer and bounded builder summaries, imported helper flow, and other
+and shadowed-factory bindings remain negative. Before chained-call inventory, Skyvern contributed 30
+evaluator observations but one finding; normalized numeric scroll JavaScript remains inventory-only.
+Schema v88 structurally
+inventories six chained evaluators that the earlier dotted-name gate missed and proves one Skyvern
+Locator chain rooted in `get_page`; current totals are 36 proven of 86 and 50 unresolved. Known
+Playwright locator/get-by/filter/nth/and/or/first/last derivations and immutable aliases are supported, while
+ordinary same-named and unknown derivations stay negative. Next resolve inherited fields, ambiguous
+wrapper/locator flows, sanitizer and bounded builder summaries, imported helper flow, and other
 browser evaluator APIs without treating every dynamic JavaScript expression as tool-controlled.
 
 ## P0 — configuration and policy resolution
@@ -300,8 +305,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 533 pinned positive/negative locations, with 857 separately
-scored IR component/relationship labels. Schema-v87 engine results and
+The curated regression set has reached 538 pinned positive/negative locations, with 863 separately
+scored IR component/relationship labels. Schema-v88 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

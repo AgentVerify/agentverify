@@ -124,9 +124,10 @@ never imported or executed.
 - `sandbox_boundary`: Compose and Kubernetes host/privilege boundaries, exact host credential bind
   mounts, named-volume/near-name negatives, and literal privileged Docker SDK calls.
 - `constant_eval`: constant Python evaluation negative case.
-- `python_browser_evaluate`: exact Playwright `Page` annotations, constructor-bound page fields, and
-  immutable aliases prove dynamic receivers; ordinary same-module `.evaluate(...)` methods plus
-  conditional, repeated, late, near-factory, and shadowed-factory pages remain negative.
+- `python_browser_evaluate`: exact Playwright `Page` annotations, constructor-bound page fields,
+  known Locator derivations, and immutable aliases prove dynamic receivers; ordinary same-module
+  `.evaluate(...)`/`.locator(...)` methods, unknown derivations, and conditional, repeated, late,
+  near-factory, or shadowed-factory pages remain negative.
 - `approval_safe`: disabled auto-approval negative case.
 - `test_scope`: findings are suppressed by default and enabled with `--include-tests`.
 - `symbol_collision`: same-named cross-file tools cannot leak agents or controls into a finding.

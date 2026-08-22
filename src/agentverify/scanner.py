@@ -1258,6 +1258,21 @@ def python_browser_receiver_proofs(
     class_browser_attributes: dict[str, str],
 ) -> dict[int, str]:
     """Prove direct browser-page evaluate receivers without semantic name matching."""
+    browser_derivation_methods = {
+        "and_",
+        "filter",
+        "frame_locator",
+        "get_by_alt_text",
+        "get_by_label",
+        "get_by_placeholder",
+        "get_by_role",
+        "get_by_test_id",
+        "get_by_text",
+        "get_by_title",
+        "locator",
+        "nth",
+        "or_",
+    }
     parents = {
         id(child): parent
         for parent in ast.walk(node)
@@ -1278,6 +1293,15 @@ def python_browser_receiver_proofs(
         if python_browser_annotation_is_type(argument.annotation, browser_type_names)
     }
     binding_lines = {name: 0 for name in bindings}
+    instance_method = bool(
+        node.args.args
+        and node.args.args[0].arg == "self"
+        and not any(
+            dotted_name(decorator).rsplit(".", 1)[-1]
+            in {"classmethod", "staticmethod"}
+            for decorator in node.decorator_list
+        )
+    )
     mutation_counts: Counter[str] = Counter()
     for candidate in ast.walk(node):
         if not belongs_to_function(candidate):
@@ -1332,6 +1356,39 @@ def python_browser_receiver_proofs(
             parent = parents.get(id(parent))
         return parent is node
 
+    def direct_receiver_proof(expression: ast.AST, line: int) -> str | None:
+        if isinstance(expression, ast.Name):
+            proof = bindings.get(expression.id)
+            if proof and binding_lines[expression.id] < line:
+                return proof
+        if (
+            isinstance(expression, ast.Attribute)
+            and isinstance(expression.value, ast.Name)
+            and expression.value.id == "self"
+            and expression.attr in class_browser_attributes
+            and instance_method
+        ):
+            return class_browser_attributes[expression.attr]
+        return None
+
+    def derived_receiver_proof(expression: ast.AST, line: int) -> str | None:
+        if direct_receiver_proof(expression, line):
+            return "playwright-derived-receiver"
+        if (
+            isinstance(expression, ast.Attribute)
+            and expression.attr in {"first", "last"}
+            and derived_receiver_proof(expression.value, line)
+        ):
+            return "playwright-derived-receiver"
+        if (
+            isinstance(expression, ast.Call)
+            and isinstance(expression.func, ast.Attribute)
+            and expression.func.attr in browser_derivation_methods
+            and derived_receiver_proof(expression.func.value, line)
+        ):
+            return "playwright-derived-receiver"
+        return None
+
     for candidate in sorted(ast.walk(node), key=lambda item: getattr(item, "lineno", 0)):
         if not (
             belongs_to_function(candidate)
@@ -1374,6 +1431,13 @@ def python_browser_receiver_proofs(
             ):
                 bindings[target.elts[0].id] = "imported-browser-factory"
                 binding_lines[target.elts[0].id] = candidate.lineno
+            elif (
+                isinstance(target, ast.Name)
+                and mutation_counts[target.id] == 1
+                and derived_receiver_proof(value, candidate.lineno)
+            ):
+                bindings[target.id] = "playwright-derived-receiver"
+                binding_lines[target.id] = candidate.lineno
 
     proofs: dict[int, str] = {}
     for candidate in ast.walk(node):
@@ -1385,25 +1449,11 @@ def python_browser_receiver_proofs(
         ):
             continue
         receiver_node = candidate.func.value
-        if isinstance(receiver_node, ast.Name):
-            receiver = receiver_node.id
-            proof = bindings.get(receiver)
-            if proof and binding_lines[receiver] < candidate.lineno:
-                proofs[id(candidate)] = proof
-        elif (
-            isinstance(receiver_node, ast.Attribute)
-            and isinstance(receiver_node.value, ast.Name)
-            and receiver_node.value.id == "self"
-            and receiver_node.attr in class_browser_attributes
-            and node.args.args
-            and node.args.args[0].arg == "self"
-            and not any(
-                dotted_name(decorator).rsplit(".", 1)[-1]
-                in {"classmethod", "staticmethod"}
-                for decorator in node.decorator_list
-            )
-        ):
-            proofs[id(candidate)] = class_browser_attributes[receiver_node.attr]
+        proof = direct_receiver_proof(
+            receiver_node, candidate.lineno
+        ) or derived_receiver_proof(receiver_node, candidate.lineno)
+        if proof:
+            proofs[id(candidate)] = proof
     return proofs
 
 
@@ -5888,8 +5938,8 @@ class PythonVisitor(ast.NodeVisitor):
                 )
         browser_evaluate = (
             self.has_browser_import
-            and short_name == "evaluate"
-            and "." in call_name
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "evaluate"
         )
         browser_receiver_proof = (
             self.function_browser_receiver_proofs[-1].get(id(node))

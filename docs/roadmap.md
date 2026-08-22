@@ -32,8 +32,9 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
 - Detect direct code evaluation and interpreter tools.
 - Require a provenance-backed browser receiver before promoting dynamic `.evaluate(...)` input;
   typed parameters, exact class attributes, immutable constructor-bound Playwright pages, and the
-  pinned Skyvern factory are supported without semantic-name matching; next cover inherited fields,
-  locator chains, and alternate evaluator APIs.
+  pinned Skyvern factory are supported without semantic-name matching. Known Locator derivations are
+  preserved through direct chains and immutable aliases; next cover inherited fields, wrapper-returned
+  locator flows, and alternate evaluator APIs.
 - Detect auto-approval/skip-confirmation configuration.
 - Detect broad filesystem roots, host mounts, Docker socket exposure, and unscoped file tools.
 - Detect MCP tool pass-throughs and enumerate statically registered server capabilities.

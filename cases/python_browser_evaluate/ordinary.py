@@ -66,3 +66,20 @@ class StaticBrowser:
     @agent.tool
     def evaluate_script(self, script: str):
         return self.page.evaluate(script)
+
+
+class LocatorCalculator:
+    def locator(self, selector: str) -> Calculator:
+        return Calculator()
+
+
+@agent.tool
+def ordinary_locator_evaluate(
+    calculator: LocatorCalculator, selector: str, script: str
+):
+    return calculator.locator(selector).evaluate(script)
+
+
+@agent.tool
+def unknown_page_derivation(page: Page, selector: str, script: str):
+    return page.custom(selector).evaluate(script)

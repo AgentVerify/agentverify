@@ -494,7 +494,11 @@ invalidates its proof, and module browser imports alone cannot promote an ordina
 `.evaluate(...)`. Fixed-script observations remain inventory with
 `unresolved-browser-import-context` when their receiver is not yet proven. The capability still
 receives an exact tool edge when it occurs in a resolved tool body, including post-definition
-FastMCP tools. Inherited fields, chained locators, sanitizer
+FastMCP tools. The call gate is structural, so chained receiver calls are inventoried even when
+their dotted name cannot be reconstructed. A locator/get-by/filter/nth/and/or call or first/last property rooted
+in an existing exact receiver remains proven through direct chains and one immutable local alias;
+ordinary same-named methods and unknown derivations are withheld. Inherited fields, ambiguous
+wrapper-returned locators, sanitizer
 proofs, imported/transitive script builders, and alternate browser evaluator APIs remain unresolved.
 
 For TypeScript filesystem writes, a relative import can prove a `path-boundary` control only through
