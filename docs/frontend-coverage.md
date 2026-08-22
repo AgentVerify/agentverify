@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v99
+framework, wrapper, or configuration path. Counts come from schema-v100
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -33,8 +33,9 @@ Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK
 Microsoft Agent Framework (2), Semantic Kernel (2), smolagents (2), AgentScope (1), AutoGen (1),
 CAMEL (1), Cline SDK (1), Lagent (1), Marvin (1), Mastra (1), MetaGPT (1), and Qwen-Agent (1).
 Provider observations are OpenAI (42), Anthropic (18), Google (18), Azure OpenAI (11), AWS Bedrock
-and Groq (6 each), Ollama (5), Cohere (3), and Mistral (3). These overlapping exact-import/call,
-literal-service, and model-string observations are lower than research-wide lexical signals.
+and Groq (6 each), Ollama (5), Cohere (3), Mistral (3), and Alibaba DashScope, DeepSeek, Moonshot AI,
+and xAI (1 each). These overlapping exact-import/call, literal-service, and model-string observations
+are lower than research-wide lexical signals.
 
 Schema v73 identifies 29 exact Python provider calls across seven repositories: 20 native Mistral,
 Groq, Cohere, or Ollama SDK calls and nine LangChain wrappers. Seven calls across five repositories
@@ -59,6 +60,14 @@ calls across eight repositories: 20 native SDK calls and 51 wrappers, split into
 PydanticAI, and ten AgentScope calls. Seventeen calls across six repositories are production-scoped;
 54 are tests. All 43 literal call-model arguments retain the exact provider proof. Repository
 presence remains 49, while OpenAI rises to 42 repositories and Anthropic and Google to 18 each.
+
+Schema v100 extends the same exact-export map with AgentScope's Alibaba DashScope, DeepSeek,
+Moonshot AI, and xAI chat models. Nine additional production calls all carry literal models: four
+DashScope, one DeepSeek, two Moonshot, and two xAI. Python therefore has 80 exact provider calls
+across eight repositories: 20 native SDK calls and 60 wrappers, split into nine LangChain, 32
+PydanticAI, and 19 AgentScope calls. Twenty-six calls across six repositories are production-scoped;
+54 are tests, and all 52 literal call-model arguments retain exact provider proof. Repository
+presence remains 49 because all four providers occur in the already-covered AgentScope repository.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
 Agent→MCP-server identities. Import-proven literal stdio constructor calls are inventoried for any
@@ -709,7 +718,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 642-label rule truth set and 967-label IR component/relationship set are curated regression
+The 642-label rule truth set and 987-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

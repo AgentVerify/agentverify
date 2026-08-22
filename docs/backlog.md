@@ -20,8 +20,11 @@ Schema v74 adds official TypeScript AI SDK imports, dynamic imports, factories, 
 instances, and direct model calls for Mistral, Groq, and Cohere. Schema v75 adds AgentScope's public
 Ollama model reexport plus exact PydanticAI provider, model, and embedding wrappers. Schema v76 maps
 the AgentScope module's OpenAI Chat/Responses, Anthropic, Gemini, and Ollama exports independently.
-Positional model IDs are accepted only on model wrappers, never provider constructors. The 173
-component labels pin 131 local/real positives and 42 unrelated, rebound, or near-name negatives.
+Schema v100 extends that symbol-specific map to the exact `DashScopeChatModel`, `DeepSeekChatModel`,
+`MoonshotChatModel`, and `XAIChatModel` exports. The pinned AgentScope sample adds nine production
+calls and literal models: four Alibaba DashScope, one DeepSeek, two Moonshot AI, and two xAI.
+Positional model IDs are accepted only on model wrappers, never provider constructors. The 203
+component labels pin 147 local/real positives and 46 unrelated, rebound, or near-name negatives.
 Next generalize selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
@@ -362,8 +365,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 642 pinned positive/negative locations, with 967 separately
-scored IR component/relationship labels. Schema-v99 engine results and
+The curated regression set has reached 642 pinned positive/negative locations, with 987 separately
+scored IR component/relationship labels. Schema-v100 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

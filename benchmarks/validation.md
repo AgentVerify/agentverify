@@ -195,6 +195,14 @@ Seventeen calls are production-scoped, 54 are tests, and all 43 literal call-mod
 exact import proof. Overall provider presence remains 49 repositories; OpenAI rises to 42 and
 Anthropic and Google to 18 each.
 
+Schema v100 adds four more exact exports from the same public AgentScope module without widening to
+class-name matching: `DashScopeChatModel`, `DeepSeekChatModel`, `MoonshotChatModel`, and
+`XAIChatModel`. The pinned sample contributes nine production calls—four Alibaba DashScope, one
+DeepSeek, two Moonshot AI, and two xAI—and nine literal models. Python reaches 80 exact calls across
+eight repositories: 20 native SDK and 60 wrapper calls, split into nine LangChain, 32 PydanticAI,
+and 19 AgentScope calls. Twenty-six are production-scoped, 54 are tests, and all 52 call-model values
+are literal. Four explicit rebinding negatives pin the import boundary.
+
 Schema v77 assigns stable IDs to results of exact imported Python MCP stdio constructors and
 resolves a direct Agent edge only for an earlier, unreassigned same-block binding selected in a literal
 `mcp_servers=[...]` list. Literal non-package processes such as Marvin's Deno server remain inventory
@@ -1366,13 +1374,13 @@ six unresolved ambiguity/shadowing/order forms, and all seven pinned Google ADK 
 tool-factory/adapter labels cover four local Agent edges, one hosted-MCP capability, one local
 Agent-as-tool delegation, eight conservative local negatives, two AutoGen factory edges, one Google
 ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent edge plus delegation.
-The 173 component-taxonomy labels add 131 exact local/pinned framework, provider, call,
-and model positives plus 42 near-name, rebound, and unrelated-service negatives. Twenty-five MCP
+The 203 component-taxonomy labels add 147 exact local/pinned framework, provider, call,
+and model positives plus 46 near-name, rebound, and unrelated-service negatives. Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 967 IR labels pass (688 positives and 279 negatives):
-131 component-taxonomy positives/42 negatives, three approval positives/four negatives,
+negatives. All 987 IR labels pass (704 positives and 283 negatives):
+147 component-taxonomy positives/46 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
 contextual network-import positives,

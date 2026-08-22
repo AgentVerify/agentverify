@@ -53,6 +53,9 @@ Schema v76 makes provider identity symbol-specific within a public wrapper modul
 `agentscope.model` reexport can therefore prove OpenAI Chat/Responses, Anthropic, Google Gemini, or
 Ollama without assigning one provider to every symbol in the module. Module aliases and named
 imports share the same exact export map, while reassignment still invalidates the binding.
+Schema v100 adds the exact AgentScope DashScope, DeepSeek, Moonshot, and xAI chat-model exports to
+that symbol map. Literal model arguments inherit the corresponding provider only while the module
+alias or named import remains unrebound; adjacent or arbitrary model-class names remain unresolved.
 Schema v77 gives import-proven, assigned Python MCP stdio constructors stable component identities.
 An Agent receives an exact `uses` edge only when its literal `mcp_servers=[...]` list names an
 earlier, unreassigned server binding in the same statement block. Package and version facts remain

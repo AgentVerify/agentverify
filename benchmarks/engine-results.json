@@ -1,6 +1,6 @@
 {
-  "schema_version": 99,
-  "generated_at": "2026-08-22T18:15:49.104982+00:00",
+  "schema_version": 100,
+  "generated_at": "2026-08-22T18:26:42.616838+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -61,24 +61,28 @@
       "ts": 313
     },
     "python_provider_call_attribution": {
-      "calls": 71,
-      "production_calls": 17,
+      "calls": 80,
+      "production_calls": 26,
       "test_calls": 54,
       "repositories": 8,
       "production_repositories": 6,
       "sdk_calls": 20,
-      "wrapper_calls": 51,
+      "wrapper_calls": 60,
       "langchain_wrapper_calls": 9,
       "pydantic_ai_wrapper_calls": 32,
-      "agentscope_wrapper_calls": 10,
-      "literal_models": 43,
+      "agentscope_wrapper_calls": 19,
+      "literal_models": 52,
       "openai": 4,
       "anthropic": 2,
       "google": 2,
       "mistral": 12,
       "groq": 16,
       "cohere": 27,
-      "ollama": 8
+      "ollama": 8,
+      "alibaba_dashscope": 4,
+      "deepseek": 1,
+      "moonshot_ai": 2,
+      "xai": 2
     },
     "typescript_provider_call_attribution": {
       "calls": 1,
@@ -702,14 +706,18 @@
       },
       "provider": {
         "AWS Bedrock": 6,
+        "Alibaba DashScope": 1,
         "Anthropic": 18,
         "Azure OpenAI": 11,
         "Cohere": 3,
+        "DeepSeek": 1,
         "Google": 18,
         "Groq": 6,
         "Mistral": 3,
+        "Moonshot AI": 1,
         "Ollama": 5,
-        "OpenAI": 42
+        "OpenAI": 42,
+        "xAI": 1
       },
       "sandbox-boundary": {
         "docker-socket": 3,
@@ -833,7 +841,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 313.5717
+    "elapsed_seconds": 304.5936
   },
   "repositories": [
     {
@@ -877,7 +885,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -1346,7 +1358,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4675
+      "elapsed_seconds": 3.3528
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -1397,7 +1409,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -1871,7 +1887,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.1474
+      "elapsed_seconds": 7.8022
     },
     {
       "repository": "langchain-ai/langchain",
@@ -1918,7 +1934,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -2385,7 +2405,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0945
+      "elapsed_seconds": 3.094
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -2436,7 +2456,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -2911,7 +2935,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.1534
+      "elapsed_seconds": 11.1165
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -2967,7 +2991,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -3438,7 +3466,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5236
+      "elapsed_seconds": 0.522
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -3499,7 +3527,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -3983,7 +4015,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 13.0722
+      "elapsed_seconds": 12.6981
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -4044,7 +4076,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -4540,7 +4576,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.762
+      "elapsed_seconds": 7.5267
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -4597,7 +4633,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -5082,7 +5122,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8282
+      "elapsed_seconds": 0.8072
     },
     {
       "repository": "microsoft/autogen",
@@ -5136,7 +5176,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -5614,7 +5658,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.054
+      "elapsed_seconds": 2.0548
     },
     {
       "repository": "microsoft/agent-framework",
@@ -5652,7 +5696,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -6119,7 +6167,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0582
+      "elapsed_seconds": 0.0595
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -6182,7 +6230,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -6661,7 +6713,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3156
+      "elapsed_seconds": 0.316
     },
     {
       "repository": "openai/openai-agents-python",
@@ -6733,7 +6785,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -7231,7 +7287,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 13.4967
+      "elapsed_seconds": 13.0453
     },
     {
       "repository": "openai/openai-agents-js",
@@ -7302,7 +7358,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -7780,7 +7840,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7056
+      "elapsed_seconds": 1.6803
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -7849,7 +7909,11 @@
         "mistral": 9,
         "groq": 13,
         "cohere": 13,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -8332,7 +8396,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 28.7673
+      "elapsed_seconds": 27.6131
     },
     {
       "repository": "google/adk-python",
@@ -8396,7 +8460,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -8884,7 +8952,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.4021
+      "elapsed_seconds": 9.9625
     },
     {
       "repository": "google/adk-js",
@@ -8944,7 +9012,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -9418,7 +9490,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.2871
+      "elapsed_seconds": 4.2036
     },
     {
       "repository": "huggingface/smolagents",
@@ -9476,7 +9548,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -9959,7 +10035,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2513
+      "elapsed_seconds": 3.1561
     },
     {
       "repository": "agno-agi/agno",
@@ -10019,7 +10095,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -10508,7 +10588,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3678
+      "elapsed_seconds": 1.3204
     },
     {
       "repository": "camel-ai/camel",
@@ -10568,7 +10648,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -11058,7 +11142,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.8746
+      "elapsed_seconds": 6.7044
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -11115,7 +11199,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -11588,7 +11676,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5023
+      "elapsed_seconds": 0.5181
     },
     {
       "repository": "run-llama/llama_index",
@@ -11640,7 +11728,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -12107,7 +12199,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2491
+      "elapsed_seconds": 2.1865
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -12165,7 +12257,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -12650,7 +12746,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.5137
+      "elapsed_seconds": 3.4725
     },
     {
       "repository": "InternLM/lagent",
@@ -12709,7 +12805,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -13189,7 +13289,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6812
+      "elapsed_seconds": 1.6589
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -13241,7 +13341,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -13728,7 +13832,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8837
+      "elapsed_seconds": 2.8493
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -13783,7 +13887,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -14268,7 +14376,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.7505
+      "elapsed_seconds": 3.7167
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -14319,7 +14427,11 @@
         "mistral": 0,
         "groq": 1,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -14800,7 +14912,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.5034
+      "elapsed_seconds": 2.4535
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -14852,7 +14964,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -15329,7 +15445,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.26
+      "elapsed_seconds": 8.9625
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -15377,7 +15493,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -15853,7 +15973,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8402
+      "elapsed_seconds": 2.7358
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -15902,7 +16022,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -16369,7 +16493,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5729
+      "elapsed_seconds": 1.5278
     },
     {
       "repository": "letta-ai/letta-code",
@@ -16412,7 +16536,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -16879,7 +17007,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.5891
+      "elapsed_seconds": 5.4467
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -16937,7 +17065,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -17418,7 +17550,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6668
+      "elapsed_seconds": 2.5218
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -17434,9 +17566,9 @@
         "framework": 217,
         "mcp": 7,
         "mcp-server": 3,
-        "model": 10,
+        "model": 19,
         "protocol": 19,
-        "provider": 10
+        "provider": 19
       },
       "component_names": {
         "capability": [
@@ -17455,31 +17587,39 @@
           "MCP"
         ],
         "provider": [
+          "Alibaba DashScope",
           "Anthropic",
+          "DeepSeek",
           "Google",
+          "Moonshot AI",
           "Ollama",
-          "OpenAI"
+          "OpenAI",
+          "xAI"
         ]
       },
       "python_provider_call_attribution": {
-        "calls": 10,
-        "production_calls": 10,
+        "calls": 19,
+        "production_calls": 19,
         "test_calls": 0,
         "repositories": true,
         "production_repositories": true,
         "sdk_calls": 0,
-        "wrapper_calls": 10,
+        "wrapper_calls": 19,
         "langchain_wrapper_calls": 0,
         "pydantic_ai_wrapper_calls": 0,
-        "agentscope_wrapper_calls": 10,
-        "literal_models": 10,
+        "agentscope_wrapper_calls": 19,
+        "literal_models": 19,
         "openai": 4,
         "anthropic": 2,
         "google": 2,
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 2
+        "ollama": 2,
+        "alibaba_dashscope": 4,
+        "deepseek": 1,
+        "moonshot_ai": 2,
+        "xai": 2
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -17961,7 +18101,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.1897
+      "elapsed_seconds": 4.8914
     },
     {
       "repository": "mastra-ai/mastra",
@@ -18017,7 +18157,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 1,
@@ -18490,7 +18634,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2096
+      "elapsed_seconds": 3.083
     },
     {
       "repository": "vercel/ai",
@@ -18544,7 +18688,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -19016,7 +19164,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.5204
+      "elapsed_seconds": 3.3685
     },
     {
       "repository": "cline/cline",
@@ -19075,7 +19223,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -19548,7 +19700,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.8794
+      "elapsed_seconds": 4.7248
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -19596,7 +19748,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -20063,7 +20219,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.2673
+      "elapsed_seconds": 5.1591
     },
     {
       "repository": "continuedev/continue",
@@ -20107,7 +20263,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -20574,7 +20734,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2438
+      "elapsed_seconds": 3.1367
     },
     {
       "repository": "Aider-AI/aider",
@@ -20619,7 +20779,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -21105,7 +21269,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.2896
+      "elapsed_seconds": 5.0018
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -21145,7 +21309,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -21624,7 +21792,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 2.017
+      "elapsed_seconds": 1.9271
     },
     {
       "repository": "plandex-ai/plandex",
@@ -21653,7 +21821,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -22120,7 +22292,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0729
+      "elapsed_seconds": 0.065
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -22164,7 +22336,11 @@
         "mistral": 0,
         "groq": 1,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -22637,7 +22813,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8381
+      "elapsed_seconds": 2.7502
     },
     {
       "repository": "stitionai/devika",
@@ -22687,7 +22863,11 @@
         "mistral": 1,
         "groq": 1,
         "cohere": 0,
-        "ollama": 1
+        "ollama": 1,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -23164,7 +23344,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7075
+      "elapsed_seconds": 0.7166
     },
     {
       "repository": "block/goose",
@@ -23217,7 +23397,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -23694,7 +23878,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 6.7983
+      "elapsed_seconds": 6.5886
     },
     {
       "repository": "bytedance/trae-agent",
@@ -23753,7 +23937,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 1
+        "ollama": 1,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -24237,7 +24425,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.613
+      "elapsed_seconds": 1.5463
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -24288,7 +24476,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -24761,7 +24953,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.675
+      "elapsed_seconds": 7.4414
     },
     {
       "repository": "openai/codex",
@@ -24797,7 +24989,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -25270,7 +25466,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3903
+      "elapsed_seconds": 1.3525
     },
     {
       "repository": "browser-use/browser-use",
@@ -25329,7 +25525,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -25818,7 +26018,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.458
+      "elapsed_seconds": 8.306
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -25886,7 +26086,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -26385,7 +26589,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 17.8527
+      "elapsed_seconds": 17.2187
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -26436,7 +26640,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 1,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -26918,7 +27126,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7776
+      "elapsed_seconds": 1.7123
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -26965,7 +27173,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -27434,7 +27646,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6306
+      "elapsed_seconds": 1.5654
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -27483,7 +27695,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -27960,7 +28176,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7195
+      "elapsed_seconds": 1.6585
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -28017,7 +28233,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -28493,7 +28713,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.0512
+      "elapsed_seconds": 5.6332
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -28557,7 +28777,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -29033,7 +29257,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.8047
+      "elapsed_seconds": 5.6971
     },
     {
       "repository": "github/github-mcp-server",
@@ -29072,7 +29296,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -29539,7 +29767,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0582
+      "elapsed_seconds": 0.0558
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -29579,7 +29807,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -30046,7 +30278,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1368
+      "elapsed_seconds": 0.1366
     },
     {
       "repository": "awslabs/mcp",
@@ -30098,7 +30330,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -30573,7 +30809,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.2738
+      "elapsed_seconds": 4.2257
     },
     {
       "repository": "docker/mcp-gateway",
@@ -30613,7 +30849,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -31082,7 +31322,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0522
+      "elapsed_seconds": 0.0509
     },
     {
       "repository": "jlowin/fastmcp",
@@ -31137,7 +31377,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -31619,7 +31863,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.1676
+      "elapsed_seconds": 6.0418
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -31648,7 +31892,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -32115,7 +32363,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0406
+      "elapsed_seconds": 0.0388
     },
     {
       "repository": "langflow-ai/langflow",
@@ -32173,7 +32421,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -32649,7 +32901,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.5573
+      "elapsed_seconds": 5.4056
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -32696,7 +32948,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -33171,7 +33427,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.5046
+      "elapsed_seconds": 4.4864
     },
     {
       "repository": "langgenius/dify",
@@ -33203,7 +33459,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -33670,7 +33930,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.8407
+      "elapsed_seconds": 3.761
     },
     {
       "repository": "n8n-io/n8n",
@@ -33725,7 +33985,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -34200,7 +34464,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2861
+      "elapsed_seconds": 3.2394
     },
     {
       "repository": "activepieces/activepieces",
@@ -34263,7 +34527,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -34740,7 +35008,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0949
+      "elapsed_seconds": 2.0614
     },
     {
       "repository": "simstudioai/sim",
@@ -34778,7 +35046,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -35245,7 +35517,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.2684
+      "elapsed_seconds": 6.1233
     },
     {
       "repository": "composiohq/composio",
@@ -35311,7 +35583,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -35787,7 +36063,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8838
+      "elapsed_seconds": 2.829
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -35847,7 +36123,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -36332,7 +36612,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.6322
+      "elapsed_seconds": 5.544
     },
     {
       "repository": "e2b-dev/E2B",
@@ -36369,7 +36649,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -36836,7 +37120,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.9799
+      "elapsed_seconds": 3.9639
     },
     {
       "repository": "daytonaio/daytona",
@@ -36865,7 +37149,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -37391,7 +37679,11 @@
         "mistral": 0,
         "groq": 0,
         "cohere": 0,
-        "ollama": 0
+        "ollama": 0,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -37865,7 +38157,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1611
+      "elapsed_seconds": 3.0828
     },
     {
       "repository": "traceloop/openllmetry",
@@ -37933,7 +38225,11 @@
         "mistral": 2,
         "groq": 0,
         "cohere": 13,
-        "ollama": 4
+        "ollama": 4,
+        "alibaba_dashscope": 0,
+        "deepseek": 0,
+        "moonshot_ai": 0,
+        "xai": 0
       },
       "typescript_provider_call_attribution": {
         "calls": 0,
@@ -38411,7 +38707,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.9798
+      "elapsed_seconds": 4.9111
     }
   ]
 }

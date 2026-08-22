@@ -23,6 +23,20 @@ PUBLISHED_NAME_KINDS = {
     "sandbox-boundary",
 }
 
+PYTHON_PROVIDER_METRICS = {
+    "openai": "OpenAI",
+    "anthropic": "Anthropic",
+    "google": "Google",
+    "mistral": "Mistral",
+    "groq": "Groq",
+    "cohere": "Cohere",
+    "ollama": "Ollama",
+    "alibaba_dashscope": "Alibaba DashScope",
+    "deepseek": "DeepSeek",
+    "moonshot_ai": "Moonshot AI",
+    "xai": "xAI",
+}
+
 
 def is_test_path(path: str) -> bool:
     lowered = path.lower()
@@ -972,19 +986,11 @@ def main() -> int:
                 ),
                 "literal_models": len(python_provider_call_models),
                 **{
-                    provider.lower(): sum(
+                    metric: sum(
                         item.name == provider
                         for item in python_provider_call_attributions
                     )
-                    for provider in (
-                        "OpenAI",
-                        "Anthropic",
-                        "Google",
-                        "Mistral",
-                        "Groq",
-                        "Cohere",
-                        "Ollama",
-                    )
+                    for metric, provider in PYTHON_PROVIDER_METRICS.items()
                 },
             },
             "typescript_provider_call_attribution": {
@@ -2524,7 +2530,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 99,
+        "schema_version": 100,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2619,13 +2625,7 @@ def main() -> int:
                     "pydantic_ai_wrapper_calls",
                     "agentscope_wrapper_calls",
                     "literal_models",
-                    "openai",
-                    "anthropic",
-                    "google",
-                    "mistral",
-                    "groq",
-                    "cohere",
-                    "ollama",
+                    *PYTHON_PROVIDER_METRICS,
                 )
             },
             "typescript_provider_call_attribution": {

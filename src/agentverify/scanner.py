@@ -135,10 +135,14 @@ PYTHON_PROVIDER_SDK_CALLS = {
     "langchain_ollama": ("ChatOllama", "OllamaEmbeddings", "OllamaLLM"),
     "agentscope.model": (
         "AnthropicChatModel",
+        "DashScopeChatModel",
+        "DeepSeekChatModel",
         "GeminiChatModel",
+        "MoonshotChatModel",
         "OllamaChatModel",
         "OpenAIChatModel",
         "OpenAIResponseModel",
+        "XAIChatModel",
     ),
     "pydantic_ai.models.groq": ("GroqModel",),
     "pydantic_ai.models.mistral": ("MistralModel",),
@@ -175,10 +179,14 @@ PYTHON_PROVIDER_MODULES = {
 # span providers override that default for each exact exported symbol.
 PYTHON_PROVIDER_SYMBOL_PROVIDERS = {
     ("agentscope.model", "AnthropicChatModel"): "Anthropic",
+    ("agentscope.model", "DashScopeChatModel"): "Alibaba DashScope",
+    ("agentscope.model", "DeepSeekChatModel"): "DeepSeek",
     ("agentscope.model", "GeminiChatModel"): "Google",
+    ("agentscope.model", "MoonshotChatModel"): "Moonshot AI",
     ("agentscope.model", "OllamaChatModel"): "Ollama",
     ("agentscope.model", "OpenAIChatModel"): "OpenAI",
     ("agentscope.model", "OpenAIResponseModel"): "OpenAI",
+    ("agentscope.model", "XAIChatModel"): "xAI",
 }
 PYTHON_PROVIDER_SDK_FUNCTIONS = {("ollama", "chat"), ("ollama", "generate")}
 PYTHON_PROVIDER_WRAPPER_MODULE_PREFIXES = ("agentscope.", "langchain_", "pydantic_ai.")

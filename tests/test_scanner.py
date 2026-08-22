@@ -322,6 +322,34 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "agentscope.model",
             "OpenAIResponseModel",
         ),
+        (
+            27,
+            "Alibaba DashScope",
+            "agent_models.DashScopeChatModel",
+            "agentscope.model",
+            "DashScopeChatModel",
+        ),
+        (
+            28,
+            "DeepSeek",
+            "agent_models.DeepSeekChatModel",
+            "agentscope.model",
+            "DeepSeekChatModel",
+        ),
+        (
+            29,
+            "Moonshot AI",
+            "agent_models.MoonshotChatModel",
+            "agentscope.model",
+            "MoonshotChatModel",
+        ),
+        (
+            30,
+            "xAI",
+            "agent_models.XAIChatModel",
+            "agentscope.model",
+            "XAIChatModel",
+        ),
     }
     assert {
         (item.evidence.line, item.name, item.attributes["provider"])
@@ -340,6 +368,10 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         (24, "gemini-2.5-flash", "Google"),
         (25, "gpt-4.1", "OpenAI"),
         (26, "gpt-4.1", "OpenAI"),
+        (27, "qwen-plus", "Alibaba DashScope"),
+        (28, "deepseek-chat", "DeepSeek"),
+        (29, "kimi-k2.5", "Moonshot AI"),
+        (30, "grok-3", "xAI"),
     }
     assert not any(
         item.kind == "provider"

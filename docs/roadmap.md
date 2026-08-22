@@ -5,7 +5,7 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
 
 | Priority | Capability | Impact | Frequency | Feasibility | Score | Evidence |
 |---:|---|---:|---:|---:|---:|---|
-| 1 | Agent bill of materials: models, providers, frameworks, tools, MCP | 4 | 5 | 5 | 100 | 44 multi-provider research signals; schema v85 proves exact selected-path framework/provider evidence in 40/49 repos, inventories exact-import OpenAI SandboxAgents, local shell, hosted code-interpreter, web-search, file-search, and image-generation tools plus project-local MCP adapters, resolves direct local Agent factories, and links Python Agent→assigned/context-managed/imported-adapter MCP→registered-tool paths; 50 have MCP signals and 69 have privileged-capability signals |
+| 1 | Agent bill of materials: models, providers, frameworks, tools, MCP | 4 | 5 | 5 | 100 | 44 multi-provider research signals; schema v100 proves exact selected-path framework/provider evidence in 40/49 repos, including symbol-specific AgentScope attribution for Alibaba DashScope, DeepSeek, Moonshot AI, and xAI; it inventories exact-import OpenAI SandboxAgents, local shell, hosted code-interpreter, web-search, file-search, and image-generation tools plus project-local MCP adapters, resolves direct local Agent factories, and links Python Agent→assigned/context-managed/imported-adapter MCP→registered-tool paths; 50 have MCP signals and 69 have privileged-capability signals |
 | 2 | Dangerous shell and code execution | 5 | 4 | 4 | 80 | 42 shell-capable repos; 8 `shell=True` candidates; schema v84 adds five exact hosted-sandbox CodeInterpreterTool assets and two production Agent paths without misclassifying them as unsandboxed dynamic evaluation |
 | 3 | MCP server/tool trust-boundary analysis | 5 | 4 | 4 | 80 | 50 MCP repos; 49 forwarding reviews, 34 automatic unpinned/floating package installs, one exact Semantic Kernel sampling auto-approval path, three generic sampling handlers without a proven user decision, three automatic elicitation acceptances, and two human-confirmed URL elicitations without full-URL display |
 | 4 | Approval coverage and bypass paths | 5 | 4 | 3 | 60 | 52 approval-positive; 18 auto-approval candidates; three exact environment-backed callbacks reach privileged OpenAI built-ins; three OpenAI Agents JS and two Agno reviews connect writable local filesystem MCP tools to disabled approval/confirmation defaults; schema v83 also inventories five test-scoped Python LocalShellTools whose SDK exposes no approval parameter, while their executors remain possible compensating controls |
@@ -20,7 +20,8 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
 - Parse Python and TypeScript without executing project code.
 - Emit Agent IR nodes for models, agents, tools, MCP servers, capabilities, controls, and evidence.
 - Produce deterministic text and JSON reports.
-- Support OpenAI, Anthropic, Azure OpenAI, Google, AWS Bedrock, Mistral, Groq, Cohere, and Ollama
+- Support OpenAI, Anthropic, Azure OpenAI, Google, AWS Bedrock, Mistral, Groq, Cohere, Ollama,
+  Alibaba DashScope, DeepSeek, Moonshot AI, and xAI
   providers; LangChain/LangGraph, CrewAI, AutoGen, OpenAI Agents SDK, Google ADK, Semantic Kernel,
   LlamaIndex, Agno, Mastra, smolagents, Microsoft Agent Framework, CAMEL, Qwen-Agent, Lagent,
   MetaGPT, Marvin, AgentScope, Vercel AI SDK, and common MCP configuration shapes. Newer provider and

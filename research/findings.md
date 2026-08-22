@@ -403,6 +403,14 @@ SDK and 51 framework wrappers—with 17 production calls and 54 test calls. The 
 increases strict selected-source presence to OpenAI in 42 repositories and Anthropic and Google in
 18 each without trusting arbitrary model-class names.
 
+Schema v100 extends that exact-export proof to AgentScope's `DashScopeChatModel`,
+`DeepSeekChatModel`, `MoonshotChatModel`, and `XAIChatModel`. The pinned source adds nine production
+calls with literal models: four Alibaba DashScope, one DeepSeek, two Moonshot AI, and two xAI. The
+Python corpus now has 80 exact provider calls—20 native SDK and 60 framework wrappers—with 26
+production calls and 54 test calls. The provider-presence total remains 49 repositories because the
+new families occur in AgentScope, which was already covered; rebinding any imported constructor
+withholds both provider and model attribution.
+
 ## 5. Controls are layered
 
 Sandboxing vocabulary appears in 64 repositories, audit/tracing in 57, human approval in 52, and
