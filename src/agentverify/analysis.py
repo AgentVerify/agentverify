@@ -177,7 +177,9 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
                 "protocol": protocol,
                 "governing_controls": capability_controls,
                 "governing_control_effects": capability_control_effects,
-                "approval_coverage": "unresolved",
+                "approval_coverage": component.attributes.get(
+                    "approval_policy", "unresolved"
+                ),
                 "audit_coverage": _audit_coverage(capability_controls),
             }
         return (f"capability:{component.name}",), {

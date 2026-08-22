@@ -128,6 +128,12 @@ For sampling, the relevant evidence is callback registration, default denial, ca
 the server-controlled prompt and sampling fields, the actual model call, and the response channel.
 A shared word such as `auto_approve` is not enough to explain that trust boundary, and generic and
 protocol-specific findings should not be emitted for the same setting.
+At the raw protocol layer, registering a sampling callback is itself a capability grant. Returning a
+well-formed sampling result without an intervening decision is automatic fulfilment whether the
+example currently uses a canned response or a provider—the same handler seam is where production
+hosts attach the model. A consent control must expose the request and fail closed on rejection;
+logging a preview is not approval. Token capping is an independent spend control and does not replace
+the decision.
 
 ## Observability as a cross-cutting control
 

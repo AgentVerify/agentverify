@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T05:22:03.292325+00:00",
-  "labels": 551,
-  "passed": 551,
+  "generated_at": "2026-08-22T06:03:02.833309+00:00",
+  "labels": 568,
+  "passed": 568,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -96,6 +96,14 @@
       "tp": 2,
       "fp": 0,
       "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-MCP-SAMPLING-CONSENT": {
+      "tp": 15,
+      "fp": 0,
+      "tn": 2,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -3072,6 +3080,159 @@
     {
       "id": "python-semantic-kernel-mcp-sampling-default-control-real",
       "check_id": "IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-sampling-consent-python-protocol-local",
+      "check_id": "IR-MCP-SAMPLING-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-sampling-consent-python-setting-local",
+      "check_id": "IR-MCP-SAMPLING-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-sampling-consent-typescript-protocol-local",
+      "check_id": "IR-MCP-SAMPLING-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-sampling-consent-typescript-late-confirm-local",
+      "check_id": "IR-MCP-SAMPLING-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-sampling-consent-python-human-local",
+      "check_id": "IR-MCP-SAMPLING-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-sampling-consent-typescript-human-local",
+      "check_id": "IR-MCP-SAMPLING-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-sampling-consent-typescript-budget-local",
+      "check_id": "IR-MCP-SAMPLING-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-sampling-consent-python-denied-local",
+      "check_id": "IR-MCP-SAMPLING-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-sampling-consent-python-unresolved-local",
+      "check_id": "IR-MCP-SAMPLING-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-sampling-consent-typescript-unresolved-local",
+      "check_id": "IR-MCP-SAMPLING-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-sampling-consent-typescript-disconnected-local-negative",
+      "check_id": "IR-MCP-SAMPLING-CONSENT",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-sampling-consent-typescript-missing-capability-local-negative",
+      "check_id": "IR-MCP-SAMPLING-CONSENT",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-sampling-consent-python-protocol-real",
+      "check_id": "IR-MCP-SAMPLING-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-sampling-consent-typescript-guide-real",
+      "check_id": "IR-MCP-SAMPLING-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-sampling-consent-typescript-example-real",
+      "check_id": "IR-MCP-SAMPLING-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-sampling-consent-typescript-human-real",
+      "check_id": "IR-MCP-SAMPLING-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-sampling-consent-typescript-budget-real",
+      "check_id": "IR-MCP-SAMPLING-CONSENT",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

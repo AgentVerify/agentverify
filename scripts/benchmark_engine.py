@@ -561,6 +561,17 @@ def main() -> int:
             and item.attributes.get("analysis")
             == "python-semantic-kernel-mcp-sampling-approval"
         ]
+        mcp_sampling_consent_capabilities = [
+            item
+            for item in ir.components
+            if item.kind == "capability"
+            and item.name == "model-sampling"
+            and item.attributes.get("analysis")
+            in {
+                "python-mcp-sampling-callback-consent",
+                "typescript-mcp-sampling-handler-consent",
+            }
+        ]
         approval_callback_bypass_tools = [
             item
             for item in ir.components
@@ -1339,6 +1350,99 @@ def main() -> int:
                     finding.rule_id == "AV-MCP004" for finding in ir.findings
                 ),
             },
+            "mcp_sampling_consent": {
+                "handlers": len(mcp_sampling_consent_capabilities),
+                "default_scope_handlers": sum(
+                    item.attributes.get("scope") != "test"
+                    for item in mcp_sampling_consent_capabilities
+                ),
+                "automatic_fulfilment": sum(
+                    item.attributes.get("approval_policy") == "automatic-fulfilment"
+                    for item in mcp_sampling_consent_capabilities
+                ),
+                "default_scope_automatic_fulfilment": sum(
+                    item.attributes.get("scope") != "test"
+                    and item.attributes.get("approval_policy")
+                    == "automatic-fulfilment"
+                    for item in mcp_sampling_consent_capabilities
+                ),
+                "human_confirmed": sum(
+                    item.attributes.get("approval_policy") == "human-confirmed"
+                    for item in mcp_sampling_consent_capabilities
+                ),
+                "denied_handler": sum(
+                    item.attributes.get("approval_policy") == "denied-handler"
+                    for item in mcp_sampling_consent_capabilities
+                ),
+                "unresolved_handler": sum(
+                    item.attributes.get("approval_policy") == "unresolved-handler"
+                    for item in mcp_sampling_consent_capabilities
+                ),
+                "python": sum(
+                    item.attributes.get("frontend") == "python"
+                    for item in mcp_sampling_consent_capabilities
+                ),
+                "typescript": sum(
+                    item.attributes.get("frontend") == "typescript"
+                    for item in mcp_sampling_consent_capabilities
+                ),
+                "model_provider": sum(
+                    item.attributes.get("fulfilment_target") == "model-provider"
+                    for item in mcp_sampling_consent_capabilities
+                ),
+                "protocol_edges": sum(
+                    edge.source_kind == "protocol"
+                    and edge.source_name == "MCP"
+                    and edge.relation == "uses"
+                    and edge.target_kind == "capability"
+                    and edge.target_name == "model-sampling"
+                    and edge.attributes.get("analysis")
+                    in {
+                        "python-mcp-sampling-callback-consent",
+                        "typescript-mcp-sampling-handler-consent",
+                    }
+                    for edge in ir.relationships
+                ),
+                "configured_by_edges": sum(
+                    edge.source_kind == "protocol"
+                    and edge.source_name == "MCP"
+                    and edge.relation == "configured-by"
+                    and edge.target_kind == "control-setting"
+                    and edge.target_name == "mcp-sampling-fulfilment"
+                    and edge.attributes.get("analysis")
+                    in {
+                        "python-mcp-sampling-callback-consent",
+                        "typescript-mcp-sampling-handler-consent",
+                    }
+                    for edge in ir.relationships
+                ),
+                "consent_control_edges": sum(
+                    edge.source_kind == "capability"
+                    and edge.source_name == "model-sampling"
+                    and edge.relation == "governed-by"
+                    and edge.target_kind == "control"
+                    and edge.target_name == "mcp-sampling-consent"
+                    and edge.attributes.get("analysis")
+                    in {
+                        "python-mcp-sampling-callback-consent",
+                        "typescript-mcp-sampling-handler-consent",
+                    }
+                    for edge in ir.relationships
+                ),
+                "token_budget_edges": sum(
+                    edge.source_kind == "capability"
+                    and edge.source_name == "model-sampling"
+                    and edge.relation == "governed-by"
+                    and edge.target_kind == "control"
+                    and edge.target_name == "mcp-sampling-token-budget"
+                    and edge.attributes.get("analysis")
+                    == "typescript-mcp-sampling-handler-consent"
+                    for edge in ir.relationships
+                ),
+                "findings": sum(
+                    finding.rule_id == "AV-MCP005" for finding in ir.findings
+                ),
+            },
             "approval_callback_bypass": {
                 "tools": len(approval_callback_bypass_tools),
                 "python_tools": sum(
@@ -1786,7 +1890,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 68,
+        "schema_version": 69,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2164,6 +2268,26 @@ def main() -> int:
                     "agent_server_edges",
                     "configured_by_edges",
                     "deny_control_edges",
+                    "findings",
+                )
+            },
+            "mcp_sampling_consent": {
+                name: sum(result["mcp_sampling_consent"][name] for result in successful)
+                for name in (
+                    "handlers",
+                    "default_scope_handlers",
+                    "automatic_fulfilment",
+                    "default_scope_automatic_fulfilment",
+                    "human_confirmed",
+                    "denied_handler",
+                    "unresolved_handler",
+                    "python",
+                    "typescript",
+                    "model_provider",
+                    "protocol_edges",
+                    "configured_by_edges",
+                    "consent_control_edges",
+                    "token_budget_edges",
                     "findings",
                 )
             },

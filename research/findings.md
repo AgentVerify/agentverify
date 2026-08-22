@@ -114,14 +114,14 @@ that resolves `get_tool(name)`, rejects a missing tool, and only then executes. 
 retained as a required edge argument. This becomes the second `tool-registry` edge. A default-tool
 fallback remains unresolved, demonstrating why semantic names are not enforcement evidence.
 
-The collector's bounded dependency closure and audited evidence hints add 174 local source files
-across 20 repositories. It
+The collector's bounded dependency closure and audited evidence hints add 176 local source files
+across 21 repositories. It
 exposes the MCP Python SDK's `ToolManager` reexport and implementation: `MCPServer` binds one imported
 manager in its constructor, and that manager resolves `get_tool(name)` and rejects a miss before
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the 451-label truth set.
+rule observations are pinned in the 467-label truth set.
 
 MCP configuration is also executable dependency configuration. Schema v65 resolves 50 literal
 `npx`/`uvx` package launchers in the bounded corpus: 45 unpinned, three floating, and two exact,
@@ -142,6 +142,16 @@ governed by the SDK's fail-closed default; one release-notes sample explicitly s
 `sampling_auto_approve=True` and raises `AV-MCP004`. The specialized review replaces the generic
 auto-approval result at that location. A configured callback takes precedence, but callback and
 dynamic outcomes remain unresolved without inspecting their decision logic.
+
+Schema v69 resolves the raw MCP client surface across both frontends. The Microsoft agent-protocol
+tutorial installs a Python `ClientSession` callback that logs the request and automatically returns a
+canned sampling result. Two TypeScript SDK examples register equivalent automatic
+`sampling/createMessage` handlers. The SDK CLI host supplies the control comparison: it constructs
+and displays the full server request, caps `maxTokens`, awaits a user confirmation, throws on
+rejection, and only then invokes its provider. `AV-MCP005` therefore reports three default-scope
+automatic handlers across two repositories; six positive and ten negative rule labels plus 15
+positive and two negative IR labels pin exact imports, capabilities, receivers, result shapes, denial, consent,
+budget, and unresolved callback states.
 
 ## 3. Approval exists, but bypass behavior recurs
 
@@ -273,28 +283,29 @@ and records all ten possible concrete target IDs rather than selecting one occur
 `ComputerTool` constructors add 15 computer-control assets and ten exact agent links; three of those
 links replace ambiguous repeated bindings. All 15 observed instances are local, two configure a
 safety-check callback, and only one is outside test paths. Literal Agent tool lists additionally
-recover 753 role-proven tool components: 181 callables, 100 constructor-bound instances, 444 inline
-constructors, two direct context-manager bindings, 21 Agent-as-tool adapters, and five absolute-import
-boundary tools. They create 810 exact Agent edges; 524 tools are outside tests and 30 capability edges
+recover 755 role-proven tool components: 181 callables, 100 constructor-bound instances, 444 inline
+constructors, four direct context-manager bindings, 21 Agent-as-tool adapters, and five absolute-import
+boundary tools. They create 812 exact Agent edges; 526 tools are outside tests and 30 capability edges
 become reachable. Each Agent-as-tool adapter delegates to one exact same-block Agent receiver.
 Four imported callable definitions resolve through exact local exports; three unavailable production
 SDK sources remain import-boundary identities without inferred capabilities. Exact imported
 `from_settings` factories, `HostedMCPTool` and `LangchainTool` constructors, and same-block
-`Agent.as_tool()` adapters resolve those final six former production misses. All 598 non-test Python
+`Agent.as_tool()` adapters resolve those final six former production misses. All 600 non-test Python
 Agent→tool edges now resolve; 72 unresolved edges remain only in tests and conservative fixtures.
 Import-proven OpenAI `function_tool(function)` assignments
 recover 12 wrapper tools and 12 exact Agent edges; three enable approval, all occur under tests, and
 their selected bodies add no capability edges. Twenty-five project-local CrewAI class-tool imports
 resolve through one importer-ancestor path and one exact decorated export. The 14 factory edges span
 four production example projects and require one exact imported class, immutable local construction,
-and a direct Agent return. The final export resolves 3,371 endpoints by symbol ID, 544 by exact
-evidence location, and 18 by unique display name; 29 remain ambiguous control/tool targets, and 68
+and a direct Agent return. The final export resolves 3,442 endpoints by symbol ID, 604 by exact
+evidence location, and 20 by unique display name; 38 remain ambiguous agent/protocol/control/tool
+endpoints, and 68
 unresolved. No `ambiguous-repeated-binding` target remains in the pinned corpus;
 cross-branch, forward, inconsistent/untyped parameters, conditional/transformed returns,
 external receivers, shadowed factories, lambdas, and reassigned fixture cases stay unresolved. Two apparent CrewAI
 re-export misses were false identities:
 a function parameter and a local assignment shadowed the imported `tool` binding. Scope-isolating
-module and function imports now withhold those IDs, so all 3,371 identified endpoints resolve.
+module and function imports now withhold those IDs, so all 3,448 identified endpoints resolve.
 A governance export that collapses those references
 by name would silently attach controls or risks to the wrong asset.
 

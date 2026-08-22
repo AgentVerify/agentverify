@@ -169,6 +169,30 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                 )
         if (
             component.kind == "capability"
+            and component.name == "model-sampling"
+            and component.attributes.get("analysis")
+            in {
+                "python-mcp-sampling-callback-consent",
+                "typescript-mcp-sampling-handler-consent",
+            }
+            and component.attributes.get("input_authority") == "mcp-server"
+            and component.attributes.get("response_created") is True
+            and component.attributes.get("approval_policy") == "automatic-fulfilment"
+        ):
+            ir.findings.append(
+                make_finding(
+                    ir,
+                    component,
+                    "AV-MCP005",
+                    "high",
+                    "high",
+                    "An MCP client automatically fulfills server sampling requests without a proven user decision",
+                    "Show the complete sampling request, require a fail-closed user decision, and enforce model and token-spend limits before invoking a provider or returning the sampling result.",
+                    "review",
+                )
+            )
+        if (
+            component.kind == "capability"
             and component.name == "mcp-tool-forwarding"
             and not component.attributes.get("allowlist_guard")
         ):

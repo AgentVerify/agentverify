@@ -29,17 +29,17 @@ direct, earlier definition in the same lexical/module scope, plus an exact singl
 that dominates use in the same branch/with body.
 Schema v63 additionally inventories 15 import-proven OpenAI Agents Python `ComputerTool` instances
 and resolves ten agent links to them, including three formerly ambiguous repeated bindings. Literal
-Python Agent tool lists now recover 753 exact role-proven tools: 181 callable definitions, 100
-constructor-bound instances, 444 inline constructors, two direct context-manager bindings, 21
-Agent-as-tool adapters, and five absolute-import boundary tools. They produce 810 exact Agent links;
-524 tools are outside tests and 30 capability edges become reachable. Constructor promotion requires
+Python Agent tool lists now recover 755 exact role-proven tools: 181 callable definitions, 100
+constructor-bound instances, 444 inline constructors, four direct context-manager bindings, 21
+Agent-as-tool adapters, and five absolute-import boundary tools. They produce 812 exact Agent links;
+526 tools are outside tests and 30 capability edges become reachable. Constructor promotion requires
 one immutable import from a module whose path establishes a tool namespace, while local subclasses
 require an exact imported tool base. Exact imported `from_settings` factories are limited to a
 known method on a role-proven class; `HostedMCPTool`, `LangchainTool`, and `Agent.as_tool()` use
 separate exact adapter proofs. Four of the callable
 tools resolve through one exact selected local export; three unavailable SDK definitions remain
 explicit import-boundary identities with no inferred capabilities. These proofs resolve the final
-six former default-scope misses. The benchmark now reports zero unresolved among 598 non-test Python
+six former default-scope misses. The benchmark now reports zero unresolved among 600 non-test Python
 Agent→tool edges; all 72 unresolved edges occur in tests or conservative fixtures. Import-proven OpenAI
 `function_tool(function)` assignments now recover 12 exact wrapper tools and Agent edges, including
 the two repeated SDK targets; three enable approval and all occur under tests. Exact same-class
@@ -143,8 +143,14 @@ completion. Schema v68 proves the callback registration, fail-closed default, ca
 server-controlled prompt/model hint/sampling parameters, model invocation, and response returned to
 the server. `AV-MCP004` reports the one reachable sample that explicitly enables
 `sampling_auto_approve`; six reachable default-denied bindings add exact consent-policy controls.
-Next generalize MCP sampling across other clients while keeping elicitation, tool approval, and model
-sampling as separate protocol authorities.
+Schema v69 generalizes the client side through exact MCP Python `ClientSession` callbacks and
+TypeScript `Client.setRequestHandler('sampling/createMessage', ...)` handlers. Three default-scope
+examples automatically return sampling responses without a proven user decision. The TypeScript SDK
+host is the counterexample: it displays the full request, fails closed on an awaited confirmation,
+caps server-requested tokens, and only then calls the provider. Named external callbacks, unrelated
+imports, disconnected receivers, and complex approval logic remain unresolved. Next cover PydanticAI
+and FastMCP model adapters while keeping elicitation, tool approval, and sampling as separate
+protocol authorities.
 
 ## P1 — sandbox containment quality
 
@@ -241,8 +247,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 451 pinned positive/negative locations, with 551 separately
-scored IR component/relationship labels. Schema-v68 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 467 pinned positive/negative locations, with 568 separately
+scored IR component/relationship labels. Schema-v69 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

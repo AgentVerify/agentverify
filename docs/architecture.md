@@ -331,6 +331,18 @@ async-context plugin establish the Agent→MCP-server→model-sampling path. Lit
 specialized path suppresses the broader lexical auto-approval review so one policy is not reported
 twice.
 
+The generic sampling-consent pass recognizes the protocol surface directly. Python requires an exact
+`from mcp import ClientSession`, a same-scope named async callback, and an exact `mcp.types`
+`CreateMessageResult` or `ErrorData` return. TypeScript requires an exact
+`@modelcontextprotocol/client` `Client`, a literal sampling-capability declaration, a proven instance
+or typed parameter receiver, and a
+structurally balanced `sampling/createMessage` arrow handler returning the required result fields.
+Successful handlers are automatic unless Python proves an interactive decision with a fail-closed
+rejection branch or TypeScript proves an awaited confirmation whose negative branch throws. The
+decision must precede provider invocation. The TypeScript analysis separately records full request disclosure and a `Math.min` token cap propagated
+to the provider request. Named external callbacks and complex or indirect handlers remain explicit
+`unresolved-handler` settings rather than assumed safe or unsafe.
+
 A repository prepass builds bounded Python network summaries for unique top-level free functions in
 selected files. A summary records direct recognized HTTP calls and the formal parameters that can
 control their origins after fixed-prefix discrimination. At a tool call site, only an exact named

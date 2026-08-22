@@ -73,6 +73,10 @@ never imported or executed.
   sampling through an exact Agent binding. Explicit auto-approval is reviewable; default/explicit
   denial, callback-controlled and dynamic policies, disconnected plugins, wrong imports, and changed
   SDK propagation remain distinct counterexamples.
+- `mcp_sampling_consent`: exact Python `ClientSession` callbacks and TypeScript MCP client request
+  handlers distinguish automatic sampling fulfilment from fail-closed interactive consent, denial,
+  unresolved callbacks, token caps, late confirmation, missing capability declarations,
+  disconnected receivers, and unrelated imports.
 - `python_google_adk_bigquery_audit`: Google ADK Runner composition attaches its default-enabled
   BigQuery analytics plugin to one tool action while retaining an explicit disabled near miss.
 - `python_skyvern_action_history`: Skyvern Task v3 records post-dispatch browser actions in a

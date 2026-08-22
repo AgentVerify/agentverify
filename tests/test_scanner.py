@@ -2954,6 +2954,114 @@ def test_semantic_kernel_mcp_sampling_auto_approval_resolves_server_model_author
     )
 
 
+def test_mcp_sampling_callbacks_require_a_proven_user_decision() -> None:
+    root = ROOT / "cases/mcp_sampling_consent"
+    ir = scan_repository(root)
+    analyses = {
+        "python-mcp-sampling-callback-consent",
+        "typescript-mcp-sampling-handler-consent",
+    }
+    capabilities = {
+        component.evidence.path: component
+        for component in ir.components
+        if component.kind == "capability"
+        and component.name == "model-sampling"
+        and component.attributes.get("analysis") in analyses
+    }
+    assert set(capabilities) == {
+        "python_automatic.py",
+        "python_denied.py",
+        "python_human.py",
+        "python_unresolved.py",
+        "typescript_automatic.ts",
+        "typescript_human.ts",
+        "typescript_late_confirm.ts",
+        "typescript_unresolved.ts",
+    }
+    assert capabilities["python_automatic.py"].attributes == {
+        "frontend": "python",
+        "input_authority": "mcp-server",
+        "response_destination": "mcp-server",
+        "approval_policy": "automatic-fulfilment",
+        "response_created": True,
+        "fulfilment_target": "handler-response",
+        "callback_definition_line": 6,
+        "request_disclosure": "not-proven",
+        "scope": "production",
+        "analysis": "python-mcp-sampling-callback-consent",
+    }
+    assert capabilities["python_denied.py"].attributes["approval_policy"] == "denied-handler"
+    assert capabilities["python_denied.py"].attributes["fulfilment_target"] == "denial"
+    assert capabilities["python_human.py"].attributes["approval_policy"] == "human-confirmed"
+    assert capabilities["python_unresolved.py"].attributes["approval_policy"] == "unresolved-handler"
+    assert capabilities["typescript_automatic.ts"].attributes["approval_policy"] == "automatic-fulfilment"
+    assert capabilities["typescript_human.ts"].attributes == {
+        "frontend": "typescript",
+        "input_authority": "mcp-server",
+        "response_destination": "mcp-server",
+        "approval_policy": "human-confirmed",
+        "response_created": True,
+        "fulfilment_target": "model-provider",
+        "callback_definition_line": 7,
+        "request_disclosure": "full-request",
+        "scope": "production",
+        "analysis": "typescript-mcp-sampling-handler-consent",
+    }
+    assert capabilities["typescript_late_confirm.ts"].attributes["approval_policy"] == (
+        "automatic-fulfilment"
+    )
+    assert capabilities["typescript_unresolved.ts"].attributes["approval_policy"] == "unresolved-handler"
+
+    controls = {
+        (component.name, component.evidence.path, component.evidence.line)
+        for component in ir.components
+        if component.kind == "control"
+        and component.attributes.get("analysis") in analyses
+    }
+    assert controls == {
+        ("mcp-sampling-consent", "python_human.py", 7),
+        ("mcp-sampling-token-budget", "typescript_human.ts", 13),
+        ("mcp-sampling-consent", "typescript_human.ts", 14),
+    }
+    findings = [finding for finding in ir.findings if finding.rule_id == "AV-MCP005"]
+    assert [
+        (finding.evidence.path, finding.evidence.line, finding.ir_path)
+        for finding in findings
+    ] == [
+        (
+            "python_automatic.py",
+            16,
+            ("protocol:MCP", "capability:model-sampling"),
+        ),
+        (
+            "typescript_automatic.ts",
+            8,
+            ("protocol:MCP", "capability:model-sampling"),
+        ),
+        (
+            "typescript_late_confirm.ts",
+            8,
+            ("protocol:MCP", "capability:model-sampling"),
+        ),
+    ]
+    assert all(finding.result_kind == "review" for finding in findings)
+    assert all(
+        finding.analysis["approval_coverage"] == "automatic-fulfilment"
+        for finding in findings
+    )
+    assert not any(
+        component.attributes.get("analysis") in analyses
+        and component.evidence.path
+        in {
+            "python_wrong_import.py",
+            "typescript_disconnected.ts",
+            "typescript_missing_capability.ts",
+            "typescript_wrong_import.ts",
+        }
+        for component in ir.components
+    )
+
+
 def test_typescript_a2a_remote_cards_preserve_endpoint_authority_and_transport(
     tmp_path: Path,
 ) -> None:

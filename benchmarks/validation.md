@@ -33,6 +33,9 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
   omitted, partial, complete, dynamic, and read-only-filtered confirmation states.
 - `cases/python_semantic_kernel_mcp_sampling`: exact Agent/plugin binding distinguishes explicit
   sampling auto-approval from default/explicit denial, callback, dynamic, and disconnected states.
+- `cases/mcp_sampling_consent`: exact Python and TypeScript MCP sampling handlers distinguish
+  automatic fulfilment from interactive consent, denial, token caps, unresolved callbacks,
+  disconnected receivers, and unrelated imports.
 - `cases/typescript_structured_tools`: balanced tool-array parsing, namespace spreads, inline and
   assigned SDK tools, agent-as-tool delegation, approval policies, and unrelated-name negatives.
 - `cases/typescript_bun_shell`: Cline inline tools distinguish dynamic Bun `sh -c`, a fixed command,
@@ -124,8 +127,8 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 ## Full-corpus engine benchmark
 
 The 2026-08-22 default scan covered 70 source-bearing repositories plus one docs-only upstream
-snapshot. It parsed 10,769 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,072 relationships, and completed in 244.8236 seconds on the development machine. Three parse
+snapshot. It parsed 10,771 selected Python/TypeScript/JavaScript files plus 155 configuration files,
+resolved 2,086 relationships, and completed in 264.2287 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -133,13 +136,13 @@ so the benchmark records zero suppressed findings.
 The locked collector prioritizes manifests, production SSRF/URL-safety sources, and then general
 security/agent/tool/MCP sources within the 220-file cap. It adds at most 20 local source files:
 versioned audited evidence hints plus Python imports reached from MCP forwarding or source-proven
-URL-security call sites, all charged against the same cap. This refresh materialized 174 dependency files across 20
+URL-security call sites, all charged against the same cap. This refresh materialized 176 dependency files across 21
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v68 carries both the 174-file total and the
-20-repository coverage.
+dependency count per repository; engine schema v69 carries both the 176-file total and the
+21-repository coverage.
 
-Engine benchmark schema v68 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v69 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It also publishes Python and TypeScript initial-origin control coverage
 plus source-proven Python and TypeScript secure transports, with redirect, DNS, proxy, configured
@@ -169,26 +172,26 @@ one address-filtering control with configured allowlist and environment-proxy re
 Composio edges separately count configured-route pinning residuals, one edge-runtime fail-closed path,
 and three edge-runtime unguarded fallbacks.
 
-The benchmark now also measures identity coverage: 9,531 agent/tool component observations carry
-module-qualified IDs. Of 4,030 relationship endpoints, all 3,371 identified symbol endpoints resolve
-to an observed component (3,112 Python and 259 TypeScript). Schema v63 records 359
+The benchmark now also measures identity coverage: 9,565 agent/tool component observations carry
+module-qualified IDs. Of 4,172 relationship endpoints, all 3,448 identified symbol endpoints resolve
+to an observed component (3,159 Python and 289 TypeScript). Schema v63 records 359
 `lexical-single-definition` targets, 20 exact same-block dominating definitions, 25 contextual
 absolute-import targets, and three exact same-class helper-return edges to two Agent source
 definitions. Fourteen production CrewAI delegations resolve through an exact contextual import,
 class export, immutable same-block instance, and direct Agent-returning method. Literal tools-list
-role proof adds 444 inline-constructor, two context-manager, six absolute-import-binding, and four
+role proof adds 444 inline-constructor, four context-manager, six absolute-import-binding, and four
 contextual imported-callable target identities. One import-proven typed tool
 parameter resolves through ten unanimous same-module `ApplyPatchTool` constructor call sites. Its
 occurrence-qualified parameter component records all ten concrete target IDs without selecting one
 runtime instance or propagating instance-specific approval policy. Fifteen
 import-proven OpenAI Agents Python `ComputerTool` instances add ten exact agent links, including
-three formerly ambiguous repeated bindings. Literal Agent tool lists add 753 role-proven tools: 181
-callables, 100 constructor bindings, 444 inline constructors, two context-manager bindings, 21
-Agent-as-tool adapters, and five absolute-import boundary tools. Of these, 524 are outside tests;
-they add 30 capability edges and 810 exact Agent edges. Every adapter has an exact delegation edge
+three formerly ambiguous repeated bindings. Literal Agent tool lists add 755 role-proven tools: 181
+callables, 100 constructor bindings, 444 inline constructors, four context-manager bindings, 21
+Agent-as-tool adapters, and five absolute-import boundary tools. Of these, 526 are outside tests;
+they add 30 capability edges and 812 exact Agent edges. Every adapter has an exact delegation edge
 to its proven Agent receiver. Imported `from_settings` tool factories plus exact
 `HostedMCPTool`, `LangchainTool`, and `Agent.as_tool()` adapters resolve the last six production
-misses. The schema publishes 1,182 Python Agent→tool edges in total: all 598 non-test edges resolve,
+misses. The schema publishes 1,184 Python Agent→tool edges in total: all 600 non-test edges resolve,
 while the 72 unresolved edges are confined to tests and conservative fixtures. Import-proven OpenAI
 `function_tool(function)` assignments add 12 wrapper tools and 12 exact Agent edges; three explicitly
 enable approval, all occur under tests, and none of their selected bodies contains a recognized
@@ -220,13 +223,13 @@ Missing relative modules, duplicate or forward imports, module rebinding, and fu
 shadowing remain unresolved. Sixteen IR labels cover the local export/import boundary, six negative
 forms, and all seven pinned Google ADK edges; one rule label proves cross-file AV-FS001 reachability.
 
-Schema-v63 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
-resolves 3,371 endpoints by symbol ID, 544 by exact evidence location, and 18 by a unique display
-name; 29 remain ambiguous and 68 unresolved. Before evidence-local and occurrence-qualified
+Schema-v69 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
+resolves 3,442 endpoints by symbol ID, 604 by exact evidence location, and 20 by a unique display
+name; 38 remain ambiguous and 68 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
 and mark unsafe targets explicitly unresolved. Conservative lexical resolution removes further target
-ambiguities. The 29 remaining ambiguities are control or tool targets without a unique local definition, so the
+ambiguities. The 38 remaining ambiguities are agent, protocol, control, or tool endpoints without a unique local definition, so the
 resolver does not use a nearby source location to invent an identity.
 
 The Python frontend resolves unambiguous absolute imports rooted at the repository, `src/`, or
@@ -469,6 +472,25 @@ policies remain unresolved, while disconnected plugins, wrong imports, and a cha
 withhold the path. The rule matrix is 2 TP, 7 TN, 0 FP, and 0 FN; the IR matrix is 9 TP, 2 TN, 0 FP,
 and 0 FN.
 
+## AV-MCP005 — MCP sampling is fulfilled without a proven user decision
+
+Schema v69 verifies the raw client registration seam in both supported frontends. Python requires an
+exact `mcp.ClientSession`, a same-scope named async callback, and an exact `mcp.types` sampling result.
+TypeScript requires an exact `@modelcontextprotocol/client` `Client` with a literal sampling
+capability, a proven receiver, and a balanced inline `sampling/createMessage` handler returning
+`role`, `content`, and `model`. The IR records the
+MCP-protocol→model-sampling path, server input authority, response destination, fulfilment target,
+and configured policy.
+
+Six pinned handlers qualify: one Python and five TypeScript, including two test-only SDK handlers.
+Five automatically return results; the three default-scope instances raise reviews across two
+repositories. The TypeScript CLI host is the governed counterexample: it displays the full system
+prompt and messages, caps the server's token request, awaits an explicit decision, throws on
+rejection, and only then calls its provider. Direct Python rejection, unresolved callbacks, and a
+too-late TypeScript confirmation are separately regression-tested. A missing capability, unrelated imports, and a disconnected TypeScript receiver withhold
+the path. The rule matrix is 6 TP, 10 TN, 0 FP, and 0 FN; the IR matrix is 15 TP, 2 TN, 0 FP, and 0 FN.
+All 467 cross-rule labels pass.
+
 During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
 to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
 path where agent input reaches
@@ -480,8 +502,8 @@ Expanding the truth set exposed two additional false-positive families. Literal 
 were incorrectly classified as dynamic; resolving complete string literals removed five corpus
 findings while preserving interpolated templates. Broad approval-name matching confused warning-state
 and version-check flags with human approval; requiring approval-specific names removed six review
-candidates. Corpus totals are now 21 `AV-EXEC001` findings, 14 `AV-APPROVAL001` reviews, and one
-specialized `AV-MCP004` review.
+candidates. Corpus totals are now 21 `AV-EXEC001` findings, 14 `AV-APPROVAL001` reviews, one
+specialized `AV-MCP004` review, and three generic `AV-MCP005` sampling-consent reviews.
 The dependency closure also exposes CAMEL's production `func_string_to_callable(code)` helper, whose
 parameter reaches `exec`. Browser-aware evaluation adds one more exact path: Skyvern's registered
 [`skyvern_evaluate`](https://github.com/Skyvern-AI/skyvern/blob/486c8975e9864a53037d4701b781f8619e698c40/skyvern/cli/mcp_tools/browser.py#L2458)
@@ -1051,7 +1073,7 @@ ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent 
 Eighty component-taxonomy labels add 51 exact local/pinned framework, provider, and model positives
 plus 29 near-name and unrelated-service negatives. Twenty-five MCP package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
-four real repositories. All 551 IR labels pass:
+four real repositories. All 568 IR labels pass:
 51 component-taxonomy positives/29 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
@@ -1088,4 +1110,5 @@ positives/one negative, plus four Composio conditional-runtime positives/one neg
 CLI upload positives/one negative, two Google ADK OpenAPI origin-lock positives/one negative, and two
 OpenAI Agents Python MCP-approval-default positives/one negative, six OpenAI Agents JS MCP approval
 composition positives/one negative, nine Agno MCP confirmation positives/one negative, nine Semantic
-Kernel MCP sampling positives/two negatives, plus 22 MCP package-launcher positives/three negatives.
+Kernel MCP sampling positives/two negatives, 15 generic MCP sampling-consent positives/two negatives,
+plus 22 MCP package-launcher positives/three negatives.

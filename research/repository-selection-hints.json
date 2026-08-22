@@ -52,12 +52,23 @@
     "google-gemini/gemini-cli": [
       "packages/core/src/agents/a2a-client-manager.ts"
     ],
+    "microsoft/ai-agents-for-beginners": [
+      "11-agentic-protocols/code_samples/mcp-agents/client/client.py"
+    ],
+    "modelcontextprotocol/python-sdk": [
+      "src/mcp/client/session.py"
+    ],
     "modelcontextprotocol/typescript-sdk": [
+      "examples/cli-client/host/host.ts",
       "examples/caching/client.ts",
       "examples/custom-version/client.ts",
       "examples/extension-capabilities/client.ts",
+      "examples/guides/clients/server-requests.examples.ts",
       "examples/guides/get-started/firstClient.examples.ts",
-      "examples/streaming/client.ts"
+      "examples/sampling/client.ts",
+      "examples/streaming/client.ts",
+      "packages/client/src/client/client.ts",
+      "packages/core-internal/src/shared/protocol.ts"
     ],
     "microsoft/semantic-kernel": [
       "python/samples/concepts/mcp/agent_with_mcp_plugin.py",

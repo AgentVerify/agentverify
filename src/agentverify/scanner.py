@@ -16481,6 +16481,30 @@ def python_exact_import_name(
     return binding
 
 
+def python_exact_module_import_name(tree: ast.Module, module: str) -> str | None:
+    """Return one immutable module binding for an exact Python import."""
+    matches = [
+        alias.asname or alias.name
+        for statement in tree.body
+        if isinstance(statement, ast.Import)
+        for alias in statement.names
+        if alias.name == module and (alias.asname is not None or "." not in alias.name)
+    ]
+    if len(matches) != 1:
+        return None
+    binding = matches[0]
+    if any(
+        isinstance(node, ast.Name)
+        and isinstance(node.ctx, (ast.Store, ast.Del))
+        and node.id == binding
+        for node in ast.walk(tree)
+    ) or any(
+        isinstance(node, ast.arg) and node.arg == binding for node in ast.walk(tree)
+    ):
+        return None
+    return binding
+
+
 def python_scope_nodes(body: list[ast.stmt]) -> list[ast.AST]:
     """Walk one lexical Python body without descending into nested definitions."""
     nodes: list[ast.AST] = []
@@ -17341,6 +17365,625 @@ def add_python_semantic_kernel_mcp_sampling_flow(
                                 target_id=server_id,
                             )
                         )
+
+
+def add_mcp_sampling_consent_observation(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    frontend: str,
+    analysis: str,
+    approval_policy: str,
+    response_created: bool,
+    fulfilment_target: str,
+    callback_line: int | None,
+    consent_line: int | None = None,
+    request_disclosure: str = "unresolved",
+    token_budget_line: int | None = None,
+) -> None:
+    """Emit one exact MCP client sampling handler and its mediation state."""
+    evidence = Evidence(relative, line, excerpt(lines, line))
+    symbol_frontend = {"python": "py", "typescript": "ts"}.get(frontend, frontend)
+    protocol_id = source_symbol(
+        symbol_frontend,
+        relative,
+        "protocol",
+        f"mcp-sampling@{line}",
+    )
+    common_attributes: dict[str, object] = {
+        "frontend": frontend,
+        "input_authority": "mcp-server",
+        "response_destination": "mcp-server",
+        "approval_policy": approval_policy,
+        "response_created": response_created,
+        "fulfilment_target": fulfilment_target,
+        "callback_definition_line": callback_line,
+        "request_disclosure": request_disclosure,
+        "scope": source_scope(relative),
+        "analysis": analysis,
+    }
+    ir.add_component(
+        Component(
+            "protocol",
+            "MCP",
+            evidence,
+            {
+                "role": "client",
+                "sampling_handler": "registered",
+                **common_attributes,
+            },
+            protocol_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "capability",
+            "model-sampling",
+            evidence,
+            common_attributes,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "protocol",
+            "MCP",
+            "uses",
+            "capability",
+            "model-sampling",
+            evidence,
+            common_attributes,
+            source_id=protocol_id,
+        )
+    )
+    setting_attributes = {
+        "enabled": (
+            True
+            if response_created
+            else False
+            if approval_policy == "denied-handler"
+            else None
+        ),
+        "approval_policy": approval_policy,
+        "scope": source_scope(relative),
+        "analysis": analysis,
+    }
+    ir.add_component(
+        Component(
+            "control-setting",
+            "mcp-sampling-fulfilment",
+            evidence,
+            setting_attributes,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "protocol",
+            "MCP",
+            "configured-by",
+            "control-setting",
+            "mcp-sampling-fulfilment",
+            evidence,
+            setting_attributes,
+            source_id=protocol_id,
+        )
+    )
+    if consent_line is not None:
+        control_attributes = {
+            "policy_effect": "requires-user-decision-before-model-sampling",
+            "request_disclosure": request_disclosure,
+            "control_line": consent_line,
+            "scope": source_scope(relative),
+            "analysis": analysis,
+        }
+        ir.add_component(
+            Component(
+                "control",
+                "mcp-sampling-consent",
+                Evidence(relative, consent_line, excerpt(lines, consent_line)),
+                control_attributes,
+            )
+        )
+        ir.add_relationship(
+            Relationship(
+                "capability",
+                "model-sampling",
+                "governed-by",
+                "control",
+                "mcp-sampling-consent",
+                evidence,
+                control_attributes,
+            )
+        )
+    if token_budget_line is not None:
+        budget_attributes = {
+            "policy_effect": "caps-server-requested-sampling-tokens",
+            "control_line": token_budget_line,
+            "scope": source_scope(relative),
+            "analysis": analysis,
+        }
+        ir.add_component(
+            Component(
+                "control",
+                "mcp-sampling-token-budget",
+                Evidence(
+                    relative,
+                    token_budget_line,
+                    excerpt(lines, token_budget_line),
+                ),
+                budget_attributes,
+            )
+        )
+        ir.add_relationship(
+            Relationship(
+                "capability",
+                "model-sampling",
+                "governed-by",
+                "control",
+                "mcp-sampling-token-budget",
+                evidence,
+                budget_attributes,
+            )
+        )
+
+
+def python_mcp_sampling_result_kind(
+    node: ast.AST | None,
+    types_binding: str | None,
+) -> str | None:
+    """Classify an exact mcp.types sampling callback return expression."""
+    if not (
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and isinstance(node.func.value, ast.Name)
+        and node.func.value.id == types_binding
+    ):
+        return None
+    if node.func.attr in {"CreateMessageResult", "CreateMessageResultWithTools"}:
+        return "response"
+    if node.func.attr == "ErrorData":
+        return "error"
+    return None
+
+
+def python_mcp_sampling_human_consent(
+    function: ast.AsyncFunctionDef,
+    types_binding: str | None,
+    successful_lines: set[int],
+) -> int | None:
+    """Prove a fail-closed interactive decision before a successful response."""
+    interactive_names: dict[str, int] = {}
+    for node in python_scope_nodes(function.body):
+        if not isinstance(node, (ast.Assign, ast.AnnAssign)):
+            continue
+        target = node.targets[0] if isinstance(node, ast.Assign) and len(node.targets) == 1 else None
+        if isinstance(node, ast.AnnAssign):
+            target = node.target
+        value = node.value
+        if not (
+            isinstance(target, ast.Name)
+            and isinstance(value, (ast.Call, ast.Await))
+        ):
+            continue
+        call = value.value if isinstance(value, ast.Await) else value
+        if not isinstance(call, ast.Call):
+            continue
+        callee = call.func
+        if (
+            isinstance(callee, ast.Name)
+            and callee.id == "input"
+            or isinstance(callee, ast.Attribute)
+            and callee.attr == "input"
+        ):
+            interactive_names[target.id] = node.lineno
+
+    for statement in function.body:
+        if not isinstance(statement, ast.If):
+            continue
+        test = statement.test
+        if not (
+            isinstance(test, ast.Compare)
+            and isinstance(test.left, ast.Name)
+            and test.left.id in interactive_names
+            and len(test.ops) == 1
+            and isinstance(test.ops[0], (ast.NotEq, ast.NotIn))
+            and len(test.comparators) == 1
+        ):
+            continue
+        accepted = test.comparators[0]
+        literal_acceptance = (
+            isinstance(accepted, ast.Constant)
+            and accepted.value in {True, "y", "yes", "allow", "approve"}
+            or isinstance(accepted, (ast.Set, ast.List, ast.Tuple))
+            and bool(accepted.elts)
+            and all(
+                isinstance(item, ast.Constant)
+                and item.value in {True, "y", "yes", "allow", "approve"}
+                for item in accepted.elts
+            )
+        )
+        if not literal_acceptance:
+            continue
+        rejected = any(
+            isinstance(node, ast.Raise)
+            or isinstance(node, ast.Return)
+            and python_mcp_sampling_result_kind(node.value, types_binding) == "error"
+            for node in python_scope_nodes(statement.body)
+        )
+        if rejected and any(
+            line > (statement.end_lineno or statement.lineno)
+            for line in successful_lines
+        ):
+            return interactive_names[test.left.id]
+    return None
+
+
+def add_python_mcp_sampling_callback_consent_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve direct Python MCP ClientSession sampling callbacks and consent."""
+    analysis = "python-mcp-sampling-callback-consent"
+    for path in paths:
+        if path.suffix.lower() != ".py" or not path.is_file():
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+            tree = ast.parse(text)
+        except (OSError, SyntaxError, ValueError):
+            continue
+        if "sampling_callback" not in text or "ClientSession" not in text:
+            continue
+        client_session = python_exact_import_name(tree, "mcp", "ClientSession")
+        if client_session is None:
+            continue
+        types_binding = python_exact_module_import_name(tree, "mcp.types")
+        relative = path.relative_to(root).as_posix()
+        lines = text.splitlines()
+        scopes: list[list[ast.stmt]] = [tree.body]
+        scopes.extend(
+            statement.body
+            for statement in tree.body
+            if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef))
+        )
+        for body in scopes:
+            nodes = python_scope_nodes(body)
+            callbacks = {
+                node.name: node
+                for node in nodes
+                if isinstance(node, ast.AsyncFunctionDef)
+            }
+            for call in nodes:
+                if not (
+                    isinstance(call, ast.Call)
+                    and isinstance(call.func, ast.Name)
+                    and call.func.id == client_session
+                ):
+                    continue
+                callback_expression = python_call_keyword(call, "sampling_callback")
+                if callback_expression is None:
+                    continue
+                callback = (
+                    callbacks.get(callback_expression.id)
+                    if isinstance(callback_expression, ast.Name)
+                    else None
+                )
+                if callback is None or callback.lineno >= call.lineno:
+                    add_mcp_sampling_consent_observation(
+                        ir,
+                        relative=relative,
+                        lines=lines,
+                        line=callback_expression.lineno,
+                        frontend="python",
+                        analysis=analysis,
+                        approval_policy="unresolved-handler",
+                        response_created=False,
+                        fulfilment_target="unresolved",
+                        callback_line=None,
+                    )
+                    continue
+                return_kinds = [
+                    (node.lineno, python_mcp_sampling_result_kind(node.value, types_binding))
+                    for node in python_scope_nodes(callback.body)
+                    if isinstance(node, ast.Return)
+                ]
+                successful_lines = {
+                    line for line, kind in return_kinds if kind == "response"
+                }
+                error_lines = {line for line, kind in return_kinds if kind == "error"}
+                consent_line = python_mcp_sampling_human_consent(
+                    callback,
+                    types_binding,
+                    successful_lines,
+                )
+                if successful_lines and consent_line is not None:
+                    approval_policy = "human-confirmed"
+                elif successful_lines:
+                    approval_policy = "automatic-fulfilment"
+                elif error_lines:
+                    approval_policy = "denied-handler"
+                else:
+                    approval_policy = "unresolved-handler"
+                callback_nodes = python_scope_nodes(callback.body)
+                if not successful_lines:
+                    fulfilment_target = "denial" if error_lines else "unresolved"
+                elif any(
+                    isinstance(node, ast.Call)
+                    and isinstance(node.func, ast.Attribute)
+                    and node.func.attr
+                    in {"generate", "create", "request", "get_chat_message_content"}
+                    for node in callback_nodes
+                ):
+                    fulfilment_target = "model-provider"
+                else:
+                    fulfilment_target = "handler-response"
+                add_mcp_sampling_consent_observation(
+                    ir,
+                    relative=relative,
+                    lines=lines,
+                    line=callback_expression.lineno,
+                    frontend="python",
+                    analysis=analysis,
+                    approval_policy=approval_policy,
+                    response_created=bool(successful_lines),
+                    fulfilment_target=fulfilment_target,
+                    callback_line=callback.lineno,
+                    consent_line=consent_line,
+                    request_disclosure=(
+                        "interactive-decision"
+                        if consent_line is not None
+                        else "not-proven"
+                    ),
+                )
+
+
+def typescript_sampling_response_offset(callback: str) -> int | None:
+    """Return the first exact sampling-result object returned by an arrow callback."""
+    code = typescript_code_mask(callback)
+    arrow = code.find("=>")
+    if arrow < 0:
+        return None
+    cursor = arrow + 2
+    while cursor < len(code) and code[cursor].isspace():
+        cursor += 1
+    candidates: list[int] = []
+    if cursor < len(code) and code[cursor] == "{":
+        body_end = typescript_balanced_end(code, cursor, "{", "}")
+        if body_end is None:
+            return None
+        body_code = code[cursor + 1 : body_end - 1]
+        candidates.extend(
+            cursor + 1 + match.end() - 1
+            for match in re.finditer(r"\breturn\s*\{", body_code)
+        )
+    else:
+        if cursor < len(code) and code[cursor] == "(":
+            cursor += 1
+            while cursor < len(code) and code[cursor].isspace():
+                cursor += 1
+        if cursor < len(code) and code[cursor] == "{":
+            candidates.append(cursor)
+    for opening in candidates:
+        end = typescript_balanced_end(code, opening, "{", "}")
+        if end is None:
+            continue
+        result = callback[opening:end]
+        if all(
+            typescript_object_property_expression(result, name) is not None
+            for name in ("role", "content", "model")
+        ):
+            return opening
+    return None
+
+
+def typescript_sampling_consent_proof(
+    callback: str,
+    response_offset: int,
+) -> tuple[int | None, str]:
+    """Prove full-request disclosure and a fail-closed awaited user decision."""
+    prefix = callback[:response_offset]
+    code = typescript_code_mask(prefix)
+    for match in re.finditer(
+        r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*await\s+"
+        r"[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*\.confirm\s*\(",
+        code,
+    ):
+        decision = match.group(1)
+        rejection = re.search(
+            rf"\bif\s*\(\s*!\s*{re.escape(decision)}\s*\)\s*\{{",
+            code[match.end() :],
+        )
+        if rejection is None:
+            continue
+        opening = match.end() + rejection.end() - 1
+        end = typescript_balanced_end(code, opening, "{", "}")
+        if end is None or not re.search(r"\bthrow\b", code[opening + 1 : end - 1]):
+            continue
+        if re.search(r"\.(?:generate|create|request)\s*\(", code[:end]):
+            continue
+        disclosed = (
+            "systemPrompt" in prefix
+            and ".messages" in prefix
+            and re.search(r"\.(?:attention|print|log)\s*\(", code[: match.start()])
+            is not None
+        )
+        return match.start(), "full-request" if disclosed else "partial-or-unresolved"
+    return None, "not-proven"
+
+
+def typescript_sampling_token_budget_line(
+    callback: str,
+    response_offset: int,
+) -> int | None:
+    """Locate a token cap that is passed to the provider before sampling."""
+    prefix = callback[:response_offset]
+    code = typescript_code_mask(prefix)
+    for match in re.finditer(
+        r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*Math\.min\s*\("
+        r"\s*[A-Za-z_$][\w$]*(?:\.params)?\.maxTokens\s*,\s*"
+        r"(?:[A-Za-z_$][\w$]*|\d+)",
+        code,
+    ):
+        binding = match.group(1)
+        if re.search(rf"\bmaxTokens\s*:\s*{re.escape(binding)}\b", code[match.end() :]):
+            return match.start()
+    return None
+
+
+def add_typescript_mcp_sampling_handler_consent_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve TypeScript MCP client sampling handlers and explicit consent gates."""
+    analysis = "typescript-mcp-sampling-handler-consent"
+    for path in paths:
+        if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        if "sampling/createMessage" not in text or "setRequestHandler" not in text:
+            continue
+        imports = typescript_named_import_bindings(text, "@modelcontextprotocol/client")
+        client_constructors = {
+            local
+            for local, exported in imports.items()
+            if exported == "Client" and not typescript_import_binding_is_shadowed(text, local)
+        }
+        if not client_constructors:
+            continue
+        code = typescript_code_mask(text)
+        configured_receivers: set[str] = set()
+        for constructor in client_constructors:
+            for match in re.finditer(
+                rf"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*new\s+"
+                rf"{re.escape(constructor)}\s*\(",
+                code,
+            ):
+                opening = match.end() - 1
+                end = typescript_balanced_end(code, opening, "(", ")")
+                if end is None:
+                    continue
+                arguments = typescript_call_arguments(text[opening + 1 : end - 1])
+                if len(arguments) < 2:
+                    continue
+                capabilities = typescript_object_property_expression(
+                    arguments[1][0],
+                    "capabilities",
+                )
+                if capabilities is not None and typescript_object_property_expression(
+                    capabilities,
+                    "sampling",
+                ) is not None:
+                    configured_receivers.add(match.group(1))
+        receivers = set(configured_receivers)
+        for constructor in client_constructors:
+            for match in re.finditer(
+                rf"\b(?P<method>[A-Za-z_$][\w$]*)\s*\([^)]*\b"
+                rf"(?P<parameter>[A-Za-z_$][\w$]*)\s*:\s*"
+                rf"{re.escape(constructor)}\b[^)]*\)",
+                code,
+            ):
+                method = match.group("method")
+                parameter = match.group("parameter")
+                if any(
+                    re.search(
+                        rf"\b(?:this|[A-Za-z_$][\w$]*)\.{re.escape(method)}"
+                        rf"\s*\(\s*{re.escape(receiver)}\b",
+                        code,
+                    )
+                    for receiver in configured_receivers
+                ):
+                    receivers.add(parameter)
+        if not receivers:
+            continue
+        relative = path.relative_to(root).as_posix()
+        lines = text.splitlines()
+        receiver_pattern = "|".join(re.escape(receiver) for receiver in sorted(receivers))
+        for match in re.finditer(
+            rf"\b(?P<receiver>{receiver_pattern})\.setRequestHandler\s*\(",
+            code,
+        ):
+            opening = match.end() - 1
+            end = typescript_balanced_end(code, opening, "(", ")")
+            if end is None:
+                continue
+            arguments = typescript_call_arguments(
+                text[opening + 1 : end - 1],
+                opening + 1,
+            )
+            if len(arguments) != 2 or re.fullmatch(
+                r"(['\"])sampling/createMessage\1", arguments[0][0].strip()
+            ) is None:
+                continue
+            callback, callback_offset = arguments[1]
+            response_offset = typescript_sampling_response_offset(callback)
+            if response_offset is None:
+                approval_policy = "unresolved-handler"
+                response_created = False
+                consent_offset = None
+                request_disclosure = "unresolved"
+                budget_offset = None
+                fulfilment_target = "unresolved"
+            else:
+                consent_offset, request_disclosure = typescript_sampling_consent_proof(
+                    callback,
+                    response_offset,
+                )
+                approval_policy = (
+                    "human-confirmed"
+                    if consent_offset is not None
+                    else "automatic-fulfilment"
+                )
+                response_created = True
+                budget_offset = typescript_sampling_token_budget_line(
+                    callback,
+                    response_offset,
+                )
+                callback_prefix_code = typescript_code_mask(callback[:response_offset])
+                fulfilment_target = (
+                    "model-provider"
+                    if re.search(
+                        r"\.(?:generate|create|request)\s*\(",
+                        callback_prefix_code,
+                    )
+                    else "handler-response"
+                )
+                if fulfilment_target != "model-provider":
+                    budget_offset = None
+            line = line_at(text, match.start())
+            callback_line = line_at(text, callback_offset)
+            add_mcp_sampling_consent_observation(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=line,
+                frontend="typescript",
+                analysis=analysis,
+                approval_policy=approval_policy,
+                response_created=response_created,
+                fulfilment_target=fulfilment_target,
+                callback_line=callback_line,
+                consent_line=(
+                    line_at(text, callback_offset + consent_offset)
+                    if consent_offset is not None
+                    else None
+                ),
+                request_disclosure=request_disclosure,
+                token_budget_line=(
+                    line_at(text, callback_offset + budget_offset)
+                    if budget_offset is not None
+                    else None
+                ),
+            )
 
 
 def add_python_google_adk_bigquery_audit_flow(
@@ -18692,7 +19335,9 @@ def scan_repository(
     add_typescript_google_adk_openapi_rest_tool_flow(ir, root, registry_paths)
     add_typescript_a2a_card_endpoint_composition(ir, root, registry_paths)
     add_typescript_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)
+    add_typescript_mcp_sampling_handler_consent_flow(ir, root, registry_paths)
     add_python_agno_mcp_confirmation_flow(ir, root, registry_paths)
+    add_python_mcp_sampling_callback_consent_flow(ir, root, registry_paths)
     add_python_semantic_kernel_mcp_sampling_flow(ir, root, registry_paths)
     add_python_adk_a2a_card_endpoint_policy(ir, root, registry_paths)
     add_python_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)
