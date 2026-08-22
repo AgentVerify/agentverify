@@ -4,7 +4,7 @@ import ast
 from pathlib import Path
 
 from agentverify.ir import Component, Evidence, Relationship, RepositoryIR
-from agentverify.rules import RULE_CATALOG, RULE_DEFINITIONS, run_rules
+from agentverify.rules import REPORTING_RULE_IDS, RULE_CATALOG, RULE_DEFINITIONS, run_rules
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -14,6 +14,7 @@ def test_rule_catalog_covers_every_emission_site_with_matching_metadata() -> Non
         definition.rule_id for definition in RULE_DEFINITIONS
     )
     assert len(RULE_CATALOG) == 19
+    assert REPORTING_RULE_IDS == frozenset(RULE_CATALOG)
     assert all(
         definition.summary and definition.remediation
         for definition in RULE_DEFINITIONS

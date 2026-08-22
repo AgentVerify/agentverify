@@ -69,6 +69,6 @@ each rule's result kind, default severity, confidence, summary, and baseline rem
 schema-versioned payload. The engine checks every emitted finding against the same catalog, so a
 call site cannot silently drift to a different kind, severity, or confidence. Inventory-only IDs in
 the specification table above are not reporting rules and therefore do not appear in the runtime
-catalog or emit policy-counted findings. SARIF rule descriptors use the catalog's stable summary,
-remediation, kind, severity, and confidence while individual results retain their context-specific
-messages.
+catalog or emit policy-counted findings; policy rule filters reject those IDs. SARIF rule
+descriptors use the catalog's stable summary, remediation, kind, severity, and confidence while
+individual results retain their context-specific messages.

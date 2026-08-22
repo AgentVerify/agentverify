@@ -55,7 +55,8 @@ to write them directly to a file. Output write failures return exit code 2; succ
 still preserve policy and `--fail-on` exit decisions.
 `agentverify rules` lists every enabled reporting rule with its result kind, default severity,
 confidence, summary, and baseline remediation. Pass a rule ID for a focused explanation or
-`--format json` for policy tooling and editor integrations.
+`--format json` for policy tooling and editor integrations. Policy rule filters reject unknown or
+inventory-only IDs before scanning, so a typo cannot silently turn a gate into an empty match.
 
 Example finding:
 

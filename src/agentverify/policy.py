@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from .ir import RepositoryIR
+from .rules import REPORTING_RULE_IDS
 
 SEVERITY_RANK = {"info": 0, "low": 1, "medium": 2, "high": 3}
 RESULT_KINDS = {"finding", "review"}
@@ -80,7 +81,15 @@ def normalize_policy(payload: object) -> dict[str, Any]:
         maximum = raw_gate.get("max_count")
         if not isinstance(maximum, int) or isinstance(maximum, bool) or maximum < 0:
             raise PolicyError(f"{field}.max_count must be a non-negative integer")
-        rules = _string_list(raw_gate["rules"], f"{field}.rules") if "rules" in raw_gate else []
+        rules = (
+            _string_list(
+                raw_gate["rules"],
+                f"{field}.rules",
+                allowed=REPORTING_RULE_IDS,
+            )
+            if "rules" in raw_gate
+            else []
+        )
         result_kinds = (
             _string_list(raw_gate["result_kinds"], f"{field}.result_kinds", allowed=RESULT_KINDS)
             if "result_kinds" in raw_gate

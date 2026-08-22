@@ -5,6 +5,9 @@ evidence. Policies are JSON documents conforming to the bundled schema:
 
 Use `agentverify rules` to inspect enabled rule IDs and their default metadata, or
 `agentverify rules --format json` when generating policy configuration in tooling.
+Both runtime loading and the bundled JSON schema restrict `rules` entries to this enabled catalog.
+Unknown, misspelled, and inventory-only IDs fail before repository scanning instead of matching zero
+results and allowing a gate to pass silently.
 
 ```console
 agentverify schema policy --output agentverify-policy.schema.json

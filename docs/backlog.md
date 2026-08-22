@@ -440,6 +440,9 @@ The CLI now exposes an authoritative 19-rule runtime catalog in text or schema-v
 focused lookup by rule ID. Every emission site is checked against the catalog's result kind,
 severity, and confidence, preventing policy-facing metadata drift while keeping context-specific
 finding messages and remediation details in reports.
+Policy rule filters are now fail-closed against the same catalog in both runtime normalization and
+the bundled JSON schema. Unknown, misspelled, or inventory-only IDs are rejected before scanning;
+a consistency test requires schema and catalog updates to land together.
 
 ## P2 — AI BOM standards adapters
 

@@ -188,6 +188,7 @@ RULE_DEFINITIONS = tuple(
 RULE_CATALOG: Mapping[str, RuleMetadata] = MappingProxyType(
     {definition.rule_id: definition for definition in RULE_DEFINITIONS}
 )
+REPORTING_RULE_IDS = frozenset(RULE_CATALOG)
 
 
 def fingerprint(rule_id: str, path: str, line: int, message: str) -> str:

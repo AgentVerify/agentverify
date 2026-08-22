@@ -7,6 +7,7 @@ from jsonschema import Draft202012Validator
 
 from agentverify import cli
 from agentverify.report import render_bom, render_json
+from agentverify.rules import RULE_CATALOG
 from agentverify.scanner import scan_repository
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -254,6 +255,9 @@ def test_cli_prints_bundled_policy_schema(capsys) -> None:
         )
     )
     assert schema["title"] == "AgentVerify Policy 1"
+    assert schema["$defs"]["gate"]["properties"]["rules"]["items"]["enum"] == list(
+        RULE_CATALOG
+    )
 
 
 def test_cli_writes_bundled_schema_to_output_file(tmp_path: Path, capsys) -> None:
@@ -418,6 +422,26 @@ def test_invalid_policy_is_rejected_before_scanning(
     captured = capsys.readouterr()
     assert captured.out == ""
     assert "unknown policy fields: disable_rules" in captured.err
+
+
+def test_unknown_policy_rule_is_rejected_before_scanning(
+    tmp_path: Path, capsys, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    policy = tmp_path / "invalid-rule.json"
+    policy.write_text(
+        '{"schema_version":1,"gates":[{"id":"typo","rules":["AV-EXECC001"],"max_count":0}]}',
+        encoding="utf-8",
+    )
+
+    def unexpected_scan(*args: object, **kwargs: object) -> None:
+        raise AssertionError("scan must not run")
+
+    monkeypatch.setattr(cli, "scan_repository", unexpected_scan)
+
+    assert cli.main(["scan", str(ROOT / "cases/python_dangerous"), "--policy", str(policy)]) == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "rules contains unsupported values: AV-EXECC001" in captured.err
 
 
 def test_paths_from_scans_only_selected_repository_paths(tmp_path: Path, capsys) -> None:

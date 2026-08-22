@@ -26,6 +26,20 @@ from agentverify.policy import PolicyError, load_policy, normalize_policy
         (
             {
                 "schema_version": 1,
+                "gates": [{"id": "gate", "rules": ["AV-EXECC001"], "max_count": 0}],
+            },
+            "rules contains unsupported values: AV-EXECC001",
+        ),
+        (
+            {
+                "schema_version": 1,
+                "gates": [{"id": "gate", "rules": ["AV-AI001"], "max_count": 0}],
+            },
+            "rules contains unsupported values: AV-AI001",
+        ),
+        (
+            {
+                "schema_version": 1,
                 "gates": [{"id": "same", "max_count": 0}, {"id": "same", "max_count": 1}],
             },
             "duplicate gate id",
