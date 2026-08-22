@@ -138,6 +138,14 @@ covering all known mutations is controlled, and a static read-only `include_tool
 counterexample. Dynamic confirmation lists remain unresolved. Next generalize package capability
 manifests and approval mediation without inferring writes from names.
 
+Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
+completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
+server-controlled prompt/model hint/sampling parameters, model invocation, and response returned to
+the server. `AV-MCP004` reports the one reachable sample that explicitly enables
+`sampling_auto_approve`; six reachable default-denied bindings add exact consent-policy controls.
+Next generalize MCP sampling across other clients while keeping elicitation, tool approval, and model
+sampling as separate protocol authorities.
+
 ## P1 — sandbox containment quality
 
 Kubernetes privileged mode, host network/PID/IPC, service-account token mounts, explicit privilege
@@ -233,8 +241,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 441 pinned positive/negative locations, with 540 separately
-scored IR component/relationship labels. Schema-v67 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 451 pinned positive/negative locations, with 551 separately
+scored IR component/relationship labels. Schema-v68 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

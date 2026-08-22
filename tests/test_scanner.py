@@ -2843,6 +2843,117 @@ def test_agno_filesystem_mcp_confirmation_policy_is_resolved_per_mutating_tool(
     )
 
 
+def test_semantic_kernel_mcp_sampling_auto_approval_resolves_server_model_authority(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/python_semantic_kernel_mcp_sampling"
+    ir = scan_repository(root)
+    findings = [finding for finding in ir.findings if finding.rule_id == "AV-MCP004"]
+    assert [
+        (finding.evidence.path, finding.evidence.line, finding.ir_path)
+        for finding in findings
+    ] == [
+        (
+            "auto.py",
+            9,
+            (
+                "agent:Sampler",
+                "mcp-server:ReleaseNotes",
+                "capability:model-sampling",
+            ),
+        )
+    ]
+    assert findings[0].result_kind == "review"
+    assert findings[0].analysis["control_settings"] == ["mcp-sampling-approval"]
+    assert findings[0].analysis["approval_coverage"] == "auto-approved-explicit"
+
+    capabilities = {
+        component.evidence.path: component
+        for component in ir.components
+        if component.kind == "capability"
+        and component.name == "model-sampling"
+        and component.attributes.get("analysis")
+        == "python-semantic-kernel-mcp-sampling-approval"
+    }
+    assert set(capabilities) == {
+        "auto.py",
+        "callback.py",
+        "default_deny.py",
+        "dynamic.py",
+        "explicit_deny.py",
+    }
+    assert capabilities["auto.py"].attributes == {
+        "input_authority": "mcp-server",
+        "system_prompt_authority": "mcp-server",
+        "model_hint_authority": "mcp-server",
+        "sampling_parameters_authority": "mcp-server",
+        "response_destination": "mcp-server",
+        "approval_policy": "auto-approved-explicit",
+        "auto_approved": True,
+        "consent_callback": "absent",
+        "configuration_call_line": 6,
+        "sdk_source_path": "python/semantic_kernel/connectors/mcp.py",
+        "scope": "production",
+        "analysis": "python-semantic-kernel-mcp-sampling-approval",
+    }
+    assert capabilities["callback.py"].attributes["approval_policy"] == "callback-controlled"
+    assert capabilities["callback.py"].attributes["consent_callback"] == "configured"
+    assert capabilities["dynamic.py"].attributes["approval_policy"] == "unresolved-explicit"
+    assert capabilities["default_deny.py"].attributes["approval_policy"] == "denied-default"
+    assert capabilities["explicit_deny.py"].attributes["approval_policy"] == "denied-explicit"
+    assert all(
+        capabilities[path].attributes["auto_approved"] is False
+        for path in ("default_deny.py", "explicit_deny.py")
+    )
+
+    deny_controls = {
+        edge.evidence.path
+        for edge in ir.relationships
+        if edge.source_kind == "capability"
+        and edge.source_name == "model-sampling"
+        and edge.relation == "governed-by"
+        and edge.target_kind == "control"
+        and edge.target_name == "mcp-sampling-consent"
+        and edge.attributes.get("policy_effect")
+        == "denies-model-sampling-without-consent"
+    }
+    assert deny_controls == {"default_deny.py", "explicit_deny.py"}
+    assert not any(
+        finding.rule_id == "AV-APPROVAL001"
+        and finding.evidence.path in {"auto.py", "callback.py"}
+        for finding in ir.findings
+    )
+    assert not any(
+        component.kind == "control-setting"
+        and component.name == "auto-approval"
+        and component.evidence.path in {"auto.py", "callback.py"}
+        for component in ir.components
+    )
+    assert not any(
+        component.attributes.get("analysis")
+        == "python-semantic-kernel-mcp-sampling-approval"
+        and component.evidence.path in {"disconnected.py", "unbound.py", "wrong_import.py"}
+        for component in ir.components
+    )
+
+    changed_sdk = tmp_path / "changed-sdk-default"
+    shutil.copytree(root, changed_sdk)
+    sdk_path = changed_sdk / "python/semantic_kernel/connectors/mcp.py"
+    sdk_source = sdk_path.read_text(encoding="utf-8")
+    before = "sampling_auto_approve: bool = False"
+    assert before in sdk_source
+    sdk_path.write_text(
+        sdk_source.replace(before, "sampling_auto_approve: bool = True"),
+        encoding="utf-8",
+    )
+    changed_ir = scan_repository(changed_sdk)
+    assert not any(
+        edge.attributes.get("analysis")
+        == "python-semantic-kernel-mcp-sampling-approval"
+        for edge in changed_ir.relationships
+    )
+
+
 def test_typescript_a2a_remote_cards_preserve_endpoint_authority_and_transport(
     tmp_path: Path,
 ) -> None:

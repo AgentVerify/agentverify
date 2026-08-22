@@ -42,6 +42,14 @@ def make_finding(
 def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
     """Evaluate deterministic local rules after parsing has completed."""
     ir.findings.clear()
+    specialized_mcp_sampling_calls = {
+        (component.evidence.path, component.attributes.get("configuration_call_line"))
+        for component in ir.components
+        if component.kind == "capability"
+        and component.name == "model-sampling"
+        and component.attributes.get("analysis")
+        == "python-semantic-kernel-mcp-sampling-approval"
+    }
     for component in ir.components:
         if component.attributes.get("scope") == "test" and not include_tests:
             continue
@@ -118,7 +126,12 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                     "Replace dynamic evaluation with a typed parser or execute inside a least-privilege sandbox.",
                 )
             )
-        if component.kind == "control-setting" and component.name == "auto-approval":
+        if (
+            component.kind == "control-setting"
+            and component.name == "auto-approval"
+            and (component.evidence.path, component.evidence.line)
+            not in specialized_mcp_sampling_calls
+        ):
             ir.findings.append(
                 make_finding(
                     ir,
@@ -131,6 +144,29 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                     "review",
                 )
             )
+        if (
+            component.kind == "capability"
+            and component.name == "model-sampling"
+            and component.attributes.get("analysis")
+            == "python-semantic-kernel-mcp-sampling-approval"
+            and component.attributes.get("input_authority") == "mcp-server"
+            and component.attributes.get("auto_approved") is True
+            and component.attributes.get("approval_policy") == "auto-approved-explicit"
+        ):
+            _, context = component_context(ir, component)
+            if context.get("direct_agents"):
+                ir.findings.append(
+                    make_finding(
+                        ir,
+                        component,
+                        "AV-MCP004",
+                        "high",
+                        "high",
+                        "A reachable Semantic Kernel MCP server can auto-approve its own model-sampling requests",
+                        "Keep sampling_auto_approve disabled and use a fail-closed sampling_consent_callback with user review, model allowlists, and spending limits.",
+                        "review",
+                    )
+                )
         if (
             component.kind == "capability"
             and component.name == "mcp-tool-forwarding"

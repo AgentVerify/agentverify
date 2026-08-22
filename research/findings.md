@@ -121,7 +121,7 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the 441-label truth set.
+rule observations are pinned in the 451-label truth set.
 
 MCP configuration is also executable dependency configuration. Schema v65 resolves 50 literal
 `npx`/`uvx` package launchers in the bounded corpus: 45 unpinned, three floating, and two exact,
@@ -133,6 +133,15 @@ dependency fact, not a claim that `tsx` is the server implementation.
 The rule requires MCP structure and literal package selection, so ordinary package scripts,
 prompt/cache-only `npx`, `--no-install`, and dynamic launcher expressions are not promoted. This is a
 dependency-review signal, not evidence that a named package or registry is compromised.
+
+Schema v68 models MCP sampling as a separate server-to-client authority. Semantic Kernel registers a
+sampling callback on each MCP client session; a server request can supply the system prompt,
+messages, model hint, temperature, and token limit, invoke the client's chat model, and receive the
+result. Seven pinned plugin instances reach a `ChatCompletionAgent`. Six omit the opt-in and are
+governed by the SDK's fail-closed default; one release-notes sample explicitly sets
+`sampling_auto_approve=True` and raises `AV-MCP004`. The specialized review replaces the generic
+auto-approval result at that location. A configured callback takes precedence, but callback and
+dynamic outcomes remain unresolved without inspecting their decision logic.
 
 ## 3. Approval exists, but bypass behavior recurs
 
@@ -148,9 +157,10 @@ generated MCP `FunctionTool`. AgentVerify records the exact agent→server bindi
 setting, but does not emit AV-APPROVAL002 because the example's policy tools are not a proven
 destructive capability. Two negative rule labels and three IR labels pin that distinction.
 
-The structure-aware engine reports 15 default-scope approval-bypass reviews. Eight are explicit
+The structure-aware engine reports 14 default-scope generic approval-bypass reviews. Eight are explicit
 environment-enabled approval short circuits in pinned OpenAI Agents Python/JavaScript examples; the
-remaining seven are enabled configuration candidates found previously. Examples are not treated as
+remaining six are enabled configuration candidates found previously. The Semantic Kernel sampling
+opt-in is now reported by the protocol-specific `AV-MCP004` rule instead. Examples are not treated as
 vulnerabilities, but they prove that deployment-time approval overrides recur in real agent code and
 need auditable policy. Status flags and branches with an additional safety condition are regression
 negatives.

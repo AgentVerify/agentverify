@@ -69,6 +69,10 @@ never imported or executed.
   writable tools, while a static read-only include list, complete mutation confirmation, dynamic
   policy, disconnected session, unbound toolkit, and wrong imports remain conservative
   counterexamples.
+- `python_semantic_kernel_mcp_sampling`: Semantic Kernel MCP plugins expose server-originated model
+  sampling through an exact Agent binding. Explicit auto-approval is reviewable; default/explicit
+  denial, callback-controlled and dynamic policies, disconnected plugins, wrong imports, and changed
+  SDK propagation remain distinct counterexamples.
 - `python_google_adk_bigquery_audit`: Google ADK Runner composition attaches its default-enabled
   BigQuery analytics plugin to one tool action while retaining an explicit disabled near miss.
 - `python_skyvern_action_history`: Skyvern Task v3 records post-dispatch browser actions in a

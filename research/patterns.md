@@ -122,6 +122,13 @@ omission and incomplete static coverage are actionable, complete coverage is a p
 dynamic policy expressions remain unresolved. Read-only tool inclusion is an independent
 counterproof and must not be inferred from a suggestive variable name.
 
+MCP approval is bidirectional. Tool approval governs client requests sent to a server, while sampling
+approval governs a server request that spends the client's model authority and returns the result.
+For sampling, the relevant evidence is callback registration, default denial, callback precedence,
+the server-controlled prompt and sampling fields, the actual model call, and the response channel.
+A shared word such as `auto_approve` is not enough to explain that trust boundary, and generic and
+protocol-specific findings should not be emitted for the same setting.
+
 ## Observability as a cross-cutting control
 
 Tracing and audit hooks appear at framework, model-client, runtime, and tool layers. A useful rule asks

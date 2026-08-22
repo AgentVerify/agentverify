@@ -3480,6 +3480,72 @@
       "relationship":{"source_kind":"capability","source_name":"filesystem","relation":"governed-by","target_kind":"control","target_name":"mcp-tool-filter","attributes":{"analysis":"python-agno-mcp-confirmation-default","policy_effect":"blocks-filesystem-mutation"}}
     },
     {
+      "id":"python-semantic-kernel-mcp-sampling-agent-local",
+      "target":{"kind":"local","path":"cases/python_semantic_kernel_mcp_sampling"},
+      "check_id":"IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING","path":"auto.py","line":11,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Sampler","relation":"uses","target_kind":"mcp-server","target_name":"ReleaseNotes","source_id":"py:auto.py#agent:agent","target_id":"py:auto.py#mcp-server:plugin","attributes":{"analysis":"python-semantic-kernel-mcp-sampling-approval","approval_policy":"auto-approved-explicit","model_sampling":true}}
+    },
+    {
+      "id":"python-semantic-kernel-mcp-sampling-capability-local",
+      "target":{"kind":"local","path":"cases/python_semantic_kernel_mcp_sampling"},
+      "check_id":"IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING","path":"auto.py","line":9,"expected":true,
+      "relationship":{"source_kind":"mcp-server","source_name":"ReleaseNotes","relation":"uses","target_kind":"capability","target_name":"model-sampling","source_id":"py:auto.py#mcp-server:plugin","attributes":{"analysis":"python-semantic-kernel-mcp-sampling-approval","input_authority":"mcp-server","response_destination":"mcp-server","auto_approved":true}}
+    },
+    {
+      "id":"python-semantic-kernel-mcp-sampling-setting-local",
+      "target":{"kind":"local","path":"cases/python_semantic_kernel_mcp_sampling"},
+      "check_id":"IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING","path":"auto.py","line":9,"expected":true,
+      "relationship":{"source_kind":"mcp-server","source_name":"ReleaseNotes","relation":"configured-by","target_kind":"control-setting","target_name":"mcp-sampling-approval","source_id":"py:auto.py#mcp-server:plugin","attributes":{"analysis":"python-semantic-kernel-mcp-sampling-approval","approval_policy":"auto-approved-explicit","enabled":true}}
+    },
+    {
+      "id":"python-semantic-kernel-mcp-sampling-default-control-local",
+      "target":{"kind":"local","path":"cases/python_semantic_kernel_mcp_sampling"},
+      "check_id":"IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING","path":"default_deny.py","line":6,"expected":true,
+      "relationship":{"source_kind":"capability","source_name":"model-sampling","relation":"governed-by","target_kind":"control","target_name":"mcp-sampling-consent","attributes":{"analysis":"python-semantic-kernel-mcp-sampling-approval","policy_effect":"denies-model-sampling-without-consent","approval_policy":"denied-default"}}
+    },
+    {
+      "id":"python-semantic-kernel-mcp-sampling-callback-local",
+      "target":{"kind":"local","path":"cases/python_semantic_kernel_mcp_sampling"},
+      "check_id":"IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING","path":"callback.py","line":13,"expected":true,
+      "relationship":{"source_kind":"mcp-server","source_name":"Reviewed","relation":"configured-by","target_kind":"control-setting","target_name":"mcp-sampling-approval","attributes":{"analysis":"python-semantic-kernel-mcp-sampling-approval","approval_policy":"callback-controlled","consent_callback":"configured"}}
+    },
+    {
+      "id":"python-semantic-kernel-mcp-sampling-dynamic-local",
+      "target":{"kind":"local","path":"cases/python_semantic_kernel_mcp_sampling"},
+      "check_id":"IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING","path":"dynamic.py","line":9,"expected":true,
+      "relationship":{"source_kind":"mcp-server","source_name":"Dynamic","relation":"configured-by","target_kind":"control-setting","target_name":"mcp-sampling-approval","attributes":{"analysis":"python-semantic-kernel-mcp-sampling-approval","approval_policy":"unresolved-explicit","enabled":null}}
+    },
+    {
+      "id":"python-semantic-kernel-mcp-sampling-disconnected-local-negative",
+      "target":{"kind":"local","path":"cases/python_semantic_kernel_mcp_sampling"},
+      "check_id":"IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING","path":"disconnected.py","line":6,"expected":false,"source_contains":"async with MCPStdioPlugin(",
+      "relationship":{"source_kind":"mcp-server","relation":"uses","target_kind":"capability","target_name":"model-sampling","attributes":{"analysis":"python-semantic-kernel-mcp-sampling-approval"}}
+    },
+    {
+      "id":"python-semantic-kernel-mcp-sampling-wrong-import-local-negative",
+      "target":{"kind":"local","path":"cases/python_semantic_kernel_mcp_sampling"},
+      "check_id":"IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING","path":"wrong_import.py","line":6,"expected":false,"source_contains":"async with MCPStdioPlugin(",
+      "relationship":{"source_kind":"mcp-server","relation":"uses","target_kind":"capability","target_name":"model-sampling","attributes":{"analysis":"python-semantic-kernel-mcp-sampling-approval"}}
+    },
+    {
+      "id":"python-semantic-kernel-mcp-sampling-agent-real",
+      "target":{"kind":"repository","repository":"microsoft/semantic-kernel","commit":"b39d95a34435f4c1d55dd00c86120ce118d847e1"},
+      "check_id":"IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING","path":"python/samples/concepts/mcp/agent_with_mcp_sampling.py","line":57,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"IssueAgent","relation":"uses","target_kind":"mcp-server","target_name":"ReleaseNotes","target_id":"py:python/samples/concepts/mcp/agent_with_mcp_sampling.py#mcp-server:plugin","attributes":{"analysis":"python-semantic-kernel-mcp-sampling-approval","approval_policy":"auto-approved-explicit"}}
+    },
+    {
+      "id":"python-semantic-kernel-mcp-sampling-capability-real",
+      "target":{"kind":"repository","repository":"microsoft/semantic-kernel","commit":"b39d95a34435f4c1d55dd00c86120ce118d847e1"},
+      "check_id":"IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING","path":"python/samples/concepts/mcp/agent_with_mcp_sampling.py","line":55,"expected":true,
+      "relationship":{"source_kind":"mcp-server","source_name":"ReleaseNotes","relation":"uses","target_kind":"capability","target_name":"model-sampling","attributes":{"analysis":"python-semantic-kernel-mcp-sampling-approval","system_prompt_authority":"mcp-server","model_hint_authority":"mcp-server","sampling_parameters_authority":"mcp-server","response_destination":"mcp-server","auto_approved":true}}
+    },
+    {
+      "id":"python-semantic-kernel-mcp-sampling-default-control-real",
+      "target":{"kind":"repository","repository":"microsoft/semantic-kernel","commit":"b39d95a34435f4c1d55dd00c86120ce118d847e1"},
+      "check_id":"IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING","path":"python/samples/concepts/mcp/agent_with_mcp_plugin.py","line":35,"expected":true,
+      "relationship":{"source_kind":"capability","source_name":"model-sampling","relation":"governed-by","target_kind":"control","target_name":"mcp-sampling-consent","attributes":{"analysis":"python-semantic-kernel-mcp-sampling-approval","policy_effect":"denies-model-sampling-without-consent","approval_policy":"denied-default"}}
+    },
+    {
       "id":"python-google-adk-bigquery-audit-local",
       "target":{"kind":"local","path":"cases/python_google_adk_bigquery_audit"},
       "check_id":"IR-PY-GOOGLE-ADK-BIGQUERY-AUDIT","path":"app.py","line":13,"expected":true,

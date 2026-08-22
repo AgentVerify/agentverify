@@ -12,7 +12,7 @@ coverage to justify them.
 | AV-MCP001 | inventory | info | Identify MCP clients, servers, transports, commands, URLs, and declared tools | MCP signals in 50/71 |
 | AV-EXEC001 | finding | high | Dynamic command executed through a system shell | 21 default-scope engine matches after literal-command and API resolution |
 | AV-EXEC002 | finding | high | Dynamic input reaches an evaluator/interpreter | 51 default-scope matches across 15 repositories; browser-page promotion additionally requires a proven receiver |
-| AV-APPROVAL001 | review | high | Enabled auto-approve or skip-confirmation path | 15 default-scope engine candidates after semantic-name and approval-flow filtering |
+| AV-APPROVAL001 | review | high | Enabled auto-approve or skip-confirmation path | 14 default-scope engine candidates after semantic-name, approval-flow, and specialized MCP-sampling filtering |
 | AV-APPROVAL002 | review | high | Reachable local OpenAI Agents Python/TypeScript shell tool uses the SDK's disabled approval policy | 2 default-scope matches in the pinned SDK examples; the separate Python MCP composition remains inventory because it lacks a proven destructive capability |
 | AV-APPROVAL003 | finding | high | Reachable local shell or apply-patch tool has a same-file approval callback that transitively returns approval from an environment flag | 3 exact default-scope matches across the pinned OpenAI Agents Python and JavaScript SDK examples |
 | AV-APPROVAL004 | review | high | Reachable writable local filesystem MCP server is converted by OpenAI Agents JS with approval disabled by default | 3 exact default-scope matches in the pinned SDK examples; one static read-only tool-filter example and one unbound server remain negative |
@@ -23,6 +23,7 @@ coverage to justify them.
 | AV-A2A001 | review | high | A remotely fetched A2A AgentCard can select a downstream RPC origin without a proven source-origin binding | 2 default-scope matches: Google ADK JS and Gemini CLI; two ADK Python client-construction paths are guarded by all-interface HTTPS/loopback and same-origin validation |
 | AV-MCP002 | review | high | Dynamic MCP tool name and arguments are forwarded to a server | 49 default-scope matches across 23 repositories after policy resolution |
 | AV-MCP003 | review | high | An MCP server is automatically installed from an unpinned or floating `npx`/`uvx` package reference | 34 default-scope matches across Marvin, Qwen-Agent, Agno, CAMEL, and the TypeScript SDK; exact OpenHands pins and non-auto-install `npx` calls remain negative |
+| AV-MCP004 | review | high | A reachable Semantic Kernel MCP server can auto-approve its own model-sampling requests | 1 exact default-scope match in the pinned sampling example; six reachable default-denied server bindings remain negative |
 | AV-SANDBOX001 | review | high | Container/Kubernetes workload or Docker SDK call exposes a host, privilege, credential, or service-account boundary | 20 matches across 10 repositories; Goose adds an exact read-only host `~/.ssh` bind |
 | AV-AUDIT001 | review | medium | Consequential action has a durable record with explicit unresolved actor attribution | 1 production Skyvern Task v3 path; requires an exact durable-action-record edge and nullable/unset actor state, while generic absence and attributable ADK records remain negative |
 

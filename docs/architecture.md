@@ -320,6 +320,17 @@ partial lists remain reviewable, complete lists add a human-approval control, an
 remain unresolved. A literal `include_tools` list containing only known read-only tools adds an
 `mcp-tool-filter` counterproof and suppresses the destructive capability claim.
 
+The Semantic Kernel MCP sampling pass models authority in the opposite direction. It requires the
+pinned SDK source to register `sampling_callback` on the client session, deny requests when both
+consent and auto-approval are absent, give a configured callback precedence, translate the server's
+system prompt/messages/model hint/temperature/token limit into chat-model inputs, and return the
+completion to the server. Exact `MCP*Plugin` and `ChatCompletionAgent` imports plus a directly bound
+async-context plugin establish the Agent→MCP-server→model-sampling path. Literal true becomes
+`auto-approved-explicit`; omitted and literal-false settings add a fail-closed
+`mcp-sampling-consent` control; callback and dynamic expressions remain unresolved. An exact
+specialized path suppresses the broader lexical auto-approval review so one policy is not reported
+twice.
+
 A repository prepass builds bounded Python network summaries for unique top-level free functions in
 selected files. A summary records direct recognized HTTP calls and the formal parameters that can
 control their origins after fixed-prefix discrimination. At a tool call site, only an exact named

@@ -31,6 +31,8 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
   Agents Python disabled approval default; explicit approval and broken SDK propagation stay negative.
 - `cases/python_agno_mcp_confirmation`: direct and session-composed Agno filesystem MCP tools retain
   omitted, partial, complete, dynamic, and read-only-filtered confirmation states.
+- `cases/python_semantic_kernel_mcp_sampling`: exact Agent/plugin binding distinguishes explicit
+  sampling auto-approval from default/explicit denial, callback, dynamic, and disconnected states.
 - `cases/typescript_structured_tools`: balanced tool-array parsing, namespace spreads, inline and
   assigned SDK tools, agent-as-tool delegation, approval policies, and unrelated-name negatives.
 - `cases/typescript_bun_shell`: Cline inline tools distinguish dynamic Bun `sh -c`, a fixed command,
@@ -123,7 +125,7 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-22 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,769 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,045 relationships, and completed in 236.8013 seconds on the development machine. Three parse
+resolved 2,072 relationships, and completed in 244.8236 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -134,10 +136,10 @@ versioned audited evidence hints plus Python imports reached from MCP forwarding
 URL-security call sites, all charged against the same cap. This refresh materialized 174 dependency files across 20
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v67 carries both the 174-file total and the
+dependency count per repository; engine schema v68 carries both the 174-file total and the
 20-repository coverage.
 
-Engine benchmark schema v67 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v68 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It also publishes Python and TypeScript initial-origin control coverage
 plus source-proven Python and TypeScript secure transports, with redirect, DNS, proxy, configured
@@ -358,7 +360,7 @@ value, and the governed branch must return true directly without an intervening 
 tracks module flags into functions and keeps local flags lexically scoped. TypeScript supports inline
 `process.env` comparisons and module-level flag assignments; comments and strings remain masked.
 
-The full benchmark now reports 15 default-scope reviews. Eight newly resolved paths are official SDK
+The full benchmark now reports 14 default-scope reviews. Eight newly resolved paths are official SDK
 examples: OpenAI Agents Python's
 [shell prompt bypass](https://github.com/openai/openai-agents-python/blob/17ba331bb0ad1622a4ff4ecdc914c77118075dad/examples/tools/shell.py#L80),
 its [apply-patch approval short circuit](https://github.com/openai/openai-agents-python/blob/17ba331bb0ad1622a4ff4ecdc914c77118075dad/examples/tools/apply_patch.py#L83),
@@ -374,7 +376,8 @@ Regression negatives reject status variables such as `AUTO_APPROVED_WARNING`, di
 non-approval methods, and branches that add a second safety condition before returning. Same-class
 Python attributes are resolved only when an approval-specific method has an unconditional early
 return; inheritance, helper-object propagation, and callback results remain unresolved. The rule has
-14 positive and 14 negative exact labels.
+14 positive and 15 negative exact labels. Semantic Kernel's sampling opt-in is excluded here because
+`AV-MCP004` explains its distinct server-to-model authority.
 
 ## AV-APPROVAL002 — reachable local shell with SDK approval disabled
 
@@ -449,6 +452,23 @@ complete mutation coverage, dynamic policy, read-only filtering, unbound tools, 
 Complete static coverage adds a human-approval control; dynamic policy remains unresolved. The rule
 matrix is 5 TP, 4 TN, 0 FP, and 0 FN. The corresponding IR matrix is 9 TP, 1 TN, 0 FP, and 0 FN.
 
+## AV-MCP004 — MCP server model sampling is auto-approved
+
+Schema v68 verifies Semantic Kernel's bidirectional MCP composition. The pinned SDK registers its
+sampling callback on `ClientSession`, denies requests when neither consent nor auto-approval exists,
+gives a configured consent callback precedence, maps the server's system prompt, messages, model
+hint, temperature, and token limit into a chat completion, and returns that completion to the
+server. Exact plugin and `ChatCompletionAgent` imports plus direct async-context binding produce the
+Agent→MCP-server→model-sampling path.
+
+Seven pinned plugin instances qualify for inventory. Six omit the opt-in and receive a
+`mcp-sampling-consent` control representing the fail-closed default. The release-notes sample at
+`python/samples/concepts/mcp/agent_with_mcp_sampling.py:55` explicitly enables
+`sampling_auto_approve` and raises the one high-confidence review. Callback-controlled and dynamic
+policies remain unresolved, while disconnected plugins, wrong imports, and a changed SDK default
+withhold the path. The rule matrix is 2 TP, 7 TN, 0 FP, and 0 FN; the IR matrix is 9 TP, 2 TN, 0 FP,
+and 0 FN.
+
 During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
 to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
 path where agent input reaches
@@ -460,7 +480,8 @@ Expanding the truth set exposed two additional false-positive families. Literal 
 were incorrectly classified as dynamic; resolving complete string literals removed five corpus
 findings while preserving interpolated templates. Broad approval-name matching confused warning-state
 and version-check flags with human approval; requiring approval-specific names removed six review
-candidates. Corpus totals are now 21 `AV-EXEC001` findings and 15 `AV-APPROVAL001` reviews.
+candidates. Corpus totals are now 21 `AV-EXEC001` findings, 14 `AV-APPROVAL001` reviews, and one
+specialized `AV-MCP004` review.
 The dependency closure also exposes CAMEL's production `func_string_to_callable(code)` helper, whose
 parameter reaches `exec`. Browser-aware evaluation adds one more exact path: Skyvern's registered
 [`skyvern_evaluate`](https://github.com/Skyvern-AI/skyvern/blob/486c8975e9864a53037d4701b781f8619e698c40/skyvern/cli/mcp_tools/browser.py#L2458)
@@ -1030,7 +1051,7 @@ ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent 
 Eighty component-taxonomy labels add 51 exact local/pinned framework, provider, and model positives
 plus 29 near-name and unrelated-service negatives. Twenty-five MCP package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
-four real repositories. All 540 IR labels pass:
+four real repositories. All 551 IR labels pass:
 51 component-taxonomy positives/29 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
@@ -1066,5 +1087,5 @@ negative, four Axios-instance positives/one negative, and two Activepieces filte
 positives/one negative, plus four Composio conditional-runtime positives/one negative, two Composio
 CLI upload positives/one negative, two Google ADK OpenAPI origin-lock positives/one negative, and two
 OpenAI Agents Python MCP-approval-default positives/one negative, six OpenAI Agents JS MCP approval
-composition positives/one negative, nine Agno MCP confirmation positives/one negative, plus 22 MCP
-package-launcher positives/three negatives.
+composition positives/one negative, nine Agno MCP confirmation positives/one negative, nine Semantic
+Kernel MCP sampling positives/two negatives, plus 22 MCP package-launcher positives/three negatives.

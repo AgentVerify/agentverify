@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T04:45:05.458448+00:00",
-  "labels": 540,
-  "passed": 540,
+  "generated_at": "2026-08-22T05:22:03.292325+00:00",
+  "labels": 551,
+  "passed": 551,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -310,6 +310,14 @@
     },
     "IR-PY-SECURE-NETWORK-HELPER": {
       "tp": 4,
+      "fp": 0,
+      "tn": 2,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING": {
+      "tp": 9,
       "fp": 0,
       "tn": 2,
       "fn": 0,
@@ -2965,6 +2973,105 @@
     {
       "id": "python-agno-mcp-read-only-filter-real",
       "check_id": "IR-PY-AGNO-MCP-CONFIRMATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-semantic-kernel-mcp-sampling-agent-local",
+      "check_id": "IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-semantic-kernel-mcp-sampling-capability-local",
+      "check_id": "IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-semantic-kernel-mcp-sampling-setting-local",
+      "check_id": "IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-semantic-kernel-mcp-sampling-default-control-local",
+      "check_id": "IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-semantic-kernel-mcp-sampling-callback-local",
+      "check_id": "IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-semantic-kernel-mcp-sampling-dynamic-local",
+      "check_id": "IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-semantic-kernel-mcp-sampling-disconnected-local-negative",
+      "check_id": "IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-semantic-kernel-mcp-sampling-wrong-import-local-negative",
+      "check_id": "IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-semantic-kernel-mcp-sampling-agent-real",
+      "check_id": "IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-semantic-kernel-mcp-sampling-capability-real",
+      "check_id": "IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-semantic-kernel-mcp-sampling-default-control-real",
+      "check_id": "IR-PY-SEMANTIC-KERNEL-MCP-SAMPLING",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

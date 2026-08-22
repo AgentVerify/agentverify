@@ -546,6 +546,21 @@ def main() -> int:
             and item.attributes.get("analysis")
             == "python-agno-mcp-confirmation-default"
         ]
+        python_semantic_kernel_mcp_sampling_servers = [
+            item
+            for item in ir.components
+            if item.kind == "mcp-server"
+            and item.attributes.get("analysis")
+            == "python-semantic-kernel-mcp-sampling-approval"
+        ]
+        python_semantic_kernel_mcp_sampling_capabilities = [
+            item
+            for item in ir.components
+            if item.kind == "capability"
+            and item.name == "model-sampling"
+            and item.attributes.get("analysis")
+            == "python-semantic-kernel-mcp-sampling-approval"
+        ]
         approval_callback_bypass_tools = [
             item
             for item in ir.components
@@ -1269,6 +1284,61 @@ def main() -> int:
                     finding.rule_id == "AV-APPROVAL005" for finding in ir.findings
                 ),
             },
+            "python_semantic_kernel_mcp_sampling": {
+                "servers": len(python_semantic_kernel_mcp_sampling_servers),
+                "capabilities": len(python_semantic_kernel_mcp_sampling_capabilities),
+                "auto_approved": sum(
+                    item.attributes.get("approval_policy")
+                    == "auto-approved-explicit"
+                    for item in python_semantic_kernel_mcp_sampling_capabilities
+                ),
+                "denied_default": sum(
+                    item.attributes.get("approval_policy") == "denied-default"
+                    for item in python_semantic_kernel_mcp_sampling_capabilities
+                ),
+                "denied_explicit": sum(
+                    item.attributes.get("approval_policy") == "denied-explicit"
+                    for item in python_semantic_kernel_mcp_sampling_capabilities
+                ),
+                "callback_controlled": sum(
+                    item.attributes.get("approval_policy") == "callback-controlled"
+                    for item in python_semantic_kernel_mcp_sampling_capabilities
+                ),
+                "unresolved_explicit": sum(
+                    item.attributes.get("approval_policy") == "unresolved-explicit"
+                    for item in python_semantic_kernel_mcp_sampling_capabilities
+                ),
+                "agent_server_edges": sum(
+                    edge.source_kind == "agent"
+                    and edge.relation == "uses"
+                    and edge.target_kind == "mcp-server"
+                    and edge.attributes.get("analysis")
+                    == "python-semantic-kernel-mcp-sampling-approval"
+                    for edge in ir.relationships
+                ),
+                "configured_by_edges": sum(
+                    edge.source_kind == "mcp-server"
+                    and edge.relation == "configured-by"
+                    and edge.target_kind == "control-setting"
+                    and edge.target_name == "mcp-sampling-approval"
+                    and edge.attributes.get("analysis")
+                    == "python-semantic-kernel-mcp-sampling-approval"
+                    for edge in ir.relationships
+                ),
+                "deny_control_edges": sum(
+                    edge.source_kind == "capability"
+                    and edge.source_name == "model-sampling"
+                    and edge.relation == "governed-by"
+                    and edge.target_kind == "control"
+                    and edge.target_name == "mcp-sampling-consent"
+                    and edge.attributes.get("analysis")
+                    == "python-semantic-kernel-mcp-sampling-approval"
+                    for edge in ir.relationships
+                ),
+                "findings": sum(
+                    finding.rule_id == "AV-MCP004" for finding in ir.findings
+                ),
+            },
             "approval_callback_bypass": {
                 "tools": len(approval_callback_bypass_tools),
                 "python_tools": sum(
@@ -1716,7 +1786,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 67,
+        "schema_version": 68,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2075,6 +2145,25 @@ def main() -> int:
                     "fully_confirmed",
                     "agent_server_edges",
                     "configured_by_edges",
+                    "findings",
+                )
+            },
+            "python_semantic_kernel_mcp_sampling": {
+                name: sum(
+                    result["python_semantic_kernel_mcp_sampling"][name]
+                    for result in successful
+                )
+                for name in (
+                    "servers",
+                    "capabilities",
+                    "auto_approved",
+                    "denied_default",
+                    "denied_explicit",
+                    "callback_controlled",
+                    "unresolved_explicit",
+                    "agent_server_edges",
+                    "configured_by_edges",
+                    "deny_control_edges",
                     "findings",
                 )
             },

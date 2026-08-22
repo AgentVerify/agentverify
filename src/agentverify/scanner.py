@@ -16988,6 +16988,361 @@ def add_python_agno_mcp_confirmation_flow(
                     )
 
 
+SEMANTIC_KERNEL_MCP_PLUGIN_CONSTRUCTORS = {
+    "MCPStdioPlugin": "stdio",
+    "MCPSsePlugin": "sse",
+    "MCPStreamableHttpPlugin": "streamable-http",
+    "MCPWebsocketPlugin": "websocket",
+}
+
+
+def add_python_semantic_kernel_mcp_sampling_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve MCP server-originated model sampling through Semantic Kernel policy."""
+    selected: dict[str, tuple[str, list[str], ast.Module]] = {}
+    for path in paths:
+        if path.suffix.lower() != ".py" or not path.is_file():
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+            tree = ast.parse(text)
+        except (OSError, SyntaxError, ValueError):
+            continue
+        selected[path.relative_to(root).as_posix()] = (text, text.splitlines(), tree)
+
+    sdk_path = "python/semantic_kernel/connectors/mcp.py"
+    if sdk_path not in selected:
+        return
+    sdk_source = selected[sdk_path][0]
+    if not all(
+        marker in sdk_source
+        for marker in (
+            "sampling_auto_approve: bool = False",
+            "sampling_auto_approve=sampling_auto_approve,",
+            "sampling_callback=self.sampling_callback",
+            "if self.sampling_consent_callback is None:",
+            "if not self.sampling_auto_approve:",
+            "elif not await self._is_sampling_approved(params):",
+            "chat_history = ChatHistory(system_message=params.systemPrompt)",
+            "completion_settings.max_completion_tokens = params.maxTokens",
+            "result = await service.get_chat_message_content(",
+            "return types.CreateMessageResult(",
+        )
+    ):
+        return
+
+    analysis = "python-semantic-kernel-mcp-sampling-approval"
+    for relative, (text, lines, tree) in selected.items():
+        if relative == sdk_path or "MCP" not in text or "Plugin" not in text:
+            continue
+        agent_constructor = python_exact_import_name(
+            tree, "semantic_kernel.agents", "ChatCompletionAgent"
+        )
+        if agent_constructor is None:
+            continue
+        plugin_bindings = {
+            binding: (exported, transport)
+            for exported, transport in SEMANTIC_KERNEL_MCP_PLUGIN_CONSTRUCTORS.items()
+            if (
+                binding := python_exact_import_name(
+                    tree, "semantic_kernel.connectors.mcp", exported
+                )
+            )
+            is not None
+        }
+        if not plugin_bindings:
+            continue
+
+        scopes: list[list[ast.stmt]] = [tree.body]
+        scopes.extend(
+            statement.body
+            for statement in tree.body
+            if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef))
+        )
+        for body in scopes:
+            nodes = python_scope_nodes(body)
+            store_counts = Counter(
+                node.id
+                for node in nodes
+                if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store)
+            )
+            for context in nodes:
+                if not isinstance(context, ast.AsyncWith):
+                    continue
+                context_nodes = python_scope_nodes(context.body)
+                for item in context.items:
+                    plugin_call = item.context_expr
+                    plugin_target = item.optional_vars
+                    if not (
+                        isinstance(plugin_call, ast.Call)
+                        and isinstance(plugin_call.func, ast.Name)
+                        and plugin_call.func.id in plugin_bindings
+                        and isinstance(plugin_target, ast.Name)
+                        and store_counts[plugin_target.id] == 1
+                    ):
+                        continue
+                    agent_calls = [
+                        node
+                        for node in context_nodes
+                        if isinstance(node, ast.Call)
+                        and isinstance(node.func, ast.Name)
+                        and node.func.id == agent_constructor
+                        and isinstance(
+                            plugins_expression := python_call_keyword(node, "plugins"),
+                            (ast.List, ast.Tuple),
+                        )
+                        and any(
+                            isinstance(plugin, ast.Name)
+                            and plugin.id == plugin_target.id
+                            for plugin in plugins_expression.elts
+                        )
+                    ]
+                    if not agent_calls:
+                        continue
+
+                    callback_expression = python_call_keyword(
+                        plugin_call, "sampling_consent_callback"
+                    )
+                    callback_configured = callback_expression is not None and not (
+                        isinstance(callback_expression, ast.Constant)
+                        and callback_expression.value is None
+                    )
+                    auto_expression = python_call_keyword(
+                        plugin_call, "sampling_auto_approve"
+                    )
+                    if callback_configured:
+                        approval_policy = "callback-controlled"
+                        auto_approved: bool | None = None
+                        policy_expression = callback_expression
+                    elif auto_expression is None:
+                        approval_policy = "denied-default"
+                        auto_approved = False
+                        policy_expression = plugin_call
+                    elif (
+                        isinstance(auto_expression, ast.Constant)
+                        and auto_expression.value is True
+                    ):
+                        approval_policy = "auto-approved-explicit"
+                        auto_approved = True
+                        policy_expression = auto_expression
+                    elif (
+                        isinstance(auto_expression, ast.Constant)
+                        and auto_expression.value is False
+                    ):
+                        approval_policy = "denied-explicit"
+                        auto_approved = False
+                        policy_expression = auto_expression
+                    else:
+                        approval_policy = "unresolved-explicit"
+                        auto_approved = None
+                        policy_expression = auto_expression
+
+                    ir.components = [
+                        component
+                        for component in ir.components
+                        if not (
+                            component.kind == "control-setting"
+                            and component.name == "auto-approval"
+                            and component.evidence.path == relative
+                            and component.evidence.line == plugin_call.lineno
+                        )
+                    ]
+
+                    exported, transport = plugin_bindings[plugin_call.func.id]
+                    server_name_expression = python_call_keyword(plugin_call, "name")
+                    server_name = (
+                        server_name_expression.value
+                        if isinstance(server_name_expression, ast.Constant)
+                        and isinstance(server_name_expression.value, str)
+                        else f"Semantic Kernel MCP@{plugin_call.lineno}"
+                    )
+                    server_evidence = Evidence(
+                        relative,
+                        plugin_call.lineno,
+                        excerpt(lines, plugin_call.lineno),
+                    )
+                    policy_evidence = Evidence(
+                        relative,
+                        policy_expression.lineno,
+                        excerpt(lines, policy_expression.lineno),
+                    )
+                    server_id = source_symbol(
+                        "py", relative, "mcp-server", plugin_target.id
+                    )
+                    server_attributes = {
+                        "framework": "Semantic Kernel",
+                        "constructor": exported,
+                        "transport": transport,
+                        "sampling": "client-callback-enabled",
+                        "approval_policy": approval_policy,
+                        "scope": source_scope(relative),
+                        "analysis": analysis,
+                    }
+                    ir.add_component(
+                        Component(
+                            "mcp-server",
+                            server_name,
+                            server_evidence,
+                            server_attributes,
+                            server_id,
+                        )
+                    )
+                    capability_attributes = {
+                        "input_authority": "mcp-server",
+                        "system_prompt_authority": "mcp-server",
+                        "model_hint_authority": "mcp-server",
+                        "sampling_parameters_authority": "mcp-server",
+                        "response_destination": "mcp-server",
+                        "approval_policy": approval_policy,
+                        "auto_approved": auto_approved,
+                        "consent_callback": (
+                            "configured" if callback_configured else "absent"
+                        ),
+                        "configuration_call_line": plugin_call.lineno,
+                        "sdk_source_path": sdk_path,
+                        "scope": source_scope(relative),
+                        "analysis": analysis,
+                    }
+                    ir.add_component(
+                        Component(
+                            "capability",
+                            "model-sampling",
+                            policy_evidence,
+                            capability_attributes,
+                        )
+                    )
+                    ir.add_relationship(
+                        Relationship(
+                            "mcp-server",
+                            server_name,
+                            "uses",
+                            "capability",
+                            "model-sampling",
+                            policy_evidence,
+                            capability_attributes,
+                            source_id=server_id,
+                        )
+                    )
+                    setting_attributes = {
+                        "enabled": auto_approved,
+                        "approval_policy": approval_policy,
+                        "consent_callback": (
+                            "configured" if callback_configured else "absent"
+                        ),
+                        "scope": source_scope(relative),
+                        "analysis": analysis,
+                    }
+                    ir.add_component(
+                        Component(
+                            "control-setting",
+                            "mcp-sampling-approval",
+                            policy_evidence,
+                            setting_attributes,
+                        )
+                    )
+                    ir.add_relationship(
+                        Relationship(
+                            "mcp-server",
+                            server_name,
+                            "configured-by",
+                            "control-setting",
+                            "mcp-sampling-approval",
+                            policy_evidence,
+                            setting_attributes,
+                            source_id=server_id,
+                        )
+                    )
+                    if approval_policy in {"denied-default", "denied-explicit"}:
+                        control_attributes = {
+                            "policy_effect": "denies-model-sampling-without-consent",
+                            "approval_policy": approval_policy,
+                            "scope": source_scope(relative),
+                            "analysis": analysis,
+                        }
+                        ir.add_component(
+                            Component(
+                                "control",
+                                "mcp-sampling-consent",
+                                policy_evidence,
+                                control_attributes,
+                            )
+                        )
+                        ir.add_relationship(
+                            Relationship(
+                                "capability",
+                                "model-sampling",
+                                "governed-by",
+                                "control",
+                                "mcp-sampling-consent",
+                                policy_evidence,
+                                control_attributes,
+                            )
+                        )
+
+                    for agent_call in agent_calls:
+                        agent_name_expression = python_call_keyword(agent_call, "name")
+                        agent_name = (
+                            agent_name_expression.value
+                            if isinstance(agent_name_expression, ast.Constant)
+                            and isinstance(agent_name_expression.value, str)
+                            else f"ChatCompletionAgent@{agent_call.lineno}"
+                        )
+                        agent_binding = f"ChatCompletionAgent@{agent_call.lineno}"
+                        for assignment in context_nodes:
+                            if (
+                                isinstance(assignment, ast.Assign)
+                                and assignment.value is agent_call
+                                and len(assignment.targets) == 1
+                                and isinstance(assignment.targets[0], ast.Name)
+                                and store_counts[assignment.targets[0].id] == 1
+                            ):
+                                agent_binding = assignment.targets[0].id
+                        agent_evidence = Evidence(
+                            relative,
+                            agent_call.lineno,
+                            excerpt(lines, agent_call.lineno),
+                        )
+                        agent_id = source_symbol(
+                            "py", relative, "agent", agent_binding
+                        )
+                        ir.add_component(
+                            Component(
+                                "agent",
+                                agent_name,
+                                agent_evidence,
+                                {
+                                    "constructor": "ChatCompletionAgent",
+                                    "framework": "Semantic Kernel",
+                                    "scope": source_scope(relative),
+                                    "analysis": analysis,
+                                },
+                                agent_id,
+                            )
+                        )
+                        ir.add_relationship(
+                            Relationship(
+                                "agent",
+                                agent_name,
+                                "uses",
+                                "mcp-server",
+                                server_name,
+                                agent_evidence,
+                                {
+                                    "approval_policy": approval_policy,
+                                    "model_sampling": True,
+                                    "analysis": analysis,
+                                },
+                                source_id=agent_id,
+                                target_id=server_id,
+                            )
+                        )
+
+
 def add_python_google_adk_bigquery_audit_flow(
     ir: RepositoryIR,
     root: Path,
@@ -18338,6 +18693,7 @@ def scan_repository(
     add_typescript_a2a_card_endpoint_composition(ir, root, registry_paths)
     add_typescript_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)
     add_python_agno_mcp_confirmation_flow(ir, root, registry_paths)
+    add_python_semantic_kernel_mcp_sampling_flow(ir, root, registry_paths)
     add_python_adk_a2a_card_endpoint_policy(ir, root, registry_paths)
     add_python_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)
     add_python_google_adk_bigquery_audit_flow(ir, root, registry_paths)
