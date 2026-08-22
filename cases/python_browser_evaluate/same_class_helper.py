@@ -107,3 +107,81 @@ class ConditionalLaunch:
         context = await browser.new_context()
         page = await context.new_page()
         return await page.evaluate("document.title")
+
+
+class ExactLifecycle:
+    def __init__(self):
+        self.playwright = None
+        self.browser = None
+        self.page = None
+
+    async def start(self):
+        self.playwright = await async_playwright().start()
+        self.browser = await self.playwright.chromium.launch()
+        self.page = await self.browser.new_page()
+
+    async def title(self):
+        return await self.page.evaluate("document.title")
+
+
+class ConditionalLifecycle:
+    def __init__(self):
+        self.playwright = None
+        self.browser = None
+        self.page = None
+
+    async def start(self, enabled):
+        self.playwright = await async_playwright().start()
+        self.browser = await self.playwright.chromium.launch()
+        if enabled:
+            self.page = await self.browser.new_page()
+
+    async def title(self):
+        return await self.page.evaluate("document.title")
+
+
+class ReassignedLifecycle:
+    def __init__(self):
+        self.playwright = None
+        self.browser = None
+        self.page = None
+
+    async def start(self):
+        self.playwright = await async_playwright().start()
+        self.browser = await self.playwright.chromium.launch()
+        self.page = await self.browser.new_page()
+        self.page = object()
+
+    async def title(self):
+        return await self.page.evaluate("document.title")
+
+
+class ReassignedBrowserLifecycle:
+    def __init__(self):
+        self.playwright = None
+        self.browser = None
+        self.page = None
+
+    async def start(self):
+        self.playwright = await async_playwright().start()
+        self.browser = await self.playwright.chromium.launch()
+        self.browser = object()
+        self.page = await self.browser.new_page()
+
+    async def title(self):
+        return await self.page.evaluate("document.title")
+
+
+class ShadowedFactoryLifecycle:
+    def __init__(self):
+        self.playwright = None
+        self.browser = None
+        self.page = None
+
+    async def start(self, async_playwright):
+        self.playwright = await async_playwright().start()
+        self.browser = await self.playwright.chromium.launch()
+        self.page = await self.browser.new_page()
+
+    async def title(self):
+        return await self.page.evaluate("document.title")

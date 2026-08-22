@@ -2195,6 +2195,193 @@ def python_class_constructor_browser_receivers(
     }
 
 
+def python_class_lifecycle_browser_receivers(
+    node: ast.ClassDef,
+    browser_runtime_factories: set[str],
+) -> set[str]:
+    """Resolve pages initialized once after a constructor ``None`` sentinel."""
+    methods = [
+        statement
+        for statement in node.body
+        if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and statement.args.args
+        and statement.args.args[0].arg == "self"
+    ]
+    initializers = [method for method in methods if method.name == "__init__"]
+    if len(initializers) != 1:
+        return set()
+    initializer = initializers[0]
+
+    def self_attribute(target: ast.AST) -> str | None:
+        if (
+            isinstance(target, ast.Attribute)
+            and isinstance(target.value, ast.Name)
+            and target.value.id == "self"
+        ):
+            return target.attr
+        return None
+
+    attribute_mutations: Counter[str] = Counter()
+    initial_none_attributes: set[str] = set()
+    for method in methods:
+        owned, parents = python_function_owned_nodes(method)
+        for candidate in owned:
+            targets: list[ast.AST] = []
+            if isinstance(candidate, ast.Assign):
+                targets.extend(candidate.targets)
+            elif isinstance(
+                candidate,
+                (ast.AnnAssign, ast.AugAssign, ast.NamedExpr, ast.For, ast.AsyncFor),
+            ):
+                targets.append(candidate.target)
+            elif isinstance(candidate, ast.Delete):
+                targets.extend(candidate.targets)
+            for target in targets:
+                if name := self_attribute(target):
+                    attribute_mutations[name] += 1
+            if not (
+                method is initializer
+                and parents.get(id(candidate)) is initializer
+                and isinstance(candidate, (ast.Assign, ast.AnnAssign))
+                and candidate.value is not None
+                and isinstance(candidate.value, ast.Constant)
+                and candidate.value.value is None
+            ):
+                continue
+            targets = (
+                candidate.targets
+                if isinstance(candidate, ast.Assign)
+                else [candidate.target]
+            )
+            if len(targets) == 1 and (name := self_attribute(targets[0])):
+                initial_none_attributes.add(name)
+
+    resolved: set[str] = set()
+    for lifecycle in methods:
+        if (
+            lifecycle is initializer
+            or lifecycle.decorator_list
+            or not isinstance(lifecycle, ast.AsyncFunctionDef)
+        ):
+            continue
+        local_bindings = python_function_local_bindings(lifecycle)
+        factories = {
+            factory
+            for factory in browser_runtime_factories
+            if factory.split(".", 1)[0] not in local_bindings
+        }
+        if not factories:
+            continue
+
+        local_mutations: Counter[str] = Counter()
+        owned, _parents = python_function_owned_nodes(lifecycle)
+        for candidate in owned:
+            targets: list[ast.AST] = []
+            if isinstance(candidate, ast.Assign):
+                targets.extend(candidate.targets)
+            elif isinstance(
+                candidate,
+                (ast.AnnAssign, ast.AugAssign, ast.NamedExpr, ast.For, ast.AsyncFor),
+            ):
+                targets.append(candidate.target)
+            elif isinstance(candidate, ast.Delete):
+                targets.extend(candidate.targets)
+            elif isinstance(candidate, (ast.With, ast.AsyncWith)):
+                targets.extend(
+                    item.optional_vars
+                    for item in candidate.items
+                    if item.optional_vars is not None
+                )
+            for target in targets:
+                local_mutations.update(python_assigned_names(target))
+
+        bindings: dict[str, str] = {}
+
+        def resolve(
+            expression: ast.AST | None,
+            bindings: dict[str, str] = bindings,
+            factories: set[str] = factories,
+        ) -> str | None:
+            if isinstance(expression, ast.Await):
+                expression = expression.value
+            if expression is None:
+                return None
+            name = dotted_name(expression)
+            if name in bindings:
+                return bindings[name]
+            if not isinstance(expression, ast.Call):
+                return None
+            call_name = dotted_name(expression.func)
+            if (
+                call_name in factories
+                and not expression.args
+                and not expression.keywords
+            ):
+                return "playwright-context-manager"
+            if not isinstance(expression.func, ast.Attribute):
+                return None
+            receiver = expression.func.value
+            if (
+                expression.func.attr == "start"
+                and not expression.args
+                and not expression.keywords
+                and resolve(receiver) == "playwright-context-manager"
+            ):
+                return "playwright-runtime"
+            if (
+                expression.func.attr == "launch"
+                and isinstance(receiver, ast.Attribute)
+                and receiver.attr in {"chromium", "firefox", "webkit"}
+                and resolve(receiver.value) == "playwright-runtime"
+            ):
+                return "playwright-browser"
+            receiver_kind = resolve(receiver)
+            if (
+                expression.func.attr == "new_context"
+                and receiver_kind == "playwright-browser"
+            ):
+                return "playwright-context"
+            if expression.func.attr == "new_page" and receiver_kind in {
+                "playwright-browser",
+                "playwright-context",
+            }:
+                return "playwright-page"
+            return None
+
+        for statement in lifecycle.body:
+            if not isinstance(statement, (ast.Assign, ast.AnnAssign)):
+                continue
+            targets = (
+                statement.targets
+                if isinstance(statement, ast.Assign)
+                else [statement.target]
+            )
+            if len(targets) != 1 or statement.value is None:
+                continue
+            target = targets[0]
+            target_name = dotted_name(target)
+            if isinstance(target, ast.Name):
+                if local_mutations[target.id] != 1:
+                    continue
+            elif (name := self_attribute(target)) is not None:
+                if (
+                    attribute_mutations[name] != 2
+                    or name not in initial_none_attributes
+                ):
+                    continue
+            else:
+                continue
+            if binding := resolve(statement.value):
+                bindings[target_name] = binding
+
+        resolved.update(
+            name.removeprefix("self.")
+            for name, binding in bindings.items()
+            if name.startswith("self.") and binding == "playwright-page"
+        )
+    return resolved
+
+
 def python_browser_receiver_proofs(
     node: ast.FunctionDef | ast.AsyncFunctionDef,
     browser_type_names: set[str],
@@ -5421,11 +5608,18 @@ class PythonVisitor(ast.NodeVisitor):
         constructed_browser_attributes = python_class_constructor_browser_receivers(
             node, self.browser_runtime_factories
         )
+        lifecycle_browser_attributes = python_class_lifecycle_browser_receivers(
+            node, self.browser_runtime_factories
+        )
         self.class_browser_receiver_attributes.append(
             {
                 **{
                     name: "constructor-bound-playwright-page"
                     for name in constructed_browser_attributes
+                },
+                **{
+                    name: "lifecycle-bound-playwright-page"
+                    for name in lifecycle_browser_attributes
                 },
                 **{
                     name: "class-attribute-annotation"
@@ -7782,16 +7976,17 @@ def scan_python(
         alias.asname or alias.name
         for statement in tree.body
         if isinstance(statement, ast.ImportFrom)
-        and statement.module == "playwright.sync_api"
+        and statement.module in {"playwright.async_api", "playwright.sync_api"}
         for alias in statement.names
-        if alias.name == "sync_playwright"
+        if alias.name in {"async_playwright", "sync_playwright"}
     )
     browser_runtime_import_counts.update(
-        f"{alias.asname or alias.name}.sync_playwright"
+        f"{alias.asname or alias.name}.{runtime_name}"
         for statement in tree.body
         if isinstance(statement, ast.Import)
         for alias in statement.names
-        if alias.name == "playwright.sync_api"
+        if alias.name in {"playwright.async_api", "playwright.sync_api"}
+        for runtime_name in ("async_playwright", "sync_playwright")
     )
     browser_runtime_factories = {
         factory

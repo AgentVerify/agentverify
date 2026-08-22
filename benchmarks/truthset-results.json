@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T15:36:27.320994+00:00",
-  "labels": 579,
-  "passed": 579,
+  "generated_at": "2026-08-22T15:52:13.701105+00:00",
+  "labels": 587,
+  "passed": 587,
   "metrics": {
     "AV-A2A001": {
       "tp": 4,
@@ -71,7 +71,7 @@
     "AV-EXEC002": {
       "tp": 38,
       "fp": 0,
-      "tn": 61,
+      "tn": 69,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -5362,6 +5362,78 @@
     },
     {
       "id": "exec-code-browser-same-class-metagpt-71-real-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-lifecycle-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-lifecycle-conditional-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-lifecycle-page-reassigned-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-lifecycle-browser-reassigned-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-lifecycle-shadowed-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-lifecycle-devika-42-real-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-lifecycle-devika-69-real-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-lifecycle-devika-85-real-negative",
       "rule_id": "AV-EXEC002",
       "expected": false,
       "observed": false,

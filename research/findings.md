@@ -86,6 +86,11 @@ same-class helper call sites, including one immutable bound-method alias. This p
 fixed-script production evaluators, bringing coverage to 50 proven of 93 and 43 unresolved. Mixed
 calls, mutable or escaped aliases, invalid literal selectors, external calls, and mutable lifecycle
 fields remain unresolved; production findings are unchanged.
+Schema v94 proves three more fixed-script Devika production receivers. Each page, browser, and
+runtime field has exactly one `None` sentinel assignment in `__init__` and one straight-line
+assignment in an undecorated async lifecycle method rooted in exact `async_playwright().start()`.
+Coverage rises to 53 proven of 93 and 40 unresolved. Conditional initialization, any intermediate
+or page reassignment, and shadowed factories remain unresolved; findings are unchanged.
 The constructor proof requires one exact imported Playwright runtime factory and a
 straight-line, single-mutation `__init__` chain through browser/context creation. Conflicting types,
 near/rebound imports, static methods, conditional or later field assignments, and shadowed factories
@@ -150,7 +155,7 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the consolidated 579-label truth set.
+rule observations are pinned in the consolidated 587-label truth set.
 
 MCP configuration is also executable dependency configuration. Schema v65 resolves 50 literal
 `npx`/`uvx` package launchers in the bounded corpus: 45 unpinned, three floating, and two exact,

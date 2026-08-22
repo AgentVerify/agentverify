@@ -521,7 +521,11 @@ The resulting browser may flow into one uniquely defined, private, undecorated i
 when every selected-module call is a direct same-class call or an immutable bound-method alias and
 the same parameter always receives a proven local browser. Mixed or unknown arguments, other-class
 attribute calls, escaped or rebound aliases, external helper definitions, and parameter reassignment
-withhold the proof. Property proof requires the built-in
+withhold the proof. A lifecycle-bound field is accepted only when `__init__` assigns it exactly once
+to `None`, one undecorated async instance method assigns it exactly once from a straight-line exact
+Playwright runtime→browser/context→page chain, and the intermediate fields obey the same two-write
+boundary. Conditional assignments, additional mutations, decorated lifecycle methods, and locally
+shadowed runtime factories withhold the proof. Property proof requires the built-in
 decorator, one getter definition, and an exact imported Playwright return type. Inherited fields, ambiguous
 wrapper-returned locators, sanitizer
 proofs, imported/transitive script builders, helper-return or non-unanimous helper-parameter provenance, and unsupported

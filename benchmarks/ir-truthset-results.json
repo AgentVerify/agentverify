@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T15:36:04.121013+00:00",
-  "labels": 904,
-  "passed": 904,
+  "generated_at": "2026-08-22T15:51:48.912014+00:00",
+  "labels": 912,
+  "passed": 912,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -157,9 +157,9 @@
       "recall": 1.0
     },
     "IR-PY-BROWSER-RECEIVER": {
-      "tp": 35,
+      "tp": 39,
       "fp": 0,
-      "tn": 35,
+      "tn": 39,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -8663,6 +8663,78 @@
     },
     {
       "id": "python-browser-receiver-same-class-metagpt-71-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-lifecycle-local",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-lifecycle-conditional-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-lifecycle-page-reassigned-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-lifecycle-browser-reassigned-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-lifecycle-shadowed-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-lifecycle-devika-42-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-lifecycle-devika-69-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-lifecycle-devika-85-real",
       "check_id": "IR-PY-BROWSER-RECEIVER",
       "expected": true,
       "observed": true,

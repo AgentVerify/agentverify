@@ -138,7 +138,13 @@ withheld. Schema v93 additionally accepts exact `typing.Literal`-bounded browser
 private same-class helper parameters only when every direct or immutable bound-method-alias call
 agrees. This proves two fixed-script MetaGPT production evaluators, bringing current totals to 50
 proven of 93 and 43 unresolved. Mixed calls, mutable or escaped aliases, invalid selector literals,
-external calls, and mutable lifecycle flows remain withheld; findings remain unchanged. Next resolve inherited fields, ambiguous
+external calls, and mutable lifecycle flows remain withheld; findings remain unchanged.
+Schema v94 accepts one narrower lifecycle form: a field initialized exactly once to `None` in
+`__init__`, then assigned exactly once by a straight-line async
+Playwright-runtime→browser→page chain in one undecorated method. Three Devika production evaluators
+move to `lifecycle-bound-playwright-page`, bringing totals to 53 proven of 93 and 40 unresolved.
+Conditional initialization, any page/browser reassignment, and shadowed factories remain withheld.
+Next resolve inherited fields, ambiguous
 wrapper/locator flows, sanitizer and bounded builder summaries, imported helper flow, and bounded
 helper-return provenance without treating every dynamic JavaScript expression as
 tool-controlled.
@@ -328,8 +334,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 579 pinned positive/negative locations, with 904 separately
-scored IR component/relationship labels. Schema-v93 engine results and
+The curated regression set has reached 587 pinned positive/negative locations, with 912 separately
+scored IR component/relationship labels. Schema-v94 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.
