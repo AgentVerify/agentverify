@@ -543,6 +543,41 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             None,
         ),
         (
+            "provider_native_model_bindings.ts",
+            4,
+            "OpenAI",
+            "OpenAI",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
+            "provider_native_model_bindings.ts",
+            5,
+            "OpenAI",
+            "client.responses.create",
+            "provider-sdk-model",
+            "OpenAI",
+        ),
+        (
+            "provider_native_model_bindings_unresolved.ts",
+            3,
+            "OpenAI",
+            "OpenAI",
+            "provider-sdk-constructor",
+            None,
+        ),
+        *(
+            (
+                "provider_native_model_bindings_unresolved.ts",
+                line,
+                "OpenAI",
+                "client.responses.create",
+                "provider-sdk-model",
+                "OpenAI",
+            )
+            for line in (7, 9, 14, 18, 23)
+        ),
+        (
             "provider_native_calls_commonjs.js",
             5,
             "Anthropic",
@@ -629,6 +664,16 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         and item.attributes.get("resolution") == "exact-typescript-provider-import"
         for item in ir.components
     )
+    assert any(
+        item.kind == "model"
+        and item.evidence.path == "provider_native_model_bindings.ts"
+        and item.evidence.line == 5
+        and item.name == "gpt-5.4"
+        and item.attributes.get("provider") == "OpenAI"
+        and item.attributes.get("model_resolution_basis")
+        == "immutable-module-literal-binding"
+        for item in ir.components
+    )
     assert not any(
         item.kind == "provider"
         and item.evidence.path == "provider_calls_rebound.ts"
@@ -709,6 +754,12 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
                 == "exact-typescript-provider-import"
             )
         )
+        for item in ir.components
+    )
+    assert not any(
+        item.kind == "model"
+        and item.evidence.path == "provider_native_model_bindings_unresolved.ts"
+        and item.attributes.get("resolution") == "exact-typescript-provider-import"
         for item in ir.components
     )
     assert not any(

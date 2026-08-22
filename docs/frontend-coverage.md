@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v109
+framework, wrapper, or configuration path. Counts come from schema-v110
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -149,6 +149,14 @@ adds two Anthropic `messages.create` requests through this proof. TypeScript rea
 production calls across nine repositories: 23 constructors, 15 native request calls, and 32 AI SDK
 calls. Two native requests use the accessor proof; literal models remain at 26 because the quickstart
 passes a module constant rather than a direct literal property.
+
+Schema v110 resolves that model constant without broad identifier propagation. Once provider and
+request-method provenance are already exact, a direct `model: NAME` property may inherit an earlier
+module-level `const NAME[: string] = 'literal'`. The binding must have one declaration and assignment
+and no parameter, import, catch, or destructuring shadow. The two MCP TypeScript quickstart requests
+therefore gain `claude-sonnet-4-6` model components with an explicit immutable-literal resolution
+basis. TypeScript call counts remain 70, while literal models rise from 26 to 28. Mutable, forward,
+composed, shadowed, rebound, runtime-parameter, and helper-object model expressions remain withheld.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
 Agent→MCP-server identities. Import-proven literal stdio constructor calls are inventoried for any
@@ -810,7 +818,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 642-label rule truth set and 1,200-label IR component/relationship set are curated regression
+The 642-label rule truth set and 1,208-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

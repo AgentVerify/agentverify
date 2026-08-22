@@ -68,6 +68,10 @@ quickstart. The getter must consist only of a cached `??=` default-endpoint cons
 backing field may have no other writes, and no setter may exist. Public, uncached, resettable, and
 custom-endpoint getters remain unresolved. The 406 component labels now pin 295 positives and 111
 negatives.
+Schema v110 adds model identity to those two requests through the quickstart's earlier immutable
+module constant. Provider/request proof remains a prerequisite; the constant adds only a model
+component and records a separate resolution basis. Mutable, forward, composed, shadowed, and rebound
+identifiers remain unresolved. The 414 component labels now pin 298 positives and 116 negatives.
 Next generalize selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
@@ -408,8 +412,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 642 pinned positive/negative locations, with 1,200 separately
-scored IR component/relationship labels. Schema-v109 engine results and
+The curated regression set has reached 642 pinned positive/negative locations, with 1,208 separately
+scored IR component/relationship labels. Schema-v110 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

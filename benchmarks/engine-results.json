@@ -1,6 +1,6 @@
 {
-  "schema_version": 109,
-  "generated_at": "2026-08-22T21:39:41.192113+00:00",
+  "schema_version": 110,
+  "generated_at": "2026-08-22T21:55:58.993803+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -100,7 +100,8 @@
       "typed_parameter_model_calls": 1,
       "class_field_model_calls": 5,
       "class_accessor_model_calls": 2,
-      "literal_models": 26,
+      "literal_binding_models": 2,
+      "literal_models": 28,
       "openai": 34,
       "anthropic": 26,
       "google": 8,
@@ -852,7 +853,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 315.933
+    "elapsed_seconds": 319.6101
   },
   "repositories": [
     {
@@ -918,6 +919,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -1380,7 +1382,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.2349
+      "elapsed_seconds": 4.5969
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -1453,6 +1455,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -1920,7 +1923,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.5208
+      "elapsed_seconds": 7.5083
     },
     {
       "repository": "langchain-ai/langchain",
@@ -1989,6 +1992,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -2449,7 +2453,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9123
+      "elapsed_seconds": 2.8973
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -2522,6 +2526,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -2990,7 +2995,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.4063
+      "elapsed_seconds": 10.3358
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -3068,6 +3073,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -3532,7 +3538,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4914
+      "elapsed_seconds": 0.4882
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -3615,6 +3621,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -4092,7 +4099,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 12.0498
+      "elapsed_seconds": 12.1122
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -4175,6 +4182,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -4664,7 +4672,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.3245
+      "elapsed_seconds": 7.2713
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -4743,6 +4751,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -5221,7 +5230,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7667
+      "elapsed_seconds": 0.7664
     },
     {
       "repository": "microsoft/autogen",
@@ -5297,6 +5306,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -5768,7 +5778,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9236
+      "elapsed_seconds": 1.9111
     },
     {
       "repository": "microsoft/agent-framework",
@@ -5828,6 +5838,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -6373,6 +6384,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -6845,7 +6857,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.294
+      "elapsed_seconds": 0.2947
     },
     {
       "repository": "openai/openai-agents-python",
@@ -6939,6 +6951,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -7430,7 +7443,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 12.4722
+      "elapsed_seconds": 12.3926
     },
     {
       "repository": "openai/openai-agents-js",
@@ -7523,6 +7536,7 @@
         "typed_parameter_model_calls": 1,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 2,
         "openai": 9,
         "anthropic": 0,
@@ -7994,7 +8008,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.061
+      "elapsed_seconds": 2.1395
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -8086,6 +8100,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -8562,7 +8577,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 26.0425
+      "elapsed_seconds": 26.129
     },
     {
       "repository": "google/adk-python",
@@ -8648,6 +8663,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -9129,7 +9145,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.5781
+      "elapsed_seconds": 9.5697
     },
     {
       "repository": "google/adk-js",
@@ -9211,6 +9227,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -9678,7 +9695,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.2386
+      "elapsed_seconds": 5.3867
     },
     {
       "repository": "huggingface/smolagents",
@@ -9758,6 +9775,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -10234,7 +10252,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9504
+      "elapsed_seconds": 2.9324
     },
     {
       "repository": "agno-agi/agno",
@@ -10321,6 +10339,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -10803,7 +10822,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3173
+      "elapsed_seconds": 1.3089
     },
     {
       "repository": "camel-ai/camel",
@@ -10885,6 +10904,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -11368,7 +11388,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.2345
+      "elapsed_seconds": 6.2014
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -11447,6 +11467,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -11913,7 +11934,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4776
+      "elapsed_seconds": 0.4926
     },
     {
       "repository": "run-llama/llama_index",
@@ -11987,6 +12008,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -12447,7 +12469,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0602
+      "elapsed_seconds": 2.0512
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -12527,6 +12549,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -13005,7 +13028,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3156
+      "elapsed_seconds": 3.3164
     },
     {
       "repository": "InternLM/lagent",
@@ -13086,6 +13109,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -13559,7 +13583,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5696
+      "elapsed_seconds": 1.5769
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -13633,6 +13657,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -14113,7 +14138,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7093
+      "elapsed_seconds": 2.7042
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -14190,6 +14215,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -14668,7 +14694,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.5735
+      "elapsed_seconds": 3.5506
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -14741,6 +14767,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -15215,7 +15242,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3461
+      "elapsed_seconds": 2.3388
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -15289,6 +15316,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -15759,7 +15787,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.5422
+      "elapsed_seconds": 8.5172
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -15829,6 +15857,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -16298,7 +16327,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8241
+      "elapsed_seconds": 2.8636
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -16369,6 +16398,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 1,
         "openai": 2,
         "anthropic": 0,
@@ -16829,7 +16859,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7066
+      "elapsed_seconds": 1.7629
     },
     {
       "repository": "letta-ai/letta-code",
@@ -16894,6 +16924,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -17354,7 +17385,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.8495
+      "elapsed_seconds": 7.3368
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -17436,6 +17467,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -17910,7 +17942,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3777
+      "elapsed_seconds": 2.3797
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -17997,6 +18029,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -18472,7 +18505,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.7261
+      "elapsed_seconds": 4.7305
     },
     {
       "repository": "mastra-ai/mastra",
@@ -18553,6 +18586,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 1,
         "anthropic": 1,
@@ -19019,7 +19053,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.9504
+      "elapsed_seconds": 4.1154
     },
     {
       "repository": "vercel/ai",
@@ -19095,6 +19129,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 15,
         "openai": 4,
         "anthropic": 11,
@@ -19560,7 +19595,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.2786
+      "elapsed_seconds": 4.4182
     },
     {
       "repository": "cline/cline",
@@ -19641,6 +19676,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -20107,7 +20143,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.8863
+      "elapsed_seconds": 6.2413
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -20177,6 +20213,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -20637,7 +20674,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.2925
+      "elapsed_seconds": 6.6806
     },
     {
       "repository": "continuedev/continue",
@@ -20703,6 +20740,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -21163,7 +21201,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.874
+      "elapsed_seconds": 3.9868
     },
     {
       "repository": "Aider-AI/aider",
@@ -21230,6 +21268,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -21709,7 +21748,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.9636
+      "elapsed_seconds": 4.985
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -21771,6 +21810,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -22243,7 +22283,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 1.8344
+      "elapsed_seconds": 1.8393
     },
     {
       "repository": "plandex-ai/plandex",
@@ -22294,6 +22334,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -22754,7 +22795,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0629
+      "elapsed_seconds": 0.0644
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -22820,6 +22861,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 4,
         "anthropic": 4,
@@ -23286,7 +23328,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7178
+      "elapsed_seconds": 2.6613
     },
     {
       "repository": "stitionai/devika",
@@ -23358,6 +23400,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -23828,7 +23871,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6714
+      "elapsed_seconds": 0.6836
     },
     {
       "repository": "block/goose",
@@ -23903,6 +23946,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -24373,7 +24417,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 7.1364
+      "elapsed_seconds": 7.3247
     },
     {
       "repository": "bytedance/trae-agent",
@@ -24454,6 +24498,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -24931,7 +24976,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.487
+      "elapsed_seconds": 1.4749
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -25004,6 +25049,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -25470,7 +25516,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.3752
+      "elapsed_seconds": 9.6428
     },
     {
       "repository": "openai/codex",
@@ -25528,6 +25574,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -25994,7 +26041,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2924
+      "elapsed_seconds": 1.2848
     },
     {
       "repository": "browser-use/browser-use",
@@ -26075,6 +26122,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -26557,7 +26605,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.7296
+      "elapsed_seconds": 7.709
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -26647,6 +26695,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -27139,7 +27188,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 16.8958
+      "elapsed_seconds": 16.7852
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -27212,6 +27261,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -27687,7 +27737,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7521
+      "elapsed_seconds": 1.7541
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -27757,6 +27807,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 3,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 2,
         "anthropic": 2,
@@ -28219,7 +28270,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0024
+      "elapsed_seconds": 2.044
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -28290,6 +28341,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -28760,7 +28812,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0113
+      "elapsed_seconds": 2.0852
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -28839,6 +28891,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -29308,7 +29361,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.6064
+      "elapsed_seconds": 5.6488
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -29323,7 +29376,7 @@
         "control-setting": 17,
         "mcp": 449,
         "mcp-server": 20,
-        "model": 10,
+        "model": 12,
         "protocol": 329,
         "provider": 12,
         "tool": 214
@@ -29395,7 +29448,8 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 2,
         "class_accessor_model_calls": 2,
-        "literal_models": 0,
+        "literal_binding_models": 2,
+        "literal_models": 2,
         "openai": 0,
         "anthropic": 5,
         "google": 2,
@@ -29864,7 +29918,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.3529
+      "elapsed_seconds": 7.7227
     },
     {
       "repository": "github/github-mcp-server",
@@ -29925,6 +29979,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -30385,7 +30440,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0588
+      "elapsed_seconds": 0.0618
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -30447,6 +30502,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -30907,7 +30963,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1707
+      "elapsed_seconds": 0.1748
     },
     {
       "repository": "awslabs/mcp",
@@ -30981,6 +31037,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -31449,7 +31506,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.2314
+      "elapsed_seconds": 4.1721
     },
     {
       "repository": "docker/mcp-gateway",
@@ -31511,6 +31568,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -31973,7 +32031,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0505
+      "elapsed_seconds": 0.0498
     },
     {
       "repository": "jlowin/fastmcp",
@@ -32050,6 +32108,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -32525,7 +32584,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.9752
+      "elapsed_seconds": 5.8907
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -32576,6 +32635,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -33036,7 +33096,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0389
+      "elapsed_seconds": 0.0416
     },
     {
       "repository": "langflow-ai/langflow",
@@ -33116,6 +33176,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -33585,7 +33646,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.8677
+      "elapsed_seconds": 5.9222
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -33654,6 +33715,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -34122,7 +34184,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.7171
+      "elapsed_seconds": 5.8491
     },
     {
       "repository": "langgenius/dify",
@@ -34176,6 +34238,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -34636,7 +34699,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.8161
+      "elapsed_seconds": 3.7467
     },
     {
       "repository": "n8n-io/n8n",
@@ -34713,6 +34776,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -35181,7 +35245,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.0811
+      "elapsed_seconds": 4.3637
     },
     {
       "repository": "activepieces/activepieces",
@@ -35266,6 +35330,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 2,
         "anthropic": 1,
@@ -35736,7 +35801,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.5956
+      "elapsed_seconds": 2.6986
     },
     {
       "repository": "simstudioai/sim",
@@ -35796,6 +35861,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -36256,7 +36322,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.9391
+      "elapsed_seconds": 8.3958
     },
     {
       "repository": "composiohq/composio",
@@ -36345,6 +36411,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 8,
         "openai": 10,
         "anthropic": 2,
@@ -36814,7 +36881,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2362
+      "elapsed_seconds": 3.2843
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -36896,6 +36963,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -37374,7 +37442,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.5126
+      "elapsed_seconds": 5.5396
     },
     {
       "repository": "e2b-dev/E2B",
@@ -37433,6 +37501,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -37893,7 +37962,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.3405
+      "elapsed_seconds": 4.4472
     },
     {
       "repository": "daytonaio/daytona",
@@ -37944,6 +38013,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -38404,7 +38474,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0002
+      "elapsed_seconds": 0.0011
     },
     {
       "repository": "AgentOps-AI/agentops",
@@ -38485,6 +38555,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -38952,7 +39023,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1278
+      "elapsed_seconds": 3.0383
     },
     {
       "repository": "traceloop/openllmetry",
@@ -39042,6 +39113,7 @@
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
+        "literal_binding_models": 0,
         "literal_models": 0,
         "openai": 0,
         "anthropic": 0,
@@ -39513,7 +39585,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.0479
+      "elapsed_seconds": 4.8615
     }
   ]
 }

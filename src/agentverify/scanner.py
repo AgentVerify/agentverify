@@ -11547,6 +11547,13 @@ class TypeScriptProviderCall:
     model_method: str | None = None
     configured_by: str | None = None
     resolution_basis: str | None = None
+    model_resolution_basis: str | None = None
+
+
+@dataclass(frozen=True)
+class TypeScriptLiteralStringBinding:
+    value: str
+    declaration_end: int
 
 
 @dataclass(frozen=True)
@@ -12190,6 +12197,138 @@ def typescript_literal_call_object_string_property(
     return typescript_literal_object_string_property(arguments[0][0], name)
 
 
+def typescript_call_object_property_expression(
+    text: str,
+    opening: int,
+    end: int,
+    name: str,
+) -> str | None:
+    """Return one direct property expression from a call's first literal object."""
+    arguments = typescript_call_arguments(text[opening + 1 : end - 1])
+    if not arguments:
+        return None
+    return typescript_literal_object_property_expression(arguments[0][0], name)
+
+
+def typescript_immutable_module_literal_string_bindings(
+    text: str,
+) -> dict[str, TypeScriptLiteralStringBinding]:
+    """Resolve unique module-level const string bindings without later shadow or writes."""
+    code = typescript_code_mask(text)
+    depths = [0] * (len(code) + 1)
+    depth = 0
+    for index, character in enumerate(code):
+        depths[index] = depth
+        if character == "{":
+            depth += 1
+        elif character == "}":
+            depth = max(0, depth - 1)
+    depths[len(code)] = depth
+
+    candidates: dict[str, list[TypeScriptLiteralStringBinding]] = defaultdict(list)
+    pattern = re.compile(
+        r"\bconst\s+([A-Za-z_$][\w$]*)\s*(?:\:\s*string\s*)?=\s*"
+        r"(?:'([^'\\\r\n]*)'|\"([^\"\\\r\n]*)\")",
+    )
+    for match in pattern.finditer(text):
+        if (
+            depths[match.start()] != 0
+            or code[match.start() : match.start(1)].strip() != "const"
+        ):
+            continue
+        candidates[match.group(1)].append(
+            TypeScriptLiteralStringBinding(
+                match.group(2) if match.group(2) is not None else match.group(3),
+                match.end(),
+            )
+        )
+
+    imported_names = set()
+    for match in TS_DEFAULT_IMPORT.finditer(text):
+        imported_names.add(match.group(1))
+        if clause := match.group(2):
+            for imported in clause.split(","):
+                parts = imported.strip().removeprefix("type ").split()
+                if parts:
+                    imported_names.add(
+                        parts[2]
+                        if len(parts) >= 3 and parts[1] == "as"
+                        else parts[0]
+                    )
+    for match in TS_NAMED_IMPORT.finditer(text):
+        if clause := match.group(1):
+            for imported in clause.split(","):
+                parts = imported.strip().removeprefix("type ").split()
+                if parts:
+                    imported_names.add(
+                        parts[2]
+                        if len(parts) >= 3 and parts[1] == "as"
+                        else parts[0]
+                    )
+
+    resolved = {}
+    for name, values in candidates.items():
+        if len(values) != 1:
+            continue
+        escaped = re.escape(name)
+        if (
+            len(
+                re.findall(
+                    rf"\b(?:const|let|var|function|class)\s+{escaped}\b",
+                    code,
+                )
+            )
+            != 1
+            or len(
+                re.findall(
+                    rf"(?<![\w$.]){escaped}\s*"
+                    rf"(?:\:\s*[^=;\n]+)?=(?!=)",
+                    code,
+                )
+            )
+            != 1
+            or typescript_parameter_binding_is_declared(text, name)
+            or re.search(
+                r"\b(?:const|let|var)\s*(?:\{|\[)[^}\]]*\b"
+                + escaped
+                + r"\b",
+                code,
+            )
+            or re.search(rf"\bcatch\s*\(\s*{escaped}\b", code)
+            or name in imported_names
+        ):
+            continue
+        resolved[name] = values[0]
+    return resolved
+
+
+def typescript_provider_request_model(
+    text: str,
+    opening: int,
+    end: int,
+    call_offset: int,
+    literal_bindings: dict[str, TypeScriptLiteralStringBinding],
+) -> tuple[str | None, str | None]:
+    """Resolve a direct literal model or an earlier immutable module literal binding."""
+    literal = typescript_literal_call_object_string_property(
+        text, opening, end, "model"
+    )
+    if literal is not None:
+        return literal, None
+    expression = typescript_call_object_property_expression(
+        text, opening, end, "model"
+    )
+    if expression is None:
+        return None, None
+    identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", expression)
+    if identifier is None:
+        return None, None
+    binding = literal_bindings.get(identifier.group(0))
+    if binding is None or binding.declaration_end > call_offset:
+        return None, None
+    return binding.value, "immutable-module-literal-binding"
+
+
 def typescript_const_provider_binding_is_stable(
     text: str,
     name: str,
@@ -12591,6 +12730,7 @@ def add_typescript_provider_class_receiver(
 def typescript_provider_class_field_calls(
     text: str,
     imports: dict[str, TypeScriptProviderImportBinding],
+    literal_model_bindings: dict[str, TypeScriptLiteralStringBinding],
 ) -> list[TypeScriptProviderCall]:
     """Resolve exact model methods on proven native-provider class receivers."""
     code = typescript_code_mask(text)
@@ -12781,6 +12921,13 @@ def typescript_provider_class_field_calls(
                     end = typescript_balanced_end(code, opening, "(", ")")
                     if end is None or end > class_definition.body_end:
                         continue
+                    model, model_resolution_basis = typescript_provider_request_model(
+                        text,
+                        opening,
+                        end,
+                        match.start(),
+                        literal_model_bindings,
+                    )
                     observations.append(
                         TypeScriptProviderCall(
                             match.start(),
@@ -12789,12 +12936,11 @@ def typescript_provider_class_field_calls(
                             binding.module,
                             binding.imported_symbol,
                             binding.provider,
-                            typescript_literal_call_object_string_property(
-                                text, opening, end, "model"
-                            ),
+                            model,
                             model_method,
                             configured_by,
                             resolution_basis,
+                            model_resolution_basis,
                         )
                     )
     return observations
@@ -12804,6 +12950,9 @@ def typescript_provider_sdk_calls(text: str) -> list[TypeScriptProviderCall]:
     """Resolve exact native provider SDK constructors with default endpoint proof."""
     code = typescript_code_mask(text)
     imports = typescript_provider_sdk_imports(text)
+    literal_model_bindings = typescript_immutable_module_literal_string_bindings(
+        text
+    )
     observations: list[TypeScriptProviderCall] = []
     configured_instances: list[tuple[str, TypeScriptProviderImportBinding, int]] = []
     for local_name, binding in imports.items():
@@ -12851,8 +13000,12 @@ def typescript_provider_sdk_calls(text: str) -> list[TypeScriptProviderCall]:
                 end = typescript_balanced_end(code, opening, "(", ")")
                 if end is None:
                     continue
-                model = typescript_literal_call_object_string_property(
-                    text, opening, end, "model"
+                model, model_resolution_basis = typescript_provider_request_model(
+                    text,
+                    opening,
+                    end,
+                    match.start(),
+                    literal_model_bindings,
                 )
                 observations.append(
                     TypeScriptProviderCall(
@@ -12866,6 +13019,7 @@ def typescript_provider_sdk_calls(text: str) -> list[TypeScriptProviderCall]:
                         model_method,
                         binding.local_name,
                         "immutable-constructor-binding",
+                        model_resolution_basis,
                     )
                 )
 
@@ -12900,8 +13054,12 @@ def typescript_provider_sdk_calls(text: str) -> list[TypeScriptProviderCall]:
                 end = typescript_balanced_end(code, opening, "(", ")")
                 if end is None or end > definition.body_end:
                     continue
-                model = typescript_literal_call_object_string_property(
-                    text, opening, end, "model"
+                model, model_resolution_basis = typescript_provider_request_model(
+                    text,
+                    opening,
+                    end,
+                    match.start(),
+                    literal_model_bindings,
                 )
                 observations.append(
                     TypeScriptProviderCall(
@@ -12915,9 +13073,14 @@ def typescript_provider_sdk_calls(text: str) -> list[TypeScriptProviderCall]:
                         model_method,
                         binding.local_name,
                         "same-file-typed-parameter-callsite-consensus",
+                        model_resolution_basis,
                     )
                 )
-    observations.extend(typescript_provider_class_field_calls(text, imports))
+    observations.extend(
+        typescript_provider_class_field_calls(
+            text, imports, literal_model_bindings
+        )
+    )
     return sorted(observations, key=lambda item: item.offset)
 
 
@@ -14934,18 +15097,23 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
             Component("provider", provider_call.provider, ev, attributes)
         )
         if provider_call.model is not None:
+            model_attributes = {
+                "provider": provider_call.provider,
+                "configured_on": provider_call.call,
+                "model_method": provider_call.model_method,
+                "module": provider_call.module,
+                "resolution": "exact-typescript-provider-import",
+            }
+            if provider_call.model_resolution_basis is not None:
+                model_attributes["model_resolution_basis"] = (
+                    provider_call.model_resolution_basis
+                )
             ir.add_component(
                 Component(
                     "model",
                     provider_call.model,
                     ev,
-                    {
-                        "provider": provider_call.provider,
-                        "configured_on": provider_call.call,
-                        "model_method": provider_call.model_method,
-                        "module": provider_call.module,
-                        "resolution": "exact-typescript-provider-import",
-                    },
+                    model_attributes,
                 )
             )
     for offset, environment_names in typescript_environment_approval_guards(text):

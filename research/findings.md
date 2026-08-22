@@ -489,6 +489,13 @@ two calls without admitting Bytebot's explicit proxy or MCP's configurable OpenA
 client. TypeScript reaches 70 calls across nine repositories—38 native (23 constructors and 15
 requests) plus 32 AI SDK calls; literal-model count remains 26.
 
+Schema v110 demonstrates why provider-call and model-value provenance need separate resolution
+bases. The MCP TypeScript SDK quickstart's two Anthropic calls both use the earlier immutable
+`ANTHROPIC_MODEL = 'claude-sonnet-4-6'` module constant. Resolving only a unique, earlier, simple
+quoted `const` adds two exact model components while leaving all 70 provider calls unchanged.
+Literal-model count reaches 28. Runtime parameters, helper-built request objects, mutable or rebound
+names, forward declarations, composed values, and shadowed bindings remain unresolved.
+
 ## 5. Controls are layered
 
 Sandboxing vocabulary appears in 64 repositories, audit/tracing in 57, human approval in 52, and

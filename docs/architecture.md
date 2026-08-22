@@ -103,6 +103,12 @@ private, declared once with null/undefined or no initializer, and have no other 
 must have no setter. Provider-owned requests on `this.<getter>` then inherit the constructor proof.
 Public or uncached getters, resets, custom endpoints, nested-class leakage, and unrelated methods do
 not establish the receiver.
+Schema v110 keeps receiver and model provenance independent. A model component may follow a direct
+request-object identifier only when that identifier has one earlier module-level `const` binding to
+a simple quoted string, exactly one assignment, and no parameter, import, catch, or destructuring
+shadow anywhere in the file. The model records `immutable-module-literal-binding` separately from
+the request receiver's resolution basis. Later declarations, mutable/rebound bindings, templates or
+other composed expressions, runtime parameters, and helper-built request objects remain unresolved.
 Schema v77 gives import-proven, assigned Python MCP stdio constructors stable component identities.
 An Agent receives an exact `uses` edge only when its literal `mcp_servers=[...]` list names an
 earlier, unreassigned server binding in the same statement block. Package and version facts remain
