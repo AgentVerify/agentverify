@@ -128,9 +128,14 @@ proven of 93 and 49 unresolved; the API split is 86 `evaluate`, five `eval_on_se
 and production code without selected-file Playwright provenance is deliberately excluded. The sole
 dynamic production path and all 51 `AV-EXEC002` findings are unchanged. Known
 Playwright locator/get-by/filter/nth/and/or/first/last derivations and immutable aliases are supported, while
-ordinary same-named and unknown derivations stay negative. Next resolve inherited fields, ambiguous
-wrapper/locator flows, sanitizer and bounded builder summaries, imported helper flow, and
-cross-function receiver provenance without treating every dynamic JavaScript expression as
+ordinary same-named and unknown derivations stay negative. Schema v92 additionally summarizes a
+unique local `@contextlib.asynccontextmanager` only when it contains one exact Playwright
+runtime→browser→context→page chain and one unconditional page yield. Four Skyvern test consumers
+move from unresolved to `local-playwright-contextmanager-yield`, bringing current totals to 48
+proven of 93 and 45 unresolved; branch-dependent, ordinary-object, reassigned, helper-parameter, and
+mutable lifecycle flows remain withheld. Findings remain unchanged. Next resolve inherited fields, ambiguous
+wrapper/locator flows, sanitizer and bounded builder summaries, imported helper flow, and bounded
+helper-parameter/return provenance without treating every dynamic JavaScript expression as
 tool-controlled.
 
 ## P0 — configuration and policy resolution
@@ -318,8 +323,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 564 pinned positive/negative locations, with 889 separately
-scored IR component/relationship labels. Schema-v91 engine results and
+The curated regression set has reached 572 pinned positive/negative locations, with 897 separately
+scored IR component/relationship labels. Schema-v92 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

@@ -34,8 +34,9 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
   typed parameters, exact class attributes, immutable constructor-bound Playwright pages, and the
   pinned Skyvern factory are supported without semantic-name matching. Known Locator derivations are
   preserved through direct chains and immutable aliases. API-specific script slots are supported for
-  `evaluate`, `evaluate_handle`, `eval_on_selector`, `eval_on_selector_all`, and `evaluate_all`; next
-  cover inherited fields, wrapper-returned locator flows, and cross-function receiver provenance.
+  `evaluate`, `evaluate_handle`, `eval_on_selector`, `eval_on_selector_all`, and `evaluate_all`;
+  unique local async context managers with one exact Playwright page yield are also resolved. Next
+  cover inherited fields, wrapper-returned locator flows, and bounded helper-parameter/return provenance.
 - Detect auto-approval/skip-confirmation configuration.
 - Detect broad filesystem roots, host mounts, Docker socket exposure, and unscoped file tools.
 - Detect MCP tool pass-throughs and enumerate statically registered server capabilities.

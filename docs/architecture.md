@@ -508,10 +508,15 @@ in an existing exact receiver remains proven through direct chains and one immut
 ordinary same-named methods and unknown derivations are withheld. Local construction requires a
 unique exact module or direct same-function Playwright runtime import, a top-level context manager
 or direct `.start()`, and immutable straight-line browser/context/page bindings; conditional imports,
-branches, rebinding, and shadowed factories are withheld. Property proof requires the built-in
+branches, rebinding, and shadowed factories are withheld. A unique local
+`@contextlib.asynccontextmanager` may also summarize one exact runtime→browser→context→page chain
+with one unconditional page yield. Its caller must use the helper directly in a top-level
+`async with` and bind one immutable name; multiple or conditional yields, exception handlers, nested
+control flow, unknown yielded objects, decorator/helper rebinding, and target reassignment are
+withheld. Property proof requires the built-in
 decorator, one getter definition, and an exact imported Playwright return type. Inherited fields, ambiguous
 wrapper-returned locators, sanitizer
-proofs, imported/transitive script builders, cross-function receiver provenance, and unsupported
+proofs, imported/transitive script builders, general helper-parameter/return provenance, and unsupported
 browser evaluator APIs remain unresolved.
 
 For TypeScript filesystem writes, a relative import can prove a `path-boundary` control only through
