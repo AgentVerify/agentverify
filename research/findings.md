@@ -121,7 +121,7 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the 467-label truth set.
+rule observations are pinned in the 487-label truth set.
 
 MCP configuration is also executable dependency configuration. Schema v65 resolves 50 literal
 `npx`/`uvx` package launchers in the bounded corpus: 45 unpinned, three floating, and two exact,
@@ -152,6 +152,20 @@ rejection, and only then invokes its provider. `AV-MCP005` therefore reports thr
 automatic handlers across two repositories; six positive and ten negative rule labels plus 15
 positive and two negative IR labels pin exact imports, capabilities, receivers, result shapes, denial, consent,
 budget, and unresolved callback states.
+
+Schema v70 separates elicitation from sampling. The selected TypeScript SDK snapshot contains 12
+exact `elicitation/create` handlers: nine synthesize acceptance, two decline, and one collects or
+confirms user input. Three automatic acceptances are outside tests and raise `AV-MCP006`; they cover
+form data, URL-mode completion, and a state-driven destructive confirmation harness. The CLI host is
+the governed comparison: it displays the requesting server and URL, confirms before URL acceptance,
+and delegates form mode to an exact imported helper that gathers input and preserves decline/cancel.
+The Microsoft Python tutorial independently shows a direct prompt with explicit accept/decline
+branches. Five positive and 13 negative rule labels plus 17 positive and two negative IR labels
+pin exact imports, capability modes, connected receivers, response actions, direct and imported user
+interaction, decline-only behavior, and unresolved callbacks.
+This matches the [official elicitation security model](https://modelcontextprotocol.io/specification/2025-11-25/client/elicitation):
+`accept` represents user consent, and URL mode requires full destination disclosure and explicit
+consent before navigation.
 
 ## 3. Approval exists, but bypass behavior recurs
 
@@ -297,15 +311,15 @@ recover 12 wrapper tools and 12 exact Agent edges; three enable approval, all oc
 their selected bodies add no capability edges. Twenty-five project-local CrewAI class-tool imports
 resolve through one importer-ancestor path and one exact decorated export. The 14 factory edges span
 four production example projects and require one exact imported class, immutable local construction,
-and a direct Agent return. The final export resolves 3,442 endpoints by symbol ID, 604 by exact
-evidence location, and 20 by unique display name; 38 remain ambiguous agent/protocol/control/tool
+and a direct Agent return. The final export resolves 3,468 endpoints by symbol ID, 632 by exact
+evidence location, and 22 by unique display name; 38 remain ambiguous agent/protocol/control/tool
 endpoints, and 68
 unresolved. No `ambiguous-repeated-binding` target remains in the pinned corpus;
 cross-branch, forward, inconsistent/untyped parameters, conditional/transformed returns,
 external receivers, shadowed factories, lambdas, and reassigned fixture cases stay unresolved. Two apparent CrewAI
 re-export misses were false identities:
 a function parameter and a local assignment shadowed the imported `tool` binding. Scope-isolating
-module and function imports now withhold those IDs, so all 3,448 identified endpoints resolve.
+module and function imports now withhold those IDs, so all 3,474 identified endpoints resolve.
 A governance export that collapses those references
 by name would silently attach controls or risks to the wrong asset.
 

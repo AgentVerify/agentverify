@@ -572,6 +572,17 @@ def main() -> int:
                 "typescript-mcp-sampling-handler-consent",
             }
         ]
+        mcp_elicitation_consent_capabilities = [
+            item
+            for item in ir.components
+            if item.kind == "capability"
+            and item.name == "user-elicitation"
+            and item.attributes.get("analysis")
+            in {
+                "python-mcp-elicitation-callback-consent",
+                "typescript-mcp-elicitation-handler-consent",
+            }
+        ]
         approval_callback_bypass_tools = [
             item
             for item in ir.components
@@ -1443,6 +1454,92 @@ def main() -> int:
                     finding.rule_id == "AV-MCP005" for finding in ir.findings
                 ),
             },
+            "mcp_elicitation_consent": {
+                "handlers": len(mcp_elicitation_consent_capabilities),
+                "default_scope_handlers": sum(
+                    item.attributes.get("scope") != "test"
+                    for item in mcp_elicitation_consent_capabilities
+                ),
+                "automatic_acceptance": sum(
+                    item.attributes.get("approval_policy") == "automatic-accept"
+                    for item in mcp_elicitation_consent_capabilities
+                ),
+                "default_scope_automatic_acceptance": sum(
+                    item.attributes.get("scope") != "test"
+                    and item.attributes.get("approval_policy") == "automatic-accept"
+                    for item in mcp_elicitation_consent_capabilities
+                ),
+                "human_confirmed": sum(
+                    item.attributes.get("approval_policy") == "human-confirmed"
+                    for item in mcp_elicitation_consent_capabilities
+                ),
+                "declined_handler": sum(
+                    item.attributes.get("approval_policy") == "declined-handler"
+                    for item in mcp_elicitation_consent_capabilities
+                ),
+                "unresolved_handler": sum(
+                    item.attributes.get("approval_policy") == "unresolved-handler"
+                    for item in mcp_elicitation_consent_capabilities
+                ),
+                "python": sum(
+                    item.attributes.get("frontend") == "python"
+                    for item in mcp_elicitation_consent_capabilities
+                ),
+                "typescript": sum(
+                    item.attributes.get("frontend") == "typescript"
+                    for item in mcp_elicitation_consent_capabilities
+                ),
+                "form_capable": sum(
+                    "form" in item.attributes.get("elicitation_modes", ())
+                    for item in mcp_elicitation_consent_capabilities
+                ),
+                "url_capable": sum(
+                    "url" in item.attributes.get("elicitation_modes", ())
+                    for item in mcp_elicitation_consent_capabilities
+                ),
+                "protocol_edges": sum(
+                    edge.source_kind == "protocol"
+                    and edge.source_name == "MCP"
+                    and edge.relation == "uses"
+                    and edge.target_kind == "capability"
+                    and edge.target_name == "user-elicitation"
+                    and edge.attributes.get("analysis")
+                    in {
+                        "python-mcp-elicitation-callback-consent",
+                        "typescript-mcp-elicitation-handler-consent",
+                    }
+                    for edge in ir.relationships
+                ),
+                "configured_by_edges": sum(
+                    edge.source_kind == "protocol"
+                    and edge.source_name == "MCP"
+                    and edge.relation == "configured-by"
+                    and edge.target_kind == "control-setting"
+                    and edge.target_name == "mcp-elicitation-acceptance"
+                    and edge.attributes.get("analysis")
+                    in {
+                        "python-mcp-elicitation-callback-consent",
+                        "typescript-mcp-elicitation-handler-consent",
+                    }
+                    for edge in ir.relationships
+                ),
+                "consent_control_edges": sum(
+                    edge.source_kind == "capability"
+                    and edge.source_name == "user-elicitation"
+                    and edge.relation == "governed-by"
+                    and edge.target_kind == "control"
+                    and edge.target_name == "mcp-elicitation-consent"
+                    and edge.attributes.get("analysis")
+                    in {
+                        "python-mcp-elicitation-callback-consent",
+                        "typescript-mcp-elicitation-handler-consent",
+                    }
+                    for edge in ir.relationships
+                ),
+                "findings": sum(
+                    finding.rule_id == "AV-MCP006" for finding in ir.findings
+                ),
+            },
             "approval_callback_bypass": {
                 "tools": len(approval_callback_bypass_tools),
                 "python_tools": sum(
@@ -1890,7 +1987,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 69,
+        "schema_version": 70,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2288,6 +2385,26 @@ def main() -> int:
                     "configured_by_edges",
                     "consent_control_edges",
                     "token_budget_edges",
+                    "findings",
+                )
+            },
+            "mcp_elicitation_consent": {
+                name: sum(result["mcp_elicitation_consent"][name] for result in successful)
+                for name in (
+                    "handlers",
+                    "default_scope_handlers",
+                    "automatic_acceptance",
+                    "default_scope_automatic_acceptance",
+                    "human_confirmed",
+                    "declined_handler",
+                    "unresolved_handler",
+                    "python",
+                    "typescript",
+                    "form_capable",
+                    "url_capable",
+                    "protocol_edges",
+                    "configured_by_edges",
+                    "consent_control_edges",
                     "findings",
                 )
             },

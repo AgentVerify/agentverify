@@ -36,6 +36,9 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 - `cases/mcp_sampling_consent`: exact Python and TypeScript MCP sampling handlers distinguish
   automatic fulfilment from interactive consent, denial, token caps, unresolved callbacks,
   disconnected receivers, and unrelated imports.
+- `cases/mcp_elicitation_consent`: exact Python and TypeScript MCP elicitation handlers distinguish
+  automatic acceptance from direct user decisions, decline-only and unresolved callbacks, missing
+  capabilities, disconnected receivers, and unrelated imports.
 - `cases/typescript_structured_tools`: balanced tool-array parsing, namespace spreads, inline and
   assigned SDK tools, agent-as-tool delegation, approval policies, and unrelated-name negatives.
 - `cases/typescript_bun_shell`: Cline inline tools distinguish dynamic Bun `sh -c`, a fixed command,
@@ -128,7 +131,7 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-22 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,771 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,086 relationships, and completed in 264.2287 seconds on the development machine. Three parse
+resolved 2,114 relationships, and completed in 270.7738 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -139,10 +142,10 @@ versioned audited evidence hints plus Python imports reached from MCP forwarding
 URL-security call sites, all charged against the same cap. This refresh materialized 176 dependency files across 21
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v69 carries both the 176-file total and the
+dependency count per repository; engine schema v70 carries both the 176-file total and the
 21-repository coverage.
 
-Engine benchmark schema v69 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v70 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It also publishes Python and TypeScript initial-origin control coverage
 plus source-proven Python and TypeScript secure transports, with redirect, DNS, proxy, configured
@@ -172,9 +175,9 @@ one address-filtering control with configured allowlist and environment-proxy re
 Composio edges separately count configured-route pinning residuals, one edge-runtime fail-closed path,
 and three edge-runtime unguarded fallbacks.
 
-The benchmark now also measures identity coverage: 9,565 agent/tool component observations carry
-module-qualified IDs. Of 4,172 relationship endpoints, all 3,448 identified symbol endpoints resolve
-to an observed component (3,159 Python and 289 TypeScript). Schema v63 records 359
+The benchmark now also measures identity coverage: 9,578 agent/tool component observations carry
+module-qualified IDs. Of 4,228 relationship endpoints, all 3,474 identified symbol endpoints resolve
+to an observed component (3,161 Python and 313 TypeScript). Schema v63 records 359
 `lexical-single-definition` targets, 20 exact same-block dominating definitions, 25 contextual
 absolute-import targets, and three exact same-class helper-return edges to two Agent source
 definitions. Fourteen production CrewAI delegations resolve through an exact contextual import,
@@ -223,8 +226,8 @@ Missing relative modules, duplicate or forward imports, module rebinding, and fu
 shadowing remain unresolved. Sixteen IR labels cover the local export/import boundary, six negative
 forms, and all seven pinned Google ADK edges; one rule label proves cross-file AV-FS001 reachability.
 
-Schema-v69 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
-resolves 3,442 endpoints by symbol ID, 604 by exact evidence location, and 20 by a unique display
+Schema-v70 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
+resolves 3,468 endpoints by symbol ID, 632 by exact evidence location, and 22 by a unique display
 name; 38 remain ambiguous and 68 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
@@ -489,7 +492,27 @@ prompt and messages, caps the server's token request, awaits an explicit decisio
 rejection, and only then calls its provider. Direct Python rejection, unresolved callbacks, and a
 too-late TypeScript confirmation are separately regression-tested. A missing capability, unrelated imports, and a disconnected TypeScript receiver withhold
 the path. The rule matrix is 6 TP, 10 TN, 0 FP, and 0 FN; the IR matrix is 15 TP, 2 TN, 0 FP, and 0 FN.
-All 467 cross-rule labels pass.
+
+## AV-MCP006 — MCP elicitation is accepted without a proven user decision
+
+Schema v70 treats elicitation as a distinct server-to-client authority. Python requires an exact
+`mcp.ClientSession`, a same-scope named async callback, and a literal `mcp.types.ElicitResult` action.
+TypeScript requires an exact `@modelcontextprotocol/client` `Client`, a literal form/URL capability,
+a proven receiver, and a balanced inline `elicitation/create` arrow handler returning literal action
+objects. The IR records the protocol→user-elicitation path, advertised modes, server input authority,
+response destination, acceptance policy, and consent control. The
+[official MCP elicitation specification](https://modelcontextprotocol.io/specification/2025-11-25/client/elicitation)
+defines `accept` as user consent and requires explicit consent plus full-URL display before URL-mode
+navigation.
+
+Thirteen pinned handlers qualify: one Python and 12 TypeScript. Nine can return `accept`, including
+six test-only handlers; the three default-scope automatic acceptances raise reviews in the TypeScript
+SDK. Two test handlers decline only. The SDK CLI host is human-confirmed through direct URL
+confirmation plus a unique imported form collector that gathers input and preserves decline/cancel.
+The Microsoft Python tutorial independently prompts and branches on explicit user choices. Wrong
+imports, disconnected or reassigned receivers, missing capabilities, unreturned or nested action
+objects, and named external callbacks withhold the path. The rule matrix is 5 TP, 15 TN, 0 FP, and 0
+FN; the IR matrix is 18 TP, 3 TN, 0 FP, and 0 FN. All 487 cross-rule labels pass.
 
 During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
 to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
@@ -503,7 +526,8 @@ were incorrectly classified as dynamic; resolving complete string literals remov
 findings while preserving interpolated templates. Broad approval-name matching confused warning-state
 and version-check flags with human approval; requiring approval-specific names removed six review
 candidates. Corpus totals are now 21 `AV-EXEC001` findings, 14 `AV-APPROVAL001` reviews, one
-specialized `AV-MCP004` review, and three generic `AV-MCP005` sampling-consent reviews.
+specialized `AV-MCP004` review, three generic `AV-MCP005` sampling-consent reviews, and three
+`AV-MCP006` elicitation-consent reviews.
 The dependency closure also exposes CAMEL's production `func_string_to_callable(code)` helper, whose
 parameter reaches `exec`. Browser-aware evaluation adds one more exact path: Skyvern's registered
 [`skyvern_evaluate`](https://github.com/Skyvern-AI/skyvern/blob/486c8975e9864a53037d4701b781f8619e698c40/skyvern/cli/mcp_tools/browser.py#L2458)
@@ -948,14 +972,14 @@ and surfacing failed writes through metrics or alerts.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 406 exact labels across all thirteen enabled rules: 228 positives and 178
+`benchmarks/truthset.json` contains 487 exact labels across all 18 enabled rules: 262 positives and 225
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
 Compose/Kubernetes/Docker SDK settings, host credential bind near misses, and exact/prompt-only MCP
-package launchers. All 406 currently pass;
+package launchers. All 487 currently pass;
 each rule's seed precision and recall are 1.0. Negative labels must retain either an observed Agent IR
 component anchor or verified source text at the exact pinned line, preventing a missing or drifting
 location from passing silently.
@@ -1073,7 +1097,7 @@ ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent 
 Eighty component-taxonomy labels add 51 exact local/pinned framework, provider, and model positives
 plus 29 near-name and unrelated-service negatives. Twenty-five MCP package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
-four real repositories. All 568 IR labels pass:
+four real repositories. All 589 IR labels pass:
 51 component-taxonomy positives/29 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
@@ -1111,4 +1135,5 @@ CLI upload positives/one negative, two Google ADK OpenAPI origin-lock positives/
 OpenAI Agents Python MCP-approval-default positives/one negative, six OpenAI Agents JS MCP approval
 composition positives/one negative, nine Agno MCP confirmation positives/one negative, nine Semantic
 Kernel MCP sampling positives/two negatives, 15 generic MCP sampling-consent positives/two negatives,
+17 generic MCP elicitation-consent positives/two negatives,
 plus 22 MCP package-launcher positives/three negatives.

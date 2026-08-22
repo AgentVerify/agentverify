@@ -77,6 +77,10 @@ never imported or executed.
   handlers distinguish automatic sampling fulfilment from fail-closed interactive consent, denial,
   unresolved callbacks, token caps, late confirmation, missing capability declarations,
   disconnected receivers, and unrelated imports.
+- `mcp_elicitation_consent`: exact Python `ClientSession` callbacks and TypeScript MCP client request
+  handlers distinguish automatic elicitation acceptance from user-mediated acceptance, decline-only
+  and unresolved handlers, missing capability declarations, disconnected or reassigned receivers,
+  unreturned or nested action objects, and unrelated imports.
 - `python_google_adk_bigquery_audit`: Google ADK Runner composition attaches its default-enabled
   BigQuery analytics plugin to one tool action while retaining an explicit disabled near miss.
 - `python_skyvern_action_history`: Skyvern Task v3 records post-dispatch browser actions in a

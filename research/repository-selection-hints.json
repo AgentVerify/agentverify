@@ -60,12 +60,18 @@
     ],
     "modelcontextprotocol/typescript-sdk": [
       "examples/cli-client/host/host.ts",
+      "examples/cli-client/host/ui.ts",
       "examples/caching/client.ts",
       "examples/custom-version/client.ts",
+      "examples/elicitation/client.ts",
       "examples/extension-capabilities/client.ts",
       "examples/guides/clients/server-requests.examples.ts",
       "examples/guides/get-started/firstClient.examples.ts",
+      "examples/guides/servers/elicitation.examples.ts",
+      "examples/mrtr/client.ts",
+      "examples/repl/client.ts",
       "examples/sampling/client.ts",
+      "examples/stickynotes/client.ts",
       "examples/streaming/client.ts",
       "packages/client/src/client/client.ts",
       "packages/core-internal/src/shared/protocol.ts"

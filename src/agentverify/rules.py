@@ -193,6 +193,30 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
             )
         if (
             component.kind == "capability"
+            and component.name == "user-elicitation"
+            and component.attributes.get("analysis")
+            in {
+                "python-mcp-elicitation-callback-consent",
+                "typescript-mcp-elicitation-handler-consent",
+            }
+            and component.attributes.get("input_authority") == "mcp-server"
+            and component.attributes.get("acceptance_created") is True
+            and component.attributes.get("approval_policy") == "automatic-accept"
+        ):
+            ir.findings.append(
+                make_finding(
+                    ir,
+                    component,
+                    "AV-MCP006",
+                    "high",
+                    "high",
+                    "An MCP client accepts server elicitation without a proven user decision",
+                    "Show the requesting server and complete elicitation request, collect or confirm the user's response, offer decline and cancel, and validate form data or URL destinations before returning acceptance.",
+                    "review",
+                )
+            )
+        if (
+            component.kind == "capability"
             and component.name == "mcp-tool-forwarding"
             and not component.attributes.get("allowlist_guard")
         ):

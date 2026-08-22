@@ -343,6 +343,17 @@ decision must precede provider invocation. The TypeScript analysis separately re
 to the provider request. Named external callbacks and complex or indirect handlers remain explicit
 `unresolved-handler` settings rather than assumed safe or unsafe.
 
+The elicitation-consent pass models a separate server authority: a client advertises form and/or URL
+elicitation and returns `accept`, `decline`, or `cancel`. Python requires an exact `mcp.ClientSession`,
+a same-scope named async callback, and an exact `mcp.types.ElicitResult` action. TypeScript requires
+an exact `@modelcontextprotocol/client` `Client`, a literal elicitation capability, an immutable receiver,
+and a balanced inline `elicitation/create` arrow handler. Literal acceptance is automatic unless
+every accepting branch follows direct awaited user input or confirmation. One exact local imported
+helper is also recognized when its unique body collects input and can decline or cancel before
+acceptance. Decline-only and unresolved handlers remain distinct settings. The IR records advertised
+modes, server input authority, response destination, request disclosure, and an exact
+`mcp-elicitation-consent` control edge.
+
 A repository prepass builds bounded Python network summaries for unique top-level free functions in
 selected files. A summary records direct recognized HTTP calls and the formal parameters that can
 control their origins after fixed-prefix discrimination. At a tool call site, only an exact named

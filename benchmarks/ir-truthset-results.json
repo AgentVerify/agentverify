@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T06:03:02.833309+00:00",
-  "labels": 568,
-  "passed": 568,
+  "generated_at": "2026-08-22T06:36:32.825307+00:00",
+  "labels": 589,
+  "passed": 589,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -56,6 +56,14 @@
       "tp": 2,
       "fp": 0,
       "tn": 2,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-MCP-ELICITATION-CONSENT": {
+      "tp": 18,
+      "fp": 0,
+      "tn": 3,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -3233,6 +3241,195 @@
     {
       "id": "mcp-sampling-consent-typescript-budget-real",
       "check_id": "IR-MCP-SAMPLING-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-python-protocol-local",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-python-setting-local",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-protocol-local",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-python-human-local",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-human-local",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-python-declined-local",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-declined-local",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-unreturned-local",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-nested-action-local",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-python-unresolved-local",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-unresolved-local",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-disconnected-local-negative",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-missing-capability-local-negative",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-reassigned-local-negative",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-example-real",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-guide-real",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-stickynotes-real",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-host-real",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-python-tutorial-real",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-test-url-real",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-test-decline-real",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

@@ -3062,6 +3062,141 @@ def test_mcp_sampling_callbacks_require_a_proven_user_decision() -> None:
     )
 
 
+def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
+    root = ROOT / "cases/mcp_elicitation_consent"
+    ir = scan_repository(root)
+    analyses = {
+        "python-mcp-elicitation-callback-consent",
+        "typescript-mcp-elicitation-handler-consent",
+    }
+    capabilities = {
+        component.evidence.path: component
+        for component in ir.components
+        if component.kind == "capability"
+        and component.name == "user-elicitation"
+        and component.attributes.get("analysis") in analyses
+    }
+    assert set(capabilities) == {
+        "python_automatic.py",
+        "python_declined.py",
+        "python_human.py",
+        "python_unresolved.py",
+        "typescript_automatic.ts",
+        "typescript_declined.ts",
+        "typescript_human.ts",
+        "typescript_nested_action.ts",
+        "typescript_unreturned.ts",
+        "typescript_unresolved.ts",
+    }
+    assert capabilities["python_automatic.py"].attributes == {
+        "frontend": "python",
+        "input_authority": "mcp-server",
+        "response_destination": "mcp-server",
+        "approval_policy": "automatic-accept",
+        "response_created": True,
+        "acceptance_created": True,
+        "elicitation_modes": ("form", "url"),
+        "callback_definition_line": 6,
+        "request_disclosure": "not-proven",
+        "scope": "production",
+        "analysis": "python-mcp-elicitation-callback-consent",
+    }
+    assert capabilities["python_declined.py"].attributes["approval_policy"] == (
+        "declined-handler"
+    )
+    assert capabilities["python_human.py"].attributes["approval_policy"] == (
+        "human-confirmed"
+    )
+    assert capabilities["python_human.py"].attributes["request_disclosure"] == (
+        "message-and-request-details"
+    )
+    assert capabilities["python_unresolved.py"].attributes["approval_policy"] == (
+        "unresolved-handler"
+    )
+    assert capabilities["typescript_automatic.ts"].attributes["approval_policy"] == (
+        "automatic-accept"
+    )
+    assert capabilities["typescript_automatic.ts"].attributes[
+        "elicitation_modes"
+    ] == ("form", "url")
+    assert capabilities["typescript_declined.ts"].attributes["approval_policy"] == (
+        "declined-handler"
+    )
+    assert capabilities["typescript_nested_action.ts"].attributes["approval_policy"] == (
+        "unresolved-handler"
+    )
+    assert capabilities["typescript_unreturned.ts"].attributes["approval_policy"] == (
+        "declined-handler"
+    )
+    assert capabilities["typescript_human.ts"].attributes == {
+        "frontend": "typescript",
+        "input_authority": "mcp-server",
+        "response_destination": "mcp-server",
+        "approval_policy": "human-confirmed",
+        "response_created": True,
+        "acceptance_created": True,
+        "elicitation_modes": ("form", "url"),
+        "callback_definition_line": 8,
+        "request_disclosure": "message-and-request-details",
+        "scope": "production",
+        "analysis": "typescript-mcp-elicitation-handler-consent",
+    }
+    assert capabilities["typescript_unresolved.ts"].attributes["approval_policy"] == (
+        "unresolved-handler"
+    )
+
+    controls = {
+        (component.evidence.path, component.evidence.line)
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "mcp-elicitation-consent"
+        and component.attributes.get("analysis") in analyses
+    }
+    assert controls == {("python_human.py", 9), ("typescript_human.ts", 10)}
+    assert sum(
+        relationship.source_kind == "protocol"
+        and relationship.source_name == "MCP"
+        and relationship.relation == "uses"
+        and relationship.target_kind == "capability"
+        and relationship.target_name == "user-elicitation"
+        and relationship.attributes.get("analysis") in analyses
+        for relationship in ir.relationships
+    ) == 10
+    findings = [finding for finding in ir.findings if finding.rule_id == "AV-MCP006"]
+    assert [
+        (finding.evidence.path, finding.evidence.line, finding.ir_path)
+        for finding in findings
+    ] == [
+        (
+            "python_automatic.py",
+            15,
+            ("protocol:MCP", "capability:user-elicitation"),
+        ),
+        (
+            "typescript_automatic.ts",
+            8,
+            ("protocol:MCP", "capability:user-elicitation"),
+        ),
+    ]
+    assert all(finding.result_kind == "review" for finding in findings)
+    assert all(
+        finding.analysis["approval_coverage"] == "automatic-accept"
+        for finding in findings
+    )
+    assert not any(
+        component.attributes.get("analysis") in analyses
+        and component.evidence.path
+        in {
+            "python_wrong_import.py",
+            "typescript_disconnected.ts",
+            "typescript_missing_capability.ts",
+            "typescript_reassigned.ts",
+            "typescript_wrong_import.ts",
+        }
+        for component in ir.components
+    )
+
+
 def test_typescript_a2a_remote_cards_preserve_endpoint_authority_and_transport(
     tmp_path: Path,
 ) -> None:

@@ -1,6 +1,6 @@
 {
-  "schema_version": 69,
-  "generated_at": "2026-08-22T06:04:28.365649+00:00",
+  "schema_version": 70,
+  "generated_at": "2026-08-22T06:38:00.463146+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -20,10 +20,10 @@
     "dependency_files_materialized": 176,
     "repositories_with_dependency_expansion": 21,
     "config_files_scanned": 155,
-    "relationships": 2086,
-    "symbolized_components": 9565,
-    "identified_symbol_endpoints": 3448,
-    "resolved_symbol_endpoints": 3448,
+    "relationships": 2114,
+    "symbolized_components": 9578,
+    "identified_symbol_endpoints": 3474,
+    "resolved_symbol_endpoints": 3474,
     "unmatched_identified_symbol_endpoints": 0,
     "ambiguous_repeated_binding_targets": 0,
     "resolved_binding_targets_by_basis": {
@@ -39,12 +39,12 @@
       "same-class-helper-return": 3,
       "typed-parameter-callsite-consensus": 1
     },
-    "relationship_endpoints": 4172,
+    "relationship_endpoints": 4228,
     "bom_endpoint_resolutions": {
       "ambiguous": 38,
-      "evidence-location": 604,
-      "symbol-id": 3442,
-      "unique-display-name": 20,
+      "evidence-location": 632,
+      "symbol-id": 3468,
+      "unique-display-name": 22,
       "unresolved": 68
     },
     "bom_ambiguous_endpoints_by_side_kind": {
@@ -56,8 +56,8 @@
       "target:tool": 21
     },
     "resolved_symbol_endpoints_by_frontend": {
-      "py": 3159,
-      "ts": 289
+      "py": 3161,
+      "ts": 313
     },
     "typescript_graph": {
       "agent_edges": 99,
@@ -271,6 +271,23 @@
       "token_budget_edges": 1,
       "findings": 3
     },
+    "mcp_elicitation_consent": {
+      "handlers": 13,
+      "default_scope_handlers": 5,
+      "automatic_acceptance": 9,
+      "default_scope_automatic_acceptance": 3,
+      "human_confirmed": 2,
+      "declined_handler": 2,
+      "unresolved_handler": 0,
+      "python": 1,
+      "typescript": 12,
+      "form_capable": 6,
+      "url_capable": 11,
+      "protocol_edges": 13,
+      "configured_by_edges": 13,
+      "consent_control_edges": 2,
+      "findings": 3
+    },
     "approval_callback_bypass": {
       "tools": 3,
       "python_tools": 1,
@@ -441,6 +458,7 @@
       "AV-MCP003": 34,
       "AV-MCP004": 1,
       "AV-MCP005": 3,
+      "AV-MCP006": 3,
       "AV-NET001": 23,
       "AV-SANDBOX001": 20
     },
@@ -460,6 +478,7 @@
       "AV-MCP003": 5,
       "AV-MCP004": 1,
       "AV-MCP005": 2,
+      "AV-MCP006": 1,
       "AV-NET001": 12,
       "AV-SANDBOX001": 10
     },
@@ -478,7 +497,8 @@
         "mcp-tool-forwarding": 24,
         "model-sampling": 3,
         "network": 58,
-        "shell-execution": 46
+        "shell-execution": 46,
+        "user-elicitation": 2
       },
       "control": {
         "a2a-card-rpc-origin-policy": 1,
@@ -487,6 +507,7 @@
         "durable-action-record": 1,
         "fixed-tool-binding": 6,
         "human-approval": 3,
+        "mcp-elicitation-consent": 2,
         "mcp-sampling-consent": 2,
         "mcp-sampling-token-budget": 1,
         "mcp-tool-filter": 2,
@@ -499,6 +520,7 @@
       },
       "control-setting": {
         "auto-approval": 4,
+        "mcp-elicitation-acceptance": 2,
         "mcp-sampling-approval": 1,
         "mcp-sampling-fulfilment": 2,
         "mcp-tool-approval": 2,
@@ -664,7 +686,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 264.2287
+    "elapsed_seconds": 270.7738
   },
   "repositories": [
     {
@@ -909,6 +931,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -1037,7 +1076,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2735
+      "elapsed_seconds": 3.2825
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -1289,6 +1328,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -1422,7 +1478,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.7262
+      "elapsed_seconds": 6.9561
     },
     {
       "repository": "langchain-ai/langchain",
@@ -1670,6 +1726,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -1796,7 +1869,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3688
+      "elapsed_seconds": 2.4626
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -2048,6 +2121,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -2182,7 +2272,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.1607
+      "elapsed_seconds": 9.7076
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -2439,6 +2529,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -2569,7 +2676,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4259
+      "elapsed_seconds": 0.448
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -2831,6 +2938,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -2974,7 +3098,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.2237
+      "elapsed_seconds": 10.6925
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -3240,6 +3364,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -3390,7 +3531,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.3146
+      "elapsed_seconds": 6.6972
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -3652,6 +3793,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -3792,7 +3950,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.633
+      "elapsed_seconds": 0.6612
     },
     {
       "repository": "microsoft/autogen",
@@ -4048,6 +4206,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -4183,7 +4358,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6684
+      "elapsed_seconds": 1.7425
     },
     {
       "repository": "microsoft/agent-framework",
@@ -4421,6 +4596,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -4547,7 +4739,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0486
+      "elapsed_seconds": 0.0509
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -4557,11 +4749,12 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 0,
       "components": {
-        "capability": 15,
-        "control-setting": 1,
+        "capability": 16,
+        "control": 1,
+        "control-setting": 2,
         "framework": 5,
         "mcp": 2,
-        "protocol": 19,
+        "protocol": 20,
         "provider": 1,
         "tool": 1
       },
@@ -4570,9 +4763,14 @@
           "filesystem",
           "mcp-tool-forwarding",
           "model-sampling",
-          "network"
+          "network",
+          "user-elicitation"
+        ],
+        "control": [
+          "mcp-elicitation-consent"
         ],
         "control-setting": [
+          "mcp-elicitation-acceptance",
           "mcp-sampling-fulfilment"
         ],
         "framework": [
@@ -4586,15 +4784,15 @@
           "OpenAI"
         ]
       },
-      "relationships": 3,
-      "symbolized_components": 2,
-      "identified_symbol_endpoints": 3,
-      "resolved_symbol_endpoints": 3,
+      "relationships": 6,
+      "symbolized_components": 3,
+      "identified_symbol_endpoints": 5,
+      "resolved_symbol_endpoints": 5,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
-        "py": 3,
+        "py": 5,
         "ts": 0
       },
       "typescript_graph": {
@@ -4805,6 +5003,23 @@
         "token_budget_edges": 0,
         "findings": 1
       },
+      "mcp_elicitation_consent": {
+        "handlers": 1,
+        "default_scope_handlers": 1,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 1,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 1,
+        "typescript": 0,
+        "form_capable": 1,
+        "url_capable": 1,
+        "protocol_edges": 1,
+        "configured_by_edges": 1,
+        "consent_control_edges": 1,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -4930,8 +5145,9 @@
         "typescript": 0
       },
       "bom_endpoint_resolutions": {
-        "evidence-location": 3,
-        "symbol-id": 3
+        "evidence-location": 6,
+        "symbol-id": 5,
+        "unique-display-name": 1
       },
       "bom_ambiguous_endpoints_by_side_kind": {},
       "findings": {
@@ -4941,7 +5157,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2449
+      "elapsed_seconds": 0.2609
     },
     {
       "repository": "openai/openai-agents-python",
@@ -5219,6 +5435,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 1,
         "python_tools": 1,
@@ -5366,7 +5599,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.4841
+      "elapsed_seconds": 11.7902
     },
     {
       "repository": "openai/openai-agents-js",
@@ -5638,6 +5871,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 2,
         "python_tools": 0,
@@ -5775,7 +6025,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6386
+      "elapsed_seconds": 1.6167
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -6042,6 +6292,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -6180,7 +6447,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 24.2914
+      "elapsed_seconds": 24.6633
     },
     {
       "repository": "google/adk-python",
@@ -6450,6 +6717,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -6592,7 +6876,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.0097
+      "elapsed_seconds": 9.6914
     },
     {
       "repository": "google/adk-js",
@@ -6853,6 +7137,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -6986,7 +7287,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.0539
+      "elapsed_seconds": 4.0699
     },
     {
       "repository": "huggingface/smolagents",
@@ -7244,6 +7545,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -7386,7 +7704,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6176
+      "elapsed_seconds": 2.7528
     },
     {
       "repository": "agno-agi/agno",
@@ -7652,6 +7970,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -7794,7 +8129,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0613
+      "elapsed_seconds": 1.1058
     },
     {
       "repository": "camel-ai/camel",
@@ -8057,6 +8392,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -8201,7 +8553,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.38
+      "elapsed_seconds": 5.4905
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -8459,6 +8811,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -8591,7 +8960,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3867
+      "elapsed_seconds": 0.4053
     },
     {
       "repository": "run-llama/llama_index",
@@ -8844,6 +9213,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -8970,7 +9356,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7469
+      "elapsed_seconds": 1.8233
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -9229,6 +9615,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -9373,7 +9776,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8136
+      "elapsed_seconds": 2.9034
     },
     {
       "repository": "InternLM/lagent",
@@ -9633,6 +10036,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -9772,7 +10192,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2598
+      "elapsed_seconds": 1.3343
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -10027,6 +10447,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -10168,7 +10605,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3041
+      "elapsed_seconds": 2.4087
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -10423,6 +10860,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -10566,7 +11020,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0919
+      "elapsed_seconds": 3.2169
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -10818,6 +11272,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -10958,7 +11429,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.971
+      "elapsed_seconds": 2.0454
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -11211,6 +11682,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -11347,7 +11835,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.588
+      "elapsed_seconds": 7.7318
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -11596,6 +12084,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -11731,7 +12236,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.4207
+      "elapsed_seconds": 2.4559
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -11981,6 +12486,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -12107,7 +12629,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3344
+      "elapsed_seconds": 1.3526
     },
     {
       "repository": "letta-ai/letta-code",
@@ -12351,6 +12873,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -12477,7 +13016,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.2785
+      "elapsed_seconds": 5.2944
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -12736,6 +13275,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -12876,7 +13432,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2152
+      "elapsed_seconds": 2.2585
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -13129,6 +13685,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -13270,7 +13843,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.1345
+      "elapsed_seconds": 4.3042
     },
     {
       "repository": "mastra-ai/mastra",
@@ -13526,6 +14099,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -13658,7 +14248,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0209
+      "elapsed_seconds": 3.0336
     },
     {
       "repository": "vercel/ai",
@@ -13913,6 +14503,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -14044,7 +14651,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3109
+      "elapsed_seconds": 3.3015
     },
     {
       "repository": "cline/cline",
@@ -14304,6 +14911,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -14436,7 +15060,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.5788
+      "elapsed_seconds": 4.5768
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -14685,6 +15309,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -14811,7 +15452,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.9327
+      "elapsed_seconds": 4.9489
     },
     {
       "repository": "continuedev/continue",
@@ -15056,6 +15697,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -15182,7 +15840,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0263
+      "elapsed_seconds": 3.0416
     },
     {
       "repository": "Aider-AI/aider",
@@ -15430,6 +16088,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -15571,7 +16246,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.5449
+      "elapsed_seconds": 4.5241
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -15814,6 +16489,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -15948,7 +16640,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 1.5785
+      "elapsed_seconds": 1.6572
     },
     {
       "repository": "plandex-ai/plandex",
@@ -16178,6 +16870,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -16304,7 +17013,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.058
+      "elapsed_seconds": 0.0574
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -16549,6 +17258,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -16681,7 +17407,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2837
+      "elapsed_seconds": 2.3775
     },
     {
       "repository": "stitionai/devika",
@@ -16934,6 +17660,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -17064,7 +17807,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5373
+      "elapsed_seconds": 0.5605
     },
     {
       "repository": "block/goose",
@@ -17317,6 +18060,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -17453,7 +18213,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 6.4478
+      "elapsed_seconds": 6.5165
     },
     {
       "repository": "bytedance/trae-agent",
@@ -17713,6 +18473,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -17856,7 +18633,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2445
+      "elapsed_seconds": 1.3025
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -18108,6 +18885,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -18240,7 +19034,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.2597
+      "elapsed_seconds": 7.1938
     },
     {
       "repository": "openai/codex",
@@ -18477,6 +19271,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -18609,7 +19420,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1123
+      "elapsed_seconds": 1.139
     },
     {
       "repository": "browser-use/browser-use",
@@ -18871,6 +19682,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -19015,7 +19843,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.5946
+      "elapsed_seconds": 6.8786
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -19286,6 +20114,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -19430,7 +20275,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 14.0323
+      "elapsed_seconds": 14.3328
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -19684,6 +20529,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -19821,7 +20683,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3217
+      "elapsed_seconds": 1.3537
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -20069,6 +20931,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -20197,7 +21076,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5128
+      "elapsed_seconds": 1.5842
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -20447,6 +21326,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -20583,7 +21479,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6272
+      "elapsed_seconds": 1.6099
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -20840,6 +21736,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -20975,7 +21888,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.6831
+      "elapsed_seconds": 4.8371
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -20985,13 +21898,13 @@
       "dependency_files_materialized": 2,
       "config_files_scanned": 0,
       "components": {
-        "capability": 57,
-        "control": 2,
-        "control-setting": 5,
+        "capability": 69,
+        "control": 3,
+        "control-setting": 17,
         "mcp": 449,
         "mcp-server": 20,
         "model": 10,
-        "protocol": 317,
+        "protocol": 329,
         "provider": 5,
         "tool": 214
       },
@@ -21001,13 +21914,16 @@
           "filesystem",
           "model-sampling",
           "network",
-          "shell-execution"
+          "shell-execution",
+          "user-elicitation"
         ],
         "control": [
+          "mcp-elicitation-consent",
           "mcp-sampling-consent",
           "mcp-sampling-token-budget"
         ],
         "control-setting": [
+          "mcp-elicitation-acceptance",
           "mcp-sampling-fulfilment"
         ],
         "protocol": [
@@ -21018,16 +21934,16 @@
           "OpenAI"
         ]
       },
-      "relationships": 15,
-      "symbolized_components": 219,
-      "identified_symbol_endpoints": 13,
-      "resolved_symbol_endpoints": 13,
+      "relationships": 40,
+      "symbolized_components": 231,
+      "identified_symbol_endpoints": 37,
+      "resolved_symbol_endpoints": 37,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
         "py": 0,
-        "ts": 13
+        "ts": 37
       },
       "typescript_graph": {
         "agent_edges": 0,
@@ -21237,6 +22153,23 @@
         "token_budget_edges": 1,
         "findings": 2
       },
+      "mcp_elicitation_consent": {
+        "handlers": 12,
+        "default_scope_handlers": 4,
+        "automatic_acceptance": 9,
+        "default_scope_automatic_acceptance": 3,
+        "human_confirmed": 1,
+        "declined_handler": 2,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 12,
+        "form_capable": 5,
+        "url_capable": 10,
+        "protocol_edges": 12,
+        "configured_by_edges": 12,
+        "consent_control_edges": 1,
+        "findings": 3
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -21358,20 +22291,21 @@
         "typescript": 0
       },
       "bom_endpoint_resolutions": {
-        "evidence-location": 15,
-        "symbol-id": 13,
-        "unique-display-name": 2
+        "evidence-location": 40,
+        "symbol-id": 37,
+        "unique-display-name": 3
       },
       "bom_ambiguous_endpoints_by_side_kind": {},
       "findings": {
         "AV-MCP003": 18,
         "AV-MCP005": 2,
+        "AV-MCP006": 3,
         "AV-NET001": 1
       },
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.1418
+      "elapsed_seconds": 5.4514
     },
     {
       "repository": "github/github-mcp-server",
@@ -21611,6 +22545,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -21737,7 +22688,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.05
+      "elapsed_seconds": 0.0501
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -21978,6 +22929,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -22104,7 +23072,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1265
+      "elapsed_seconds": 0.1289
     },
     {
       "repository": "awslabs/mcp",
@@ -22356,6 +23324,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -22490,7 +23475,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.5811
+      "elapsed_seconds": 3.6051
     },
     {
       "repository": "docker/mcp-gateway",
@@ -22731,6 +23716,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -22859,7 +23861,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0429
+      "elapsed_seconds": 0.0437
     },
     {
       "repository": "jlowin/fastmcp",
@@ -23108,6 +24110,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -23246,7 +24265,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.7541
+      "elapsed_seconds": 4.9085
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -23476,6 +24495,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -23602,7 +24638,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0353
+      "elapsed_seconds": 0.0347
     },
     {
       "repository": "langflow-ai/langflow",
@@ -23861,6 +24897,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -23995,7 +25048,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.6619
+      "elapsed_seconds": 4.7638
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -24243,6 +25296,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -24377,7 +25447,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.1651
+      "elapsed_seconds": 4.1881
     },
     {
       "repository": "langgenius/dify",
@@ -24610,6 +25680,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -24736,7 +25823,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0314
+      "elapsed_seconds": 3.0948
     },
     {
       "repository": "n8n-io/n8n",
@@ -24992,6 +26079,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -25126,7 +26230,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0322
+      "elapsed_seconds": 3.0474
     },
     {
       "repository": "activepieces/activepieces",
@@ -25390,6 +26494,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -25526,7 +26647,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9618
+      "elapsed_seconds": 1.972
     },
     {
       "repository": "simstudioai/sim",
@@ -25765,6 +26886,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -25891,7 +27029,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.8051
+      "elapsed_seconds": 5.7966
     },
     {
       "repository": "composiohq/composio",
@@ -26158,6 +27296,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -26293,7 +27448,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.5034
+      "elapsed_seconds": 2.5359
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -26554,6 +27709,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -26698,7 +27870,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.4639
+      "elapsed_seconds": 4.5471
     },
     {
       "repository": "e2b-dev/E2B",
@@ -26936,6 +28108,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -27062,7 +28251,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3796
+      "elapsed_seconds": 3.344
     },
     {
       "repository": "daytonaio/daytona",
@@ -27290,6 +28479,23 @@
         "configured_by_edges": 0,
         "consent_control_edges": 0,
         "token_budget_edges": 0,
+        "findings": 0
+      },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
         "findings": 0
       },
       "approval_callback_bypass": {
@@ -27677,6 +28883,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -27808,7 +29031,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.4889
+      "elapsed_seconds": 2.532
     },
     {
       "repository": "traceloop/openllmetry",
@@ -28079,6 +29302,23 @@
         "token_budget_edges": 0,
         "findings": 0
       },
+      "mcp_elicitation_consent": {
+        "handlers": 0,
+        "default_scope_handlers": 0,
+        "automatic_acceptance": 0,
+        "default_scope_automatic_acceptance": 0,
+        "human_confirmed": 0,
+        "declined_handler": 0,
+        "unresolved_handler": 0,
+        "python": 0,
+        "typescript": 0,
+        "form_capable": 0,
+        "url_capable": 0,
+        "protocol_edges": 0,
+        "configured_by_edges": 0,
+        "consent_control_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -28213,7 +29453,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.1209
+      "elapsed_seconds": 4.2204
     }
   ]
 }

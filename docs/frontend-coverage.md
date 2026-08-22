@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v69
+framework, wrapper, or configuration path. Counts come from schema-v70
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -36,9 +36,9 @@ Provider observations are OpenAI (41), Anthropic (17), Google (17), Azure OpenAI
 (6), Groq (5), Ollama (4), Cohere (3), and Mistral (3). These overlapping exact-import, literal
 service, and model-string observations are lower than research-wide lexical signals.
 
-Across the selected snapshot, 9,565 agent/tool observations have module-qualified symbol IDs. Of
-4,172 relationship endpoint observations, all 3,448 identified endpoints resolve to an observed
-component (3,159 Python and 289 TypeScript). Two former false IDs on CrewAI test edges are now
+Across the selected snapshot, 9,578 agent/tool observations have module-qualified symbol IDs. Of
+4,228 relationship endpoint observations, all 3,474 identified endpoints resolve to an observed
+component (3,161 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
 withheld because a function parameter and assignment shadow the same-named package import.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
 edges resolve exactly. Schema v63 records 359 Python lexical-single-definition, 20 same-block
@@ -71,8 +71,8 @@ Capability/control taxonomy endpoints intentionally lack
 source-symbol IDs, so the endpoint fraction is inventory coverage rather than an accuracy or recall
 metric.
 
-The native AI BOM 1.2 resolver independently classifies all 4,172 endpoints: 3,442 by symbol ID, 604
-by exact relationship evidence, 20 by a unique display name, 38 as ambiguous, and 68 as unresolved.
+The native AI BOM 1.2 resolver independently classifies all 4,228 endpoints: 3,468 by symbol ID, 632
+by exact relationship evidence, 22 by a unique display name, 38 as ambiguous, and 68 as unresolved.
 Evidence-local resolution removes capability/control ambiguities; occurrence-qualified bindings
 resolve repeated source agent/tool observations, and conservative lexical resolution removes further
 target ambiguities. The remaining 38 ambiguous endpoints are agent, protocol, control, or tool targets without a unique
@@ -312,6 +312,14 @@ displays the full request, rejects a negative awaited decision, caps requested t
 the model provider. All six handlers produce protocol→model-sampling and configured-by edges; the
 safe host adds one consent and one token-budget edge.
 
+The separate elicitation surface adds 13 exact handlers: one Python and 12 TypeScript. Nine
+automatically return `accept`, two decline, and two are human-confirmed; six automatic handlers and
+both decline-only handlers are under tests, so `AV-MCP006` reports three default-scope SDK examples.
+Five handlers are outside tests: the three reviews, the TypeScript CLI host, and the Microsoft Python
+tutorial. All 13 produce protocol→user-elicitation and configured-by edges. The two governed clients
+add consent edges and preserve message/request-detail disclosure; the TypeScript host resolves its
+form path through a unique imported input collector and its URL path through direct confirmation.
+
 The approval-callback resolver summarizes unique same-file functions and propagates only direct call
 edges into an OpenAI built-in tool's configured approval handler. Python covers a named handler and
 one transitive wrapper; TypeScript covers inline handlers that call a summarized helper. The IR adds
@@ -391,6 +399,13 @@ and `network-ssrf-policy` edge.
   propagation remain unresolved. A decision after provider invocation is not a governing control.
   The rule describes automatic protocol fulfilment; a canned example
   is not claimed to have spent model quota.
+- Generic MCP elicitation consent requires exact Python or TypeScript client imports, literal
+  `ElicitResult`/returned action objects, a literal TypeScript elicitation capability, and an immutable
+  connected receiver. Direct awaited input/confirmation can govern later accepting branches; one unique local
+  imported TypeScript helper is supported when it collects input and preserves decline/cancel.
+  Python methods and module-level callbacks, TypeScript named handlers, client factories, stateful
+  decisions, other UI APIs, multi-round-trip input-required responses, and indirect helpers remain
+  unresolved. URL validation and navigation safety remain separate from the consent edge.
 - MetaGPT/Qwen registry decorators are recognized only through exact direct imports or unchanged
   aliases. Framework reexports, wildcard imports, rebound aliases, computed Qwen names, nonliteral
   MetaGPT entrypoint lists, inherited entrypoints, and indirect method adapters remain unresolved.
@@ -510,7 +525,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 467-label rule truth set and 568-label IR component/relationship set are curated regression suites. They
+The 487-label rule truth set and 589-label IR component/relationship set are curated regression suites. They
 guard known positives and negatives; they are not an unbiased accuracy estimate. A future holdout
 must be sampled separately across the categories above, externally reviewed, and kept sealed while
 rules change. Until then, precision/recall values apply only to the published seed labels.

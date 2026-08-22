@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T06:03:36.562343+00:00",
-  "labels": 467,
-  "passed": 467,
+  "generated_at": "2026-08-22T06:37:08.605791+00:00",
+  "labels": 487,
+  "passed": 487,
   "metrics": {
     "AV-A2A001": {
       "tp": 4,
@@ -120,6 +120,14 @@
       "tp": 6,
       "fp": 0,
       "tn": 10,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "AV-MCP006": {
+      "tp": 5,
+      "fp": 0,
+      "tn": 15,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -1360,6 +1368,186 @@
     {
       "id": "mcp-sampling-consent-typescript-human-real-negative",
       "rule_id": "AV-MCP005",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-python-auto-local",
+      "rule_id": "AV-MCP006",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-auto-local",
+      "rule_id": "AV-MCP006",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-python-human-local-negative",
+      "rule_id": "AV-MCP006",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-human-local-negative",
+      "rule_id": "AV-MCP006",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-python-declined-local-negative",
+      "rule_id": "AV-MCP006",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-declined-local-negative",
+      "rule_id": "AV-MCP006",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-unreturned-local-negative",
+      "rule_id": "AV-MCP006",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-nested-action-local-negative",
+      "rule_id": "AV-MCP006",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-python-unresolved-local-negative",
+      "rule_id": "AV-MCP006",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-unresolved-local-negative",
+      "rule_id": "AV-MCP006",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-python-wrong-import-local-negative",
+      "rule_id": "AV-MCP006",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-disconnected-local-negative",
+      "rule_id": "AV-MCP006",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-missing-capability-local-negative",
+      "rule_id": "AV-MCP006",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-reassigned-local-negative",
+      "rule_id": "AV-MCP006",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-wrong-import-local-negative",
+      "rule_id": "AV-MCP006",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-example-real",
+      "rule_id": "AV-MCP006",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-guide-real",
+      "rule_id": "AV-MCP006",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-stickynotes-real",
+      "rule_id": "AV-MCP006",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-typescript-host-real-negative",
+      "rule_id": "AV-MCP006",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-elicitation-consent-python-tutorial-real-negative",
+      "rule_id": "AV-MCP006",
       "expected": false,
       "observed": false,
       "anchor_ok": true,

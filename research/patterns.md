@@ -134,6 +134,12 @@ example currently uses a canned response or a provider—the same handler seam i
 hosts attach the model. A consent control must expose the request and fail closed on rejection;
 logging a preview is not approval. Token capping is an independent spend control and does not replace
 the decision.
+Elicitation is a third, distinct server-to-client authority. An `accept` result is not a generic
+success value: it asserts that a user approved a form response or URL interaction. Canned content,
+completion notifications, schema validation, and a safe-looking URL do not establish that decision.
+A governing client path must present the request, collect or confirm the user's response, preserve
+decline/cancel outcomes, and—in URL mode—apply destination controls before navigation. Analyses must
+therefore attach consent to each accepting branch rather than infer it from comments or handler names.
 
 ## Observability as a cross-cutting control
 

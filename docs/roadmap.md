@@ -7,7 +7,7 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
 |---:|---|---:|---:|---:|---:|---|
 | 1 | Agent bill of materials: models, providers, frameworks, tools, MCP | 4 | 5 | 5 | 100 | 44 multi-provider research signals; schema v65 proves exact selected-path framework/provider evidence in 40/48 repos; 50 have MCP signals and 69 have privileged-capability signals |
 | 2 | Dangerous shell and code execution | 5 | 4 | 4 | 80 | 42 shell-capable repos; 8 `shell=True` candidates |
-| 3 | MCP server/tool trust-boundary analysis | 5 | 4 | 4 | 80 | 50 MCP repos; 49 forwarding reviews, 34 automatic unpinned/floating package installs, one exact Semantic Kernel sampling auto-approval path, and three generic sampling handlers without a proven user decision |
+| 3 | MCP server/tool trust-boundary analysis | 5 | 4 | 4 | 80 | 50 MCP repos; 49 forwarding reviews, 34 automatic unpinned/floating package installs, one exact Semantic Kernel sampling auto-approval path, three generic sampling handlers without a proven user decision, and three automatic elicitation acceptances |
 | 4 | Approval coverage and bypass paths | 5 | 4 | 3 | 60 | 52 approval-positive; 18 auto-approval candidates; three exact environment-backed callbacks reach privileged OpenAI built-ins; three OpenAI Agents JS and two Agno reviews connect writable local filesystem MCP tools to disabled approval/confirmation defaults, while a separate Python agent→MCP binding still lacks a destructive-capability claim |
 | 5 | Filesystem scope and destructive writes | 5 | 4 | 3 | 60 | 59 writable-filesystem repos |
 | 6 | Sandbox boundary quality | 5 | 4 | 3 | 60 | 64 sandbox-positive; schema v65 finds 20 exact host/privilege/credential boundary reviews across 10 repos |
