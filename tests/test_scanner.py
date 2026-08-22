@@ -540,6 +540,68 @@ def test_builtin_tool_names_require_openai_agents_import(tmp_path: Path) -> None
     )
 
 
+def test_local_shell_tool_requires_exact_import_and_reports_missing_sdk_approval() -> None:
+    ir = scan_repository(ROOT / "cases/python_local_shell_tool")
+    tools = {
+        component.evidence.line: component
+        for component in ir.components
+        if component.kind == "tool" and component.name.startswith("LocalShellTool@")
+    }
+    assert set(tools) == {9, 12, 17}
+    assert {
+        (
+            tool.attributes["approval_policy"],
+            tool.attributes["approval_source"],
+            tool.attributes["execution_environment"],
+        )
+        for tool in tools.values()
+    } == {("unavailable", "sdk-no-approval-parameter", "local")}
+    capabilities = [
+        component
+        for component in ir.components
+        if component.kind == "capability"
+        and component.name == "shell-execution"
+        and component.attributes.get("api") == "LocalShellTool"
+    ]
+    assert {component.evidence.line for component in capabilities} == {9, 12, 17}
+    assert all(component.attributes.get("builtin_tool") is True for component in capabilities)
+    edges = {
+        edge.source_name: edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent" and edge.target_kind == "tool"
+    }
+    assert set(edges) == {
+        "assigned-shell",
+        "aliased-shell",
+        "inline-shell",
+        "near-shell",
+        "rebound-shell",
+    }
+    assert edges["assigned-shell"].target_id == "py:positive.py#tool:assigned"
+    assert edges["aliased-shell"].target_id == "py:positive.py#tool:aliased"
+    assert edges["inline-shell"].target_id == (
+        "py:positive.py#tool:LocalShellTool@17"
+    )
+    assert edges["near-shell"].target_id is None
+    assert edges["rebound-shell"].target_id is None
+    assert {
+        finding.evidence.line
+        for finding in ir.findings
+        if finding.rule_id == "AV-APPROVAL002"
+    } == {9, 12, 17}
+    assert all(
+        "exposes no SDK approval hook" in finding.message
+        for finding in ir.findings
+        if finding.rule_id == "AV-APPROVAL002"
+    )
+    assert all(
+        "inside the executor" in finding.remediation
+        and "needs_approval" not in finding.remediation
+        for finding in ir.findings
+        if finding.rule_id == "AV-APPROVAL002"
+    )
+
+
 def test_python_computer_tool_has_exact_agent_and_capability_identity() -> None:
     ir = scan_repository(ROOT / "cases/python_computer_tool")
     tools = [

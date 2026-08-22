@@ -111,6 +111,12 @@ package provenance. Exact `agents.sandbox` import proof separately identifies Op
 `SandboxAgent` assets, including the context-managed edge whose server also carries the SDK's
 disabled-default approval setting.
 
+Exact OpenAI Agents Python `LocalShellTool` imports produce local tool assets with shell-execution
+capability edges and `approval_policy: unavailable`. This differs from `disabled-default`: the SDK
+constructor exposes no approval parameter, so the BOM preserves the missing hook without asserting
+that a custom executor has no equivalent control. Aliased exact imports retain canonical API
+provenance; near-package and rebound imports do not become built-in assets.
+
 A project-local MCP adapter receives the same server identity only through exact nominal and
 behavioral proof: one direct `MCPServer` base imported from a supported SDK module, plus direct
 `list_tools` and `call_tool` methods. The adapter export, import, and instance binding must remain

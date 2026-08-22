@@ -121,7 +121,7 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the consolidated 511-label truth set.
+rule observations are pinned in the consolidated 516-label truth set.
 
 MCP configuration is also executable dependency configuration. Schema v65 resolves 50 literal
 `npx`/`uvx` package launchers in the bounded corpus: 45 unpinned, three floating, and two exact,
@@ -414,21 +414,23 @@ Four imported callable definitions resolve through exact local exports; three un
 SDK sources remain import-boundary identities without inferred capabilities. Exact imported
 `from_settings` factories, `HostedMCPTool` and `LangchainTool` constructors, and same-block
 `Agent.as_tool()` adapters resolve those final six former production misses. All 601 non-test Python
-Agent→tool edges now resolve; 74 unresolved edges remain only in tests and conservative fixtures.
+Agent→tool edges now resolve; 70 unresolved edges remain only in tests and conservative fixtures.
 Import-proven OpenAI `function_tool(function)` assignments
 recover 12 wrapper tools and 12 exact Agent edges; three enable approval, all occur under tests, and
 their selected bodies add no capability edges. Twenty-five project-local CrewAI class-tool imports
 resolve through one importer-ancestor path and one exact decorated export. The 14 factory edges span
 four production example projects and require one exact imported class, immutable local construction,
-and a direct Agent return. The final export resolves 3,779 endpoints by symbol ID, 645 by exact
-evidence location, and 22 by unique display name; 42 remain ambiguous agent/protocol/control/tool
-endpoints, and 64
-unresolved. No `ambiguous-repeated-binding` target remains in the pinned corpus;
+and a direct Agent return. Exact `LocalShellTool` imports add five test-scoped local shell assets,
+five capability edges, and four resolved Agent links while preserving the SDK's unavailable approval
+hook as distinct from a disabled option. The final export resolves 3,798 endpoints by symbol ID, 650
+by exact evidence location, and 20 by unique display name; 38 remain ambiguous
+agent/protocol/control/tool endpoints, and 58 unresolved. Two resumed-state LocalShellTool references
+remain `ambiguous-repeated-binding` targets rather than selecting an occurrence;
 cross-branch, forward, inconsistent/untyped parameters, conditional/transformed returns,
 external receivers, shadowed factories, lambdas, and reassigned fixture cases stay unresolved. Two apparent CrewAI
 re-export misses were false identities:
 a function parameter and a local assignment shadowed the imported `tool` binding. Scope-isolating
-module and function imports now withhold those IDs, so all 3,787 identified endpoints resolve.
+module and function imports now withhold those IDs, so all 3,806 identified endpoints resolve.
 A governance export that collapses those references
 by name would silently attach controls or risks to the wrong asset.
 

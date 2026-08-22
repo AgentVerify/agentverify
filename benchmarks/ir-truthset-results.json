@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T10:30:18.541426+00:00",
-  "labels": 772,
-  "passed": 772,
+  "generated_at": "2026-08-22T11:07:57.914986+00:00",
+  "labels": 787,
+  "passed": 787,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -264,6 +264,14 @@
       "tp": 16,
       "fp": 0,
       "tn": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-LOCAL-SHELL-TOOL": {
+      "tp": 11,
+      "fp": 0,
+      "tn": 4,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -7452,6 +7460,141 @@
     {
       "id": "python-agent-local-factory-restored-second-openai-real",
       "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-local-shell-component-local",
+      "check_id": "IR-PY-LOCAL-SHELL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-local-shell-alias-component-local",
+      "check_id": "IR-PY-LOCAL-SHELL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-local-shell-capability-local",
+      "check_id": "IR-PY-LOCAL-SHELL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-local-shell-assigned-edge-local",
+      "check_id": "IR-PY-LOCAL-SHELL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-local-shell-inline-edge-local",
+      "check_id": "IR-PY-LOCAL-SHELL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-local-shell-near-component-local-negative",
+      "check_id": "IR-PY-LOCAL-SHELL-TOOL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-local-shell-rebound-component-local-negative",
+      "check_id": "IR-PY-LOCAL-SHELL-TOOL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-local-shell-near-edge-local-negative",
+      "check_id": "IR-PY-LOCAL-SHELL-TOOL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-local-shell-rebound-edge-local-negative",
+      "check_id": "IR-PY-LOCAL-SHELL-TOOL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-local-shell-component-openai-real",
+      "check_id": "IR-PY-LOCAL-SHELL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-local-shell-capability-openai-real",
+      "check_id": "IR-PY-LOCAL-SHELL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-local-shell-edge-openai-real",
+      "check_id": "IR-PY-LOCAL-SHELL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-local-shell-sandbox-component-openai-real",
+      "check_id": "IR-PY-LOCAL-SHELL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-local-shell-sandbox-edge-openai-real",
+      "check_id": "IR-PY-LOCAL-SHELL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-local-shell-metadata-component-openai-real",
+      "check_id": "IR-PY-LOCAL-SHELL-TOOL",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

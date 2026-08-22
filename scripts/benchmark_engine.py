@@ -315,6 +315,33 @@ def main() -> int:
             for edge in ir.relationships
             if edge.source_kind == "agent" and edge.target_id in python_computer_tool_ids
         ]
+        python_local_shell_tools = [
+            item
+            for item in ir.components
+            if item.kind == "tool"
+            and item.name.startswith("LocalShellTool@")
+            and item.attributes.get("approval_source")
+            == "sdk-no-approval-parameter"
+            and item.attributes.get("execution_environment") == "local"
+        ]
+        python_local_shell_tool_ids = {
+            item.symbol_id for item in python_local_shell_tools if item.symbol_id
+        }
+        if len(python_local_shell_tool_ids) != len(python_local_shell_tools):
+            raise RuntimeError(
+                f"{repository}: Python LocalShellTool lacks a unique symbol ID"
+            )
+        python_local_shell_capability_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_id in python_local_shell_tool_ids
+            and edge.target_kind == "capability"
+            and edge.target_name == "shell-execution"
+        ]
+        if len(python_local_shell_capability_edges) != len(python_local_shell_tools):
+            raise RuntimeError(
+                f"{repository}: Python LocalShellTool lacks an exact shell edge"
+            )
         python_sandbox_agents = [
             item
             for item in ir.components
@@ -1061,6 +1088,24 @@ def main() -> int:
                 ),
                 "capability_edges": len(python_computer_capability_edges),
                 "resolved_agent_edges": len(python_computer_agent_edges),
+            },
+            "python_local_shell_tools": {
+                "instances": len(python_local_shell_tools),
+                "non_test_instances": sum(
+                    not is_test_path(item.evidence.path)
+                    for item in python_local_shell_tools
+                ),
+                "approval_unavailable": sum(
+                    item.attributes.get("approval_policy") == "unavailable"
+                    for item in python_local_shell_tools
+                ),
+                "capability_edges": len(python_local_shell_capability_edges),
+                "resolved_agent_edges": sum(
+                    edge.target_id in python_local_shell_tool_ids
+                    for edge in ir.relationships
+                    if edge.source_kind == "agent" and edge.target_kind == "tool"
+                ),
+                "repositories": bool(python_local_shell_tools),
             },
             "python_sandbox_agents": {
                 "total": len(python_sandbox_agents),
@@ -2352,7 +2397,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 82,
+        "schema_version": 83,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2529,6 +2574,20 @@ def main() -> int:
                     "safety_check_handlers_configured",
                     "capability_edges",
                     "resolved_agent_edges",
+                )
+            },
+            "python_local_shell_tools": {
+                name: sum(
+                    result["python_local_shell_tools"][name]
+                    for result in successful
+                )
+                for name in (
+                    "instances",
+                    "non_test_instances",
+                    "approval_unavailable",
+                    "capability_edges",
+                    "resolved_agent_edges",
+                    "repositories",
                 )
             },
             "python_sandbox_agents": {

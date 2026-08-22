@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T10:38:50.808339+00:00",
-  "labels": 511,
-  "passed": 511,
+  "generated_at": "2026-08-22T10:56:02.557476+00:00",
+  "labels": 516,
+  "passed": 516,
   "metrics": {
     "AV-A2A001": {
       "tp": 4,
@@ -21,9 +21,9 @@
       "recall": 1.0
     },
     "AV-APPROVAL002": {
-      "tp": 3,
+      "tp": 6,
       "fp": 0,
-      "tn": 6,
+      "tn": 8,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -4751,6 +4751,51 @@
     {
       "id": "mcp-url-disclosure-typescript-real-negative",
       "rule_id": "AV-MCP007",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-local-shell-assigned-local",
+      "rule_id": "AV-APPROVAL002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-local-shell-aliased-local",
+      "rule_id": "AV-APPROVAL002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-local-shell-inline-local",
+      "rule_id": "AV-APPROVAL002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-local-shell-near-import-local-negative",
+      "rule_id": "AV-APPROVAL002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-local-shell-rebound-import-local-negative",
+      "rule_id": "AV-APPROVAL002",
       "expected": false,
       "observed": false,
       "anchor_ok": true,

@@ -509,10 +509,20 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                 tool
                 and context.get("direct_agents")
                 and tool.attributes.get("approval_policy")
-                in {"disabled-default", "disabled-explicit"}
+                in {"disabled-default", "disabled-explicit", "unavailable"}
             ):
                 policy = tool.attributes["approval_policy"]
-                qualifier = "by default" if policy == "disabled-default" else "explicitly"
+                title = (
+                    "A reachable local shell tool exposes no SDK approval hook"
+                    if policy == "unavailable"
+                    else "A reachable local shell tool has SDK approval disabled "
+                    + ("by default" if policy == "disabled-default" else "explicitly")
+                )
+                remediation = (
+                    "Enforce and document an equivalent human-approval interruption inside the executor, or use an approval-capable local shell tool."
+                    if policy == "unavailable"
+                    else "Enable needs_approval/needsApproval and handle interruptions, or document and enforce an equivalent approval control inside the executor."
+                )
                 ir.findings.append(
                     make_finding(
                         ir,
@@ -520,8 +530,8 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                         "AV-APPROVAL002",
                         "high",
                         "high",
-                        f"A reachable local shell tool has SDK approval disabled {qualifier}",
-                        "Enable needs_approval/needsApproval and handle interruptions, or document and enforce an equivalent approval control inside the executor.",
+                        title,
+                        remediation,
                         "review",
                     )
                 )

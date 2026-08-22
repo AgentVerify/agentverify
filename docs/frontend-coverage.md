@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v82
+framework, wrapper, or configuration path. Counts come from schema-v83
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -114,21 +114,29 @@ calls, and has one direct top-level return of an import-proven Agent constructor
 with conditional or indirect returns, helper rebinding, forward use, constructor shadowing, or
 result rebinding stay unresolved. No production edge is added.
 
-Across the selected snapshot, 10,005 observations have module-qualified symbol IDs. Of
-4,554 relationship endpoint observations, all 3,797 identified endpoints resolve to an observed
-component (3,484 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
+Schema v83 recognizes OpenAI Agents Python `LocalShellTool` only through one immutable top-level
+import from `agents` or `agents.tool`. It records the SDK's lack of an approval parameter as
+`approval_policy: unavailable`, keeps the executor as an unresolved possible compensating control,
+and emits a local shell-execution capability. The pinned SDK contains five test-scoped instances,
+five capability edges, and four exact Agent bindings. A near-package import and a rebound exact
+import remain unclassified; two resumed-state test bindings remain conservatively ambiguous.
+
+Across the selected snapshot, 10,010 observations have module-qualified symbol IDs. Of
+4,564 relationship endpoint observations, all 3,806 identified endpoints resolve to an observed
+component (3,493 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
 withheld because a function parameter and assignment shadow the same-named package import.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
-edges resolve exactly. The current schema records 376 Python lexical-single-definition, 20 same-block
+edges resolve exactly. The current schema records 379 Python lexical-single-definition, 20 same-block
 dominating-definition, 25 contextual-absolute-import resolutions, three same-class helper-return
 resolutions, 14 contextual imported-class Agent-factory resolutions, 444 inline constructor
 resolutions, four context-manager resolutions, four contextual imported-callable exports, six
 absolute-import binding edges, and one typed-tool-parameter
 resolution. The latter uses an import-proven `ApplyPatchTool` annotation and ten unanimous
 same-module constructor call sites to create an occurrence-qualified parameter component that
-retains every concrete target ID. Eight same-block function-factory resolutions remove the final two
-`ambiguous-repeated-binding` targets. Inconsistent, uncalled, rebound, shadowed, reassigned, and
-non-exact typed fixture forms stay unresolved.
+retains every concrete target ID. Eight same-block function-factory resolutions remove the prior two
+`ambiguous-repeated-binding` targets; schema v83 records two new explicit ambiguities for resumed-state
+LocalShellTool references that lack a unique lexical occurrence. Inconsistent, uncalled, rebound,
+shadowed, reassigned, and non-exact typed fixture forms stay unresolved.
 All seven exact Python Agent→MCP-server edges resolve both endpoints. Marvin contributes five—two
 same-block and three immutable-module bindings—and OpenAI Agents Python contributes the
 context-managed edge. Skyvern contributes one same-block imported-adapter edge. Six edges are outside
@@ -142,22 +150,24 @@ resolve to exact selected local definitions; unavailable absolute-import sources
 identity without inferred capabilities. Imported `from_settings` tool factories, exact
 `HostedMCPTool` and `LangchainTool` constructors, and exact same-block `Agent.as_tool()` adapters
 resolve the final six former production misses. Across all 1,199 Python Agent→tool edges, all 601
-outside tests resolve; the 74 unresolved edges are confined to tests and conservative fixtures.
+outside tests resolve; the 70 unresolved edges are confined to tests and conservative fixtures.
 Import-proven OpenAI `function_tool(function)`
 assignments recover 12 wrappers and 12 Agent edges; all are tests, three enable approval, and their
 selected bodies add no recognized capability edges. Import-proven Python `ComputerTool`
 constructors contribute 15 computer-control assets and ten exact agent links; their optional
 `on_safety_check` callback is inventoried separately from generic approval policy. All 15 are local,
 two configure the callback, and one occurs outside test paths in the pinned SDK example.
+Exact-import `LocalShellTool` adds five local shell assets and five capability edges, all under tests;
+four Agent edges resolve, and all five assets record that the SDK exposes no approval parameter.
 Capability/control taxonomy endpoints intentionally lack
 source-symbol IDs, so the endpoint fraction is inventory coverage rather than an accuracy or recall
 metric.
 
-The native AI BOM 1.2 resolver independently classifies all 4,554 endpoints: 3,789 by symbol ID, 645
-by exact relationship evidence, 20 by a unique display name, 42 as ambiguous, and 58 as unresolved.
+The native AI BOM 1.2 resolver independently classifies all 4,564 endpoints: 3,798 by symbol ID, 650
+by exact relationship evidence, 20 by a unique display name, 38 as ambiguous, and 58 as unresolved.
 Evidence-local resolution removes capability/control ambiguities; occurrence-qualified bindings
 resolve repeated source agent/tool observations, and conservative lexical resolution removes further
-target ambiguities. The remaining 42 ambiguous endpoints are agent, protocol, control, or tool targets without a unique
+target ambiguities. The remaining 38 ambiguous endpoints are agent, protocol, control, or tool targets without a unique
 local symbol or target location.
 
 The TypeScript graph contains 99 structure-backed agent edges: 14 agent-as-tool delegations, 81
@@ -623,7 +633,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 511-label rule truth set and 772-label IR component/relationship set are curated regression
+The 516-label rule truth set and 787-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

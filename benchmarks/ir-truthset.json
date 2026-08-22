@@ -6123,6 +6123,66 @@
     {
       "id":"python-agent-local-factory-restored-second-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-AGENT-HELPER-RETURN","path":"tests/sandbox/test_runtime.py","line":4795,"expected":true,
       "relationship":{"source_kind":"agent","source_name":"triage","relation":"delegates-to","target_kind":"agent","target_name":"restored_second","source_id":"py:tests/sandbox/test_runtime.py#agent:restored_root","target_id":"py:tests/sandbox/test_runtime.py#agent:sandbox@4752","attributes":{"target_identity":"same-block-function-factory-return"}}
+    },
+    {
+      "id":"python-local-shell-component-local","target":{"kind":"local","path":"cases/python_local_shell_tool"},"check_id":"IR-PY-LOCAL-SHELL-TOOL","path":"positive.py","line":9,"expected":true,
+      "component":{"kind":"tool","name":"LocalShellTool@9","symbol_id":"py:positive.py#tool:assigned","attributes":{"constructor":"LocalShellTool","approval_policy":"unavailable","approval_source":"sdk-no-approval-parameter","execution_environment":"local"}}
+    },
+    {
+      "id":"python-local-shell-alias-component-local","target":{"kind":"local","path":"cases/python_local_shell_tool"},"check_id":"IR-PY-LOCAL-SHELL-TOOL","path":"positive.py","line":12,"expected":true,
+      "component":{"kind":"tool","name":"LocalShellTool@12","symbol_id":"py:positive.py#tool:aliased","attributes":{"constructor":"AliasedLocalShellTool","approval_policy":"unavailable","approval_source":"sdk-no-approval-parameter","execution_environment":"local"}}
+    },
+    {
+      "id":"python-local-shell-capability-local","target":{"kind":"local","path":"cases/python_local_shell_tool"},"check_id":"IR-PY-LOCAL-SHELL-TOOL","path":"positive.py","line":9,"expected":true,
+      "component":{"kind":"capability","name":"shell-execution","attributes":{"api":"LocalShellTool","builtin_tool":true,"execution_environment":"local"}}
+    },
+    {
+      "id":"python-local-shell-assigned-edge-local","target":{"kind":"local","path":"cases/python_local_shell_tool"},"check_id":"IR-PY-LOCAL-SHELL-TOOL","path":"positive.py","line":10,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"assigned-shell","relation":"uses","target_kind":"tool","target_name":"assigned","source_id":"py:positive.py#agent:assigned_agent","target_id":"py:positive.py#tool:assigned"}
+    },
+    {
+      "id":"python-local-shell-inline-edge-local","target":{"kind":"local","path":"cases/python_local_shell_tool"},"check_id":"IR-PY-LOCAL-SHELL-TOOL","path":"positive.py","line":15,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"inline-shell","relation":"uses","target_kind":"tool","target_name":"LocalShellTool@17","source_id":"py:positive.py#agent:inline_agent","target_id":"py:positive.py#tool:LocalShellTool@17"}
+    },
+    {
+      "id":"python-local-shell-near-component-local-negative","target":{"kind":"local","path":"cases/python_local_shell_tool"},"check_id":"IR-PY-LOCAL-SHELL-TOOL","path":"negative.py","line":6,"expected":false,
+      "component":{"kind":"tool","name":"LocalShellTool@6"}
+    },
+    {
+      "id":"python-local-shell-rebound-component-local-negative","target":{"kind":"local","path":"cases/python_local_shell_tool"},"check_id":"IR-PY-LOCAL-SHELL-TOOL","path":"negative.py","line":10,"expected":false,
+      "component":{"kind":"tool","name":"LocalShellTool@10"}
+    },
+    {
+      "id":"python-local-shell-near-edge-local-negative","target":{"kind":"local","path":"cases/python_local_shell_tool"},"check_id":"IR-PY-LOCAL-SHELL-TOOL","path":"negative.py","line":7,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"near-shell","relation":"uses","target_kind":"tool","target_name":"near","target_id":"py:negative.py#tool:near"}
+    },
+    {
+      "id":"python-local-shell-rebound-edge-local-negative","target":{"kind":"local","path":"cases/python_local_shell_tool"},"check_id":"IR-PY-LOCAL-SHELL-TOOL","path":"negative.py","line":11,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"rebound-shell","relation":"uses","target_kind":"tool","target_name":"rebound","target_id":"py:negative.py#tool:rebound"}
+    },
+    {
+      "id":"python-local-shell-component-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-LOCAL-SHELL-TOOL","path":"tests/test_local_shell_tool.py","line":50,"expected":true,
+      "component":{"kind":"tool","name":"LocalShellTool@50","symbol_id":"py:tests/test_local_shell_tool.py#tool:tool@50","attributes":{"constructor":"LocalShellTool","approval_policy":"unavailable","approval_source":"sdk-no-approval-parameter","execution_environment":"local","scope":"test"}}
+    },
+    {
+      "id":"python-local-shell-capability-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-LOCAL-SHELL-TOOL","path":"tests/test_local_shell_tool.py","line":50,"expected":true,
+      "component":{"kind":"capability","name":"shell-execution","attributes":{"api":"LocalShellTool","builtin_tool":true,"execution_environment":"local","scope":"test"}}
+    },
+    {
+      "id":"python-local-shell-edge-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-LOCAL-SHELL-TOOL","path":"tests/test_local_shell_tool.py","line":52,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"shell-agent","relation":"uses","target_kind":"tool","target_name":"tool","source_id":"py:tests/test_local_shell_tool.py#agent:initial_agent","target_id":"py:tests/test_local_shell_tool.py#tool:tool@50","attributes":{"target_identity":"lexical-single-definition"}}
+    },
+    {
+      "id":"python-local-shell-sandbox-component-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-LOCAL-SHELL-TOOL","path":"tests/sandbox/test_runtime.py","line":6351,"expected":true,
+      "component":{"kind":"tool","name":"LocalShellTool@6351","symbol_id":"py:tests/sandbox/test_runtime.py#tool:tool","attributes":{"approval_policy":"unavailable","execution_environment":"local","scope":"test"}}
+    },
+    {
+      "id":"python-local-shell-sandbox-edge-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-LOCAL-SHELL-TOOL","path":"tests/sandbox/test_runtime.py","line":6375,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"sandbox","relation":"uses","target_kind":"tool","target_name":"tool","target_id":"py:tests/sandbox/test_runtime.py#tool:tool"}
+    },
+    {
+      "id":"python-local-shell-metadata-component-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-LOCAL-SHELL-TOOL","path":"tests/test_tool_metadata.py","line":49,"expected":true,
+      "component":{"kind":"tool","name":"LocalShellTool@49","symbol_id":"py:tests/test_tool_metadata.py#tool:LocalShellTool@49","attributes":{"approval_policy":"unavailable","execution_environment":"local","scope":"test"}}
     }
   ]
 }

@@ -88,6 +88,13 @@ import-proven Agent constructor. Each direct assigned result may then point to t
 definition. Conditional or indirect returns, forward/rebound helpers, constructor shadowing, and
 result rebinding remain unresolved.
 
+Schema v83 treats `LocalShellTool` as an OpenAI built-in only when its local name comes from one
+immutable, earlier, top-level `from agents import LocalShellTool` or
+`from agents.tool import LocalShellTool` binding. Aliases are canonicalized, while near-package,
+conditional, duplicate, or rebound bindings are withheld. The asset records local shell execution
+and `approval_policy: unavailable` / `approval_source: sdk-no-approval-parameter`; it does not infer
+that the caller-supplied executor lacks an equivalent control.
+
 Names are intentionally not treated as globally unique. Python and TypeScript agent/tool definitions
 carry stable frontend-and-module-qualified `symbol_id` values; relationships carry `source_id` and
 `target_id` when resolution succeeds. Context analysis prefers those IDs and falls back to the older
@@ -559,6 +566,10 @@ the exact environment names and callback-resolution basis.
 Import-proven `ComputerTool` instances instead emit a local computer-control capability. Their
 optional `on_safety_check` callback is recorded as SDK safety-check state, not promoted to a generic
 human-approval control because it applies only when the model response carries safety checks.
+Import-proven `LocalShellTool` instances emit local shell execution and explicitly distinguish an
+SDK with no approval hook from one whose approval option is merely disabled. A reachable instance
+can therefore trigger AV-APPROVAL002 as a review while preserving the executor as an unresolved
+possible compensating control.
 
 Control presence is not automatically policy satisfaction. An uncaught lookup in an internal MCP
 tool registry creates a `tool-registry` edge because it proves the name is routable and rejects
