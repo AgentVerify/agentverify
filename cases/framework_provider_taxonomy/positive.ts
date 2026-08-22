@@ -8,3 +8,5 @@ import { BedrockRuntimeClient } from '@aws-sdk/client-bedrock-runtime';
 
 const agent = new Agent({ model: 'gemini-2.5-flash' });
 
+import { ToolLoopAgent } from 'ai';
+import type { ModelMessage } from 'ai/internal';

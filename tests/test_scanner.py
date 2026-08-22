@@ -68,6 +68,25 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "AWS Bedrock",
             "@aws-sdk/client-bedrock-runtime",
         ),
+        (
+            "positive.py",
+            16,
+            "framework",
+            "Microsoft Agent Framework",
+            "agent_framework",
+        ),
+        ("positive.py", 17, "framework", "CAMEL", "camel.agents"),
+        ("positive.py", 18, "framework", "Qwen-Agent", "qwen_agent.agents"),
+        ("positive.py", 19, "framework", "Lagent", "lagent.agents"),
+        ("positive.py", 20, "framework", "MetaGPT", "metagpt.roles"),
+        ("positive.py", 21, "framework", "Marvin", "marvin.agents"),
+        ("positive.py", 22, "framework", "AgentScope", "agentscope.agent"),
+        ("positive.py", 24, "provider", "Mistral", "mistralai"),
+        ("positive.py", 25, "provider", "Groq", "groq"),
+        ("positive.py", 26, "provider", "Cohere", "cohere"),
+        ("positive.py", 27, "provider", "Ollama", "ollama"),
+        ("positive.ts", 11, "framework", "Vercel AI SDK", "ai"),
+        ("positive.ts", 12, "framework", "Vercel AI SDK", "ai/internal"),
     }
     service = next(
         item

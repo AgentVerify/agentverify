@@ -5,16 +5,17 @@ the local repository has an approved remote.
 
 ## P0 — framework and provider taxonomy
 
-Schema v60 promotes six recurring framework families and two provider families from research-only
-signals into exact Agent IR taxonomy. The selected corpus now reports framework evidence in 34
-repositories and provider evidence in 48: LlamaIndex appears in six repositories, Google ADK and
-Agno in three each, Semantic Kernel and smolagents in two each, and Mastra in one; Google provider
-evidence appears in 17 and AWS Bedrock in six. Python and TypeScript imports must match exact package
-boundaries. Google model attribution additionally accepts Gemini prefixes, while Bedrock requires an
-exact runtime SDK/import or literal `bedrock-runtime` service selection. Forty-two component labels
-pin 26 local/real positives and 16 unrelated or near-name negatives. Next add exact Google/AWS wrapper
-constructors and additional providers from pinned application evidence without treating generic
-cloud SDKs, model family names, or framework-adjacent packages as proof.
+Schema v61 promotes fourteen recurring framework families and six provider families beyond the
+original taxonomy. The selected corpus now reports framework evidence in 40 repositories and
+provider evidence in 48. New exact-import observations include Vercel AI SDK in five repositories,
+Microsoft Agent Framework in two, and CAMEL, Qwen-Agent, Lagent, MetaGPT, Marvin, and AgentScope in
+one each. Groq appears in five repositories, Ollama in four, and Mistral and Cohere in three each.
+Python and TypeScript signatures are separated so the TypeScript-only `ai` package does not classify
+a Python import. Google model attribution additionally accepts Gemini prefixes, while Bedrock
+requires an exact runtime SDK/import or literal `bedrock-runtime` service selection. Eighty component
+labels pin 51 local/real positives and 29 unrelated or near-name negatives. Next add exact wrapper
+constructors and model attribution for the new providers without treating generic cloud SDKs, model
+family names, or framework-adjacent packages as proof.
 
 ## P0 — module-qualified symbols and graph identities
 
@@ -26,7 +27,7 @@ decorated-tool bindings now receive occurrence-qualified IDs for exact source ed
 references are scope-aware for unique and repeated names; repeated targets resolve for a single
 direct, earlier definition in the same lexical/module scope, plus an exact single-mutation definition
 that dominates use in the same branch/with body.
-Schema v60 additionally inventories 15 import-proven OpenAI Agents Python `ComputerTool` instances
+Schema v61 additionally inventories 15 import-proven OpenAI Agents Python `ComputerTool` instances
 and resolves ten agent links to them, including three formerly ambiguous repeated bindings. Literal
 Python Agent tool lists now recover 753 exact role-proven tools: 181 callable definitions, 100
 constructor-bound instances, 444 inline constructors, two direct context-manager bindings, 21
@@ -217,8 +218,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 350 pinned positive/negative locations, with 452 separately
-scored IR component/relationship labels. Schema-v60 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 350 pinned positive/negative locations, with 490 separately
+scored IR component/relationship labels. Schema-v61 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

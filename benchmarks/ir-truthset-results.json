@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T01:24:21.359082+00:00",
-  "labels": 452,
-  "passed": 452,
+  "generated_at": "2026-08-22T01:50:25.383326+00:00",
+  "labels": 490,
+  "passed": 490,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -29,9 +29,9 @@
       "recall": 1.0
     },
     "IR-COMPONENT-TAXONOMY": {
-      "tp": 26,
+      "tp": 51,
       "fp": 0,
-      "tn": 16,
+      "tn": 29,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -4507,6 +4507,348 @@
     },
     {
       "id": "taxonomy-bedrock-provider-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-microsoft-agent-framework-python",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-camel-python",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-qwen-agent-python",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-lagent-python",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-metagpt-python",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-marvin-python",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-agentscope-python",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-mistral-python",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-groq-python",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-cohere-python",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-ollama-python",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-vercel-ai-typescript",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-vercel-ai-subpath-typescript",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-microsoft-agent-framework-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-camel-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-qwen-agent-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-lagent-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-metagpt-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-marvin-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-agentscope-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-mistral-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-groq-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-cohere-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-ollama-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-vercel-ai-hyphen-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-vercel-ai-underscore-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-microsoft-agent-framework-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-camel-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-qwen-agent-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-lagent-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-metagpt-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-marvin-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-agentscope-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-vercel-ai-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-mistral-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-groq-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-cohere-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-ollama-real",
       "check_id": "IR-COMPONENT-TAXONOMY",
       "expected": true,
       "observed": true,

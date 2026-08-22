@@ -9,6 +9,8 @@ never imported or executed.
 - `typescript_approved`: literal per-tool approval plus unresolved conditional/disabled forms.
 - `python_auto_approval`: Python truthy auto-approval review candidate.
 - `model_providers`: Anthropic and Azure OpenAI provider/model attribution.
+- `framework_provider_taxonomy`: exact frontend-specific framework and provider imports, Gemini and
+  Bedrock proof, Vercel AI SDK TypeScript subpaths, and near-name/unrelated-service negatives.
 - `mcp_forwarder`: dynamic MCP forwarding positive case plus fixed-tool negative case.
 - `external_actions`: browser, network, and consequential external-action graph inventory.
 - `typescript_eval`: TypeScript dynamic evaluation with a resolved agent/tool path.

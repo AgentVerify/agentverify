@@ -76,6 +76,33 @@ IMPORT_SIGNATURES = {
     },
 }
 
+FRONTEND_IMPORT_SIGNATURES = {
+    # Keep short ecosystem package names frontend-scoped. In particular, Python
+    # `import ai` must not be treated as evidence for the TypeScript Vercel SDK.
+    "python": {
+        "framework": {
+            "Microsoft Agent Framework": ("agent_framework",),
+            "CAMEL": ("camel.agents",),
+            "Qwen-Agent": ("qwen_agent",),
+            "Lagent": ("lagent",),
+            "MetaGPT": ("metagpt",),
+            "Marvin": ("marvin.agents",),
+            "AgentScope": ("agentscope",),
+        },
+        "provider": {
+            "Mistral": ("mistralai",),
+            "Groq": ("groq",),
+            "Cohere": ("cohere",),
+            "Ollama": ("ollama",),
+        },
+    },
+    "typescript": {
+        "framework": {
+            "Vercel AI SDK": ("ai", "ai/"),
+        },
+    },
+}
+
 AGENT_CALLS = {"Agent", "AssistantAgent", "ConversableAgent", "LlmAgent", "StateGraph", "Crew"}
 TOOL_DECORATORS = {"tool", "function_tool", "mcp.tool", "server.tool"}
 MODEL_CONSTRUCTORS = {
@@ -230,15 +257,24 @@ def python_urllib_request_url(
     )
 
 
-def component_from_import(ir: RepositoryIR, module: str, evidence: Evidence) -> None:
-    for kind, signatures in IMPORT_SIGNATURES.items():
-        for name, prefixes in signatures.items():
-            if any(
-                module == prefix
-                or module.startswith(prefix if prefix.endswith("/") else f"{prefix}.")
-                for prefix in prefixes
-            ):
-                ir.add_component(Component(kind, name, evidence, {"module": module}))
+def component_from_import(
+    ir: RepositoryIR,
+    module: str,
+    evidence: Evidence,
+    frontend: str,
+) -> None:
+    for signature_set in (
+        IMPORT_SIGNATURES,
+        FRONTEND_IMPORT_SIGNATURES.get(frontend, {}),
+    ):
+        for kind, signatures in signature_set.items():
+            for name, prefixes in signatures.items():
+                if any(
+                    module == prefix
+                    or module.startswith(prefix if prefix.endswith("/") else f"{prefix}.")
+                    for prefix in prefixes
+                ):
+                    ir.add_component(Component(kind, name, evidence, {"module": module}))
 
 
 def provider_for_model(model: str) -> str:
@@ -2632,7 +2668,7 @@ class PythonVisitor(ast.NodeVisitor):
                 self.network_helper_bindings.pop(
                     local_name, None
                 )
-            component_from_import(self.ir, alias.name, self.ev(node))
+            component_from_import(self.ir, alias.name, self.ev(node), "python")
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
         for alias in node.names:
@@ -2668,7 +2704,7 @@ class PythonVisitor(ast.NodeVisitor):
                     Component("provider", "OpenAI", self.ev(node), {"module": "openai"})
                 )
         else:
-            component_from_import(self.ir, node.module or "", self.ev(node))
+            component_from_import(self.ir, node.module or "", self.ev(node), "python")
             if node.module == "google":
                 for alias in node.names:
                     if alias.name in {"genai", "generativeai"}:
@@ -2676,6 +2712,7 @@ class PythonVisitor(ast.NodeVisitor):
                             self.ir,
                             f"google.{alias.name}",
                             self.ev(node),
+                            "python",
                         )
             if node.module == "langchain_aws" and {
                 alias.name for alias in node.names
@@ -9083,7 +9120,7 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
             ):
                 guarded_network_names[origin_assignment[0]] = origin_assignment[1]
         for match in TS_IMPORT.finditer(line):
-            component_from_import(ir, match.group(1), ev)
+            component_from_import(ir, match.group(1), ev, "typescript")
         for match in TS_MODEL_SETTING.finditer(line):
             model_value = match.group(1)
             ir.add_component(
