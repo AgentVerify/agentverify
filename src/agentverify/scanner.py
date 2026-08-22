@@ -821,6 +821,15 @@ class PythonImportedToolReference:
     target_path: str | None = None
 
 
+@dataclass(frozen=True)
+class PythonBrowserClassExport:
+    """Exact browser receiver members exported by one selected Python class."""
+
+    attributes: frozenset[str] = frozenset()
+    async_receiver_methods: frozenset[str] = frozenset()
+    sync_receiver_methods: frozenset[str] = frozenset()
+
+
 def resolve_python_import(
     root: Path,
     current_path: str,
@@ -1098,9 +1107,9 @@ def python_class_browser_receiver_attributes(
 def build_python_browser_class_exports(
     root: Path,
     paths: list[Path],
-) -> dict[tuple[str, str], frozenset[str]]:
-    """Index exact Playwright-annotated fields on uniquely defined top-level classes."""
-    exports: dict[tuple[str, str], frozenset[str]] = {}
+) -> dict[tuple[str, str], PythonBrowserClassExport]:
+    """Index exact browser fields and method returns on unique top-level classes."""
+    exports: dict[tuple[str, str], PythonBrowserClassExport] = {}
     for path in paths:
         if path.suffix.lower() != ".py" or not path.is_file() or path.is_symlink():
             continue
@@ -1218,8 +1227,74 @@ def build_python_browser_class_exports(
             attributes = python_class_browser_receiver_attributes(
                 statement, browser_type_names
             )
-            if attributes:
-                exports[(relative, statement.name)] = frozenset(attributes)
+            class_binding_counts: Counter[str] = Counter()
+
+            def collect_class_bindings(
+                candidate: ast.AST, bindings: Counter[str]
+            ) -> None:
+                if isinstance(
+                    candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
+                ):
+                    bindings[candidate.name] += 1
+                    return
+                if isinstance(candidate, ast.Lambda):
+                    return
+                if isinstance(candidate, (ast.Import, ast.ImportFrom)):
+                    bindings.update(
+                        alias.asname or alias.name.split(".", 1)[0]
+                        for alias in candidate.names
+                    )
+                    return
+                if isinstance(candidate, ast.Name) and isinstance(
+                    candidate.ctx, (ast.Store, ast.Del)
+                ):
+                    bindings[candidate.id] += 1
+                for grandchild in ast.iter_child_nodes(candidate):
+                    collect_class_bindings(grandchild, bindings)
+
+            for child in statement.body:
+                collect_class_bindings(child, class_binding_counts)
+
+            def exact_instance_signature(
+                child: ast.FunctionDef | ast.AsyncFunctionDef,
+            ) -> bool:
+                positional = (*child.args.posonlyargs, *child.args.args)
+                return (
+                    len(positional) == 1
+                    and positional[0].arg == "self"
+                    and not child.args.kwonlyargs
+                    and child.args.vararg is None
+                    and child.args.kwarg is None
+                )
+
+            async_receiver_methods = {
+                child.name
+                for child in statement.body
+                if isinstance(child, ast.AsyncFunctionDef)
+                and class_binding_counts[child.name] == 1
+                and not child.decorator_list
+                and exact_instance_signature(child)
+                and python_browser_annotation_is_type(
+                    child.returns, browser_type_names
+                )
+            }
+            sync_receiver_methods = {
+                child.name
+                for child in statement.body
+                if isinstance(child, ast.FunctionDef)
+                and class_binding_counts[child.name] == 1
+                and not child.decorator_list
+                and exact_instance_signature(child)
+                and python_browser_annotation_is_type(
+                    child.returns, browser_type_names
+                )
+            }
+            if attributes or async_receiver_methods or sync_receiver_methods:
+                exports[(relative, statement.name)] = PythonBrowserClassExport(
+                    attributes=frozenset(attributes),
+                    async_receiver_methods=frozenset(async_receiver_methods),
+                    sync_receiver_methods=frozenset(sync_receiver_methods),
+                )
     return exports
 
 
@@ -3063,10 +3138,11 @@ def python_browser_receiver_proofs(
     browser_helper_parameter_proofs: dict[str, str],
     module_browser_variables: set[str],
     class_browser_attributes: dict[str, str],
-    imported_browser_class_attributes: dict[str, frozenset[str]],
+    imported_browser_class_exports: dict[str, PythonBrowserClassExport],
+    enclosing_imported_browser_contexts: dict[str, PythonBrowserClassExport],
     *,
     builtin_getattr_available: bool,
-) -> dict[int, str]:
+) -> tuple[dict[int, str], dict[str, PythonBrowserClassExport]]:
     """Prove direct browser-page evaluate receivers without semantic name matching."""
     browser_derivation_methods = {
         "and_",
@@ -3154,12 +3230,31 @@ def python_browser_receiver_proofs(
     }
     binding_lines = {name: binding_lines[name] for name in bindings}
     imported_browser_context_parameters = {
-        argument.arg: imported_browser_class_attributes[annotation_name]
+        argument.arg: imported_browser_class_exports[annotation_name]
         for argument in (*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs)
         if mutation_counts[argument.arg] == 0
         if (annotation_name := dotted_name(argument.annotation))
-        in imported_browser_class_attributes
+        in imported_browser_class_exports
     }
+    closure_nonlocal_names = {
+        name
+        for candidate in ast.walk(node)
+        if candidate is not node and isinstance(candidate, ast.Nonlocal)
+        for name in candidate.names
+    }
+    visible_imported_browser_contexts = {
+        name: export
+        for name, export in enclosing_imported_browser_contexts.items()
+        if name not in function_local_bindings
+        and name not in closure_nonlocal_names
+    }
+    visible_imported_browser_contexts.update(
+        {
+            name: export
+            for name, export in imported_browser_context_parameters.items()
+            if name not in closure_nonlocal_names
+        }
+    )
 
     def unwrap(expression: ast.AST | None) -> ast.AST | None:
         return expression.value if isinstance(expression, ast.Await) else expression
@@ -3281,7 +3376,9 @@ def python_browser_receiver_proofs(
             isinstance(expression, ast.Attribute)
             and isinstance(expression.value, ast.Name)
             and expression.attr
-            in imported_browser_context_parameters.get(expression.value.id, frozenset())
+            in visible_imported_browser_contexts.get(
+                expression.value.id, PythonBrowserClassExport()
+            ).attributes
         ):
             return "imported-class-playwright-field"
         if (
@@ -3293,6 +3390,29 @@ def python_browser_receiver_proofs(
         ):
             return class_browser_attributes[expression.attr]
         return None
+
+    def imported_method_return_proof(expression: ast.AST) -> str | None:
+        awaited = isinstance(expression, ast.Await)
+        call = expression.value if awaited else expression
+        if not (
+            isinstance(call, ast.Call)
+            and not call.args
+            and not call.keywords
+            and isinstance(call.func, ast.Attribute)
+            and isinstance(call.func.value, ast.Name)
+        ):
+            return None
+        context = visible_imported_browser_contexts.get(call.func.value.id)
+        if context is None:
+            return None
+        methods = (
+            context.async_receiver_methods
+            if awaited
+            else context.sync_receiver_methods
+        )
+        if call.func.attr not in methods:
+            return None
+        return "imported-class-playwright-method-return"
 
     def derived_receiver_proof(expression: ast.AST, line: int) -> str | None:
         direct_proof = direct_receiver_proof(expression, line)
@@ -3426,7 +3546,8 @@ def python_browser_receiver_proofs(
             and assignment_dominates_continuation(candidate)
         ):
             continue
-        value = candidate.value.value if isinstance(candidate.value, ast.Await) else candidate.value
+        raw_value = candidate.value
+        value = raw_value.value if isinstance(raw_value, ast.Await) else raw_value
         factory_call = (
             value
             if isinstance(value, ast.Call) and dotted_name(value.func) in browser_page_factories
@@ -3440,6 +3561,15 @@ def python_browser_receiver_proofs(
                 and value.id in bindings
             ):
                 bindings[target.id] = "typed-parameter-alias"
+                binding_lines[target.id] = candidate.lineno
+            elif (
+                isinstance(target, ast.Name)
+                and mutation_counts[target.id] == 1
+                and imported_method_return_proof(raw_value)
+            ):
+                bindings[target.id] = (
+                    "imported-class-playwright-method-return-alias"
+                )
                 binding_lines[target.id] = candidate.lineno
             elif (
                 isinstance(target, ast.Name)
@@ -3572,7 +3702,7 @@ def python_browser_receiver_proofs(
             proof = scoped_derived_receiver_proof(receiver_node, candidate)
         if proof:
             proofs[id(candidate)] = proof
-    return proofs
+    return proofs, visible_imported_browser_contexts
 
 
 def python_network_origin_guard_proofs(
@@ -5129,7 +5259,7 @@ class PythonVisitor(ast.NodeVisitor):
         browser_contextmanager_page_factories: set[str],
         same_class_browser_parameter_proofs: dict[int, dict[str, str]],
         module_browser_variables: set[str],
-        imported_browser_class_attributes: dict[str, frozenset[str]],
+        imported_browser_class_exports: dict[str, PythonBrowserClassExport],
         builtin_property_available: bool,
         builtin_getattr_available: bool,
         url_parser_names: set[str],
@@ -5167,6 +5297,9 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_path_bindings: list[dict[str, str]] = []
         self.function_path_constructors: list[set[str]] = []
         self.function_browser_receiver_proofs: list[dict[int, str]] = []
+        self.function_imported_browser_contexts: list[
+            dict[str, PythonBrowserClassExport]
+        ] = []
         self.function_network_origin_guards: list[dict[int, PythonNetworkOriginProof]] = []
         self.urllib_openers = urllib_openers
         self.urllib_request_constructors = urllib_request_constructors
@@ -5180,7 +5313,7 @@ class PythonVisitor(ast.NodeVisitor):
             same_class_browser_parameter_proofs
         )
         self.module_browser_variables = module_browser_variables
-        self.imported_browser_class_attributes = imported_browser_class_attributes
+        self.imported_browser_class_exports = imported_browser_class_exports
         self.builtin_property_available = builtin_property_available
         self.builtin_getattr_available = builtin_getattr_available
         self.url_parser_names = url_parser_names
@@ -6012,7 +6145,7 @@ class PythonVisitor(ast.NodeVisitor):
                 for name, proof in class_browser_attributes.items()
                 if proof != "constructor-bound-playwright-page"
             }
-        self.function_browser_receiver_proofs.append(
+        browser_receiver_proofs, imported_browser_contexts = (
             python_browser_receiver_proofs(
                 node,
                 function_browser_types,
@@ -6022,12 +6155,19 @@ class PythonVisitor(ast.NodeVisitor):
                 self.same_class_browser_parameter_proofs.get(id(node), {}),
                 function_module_browser_variables,
                 class_browser_attributes,
-                self.imported_browser_class_attributes,
+                self.imported_browser_class_exports,
+                (
+                    self.function_imported_browser_contexts[-1]
+                    if self.function_imported_browser_contexts
+                    else {}
+                ),
                 builtin_getattr_available=self.builtin_getattr_available,
             )
             if self.has_browser_import
-            else {}
+            else ({}, {})
         )
+        self.function_browser_receiver_proofs.append(browser_receiver_proofs)
+        self.function_imported_browser_contexts.append(imported_browser_contexts)
         function_url_parsers = {
             parser
             for parser in self.url_parser_names
@@ -6320,6 +6460,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_path_bindings.pop()
         self.function_path_constructors.pop()
         self.function_browser_receiver_proofs.pop()
+        self.function_imported_browser_contexts.pop()
         self.function_network_origin_guards.pop()
         self.approval_environment_flags = previous_approval_environment_flags
         self.static_http_prefixes = previous_static_http_prefixes
@@ -8855,7 +8996,9 @@ def scan_python(
         for factory in browser_page_factories
         if factory.split(".", 1)[0] not in module_rebound_names
     }
-    imported_browser_class_candidates: dict[str, list[frozenset[str]]] = defaultdict(list)
+    imported_browser_class_candidates: dict[
+        str, list[PythonBrowserClassExport]
+    ] = defaultdict(list)
     for statement in tree.body:
         if not isinstance(statement, ast.ImportFrom):
             continue
@@ -8867,16 +9010,16 @@ def scan_python(
                 alias.name,
                 module_paths,
             )
-            attributes = (
+            export = (
                 browser_class_exports.get((target_path, alias.name))
                 if target_path is not None
                 else None
             )
-            if attributes:
+            if export is not None:
                 imported_browser_class_candidates[alias.asname or alias.name].append(
-                    attributes
+                    export
                 )
-    imported_browser_class_attributes = {
+    imported_browser_class_exports = {
         name: candidates[0]
         for name, candidates in imported_browser_class_candidates.items()
         if len(candidates) == 1
@@ -11111,7 +11254,7 @@ def scan_python(
             same_class_browser_parameter_proofs
         ),
         module_browser_variables=module_browser_variables,
-        imported_browser_class_attributes=imported_browser_class_attributes,
+        imported_browser_class_exports=imported_browser_class_exports,
         builtin_property_available=(
             "property" not in imported_bindings and "property" not in module_mutations
         ),

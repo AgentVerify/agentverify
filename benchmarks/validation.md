@@ -791,7 +791,10 @@ browser selection and unanimous private same-class helper calls, bringing curren
 93 and 43 unresolved. Schema v94 proves three Devika lifecycle-field receivers, bringing current
 coverage to 53 of 93 and 40 unresolved. Schema v95 proves three Skyvern same-module helper-body
 evaluators, bringing current coverage to 56 of 93 and 37 unresolved. Schema v96 proves 12 CAMEL
-branching-lifecycle field receivers, bringing current coverage to 68 of 93 and 25 unresolved. Six
+branching-lifecycle field receivers, bringing current coverage to 68 of 93 and 25 unresolved.
+Schema v97 proves Skyvern's imported wrapper scope, schema v98 proves its imported context field,
+and schema v99 proves its imported protocol method return through an immutable captured parameter.
+Current coverage is 71 of 93 with 22 unresolved. Six
 chained calls are inventoried. Dynamic calls with only browser-import context are withheld: local
 regressions cover an ordinary calculator's `.evaluate(...)`, a reassigned typed
 page, one immutable typed-page alias, conflicting class types, and ambiguous/rebound/near type-only
@@ -800,7 +803,7 @@ remain real negatives. API-specific regressions also pin dynamic selector/fixed-
 discrimination, the `expression=` keyword, an ordinary object's `evaluate_handle`, branch and
 ordinary-object yields, reassigned context targets, mixed helper calls, mutable and escaped
 bound-method aliases, and invalid selector literals. Registry, receiver, and evaluator fixtures
-bring the rule to 38 positive and 98 negative exact labels.
+bring the rule to 38 positive and 124 negative exact labels.
 
 ## AV-MCP002 — dynamic MCP forwarding
 
@@ -1321,10 +1324,11 @@ Seven urllib labels cover two local dynamic origins, one local fixed origin, two
 negatives, and two pinned Qwen fixed-origin tool edges. Nine Python network-origin-control labels cover
 two fail-closed local guards and seven late, partial, continuing, rebound, shadowed, mutable-policy,
 or rejection-branch-sink negatives. Seven TypeScript network-origin-policy labels cover the local and
-MCP Servers edges plus late, rebound, nested-call, scheme-only, and branch-only negatives. Sixty-three
-browser-receiver labels cover 32 exact parameter, alias, factory,
+MCP Servers edges plus late, rebound, nested-call, scheme-only, and branch-only negatives. One
+hundred thirty-three browser-receiver labels cover 63 exact parameter, alias, factory,
 annotated/constructed class-field, property, local/module/context-manager construction, derived
-Locator, chained-inventory, and pinned-real proofs plus 31 ordinary, reassigned, late/branch,
+Locator, chained-inventory, imported field/method return, and pinned-real proofs plus 70 ordinary,
+reassigned, late/branch,
 container, conflicting/wrong type, static-method, near-package, rebound, duplicate-import,
 conditional/reassigned local construction, branch/ordinary context yields, repeated/shadowed
 property, near-factory, shadowed-factory, ordinary-locator, and unknown-derivation negatives. Six
@@ -1367,7 +1371,7 @@ and model positives plus 42 near-name, rebound, and unrelated-service negatives.
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 941 IR labels pass (681 positives and 260 negatives):
+negatives. All 967 IR labels pass (688 positives and 279 negatives):
 131 component-taxonomy positives/42 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
@@ -1390,8 +1394,8 @@ six path-prefix positives/two negatives,
 negatives, two MCP-registry positives/one negative, three
 fixed-instance positives/one negative, two closure positives/two negatives, two method-registry
 positives/one negative, four post-registration positives/three negatives, three transparent-wrapper
-positives/three negatives, eight browser-evaluation positives/two negatives, 56 browser-receiver
-positives/51 negatives, eight Python registry-tool
+positives/three negatives, eight browser-evaluation positives/two negatives, 63 browser-receiver
+positives/70 negatives, eight Python registry-tool
 positives/five negatives, six Python imported-network positives/five negatives, ten Python
 imported-class-network positives/five negatives, five urllib-network positives/two negatives, two
 Python network-origin-control positives/seven negatives, two TypeScript network-origin-policy

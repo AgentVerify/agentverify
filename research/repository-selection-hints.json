@@ -114,7 +114,8 @@
       "skyvern/cli/core/guards.py",
       "skyvern/forge/sdk/db/models.py",
       "skyvern/forge/sdk/db/repositories/workflow_parameters.py",
-      "skyvern/forge/taskv3/loop.py"
+      "skyvern/forge/taskv3/loop.py",
+      "skyvern/webeye/browser_state.py"
     ]
   }
 }

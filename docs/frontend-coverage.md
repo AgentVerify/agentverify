@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v98
+framework, wrapper, or configuration path. Counts come from schema-v99
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -673,12 +673,19 @@ and `network-ssrf-policy` edge.
   exact annotation of an immutable parameter, and copy the field into one immutable local. Ordinary
   or duplicate field annotations, near or rebound imports, and parameter or alias reassignment
   withhold the proof.
+  Schema v99 proves one further Skyvern production evaluation through an imported protocol method
+  returning `Page | None`. The defining selected file must expose one unique, undecorated method
+  with an exact Playwright receiver return annotation; the consumer must uniquely import the class,
+  annotate an immutable context, call the method in the matching sync/async mode, and bind one
+  dominating immutable alias. A nested closure may capture that context only when it is neither
+  shadowed nor declared `nonlocal`. Ordinary, duplicate, decorated, rebound, mode-mismatched,
+  branch-only, shadowed, and nonlocal-mutated forms withhold the proof.
   Class or `__init__` annotations may use an exact immutable Playwright import under `TYPE_CHECKING`.
   Constructor flow requires a straight-line exact Playwright runtime→browser/context→page chain and
   one field mutation. Conflicting/wrong annotations, near or rebound imports, static methods, and
   conditional, repeated, late, or shadowed-factory fields are withheld. Six chained calls formerly
   missed by the dotted-name gate are now inventoried; five remain unresolved. Across all supported
-  APIs, 23 fixed-script observations retain unresolved receiver state. Dynamic promotion also
+  APIs, 22 fixed-script observations retain unresolved receiver state. Dynamic promotion also
   supports one immutable alias of a typed parameter and known locator/get-by/filter/nth/and/or/
   first/last derivations;
   untyped/inherited fields, other ambiguous wrapper locators, sanitizers,
@@ -702,7 +709,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 628-label rule truth set and 953-label IR component/relationship set are curated regression
+The 642-label rule truth set and 967-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

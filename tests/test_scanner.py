@@ -4952,6 +4952,159 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
         "unresolved-browser-import-context"
     )
 
+def test_python_imported_browser_method_returns_require_exact_closure_proof(
+    tmp_path: Path,
+) -> None:
+    case = ROOT / "cases/python_imported_browser_method"
+    ir = scan_repository(case)
+
+    assert [
+        (
+            item.evidence.line,
+            item.attributes["api"],
+            item.attributes["dynamic_input"],
+            item.attributes["receiver_proof"],
+        )
+        for item in ir.components
+        if item.kind == "capability" and item.name == "code-execution"
+    ] == [
+        (19, "page.evaluate", False, "imported-class-playwright-method-return-alias"),
+        (26, "page.evaluate", False, "imported-class-playwright-method-return-alias"),
+        (31, "page.evaluate", False, "unresolved-browser-import-context"),
+        (36, "page.evaluate", False, "unresolved-browser-import-context"),
+        (41, "page.evaluate", False, "unresolved-browser-import-context"),
+        (46, "page.evaluate", False, "unresolved-browser-import-context"),
+        (52, "page.evaluate", False, "unresolved-browser-import-context"),
+        (58, "page.evaluate", False, "unresolved-browser-import-context"),
+        (64, "page.evaluate", False, "unresolved-browser-import-context"),
+        (70, "page.evaluate", False, "unresolved-browser-import-context"),
+        (77, "page.evaluate", False, "unresolved-browser-import-context"),
+        (82, "page.evaluate", False, "unresolved-browser-import-context"),
+        (92, "page.evaluate", False, "unresolved-browser-import-context"),
+    ]
+    assert not ir.findings
+
+    near_type = tmp_path / "near-browser-method-type"
+    shutil.copytree(case, near_type)
+    state_path = near_type / "browser_state.py"
+    state_source = state_path.read_text(encoding="utf-8")
+    exact_import = "from playwright.async_api import Page"
+    assert exact_import in state_source
+    state_path.write_text(
+        state_source.replace(
+            exact_import,
+            "from near_playwright.async_api import Page",
+        ),
+        encoding="utf-8",
+    )
+    near_ir = scan_repository(near_type)
+    near_exact = next(
+        item
+        for item in near_ir.components
+        if item.kind == "capability"
+        and item.name == "code-execution"
+        and item.evidence.path == "consumer.py"
+        and item.evidence.line == 19
+    )
+    assert near_exact.attributes["receiver_proof"] == (
+        "unresolved-browser-import-context"
+    )
+
+    rebound_import = tmp_path / "rebound-browser-method-import"
+    shutil.copytree(case, rebound_import)
+    consumer_path = rebound_import / "consumer.py"
+    consumer_source = consumer_path.read_text(encoding="utf-8")
+    consumer_path.write_text(
+        f"{consumer_source}\nBrowserState = object\n",
+        encoding="utf-8",
+    )
+    rebound_import_ir = scan_repository(rebound_import)
+    rebound_import_exact = next(
+        item
+        for item in rebound_import_ir.components
+        if item.kind == "capability"
+        and item.name == "code-execution"
+        and item.evidence.path == "consumer.py"
+        and item.evidence.line == 19
+    )
+    assert rebound_import_exact.attributes["receiver_proof"] == (
+        "unresolved-browser-import-context"
+    )
+
+    rebound_export = tmp_path / "rebound-browser-method-export"
+    shutil.copytree(case, rebound_export)
+    export_path = rebound_export / "browser_state.py"
+    export_source = export_path.read_text(encoding="utf-8")
+    export_path.write_text(
+        f"{export_source}\nBrowserState = object\n",
+        encoding="utf-8",
+    )
+    rebound_export_ir = scan_repository(rebound_export)
+    rebound_export_exact = next(
+        item
+        for item in rebound_export_ir.components
+        if item.kind == "capability"
+        and item.name == "code-execution"
+        and item.evidence.path == "consumer.py"
+        and item.evidence.line == 19
+    )
+    assert rebound_export_exact.attributes["receiver_proof"] == (
+        "unresolved-browser-import-context"
+    )
+
+    conditional_rebound = tmp_path / "conditional-browser-method-rebound"
+    shutil.copytree(case, conditional_rebound)
+    conditional_path = conditional_rebound / "browser_state.py"
+    conditional_source = conditional_path.read_text(encoding="utf-8")
+    method_marker = "    async def get_page(self) -> Page | None: ..."
+    assert method_marker in conditional_source
+    conditional_path.write_text(
+        conditional_source.replace(
+            method_marker,
+            f"{method_marker}\n\n    if True:\n        get_page = object()",
+            1,
+        ),
+        encoding="utf-8",
+    )
+    conditional_ir = scan_repository(conditional_rebound)
+    conditional_exact = next(
+        item
+        for item in conditional_ir.components
+        if item.kind == "capability"
+        and item.name == "code-execution"
+        and item.evidence.path == "consumer.py"
+        and item.evidence.line == 19
+    )
+    assert conditional_exact.attributes["receiver_proof"] == (
+        "unresolved-browser-import-context"
+    )
+
+    required_argument = tmp_path / "required-browser-method-argument"
+    shutil.copytree(case, required_argument)
+    required_path = required_argument / "browser_state.py"
+    required_source = required_path.read_text(encoding="utf-8")
+    assert method_marker in required_source
+    required_path.write_text(
+        required_source.replace(
+            method_marker,
+            "    async def get_page(self, required: str) -> Page | None: ...",
+            1,
+        ),
+        encoding="utf-8",
+    )
+    required_ir = scan_repository(required_argument)
+    required_exact = next(
+        item
+        for item in required_ir.components
+        if item.kind == "capability"
+        and item.name == "code-execution"
+        and item.evidence.path == "consumer.py"
+        and item.evidence.line == 19
+    )
+    assert required_exact.attributes["receiver_proof"] == (
+        "unresolved-browser-import-context"
+    )
+
 
 def test_python_registry_decorators_are_import_proven_and_entrypoint_scoped() -> None:
     ir = scan_repository(ROOT / "cases/python_registry_tools")

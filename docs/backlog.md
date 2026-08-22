@@ -166,9 +166,15 @@ the field into one immutable local. Skyvern's popup content-type probe moves to
 `imported-class-playwright-field-alias`, bringing totals to 70 proven of 93 and 23 unresolved.
 Ordinary or duplicate fields, near or rebound imports, and reassigned context parameters or aliases
 stay unresolved.
+Schema v99 indexes undecorated sync/async methods with exact Playwright receiver return annotations
+on those same uniquely imported classes. The call mode must match, the typed context and one local
+alias must remain immutable, and the assignment must dominate the evaluator. An immutable outer
+parameter may flow into a nested closure only when it is not shadowed or declared `nonlocal`.
+Skyvern's page-fingerprint probe moves to `imported-class-playwright-method-return-alias`, bringing
+totals to 71 proven of 93 and 22 unresolved. Ordinary, duplicate, decorated, rebound, mode-mismatched,
+branch-only, shadowed, and nonlocal-mutated forms remain unresolved.
 Next resolve inherited fields, additional bounded wrapper/locator flows, sanitizer and bounded builder
-summaries, imported helper flow, and bounded
-helper-return provenance without treating every dynamic JavaScript expression as
+summaries, and imported helper flow without treating every dynamic JavaScript expression as
 tool-controlled.
 
 ## P0 — configuration and policy resolution
@@ -356,8 +362,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 628 pinned positive/negative locations, with 953 separately
-scored IR component/relationship labels. Schema-v98 engine results and
+The curated regression set has reached 642 pinned positive/negative locations, with 967 separately
+scored IR component/relationship labels. Schema-v99 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.
