@@ -496,6 +496,14 @@ quoted `const` adds two exact model components while leaving all 70 provider cal
 Literal-model count reaches 28. Runtime parameters, helper-built request objects, mutable or rebound
 names, forward declarations, composed values, and shadowed bindings remain unresolved.
 
+Schema v111 finds the same evidence shape in an official AI SDK call. Activepieces passes its
+earlier immutable `OPENAI_3_SMALL_MODEL_ID = 'text-embedding-3-small'` constant to a configured
+OpenAI embedding provider. Resolving that first argument adds one exact model component without
+changing the 70 TypeScript provider calls or their provider distribution; literal-model count
+reaches 29 and three models now carry the immutable-module-literal basis. The remaining selected AI
+SDK nonliteral arguments are runtime parameters, so they stay unresolved alongside mutable,
+composed, shadowed, rebound, and forward identifiers.
+
 ## 5. Controls are layered
 
 Sandboxing vocabulary appears in 64 repositories, audit/tracing in 57, human approval in 52, and

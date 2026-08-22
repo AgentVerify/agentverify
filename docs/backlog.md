@@ -72,6 +72,10 @@ Schema v110 adds model identity to those two requests through the quickstart's e
 module constant. Provider/request proof remains a prerequisite; the constant adds only a model
 component and records a separate resolution basis. Mutable, forward, composed, shadowed, and rebound
 identifiers remain unresolved. The 414 component labels now pin 298 positives and 116 negatives.
+Schema v111 extends the same proof to exact official AI SDK first model arguments. It recovers the
+Activepieces `text-embedding-3-small` constant without changing its already exact OpenAI provider
+call; runtime parameters and mutable, composed, shadowed, rebound, or forward identifiers remain
+unresolved. The 420 component labels now pin 301 positives and 119 negatives.
 Next generalize selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
@@ -412,8 +416,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 642 pinned positive/negative locations, with 1,208 separately
-scored IR component/relationship labels. Schema-v110 engine results and
+The curated regression set has reached 642 pinned positive/negative locations, with 1,214 separately
+scored IR component/relationship labels. Schema-v111 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

@@ -12329,6 +12329,31 @@ def typescript_provider_request_model(
     return binding.value, "immutable-module-literal-binding"
 
 
+def typescript_provider_first_argument_model(
+    text: str,
+    opening: int,
+    end: int,
+    call_offset: int,
+    literal_bindings: dict[str, TypeScriptLiteralStringBinding],
+) -> tuple[str | None, str | None]:
+    """Resolve a literal first model argument or an earlier immutable literal binding."""
+    literal = typescript_literal_first_call_argument(text, opening, end)
+    if literal is not None:
+        return literal, None
+    arguments = typescript_call_arguments(text[opening + 1 : end - 1])
+    if not arguments:
+        return None, None
+    identifier = re.fullmatch(
+        r"[A-Za-z_$][\w$]*", arguments[0][0].strip()
+    )
+    if identifier is None:
+        return None, None
+    binding = literal_bindings.get(identifier.group(0))
+    if binding is None or binding.declaration_end > call_offset:
+        return None, None
+    return binding.value, "immutable-module-literal-binding"
+
+
 def typescript_const_provider_binding_is_stable(
     text: str,
     name: str,
@@ -12386,6 +12411,9 @@ def typescript_ai_sdk_provider_calls(text: str) -> list[TypeScriptProviderCall]:
     """Resolve exact official AI SDK factories and model calls through stable bindings."""
     code = typescript_code_mask(text)
     imports = typescript_ai_sdk_provider_imports(text)
+    literal_model_bindings = typescript_immutable_module_literal_string_bindings(
+        text
+    )
     observations: list[TypeScriptProviderCall] = []
     configured_instances: list[tuple[str, TypeScriptProviderImportBinding, int]] = []
     model_methods = "|".join(
@@ -12427,6 +12455,15 @@ def typescript_ai_sdk_provider_calls(text: str) -> list[TypeScriptProviderCall]:
                         code, method_opening, "(", ")"
                     )
                     if method_end is not None:
+                        model, model_resolution_basis = (
+                            typescript_provider_first_argument_model(
+                                text,
+                                method_opening,
+                                method_end,
+                                match.start(),
+                                literal_model_bindings,
+                            )
+                        )
                         observations.append(
                             TypeScriptProviderCall(
                                 match.start(),
@@ -12435,15 +12472,26 @@ def typescript_ai_sdk_provider_calls(text: str) -> list[TypeScriptProviderCall]:
                                 binding.module,
                                 binding.imported_symbol,
                                 binding.provider,
-                                typescript_literal_first_call_argument(
-                                    text, method_opening, method_end
-                                ),
+                                model,
                                 TYPESCRIPT_AI_SDK_MODEL_METHODS[method_name],
                                 binding.local_name,
+                                None,
+                                model_resolution_basis,
                             )
                         )
                         chained_model = True
             if not chained_model:
+                model, model_resolution_basis = (
+                    (None, None)
+                    if is_factory
+                    else typescript_provider_first_argument_model(
+                        text,
+                        opening,
+                        end,
+                        match.start(),
+                        literal_model_bindings,
+                    )
+                )
                 observations.append(
                     TypeScriptProviderCall(
                         match.start(),
@@ -12456,10 +12504,11 @@ def typescript_ai_sdk_provider_calls(text: str) -> list[TypeScriptProviderCall]:
                         binding.module,
                         binding.imported_symbol,
                         binding.provider,
-                        None
-                        if is_factory
-                        else typescript_literal_first_call_argument(text, opening, end),
+                        model,
                         model_method,
+                        None,
+                        None,
+                        model_resolution_basis,
                     )
                 )
             if not is_factory:
@@ -12489,6 +12538,13 @@ def typescript_ai_sdk_provider_calls(text: str) -> list[TypeScriptProviderCall]:
             end = typescript_balanced_end(code, opening, "(", ")")
             if end is None:
                 continue
+            model, model_resolution_basis = typescript_provider_first_argument_model(
+                text,
+                opening,
+                end,
+                match.start(),
+                literal_model_bindings,
+            )
             observations.append(
                 TypeScriptProviderCall(
                     match.start(),
@@ -12497,9 +12553,11 @@ def typescript_ai_sdk_provider_calls(text: str) -> list[TypeScriptProviderCall]:
                     binding.module,
                     binding.imported_symbol,
                     binding.provider,
-                    typescript_literal_first_call_argument(text, opening, end),
+                    model,
                     TYPESCRIPT_AI_SDK_MODEL_METHODS.get(match.group(1), "language"),
                     binding.local_name,
+                    None,
+                    model_resolution_basis,
                 )
             )
     return sorted(observations, key=lambda item: item.offset)

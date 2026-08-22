@@ -109,6 +109,11 @@ a simple quoted string, exactly one assignment, and no parameter, import, catch,
 shadow anywhere in the file. The model records `immutable-module-literal-binding` separately from
 the request receiver's resolution basis. Later declarations, mutable/rebound bindings, templates or
 other composed expressions, runtime parameters, and helper-built request objects remain unresolved.
+Schema v111 applies that same immutable module-literal proof to the first model argument of an exact
+official TypeScript AI SDK provider call. Direct singleton calls, configured instances, and chained
+factory model methods may inherit the earlier string constant only after provider and endpoint
+provenance are exact. Runtime parameters, mutable/rebound names, forward declarations, composed
+expressions, and shadowed constants remain unresolved.
 Schema v77 gives import-proven, assigned Python MCP stdio constructors stable component identities.
 An Agent receives an exact `uses` edge only when its literal `mcp_servers=[...]` list names an
 earlier, unreassigned server binding in the same statement block. Package and version facts remain

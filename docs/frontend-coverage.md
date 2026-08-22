@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v110
+framework, wrapper, or configuration path. Counts come from schema-v111
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -157,6 +157,13 @@ and no parameter, import, catch, or destructuring shadow. The two MCP TypeScript
 therefore gain `claude-sonnet-4-6` model components with an explicit immutable-literal resolution
 basis. TypeScript call counts remain 70, while literal models rise from 26 to 28. Mutable, forward,
 composed, shadowed, rebound, runtime-parameter, and helper-object model expressions remain withheld.
+
+Schema v111 reuses that proof for official AI SDK model arguments. Activepieces' configured OpenAI
+embedding provider now resolves the earlier `OPENAI_3_SMALL_MODEL_ID` constant to
+`text-embedding-3-small`, while its provider call remains the same exact AI SDK call. TypeScript
+call counts stay at 70 and literal models rise from 28 to 29; three model components now record the
+immutable-module-literal basis. Runtime parameters in Activepieces and Mastra, plus mutable,
+forward, composed, shadowed, and rebound fixture arguments, remain withheld.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
 Agent→MCP-server identities. Import-proven literal stdio constructor calls are inventoried for any
@@ -818,7 +825,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 642-label rule truth set and 1,208-label IR component/relationship set are curated regression
+The 642-label rule truth set and 1,214-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

@@ -271,6 +271,33 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             None,
         ),
         (
+            "provider_ai_sdk_model_bindings.ts",
+            5,
+            "OpenAI",
+            "openai",
+            "ai-sdk-provider-model",
+            None,
+        ),
+        (
+            "provider_ai_sdk_model_bindings.ts",
+            6,
+            "OpenAI",
+            "createOpenAI.embeddingModel",
+            "ai-sdk-provider-model",
+            "createOpenAI",
+        ),
+        *(
+            (
+                "provider_ai_sdk_model_bindings_unresolved.ts",
+                line,
+                "OpenAI",
+                "openai",
+                "ai-sdk-provider-model",
+                None,
+            )
+            for line in (5, 9, 13, 18, 20)
+        ),
+        (
             "provider_native_calls.ts",
             5,
             "OpenAI",
@@ -626,6 +653,34 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         (24, "gemini-embedding-001", "Google"),
         (27, "grok-4", "xAI"),
     }
+    assert {
+        (
+            item.evidence.line,
+            item.name,
+            item.attributes["provider"],
+            item.attributes.get("model_method"),
+            item.attributes.get("model_resolution_basis"),
+        )
+        for item in ir.components
+        if item.kind == "model"
+        and item.evidence.path == "provider_ai_sdk_model_bindings.ts"
+        and item.attributes.get("resolution") == "exact-typescript-provider-import"
+    } == {
+        (5, "gpt-5-mini", "OpenAI", "language", "immutable-module-literal-binding"),
+        (
+            6,
+            "text-embedding-3-small",
+            "OpenAI",
+            "embedding",
+            "immutable-module-literal-binding",
+        ),
+    }
+    assert not any(
+        item.kind == "model"
+        and item.evidence.path == "provider_ai_sdk_model_bindings_unresolved.ts"
+        and item.attributes.get("resolution") == "exact-typescript-provider-import"
+        for item in ir.components
+    )
     assert {
         (item.evidence.path, item.evidence.line, item.name, item.attributes["provider"])
         for item in ir.components
