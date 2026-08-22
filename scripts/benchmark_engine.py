@@ -323,7 +323,10 @@ def main() -> int:
             if edge.source_kind == "agent"
             and edge.target_kind == "mcp-server"
             and edge.attributes.get("target_identity")
-            == "literal-mcp-servers-list-binding"
+            in {
+                "literal-mcp-servers-list-binding",
+                "literal-mcp-servers-list-module-binding",
+            }
             and edge.evidence.path.endswith(".py")
         ]
         python_agent_referenced_tool_ids = {
@@ -612,6 +615,14 @@ def main() -> int:
             if item.kind == "mcp-server"
             and item.attributes.get("analysis")
             == "python-import-bound-mcp-constructor"
+        ]
+        python_import_bound_mcp_in_process_servers = [
+            item
+            for item in ir.components
+            if item.kind == "mcp-server"
+            and item.attributes.get("analysis")
+            == "python-import-bound-mcp-server-constructor"
+            and item.attributes.get("transport") == "in-process"
         ]
         python_provider_call_attributions = [
             item
@@ -1054,6 +1065,16 @@ def main() -> int:
                 ),
                 "non_test": sum(
                     not is_test_path(edge.evidence.path)
+                    for edge in python_agent_mcp_server_edges
+                ),
+                "same_block": sum(
+                    edge.attributes.get("target_identity")
+                    == "literal-mcp-servers-list-binding"
+                    for edge in python_agent_mcp_server_edges
+                ),
+                "immutable_module": sum(
+                    edge.attributes.get("target_identity")
+                    == "literal-mcp-servers-list-module-binding"
                     for edge in python_agent_mcp_server_edges
                 ),
                 "repositories": bool(python_agent_mcp_server_edges),
@@ -1786,6 +1807,18 @@ def main() -> int:
                 ),
                 "repositories": bool(python_import_bound_mcp_stdio_servers),
             },
+            "python_import_bound_mcp_in_process_servers": {
+                "total": len(python_import_bound_mcp_in_process_servers),
+                "non_test": sum(
+                    item.attributes.get("scope") != "test"
+                    for item in python_import_bound_mcp_in_process_servers
+                ),
+                "symbolized_assigned": sum(
+                    item.symbol_id is not None
+                    for item in python_import_bound_mcp_in_process_servers
+                ),
+                "repositories": bool(python_import_bound_mcp_in_process_servers),
+            },
             "python_google_adk_bigquery_audit": {
                 "available_controls": sum(
                     item.attributes.get("deployment_state") == "framework-available"
@@ -2172,7 +2205,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 77,
+        "schema_version": 78,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2390,7 +2423,14 @@ def main() -> int:
                     result["python_agent_mcp_server_edges"][name]
                     for result in successful
                 )
-                for name in ("total", "resolved", "non_test", "repositories")
+                for name in (
+                    "total",
+                    "resolved",
+                    "non_test",
+                    "same_block",
+                    "immutable_module",
+                    "repositories",
+                )
             },
             "python_function_tool_wrappers": {
                 name: sum(
@@ -2692,6 +2732,18 @@ def main() -> int:
                     "symbolized_assigned",
                     "package_backed",
                     "non_package",
+                    "repositories",
+                )
+            },
+            "python_import_bound_mcp_in_process_servers": {
+                name: sum(
+                    result["python_import_bound_mcp_in_process_servers"][name]
+                    for result in successful
+                )
+                for name in (
+                    "total",
+                    "non_test",
+                    "symbolized_assigned",
                     "repositories",
                 )
             },

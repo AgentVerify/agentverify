@@ -230,6 +230,19 @@ MCP_LAUNCHER_CONSTRUCTORS = {
     "MCPTools",
     "StdioServerParameters",
 }
+MCP_IN_PROCESS_SERVER_CONSTRUCTORS = {"FastMCP"}
+
+
+def is_mcp_server_constructor_module(module: str, constructor: str) -> bool:
+    if constructor in MCP_IN_PROCESS_SERVER_CONSTRUCTORS:
+        return bool(
+            module in {"fastmcp", "mcp.server"}
+            or module.startswith(("fastmcp.", "mcp.server."))
+        )
+    return bool(
+        re.search(r"(?:^|[._])mcp(?:[._]|$)", module, re.IGNORECASE)
+        or "modelcontextprotocol" in module.lower()
+    )
 
 
 def literal_string_arguments(node: ast.AST | None) -> list[str | None] | None:
@@ -2720,7 +2733,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.imported_symbol_paths: dict[str, str] = {}
         self.imported_symbol_names: dict[str, str] = {}
         self.imported_symbol_resolutions: dict[str, str] = {}
-        self.mcp_launcher_constructors: dict[str, tuple[str, str]] = {}
+        self.mcp_server_constructors: dict[str, tuple[str, str]] = {}
         self.observed_mcp_server_ids: set[str] = set()
         self.provider_call_bindings: dict[str, tuple[str, str, str]] = {}
         self.provider_module_bindings: dict[str, tuple[str, str]] = {}
@@ -3011,6 +3024,33 @@ class PythonVisitor(ast.NodeVisitor):
         if symbol_id is not None:
             self.observed_mcp_server_ids.add(symbol_id)
 
+    def add_mcp_in_process_server(
+        self,
+        node: ast.AST,
+        *,
+        name: str,
+        constructor: str,
+    ) -> None:
+        """Record an import-proven in-process MCP server constructor."""
+        symbol_id = self.call_symbol_ids.get(id(node))
+        self.ir.add_component(
+            Component(
+                "mcp-server",
+                name,
+                self.ev(node),
+                {
+                    "transport": "in-process",
+                    "constructor": constructor,
+                    "analysis": "python-import-bound-mcp-server-constructor",
+                    "frontend": "python",
+                    "scope": source_scope(self.path),
+                },
+                symbol_id,
+            )
+        )
+        if symbol_id is not None:
+            self.observed_mcp_server_ids.add(symbol_id)
+
     def visit_Dict(self, node: ast.Dict) -> None:
         entries = {
             key.value: value
@@ -3101,7 +3141,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.imported_symbol_paths.pop(name, None)
         self.imported_symbol_names.pop(name, None)
         self.imported_symbol_resolutions.pop(name, None)
-        self.mcp_launcher_constructors.pop(name, None)
+        self.mcp_server_constructors.pop(name, None)
         self.provider_call_bindings.pop(name, None)
         self.provider_module_bindings.pop(name, None)
 
@@ -3136,13 +3176,11 @@ class PythonVisitor(ast.NodeVisitor):
             if (
                 self.function_depth == 0
                 and not self.class_stack
-                and alias.name in MCP_LAUNCHER_CONSTRUCTORS
-                and (
-                re.search(r"(?:^|[._])mcp(?:[._]|$)", module, re.IGNORECASE)
-                or "modelcontextprotocol" in module.lower()
-                )
+                and alias.name
+                in MCP_LAUNCHER_CONSTRUCTORS | MCP_IN_PROCESS_SERVER_CONSTRUCTORS
+                and is_mcp_server_constructor_module(module, alias.name)
             ):
-                self.mcp_launcher_constructors[local_name] = (module, alias.name)
+                self.mcp_server_constructors[local_name] = (module, alias.name)
             helper_import_scope = not self.class_stack or self.function_depth > 0
             if helper_import_scope:
                 self.network_helper_bindings.pop(local_name, None)
@@ -3404,7 +3442,7 @@ class PythonVisitor(ast.NodeVisitor):
         previous_imported_symbol_paths = self.imported_symbol_paths
         previous_imported_symbol_names = self.imported_symbol_names
         previous_imported_symbol_resolutions = self.imported_symbol_resolutions
-        previous_mcp_launcher_constructors = self.mcp_launcher_constructors
+        previous_mcp_server_constructors = self.mcp_server_constructors
         previous_provider_call_bindings = self.provider_call_bindings
         previous_provider_module_bindings = self.provider_module_bindings
         self.imported_symbol_paths = {
@@ -3422,9 +3460,9 @@ class PythonVisitor(ast.NodeVisitor):
             for name, basis in self.imported_symbol_resolutions.items()
             if name not in local_bindings
         }
-        self.mcp_launcher_constructors = {
+        self.mcp_server_constructors = {
             name: constructor
-            for name, constructor in self.mcp_launcher_constructors.items()
+            for name, constructor in self.mcp_server_constructors.items()
             if name not in local_bindings
         }
         self.provider_call_bindings = {
@@ -3729,7 +3767,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.imported_symbol_paths = previous_imported_symbol_paths
         self.imported_symbol_names = previous_imported_symbol_names
         self.imported_symbol_resolutions = previous_imported_symbol_resolutions
-        self.mcp_launcher_constructors = previous_mcp_launcher_constructors
+        self.mcp_server_constructors = previous_mcp_server_constructors
         self.provider_call_bindings = previous_provider_call_bindings
         self.provider_module_bindings = previous_provider_module_bindings
         self.urllib_openers = previous_urllib_openers
@@ -4477,13 +4515,19 @@ class PythonVisitor(ast.NodeVisitor):
         call_name = dotted_name(node.func)
         short_name = call_name.rsplit(".", 1)[-1]
         imported_mcp_constructor = (
-            self.mcp_launcher_constructors.get(node.func.id)
+            self.mcp_server_constructors.get(node.func.id)
             if isinstance(node.func, ast.Name)
             and (not self.class_stack or self.function_depth > 0)
             else None
         )
         if imported_mcp_constructor is not None:
             _, constructor = imported_mcp_constructor
+            if constructor in MCP_IN_PROCESS_SERVER_CONSTRUCTORS:
+                self.add_mcp_in_process_server(
+                    node,
+                    name=f"{constructor}@{node.lineno}",
+                    constructor=constructor,
+                )
             keywords = {
                 keyword.arg: keyword.value
                 for keyword in node.keywords
@@ -4508,7 +4552,7 @@ class PythonVisitor(ast.NodeVisitor):
                             constructor=constructor,
                             analysis="python-import-bound-mcp-constructor",
                         )
-            else:
+            elif constructor not in MCP_IN_PROCESS_SERVER_CONSTRUCTORS:
                 command_node = keywords.get("command")
                 if command_node is None and node.args:
                     command_node = node.args[0]
@@ -4883,10 +4927,15 @@ class PythonVisitor(ast.NodeVisitor):
                     )
                     if dominating is None:
                         continue
-                    target_id, _ = dominating
+                    target_id, resolution_basis = dominating
                     target_name = self.mcp_server_symbol_names.get(target_id)
                     if target_name is None or target_id not in self.observed_mcp_server_ids:
                         continue
+                    target_identity = (
+                        "literal-mcp-servers-list-module-binding"
+                        if resolution_basis == "immutable-module-binding"
+                        else "literal-mcp-servers-list-binding"
+                    )
                     self.ir.add_relationship(
                         Relationship(
                             "agent",
@@ -4897,7 +4946,7 @@ class PythonVisitor(ast.NodeVisitor):
                             self.ev(node),
                             {
                                 "binding": binding,
-                                "target_identity": "literal-mcp-servers-list-binding",
+                                "target_identity": target_identity,
                             },
                             agent_id,
                             target_id,
@@ -6119,14 +6168,10 @@ def scan_python(
                 tool_constructor_import_candidates[local_name].append(statement)
             if (
                 statement in tree.body
-                and alias.name in MCP_LAUNCHER_CONSTRUCTORS
-                and (
-                    re.search(
-                        r"(?:^|[._])mcp(?:[._]|$)",
-                        statement.module or "",
-                        re.IGNORECASE,
-                    )
-                    or "modelcontextprotocol" in (statement.module or "").lower()
+                and alias.name
+                in MCP_LAUNCHER_CONSTRUCTORS | MCP_IN_PROCESS_SERVER_CONSTRUCTORS
+                and is_mcp_server_constructor_module(
+                    statement.module or "", alias.name
                 )
             ):
                 mcp_constructor_import_candidates[local_name].append(statement)
@@ -6629,6 +6674,13 @@ def scan_python(
         call_symbol_ids[id(node.value)]: assigned_mcp_server_name(node)
         for node, kind, _binding in assigned_constructors
         if kind == "mcp-server"
+    }
+    immutable_module_mcp_servers = {
+        binding: (node.lineno, call_symbol_ids[id(node.value)])
+        for node, kind, binding in assigned_constructors
+        if kind == "mcp-server"
+        and isinstance(parent_by_id.get(id(node)), ast.Module)
+        and module_mutation_counts[binding] == 1
     }
 
     usage_tool_assignment_ids = set(usage_tool_assignments)
@@ -7542,13 +7594,27 @@ def scan_python(
                     for statement in statements[:use_index]
                     if name in statement_mutations(statement)
                 ]
-                if len(mutations) != 1:
+                if len(mutations) == 1:
+                    definition = definition_by_statement.get(
+                        (id(mutations[0]), kind, name)
+                    )
+                    if definition:
+                        dominating_symbol_ids[(id(call), kind, name)] = definition
+                        continue
+                if kind != "mcp-server" or name not in immutable_module_mcp_servers:
                     continue
-                definition = definition_by_statement.get(
-                    (id(mutations[0]), kind, name)
-                )
-                if definition:
-                    dominating_symbol_ids[(id(call), kind, name)] = definition
+                call_scope = node_scopes[id(call)]
+                if any(
+                    (call_scope[:depth], name) in scope_bound_names
+                    for depth in range(1, len(call_scope) + 1)
+                ):
+                    continue
+                definition_line, symbol_id = immutable_module_mcp_servers[name]
+                if definition_line < call.lineno:
+                    dominating_symbol_ids[(id(call), kind, name)] = (
+                        symbol_id,
+                        "immutable-module-binding",
+                    )
     scoped_symbol_ids = {
         key: candidates[0]
         for key, candidates in scoped_symbol_candidates.items()

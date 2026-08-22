@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v77
+framework, wrapper, or configuration path. Counts come from schema-v78
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -72,9 +72,19 @@ servers receive stable IDs, 20 calls launch non-package processes, and seven sel
 calls are production-scoped. The only two exact Agent edges are both production-scoped and resolve
 the Deno and `uvx` bindings in Marvin.
 
-Across the selected snapshot, 9,607 observations have module-qualified symbol IDs. Of
-4,258 relationship endpoint observations, all 3,490 identified endpoints resolve to an observed
-component (3,177 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
+Schema v78 adds exact `fastmcp` and `mcp.server` FastMCP constructor inventory with
+`transport: in-process`. It also links a sole immutable module assignment into a later literal
+Agent list inside a function or module control block. Definition order and every enclosing lexical
+scope are checked; module rebinding, parameter/local shadowing, conditional definitions, forward
+lexical order, and near-name FastMCP modules are withheld.
+The corpus contains 240 exact in-process constructor calls across 13 repositories; 227 assigned
+results receive stable IDs and 22 calls are outside tests. Python Agent→MCP coverage reaches four
+fully resolved edges in Marvin: two same-block and two immutable-module bindings, with three outside
+tests.
+
+Across the selected snapshot, 9,834 observations have module-qualified symbol IDs. Of
+4,262 relationship endpoint observations, all 3,494 identified endpoints resolve to an observed
+component (3,181 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
 withheld because a function parameter and assignment shadow the same-named package import.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
 edges resolve exactly. Schema v63 records 359 Python lexical-single-definition, 20 same-block
@@ -87,9 +97,10 @@ same-module constructor call sites to create an occurrence-qualified parameter c
 retains every concrete target ID. No `ambiguous-repeated-binding` target remains in the pinned
 corpus; inconsistent, uncalled, rebound, shadowed, reassigned, and non-exact typed fixture forms stay
 unresolved.
-Both exact direct Python Agent→MCP-server edges occur outside tests in Marvin and resolve to their
-assigned stdio component IDs. One is a non-package Deno process and one is an `uvx` package launcher;
-the graph does not borrow the latter's package facts for the former.
+All four exact Python Agent→MCP-server edges occur in Marvin and resolve to assigned component IDs.
+The two same-block stdio edges and production FastMCP module edge are outside tests; the second
+immutable-module edge is a stdio test fixture. Package facts remain isolated to the relevant
+launcher.
 Literal Python Agent tool lists recover 755 exact role-proven tools: 181 callables, 100
 constructor-bound instances, 444 inline constructors, four direct context-manager bindings, 21 exact
 Agent-as-tool adapters, and five absolute-import boundary tools. Of these, 526 are outside tests;
@@ -110,15 +121,16 @@ Capability/control taxonomy endpoints intentionally lack
 source-symbol IDs, so the endpoint fraction is inventory coverage rather than an accuracy or recall
 metric.
 
-The native AI BOM 1.2 resolver independently classifies all 4,254 endpoints: 3,480 by symbol ID, 645
-by exact relationship evidence, 23 by a unique display name, 38 as ambiguous, and 68 as unresolved.
+The native AI BOM 1.2 resolver independently classifies all 4,262 endpoints: 3,486 by symbol ID, 645
+by exact relationship evidence, 23 by a unique display name, 40 as ambiguous, and 68 as unresolved.
 Evidence-local resolution removes capability/control ambiguities; occurrence-qualified bindings
 resolve repeated source agent/tool observations, and conservative lexical resolution removes further
-target ambiguities. The remaining 38 ambiguous endpoints are agent, protocol, control, or tool targets without a unique
+target ambiguities. The remaining 40 ambiguous endpoints are agent, protocol, control, or tool targets without a unique
 local symbol or target location.
 
-The TypeScript graph contains 95 structure-backed agent edges: 14 agent-as-tool delegations and 81
-agent-to-tool edges. All 81 tool endpoints resolve to an observed component. This replaces a prior
+The TypeScript graph contains 99 structure-backed agent edges: 14 agent-as-tool delegations, 81
+agent-to-tool edges, and four other agent-composition edges. All 81 tool endpoints resolve to an
+observed component. This replaces a prior
 token-level array heuristic that could turn words inside callbacks, strings, or nested options into
 spurious tool edges.
 
@@ -579,7 +591,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 511-label rule truth set and 719-label IR component/relationship set are curated regression
+The 511-label rule truth set and 732-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

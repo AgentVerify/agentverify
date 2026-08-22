@@ -5749,8 +5749,52 @@ def test_python_agent_mcp_servers_require_exact_direct_literal_bindings() -> Non
     assert not any(
         edge.source_kind == "agent"
         and edge.target_kind == "mcp-server"
-        and edge.evidence.path == "negative.py"
+        and edge.evidence.path in {"negative.py", "module_negative.py"}
         for edge in ir.relationships
+    )
+
+    module_servers = {
+        component.evidence.line: component
+        for component in ir.components
+        if component.kind == "mcp-server"
+        and component.evidence.path == "module_positive.py"
+    }
+    assert set(module_servers) == {6, 7}
+    assert module_servers[6].symbol_id == (
+        "py:module_positive.py#mcp-server:module_stdio_server"
+    )
+    assert module_servers[6].attributes["transport"] == "stdio"
+    assert module_servers[7].symbol_id == (
+        "py:module_positive.py#mcp-server:module_fastmcp_server"
+    )
+    assert module_servers[7].attributes["transport"] == "in-process"
+    assert module_servers[7].attributes["constructor"] == "FastMCP"
+    assert module_servers[7].attributes["analysis"] == (
+        "python-import-bound-mcp-server-constructor"
+    )
+
+    module_edges = {
+        edge.evidence.line: edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent"
+        and edge.target_kind == "mcp-server"
+        and edge.evidence.path == "module_positive.py"
+    }
+    assert set(module_edges) == {11, 15}
+    assert module_edges[11].target_id == (
+        "py:module_positive.py#mcp-server:module_stdio_server"
+    )
+    assert module_edges[15].target_id == (
+        "py:module_positive.py#mcp-server:module_fastmcp_server"
+    )
+    assert {edge.attributes["target_identity"] for edge in module_edges.values()} == {
+        "literal-mcp-servers-list-module-binding"
+    }
+    assert not any(
+        component.kind == "mcp-server"
+        and component.evidence.path == "module_negative.py"
+        and component.evidence.line == 26
+        for component in ir.components
     )
 
 

@@ -58,6 +58,12 @@ An Agent receives an exact `uses` edge only when its literal `mcp_servers=[...]`
 earlier, unreassigned server binding in the same statement block. Package and version facts remain
 conditional on literal `npx` or `uvx` package selection; a literal non-package command such as
 `deno` is still valid MCP inventory without invented supply-chain metadata.
+Schema v78 adds in-process server identity only for the exact `fastmcp` or `mcp.server` FastMCP
+exports. It also permits one immutable module-level MCP server assignment to feed a later literal
+Agent list inside a function or module control block. The assignment must be the module binding's
+only mutation, precede the Agent expression, and remain unshadowed through every enclosing lexical
+scope. Conditional definitions, rebinding, forward lexical order, and near-name FastMCP packages
+remain unresolved.
 
 Names are intentionally not treated as globally unique. Python and TypeScript agent/tool definitions
 carry stable frontend-and-module-qualified `symbol_id` values; relationships carry `source_id` and

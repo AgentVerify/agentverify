@@ -5911,6 +5911,58 @@
     {
       "id":"python-agent-mcp-git-edge-marvin-real","target":{"kind":"repository","repository":"PrefectHQ/marvin","commit":"eaf1040642b205973318769cab65f0c62b4b6ca4"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"examples/agent_mcp.py","line":36,"expected":true,
       "relationship":{"source_kind":"agent","source_name":"Linus","relation":"uses","target_kind":"mcp-server","target_name":"MCPServerStdio@24","source_id":"py:examples/agent_mcp.py#agent:linus","target_id":"py:examples/agent_mcp.py#mcp-server:git_server","attributes":{"binding":"git_server","target_identity":"literal-mcp-servers-list-binding"}}
+    },
+    {
+      "id":"python-agent-mcp-module-stdio-component-local","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"module_positive.py","line":6,"expected":true,
+      "component":{"kind":"mcp-server","name":"MCPServerStdio@6","symbol_id":"py:module_positive.py#mcp-server:module_stdio_server","attributes":{"transport":"stdio","package":"mcp-server-git"}}
+    },
+    {
+      "id":"python-agent-mcp-module-fastmcp-component-local","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"module_positive.py","line":7,"expected":true,
+      "component":{"kind":"mcp-server","name":"FastMCP@7","symbol_id":"py:module_positive.py#mcp-server:module_fastmcp_server","attributes":{"transport":"in-process","constructor":"FastMCP","analysis":"python-import-bound-mcp-server-constructor"}}
+    },
+    {
+      "id":"python-agent-mcp-module-stdio-edge-local","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"module_positive.py","line":11,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"module-stdio","relation":"uses","target_kind":"mcp-server","target_name":"MCPServerStdio@6","source_id":"py:module_positive.py#agent:module-stdio@11","target_id":"py:module_positive.py#mcp-server:module_stdio_server","attributes":{"binding":"module_stdio_server","target_identity":"literal-mcp-servers-list-module-binding"}}
+    },
+    {
+      "id":"python-agent-mcp-module-fastmcp-edge-local","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"module_positive.py","line":15,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"module-fastmcp","relation":"uses","target_kind":"mcp-server","target_name":"FastMCP@7","source_id":"py:module_positive.py#agent:in_process_agent","target_id":"py:module_positive.py#mcp-server:module_fastmcp_server","attributes":{"binding":"module_fastmcp_server","target_identity":"literal-mcp-servers-list-module-binding"}}
+    },
+    {
+      "id":"python-agent-mcp-module-rebound-edge-local-negative","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"module_negative.py","line":11,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"module-rebound","relation":"uses","target_kind":"mcp-server"}
+    },
+    {
+      "id":"python-agent-mcp-module-shadowed-edge-local-negative","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"module_negative.py","line":18,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"module-shadowed","relation":"uses","target_kind":"mcp-server"}
+    },
+    {
+      "id":"python-agent-mcp-module-forward-edge-local-negative","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"module_negative.py","line":22,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"module-forward","relation":"uses","target_kind":"mcp-server"}
+    },
+    {
+      "id":"python-agent-mcp-near-fastmcp-component-local-negative","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"module_negative.py","line":26,"expected":false,"source_contains":"NearFastMCP",
+      "component":{"kind":"mcp-server","name":"FastMCP@26"}
+    },
+    {
+      "id":"python-agent-mcp-fastmcp-component-marvin-real","target":{"kind":"repository","repository":"PrefectHQ/marvin","commit":"eaf1040642b205973318769cab65f0c62b4b6ca4"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"examples/fastmcp/hello.py","line":5,"expected":true,
+      "component":{"kind":"mcp-server","name":"FastMCP@5","symbol_id":"py:examples/fastmcp/hello.py#mcp-server:server","attributes":{"transport":"in-process","constructor":"FastMCP"}}
+    },
+    {
+      "id":"python-agent-mcp-fastmcp-edge-marvin-real","target":{"kind":"repository","repository":"PrefectHQ/marvin","commit":"eaf1040642b205973318769cab65f0c62b4b6ca4"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"examples/fastmcp/hello.py","line":14,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Agent","relation":"uses","target_kind":"mcp-server","target_name":"FastMCP@5","source_id":"py:examples/fastmcp/hello.py#agent:agent","target_id":"py:examples/fastmcp/hello.py#mcp-server:server","attributes":{"binding":"server","target_identity":"literal-mcp-servers-list-module-binding"}}
+    },
+    {
+      "id":"python-agent-mcp-module-stdio-component-marvin-real","target":{"kind":"repository","repository":"PrefectHQ/marvin","commit":"eaf1040642b205973318769cab65f0c62b4b6ca4"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"tests/ai/test_mcp.py","line":7,"expected":true,
+      "component":{"kind":"mcp-server","name":"MCPServerStdio@7","symbol_id":"py:tests/ai/test_mcp.py#mcp-server:git_mcp_server","attributes":{"transport":"stdio","package":"mcp-server-git"}}
+    },
+    {
+      "id":"python-agent-mcp-module-stdio-edge-marvin-real","target":{"kind":"repository","repository":"PrefectHQ/marvin","commit":"eaf1040642b205973318769cab65f0c62b4b6ca4"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"tests/ai/test_mcp.py","line":33,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"TestGitMCPAgent","relation":"uses","target_kind":"mcp-server","target_name":"MCPServerStdio@7","source_id":"py:tests/ai/test_mcp.py#agent:linus","target_id":"py:tests/ai/test_mcp.py#mcp-server:git_mcp_server","attributes":{"binding":"git_mcp_server","target_identity":"literal-mcp-servers-list-module-binding"}}
+    },
+    {
+      "id":"python-agent-mcp-fastmcp-try-component-marvin-real","target":{"kind":"repository","repository":"PrefectHQ/marvin","commit":"eaf1040642b205973318769cab65f0c62b4b6ca4"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"examples/you_have_been_goosed/goose_em.py","line":14,"expected":true,
+      "component":{"kind":"mcp-server","name":"FastMCP@14","attributes":{"transport":"in-process","constructor":"FastMCP"}}
     }
   ]
 }

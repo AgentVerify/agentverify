@@ -144,6 +144,19 @@ a matching name. Across the selected corpus, 27 import-bound literal constructor
 repositories; 23 assigned calls receive stable IDs, 20 are non-package processes, seven are
 package-backed, and ten occur outside tests. Marvin supplies the only two exact direct Agent edges.
 
+Schema v78 extends that proof to in-process servers and immutable module composition. An exact
+[`fastmcp.server.FastMCP` assignment](https://github.com/PrefectHQ/marvin/blob/eaf1040642b205973318769cab65f0c62b4b6ca4/examples/fastmcp/hello.py#L1-L14)
+becomes an in-process MCP asset and reaches the Agent inside the module's main guard. Marvin's
+module-level `MCPServerStdio` test fixture likewise reaches an Agent inside its async test function.
+Both require one earlier module mutation and no shadowing in any enclosing lexical scope. A second
+FastMCP example imported through a fail-closed `try` remains inventory-only because its conditional
+import is not yet assigned a cross-block symbol identity. Rebound, shadowed, forward, conditional,
+and near-package local cases pin the conservative boundary.
+Across the selected corpus, exact FastMCP imports prove 240 in-process constructor calls in 13
+repositories. Of those, 227 assigned results receive stable IDs and 22 calls occur outside tests.
+The Marvin additions bring Python Agent→MCP coverage to four fully resolved edges: two same-block
+and two immutable-module bindings, three of them production-scoped.
+
 Schema v68 models MCP sampling as a separate server-to-client authority. Semantic Kernel registers a
 sampling callback on each MCP client session; a server request can supply the system prompt,
 messages, model hint, temperature, and token limit, invoke the client's chat model, and receive the
@@ -386,15 +399,15 @@ recover 12 wrapper tools and 12 exact Agent edges; three enable approval, all oc
 their selected bodies add no capability edges. Twenty-five project-local CrewAI class-tool imports
 resolve through one importer-ancestor path and one exact decorated export. The 14 factory edges span
 four production example projects and require one exact imported class, immutable local construction,
-and a direct Agent return. The final export resolves 3,480 endpoints by symbol ID, 645 by exact
-evidence location, and 23 by unique display name; 38 remain ambiguous agent/protocol/control/tool
+and a direct Agent return. The final export resolves 3,486 endpoints by symbol ID, 645 by exact
+evidence location, and 23 by unique display name; 40 remain ambiguous agent/protocol/control/tool
 endpoints, and 68
 unresolved. No `ambiguous-repeated-binding` target remains in the pinned corpus;
 cross-branch, forward, inconsistent/untyped parameters, conditional/transformed returns,
 external receivers, shadowed factories, lambdas, and reassigned fixture cases stay unresolved. Two apparent CrewAI
 re-export misses were false identities:
 a function parameter and a local assignment shadowed the imported `tool` binding. Scope-isolating
-module and function imports now withhold those IDs, so all 3,486 identified endpoints resolve.
+module and function imports now withhold those IDs, so all 3,494 identified endpoints resolve.
 A governance export that collapses those references
 by name would silently attach controls or risks to the wrong asset.
 

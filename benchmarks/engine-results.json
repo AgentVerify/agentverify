@@ -1,6 +1,6 @@
 {
-  "schema_version": 77,
-  "generated_at": "2026-08-22T08:54:31.260547+00:00",
+  "schema_version": 78,
+  "generated_at": "2026-08-22T09:07:17.965113+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -20,10 +20,10 @@
     "dependency_files_materialized": 176,
     "repositories_with_dependency_expansion": 21,
     "config_files_scanned": 155,
-    "relationships": 2129,
-    "symbolized_components": 9607,
-    "identified_symbol_endpoints": 3490,
-    "resolved_symbol_endpoints": 3490,
+    "relationships": 2131,
+    "symbolized_components": 9834,
+    "identified_symbol_endpoints": 3494,
+    "resolved_symbol_endpoints": 3494,
     "unmatched_identified_symbol_endpoints": 0,
     "ambiguous_repeated_binding_targets": 0,
     "resolved_binding_targets_by_basis": {
@@ -39,11 +39,11 @@
       "same-class-helper-return": 3,
       "typed-parameter-callsite-consensus": 1
     },
-    "relationship_endpoints": 4258,
+    "relationship_endpoints": 4262,
     "bom_endpoint_resolutions": {
       "ambiguous": 40,
       "evidence-location": 645,
-      "symbol-id": 3482,
+      "symbol-id": 3486,
       "unique-display-name": 23,
       "unresolved": 68
     },
@@ -56,7 +56,7 @@
       "target:tool": 23
     },
     "resolved_symbol_endpoints_by_frontend": {
-      "py": 3177,
+      "py": 3181,
       "ts": 313
     },
     "python_provider_call_attribution": {
@@ -156,9 +156,11 @@
       "unresolved_non_test": 0
     },
     "python_agent_mcp_server_edges": {
-      "total": 2,
-      "resolved": 2,
-      "non_test": 2,
+      "total": 4,
+      "resolved": 4,
+      "non_test": 3,
+      "same_block": 2,
+      "immutable_module": 2,
       "repositories": 1
     },
     "python_function_tool_wrappers": {
@@ -358,6 +360,12 @@
       "package_backed": 7,
       "non_package": 20,
       "repositories": 7
+    },
+    "python_import_bound_mcp_in_process_servers": {
+      "total": 240,
+      "non_test": 22,
+      "symbolized_assigned": 227,
+      "repositories": 13
     },
     "python_google_adk_bigquery_audit": {
       "available_controls": 1,
@@ -740,7 +748,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 278.7206
+    "elapsed_seconds": 282.2729
   },
   "repositories": [
     {
@@ -877,6 +885,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -1073,6 +1083,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -1182,7 +1198,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4645
+      "elapsed_seconds": 3.4321
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -1195,7 +1211,7 @@
         "agent": 125,
         "capability": 622,
         "mcp": 1,
-        "mcp-server": 3,
+        "mcp-server": 4,
         "model": 2,
         "protocol": 2,
         "provider": 2,
@@ -1250,7 +1266,7 @@
         "cohere": 0
       },
       "relationships": 0,
-      "symbolized_components": 126,
+      "symbolized_components": 127,
       "identified_symbol_endpoints": 0,
       "resolved_symbol_endpoints": 0,
       "unmatched_identified_symbol_endpoints": 0,
@@ -1326,6 +1342,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -1522,6 +1540,12 @@
         "non_package": 0,
         "repositories": true
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 1,
+        "non_test": 0,
+        "symbolized_assigned": 1,
+        "repositories": true
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -1636,7 +1660,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.4885
+      "elapsed_seconds": 7.4126
     },
     {
       "repository": "langchain-ai/langchain",
@@ -1776,6 +1800,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -1972,6 +1998,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -2079,7 +2111,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6612
+      "elapsed_seconds": 2.5985
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -2223,6 +2255,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -2419,6 +2453,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -2534,7 +2574,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.8293
+      "elapsed_seconds": 10.4565
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -2683,6 +2723,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -2879,6 +2921,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -2990,7 +3038,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4882
+      "elapsed_seconds": 0.4906
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -3144,6 +3192,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -3340,6 +3390,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -3464,7 +3520,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.5448
+      "elapsed_seconds": 11.4665
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -3623,6 +3679,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -3819,6 +3877,12 @@
         "non_package": 10,
         "repositories": true
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -3950,7 +4014,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.0409
+      "elapsed_seconds": 6.9513
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -4104,6 +4168,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -4300,6 +4366,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -4421,7 +4493,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6755
+      "elapsed_seconds": 0.687
     },
     {
       "repository": "microsoft/autogen",
@@ -4434,6 +4506,7 @@
         "agent": 225,
         "capability": 13,
         "mcp": 1,
+        "mcp-server": 1,
         "model": 12,
         "protocol": 9,
         "provider": 12,
@@ -4491,7 +4564,7 @@
         "cohere": 0
       },
       "relationships": 42,
-      "symbolized_components": 247,
+      "symbolized_components": 248,
       "identified_symbol_endpoints": 82,
       "resolved_symbol_endpoints": 82,
       "unmatched_identified_symbol_endpoints": 0,
@@ -4569,6 +4642,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -4764,6 +4839,12 @@
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
+      },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 1,
+        "non_test": 1,
+        "symbolized_assigned": 1,
+        "repositories": true
       },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
@@ -4881,7 +4962,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.788
+      "elapsed_seconds": 1.7973
     },
     {
       "repository": "microsoft/agent-framework",
@@ -4892,6 +4973,7 @@
       "config_files_scanned": 1,
       "components": {
         "mcp": 1,
+        "mcp-server": 1,
         "protocol": 1,
         "tool": 1
       },
@@ -4935,7 +5017,7 @@
         "cohere": 0
       },
       "relationships": 0,
-      "symbolized_components": 1,
+      "symbolized_components": 2,
       "identified_symbol_endpoints": 0,
       "resolved_symbol_endpoints": 0,
       "unmatched_identified_symbol_endpoints": 0,
@@ -5011,6 +5093,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -5207,6 +5291,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 1,
+        "non_test": 1,
+        "symbolized_assigned": 1,
+        "repositories": true
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -5314,7 +5404,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0489
+      "elapsed_seconds": 0.0532
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -5470,6 +5560,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -5666,6 +5758,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -5785,7 +5883,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2881
+      "elapsed_seconds": 0.279
     },
     {
       "repository": "openai/openai-agents-python",
@@ -5953,6 +6051,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -6151,6 +6251,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -6279,7 +6385,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 12.459
+      "elapsed_seconds": 12.421
     },
     {
       "repository": "openai/openai-agents-js",
@@ -6443,6 +6549,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -6639,6 +6747,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -6757,7 +6871,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6951
+      "elapsed_seconds": 1.6876
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -6772,7 +6886,7 @@
         "control-setting": 4,
         "framework": 1502,
         "mcp": 9,
-        "mcp-server": 4,
+        "mcp-server": 9,
         "model": 25,
         "protocol": 26,
         "provider": 129,
@@ -6843,7 +6957,7 @@
         "cohere": 0
       },
       "relationships": 83,
-      "symbolized_components": 2577,
+      "symbolized_components": 2579,
       "identified_symbol_endpoints": 149,
       "resolved_symbol_endpoints": 149,
       "unmatched_identified_symbol_endpoints": 0,
@@ -6922,6 +7036,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -7118,6 +7234,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 5,
+        "non_test": 0,
+        "symbolized_assigned": 2,
+        "repositories": true
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -7238,7 +7360,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 25.1252
+      "elapsed_seconds": 27.367
     },
     {
       "repository": "google/adk-python",
@@ -7400,6 +7522,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -7596,6 +7720,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 1,
         "deployed_controls": 2,
@@ -7719,7 +7849,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.3233
+      "elapsed_seconds": 9.9311
     },
     {
       "repository": "google/adk-js",
@@ -7872,6 +8002,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -8068,6 +8200,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -8182,7 +8320,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.0952
+      "elapsed_seconds": 4.2184
     },
     {
       "repository": "huggingface/smolagents",
@@ -8333,6 +8471,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -8529,6 +8669,12 @@
         "non_package": 7,
         "repositories": true
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -8652,7 +8798,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.71
+      "elapsed_seconds": 2.9126
     },
     {
       "repository": "agno-agi/agno",
@@ -8810,6 +8956,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -9006,6 +9154,12 @@
         "non_package": 0,
         "repositories": true
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -9130,7 +9284,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0759
+      "elapsed_seconds": 1.1333
     },
     {
       "repository": "camel-ai/camel",
@@ -9283,6 +9437,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -9481,6 +9637,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -9606,7 +9768,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.4979
+      "elapsed_seconds": 5.9115
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -9756,6 +9918,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -9952,6 +10116,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -10065,7 +10235,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4062
+      "elapsed_seconds": 0.4516
     },
     {
       "repository": "run-llama/llama_index",
@@ -10210,6 +10380,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -10406,6 +10578,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -10513,7 +10691,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8084
+      "elapsed_seconds": 1.9709
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -10664,6 +10842,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -10860,6 +11040,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -10985,7 +11171,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9107
+      "elapsed_seconds": 3.1147
     },
     {
       "repository": "InternLM/lagent",
@@ -11137,6 +11323,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -11333,6 +11521,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -11453,7 +11647,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3349
+      "elapsed_seconds": 1.3776
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -11598,6 +11792,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -11796,6 +11992,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -11918,7 +12120,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3827
+      "elapsed_seconds": 2.5215
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -11931,6 +12133,7 @@
         "capability": 133,
         "control": 1,
         "mcp": 1,
+        "mcp-server": 1,
         "protocol": 1,
         "provider": 10,
         "tool": 1
@@ -11989,7 +12192,7 @@
         "cohere": 0
       },
       "relationships": 1,
-      "symbolized_components": 1,
+      "symbolized_components": 2,
       "identified_symbol_endpoints": 0,
       "resolved_symbol_endpoints": 0,
       "unmatched_identified_symbol_endpoints": 0,
@@ -12065,6 +12268,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -12261,6 +12466,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 1,
+        "non_test": 1,
+        "symbolized_assigned": 1,
+        "repositories": true
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -12385,7 +12596,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2176
+      "elapsed_seconds": 3.4032
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -12529,6 +12740,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -12725,6 +12938,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -12846,7 +13065,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0038
+      "elapsed_seconds": 2.1968
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -12991,6 +13210,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -13187,6 +13408,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -13304,7 +13531,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.4618
+      "elapsed_seconds": 7.8991
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -13445,6 +13672,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -13641,6 +13870,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -13757,7 +13992,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.4751
+      "elapsed_seconds": 2.4558
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -13899,6 +14134,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -14095,6 +14332,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -14202,7 +14445,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3987
+      "elapsed_seconds": 1.368
     },
     {
       "repository": "letta-ai/letta-code",
@@ -14338,6 +14581,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -14534,6 +14779,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -14641,7 +14892,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.3556
+      "elapsed_seconds": 5.3122
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -14655,7 +14906,7 @@
         "capability": 67,
         "framework": 139,
         "mcp": 3,
-        "mcp-server": 3,
+        "mcp-server": 6,
         "model": 9,
         "protocol": 4,
         "provider": 1,
@@ -14715,15 +14966,15 @@
         "groq": 0,
         "cohere": 0
       },
-      "relationships": 22,
-      "symbolized_components": 129,
-      "identified_symbol_endpoints": 36,
-      "resolved_symbol_endpoints": 36,
+      "relationships": 24,
+      "symbolized_components": 131,
+      "identified_symbol_endpoints": 40,
+      "resolved_symbol_endpoints": 40,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
-        "py": 36,
+        "py": 40,
         "ts": 0
       },
       "typescript_graph": {
@@ -14789,9 +15040,11 @@
         "unresolved_non_test": 0
       },
       "python_agent_mcp_server_edges": {
-        "total": 2,
-        "resolved": 2,
-        "non_test": 2,
+        "total": 4,
+        "resolved": 4,
+        "non_test": 3,
+        "same_block": 2,
+        "immutable_module": 2,
         "repositories": true
       },
       "python_function_tool_wrappers": {
@@ -14988,6 +15241,12 @@
         "non_package": 1,
         "repositories": true
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 3,
+        "non_test": 3,
+        "symbolized_assigned": 2,
+        "repositories": true
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -15097,7 +15356,7 @@
       },
       "bom_endpoint_resolutions": {
         "evidence-location": 8,
-        "symbol-id": 36
+        "symbol-id": 40
       },
       "bom_ambiguous_endpoints_by_side_kind": {},
       "findings": {
@@ -15109,7 +15368,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1832
+      "elapsed_seconds": 2.2193
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -15124,6 +15383,7 @@
         "control": 1,
         "framework": 217,
         "mcp": 7,
+        "mcp-server": 3,
         "model": 10,
         "protocol": 19,
         "provider": 10
@@ -15186,7 +15446,7 @@
         "cohere": 0
       },
       "relationships": 2,
-      "symbolized_components": 17,
+      "symbolized_components": 20,
       "identified_symbol_endpoints": 0,
       "resolved_symbol_endpoints": 0,
       "unmatched_identified_symbol_endpoints": 0,
@@ -15262,6 +15522,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -15458,6 +15720,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 3,
+        "non_test": 0,
+        "symbolized_assigned": 3,
+        "repositories": true
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -15580,7 +15848,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.2807
+      "elapsed_seconds": 4.3158
     },
     {
       "repository": "mastra-ai/mastra",
@@ -15729,6 +15997,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -15925,6 +16195,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -16038,7 +16314,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0275
+      "elapsed_seconds": 3.0097
     },
     {
       "repository": "vercel/ai",
@@ -16185,6 +16461,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -16381,6 +16659,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -16493,7 +16777,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3101
+      "elapsed_seconds": 3.2971
     },
     {
       "repository": "cline/cline",
@@ -16645,6 +16929,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -16841,6 +17127,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -16954,7 +17246,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.5741
+      "elapsed_seconds": 4.6487
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -17095,6 +17387,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -17291,6 +17585,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -17398,7 +17698,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.9677
+      "elapsed_seconds": 4.9701
     },
     {
       "repository": "continuedev/continue",
@@ -17535,6 +17835,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -17731,6 +18033,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -17838,7 +18146,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0495
+      "elapsed_seconds": 3.0985
     },
     {
       "repository": "Aider-AI/aider",
@@ -17976,6 +18284,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -18174,6 +18484,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -18296,7 +18612,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.4798
+      "elapsed_seconds": 4.5013
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -18429,6 +18745,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -18627,6 +18945,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -18742,7 +19066,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 1.6121
+      "elapsed_seconds": 1.6158
     },
     {
       "repository": "plandex-ai/plandex",
@@ -18864,6 +19188,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -19060,6 +19386,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -19167,7 +19499,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0562
+      "elapsed_seconds": 0.0591
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -19304,6 +19636,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -19500,6 +19834,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -19613,7 +19953,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3717
+      "elapsed_seconds": 2.3233
     },
     {
       "repository": "stitionai/devika",
@@ -19756,6 +20096,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -19954,6 +20296,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -20065,7 +20413,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5553
+      "elapsed_seconds": 0.5486
     },
     {
       "repository": "block/goose",
@@ -20078,6 +20426,7 @@
         "capability": 17,
         "framework": 1,
         "mcp": 4,
+        "mcp-server": 3,
         "protocol": 15,
         "sandbox-boundary": 1,
         "tool": 11
@@ -20134,7 +20483,7 @@
         "cohere": 0
       },
       "relationships": 2,
-      "symbolized_components": 11,
+      "symbolized_components": 14,
       "identified_symbol_endpoints": 2,
       "resolved_symbol_endpoints": 2,
       "unmatched_identified_symbol_endpoints": 0,
@@ -20210,6 +20559,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -20406,6 +20757,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 3,
+        "non_test": 2,
+        "symbolized_assigned": 3,
+        "repositories": true
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -20523,7 +20880,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 6.3518
+      "elapsed_seconds": 6.2699
     },
     {
       "repository": "bytedance/trae-agent",
@@ -20675,6 +21032,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -20871,6 +21230,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -20995,7 +21360,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2949
+      "elapsed_seconds": 1.3053
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -21139,6 +21504,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -21335,6 +21702,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -21448,7 +21821,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.2947
+      "elapsed_seconds": 7.1726
     },
     {
       "repository": "openai/codex",
@@ -21577,6 +21950,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -21773,6 +22148,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -21886,7 +22267,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1926
+      "elapsed_seconds": 1.1932
     },
     {
       "repository": "browser-use/browser-use",
@@ -22038,6 +22419,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -22236,6 +22619,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -22361,7 +22750,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.1669
+      "elapsed_seconds": 7.0452
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -22376,7 +22765,7 @@
         "control": 1,
         "framework": 14,
         "mcp": 5,
-        "mcp-server": 4,
+        "mcp-server": 8,
         "protocol": 7,
         "provider": 7,
         "sandbox-boundary": 9,
@@ -22446,7 +22835,7 @@
         "cohere": 0
       },
       "relationships": 27,
-      "symbolized_components": 135,
+      "symbolized_components": 139,
       "identified_symbol_endpoints": 26,
       "resolved_symbol_endpoints": 26,
       "unmatched_identified_symbol_endpoints": 0,
@@ -22522,6 +22911,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -22721,6 +23112,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 4,
+        "non_test": 0,
+        "symbolized_assigned": 4,
+        "repositories": true
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -22846,7 +23243,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 14.7086
+      "elapsed_seconds": 14.8756
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -22990,6 +23387,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -23188,6 +23587,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -23306,7 +23711,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4029
+      "elapsed_seconds": 1.3678
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -23446,6 +23851,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -23642,6 +24049,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -23751,7 +24164,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5813
+      "elapsed_seconds": 1.5168
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -23893,6 +24306,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -24089,6 +24504,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -24206,7 +24627,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6356
+      "elapsed_seconds": 1.6005
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -24356,6 +24777,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -24552,6 +24975,12 @@
         "non_package": 1,
         "repositories": true
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -24668,7 +25097,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.9556
+      "elapsed_seconds": 4.8664
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -24825,6 +25254,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -25021,6 +25452,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -25137,7 +25574,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.6959
+      "elapsed_seconds": 5.602
     },
     {
       "repository": "github/github-mcp-server",
@@ -25269,6 +25706,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -25465,6 +25904,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -25572,7 +26017,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0521
+      "elapsed_seconds": 0.0543
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -25705,6 +26150,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -25901,6 +26348,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -26008,7 +26461,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1321
+      "elapsed_seconds": 0.1325
     },
     {
       "repository": "awslabs/mcp",
@@ -26021,6 +26474,7 @@
         "capability": 19,
         "framework": 1,
         "mcp": 3,
+        "mcp-server": 1,
         "protocol": 7,
         "provider": 3
       },
@@ -26076,7 +26530,7 @@
         "cohere": 0
       },
       "relationships": 0,
-      "symbolized_components": 0,
+      "symbolized_components": 1,
       "identified_symbol_endpoints": 0,
       "resolved_symbol_endpoints": 0,
       "unmatched_identified_symbol_endpoints": 0,
@@ -26152,6 +26606,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -26348,6 +26804,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 1,
+        "non_test": 1,
+        "symbolized_assigned": 1,
+        "repositories": true
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -26463,7 +26925,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.9074
+      "elapsed_seconds": 3.899
     },
     {
       "repository": "docker/mcp-gateway",
@@ -26596,6 +27058,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -26792,6 +27256,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -26901,7 +27371,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0441
+      "elapsed_seconds": 0.0468
     },
     {
       "repository": "jlowin/fastmcp",
@@ -26915,7 +27385,7 @@
         "control": 3,
         "control-setting": 2,
         "mcp": 225,
-        "mcp-server": 15,
+        "mcp-server": 228,
         "protocol": 116,
         "tool": 190
       },
@@ -26973,7 +27443,7 @@
         "cohere": 0
       },
       "relationships": 7,
-      "symbolized_components": 192,
+      "symbolized_components": 397,
       "identified_symbol_endpoints": 4,
       "resolved_symbol_endpoints": 4,
       "unmatched_identified_symbol_endpoints": 0,
@@ -27049,6 +27519,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -27245,6 +27717,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 213,
+        "non_test": 10,
+        "symbolized_assigned": 205,
+        "repositories": true
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -27367,7 +27845,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.2895
+      "elapsed_seconds": 5.3438
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -27489,6 +27967,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -27685,6 +28165,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -27792,7 +28278,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0365
+      "elapsed_seconds": 0.0386
     },
     {
       "repository": "langflow-ai/langflow",
@@ -27805,7 +28291,7 @@
         "capability": 96,
         "control": 3,
         "mcp": 3,
-        "mcp-server": 1,
+        "mcp-server": 4,
         "protocol": 4,
         "provider": 4,
         "sandbox-boundary": 1,
@@ -27867,7 +28353,7 @@
         "cohere": 0
       },
       "relationships": 10,
-      "symbolized_components": 52,
+      "symbolized_components": 54,
       "identified_symbol_endpoints": 0,
       "resolved_symbol_endpoints": 0,
       "unmatched_identified_symbol_endpoints": 0,
@@ -27943,6 +28429,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -28139,6 +28627,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 3,
+        "non_test": 2,
+        "symbolized_assigned": 2,
+        "repositories": true
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -28254,7 +28748,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.0643
+      "elapsed_seconds": 5.0163
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -28394,6 +28888,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -28590,6 +29086,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -28705,7 +29207,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.4466
+      "elapsed_seconds": 4.3104
     },
     {
       "repository": "langgenius/dify",
@@ -28830,6 +29332,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -29026,6 +29530,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -29133,7 +29643,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.33
+      "elapsed_seconds": 3.3046
     },
     {
       "repository": "n8n-io/n8n",
@@ -29281,6 +29791,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -29477,6 +29989,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -29592,7 +30110,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2104
+      "elapsed_seconds": 3.1813
     },
     {
       "repository": "activepieces/activepieces",
@@ -29748,6 +30266,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -29944,6 +30464,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -30061,7 +30587,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0436
+      "elapsed_seconds": 2.0159
     },
     {
       "repository": "simstudioai/sim",
@@ -30192,6 +30718,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -30388,6 +30916,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -30495,7 +31029,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.1004
+      "elapsed_seconds": 6.024
     },
     {
       "repository": "composiohq/composio",
@@ -30654,6 +31188,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -30850,6 +31386,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -30966,7 +31508,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6763
+      "elapsed_seconds": 2.6687
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -31119,6 +31661,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -31315,6 +31859,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -31440,7 +31990,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.8888
+      "elapsed_seconds": 4.8785
     },
     {
       "repository": "e2b-dev/E2B",
@@ -31570,6 +32120,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -31766,6 +32318,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -31873,7 +32431,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.537
+      "elapsed_seconds": 3.5066
     },
     {
       "repository": "daytonaio/daytona",
@@ -31995,6 +32553,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -32191,6 +32751,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -32298,7 +32864,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0003
+      "elapsed_seconds": 0.0005
     },
     {
       "repository": "AgentOps-AI/agentops",
@@ -32449,6 +33015,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -32645,6 +33213,12 @@
         "non_package": 0,
         "repositories": false
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 0,
+        "non_test": 0,
+        "symbolized_assigned": 0,
+        "repositories": false
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -32757,7 +33331,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6917
+      "elapsed_seconds": 2.6739
     },
     {
       "repository": "traceloop/openllmetry",
@@ -32771,7 +33345,7 @@
         "capability": 38,
         "framework": 101,
         "mcp": 10,
-        "mcp-server": 1,
+        "mcp-server": 2,
         "model": 82,
         "protocol": 6,
         "provider": 125,
@@ -32842,7 +33416,7 @@
         "cohere": 0
       },
       "relationships": 40,
-      "symbolized_components": 90,
+      "symbolized_components": 91,
       "identified_symbol_endpoints": 67,
       "resolved_symbol_endpoints": 67,
       "unmatched_identified_symbol_endpoints": 0,
@@ -32921,6 +33495,8 @@
         "total": 0,
         "resolved": 0,
         "non_test": 0,
+        "same_block": 0,
+        "immutable_module": 0,
         "repositories": false
       },
       "python_function_tool_wrappers": {
@@ -33117,6 +33693,12 @@
         "non_package": 1,
         "repositories": true
       },
+      "python_import_bound_mcp_in_process_servers": {
+        "total": 1,
+        "non_test": 1,
+        "symbolized_assigned": 1,
+        "repositories": true
+      },
       "python_google_adk_bigquery_audit": {
         "available_controls": 0,
         "deployed_controls": 0,
@@ -33232,7 +33814,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.4596
+      "elapsed_seconds": 4.47
     }
   ]
 }

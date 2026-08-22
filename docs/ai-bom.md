@@ -89,9 +89,12 @@ multiply wrapped functions, shadowed factories, and otherwise unproven reference
 
 Assigned Python MCP stdio constructors follow the same conservative identity contract. An exact
 Agent→server edge requires the binding to dominate a literal `mcp_servers=[...]` list in the same
-statement block. Forward and rebound bindings, indirect container variables, and cross-scope
-module-global references remain unresolved. Package provenance is independent: a non-package
-literal command can have an exact server identity without gaining `npx`/`uvx` package attributes.
+statement block. An exact FastMCP import can instead produce an in-process server asset. One
+immutable module-level server may flow into a function or module control block when it precedes the
+Agent and is not rebound or shadowed in any enclosing lexical scope. Forward, conditional, rebound,
+shadowed, indirect-container, and near-package forms remain unresolved. Package provenance is
+independent: a non-package or in-process server can have an exact identity without gaining
+`npx`/`uvx` package attributes.
 
 An Agent endpoint can additionally resolve as `same-class-helper-return` when a unique same-class
 method has one direct top-level return of an exact Agent constructor or immutable Agent local, the
