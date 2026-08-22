@@ -1991,6 +1991,166 @@ def python_same_class_browser_parameter_proofs(
     return proofs
 
 
+def python_same_module_page_parameter_proofs(
+    tree: ast.Module,
+    module_mutation_counts: Counter[str],
+    browser_contextmanager_page_factories: set[str],
+) -> dict[int, dict[str, str]]:
+    """Resolve private helper parameters from unanimous local page call sites."""
+    definitions: dict[
+        str,
+        list[ast.FunctionDef | ast.AsyncFunctionDef],
+    ] = defaultdict(list)
+    for statement in tree.body:
+        if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            definitions[statement.name].append(statement)
+    helpers = {
+        name: candidates[0]
+        for name, candidates in definitions.items()
+        if len(candidates) == 1
+        and name.startswith("_")
+        and not name.startswith("__")
+        and not candidates[0].decorator_list
+        and module_mutation_counts[name] == 1
+    }
+    if not helpers or not browser_contextmanager_page_factories:
+        return {}
+
+    calls: dict[str, list[dict[str, str | None]]] = defaultdict(list)
+    unsafe: set[str] = set()
+    module_parents = {
+        id(child): parent
+        for parent in ast.walk(tree)
+        for child in ast.iter_child_nodes(parent)
+    }
+    for candidate in ast.walk(tree):
+        if not (
+            isinstance(candidate, ast.Name)
+            and isinstance(candidate.ctx, ast.Load)
+            and candidate.id in helpers
+        ):
+            continue
+        parent = module_parents.get(id(candidate))
+        if not (isinstance(parent, ast.Call) and parent.func is candidate):
+            unsafe.add(candidate.id)
+            continue
+        scope = module_parents.get(id(parent))
+        while scope is not None and not isinstance(
+            scope,
+            (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda),
+        ):
+            scope = module_parents.get(id(scope))
+        if scope is None or isinstance(scope, ast.Lambda):
+            unsafe.add(candidate.id)
+
+    for caller in (
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+    ):
+        local_bindings = python_function_local_bindings(caller)
+        shadowed_helpers = local_bindings & helpers.keys()
+        unsafe.update(shadowed_helpers)
+        function_contextmanager_page_factories = {
+            factory
+            for factory in browser_contextmanager_page_factories
+            if factory.split(".", 1)[0] not in local_bindings
+        }
+        owned, parents = python_function_owned_nodes(caller)
+        mutation_counts: Counter[str] = Counter(
+            candidate.id
+            for candidate in owned
+            if isinstance(candidate, ast.Name)
+            and isinstance(candidate.ctx, (ast.Store, ast.Del))
+        )
+        page_bindings: dict[str, int] = {}
+        for candidate in owned:
+            if not (
+                isinstance(candidate, (ast.With, ast.AsyncWith))
+                and parents.get(id(candidate)) is caller
+            ):
+                continue
+            for item in candidate.items:
+                context = (
+                    item.context_expr.value
+                    if isinstance(item.context_expr, ast.Await)
+                    else item.context_expr
+                )
+                if (
+                    isinstance(item.optional_vars, ast.Name)
+                    and mutation_counts[item.optional_vars.id] == 1
+                    and isinstance(context, ast.Call)
+                    and dotted_name(context.func)
+                    in function_contextmanager_page_factories
+                ):
+                    page_bindings[item.optional_vars.id] = candidate.lineno
+
+        for candidate in owned:
+            if not (
+                isinstance(candidate, ast.Name)
+                and isinstance(candidate.ctx, ast.Load)
+                and candidate.id in helpers
+            ):
+                continue
+            parent = parents.get(id(candidate))
+            if not (isinstance(parent, ast.Call) and parent.func is candidate):
+                unsafe.add(candidate.id)
+
+        for call in (candidate for candidate in owned if isinstance(candidate, ast.Call)):
+            if not isinstance(call.func, ast.Name) or call.func.id not in helpers:
+                continue
+            target = call.func.id
+            if target in shadowed_helpers:
+                continue
+            helper = helpers[target]
+            parameters = [*helper.args.posonlyargs, *helper.args.args]
+            if (
+                any(isinstance(argument, ast.Starred) for argument in call.args)
+                or any(keyword.arg is None for keyword in call.keywords)
+                or len(call.args) > len(parameters)
+            ):
+                unsafe.add(target)
+                continue
+            arguments: dict[str, str | None] = {}
+            for index, parameter in enumerate(parameters):
+                values: list[ast.AST] = []
+                if index < len(call.args):
+                    values.append(call.args[index])
+                values.extend(
+                    keyword.value
+                    for keyword in call.keywords
+                    if keyword.arg == parameter.arg
+                )
+                if len(values) != 1 or not isinstance(values[0], ast.Name):
+                    arguments[parameter.arg] = None
+                    continue
+                value = values[0]
+                arguments[parameter.arg] = (
+                    "local-playwright-contextmanager-yield"
+                    if page_bindings.get(value.id, call.lineno) < call.lineno
+                    else None
+                )
+            calls[target].append(arguments)
+
+    proofs: dict[int, dict[str, str]] = {}
+    for target, call_arguments in calls.items():
+        if target in unsafe or not call_arguments:
+            continue
+        helper = helpers[target]
+        resolved = {
+            parameter.arg: "same-module-contextmanager-page-parameter"
+            for parameter in [*helper.args.posonlyargs, *helper.args.args]
+            if all(
+                arguments.get(parameter.arg)
+                == "local-playwright-contextmanager-yield"
+                for arguments in call_arguments
+            )
+        }
+        if resolved:
+            proofs[id(helper)] = resolved
+    return proofs
+
+
 def python_class_browser_receiver_properties(
     node: ast.ClassDef,
     browser_type_names: set[str],
@@ -8033,6 +8193,13 @@ def scan_python(
                 "getattr" not in imported_bindings
                 and "getattr" not in module_mutations
             ),
+        )
+    )
+    same_class_browser_parameter_proofs.update(
+        python_same_module_page_parameter_proofs(
+            tree,
+            module_mutation_counts,
+            browser_contextmanager_page_factories,
         )
     )
     filesystem_api_aliases = {

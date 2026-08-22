@@ -91,6 +91,11 @@ runtime field has exactly one `None` sentinel assignment in `__init__` and one s
 assignment in an undecorated async lifecycle method rooted in exact `async_playwright().start()`.
 Coverage rises to 53 proven of 93 and 40 unresolved. Conditional initialization, any intermediate
 or page reassignment, and shadowed factories remain unresolved; findings are unchanged.
+Schema v95 resolves three fixed-script Skyvern test evaluators inside `_snapshot_react_find`.
+Every selected-module caller passes a page yielded by one of the already proven local async context
+managers; the helper is private, uniquely defined, and never escapes. The separate `_observe_data`
+helper remains unresolved because its call sites are not unanimous. Coverage rises to 56 proven of
+93 and 37 unresolved; production findings remain unchanged.
 The constructor proof requires one exact imported Playwright runtime factory and a
 straight-line, single-mutation `__init__` chain through browser/context creation. Conflicting types,
 near/rebound imports, static methods, conditional or later field assignments, and shadowed factories
@@ -155,7 +160,7 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the consolidated 587-label truth set.
+rule observations are pinned in the consolidated 596-label truth set.
 
 MCP configuration is also executable dependency configuration. Schema v65 resolves 50 literal
 `npx`/`uvx` package launchers in the bounded corpus: 45 unpinned, three floating, and two exact,

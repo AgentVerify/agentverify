@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T15:52:13.701105+00:00",
-  "labels": 587,
-  "passed": 587,
+  "generated_at": "2026-08-22T16:40:35.656469+00:00",
+  "labels": 596,
+  "passed": 596,
   "metrics": {
     "AV-A2A001": {
       "tp": 4,
@@ -71,7 +71,7 @@
     "AV-EXEC002": {
       "tp": 38,
       "fp": 0,
-      "tn": 69,
+      "tn": 78,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -5434,6 +5434,87 @@
     },
     {
       "id": "exec-code-browser-lifecycle-devika-85-real-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-same-module-helper-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-same-module-mixed-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-same-module-escaped-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-same-module-skyvern-676-real-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-same-module-skyvern-677-real-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-same-module-skyvern-678-real-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-same-module-lambda-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-same-module-shadowed-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-same-module-factory-shadowed-local-negative",
       "rule_id": "AV-EXEC002",
       "expected": false,
       "observed": false,

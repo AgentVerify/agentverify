@@ -144,6 +144,11 @@ Schema v94 accepts one narrower lifecycle form: a field initialized exactly once
 Playwright-runtime→browser→page chain in one undecorated method. Three Devika production evaluators
 move to `lifecycle-bound-playwright-page`, bringing totals to 53 proven of 93 and 40 unresolved.
 Conditional initialization, any page/browser reassignment, and shadowed factories remain withheld.
+Schema v95 propagates exact local context-manager pages into private top-level helpers only when
+every selected-module call passes such a page directly. Three Skyvern test evaluators move to
+`same-module-contextmanager-page-parameter`, bringing totals to 56 proven of 93 and 37 unresolved.
+Mixed calls, function escape, lambda-hidden calls, and caller-local helper or factory shadowing remain
+withheld.
 Next resolve inherited fields, ambiguous
 wrapper/locator flows, sanitizer and bounded builder summaries, imported helper flow, and bounded
 helper-return provenance without treating every dynamic JavaScript expression as
@@ -334,8 +339,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 587 pinned positive/negative locations, with 912 separately
-scored IR component/relationship labels. Schema-v94 engine results and
+The curated regression set has reached 596 pinned positive/negative locations, with 921 separately
+scored IR component/relationship labels. Schema-v95 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

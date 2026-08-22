@@ -136,7 +136,7 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-22 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,771 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,311 relationships, and completed in 291.6273 seconds on the development machine. Three parse
+resolved 2,311 relationships, and completed in 293.4792 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -147,10 +147,10 @@ versioned audited evidence hints plus Python imports reached from MCP forwarding
 URL-security call sites, all charged against the same cap. This refresh materialized 176 dependency files across 21
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v94 carries both the 176-file total and the
+dependency count per repository; engine schema v95 carries both the 176-file total and the
 21-repository coverage.
 
-Engine benchmark schema v94 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v95 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It also publishes Python and TypeScript initial-origin control coverage
 plus source-proven Python and TypeScript secure transports, with redirect, DNS, proxy, configured
@@ -351,6 +351,14 @@ assigned once to `None` in `__init__`, then once in one undecorated async method
 lines 42, 69, and 85, raising coverage to 53 of 93 and leaving 40 unresolved. Conditional
 initialization, page or browser reassignment, and shadowed runtime factories remain withheld. The
 dynamic path and all 51 AV-EXEC002 findings remain unchanged.
+
+Schema v95 resolves private same-module helper parameters from unanimous exact context-manager page
+call sites. The helper must have one undecorated top-level definition, every selected-module call
+must pass the proven page directly, and the function may not escape. This proves Skyvern test
+evaluators at lines 676, 677, and 678, raising coverage to 56 of 93 and leaving 37 unresolved. Mixed
+or missing arguments, star expansion, helper escape, module-level calls, and lambda-hidden calls
+remain withheld; caller-local helper-name and context-manager-factory shadowing are also negative. The dynamic path and all 51
+AV-EXEC002 findings remain unchanged.
 
 Schema v63 retains A2A endpoint provenance as a separate authority class: four exact client-construction
 paths comprise two unconstrained remote-card-selected TypeScript origins and two same-origin-
@@ -740,7 +748,7 @@ Two default-scope clients qualify: the Microsoft tutorial and FastMCP CLI both a
 do not show the target URL. The TypeScript SDK host is the negative control: it displays the full URL,
 rejects unsafe non-HTTPS/non-loopback destinations, and asks before proceeding. The rule matrix is 4
 TP, 3 TN, 0 FP, and 0 FN; seven additional positive IR labels pin full versus missing disclosure.
-All 587 cross-rule labels pass.
+All 596 cross-rule labels pass.
 
 During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
 to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
@@ -774,7 +782,8 @@ through exact local async-context-manager page yields, bringing current coverage
 unresolved. Schema v93 proves two MetaGPT production evaluators through exact Literal-bounded local
 browser selection and unanimous private same-class helper calls, bringing current coverage to 50 of
 93 and 43 unresolved. Schema v94 proves three Devika lifecycle-field receivers, bringing current
-coverage to 53 of 93 and 40 unresolved. Six chained calls are inventoried. Dynamic calls with only browser-import context are
+coverage to 53 of 93 and 40 unresolved. Schema v95 proves three Skyvern same-module helper-body
+evaluators, bringing current coverage to 56 of 93 and 37 unresolved. Six chained calls are inventoried. Dynamic calls with only browser-import context are
 withheld: local regressions cover an ordinary calculator's `.evaluate(...)`, a reassigned typed
 page, one immutable typed-page alias, conflicting class types, and ambiguous/rebound/near type-only
 imports. Skyvern's normalized numeric direct and locator scroll JavaScript at lines 1664 and 1662
@@ -782,7 +791,7 @@ remain real negatives. API-specific regressions also pin dynamic selector/fixed-
 discrimination, the `expression=` keyword, an ordinary object's `evaluate_handle`, branch and
 ordinary-object yields, reassigned context targets, mixed helper calls, mutable and escaped
 bound-method aliases, and invalid selector literals. Registry, receiver, and evaluator fixtures
-bring the rule to 38 positive and 69 negative exact labels.
+bring the rule to 38 positive and 78 negative exact labels.
 
 ## AV-MCP002 — dynamic MCP forwarding
 
@@ -1215,14 +1224,14 @@ and surfacing failed writes through metrics or alerts.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 587 exact labels across all 19 enabled rules: 289 positives and 298
+`benchmarks/truthset.json` contains 596 exact labels across all 19 enabled rules: 289 positives and 307
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
 Compose/Kubernetes/Docker SDK settings, host credential bind near misses, and exact/prompt-only MCP
-package launchers. All 587 currently pass;
+package launchers. All 596 currently pass;
 each rule's seed precision and recall are 1.0. Negative labels must retain either an observed Agent IR
 component anchor or verified source text at the exact pinned line, preventing a missing or drifting
 location from passing silently.
@@ -1349,7 +1358,7 @@ and model positives plus 42 near-name, rebound, and unrelated-service negatives.
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 912 IR labels pass (664 positives and 248 negatives):
+negatives. All 921 IR labels pass (668 positives and 253 negatives):
 131 component-taxonomy positives/42 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
@@ -1372,8 +1381,8 @@ six path-prefix positives/two negatives,
 negatives, two MCP-registry positives/one negative, three
 fixed-instance positives/one negative, two closure positives/two negatives, two method-registry
 positives/one negative, four post-registration positives/three negatives, three transparent-wrapper
-positives/three negatives, eight browser-evaluation positives/two negatives, 39 browser-receiver
-positives/39 negatives, eight Python registry-tool
+positives/three negatives, eight browser-evaluation positives/two negatives, 43 browser-receiver
+positives/44 negatives, eight Python registry-tool
 positives/five negatives, six Python imported-network positives/five negatives, ten Python
 imported-class-network positives/five negatives, five urllib-network positives/two negatives, two
 Python network-origin-control positives/seven negatives, two TypeScript network-origin-policy

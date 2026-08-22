@@ -525,9 +525,14 @@ withhold the proof. A lifecycle-bound field is accepted only when `__init__` ass
 to `None`, one undecorated async instance method assigns it exactly once from a straight-line exact
 Playwright runtime→browser/context→page chain, and the intermediate fields obey the same two-write
 boundary. Conditional assignments, additional mutations, decorated lifecycle methods, and locally
-shadowed runtime factories withhold the proof. Property proof requires the built-in
-decorator, one getter definition, and an exact imported Playwright return type. Inherited fields, ambiguous
-wrapper-returned locators, sanitizer
+shadowed runtime factories withhold the proof. Private top-level helper parameters may also inherit
+an exact local context-manager page proof when
+the helper has one immutable definition, every selected-module call passes a proven page directly,
+and the helper is never loaded as a value. Missing or mixed arguments, star expansion, ordinary
+objects, function escape, module-level calls, and calls inside lambdas withhold the summary.
+Caller-local shadowing of the helper or context-manager factory name also withholds the summary.
+Property proof requires the built-in decorator, one getter definition, and an exact imported
+Playwright return type. Inherited fields, ambiguous wrapper-returned locators, sanitizer
 proofs, imported/transitive script builders, helper-return or non-unanimous helper-parameter provenance, and unsupported
 browser evaluator APIs remain unresolved.
 

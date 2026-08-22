@@ -38,8 +38,10 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
   unique local async context managers with one exact Playwright page yield are also resolved. Exact
   `Literal`-bounded local browser selection can flow through a private same-class helper parameter
   when all direct or immutable-alias call sites agree. A one-shot lifecycle page field is supported
-  when `None` initialization is followed by one exact straight-line async Playwright chain. Next
-  cover inherited fields, wrapper-returned locator flows, helper returns, and branchy lifecycle provenance.
+  when `None` initialization is followed by one exact straight-line async Playwright chain. Private
+  same-module helper parameters are resolved when every call passes an exact local
+  context-manager page and the helper never escapes. Next cover inherited fields, imported
+  wrapper-returned locator flows, helper returns, and branchy lifecycle provenance.
 - Detect auto-approval/skip-confirmation configuration.
 - Detect broad filesystem roots, host mounts, Docker socket exposure, and unscoped file tools.
 - Detect MCP tool pass-throughs and enumerate statically registered server capabilities.
