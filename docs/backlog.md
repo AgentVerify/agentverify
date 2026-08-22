@@ -158,8 +158,14 @@ fail-closed interactive decision. Schema v71 adds two exact framework adapters: 
 non-`ElicitResult` handler return to protocol `accept`. Pinned test paths expose both automatic
 behaviors without changing the three default-scope findings per rule; FastMCP's production CLI
 remains human-confirmed and records only message disclosure. Next cover multi-round-trip
-input-required configuration, URL-origin controls, and indirect UI helpers without treating an
+input-required configuration and indirect UI helpers without treating an
 `accept` test fixture as proof of deployment.
+
+Schema v72 separates URL disclosure from consent. `AV-MCP007` reports two human-confirmed clients
+that advertise URL elicitation but do not show the server-provided URL: the Microsoft tutorial and
+FastMCP CLI. The TypeScript SDK host is the governed comparison because it displays the full URL,
+rejects unsafe schemes/origins, and asks before opening. Next model domain highlighting, Punycode
+warnings, browser isolation, and navigation sinks without inferring navigation from acceptance alone.
 
 ## P1 — sandbox containment quality
 
@@ -256,8 +262,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 504 pinned positive/negative locations, with 608 separately
-scored IR component/relationship labels. Schema-v71 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 511 pinned positive/negative locations, with 615 separately
+scored IR component/relationship labels. Schema-v72 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

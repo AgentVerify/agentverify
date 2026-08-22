@@ -145,6 +145,10 @@ into an SDK-generated callback, while FastMCP turns ordinary elicitation-handler
 `accept`. Analysis must model those adapter contracts explicitly, preserve SDK/session compatibility
 and disclosure gaps, and reject rebound constructors, callbacks, or response factories rather than
 equating a friendly framework API with consent.
+Consent and disclosure are separate controls for URL elicitation. A yes/no prompt can prove the
+decision while still hiding a server-controlled phishing destination. Full-URL display must be
+proven at the user interface before acceptance; URL validation and secure browser opening are further
+independent controls.
 
 ## Observability as a cross-cutting control
 

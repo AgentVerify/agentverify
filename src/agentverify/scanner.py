@@ -18161,6 +18161,7 @@ def add_mcp_elicitation_consent_observation(
     callback_line: int | None,
     consent_line: int | None = None,
     request_disclosure: str = "unresolved",
+    url_disclosure: str = "not-proven",
     extra_attributes: dict[str, object] | None = None,
 ) -> None:
     """Emit one exact MCP client elicitation handler and its consent state."""
@@ -18182,6 +18183,7 @@ def add_mcp_elicitation_consent_observation(
         "elicitation_modes": elicitation_modes,
         "callback_definition_line": callback_line,
         "request_disclosure": request_disclosure,
+        "url_disclosure": url_disclosure,
         "scope": source_scope(relative),
         "analysis": analysis,
         **(extra_attributes or {}),
@@ -18229,6 +18231,7 @@ def add_mcp_elicitation_consent_observation(
         ),
         "approval_policy": approval_policy,
         "elicitation_modes": elicitation_modes,
+        "url_disclosure": url_disclosure,
         "scope": source_scope(relative),
         "analysis": analysis,
         **(extra_attributes or {}),
@@ -18511,6 +18514,60 @@ def python_mcp_elicitation_human_consent(
     return min(consent_lines) if consent_lines else None
 
 
+def python_elicitation_url_is_displayed(
+    function: ast.AsyncFunctionDef,
+    params_binding: str | None,
+) -> bool:
+    """Prove a full URL or the complete request params reach a direct user display."""
+    if params_binding is None:
+        return False
+
+    def contains_url(expression: ast.AST) -> bool:
+        if isinstance(expression, ast.Attribute):
+            return (
+                isinstance(expression.value, ast.Name)
+                and expression.value.id == params_binding
+                and expression.attr == "url"
+            )
+        if isinstance(expression, ast.Name):
+            return expression.id == params_binding
+        if isinstance(expression, ast.Call):
+            return (
+                isinstance(expression.func, ast.Name)
+                and expression.func.id in {"repr", "str"}
+                and any(contains_url(argument) for argument in expression.args)
+            )
+        if isinstance(expression, ast.IfExp):
+            return contains_url(expression.body) or contains_url(expression.orelse)
+        if isinstance(expression, ast.FormattedValue):
+            return contains_url(expression.value)
+        if isinstance(expression, ast.BinOp):
+            return contains_url(expression.left) or contains_url(expression.right)
+        if isinstance(expression, ast.JoinedStr):
+            return any(contains_url(item) for item in expression.values)
+        if isinstance(expression, (ast.List, ast.Set, ast.Tuple)):
+            return any(contains_url(item) for item in expression.elts)
+        if isinstance(expression, ast.Dict):
+            return any(contains_url(item) for item in (*expression.keys, *expression.values) if item is not None)
+        return False
+
+    return any(
+        isinstance(node, ast.Call)
+        and (
+            isinstance(node.func, ast.Name)
+            and node.func.id in {"input", "print"}
+            or isinstance(node.func, ast.Attribute)
+            and node.func.attr
+            in {"ask", "attention", "confirm", "input", "print", "question", "show"}
+        )
+        and any(
+            contains_url(argument)
+            for argument in (*node.args, *(keyword.value for keyword in node.keywords))
+        )
+        for node in python_scope_nodes(function.body)
+    )
+
+
 def add_python_mcp_elicitation_callback_consent_flow(
     ir: RepositoryIR,
     root: Path,
@@ -18609,6 +18666,10 @@ def add_python_mcp_elicitation_callback_consent_flow(
                 else:
                     approval_policy = "unresolved-handler"
                 callback_text = ast.get_source_segment(text, callback) or ""
+                callback_parameters = [
+                    argument.arg
+                    for argument in (*callback.args.posonlyargs, *callback.args.args)
+                ]
                 has_message = ".message" in callback_text
                 has_details = any(
                     marker in callback_text
@@ -18632,6 +18693,16 @@ def add_python_mcp_elicitation_callback_consent_flow(
                         if consent_line is not None and has_message and has_details
                         else "interactive-decision"
                         if consent_line is not None
+                        else "not-proven"
+                    ),
+                    url_disclosure=(
+                        "full-url"
+                        if python_elicitation_url_is_displayed(
+                            callback,
+                            callback_parameters[1]
+                            if len(callback_parameters) >= 2
+                            else None,
+                        )
                         else "not-proven"
                     ),
                 )
@@ -18904,6 +18975,12 @@ def add_python_fastmcp_elicitation_handler_consent_flow(
                         if consent_line is not None
                         else "not-proven"
                     ),
+                    url_disclosure=(
+                        "full-url"
+                        if len(parameters) >= 3
+                        and python_elicitation_url_is_displayed(callback, parameters[2])
+                        else "not-proven"
+                    ),
                     extra_attributes={
                         "adapter": "fastmcp-client",
                         "acceptance_semantics": "non-result-return-implies-accept",
@@ -19090,6 +19167,23 @@ def typescript_elicitation_handler_consent(
     )
 
 
+def typescript_elicitation_url_is_displayed(callback: str) -> bool:
+    """Prove request.params.url reaches a direct UI display or prompt call."""
+    code = typescript_code_mask(callback)
+    for match in re.finditer(
+        r"\.(?:ask|attention|confirm|input|print|question|show)\s*\(",
+        code,
+    ):
+        opening = match.end() - 1
+        end = typescript_balanced_end(code, opening, "(", ")")
+        if end is not None and re.search(
+            r"\b(?:request\.)?params\.url\b",
+            callback[opening:end],
+        ):
+            return True
+    return False
+
+
 def add_typescript_mcp_elicitation_handler_consent_flow(
     ir: RepositoryIR,
     root: Path,
@@ -19173,6 +19267,12 @@ def add_typescript_mcp_elicitation_handler_consent_flow(
                     else None
                 ),
                 request_disclosure=request_disclosure,
+                url_disclosure=(
+                    "full-url"
+                    if "=>" in typescript_code_mask(callback)
+                    and typescript_elicitation_url_is_displayed(callback)
+                    else "not-proven"
+                ),
             )
 
 

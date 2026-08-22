@@ -1,6 +1,6 @@
 {
-  "schema_version": 71,
-  "generated_at": "2026-08-22T06:58:17.503448+00:00",
+  "schema_version": 72,
+  "generated_at": "2026-08-22T07:35:20.943153+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -283,10 +283,14 @@
       "typescript": 12,
       "form_capable": 8,
       "url_capable": 13,
+      "human_confirmed_url_acceptance": 3,
+      "full_url_disclosure": 1,
+      "missing_full_url_disclosure": 2,
       "protocol_edges": 15,
       "configured_by_edges": 15,
       "consent_control_edges": 3,
-      "findings": 3
+      "findings": 3,
+      "url_disclosure_findings": 2
     },
     "approval_callback_bypass": {
       "tools": 3,
@@ -459,6 +463,7 @@
       "AV-MCP004": 1,
       "AV-MCP005": 3,
       "AV-MCP006": 3,
+      "AV-MCP007": 2,
       "AV-NET001": 23,
       "AV-SANDBOX001": 20
     },
@@ -479,6 +484,7 @@
       "AV-MCP004": 1,
       "AV-MCP005": 2,
       "AV-MCP006": 1,
+      "AV-MCP007": 2,
       "AV-NET001": 12,
       "AV-SANDBOX001": 10
     },
@@ -686,7 +692,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 267.6628
+    "elapsed_seconds": 267.1379
   },
   "repositories": [
     {
@@ -943,10 +949,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -1076,7 +1086,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1575
+      "elapsed_seconds": 3.0722
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -1340,10 +1350,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -1478,7 +1492,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.7855
+      "elapsed_seconds": 6.6513
     },
     {
       "repository": "langchain-ai/langchain",
@@ -1738,10 +1752,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -1869,7 +1887,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.4391
+      "elapsed_seconds": 2.4096
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -2133,10 +2151,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -2272,7 +2294,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.6464
+      "elapsed_seconds": 9.677
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -2541,10 +2563,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -2676,7 +2702,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4456
+      "elapsed_seconds": 0.4433
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -2950,10 +2976,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -3098,7 +3128,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.5024
+      "elapsed_seconds": 10.4092
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -3376,10 +3406,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -3531,7 +3565,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.4819
+      "elapsed_seconds": 6.4413
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -3805,10 +3839,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -3950,7 +3988,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6512
+      "elapsed_seconds": 0.6454
     },
     {
       "repository": "microsoft/autogen",
@@ -4218,10 +4256,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -4358,7 +4400,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6983
+      "elapsed_seconds": 1.7008
     },
     {
       "repository": "microsoft/agent-framework",
@@ -4608,10 +4650,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -4739,7 +4785,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0481
+      "elapsed_seconds": 0.0507
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -5015,10 +5061,14 @@
         "typescript": 0,
         "form_capable": 1,
         "url_capable": 1,
+        "human_confirmed_url_acceptance": 1,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 1,
         "protocol_edges": 1,
         "configured_by_edges": 1,
         "consent_control_edges": 1,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 1
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -5152,12 +5202,13 @@
       "bom_ambiguous_endpoints_by_side_kind": {},
       "findings": {
         "AV-MCP002": 1,
-        "AV-MCP005": 1
+        "AV-MCP005": 1,
+        "AV-MCP007": 1
       },
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2566
+      "elapsed_seconds": 0.2557
     },
     {
       "repository": "openai/openai-agents-python",
@@ -5447,10 +5498,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 1,
@@ -5599,7 +5654,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.3742
+      "elapsed_seconds": 11.3404
     },
     {
       "repository": "openai/openai-agents-js",
@@ -5883,10 +5938,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 2,
@@ -6025,7 +6084,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.55
+      "elapsed_seconds": 1.5522
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -6309,10 +6368,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -6453,7 +6516,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 23.9122
+      "elapsed_seconds": 23.7977
     },
     {
       "repository": "google/adk-python",
@@ -6735,10 +6798,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -6882,7 +6949,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.593
+      "elapsed_seconds": 8.6024
     },
     {
       "repository": "google/adk-js",
@@ -7155,10 +7222,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -7293,7 +7364,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.8889
+      "elapsed_seconds": 3.9162
     },
     {
       "repository": "huggingface/smolagents",
@@ -7563,10 +7634,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -7710,7 +7785,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6996
+      "elapsed_seconds": 2.7139
     },
     {
       "repository": "agno-agi/agno",
@@ -7988,10 +8063,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -8135,7 +8214,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.06
+      "elapsed_seconds": 1.0614
     },
     {
       "repository": "camel-ai/camel",
@@ -8410,10 +8489,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -8559,7 +8642,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.4263
+      "elapsed_seconds": 5.4333
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -8829,10 +8912,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -8966,7 +9053,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4142
+      "elapsed_seconds": 0.4121
     },
     {
       "repository": "run-llama/llama_index",
@@ -9231,10 +9318,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -9362,7 +9453,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8025
+      "elapsed_seconds": 1.8067
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -9633,10 +9724,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -9782,7 +9877,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9155
+      "elapsed_seconds": 2.909
     },
     {
       "repository": "InternLM/lagent",
@@ -10054,10 +10149,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -10198,7 +10297,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3179
+      "elapsed_seconds": 1.3123
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -10465,10 +10564,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -10611,7 +10714,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3866
+      "elapsed_seconds": 2.3601
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -10878,10 +10981,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -11026,7 +11133,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1858
+      "elapsed_seconds": 3.1813
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -11290,10 +11397,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -11435,7 +11546,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0221
+      "elapsed_seconds": 2.0297
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -11700,10 +11811,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -11841,7 +11956,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.6282
+      "elapsed_seconds": 7.5959
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -12102,10 +12217,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -12242,7 +12361,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3798
+      "elapsed_seconds": 2.382
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -12504,10 +12623,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -12635,7 +12758,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3078
+      "elapsed_seconds": 1.3146
     },
     {
       "repository": "letta-ai/letta-code",
@@ -12891,10 +13014,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -13022,7 +13149,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.06
+      "elapsed_seconds": 5.0649
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -13293,10 +13420,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -13438,7 +13569,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1621
+      "elapsed_seconds": 2.1693
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -13703,10 +13834,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -13849,7 +13984,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.4096
+      "elapsed_seconds": 4.2039
     },
     {
       "repository": "mastra-ai/mastra",
@@ -14117,10 +14252,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -14254,7 +14393,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8866
+      "elapsed_seconds": 2.8932
     },
     {
       "repository": "vercel/ai",
@@ -14521,10 +14660,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -14657,7 +14800,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1384
+      "elapsed_seconds": 3.1548
     },
     {
       "repository": "cline/cline",
@@ -14929,10 +15072,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -15066,7 +15213,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.3824
+      "elapsed_seconds": 4.3961
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -15327,10 +15474,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -15458,7 +15609,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.7006
+      "elapsed_seconds": 4.718
     },
     {
       "repository": "continuedev/continue",
@@ -15715,10 +15866,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -15846,7 +16001,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9107
+      "elapsed_seconds": 2.9242
     },
     {
       "repository": "Aider-AI/aider",
@@ -16106,10 +16261,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -16252,7 +16411,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.37
+      "elapsed_seconds": 4.3626
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -16507,10 +16666,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -16646,7 +16809,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 1.592
+      "elapsed_seconds": 1.5956
     },
     {
       "repository": "plandex-ai/plandex",
@@ -16888,10 +17051,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -17019,7 +17186,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0571
+      "elapsed_seconds": 0.0592
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -17276,10 +17443,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -17413,7 +17584,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3504
+      "elapsed_seconds": 2.3485
     },
     {
       "repository": "stitionai/devika",
@@ -17678,10 +17849,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -17813,7 +17988,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5486
+      "elapsed_seconds": 0.5677
     },
     {
       "repository": "block/goose",
@@ -18078,10 +18253,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -18219,7 +18398,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 6.2674
+      "elapsed_seconds": 6.2824
     },
     {
       "repository": "bytedance/trae-agent",
@@ -18491,10 +18670,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -18639,7 +18822,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2878
+      "elapsed_seconds": 1.3174
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -18903,10 +19086,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -19040,7 +19227,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.9389
+      "elapsed_seconds": 6.9763
     },
     {
       "repository": "openai/codex",
@@ -19289,10 +19476,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -19426,7 +19617,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1908
+      "elapsed_seconds": 1.1866
     },
     {
       "repository": "browser-use/browser-use",
@@ -19700,10 +19891,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -19849,7 +20044,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.0802
+      "elapsed_seconds": 7.0803
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -20132,10 +20327,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -20281,7 +20480,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 14.8299
+      "elapsed_seconds": 14.6349
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -20547,10 +20746,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -20689,7 +20892,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3733
+      "elapsed_seconds": 1.3825
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -20949,10 +21152,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -21082,7 +21289,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5037
+      "elapsed_seconds": 1.5089
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -21344,10 +21551,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -21485,7 +21696,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5607
+      "elapsed_seconds": 1.5872
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -21754,10 +21965,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -21894,7 +22109,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.8599
+      "elapsed_seconds": 4.9539
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -22171,10 +22386,14 @@
         "typescript": 12,
         "form_capable": 5,
         "url_capable": 10,
+        "human_confirmed_url_acceptance": 1,
+        "full_url_disclosure": 1,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 12,
         "configured_by_edges": 12,
         "consent_control_edges": 1,
-        "findings": 3
+        "findings": 3,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -22311,7 +22530,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.4557
+      "elapsed_seconds": 5.4354
     },
     {
       "repository": "github/github-mcp-server",
@@ -22563,10 +22782,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -22694,7 +22917,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0527
+      "elapsed_seconds": 0.0531
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -22947,10 +23170,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -23078,7 +23305,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1286
+      "elapsed_seconds": 0.1272
     },
     {
       "repository": "awslabs/mcp",
@@ -23342,10 +23569,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -23481,7 +23712,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.8796
+      "elapsed_seconds": 3.8847
     },
     {
       "repository": "docker/mcp-gateway",
@@ -23734,10 +23965,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -23867,7 +24102,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0438
+      "elapsed_seconds": 0.0468
     },
     {
       "repository": "jlowin/fastmcp",
@@ -24134,10 +24369,14 @@
         "typescript": 0,
         "form_capable": 2,
         "url_capable": 2,
+        "human_confirmed_url_acceptance": 1,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 1,
         "protocol_edges": 2,
         "configured_by_edges": 2,
         "consent_control_edges": 1,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 1
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -24274,12 +24513,13 @@
       },
       "bom_ambiguous_endpoints_by_side_kind": {},
       "findings": {
-        "AV-MCP002": 3
+        "AV-MCP002": 3,
+        "AV-MCP007": 1
       },
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.1512
+      "elapsed_seconds": 5.1445
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -24521,10 +24761,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -24652,7 +24896,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0352
+      "elapsed_seconds": 0.038
     },
     {
       "repository": "langflow-ai/langflow",
@@ -24923,10 +25167,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -25062,7 +25310,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.9867
+      "elapsed_seconds": 4.9308
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -25322,10 +25570,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -25461,7 +25713,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.2285
+      "elapsed_seconds": 4.2111
     },
     {
       "repository": "langgenius/dify",
@@ -25706,10 +25958,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -25837,7 +26093,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2938
+      "elapsed_seconds": 3.3382
     },
     {
       "repository": "n8n-io/n8n",
@@ -26105,10 +26361,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -26244,7 +26504,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0623
+      "elapsed_seconds": 3.0763
     },
     {
       "repository": "activepieces/activepieces",
@@ -26520,10 +26780,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -26661,7 +26925,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9724
+      "elapsed_seconds": 1.9696
     },
     {
       "repository": "simstudioai/sim",
@@ -26912,10 +27176,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -27043,7 +27311,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.8024
+      "elapsed_seconds": 5.9026
     },
     {
       "repository": "composiohq/composio",
@@ -27322,10 +27590,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -27462,7 +27734,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.608
+      "elapsed_seconds": 2.6685
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -27735,10 +28007,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -27884,7 +28160,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.9067
+      "elapsed_seconds": 4.8821
     },
     {
       "repository": "e2b-dev/E2B",
@@ -28134,10 +28410,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -28265,7 +28545,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4336
+      "elapsed_seconds": 3.441
     },
     {
       "repository": "daytonaio/daytona",
@@ -28507,10 +28787,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -28638,7 +28922,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0002
+      "elapsed_seconds": 0.0012
     },
     {
       "repository": "AgentOps-AI/agentops",
@@ -28909,10 +29193,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -29045,7 +29333,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6342
+      "elapsed_seconds": 2.6307
     },
     {
       "repository": "traceloop/openllmetry",
@@ -29328,10 +29616,14 @@
         "typescript": 0,
         "form_capable": 0,
         "url_capable": 0,
+        "human_confirmed_url_acceptance": 0,
+        "full_url_disclosure": 0,
+        "missing_full_url_disclosure": 0,
         "protocol_edges": 0,
         "configured_by_edges": 0,
         "consent_control_edges": 0,
-        "findings": 0
+        "findings": 0,
+        "url_disclosure_findings": 0
       },
       "approval_callback_bypass": {
         "tools": 0,
@@ -29467,7 +29759,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.5445
+      "elapsed_seconds": 4.5053
     }
   ]
 }

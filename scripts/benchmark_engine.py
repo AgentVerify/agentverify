@@ -1502,6 +1502,21 @@ def main() -> int:
                     "url" in item.attributes.get("elicitation_modes", ())
                     for item in mcp_elicitation_consent_capabilities
                 ),
+                "human_confirmed_url_acceptance": sum(
+                    "url" in item.attributes.get("elicitation_modes", ())
+                    and item.attributes.get("approval_policy") == "human-confirmed"
+                    for item in mcp_elicitation_consent_capabilities
+                ),
+                "full_url_disclosure": sum(
+                    item.attributes.get("url_disclosure") == "full-url"
+                    for item in mcp_elicitation_consent_capabilities
+                ),
+                "missing_full_url_disclosure": sum(
+                    "url" in item.attributes.get("elicitation_modes", ())
+                    and item.attributes.get("approval_policy") == "human-confirmed"
+                    and item.attributes.get("url_disclosure") != "full-url"
+                    for item in mcp_elicitation_consent_capabilities
+                ),
                 "protocol_edges": sum(
                     edge.source_kind == "protocol"
                     and edge.source_name == "MCP"
@@ -1546,6 +1561,9 @@ def main() -> int:
                 ),
                 "findings": sum(
                     finding.rule_id == "AV-MCP006" for finding in ir.findings
+                ),
+                "url_disclosure_findings": sum(
+                    finding.rule_id == "AV-MCP007" for finding in ir.findings
                 ),
             },
             "approval_callback_bypass": {
@@ -1995,7 +2013,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 71,
+        "schema_version": 72,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2410,10 +2428,14 @@ def main() -> int:
                     "typescript",
                     "form_capable",
                     "url_capable",
+                    "human_confirmed_url_acceptance",
+                    "full_url_disclosure",
+                    "missing_full_url_disclosure",
                     "protocol_edges",
                     "configured_by_edges",
                     "consent_control_edges",
                     "findings",
+                    "url_disclosure_findings",
                 )
             },
             "approval_callback_bypass": {

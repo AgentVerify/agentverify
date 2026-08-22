@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v71
+framework, wrapper, or configuration path. Counts come from schema-v72
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -323,6 +323,9 @@ is implicitly adapted to `accept`; its production CLI preserves decline/cancel b
 All 15 produce protocol→user-elicitation and configured-by edges. The three governed clients add
 consent edges. The TypeScript host and Microsoft tutorial preserve message/request-detail disclosure,
 while FastMCP's CLI proves user confirmation but displays only the request message.
+Among the three human-confirmed URL-capable handlers, only the TypeScript SDK host proves full-URL
+display. `AV-MCP007` reports the Microsoft Python tutorial and FastMCP CLI separately from automatic
+acceptance; it does not claim either handler navigates or opens the URL.
 
 The approval-callback resolver summarizes unique same-file functions and propagates only direct call
 edges into an OpenAI built-in tool's configured approval handler. Python covers a named handler and
@@ -531,7 +534,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 504-label rule truth set and 608-label IR component/relationship set are curated regression suites. They
+The 511-label rule truth set and 615-label IR component/relationship set are curated regression suites. They
 guard known positives and negatives; they are not an unbiased accuracy estimate. A future holdout
 must be sampled separately across the categories above, externally reviewed, and kept sealed while
 rules change. Until then, precision/recall values apply only to the published seed labels.

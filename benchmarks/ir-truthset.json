@@ -5467,6 +5467,34 @@
       "target":{"kind":"local","path":"cases/mcp_sampling_consent"},
       "check_id":"IR-MCP-SAMPLING-CONSENT","path":"pydantic_conditional_import.py","line":4,"expected":false,
       "component":{"kind":"capability","name":"model-sampling","attributes":{"analysis":"python-pydantic-ai-mcp-sampling-model"}}
+    },
+    {
+      "id":"mcp-url-disclosure-python-local","target":{"kind":"local","path":"cases/mcp_elicitation_consent"},"check_id":"IR-MCP-ELICITATION-CONSENT","path":"python_human.py","line":17,"expected":true,
+      "component":{"kind":"capability","name":"user-elicitation","attributes":{"approval_policy":"human-confirmed","url_disclosure":"not-proven"}}
+    },
+    {
+      "id":"mcp-url-disclosure-fastmcp-local","target":{"kind":"local","path":"cases/mcp_elicitation_consent"},"check_id":"IR-MCP-ELICITATION-CONSENT","path":"fastmcp_message_only.py","line":15,"expected":true,
+      "component":{"kind":"capability","name":"user-elicitation","attributes":{"approval_policy":"human-confirmed","url_disclosure":"not-proven"}}
+    },
+    {
+      "id":"mcp-url-disclosure-fastmcp-full-local","target":{"kind":"local","path":"cases/mcp_elicitation_consent"},"check_id":"IR-MCP-ELICITATION-CONSENT","path":"fastmcp_human.py","line":15,"expected":true,
+      "component":{"kind":"capability","name":"user-elicitation","attributes":{"approval_policy":"human-confirmed","url_disclosure":"full-url"}}
+    },
+    {
+      "id":"mcp-url-disclosure-typescript-full-local","target":{"kind":"local","path":"cases/mcp_elicitation_consent"},"check_id":"IR-MCP-ELICITATION-CONSENT","path":"typescript_human.ts","line":8,"expected":true,
+      "component":{"kind":"capability","name":"user-elicitation","attributes":{"approval_policy":"human-confirmed","url_disclosure":"full-url"}}
+    },
+    {
+      "id":"mcp-url-disclosure-python-real","target":{"kind":"repository","repository":"microsoft/ai-agents-for-beginners","commit":"01777b05e8afeba6bf5a6dbe74cc2293372d3693"},"check_id":"IR-MCP-ELICITATION-CONSENT","path":"11-agentic-protocols/code_samples/mcp-agents/client/client.py","line":219,"expected":true,
+      "component":{"kind":"capability","name":"user-elicitation","attributes":{"approval_policy":"human-confirmed","url_disclosure":"not-proven"}}
+    },
+    {
+      "id":"mcp-url-disclosure-fastmcp-real","target":{"kind":"repository","repository":"jlowin/fastmcp","commit":"609f79b8a118cd6c4bb58a5341bafd76e42e5a2b"},"check_id":"IR-MCP-ELICITATION-CONSENT","path":"fastmcp_slim/fastmcp/cli/client.py","line":251,"expected":true,
+      "component":{"kind":"capability","name":"user-elicitation","attributes":{"approval_policy":"human-confirmed","url_disclosure":"not-proven"}}
+    },
+    {
+      "id":"mcp-url-disclosure-typescript-real","target":{"kind":"repository","repository":"modelcontextprotocol/typescript-sdk","commit":"3924de99df834302d89f5997a1b64ca268282284"},"check_id":"IR-MCP-ELICITATION-CONSENT","path":"examples/cli-client/host/host.ts","line":429,"expected":true,
+      "component":{"kind":"capability","name":"user-elicitation","attributes":{"approval_policy":"human-confirmed","url_disclosure":"full-url"}}
     }
   ]
 }

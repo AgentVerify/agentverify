@@ -3110,6 +3110,7 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
         "fastmcp_declined.py",
         "fastmcp_human.py",
         "fastmcp_input_only.py",
+        "fastmcp_message_only.py",
         "fastmcp_reassigned.py",
         "fastmcp_rebound_response_type.py",
         "fastmcp_shadowed_callback.py",
@@ -3131,6 +3132,12 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
     )
     assert capabilities["fastmcp_input_only.py"].attributes["approval_policy"] == (
         "automatic-accept"
+    )
+    assert capabilities["fastmcp_message_only.py"].attributes["approval_policy"] == (
+        "human-confirmed"
+    )
+    assert capabilities["fastmcp_message_only.py"].attributes["url_disclosure"] == (
+        "not-proven"
     )
     assert capabilities["fastmcp_declined.py"].attributes["approval_policy"] == (
         "declined-handler"
@@ -3160,6 +3167,7 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
         "elicitation_modes": ("form", "url"),
         "callback_definition_line": 5,
         "request_disclosure": "message-and-request-details",
+        "url_disclosure": "full-url",
         "scope": "production",
         "analysis": "python-fastmcp-elicitation-handler-consent",
         "adapter": "fastmcp-client",
@@ -3175,6 +3183,7 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
         "elicitation_modes": ("form", "url"),
         "callback_definition_line": 6,
         "request_disclosure": "not-proven",
+        "url_disclosure": "not-proven",
         "scope": "production",
         "analysis": "python-mcp-elicitation-callback-consent",
     }
@@ -3215,6 +3224,7 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
         "elicitation_modes": ("form", "url"),
         "callback_definition_line": 8,
         "request_disclosure": "message-and-request-details",
+        "url_disclosure": "full-url",
         "scope": "production",
         "analysis": "typescript-mcp-elicitation-handler-consent",
     }
@@ -3231,6 +3241,7 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
     }
     assert controls == {
         ("fastmcp_human.py", 7),
+        ("fastmcp_message_only.py", 7),
         ("python_human.py", 9),
         ("typescript_human.ts", 10),
     }
@@ -3242,7 +3253,7 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
         and relationship.target_name == "user-elicitation"
         and relationship.attributes.get("analysis") in analyses
         for relationship in ir.relationships
-    ) == 19
+    ) == 20
     findings = [finding for finding in ir.findings if finding.rule_id == "AV-MCP006"]
     assert [
         (finding.evidence.path, finding.evidence.line, finding.ir_path)
@@ -3273,6 +3284,27 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
     assert all(
         finding.analysis["approval_coverage"] == "automatic-accept"
         for finding in findings
+    )
+    url_findings = [finding for finding in ir.findings if finding.rule_id == "AV-MCP007"]
+    assert [
+        (finding.evidence.path, finding.evidence.line, finding.ir_path)
+        for finding in url_findings
+    ] == [
+        (
+            "fastmcp_message_only.py",
+            15,
+            ("protocol:MCP", "capability:user-elicitation"),
+        ),
+        (
+            "python_human.py",
+            17,
+            ("protocol:MCP", "capability:user-elicitation"),
+        ),
+    ]
+    assert all(finding.result_kind == "review" for finding in url_findings)
+    assert all(
+        finding.analysis["approval_coverage"] == "human-confirmed"
+        for finding in url_findings
     )
     assert not any(
         component.attributes.get("analysis") in analyses

@@ -121,7 +121,7 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the 504-label truth set.
+rule observations are pinned in the consolidated 511-label truth set.
 
 MCP configuration is also executable dependency configuration. Schema v65 resolves 50 literal
 `npx`/`uvx` package launchers in the bounded corpus: 45 unpinned, three floating, and two exact,
@@ -169,8 +169,8 @@ branches. Five positive and 15 negative rule labels plus 18 positive and three n
 pin exact imports, capability modes, connected receivers, response actions, direct and imported user
 interaction, decline-only behavior, and unresolved callbacks.
 This matches the [official elicitation security model](https://modelcontextprotocol.io/specification/2025-11-25/client/elicitation):
-`accept` represents user consent, and URL mode requires full destination disclosure and explicit
-consent before navigation.
+`accept` represents user consent, and URL mode requires clear target domain/host disclosure plus
+explicit consent before navigation.
 
 Schema v71 adds FastMCP's client adapter. Its
 [official client documentation](https://gofastmcp.com/clients/elicitation) and pinned implementation
@@ -181,6 +181,16 @@ cancel before acceptance. The CLI displays the message but does not prove full r
 disclosure, so the IR records `message-only`. Rebound callbacks, rebound response factories, unknown
 returns, and unrelated imports remain unresolved or absent. The expanded matrix is seven positive
 and 24 negative rule labels plus 29 positive and four negative IR labels.
+
+Schema v72 isolates URL disclosure from the acceptance decision. The released MCP specification
+requires clear target domain/host display, while the
+[draft safe-URL guidance](https://modelcontextprotocol.io/specification/draft/client/elicitation)
+requires the full URL before consent. The Microsoft tutorial prints the server message and optional
+form schema, while FastMCP's CLI prints only the message; both can return human-confirmed acceptance
+and therefore raise the stricter `AV-MCP007` hardening review. The TypeScript SDK host displays
+`params.url`, validates HTTPS or loopback HTTP, and asks before proceeding. Four positive and three
+negative rule labels plus seven positive IR labels pin the distinction without claiming that either
+reviewed Python client actually navigates to the URL.
 
 ## 3. Approval exists, but bypass behavior recurs
 

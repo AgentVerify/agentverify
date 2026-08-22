@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T07:22:41.255379+00:00",
-  "labels": 504,
-  "passed": 504,
+  "generated_at": "2026-08-22T07:39:16.208770+00:00",
+  "labels": 511,
+  "passed": 511,
   "metrics": {
     "AV-A2A001": {
       "tp": 4,
@@ -128,6 +128,14 @@
       "tp": 7,
       "fp": 0,
       "tn": 24,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "AV-MCP007": {
+      "tp": 4,
+      "fp": 0,
+      "tn": 3,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -4680,6 +4688,69 @@
     {
       "id": "mcp-sampling-consent-pydantic-conditional-import-local-negative",
       "rule_id": "AV-MCP005",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-url-disclosure-python-local",
+      "rule_id": "AV-MCP007",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-url-disclosure-fastmcp-local",
+      "rule_id": "AV-MCP007",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-url-disclosure-fastmcp-full-local-negative",
+      "rule_id": "AV-MCP007",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-url-disclosure-typescript-full-local-negative",
+      "rule_id": "AV-MCP007",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-url-disclosure-python-real",
+      "rule_id": "AV-MCP007",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-url-disclosure-fastmcp-real",
+      "rule_id": "AV-MCP007",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-url-disclosure-typescript-real-negative",
+      "rule_id": "AV-MCP007",
       "expected": false,
       "observed": false,
       "anchor_ok": true,

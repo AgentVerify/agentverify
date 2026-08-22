@@ -219,6 +219,32 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
             )
         if (
             component.kind == "capability"
+            and component.name == "user-elicitation"
+            and component.attributes.get("analysis")
+            in {
+                "python-fastmcp-elicitation-handler-consent",
+                "python-mcp-elicitation-callback-consent",
+                "typescript-mcp-elicitation-handler-consent",
+            }
+            and "url" in component.attributes.get("elicitation_modes", ())
+            and component.attributes.get("acceptance_created") is True
+            and component.attributes.get("approval_policy") == "human-confirmed"
+            and component.attributes.get("url_disclosure") != "full-url"
+        ):
+            ir.findings.append(
+                make_finding(
+                    ir,
+                    component,
+                    "AV-MCP007",
+                    "high",
+                    "high",
+                    "An MCP client asks the user to accept URL elicitation without showing the full target URL",
+                    "Display the complete server-provided URL before consent, highlight its host, reject unsafe schemes or origins, and open it only after an explicit user decision.",
+                    "review",
+                )
+            )
+        if (
+            component.kind == "capability"
             and component.name == "mcp-tool-forwarding"
             and not component.attributes.get("allowlist_guard")
         ):

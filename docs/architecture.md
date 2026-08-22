@@ -373,6 +373,12 @@ disclosure is derived only from values passed to recognized display/prompt calls
 is correctly modeled as human-confirmed with message-only disclosure rather than full request-detail
 disclosure.
 
+URL disclosure is modeled independently from acceptance. For exact Python callbacks, the full
+request object or its `.url` field must reach a direct display/prompt argument; schema-only and
+message-only rendering do not qualify. TypeScript requires `request.params.url` in a recognized UI
+call. `AV-MCP007` applies only to human-confirmed URL-capable handlers missing that proof, avoiding a
+duplicate disclosure result on handlers already reported for automatic acceptance.
+
 A repository prepass builds bounded Python network summaries for unique top-level free functions in
 selected files. A summary records direct recognized HTTP calls and the formal parameters that can
 control their origins after fixed-prefix discrimination. At a tool call site, only an exact named

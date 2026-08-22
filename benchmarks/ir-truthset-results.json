@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T07:25:38.915082+00:00",
-  "labels": 608,
-  "passed": 608,
+  "generated_at": "2026-08-22T07:38:40.999034+00:00",
+  "labels": 615,
+  "passed": 615,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -61,7 +61,7 @@
       "recall": 1.0
     },
     "IR-MCP-ELICITATION-CONSENT": {
-      "tp": 29,
+      "tp": 36,
       "fp": 0,
       "tn": 4,
       "fn": 0,
@@ -5970,6 +5970,69 @@
       "check_id": "IR-MCP-SAMPLING-CONSENT",
       "expected": false,
       "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-url-disclosure-python-local",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-url-disclosure-fastmcp-local",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-url-disclosure-fastmcp-full-local",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-url-disclosure-typescript-full-local",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-url-disclosure-python-real",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-url-disclosure-fastmcp-real",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-url-disclosure-typescript-real",
+      "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true
