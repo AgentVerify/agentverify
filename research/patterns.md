@@ -48,7 +48,11 @@ MCP stdio configuration is also a package-install boundary. `uvx` and `npx -y` c
 server package at startup, so a missing version or floating tag makes future executions depend on
 mutable registry state. Exact package pins narrow that state but do not prove artifact integrity,
 transitive dependency stability, publisher identity, or server capability safety. Analysis should
-keep package resolution separate from tool authorization and runtime containment.
+keep package resolution separate from tool authorization and runtime containment. The same boundary
+appears in Python constructors, JSON configuration, and TypeScript SDK transports or literal
+`mcpServers` objects. A launcher dependency such as `tsx` may execute local server source, so the
+fact should identify the mutable package selected by the launcher without claiming it implements the
+server.
 
 ## Local versus isolated execution
 

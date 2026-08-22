@@ -7685,6 +7685,20 @@ def typescript_object_items(body: str, body_offset: int = 0) -> list[tuple[str, 
     return typescript_top_level_items(body[opening + 1 : end - 1], body_offset + opening + 1)
 
 
+def typescript_literal_object_items(
+    body: str, body_offset: int = 0
+) -> list[tuple[str, int]]:
+    """Extract literal object properties while retaining quoted property names."""
+    code = typescript_code_mask(body)
+    opening = len(code) - len(code.lstrip())
+    if opening >= len(code) or code[opening] != "{":
+        return []
+    end = typescript_balanced_end(code, opening, "{", "}")
+    if end is None:
+        return []
+    return typescript_call_arguments(body[opening + 1 : end - 1], body_offset + opening + 1)
+
+
 def typescript_agent_tool_items(body: str, body_offset: int) -> list[tuple[str, int]]:
     """Extract only the top-level entries of an Agent's literal tools array."""
     for property_text, property_offset in typescript_object_items(body, body_offset):
@@ -7711,6 +7725,22 @@ def typescript_object_string_property(body: str, name: str) -> str | None:
     return match.group(2) if match else None
 
 
+def typescript_named_object_property(property_text: str) -> tuple[str, str] | None:
+    """Return a direct literal property name and value with a structural colon."""
+    match = re.match(
+        r"\s*(?:(?P<identifier>[A-Za-z_$][\w$]*)|(?P<quote>['\"])(?P<quoted>.*?)\2)\s*:",
+        property_text,
+        re.DOTALL,
+    )
+    if match is None:
+        return None
+    colon = match.end() - 1
+    code = typescript_code_mask(property_text)
+    if colon >= len(code) or code[colon] != ":":
+        return None
+    return match.group("identifier") or match.group("quoted"), property_text[match.end() :].strip()
+
+
 def typescript_object_property_expression(body: str, name: str) -> str | None:
     """Return one unambiguous direct property expression from a literal object."""
     values = []
@@ -7719,6 +7749,25 @@ def typescript_object_property_expression(body: str, name: str) -> str | None:
         if match:
             values.append(property_text[match.end() :].strip())
     return values[0] if len(values) == 1 else None
+
+
+def typescript_literal_object_property_expression(body: str, name: str) -> str | None:
+    """Return a direct identifier- or string-keyed property from a literal object."""
+    values = []
+    for property_text, _ in typescript_literal_object_items(body):
+        property_value = typescript_named_object_property(property_text)
+        if property_value is not None and property_value[0] == name:
+            values.append(property_value[1])
+    return values[0] if len(values) == 1 else None
+
+
+def typescript_literal_object_string_property(body: str, name: str) -> str | None:
+    """Resolve one identifier- or string-keyed direct literal string property."""
+    value = typescript_literal_object_property_expression(body, name)
+    if value is None:
+        return None
+    match = re.fullmatch(r"(['\"])(.*?)\1", value, re.DOTALL)
+    return match.group(2) if match else None
 
 
 def typescript_named_import_bindings(text: str, module_prefix: str) -> dict[str, str]:
@@ -7736,6 +7785,171 @@ def typescript_named_import_bindings(text: str, module_prefix: str) -> dict[str,
             local = parts[2] if len(parts) >= 3 and parts[1] == "as" else original
             bindings[local] = original
     return bindings
+
+
+def typescript_literal_string_arguments(expression: str) -> list[str | None] | None:
+    """Return literal TypeScript array items while retaining unresolved positions."""
+    code = typescript_code_mask(expression)
+    opening = len(code) - len(code.lstrip())
+    if opening >= len(code) or code[opening] != "[":
+        return None
+    end = typescript_balanced_end(code, opening, "[", "]")
+    if end is None:
+        return None
+    suffix = code[end:].strip()
+    if suffix and not re.fullmatch(r"as\s+const", suffix):
+        return None
+    arguments: list[str | None] = []
+    for item, _ in typescript_call_arguments(expression[opening + 1 : end - 1]):
+        item = item.strip()
+        match = re.fullmatch(r"(['\"`])([^\\]*?)\1", item, re.DOTALL)
+        arguments.append(
+            match.group(2)
+            if match is not None and not (match.group(1) == "`" and "${" in match.group(2))
+            else None
+        )
+    return arguments
+
+
+def typescript_import_binding_is_shadowed(text: str, name: str) -> bool:
+    """Conservatively reject imported constructor aliases shadowed in local code."""
+    code = typescript_code_mask(text)
+    escaped = re.escape(name)
+    return bool(
+        re.search(rf"\b(?:const|let|var|function|class)\s+{escaped}\b", code)
+        or re.search(rf"(?<![\w$.]){escaped}\s*=(?!=)", code)
+        or re.search(rf"\bfunction\s+\w*\s*\([^)]*\b{escaped}\b", code)
+        or re.search(rf"\([^)]*\b{escaped}\b[^)]*\)\s*=>", code)
+    )
+
+
+def add_typescript_mcp_package_launcher(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    text: str,
+    lines: list[str],
+    offset: int,
+    name: str,
+    command: str,
+    arguments: list[str | None],
+    constructor: str,
+    analysis: str,
+) -> None:
+    package = mcp_package_reference(command, arguments)
+    if package is None:
+        return
+    line = line_at(text, offset)
+    ir.add_component(
+        Component(
+            "mcp-server",
+            name,
+            Evidence(relative, line, excerpt(lines, line)),
+            {
+                "transport": "stdio",
+                "command": command,
+                "package_manager": command,
+                "constructor": constructor,
+                "analysis": analysis,
+                "frontend": "typescript",
+                "scope": source_scope(relative),
+                **package,
+            },
+        )
+    )
+
+
+def typescript_mcp_package_launchers(
+    ir: RepositoryIR,
+    relative: str,
+    text: str,
+    lines: list[str],
+) -> None:
+    """Resolve literal MCP stdio package launchers without executing code."""
+    code = typescript_code_mask(text)
+    imports = typescript_named_import_bindings(text, "@modelcontextprotocol/sdk")
+    for local_name, original_name in imports.items():
+        if original_name != "StdioClientTransport" or typescript_import_binding_is_shadowed(
+            text, local_name
+        ):
+            continue
+        pattern = re.compile(rf"\bnew\s+{re.escape(local_name)}\s*\(")
+        for match in pattern.finditer(code):
+            opening = code.find("(", match.start(), match.end())
+            end = typescript_balanced_end(code, opening, "(", ")")
+            if end is None:
+                continue
+            call_arguments = typescript_call_arguments(
+                text[opening + 1 : end - 1], opening + 1
+            )
+            if not call_arguments:
+                continue
+            config, _ = call_arguments[0]
+            command = typescript_literal_object_string_property(config, "command")
+            arguments_expression = typescript_literal_object_property_expression(config, "args")
+            arguments = (
+                typescript_literal_string_arguments(arguments_expression)
+                if arguments_expression is not None
+                else None
+            )
+            if command is None or arguments is None:
+                continue
+            line = line_at(text, match.start())
+            add_typescript_mcp_package_launcher(
+                ir,
+                relative=relative,
+                text=text,
+                lines=lines,
+                offset=match.start(),
+                name=f"StdioClientTransport@{line}",
+                command=command,
+                arguments=arguments,
+                constructor="StdioClientTransport",
+                analysis="typescript-import-bound-mcp-transport",
+            )
+
+    property_pattern = re.compile(r"(?:\bmcpServers\b|(['\"])mcpServers\1)\s*:")
+    for match in property_pattern.finditer(text):
+        colon = match.end() - 1
+        if colon >= len(code) or code[colon] != ":":
+            continue
+        opening = colon + 1
+        while opening < len(code) and code[opening].isspace():
+            opening += 1
+        if opening >= len(code) or code[opening] != "{":
+            continue
+        end = typescript_balanced_end(code, opening, "{", "}")
+        if end is None:
+            continue
+        servers_expression = text[opening:end]
+        for server_property, server_offset in typescript_literal_object_items(
+            servers_expression, opening
+        ):
+            server = typescript_named_object_property(server_property)
+            if server is None:
+                continue
+            server_name, config = server
+            command = typescript_literal_object_string_property(config, "command")
+            arguments_expression = typescript_literal_object_property_expression(config, "args")
+            arguments = (
+                typescript_literal_string_arguments(arguments_expression)
+                if arguments_expression is not None
+                else None
+            )
+            if command is None or arguments is None:
+                continue
+            add_typescript_mcp_package_launcher(
+                ir,
+                relative=relative,
+                text=text,
+                lines=lines,
+                offset=server_offset,
+                name=server_name,
+                command=command,
+                arguments=arguments,
+                constructor="mcpServers",
+                analysis="typescript-mcp-config-literal",
+            )
 
 
 def typescript_axios_default_bindings(text: str) -> set[str]:
@@ -9542,6 +9756,7 @@ def add_typescript_network_origin_control(
 def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None:
     relative = path.relative_to(root).as_posix()
     lines = text.splitlines()
+    typescript_mcp_package_launchers(ir, relative, text, lines)
     masked_lines = typescript_code_mask(text).splitlines()
     line_depths: dict[int, tuple[int, int]] = {}
     brace_depth = 0

@@ -470,11 +470,15 @@ branch and carries `summary: imported-class-method`; its effect remains `routing
 MCP stdio launchers carry a separate supply-chain fact set on the `mcp-server` component:
 `package_manager`, `package`, `package_spec`, `version_scope`, `auto_install`, and `install_mode`.
 The Python frontend requires an MCP-module-bound constructor or a literal nested `mcpServers`
-configuration; the JSON frontend requires the standard top-level `mcpServers` object. `uvx` is an
-automatic installer, while `npx` is treated as automatic only with `-y`/`--yes`. An exact npm
+configuration; the TypeScript frontend requires an exact `@modelcontextprotocol/sdk` named import of
+`StdioClientTransport` or a literal `mcpServers` object, and rejects rebound/shadowed imports; the
+JSON frontend requires the standard top-level `mcpServers` object. `uvx` is an automatic installer,
+while `npx` is treated as automatic only with `-y`/`--yes`. An exact npm
 `package@version` or Python `package==version` is distinguished from an absent version or floating
 tag/range. These are launcher facts, not proof about registry integrity, lockfile provenance,
-artifact signatures, transitive dependencies, or the capabilities of the installed server.
+artifact signatures, transitive dependencies, or the capabilities of the installed server. In
+particular, a package such as `tsx` can be the launcher runtime for local MCP source rather than the
+server implementation itself.
 
 For audit modeling, a tool capability lexically inside an OpenTelemetry
 `start_as_current_span(...)` block receives an exact capability-to-`action-trace` control edge. A

@@ -4774,7 +4774,12 @@ def test_mcp_package_launchers_require_literal_mcp_structure_and_auto_install() 
     ir = scan_repository(ROOT / "cases/mcp_package_launchers")
     servers = [component for component in ir.components if component.kind == "mcp-server"]
 
-    assert len(servers) == 14
+    assert len(servers) == 22
+    assert {component.attributes["frontend"] for component in servers} == {
+        "json",
+        "python",
+        "typescript",
+    }
     assert {
         (
             component.attributes["package_spec"],
@@ -4805,10 +4810,21 @@ def test_mcp_package_launchers_require_literal_mcp_structure_and_auto_install() 
         ("AV-MCP003", "launchers.py", 16),
         ("AV-MCP003", "launchers.py", 36),
         ("AV-MCP003", "launchers.py", 37),
+        ("AV-MCP003", "launchers.ts", 9),
+        ("AV-MCP003", "launchers.ts", 31),
+        ("AV-MCP003", "launchers.ts", 32),
+        ("AV-MCP003", "launchers.ts", 40),
     }
     assert not any(
         component.attributes.get("package")
-        in {"not-an-mcp-constructor", "ordinary-package", "shadowed-package"}
+        in {
+            "not-an-mcp-constructor",
+            "ordinary-package",
+            "shadowed-package",
+            "rebound-package",
+            "lookalike-package",
+            "same-scope-lookalike-package",
+        }
         for component in servers
     )
 

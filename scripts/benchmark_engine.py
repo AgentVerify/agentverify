@@ -1223,6 +1223,10 @@ def main() -> int:
                     item.attributes.get("frontend") == "json"
                     for item in mcp_package_launchers
                 ),
+                "typescript": sum(
+                    item.attributes.get("frontend") == "typescript"
+                    for item in mcp_package_launchers
+                ),
                 "findings": sum(
                     finding.rule_id == "AV-MCP003" for finding in ir.findings
                 ),
@@ -1613,7 +1617,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 64,
+        "schema_version": 65,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -1973,6 +1977,7 @@ def main() -> int:
                     "exact",
                     "python",
                     "json",
+                    "typescript",
                     "findings",
                 )
             },
