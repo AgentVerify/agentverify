@@ -30,11 +30,12 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
 
 - Detect shell invocation and distinguish constant argv from dynamic shell strings.
 - Detect direct code evaluation and interpreter tools.
-- Require a provenance-backed browser receiver before promoting dynamic `.evaluate(...)` input;
+- Require a provenance-backed browser receiver before promoting dynamic Playwright evaluator input;
   typed parameters, exact class attributes, immutable constructor-bound Playwright pages, and the
   pinned Skyvern factory are supported without semantic-name matching. Known Locator derivations are
-  preserved through direct chains and immutable aliases; next cover inherited fields, wrapper-returned
-  locator flows, and alternate evaluator APIs.
+  preserved through direct chains and immutable aliases. API-specific script slots are supported for
+  `evaluate`, `evaluate_handle`, `eval_on_selector`, `eval_on_selector_all`, and `evaluate_all`; next
+  cover inherited fields, wrapper-returned locator flows, and cross-function receiver provenance.
 - Detect auto-approval/skip-confirmation configuration.
 - Detect broad filesystem roots, host mounts, Docker socket exposure, and unscoped file tools.
 - Detect MCP tool pass-throughs and enumerate statically registered server capabilities.

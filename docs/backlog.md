@@ -118,11 +118,20 @@ Locator chain rooted in `get_page`. Schema v89 proves one exact Playwright-retur
 OpenAI Agents Python and three straight-line local page constructions in Aider and Skyvern, bringing
 the totals to 40 proven of 86 and 46 unresolved. Schema v90 proves Browser-Use's uniquely annotated
 module page through a fail-closed dependency guard and same-branch Locator assignment, bringing the
-current totals to 41 proven and 45 unresolved. Known
+`.evaluate(...)` totals to 41 proven and 45 unresolved. Schema v91 extends structural inventory to
+Playwright `evaluate_handle(...)`, `eval_on_selector(...)`, `eval_on_selector_all(...)`, and Locator
+`evaluate_all(...)`, with API-specific script positions and exact `expression=` keyword handling.
+The pinned corpus adds seven alternate-API observations, all from Skyvern tests: three locally
+constructed pages are proven and four remain unresolved. Current browser-evaluator totals are 44
+proven of 93 and 49 unresolved; the API split is 86 `evaluate`, five `eval_on_selector`, and two
+`eval_on_selector_all` calls. A dynamic selector paired with a fixed script remains inventory-only,
+and production code without selected-file Playwright provenance is deliberately excluded. The sole
+dynamic production path and all 51 `AV-EXEC002` findings are unchanged. Known
 Playwright locator/get-by/filter/nth/and/or/first/last derivations and immutable aliases are supported, while
 ordinary same-named and unknown derivations stay negative. Next resolve inherited fields, ambiguous
-wrapper/locator flows, sanitizer and bounded builder summaries, imported helper flow, and other
-browser evaluator APIs without treating every dynamic JavaScript expression as tool-controlled.
+wrapper/locator flows, sanitizer and bounded builder summaries, imported helper flow, and
+cross-function receiver provenance without treating every dynamic JavaScript expression as
+tool-controlled.
 
 ## P0 — configuration and policy resolution
 
@@ -309,8 +318,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 557 pinned positive/negative locations, with 882 separately
-scored IR component/relationship labels. Schema-v90 engine results and
+The curated regression set has reached 564 pinned positive/negative locations, with 889 separately
+scored IR component/relationship labels. Schema-v91 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

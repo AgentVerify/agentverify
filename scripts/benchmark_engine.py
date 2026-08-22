@@ -1436,6 +1436,16 @@ def main() -> int:
                     not in {None, "unresolved-browser-import-context"}
                     for item in python_browser_evaluations
                 ),
+                "apis": dict(
+                    sorted(
+                        Counter(
+                            str(item.attributes.get("api", "unknown")).rsplit(
+                                ".", 1
+                            )[-1]
+                            for item in python_browser_evaluations
+                        ).items()
+                    )
+                ),
                 "receiver_proofs": dict(
                     sorted(
                         Counter(
@@ -2514,7 +2524,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 90,
+        "schema_version": 91,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2884,6 +2894,17 @@ def main() -> int:
                 name: sum(result["python_browser_evaluate"][name] for result in successful)
                 for name in ("total", "dynamic", "receiver_proven")
             },
+            "python_browser_evaluator_apis": dict(
+                sorted(
+                    sum(
+                        (
+                            Counter(result["python_browser_evaluate"]["apis"])
+                            for result in successful
+                        ),
+                        Counter(),
+                    ).items()
+                )
+            ),
             "python_browser_receiver_proofs": dict(
                 sorted(
                     sum(

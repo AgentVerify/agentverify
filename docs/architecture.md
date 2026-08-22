@@ -475,9 +475,12 @@ summaries for the next pass, capped at four iterations. Each capability retains 
 method, definition line, and prior network-edge lines.
 
 The same Python tool-parameter state distinguishes browser-page code execution from ordinary code
-inventory. In a module importing Playwright, Selenium, or Puppeteer, an attribute
-`.evaluate(...)` call becomes a `code-execution` capability with
-`execution_context: browser-page`. `dynamic_input` is true only when the script expression contains
+inventory. In a module importing Playwright, Selenium, or Puppeteer, an attribute call to
+`evaluate(...)`, `evaluate_handle(...)`, `eval_on_selector(...)`, `eval_on_selector_all(...)`, or
+Locator `evaluate_all(...)` becomes a `code-execution` capability with
+`execution_context: browser-page`. The script expression is positional argument zero except for the selector APIs, where
+it is positional argument one; every supported API also accepts the exact `expression=` keyword.
+`dynamic_input` is true only when that script expression contains
 a current tool parameter or its direct assignment alias; literals, module constants, and values
 derived solely from normalized intermediates remain inventory-only. A dynamic browser evaluator is
 emitted only when its receiver is an exact imported Playwright `Page`/`Locator`/handle annotation,
@@ -496,7 +499,7 @@ begin at one exact imported `sync_playwright` call, continue through direct
 browser/context creation, and assign the page field once in straight-line `__init__` code.
 Conditional, repeated, later-method, and shadowed-factory assignments are withheld. Parameter reassignment
 invalidates its proof, and module browser imports alone cannot promote an ordinary object's
-`.evaluate(...)`. Fixed-script observations remain inventory with
+call to one of these evaluator names. Fixed-script observations remain inventory with
 `unresolved-browser-import-context` when their receiver is not yet proven. The capability still
 receives an exact tool edge when it occurs in a resolved tool body, including post-definition
 FastMCP tools. The call gate is structural, so chained receiver calls are inventoried even when
@@ -508,7 +511,8 @@ or direct `.start()`, and immutable straight-line browser/context/page bindings;
 branches, rebinding, and shadowed factories are withheld. Property proof requires the built-in
 decorator, one getter definition, and an exact imported Playwright return type. Inherited fields, ambiguous
 wrapper-returned locators, sanitizer
-proofs, imported/transitive script builders, and alternate browser evaluator APIs remain unresolved.
+proofs, imported/transitive script builders, cross-function receiver provenance, and unsupported
+browser evaluator APIs remain unresolved.
 
 For TypeScript filesystem writes, a relative import can prove a `path-boundary` control only through
 an exact two-file chain: the guard must pass the tool-derived path into a uniquely resolved predicate,

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T14:26:26.237354+00:00",
-  "labels": 882,
-  "passed": 882,
+  "generated_at": "2026-08-22T14:41:51.037545+00:00",
+  "labels": 889,
+  "passed": 889,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -149,9 +149,9 @@
       "recall": 1.0
     },
     "IR-PY-BROWSER-EVALUATE": {
-      "tp": 2,
+      "tp": 8,
       "fp": 0,
-      "tn": 1,
+      "tn": 2,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -8466,6 +8466,69 @@
     {
       "id": "python-browser-receiver-module-browser-use-real",
       "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-evaluator-selector-script-local",
+      "check_id": "IR-PY-BROWSER-EVALUATE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-evaluator-selector-only-local",
+      "check_id": "IR-PY-BROWSER-EVALUATE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-evaluator-handle-script-local",
+      "check_id": "IR-PY-BROWSER-EVALUATE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-evaluator-locator-all-script-local",
+      "check_id": "IR-PY-BROWSER-EVALUATE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-evaluator-keyword-script-local",
+      "check_id": "IR-PY-BROWSER-EVALUATE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-evaluator-ordinary-handle-local-negative",
+      "check_id": "IR-PY-BROWSER-EVALUATE",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-evaluator-selector-skyvern-test-real",
+      "check_id": "IR-PY-BROWSER-EVALUATE",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

@@ -1143,6 +1143,35 @@ def python_module_browser_receiver_variables(
     }
 
 
+PYTHON_BROWSER_EVALUATOR_SCRIPT_ARGUMENTS = {
+    "eval_on_selector": 1,
+    "eval_on_selector_all": 1,
+    "evaluate": 0,
+    "evaluate_all": 0,
+    "evaluate_handle": 0,
+}
+
+
+def python_browser_evaluator_script_argument(
+    call: ast.Call,
+) -> tuple[bool, ast.AST | None]:
+    if not isinstance(call.func, ast.Attribute):
+        return False, None
+    argument_index = PYTHON_BROWSER_EVALUATOR_SCRIPT_ARGUMENTS.get(call.func.attr)
+    if argument_index is None:
+        return False, None
+    if len(call.args) > argument_index:
+        return True, call.args[argument_index]
+    return True, next(
+        (
+            keyword.value
+            for keyword in call.keywords
+            if keyword.arg == "expression"
+        ),
+        None,
+    )
+
+
 def python_class_browser_receiver_properties(
     node: ast.ClassDef,
     browser_type_names: set[str],
@@ -1684,7 +1713,7 @@ def python_browser_receiver_proofs(
             belongs_to_function(candidate)
             and isinstance(candidate, ast.Call)
             and isinstance(candidate.func, ast.Attribute)
-            and candidate.func.attr == "evaluate"
+            and candidate.func.attr in PYTHON_BROWSER_EVALUATOR_SCRIPT_ARGUMENTS
         ):
             continue
         receiver_node = candidate.func.value
@@ -6215,18 +6244,23 @@ class PythonVisitor(ast.NodeVisitor):
                         source_id=self.current_tool_id,
                     )
                 )
-        browser_evaluate = (
-            self.has_browser_import
-            and isinstance(node.func, ast.Attribute)
-            and node.func.attr == "evaluate"
+        browser_evaluator, browser_script_argument = (
+            python_browser_evaluator_script_argument(node)
         )
+        browser_evaluate = self.has_browser_import and browser_evaluator
         browser_receiver_proof = (
             self.function_browser_receiver_proofs[-1].get(id(node))
             if browser_evaluate and self.function_browser_receiver_proofs
             else None
         )
         if call_name in {"eval", "exec"} or browser_evaluate:
-            argument = node.args[0] if node.args else None
+            argument = (
+                browser_script_argument
+                if browser_evaluate
+                else node.args[0]
+                if node.args
+                else None
+            )
             dynamic_input = argument is not None and not isinstance(
                 argument, ast.Constant
             )
