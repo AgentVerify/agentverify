@@ -12,10 +12,13 @@ Microsoft Agent Framework in two, and CAMEL, Qwen-Agent, Lagent, MetaGPT, Marvin
 one each. Groq appears in five repositories, Ollama in four, and Mistral and Cohere in three each.
 Python and TypeScript signatures are separated so the TypeScript-only `ai` package does not classify
 a Python import. Google model attribution additionally accepts Gemini prefixes, while Bedrock
-requires an exact runtime SDK/import or literal `bedrock-runtime` service selection. Eighty component
-labels pin 51 local/real positives and 29 unrelated or near-name negatives. Next add exact wrapper
-constructors and model attribution for the new providers without treating generic cloud SDKs, model
-family names, or framework-adjacent packages as proof.
+requires an exact runtime SDK/import or literal `bedrock-runtime` service selection. Schema v73 adds
+import- and rebinding-aware native SDK calls plus exact LangChain wrappers for Mistral, Groq, Cohere,
+and Ollama. Literal model arguments inherit that constructor proof, while Mistral-owned prefixes are
+recognized separately; Groq/Ollama third-party model IDs do not establish provider identity alone.
+The 101 component labels pin 67 local/real positives and 34 unrelated, rebound, or near-name
+negatives. Next cover TypeScript provider factories and package reexports without trusting generic
+`Client` names or framework-adjacent packages.
 
 ## P0 — module-qualified symbols and graph identities
 
@@ -262,8 +265,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 511 pinned positive/negative locations, with 615 separately
-scored IR component/relationship labels. Schema-v72 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 511 pinned positive/negative locations, with 636 separately
+scored IR component/relationship labels. Schema-v73 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

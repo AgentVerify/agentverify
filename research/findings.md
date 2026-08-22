@@ -254,6 +254,15 @@ do not increase the 48-repository provider-presence total because each occurs al
 recognized provider. The difference from the research-wide lexical census is retained as
 unsupported/unselected evidence, not silently upgraded.
 
+Schema v73 distinguishes provider presence from a configured provider call. Exact Python SDK and
+LangChain-wrapper imports for Mistral, Groq, Cohere, and Ollama now survive aliases but not rebinding.
+The pinned corpus proves seven production calls across five repositories: Devika contributes Mistral,
+Groq, and Ollama; GPT Pilot adds `AsyncGroq`; TaskWeaver adds a conditionally imported `Groq` client;
+LaVague adds `cohere.Client`; and Trae Agent invokes the imported Ollama `chat` function. Literal
+model arguments inherit the exact call's provider. Mistral-owned model prefixes are also attributed
+when configured directly on an Agent, while generic Mixtral, Llama, and other third-party IDs remain
+unresolved without a provider call.
+
 ## 5. Controls are layered
 
 Sandboxing vocabulary appears in 64 repositories, audit/tracing in 57, human approval in 52, and
@@ -336,15 +345,15 @@ recover 12 wrapper tools and 12 exact Agent edges; three enable approval, all oc
 their selected bodies add no capability edges. Twenty-five project-local CrewAI class-tool imports
 resolve through one importer-ancestor path and one exact decorated export. The 14 factory edges span
 four production example projects and require one exact imported class, immutable local construction,
-and a direct Agent return. The final export resolves 3,468 endpoints by symbol ID, 632 by exact
-evidence location, and 22 by unique display name; 38 remain ambiguous agent/protocol/control/tool
+and a direct Agent return. The final export resolves 3,480 endpoints by symbol ID, 645 by exact
+evidence location, and 23 by unique display name; 38 remain ambiguous agent/protocol/control/tool
 endpoints, and 68
 unresolved. No `ambiguous-repeated-binding` target remains in the pinned corpus;
 cross-branch, forward, inconsistent/untyped parameters, conditional/transformed returns,
 external receivers, shadowed factories, lambdas, and reassigned fixture cases stay unresolved. Two apparent CrewAI
 re-export misses were false identities:
 a function parameter and a local assignment shadowed the imported `tool` binding. Scope-isolating
-module and function imports now withhold those IDs, so all 3,474 identified endpoints resolve.
+module and function imports now withhold those IDs, so all 3,486 identified endpoints resolve.
 A governance export that collapses those references
 by name would silently attach controls or risks to the wrong asset.
 

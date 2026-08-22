@@ -150,6 +150,14 @@ decision while still hiding a server-controlled phishing destination. Full-URL d
 proven at the user interface before acceptance; URL validation and secure browser opening are further
 independent controls.
 
+## Provider presence versus configured provider calls
+
+An SDK import proves a repository dependency, while an import-proven constructor or inference call
+proves configured use at a specific source location. Aliases preserve that identity until rebinding;
+generic `Client` names do not. Literal model arguments can inherit the proven call's provider, but
+hosted third-party identifiers must not be treated as provider-owned model families. This distinction
+is especially important for Groq and Ollama, which commonly serve models developed elsewhere.
+
 ## Observability as a cross-cutting control
 
 Tracing and audit hooks appear at framework, model-client, runtime, and tool layers. A useful rule asks

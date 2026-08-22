@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T07:38:40.999034+00:00",
-  "labels": 615,
-  "passed": 615,
+  "generated_at": "2026-08-22T07:58:10.676142+00:00",
+  "labels": 636,
+  "passed": 636,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -37,9 +37,9 @@
       "recall": 1.0
     },
     "IR-COMPONENT-TAXONOMY": {
-      "tp": 51,
+      "tp": 67,
       "fp": 0,
-      "tn": 29,
+      "tn": 34,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -6031,6 +6031,195 @@
     {
       "id": "mcp-url-disclosure-typescript-real",
       "check_id": "IR-MCP-ELICITATION-CONSENT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-constructor-mistral-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-constructor-groq-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-constructor-cohere-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-constructor-ollama-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-constructor-cohere-wrapper-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-constructor-groq-wrapper-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-constructor-cohere-model-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-constructor-groq-model-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-model-mistral-family-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-constructor-mistral-rebound-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-constructor-groq-rebound-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-constructor-cohere-rebound-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-constructor-ollama-rebound-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-model-mixtral-unresolved-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-constructor-devika-mistral-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-constructor-devika-groq-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-constructor-devika-ollama-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-constructor-gpt-pilot-groq-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-constructor-lavague-cohere-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-constructor-trae-ollama-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-constructor-taskweaver-groq-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

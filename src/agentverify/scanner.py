@@ -111,6 +111,29 @@ MODEL_CONSTRUCTORS = {
     "Anthropic": {"Anthropic", "AsyncAnthropic", "ChatAnthropic"},
     "Azure OpenAI": {"AzureOpenAI", "AsyncAzureOpenAI", "AzureChatOpenAI"},
 }
+PYTHON_PROVIDER_SDK_CALLS = {
+    "mistralai": ("Mistral",),
+    "mistralai.client": ("Mistral",),
+    "groq": ("AsyncGroq", "Groq"),
+    "cohere": ("AsyncClient", "AsyncClientV2", "Client", "ClientV2"),
+    "ollama": ("AsyncClient", "Client", "chat", "generate"),
+    "langchain_mistralai": ("ChatMistralAI", "MistralAIEmbeddings"),
+    "langchain_groq": ("ChatGroq",),
+    "langchain_cohere": ("ChatCohere", "CohereEmbeddings", "CohereRerank"),
+    "langchain_ollama": ("ChatOllama", "OllamaEmbeddings", "OllamaLLM"),
+}
+PYTHON_PROVIDER_MODULES = {
+    "mistralai": "Mistral",
+    "mistralai.client": "Mistral",
+    "groq": "Groq",
+    "cohere": "Cohere",
+    "ollama": "Ollama",
+    "langchain_mistralai": "Mistral",
+    "langchain_groq": "Groq",
+    "langchain_cohere": "Cohere",
+    "langchain_ollama": "Ollama",
+}
+PYTHON_PROVIDER_SDK_FUNCTIONS = {("ollama", "chat"), ("ollama", "generate")}
 BUILTIN_TOOL_CAPABILITIES = {
     "ShellTool": ("shell-execution",),
     "ApplyPatchTool": ("filesystem",),
@@ -438,6 +461,22 @@ def provider_for_model(model: str) -> str:
         return "Anthropic"
     if lowered.startswith(("gemini-", "models/gemini-", "google/gemini-")):
         return "Google"
+    if lowered.startswith(
+        (
+            "codestral-",
+            "devstral-",
+            "magistral-",
+            "ministral-",
+            "mistral-",
+            "open-codestral-",
+            "open-mistral-",
+            "open-mixtral-",
+            "pixtral-",
+            "shieldstral-",
+            "voxtral-",
+        )
+    ):
+        return "Mistral"
     return "unresolved"
 
 
@@ -2614,6 +2653,8 @@ class PythonVisitor(ast.NodeVisitor):
         self.imported_symbol_names: dict[str, str] = {}
         self.imported_symbol_resolutions: dict[str, str] = {}
         self.mcp_launcher_constructors: dict[str, tuple[str, str]] = {}
+        self.provider_call_bindings: dict[str, tuple[str, str, str]] = {}
+        self.provider_module_bindings: dict[str, tuple[str, str]] = {}
         self.network_helper_bindings: dict[str, PythonNetworkHelperSummary] = {}
         self.module_paths = module_paths
         self.local_symbol_ids = local_symbol_ids
@@ -2987,11 +3028,15 @@ class PythonVisitor(ast.NodeVisitor):
         self.imported_symbol_names.pop(name, None)
         self.imported_symbol_resolutions.pop(name, None)
         self.mcp_launcher_constructors.pop(name, None)
+        self.provider_call_bindings.pop(name, None)
+        self.provider_module_bindings.pop(name, None)
 
     def visit_Import(self, node: ast.Import) -> None:
         for alias in node.names:
             local_name = alias.asname or alias.name.split(".", 1)[0]
             self.invalidate_imported_symbol(local_name)
+            if provider := PYTHON_PROVIDER_MODULES.get(alias.name):
+                self.provider_module_bindings[local_name] = (provider, alias.name)
             if not self.class_stack or self.function_depth > 0:
                 self.network_helper_bindings.pop(
                     local_name, None
@@ -3003,6 +3048,15 @@ class PythonVisitor(ast.NodeVisitor):
             local_name = alias.asname or alias.name
             self.invalidate_imported_symbol(local_name)
             module = node.module or ""
+            if (
+                (provider := PYTHON_PROVIDER_MODULES.get(module))
+                and alias.name in PYTHON_PROVIDER_SDK_CALLS[module]
+            ):
+                self.provider_call_bindings[local_name] = (
+                    provider,
+                    module,
+                    alias.name,
+                )
             if (
                 self.function_depth == 0
                 and not self.class_stack
@@ -3275,6 +3329,8 @@ class PythonVisitor(ast.NodeVisitor):
         previous_imported_symbol_names = self.imported_symbol_names
         previous_imported_symbol_resolutions = self.imported_symbol_resolutions
         previous_mcp_launcher_constructors = self.mcp_launcher_constructors
+        previous_provider_call_bindings = self.provider_call_bindings
+        previous_provider_module_bindings = self.provider_module_bindings
         self.imported_symbol_paths = {
             name: target
             for name, target in self.imported_symbol_paths.items()
@@ -3293,6 +3349,16 @@ class PythonVisitor(ast.NodeVisitor):
         self.mcp_launcher_constructors = {
             name: constructor
             for name, constructor in self.mcp_launcher_constructors.items()
+            if name not in local_bindings
+        }
+        self.provider_call_bindings = {
+            name: binding
+            for name, binding in self.provider_call_bindings.items()
+            if name not in local_bindings
+        }
+        self.provider_module_bindings = {
+            name: binding
+            for name, binding in self.provider_module_bindings.items()
             if name not in local_bindings
         }
         previous_urllib_openers = self.urllib_openers
@@ -3588,6 +3654,8 @@ class PythonVisitor(ast.NodeVisitor):
         self.imported_symbol_names = previous_imported_symbol_names
         self.imported_symbol_resolutions = previous_imported_symbol_resolutions
         self.mcp_launcher_constructors = previous_mcp_launcher_constructors
+        self.provider_call_bindings = previous_provider_call_bindings
+        self.provider_module_bindings = previous_provider_module_bindings
         self.urllib_openers = previous_urllib_openers
         self.urllib_request_constructors = previous_urllib_request_constructors
 
@@ -4578,6 +4646,73 @@ class PythonVisitor(ast.NodeVisitor):
                     {"constructor": call_name, "service": "bedrock-runtime"},
                 )
             )
+        imported_provider: tuple[str, str, str] | None = None
+        if call_name in self.provider_call_bindings:
+            imported_provider = self.provider_call_bindings[call_name]
+        else:
+            root_name, separator, call_suffix = call_name.partition(".")
+            module_binding = self.provider_module_bindings.get(root_name)
+            if separator and module_binding:
+                provider, module = module_binding
+                expected_prefix = (
+                    f"{module.split('.', 1)[1]}."
+                    if "." in module and root_name == module.split(".", 1)[0]
+                    else ""
+                )
+                expected_call = f"{expected_prefix}{short_name}"
+                if (
+                    call_suffix == expected_call
+                    and short_name in PYTHON_PROVIDER_SDK_CALLS[module]
+                ):
+                    imported_provider = (provider, module, short_name)
+        if imported_provider:
+            provider, module, imported_symbol = imported_provider
+            call_kind = (
+                "wrapper-constructor"
+                if module.startswith("langchain_")
+                else "sdk-function"
+                if (module, imported_symbol) in PYTHON_PROVIDER_SDK_FUNCTIONS
+                else "sdk-constructor"
+            )
+            self.ir.add_component(
+                Component(
+                    "provider",
+                    provider,
+                    self.ev(node),
+                    {
+                        "call": call_name,
+                        "call_kind": call_kind,
+                        "module": module,
+                        "imported_symbol": imported_symbol,
+                        "resolution": "exact-provider-sdk-import",
+                    },
+                )
+            )
+            model_value = next(
+                (
+                    keyword.value.value
+                    for keyword in node.keywords
+                    if keyword.arg in {"model", "model_id", "model_name"}
+                    and isinstance(keyword.value, ast.Constant)
+                    and isinstance(keyword.value.value, str)
+                ),
+                None,
+            )
+            if model_value is not None:
+                self.ir.add_component(
+                    Component(
+                        "model",
+                        model_value,
+                        self.ev(node),
+                        {
+                            "provider": provider,
+                            "configured_on": call_name,
+                            "call_kind": call_kind,
+                            "module": module,
+                            "resolution": "exact-provider-sdk-import",
+                        },
+                    )
+                )
         constructor_provider = next(
             (
                 provider

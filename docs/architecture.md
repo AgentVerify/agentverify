@@ -31,10 +31,14 @@ families. Frontend-specific boundaries keep Python-only framework roots separate
 TypeScript-only `ai` package used by Vercel AI SDK. Google provider evidence requires an exact GenAI,
 Vertex, or AI SDK import, or a configured Gemini model prefix. AWS Bedrock requires the exact runtime
 SDK, a recognized `langchain_aws` constructor import, or a literal `bedrock-runtime` service
-selection. Mistral, Groq, Cohere, and Ollama require their exact Python SDK module. Generic Google
-Cloud/AWS SDKs, near-name packages, and Gemma model names do not establish provider identity. Taxonomy
-components intentionally have no source-symbol ID; exact positive and negative component labels are
-scored separately from relationship and finding labels.
+selection. Mistral, Groq, Cohere, and Ollama require their exact Python SDK module. Schema v73 also
+resolves their native client calls and exact LangChain provider wrappers through import aliases until
+rebinding; a literal `model`/`model_name`/`model_id` on those calls inherits the proven provider.
+Recognized Mistral-owned model prefixes provide a separate literal configuration proof, while Groq
+and Ollama model names remain unresolved without the constructor because they commonly host
+third-party models. Generic Google Cloud/AWS SDKs, near-name packages, and Gemma model names do not
+establish provider identity. Taxonomy components intentionally have no source-symbol ID; exact
+positive and negative component labels are scored separately from relationship and finding labels.
 
 Names are intentionally not treated as globally unique. Python and TypeScript agent/tool definitions
 carry stable frontend-and-module-qualified `symbol_id` values; relationships carry `source_id` and

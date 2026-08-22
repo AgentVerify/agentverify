@@ -111,6 +111,59 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         and item.evidence.path.startswith("negative.")
         for item in ir.components
     )
+    provider_calls = {
+        (
+            item.evidence.path,
+            item.evidence.line,
+            item.name,
+            item.attributes.get("call"),
+            item.attributes.get("module"),
+            item.attributes.get("imported_symbol"),
+        )
+        for item in ir.components
+        if item.kind == "provider"
+        and item.attributes.get("resolution") == "exact-provider-sdk-import"
+    }
+    assert provider_calls == {
+        ("provider_constructors.py", 9, "Mistral", "MistralClient", "mistralai", "Mistral"),
+        ("provider_constructors.py", 10, "Groq", "AsyncGroq", "groq", "AsyncGroq"),
+        ("provider_constructors.py", 11, "Cohere", "co.Client", "cohere", "Client"),
+        ("provider_constructors.py", 12, "Ollama", "local_models.Client", "ollama", "Client"),
+        (
+            "provider_constructors.py",
+            13,
+            "Cohere",
+            "ChatCohere",
+            "langchain_cohere",
+            "ChatCohere",
+        ),
+        (
+            "provider_constructors.py",
+            14,
+            "Groq",
+            "GroqChat",
+            "langchain_groq",
+            "ChatGroq",
+        ),
+    }
+    attributed_models = {
+        (item.evidence.path, item.evidence.line, item.name, item.attributes["provider"])
+        for item in ir.components
+        if item.kind == "model"
+        and item.evidence.path.startswith("provider_constructors")
+    }
+    assert attributed_models == {
+        ("provider_constructors.py", 13, "command-r-plus", "Cohere"),
+        ("provider_constructors.py", 14, "llama-3.3-70b-versatile", "Groq"),
+        ("provider_constructors.py", 16, "mistral-large-latest", "Mistral"),
+        ("provider_constructors_rebound.py", 17, "mixtral-8x7b", "unresolved"),
+    }
+    assert not any(
+        item.kind == "provider"
+        and item.evidence.path == "provider_constructors_rebound.py"
+        and item.evidence.line >= 12
+        for item in ir.components
+    )
 
 
 def test_python_agent_inventory_and_dynamic_shell_finding() -> None:

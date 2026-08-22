@@ -142,10 +142,10 @@ versioned audited evidence hints plus Python imports reached from MCP forwarding
 URL-security call sites, all charged against the same cap. This refresh materialized 176 dependency files across 21
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v72 carries both the 176-file total and the
+dependency count per repository; engine schema v73 carries both the 176-file total and the
 21-repository coverage.
 
-Engine benchmark schema v72 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v73 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It also publishes Python and TypeScript initial-origin control coverage
 plus source-proven Python and TypeScript secure transports, with redirect, DNS, proxy, configured
@@ -162,6 +162,12 @@ appears in five repositories, Ollama in four, and Mistral and Cohere in three ea
 signatures keep Python package roots separate from TypeScript's exact `ai` package. Eighty component
 labels cover 51 positives and 29 near-name or unrelated negatives.
 
+Schema v73 separates import-only provider presence from exact configured calls for Mistral, Groq,
+Cohere, and Ollama. Import/alias proof identifies 29 calls across seven repositories: 20 native SDK
+calls and nine LangChain wrappers. Seven production calls occur across five repositories; the other
+22 calls and all 12 literal call-model arguments are test-scoped. Reassignment removes the binding,
+and Mistral-owned literal prefixes remain distinct from unqualified Mixtral or third-party model IDs.
+
 Schema v63 retains A2A endpoint provenance as a separate authority class: four exact client-construction
 paths comprise two unconstrained remote-card-selected TypeScript origins and two same-origin-
 constrained ADK Python paths. The guarded paths validate every advertised interface; the Gemini path
@@ -175,9 +181,9 @@ one address-filtering control with configured allowlist and environment-proxy re
 Composio edges separately count configured-route pinning residuals, one edge-runtime fail-closed path,
 and three edge-runtime unguarded fallbacks.
 
-The benchmark now also measures identity coverage: 9,578 agent/tool component observations carry
-module-qualified IDs. Of 4,228 relationship endpoints, all 3,474 identified symbol endpoints resolve
-to an observed component (3,161 Python and 313 TypeScript). Schema v63 records 359
+The benchmark now also measures identity coverage: 9,584 agent/tool component observations carry
+module-qualified IDs. Of 4,254 relationship endpoints, all 3,486 identified symbol endpoints resolve
+to an observed component (3,173 Python and 313 TypeScript). Schema v63 records 359
 `lexical-single-definition` targets, 20 exact same-block dominating definitions, 25 contextual
 absolute-import targets, and three exact same-class helper-return edges to two Agent source
 definitions. Fourteen production CrewAI delegations resolve through an exact contextual import,
@@ -226,8 +232,8 @@ Missing relative modules, duplicate or forward imports, module rebinding, and fu
 shadowing remain unresolved. Sixteen IR labels cover the local export/import boundary, six negative
 forms, and all seven pinned Google ADK edges; one rule label proves cross-file AV-FS001 reachability.
 
-Schema-v70 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
-resolves 3,468 endpoints by symbol ID, 632 by exact evidence location, and 22 by a unique display
+Schema-v73 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
+resolves 3,480 endpoints by symbol ID, 645 by exact evidence location, and 23 by a unique display
 name; 38 remain ambiguous and 68 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
@@ -1122,11 +1128,11 @@ six unresolved ambiguity/shadowing/order forms, and all seven pinned Google ADK 
 tool-factory/adapter labels cover four local Agent edges, one hosted-MCP capability, one local
 Agent-as-tool delegation, eight conservative local negatives, two AutoGen factory edges, one Google
 ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent edge plus delegation.
-Eighty component-taxonomy labels add 51 exact local/pinned framework, provider, and model positives
-plus 29 near-name and unrelated-service negatives. Twenty-five MCP package-launcher labels separately
+The 101 component-taxonomy labels add 67 exact local/pinned framework, provider, constructor,
+and model positives plus 34 near-name, rebound, and unrelated-service negatives. Twenty-five MCP package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
-four real repositories. All 615 IR labels pass:
-51 component-taxonomy positives/29 negatives, three approval positives/four negatives,
+four real repositories. All 636 IR labels pass:
+67 component-taxonomy positives/34 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
 contextual network-import positives,

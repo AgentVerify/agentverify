@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v72
+framework, wrapper, or configuration path. Counts come from schema-v73
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -36,9 +36,14 @@ Provider observations are OpenAI (41), Anthropic (17), Google (17), Azure OpenAI
 (6), Groq (5), Ollama (4), Cohere (3), and Mistral (3). These overlapping exact-import, literal
 service, and model-string observations are lower than research-wide lexical signals.
 
-Across the selected snapshot, 9,578 agent/tool observations have module-qualified symbol IDs. Of
-4,228 relationship endpoint observations, all 3,474 identified endpoints resolve to an observed
-component (3,161 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
+Schema v73 identifies 29 exact Python provider calls across seven repositories: 20 native Mistral,
+Groq, Cohere, or Ollama SDK calls and nine LangChain wrappers. Seven calls across five repositories
+are production-scoped; 22 calls and all 12 literal call-model arguments occur in tests. These call
+facts refine configured use without changing the 48-repository provider-presence total.
+
+Across the selected snapshot, 9,584 agent/tool observations have module-qualified symbol IDs. Of
+4,254 relationship endpoint observations, all 3,486 identified endpoints resolve to an observed
+component (3,173 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
 withheld because a function parameter and assignment shadow the same-named package import.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
 edges resolve exactly. Schema v63 records 359 Python lexical-single-definition, 20 same-block
@@ -71,8 +76,8 @@ Capability/control taxonomy endpoints intentionally lack
 source-symbol IDs, so the endpoint fraction is inventory coverage rather than an accuracy or recall
 metric.
 
-The native AI BOM 1.2 resolver independently classifies all 4,228 endpoints: 3,468 by symbol ID, 632
-by exact relationship evidence, 22 by a unique display name, 38 as ambiguous, and 68 as unresolved.
+The native AI BOM 1.2 resolver independently classifies all 4,254 endpoints: 3,480 by symbol ID, 645
+by exact relationship evidence, 23 by a unique display name, 38 as ambiguous, and 68 as unresolved.
 Evidence-local resolution removes capability/control ambiguities; occurrence-qualified bindings
 resolve repeated source agent/tool observations, and conservative lexical resolution removes further
 target ambiguities. The remaining 38 ambiguous endpoints are agent, protocol, control, or tool targets without a unique
@@ -378,9 +383,11 @@ and `network-ssrf-policy` edge.
   agent bases may still leave a generic `Agent` without framework attribution.
 - Google provider taxonomy requires an exact GenAI/Vertex/AI SDK import or a Gemini model prefix.
   AWS Bedrock requires its exact TypeScript runtime SDK, a recognized `langchain_aws` constructor
-  import, or a literal `bedrock-runtime` service selection. Mistral, Groq, Cohere, and Ollama require
-  exact Python SDK imports. Indirect factories, reexports, and model-name-only attribution for these
-  providers remain unresolved rather than inferred from nearby names.
+  import, or a literal `bedrock-runtime` service selection. Mistral, Groq, Cohere, and Ollama support
+  exact Python SDK imports plus import/alias-proven native and LangChain wrapper calls. Rebinding
+  withholds call attribution. Literal constructor model arguments inherit the proven provider, and
+  selected Mistral-owned prefixes are recognized; third-party model names hosted by Groq or Ollama,
+  indirect factories, and reexports remain unresolved.
 - Python registry classes reexported through exact selected `__init__.py` imports are resolved only
   for immutable constructor-bound attributes. General package reexports, wildcard imports,
   module-qualified or dynamically selected constructors, imported policy objects, callback approval
@@ -534,7 +541,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 511-label rule truth set and 615-label IR component/relationship set are curated regression suites. They
+The 511-label rule truth set and 636-label IR component/relationship set are curated regression suites. They
 guard known positives and negatives; they are not an unbiased accuracy estimate. A future holdout
 must be sampled separately across the categories above, externally reviewed, and kept sealed while
 rules change. Until then, precision/recall values apply only to the published seed labels.

@@ -597,6 +597,18 @@ def main() -> int:
             for item in ir.components
             if item.kind == "mcp-server" and item.attributes.get("package")
         ]
+        python_provider_call_attributions = [
+            item
+            for item in ir.components
+            if item.kind == "provider"
+            and item.attributes.get("resolution") == "exact-provider-sdk-import"
+        ]
+        python_provider_call_models = [
+            item
+            for item in ir.components
+            if item.kind == "model"
+            and item.attributes.get("resolution") == "exact-provider-sdk-import"
+        ]
         python_google_adk_bigquery_audit_controls = [
             item
             for item in ir.components
@@ -734,6 +746,38 @@ def main() -> int:
                 kind: sorted({item.name for item in ir.components if item.kind == kind})
                 for kind in sorted(PUBLISHED_NAME_KINDS)
                 if any(item.kind == kind for item in ir.components)
+            },
+            "python_provider_call_attribution": {
+                "calls": len(python_provider_call_attributions),
+                "production_calls": sum(
+                    not is_test_path(item.evidence.path)
+                    for item in python_provider_call_attributions
+                ),
+                "test_calls": sum(
+                    is_test_path(item.evidence.path)
+                    for item in python_provider_call_attributions
+                ),
+                "repositories": bool(python_provider_call_attributions),
+                "production_repositories": any(
+                    not is_test_path(item.evidence.path)
+                    for item in python_provider_call_attributions
+                ),
+                "sdk_calls": sum(
+                    not str(item.attributes.get("module", "")).startswith("langchain_")
+                    for item in python_provider_call_attributions
+                ),
+                "wrapper_calls": sum(
+                    str(item.attributes.get("module", "")).startswith("langchain_")
+                    for item in python_provider_call_attributions
+                ),
+                "literal_models": len(python_provider_call_models),
+                **{
+                    provider.lower(): sum(
+                        item.name == provider
+                        for item in python_provider_call_attributions
+                    )
+                    for provider in ("Mistral", "Groq", "Cohere", "Ollama")
+                },
             },
             "relationships": len(ir.relationships),
             "symbolized_components": sum(bool(item.symbol_id) for item in ir.components),
@@ -2013,7 +2057,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 72,
+        "schema_version": 73,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2090,6 +2134,26 @@ def main() -> int:
                     for result in successful
                 )
                 for frontend in ("py", "ts")
+            },
+            "python_provider_call_attribution": {
+                name: sum(
+                    result["python_provider_call_attribution"][name]
+                    for result in successful
+                )
+                for name in (
+                    "calls",
+                    "production_calls",
+                    "test_calls",
+                    "repositories",
+                    "production_repositories",
+                    "sdk_calls",
+                    "wrapper_calls",
+                    "literal_models",
+                    "mistral",
+                    "groq",
+                    "cohere",
+                    "ollama",
+                )
             },
             "typescript_graph": {
                 name: sum(result["typescript_graph"][name] for result in successful)
