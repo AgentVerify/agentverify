@@ -40,6 +40,28 @@ from agentverify.policy import PolicyError, load_policy, normalize_policy
         (
             {
                 "schema_version": 1,
+                "gates": [{"id": "gate", "rules": ["AV-APPROVAL001"], "max_count": 0}],
+            },
+            "rules cannot match gates\\[0\\].result_kinds: AV-APPROVAL001 emits review",
+        ),
+        (
+            {
+                "schema_version": 1,
+                "gates": [
+                    {
+                        "id": "gate",
+                        "rules": ["AV-AUDIT001"],
+                        "result_kinds": ["review"],
+                        "min_severity": "high",
+                        "max_count": 0,
+                    }
+                ],
+            },
+            "rules cannot meet gates\\[0\\].min_severity high: AV-AUDIT001 emits medium",
+        ),
+        (
+            {
+                "schema_version": 1,
                 "gates": [{"id": "same", "max_count": 0}, {"id": "same", "max_count": 1}],
             },
             "duplicate gate id",
@@ -72,6 +94,32 @@ def test_policy_normalization_trims_identifiers_and_applies_defaults() -> None:
             }
         ],
     }
+
+
+def test_policy_rule_filters_accept_matching_catalog_kind_and_severity() -> None:
+    normalized = normalize_policy(
+        {
+            "schema_version": 1,
+            "gates": [
+                {
+                    "id": "approval",
+                    "rules": ["AV-APPROVAL001"],
+                    "result_kinds": ["review"],
+                    "min_severity": "high",
+                    "max_count": 0,
+                },
+                {
+                    "id": "audit",
+                    "rules": ["AV-AUDIT001"],
+                    "result_kinds": ["review"],
+                    "min_severity": "medium",
+                    "max_count": 1,
+                },
+            ],
+        }
+    )
+
+    assert [gate["id"] for gate in normalized["gates"]] == ["approval", "audit"]
 
 
 def test_policy_can_contain_only_local_policy_references() -> None:

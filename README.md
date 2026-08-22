@@ -56,7 +56,8 @@ still preserve policy and `--fail-on` exit decisions.
 `agentverify rules` lists every enabled reporting rule with its result kind, default severity,
 confidence, summary, and baseline remediation. Pass a rule ID for a focused explanation or
 `--format json` for policy tooling and editor integrations. Policy rule filters reject unknown or
-inventory-only IDs before scanning, so a typo cannot silently turn a gate into an empty match.
+inventory-only IDs before scanning. They also reject selected rules excluded by the gate's result
+kind or severity threshold, so a typo or dead filter cannot silently turn a gate into an empty match.
 
 Example finding:
 

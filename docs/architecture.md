@@ -825,3 +825,6 @@ fingerprints by rule, result kind, and minimum severity; findings remain in ever
 AI BOM, and SARIF retain the policy file digest and per-gate decision evidence. Local `extends`
 composition loads base policies depth first, deduplicates shared files by resolved path, rejects
 cycles and duplicate gate identities, and attaches the contributing file digest to every gate.
+Rule IDs, result kinds, severities, and confidence come from one runtime catalog. Policy loading
+rejects unknown IDs and any selected rule excluded by the gate's kind or severity filters before a
+scan begins; the bundled schema carries the same enabled ID set.

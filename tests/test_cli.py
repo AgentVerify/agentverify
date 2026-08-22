@@ -444,6 +444,27 @@ def test_unknown_policy_rule_is_rejected_before_scanning(
     assert "rules contains unsupported values: AV-EXECC001" in captured.err
 
 
+def test_impossible_policy_rule_filter_is_rejected_before_scanning(
+    tmp_path: Path, capsys, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    policy = tmp_path / "dead-filter.json"
+    policy.write_text(
+        '{"schema_version":1,"gates":['
+        '{"id":"wrong-kind","rules":["AV-APPROVAL001"],"max_count":0}]}',
+        encoding="utf-8",
+    )
+
+    def unexpected_scan(*args: object, **kwargs: object) -> None:
+        raise AssertionError("scan must not run")
+
+    monkeypatch.setattr(cli, "scan_repository", unexpected_scan)
+
+    assert cli.main(["scan", str(ROOT / "cases/python_auto_approval"), "--policy", str(policy)]) == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "AV-APPROVAL001 emits review" in captured.err
+
+
 def test_paths_from_scans_only_selected_repository_paths(tmp_path: Path, capsys) -> None:
     paths = tmp_path / "changed.txt"
     paths.write_text("cases/python_dangerous/agent.py\n", encoding="utf-8")

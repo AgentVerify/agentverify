@@ -443,6 +443,9 @@ finding messages and remediation details in reports.
 Policy rule filters are now fail-closed against the same catalog in both runtime normalization and
 the bundled JSON schema. Unknown, misspelled, or inventory-only IDs are rejected before scanning;
 a consistency test requires schema and catalog updates to land together.
+Runtime normalization also rejects selected rules whose catalog result kind is absent from the gate
+or whose fixed severity falls below its threshold. This prevents review-only/default-finding and
+medium-rule/high-threshold filters from becoming provably empty passing gates.
 
 ## P2 — AI BOM standards adapters
 

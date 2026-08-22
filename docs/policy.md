@@ -49,13 +49,19 @@ Each gate counts results satisfying all configured filters:
 - `max_count`: required non-negative count. The gate passes when matches are less than or equal to
   this value.
 
+When `rules` is present, every selected rule must emit one of the configured `result_kinds` and its
+fixed catalog severity must meet `min_severity`. For example, `AV-APPROVAL001` requires `review`,
+and medium-severity `AV-AUDIT001` cannot be selected by a high-only gate. AgentVerify rejects these
+dead filters rather than allowing a provably empty gate to pass.
+
 All gates must pass. Exit status is `1` when a policy gate or an explicit `--fail-on` threshold fails,
 `2` for an invalid policy, and `0` otherwise. `--fail-on` and `--policy` are additive.
 
 Policies are deliberately non-hiding. Matching findings remain in text, JSON, AI BOM, and SARIF
 output. Each report includes the policy name, source filename, SHA-256 digest, overall status, gate
-filters, matched counts, and matching fingerprints. Unknown fields, duplicate gate IDs, invalid
-enumerations, and negative budgets are rejected rather than ignored.
+filters, matched counts, and matching fingerprints. Unknown fields or rules, duplicate gate IDs,
+kind/severity-incompatible rule filters, invalid enumerations, and negative budgets are rejected
+rather than ignored.
 
 ## Organization policy composition
 

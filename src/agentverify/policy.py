@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from .ir import RepositoryIR
-from .rules import REPORTING_RULE_IDS
+from .rules import REPORTING_RULE_IDS, RULE_CATALOG
 
 SEVERITY_RANK = {"info": 0, "low": 1, "medium": 2, "high": 3}
 RESULT_KINDS = {"finding", "review"}
@@ -95,6 +95,33 @@ def normalize_policy(payload: object) -> dict[str, Any]:
             if "result_kinds" in raw_gate
             else ["finding"]
         )
+        excluded_by_kind = [
+            rule_id
+            for rule_id in rules
+            if RULE_CATALOG[rule_id].result_kind not in result_kinds
+        ]
+        if excluded_by_kind:
+            details = ", ".join(
+                f"{rule_id} emits {RULE_CATALOG[rule_id].result_kind}"
+                for rule_id in excluded_by_kind
+            )
+            raise PolicyError(
+                f"{field}.rules cannot match {field}.result_kinds: {details}"
+            )
+        excluded_by_severity = [
+            rule_id
+            for rule_id in rules
+            if SEVERITY_RANK[RULE_CATALOG[rule_id].severity]
+            < SEVERITY_RANK[minimum]
+        ]
+        if excluded_by_severity:
+            details = ", ".join(
+                f"{rule_id} emits {RULE_CATALOG[rule_id].severity}"
+                for rule_id in excluded_by_severity
+            )
+            raise PolicyError(
+                f"{field}.rules cannot meet {field}.min_severity {minimum}: {details}"
+            )
         gates.append(
             {
                 "id": gate_id,
