@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T17:26:30.614287+00:00",
-  "labels": 947,
-  "passed": 947,
+  "generated_at": "2026-08-22T17:42:15.122318+00:00",
+  "labels": 953,
+  "passed": 953,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -157,9 +157,9 @@
       "recall": 1.0
     },
     "IR-PY-BROWSER-RECEIVER": {
-      "tp": 58,
+      "tp": 60,
       "fp": 0,
-      "tn": 55,
+      "tn": 59,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -9050,6 +9050,60 @@
     },
     {
       "id": "python-browser-receiver-wrapper-skyvern-1755-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-imported-field-local",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-imported-field-ordinary-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-imported-field-duplicate-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-imported-field-context-reassigned-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-imported-field-alias-reassigned-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-imported-field-skyvern-1508-real",
       "check_id": "IR-PY-BROWSER-RECEIVER",
       "expected": true,
       "observed": true,

@@ -1095,6 +1095,134 @@ def python_class_browser_receiver_attributes(
     }
 
 
+def build_python_browser_class_exports(
+    root: Path,
+    paths: list[Path],
+) -> dict[tuple[str, str], frozenset[str]]:
+    """Index exact Playwright-annotated fields on uniquely defined top-level classes."""
+    exports: dict[tuple[str, str], frozenset[str]] = {}
+    for path in paths:
+        if path.suffix.lower() != ".py" or not path.is_file() or path.is_symlink():
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+            if "playwright." not in text or "class " not in text:
+                continue
+            tree = ast.parse(text, filename=relative)
+        except (OSError, SyntaxError):
+            continue
+
+        module_mutations: Counter[str] = Counter()
+
+        def collect_module_mutations(
+            candidate: ast.AST, mutations: Counter[str]
+        ) -> None:
+            if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                return
+            if isinstance(candidate, (ast.Import, ast.ImportFrom, ast.Lambda)):
+                return
+            if isinstance(candidate, ast.Name) and isinstance(
+                candidate.ctx, (ast.Store, ast.Del)
+            ):
+                mutations[candidate.id] += 1
+            for child in ast.iter_child_nodes(candidate):
+                collect_module_mutations(child, mutations)
+
+        for statement in tree.body:
+            collect_module_mutations(statement, module_mutations)
+        module_mutations.update(
+            name
+            for candidate in ast.walk(tree)
+            if isinstance(candidate, ast.Global)
+            for name in candidate.names
+        )
+
+        type_checking_counts = Counter(
+            alias.asname or alias.name
+            for statement in tree.body
+            if isinstance(statement, ast.ImportFrom)
+            and statement.module == "typing"
+            for alias in statement.names
+            if alias.name == "TYPE_CHECKING"
+        )
+        type_checking_names = {
+            name
+            for name, count in type_checking_counts.items()
+            if count == 1 and module_mutations[name] == 0
+        }
+        browser_imports: list[ast.Import | ast.ImportFrom] = [
+            statement
+            for statement in tree.body
+            if isinstance(statement, (ast.Import, ast.ImportFrom))
+        ]
+        browser_imports.extend(
+            child
+            for statement in tree.body
+            if isinstance(statement, ast.If)
+            and isinstance(statement.test, ast.Name)
+            and statement.test.id in type_checking_names
+            and not statement.orelse
+            for child in statement.body
+            if isinstance(child, (ast.Import, ast.ImportFrom))
+        )
+        import_binding_counts = Counter(
+            alias.asname
+            or (
+                alias.name
+                if isinstance(statement, ast.ImportFrom)
+                else alias.name.split(".", 1)[0]
+            )
+            for statement in browser_imports
+            for alias in statement.names
+        )
+        browser_type_counts = Counter(
+            alias.asname or alias.name
+            for statement in browser_imports
+            if isinstance(statement, ast.ImportFrom)
+            and statement.module is not None
+            and statement.module.startswith("playwright.")
+            for alias in statement.names
+            if alias.name in {"ElementHandle", "Frame", "JSHandle", "Locator", "Page"}
+        )
+        browser_type_names = {
+            name
+            for name, count in browser_type_counts.items()
+            if count == 1
+            and import_binding_counts[name.split(".", 1)[0]] == 1
+            and module_mutations[name] == 0
+        }
+        if not browser_type_names:
+            continue
+        top_level_definition_counts = Counter(
+            statement.name
+            for statement in tree.body
+            if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+        )
+        top_level_import_counts = Counter(
+            alias.asname or alias.name.split(".", 1)[0]
+            for statement in tree.body
+            if isinstance(statement, (ast.Import, ast.ImportFrom))
+            for alias in statement.names
+        )
+        for statement in tree.body:
+            if (
+                not isinstance(statement, ast.ClassDef)
+                or top_level_definition_counts[statement.name] != 1
+                or top_level_import_counts[statement.name] != 0
+                or module_mutations[statement.name] != 0
+            ):
+                continue
+            attributes = python_class_browser_receiver_attributes(
+                statement, browser_type_names
+            )
+            if attributes:
+                exports[(relative, statement.name)] = frozenset(attributes)
+    return exports
+
+
 def python_module_browser_receiver_variables(
     tree: ast.Module, browser_type_names: set[str]
 ) -> set[str]:
@@ -2935,6 +3063,7 @@ def python_browser_receiver_proofs(
     browser_helper_parameter_proofs: dict[str, str],
     module_browser_variables: set[str],
     class_browser_attributes: dict[str, str],
+    imported_browser_class_attributes: dict[str, frozenset[str]],
     *,
     builtin_getattr_available: bool,
 ) -> dict[int, str]:
@@ -3024,6 +3153,13 @@ def python_browser_receiver_proofs(
         name: proof for name, proof in bindings.items() if mutation_counts[name] == 0
     }
     binding_lines = {name: binding_lines[name] for name in bindings}
+    imported_browser_context_parameters = {
+        argument.arg: imported_browser_class_attributes[annotation_name]
+        for argument in (*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs)
+        if mutation_counts[argument.arg] == 0
+        if (annotation_name := dotted_name(argument.annotation))
+        in imported_browser_class_attributes
+    }
 
     def unwrap(expression: ast.AST | None) -> ast.AST | None:
         return expression.value if isinstance(expression, ast.Await) else expression
@@ -3141,6 +3277,13 @@ def python_browser_receiver_proofs(
             proof = bindings.get(expression.id)
             if proof and binding_lines[expression.id] < line:
                 return proof
+        if (
+            isinstance(expression, ast.Attribute)
+            and isinstance(expression.value, ast.Name)
+            and expression.attr
+            in imported_browser_context_parameters.get(expression.value.id, frozenset())
+        ):
+            return "imported-class-playwright-field"
         if (
             isinstance(expression, ast.Attribute)
             and isinstance(expression.value, ast.Name)
@@ -3297,6 +3440,14 @@ def python_browser_receiver_proofs(
                 and value.id in bindings
             ):
                 bindings[target.id] = "typed-parameter-alias"
+                binding_lines[target.id] = candidate.lineno
+            elif (
+                isinstance(target, ast.Name)
+                and mutation_counts[target.id] == 1
+                and direct_receiver_proof(value, candidate.lineno)
+                == "imported-class-playwright-field"
+            ):
+                bindings[target.id] = "imported-class-playwright-field-alias"
                 binding_lines[target.id] = candidate.lineno
             elif (
                 isinstance(target, ast.Name)
@@ -4978,6 +5129,7 @@ class PythonVisitor(ast.NodeVisitor):
         browser_contextmanager_page_factories: set[str],
         same_class_browser_parameter_proofs: dict[int, dict[str, str]],
         module_browser_variables: set[str],
+        imported_browser_class_attributes: dict[str, frozenset[str]],
         builtin_property_available: bool,
         builtin_getattr_available: bool,
         url_parser_names: set[str],
@@ -5028,6 +5180,7 @@ class PythonVisitor(ast.NodeVisitor):
             same_class_browser_parameter_proofs
         )
         self.module_browser_variables = module_browser_variables
+        self.imported_browser_class_attributes = imported_browser_class_attributes
         self.builtin_property_available = builtin_property_available
         self.builtin_getattr_available = builtin_getattr_available
         self.url_parser_names = url_parser_names
@@ -5869,6 +6022,7 @@ class PythonVisitor(ast.NodeVisitor):
                 self.same_class_browser_parameter_proofs.get(id(node), {}),
                 function_module_browser_variables,
                 class_browser_attributes,
+                self.imported_browser_class_attributes,
                 builtin_getattr_available=self.builtin_getattr_available,
             )
             if self.has_browser_import
@@ -8374,6 +8528,7 @@ def scan_python(
     registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
     network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
     registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
+    browser_class_exports: dict[tuple[str, str], frozenset[str]],
 ) -> None:
     relative = path.relative_to(root).as_posix()
     try:
@@ -8398,6 +8553,17 @@ def scan_python(
         if isinstance(node, ast.ImportFrom)
         for alias in node.names
     }
+    module_import_binding_counts = Counter(
+        alias.asname
+        or (
+            alias.name.split(".", 1)[0]
+            if isinstance(node, ast.Import)
+            else alias.name
+        )
+        for node in tree.body
+        if isinstance(node, (ast.Import, ast.ImportFrom))
+        for alias in node.names
+    )
     module_mutations: set[str] = set()
     module_mutation_counts: Counter[str] = Counter()
 
@@ -8688,6 +8854,34 @@ def scan_python(
         factory
         for factory in browser_page_factories
         if factory.split(".", 1)[0] not in module_rebound_names
+    }
+    imported_browser_class_candidates: dict[str, list[frozenset[str]]] = defaultdict(list)
+    for statement in tree.body:
+        if not isinstance(statement, ast.ImportFrom):
+            continue
+        for alias in statement.names:
+            target_path = resolve_python_import_path(
+                root,
+                relative,
+                statement,
+                alias.name,
+                module_paths,
+            )
+            attributes = (
+                browser_class_exports.get((target_path, alias.name))
+                if target_path is not None
+                else None
+            )
+            if attributes:
+                imported_browser_class_candidates[alias.asname or alias.name].append(
+                    attributes
+                )
+    imported_browser_class_attributes = {
+        name: candidates[0]
+        for name, candidates in imported_browser_class_candidates.items()
+        if len(candidates) == 1
+        and module_import_binding_counts[name] == 1
+        and name not in module_rebound_names
     }
     browser_contextmanager_page_factories = (
         python_browser_contextmanager_page_factories(
@@ -10917,6 +11111,7 @@ def scan_python(
             same_class_browser_parameter_proofs
         ),
         module_browser_variables=module_browser_variables,
+        imported_browser_class_attributes=imported_browser_class_attributes,
         builtin_property_available=(
             "property" not in imported_bindings and "property" not in module_mutations
         ),
@@ -24528,6 +24723,7 @@ def scan_repository(
         registry_paths,
         module_paths,
     )
+    browser_class_exports = build_python_browser_class_exports(root, registry_paths)
     for path in paths:
         relative_path = path.relative_to(root)
         if path.is_symlink() or not path.is_file() or set(relative_path.parts) & SKIP_DIRECTORIES:
@@ -24586,6 +24782,7 @@ def scan_repository(
                 registry_class_exports,
                 network_helper_summaries,
                 registered_tool_functions,
+                browser_class_exports,
             )
         else:
             scan_typescript(ir, root, path, text)

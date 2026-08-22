@@ -43,8 +43,9 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
   context-manager page and the helper never escapes. Branching lifecycle fields are resolved only
   when all writes stay on one exact Playwright construction or popup-page graph. Skyvern's exact
   imported-page wrapper scope is resolved only for its literal `_locator_scope`/`.page` fallback
-  expression with unshadowed `getattr` and statement dominance. Next cover inherited fields,
-  additional bounded wrapper-returned locator flows, and helper returns.
+  expression with unshadowed `getattr` and statement dominance. Exact Playwright fields on uniquely
+  imported context classes may flow through an immutable typed parameter and one-write local alias.
+  Next cover inherited fields, additional bounded wrapper-returned locator flows, and helper returns.
 - Detect auto-approval/skip-confirmation configuration.
 - Detect broad filesystem roots, host mounts, Docker socket exposure, and unscoped file tools.
 - Detect MCP tool pass-throughs and enumerate statically registered server capabilities.

@@ -108,6 +108,13 @@ selects exactly `_locator_scope` or falls back through `.page` to the same page 
 built-in `getattr`. Coverage rises to 69 proven of 93 and 24 unresolved. Wrong attributes or
 fallbacks, shadowed `getattr`, and non-dominating branch-local assignments remain withheld; findings
 remain unchanged.
+Schema v98 proves Skyvern's fixed-script popup probe at
+[`scouting.py:1508`](https://github.com/Skyvern-AI/skyvern/blob/486c8975e9864a53037d4701b781f8619e698c40/skyvern/forge/sdk/copilot/tools/scouting.py#L1508).
+The imported `AgentContext` uniquely annotates `pending_scout_popup` as `Page | None`; the consumer
+uses an exact immutable `AgentContext` parameter and copies that field into one immutable local
+before clearing the shared slot and checking for `None`. Coverage rises to 70 proven of 93 and 23
+unresolved. Ordinary or duplicate fields, near or rebound imports, and context or alias reassignment
+remain withheld; findings remain unchanged.
 The constructor proof requires one exact imported Playwright runtime factory and a
 straight-line, single-mutation `__init__` chain through browser/context creation. Conflicting types,
 near/rebound imports, static methods, conditional or later field assignments, and shadowed factories
@@ -172,7 +179,7 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the consolidated 622-label truth set.
+rule observations are pinned in the consolidated 628-label truth set.
 
 MCP configuration is also executable dependency configuration. Schema v65 resolves 50 literal
 `npx`/`uvx` package launchers in the bounded corpus: 45 unpinned, three floating, and two exact,

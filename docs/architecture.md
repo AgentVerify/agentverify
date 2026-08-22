@@ -492,8 +492,11 @@ whose selected-module call sites unanimously pass a locally proven Playwright br
 result of Skyvern's exact imported `get_page` factory. An exact Skyvern wrapper scope derived from
 that result is also accepted when an unshadowed built-in `getattr` selects `_locator_scope` with a
 `None` default or falls back through `.page` to the same receiver, and the annotated assignment
-dominates the evaluator. Module annotations require one binding and no top-level rebound or
-duplicate annotation; function parameters and local bindings shadow them. Playwright imports in a
+dominates the evaluator. A field on an imported context class may flow through one immutable local
+alias when the selected defining file has one top-level class definition and one exact Playwright
+field annotation, the consumer uniquely resolves an unrebound import of that class, and an immutable
+parameter uses the exact imported class annotation. Module annotations require one binding and no
+top-level rebound or duplicate annotation; function parameters and local bindings shadow them. Playwright imports in a
 top-level `try` are accepted only when every handler terminates, including an exact `sys.exit(...)`
 path through one uniquely bound `sys` import. Class attributes may use one
 direct annotation in the class body or `__init__`; exact Playwright imports under an immutable
@@ -539,6 +542,8 @@ runtime root reaches every non-`None` field assignment through runtime, browser,
 exact `"popup"` event-result transitions. Unknown, tuple, or dynamic `setattr` writes, other event
 names, and shadowed runtime factories withhold the field-wide summary.
 Wrong wrapper attributes or fallbacks, shadowed `getattr`, and cross-branch use are withheld.
+Ordinary or duplicate imported fields, near-package Playwright types, ambiguous or rebound class
+imports, and reassigned context parameters or local aliases are also withheld.
 Property proof requires the built-in decorator, one getter definition, and an exact imported
 Playwright return type. Inherited fields, other ambiguous wrapper-returned locators, sanitizer
 proofs, imported/transitive script builders, helper-return or non-unanimous helper-parameter provenance, and unsupported

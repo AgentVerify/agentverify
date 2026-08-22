@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v97
+framework, wrapper, or configuration path. Counts come from schema-v98
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -627,7 +627,7 @@ and `network-ssrf-policy` edge.
   returned receivers remain unresolved rather than matching string/container methods by name.
   Arbitrary attribute `.open()` calls are deliberately excluded unless the receiver is proven to be
   a `pathlib.Path`; configured or fixed write paths remain inventory but do not raise AV-FS001.
-- Browser-page evaluation inventories 93 import-context calls and proves 69 receivers: two exact
+- Browser-page evaluation inventories 93 import-context calls and proves 70 receivers: two exact
   Playwright-annotated SWE-agent parameters, five Skyvern calls reached from an exact imported page
   factory, 15 exact class-attribute annotations across CAMEL, LaVague, and MetaGPT, and 13 Devika
   calls through an exact constructor-bound page field or immutable local alias. One further Skyvern
@@ -667,12 +667,18 @@ and `network-ssrf-policy` edge.
   the expression must select `_locator_scope` with a `None` default or fall back through `.page` to
   the same page. The annotated assignment must dominate the derived Locator evaluator. Wrong
   attributes or defaults, a shadowed `getattr`, and cross-branch use withhold the proof.
+  Schema v98 proves one further Skyvern production evaluation through an imported context field.
+  The defining selected file must contain one top-level class with one exact Playwright field
+  annotation; the consumer must uniquely resolve an unrebound import of that class, use it as the
+  exact annotation of an immutable parameter, and copy the field into one immutable local. Ordinary
+  or duplicate field annotations, near or rebound imports, and parameter or alias reassignment
+  withhold the proof.
   Class or `__init__` annotations may use an exact immutable Playwright import under `TYPE_CHECKING`.
   Constructor flow requires a straight-line exact Playwright runtime→browser/context→page chain and
   one field mutation. Conflicting/wrong annotations, near or rebound imports, static methods, and
   conditional, repeated, late, or shadowed-factory fields are withheld. Six chained calls formerly
   missed by the dotted-name gate are now inventoried; five remain unresolved. Across all supported
-  APIs, 24 fixed-script observations retain unresolved receiver state. Dynamic promotion also
+  APIs, 23 fixed-script observations retain unresolved receiver state. Dynamic promotion also
   supports one immutable alias of a typed parameter and known locator/get-by/filter/nth/and/or/
   first/last derivations;
   untyped/inherited fields, other ambiguous wrapper locators, sanitizers,
@@ -696,7 +702,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 622-label rule truth set and 947-label IR component/relationship set are curated regression
+The 628-label rule truth set and 953-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

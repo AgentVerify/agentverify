@@ -4543,6 +4543,46 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
             "unresolved-browser-import-context",
         ),
         (
+            "imported_field.py",
+            12,
+            "popup.evaluate",
+            "browser-page",
+            False,
+            "imported-class-playwright-field-alias",
+        ),
+        (
+            "imported_field.py",
+            17,
+            "popup.evaluate",
+            "browser-page",
+            False,
+            "unresolved-browser-import-context",
+        ),
+        (
+            "imported_field.py",
+            22,
+            "popup.evaluate",
+            "browser-page",
+            False,
+            "unresolved-browser-import-context",
+        ),
+        (
+            "imported_field.py",
+            28,
+            "popup.evaluate",
+            "browser-page",
+            False,
+            "unresolved-browser-import-context",
+        ),
+        (
+            "imported_field.py",
+            34,
+            "popup.evaluate",
+            "browser-page",
+            False,
+            "unresolved-browser-import-context",
+        ),
+        (
             "local_construction.py",
             16,
             "page.evaluate",
@@ -4839,6 +4879,76 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
         and item.evidence.line == 14
     )
     assert shadowed_exact.attributes["receiver_proof"] == (
+        "unresolved-browser-import-context"
+    )
+
+    rebound_class = tmp_path / "rebound-imported-browser-class"
+    shutil.copytree(ROOT / "cases/python_browser_evaluate", rebound_class)
+    imported_field_path = rebound_class / "imported_field.py"
+    imported_field_source = imported_field_path.read_text(encoding="utf-8")
+    imported_marker = "BrowserReceiver = Page"
+    assert imported_marker in imported_field_source
+    imported_field_path.write_text(
+        imported_field_source.replace(
+            imported_marker,
+            f"{imported_marker}\nBrowserContext = object",
+        ),
+        encoding="utf-8",
+    )
+    rebound_ir = scan_repository(rebound_class)
+    rebound_exact = next(
+        item
+        for item in rebound_ir.components
+        if item.kind == "capability"
+        and item.name == "code-execution"
+        and item.evidence.path == "imported_field.py"
+        and item.evidence.line == 13
+    )
+    assert rebound_exact.attributes["receiver_proof"] == (
+        "unresolved-browser-import-context"
+    )
+
+    near_type = tmp_path / "near-browser-field-type"
+    shutil.copytree(ROOT / "cases/python_browser_evaluate", near_type)
+    context_path = near_type / "imported_field_context.py"
+    context_source = context_path.read_text(encoding="utf-8")
+    exact_import = "from playwright.async_api import Page"
+    assert exact_import in context_source
+    context_path.write_text(
+        context_source.replace(exact_import, "from near_playwright.async_api import Page"),
+        encoding="utf-8",
+    )
+    near_ir = scan_repository(near_type)
+    near_exact = next(
+        item
+        for item in near_ir.components
+        if item.kind == "capability"
+        and item.name == "code-execution"
+        and item.evidence.path == "imported_field.py"
+        and item.evidence.line == 12
+    )
+    assert near_exact.attributes["receiver_proof"] == (
+        "unresolved-browser-import-context"
+    )
+
+    rebound_export = tmp_path / "rebound-browser-class-export"
+    shutil.copytree(ROOT / "cases/python_browser_evaluate", rebound_export)
+    export_context_path = rebound_export / "imported_field_context.py"
+    export_context_source = export_context_path.read_text(encoding="utf-8")
+    export_context_path.write_text(
+        f"{export_context_source}\nBrowserContext = object\n",
+        encoding="utf-8",
+    )
+    rebound_export_ir = scan_repository(rebound_export)
+    rebound_export_exact = next(
+        item
+        for item in rebound_export_ir.components
+        if item.kind == "capability"
+        and item.name == "code-execution"
+        and item.evidence.path == "imported_field.py"
+        and item.evidence.line == 12
+    )
+    assert rebound_export_exact.attributes["receiver_proof"] == (
         "unresolved-browser-import-context"
     )
 

@@ -160,6 +160,12 @@ falls back through `.page` to the same receiver. One production evaluator moves 
 `imported-browser-wrapper-scope`, bringing totals to 69 proven of 93 and 24 unresolved. Wrong
 attributes or fallbacks, shadowed `getattr`, and assignments that do not dominate the evaluator stay
 unresolved.
+Schema v98 indexes exact Playwright-annotated fields on uniquely defined imported classes. A consumer
+must resolve one unrebound class import, annotate an immutable parameter with that class, and copy
+the field into one immutable local. Skyvern's popup content-type probe moves to
+`imported-class-playwright-field-alias`, bringing totals to 70 proven of 93 and 23 unresolved.
+Ordinary or duplicate fields, near or rebound imports, and reassigned context parameters or aliases
+stay unresolved.
 Next resolve inherited fields, additional bounded wrapper/locator flows, sanitizer and bounded builder
 summaries, imported helper flow, and bounded
 helper-return provenance without treating every dynamic JavaScript expression as
@@ -350,8 +356,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 622 pinned positive/negative locations, with 947 separately
-scored IR component/relationship labels. Schema-v97 engine results and
+The curated regression set has reached 628 pinned positive/negative locations, with 953 separately
+scored IR component/relationship labels. Schema-v98 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.
