@@ -160,6 +160,9 @@ is especially important for Groq and Ollama, which commonly serve models develop
 In TypeScript, exact dynamic `import()` destructuring can preserve the same proof as a static named
 import, while a provider instance created by an official factory remains attributable only while its
 local binding is immutable and unshadowed.
+Framework public APIs can provide equivalent proof when the module and exported constructor are
+both exact. Positional arguments need signature-level treatment: a model wrapper's first string may
+be a model ID, while a provider constructor's first string may instead be a credential or endpoint.
 
 ## Observability as a cross-cutting control
 

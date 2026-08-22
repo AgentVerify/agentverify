@@ -126,6 +126,16 @@ PYTHON_PROVIDER_SDK_CALLS = {
     "langchain_groq": ("ChatGroq",),
     "langchain_cohere": ("ChatCohere", "CohereEmbeddings", "CohereRerank"),
     "langchain_ollama": ("ChatOllama", "OllamaEmbeddings", "OllamaLLM"),
+    "agentscope.model": ("OllamaChatModel",),
+    "pydantic_ai.models.groq": ("GroqModel",),
+    "pydantic_ai.models.mistral": ("MistralModel",),
+    "pydantic_ai.models.cohere": ("CohereModel",),
+    "pydantic_ai.models.ollama": ("OllamaModel",),
+    "pydantic_ai.embeddings.cohere": ("CohereEmbeddingModel",),
+    "pydantic_ai.providers.groq": ("GroqProvider",),
+    "pydantic_ai.providers.mistral": ("MistralProvider",),
+    "pydantic_ai.providers.cohere": ("CohereProvider",),
+    "pydantic_ai.providers.ollama": ("OllamaProvider",),
 }
 PYTHON_PROVIDER_MODULES = {
     "mistralai": "Mistral",
@@ -137,8 +147,28 @@ PYTHON_PROVIDER_MODULES = {
     "langchain_groq": "Groq",
     "langchain_cohere": "Cohere",
     "langchain_ollama": "Ollama",
+    "agentscope.model": "Ollama",
+    "pydantic_ai.models.groq": "Groq",
+    "pydantic_ai.models.mistral": "Mistral",
+    "pydantic_ai.models.cohere": "Cohere",
+    "pydantic_ai.models.ollama": "Ollama",
+    "pydantic_ai.embeddings.cohere": "Cohere",
+    "pydantic_ai.providers.groq": "Groq",
+    "pydantic_ai.providers.mistral": "Mistral",
+    "pydantic_ai.providers.cohere": "Cohere",
+    "pydantic_ai.providers.ollama": "Ollama",
 }
 PYTHON_PROVIDER_SDK_FUNCTIONS = {("ollama", "chat"), ("ollama", "generate")}
+PYTHON_PROVIDER_WRAPPER_MODULE_PREFIXES = ("agentscope.", "langchain_", "pydantic_ai.")
+PYTHON_PROVIDER_POSITIONAL_MODEL_CALLS = {
+    ("ollama", "chat"),
+    ("ollama", "generate"),
+    ("pydantic_ai.models.groq", "GroqModel"),
+    ("pydantic_ai.models.mistral", "MistralModel"),
+    ("pydantic_ai.models.cohere", "CohereModel"),
+    ("pydantic_ai.models.ollama", "OllamaModel"),
+    ("pydantic_ai.embeddings.cohere", "CohereEmbeddingModel"),
+}
 TYPESCRIPT_AI_SDK_PROVIDER_EXPORTS = {
     "@ai-sdk/mistral": {
         "provider": "Mistral",
@@ -4691,7 +4721,7 @@ class PythonVisitor(ast.NodeVisitor):
             provider, module, imported_symbol = imported_provider
             call_kind = (
                 "wrapper-constructor"
-                if module.startswith("langchain_")
+                if module.startswith(PYTHON_PROVIDER_WRAPPER_MODULE_PREFIXES)
                 else "sdk-function"
                 if (module, imported_symbol) in PYTHON_PROVIDER_SDK_FUNCTIONS
                 else "sdk-constructor"
@@ -4720,6 +4750,14 @@ class PythonVisitor(ast.NodeVisitor):
                 ),
                 None,
             )
+            if (
+                model_value is None
+                and (module, imported_symbol) in PYTHON_PROVIDER_POSITIONAL_MODEL_CALLS
+                and node.args
+                and isinstance(node.args[0], ast.Constant)
+                and isinstance(node.args[0].value, str)
+            ):
+                model_value = node.args[0].value
             if model_value is not None:
                 self.ir.add_component(
                     Component(

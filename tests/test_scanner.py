@@ -125,6 +125,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         )
         for item in ir.components
         if item.kind == "provider"
+        and item.evidence.path == "provider_constructors.py"
         and item.attributes.get("resolution") == "exact-provider-sdk-import"
     }
     assert provider_calls == {
@@ -237,6 +238,81 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         item.kind == "provider"
         and item.evidence.path == "provider_calls_rebound.ts"
         and item.attributes.get("resolution") == "exact-typescript-provider-import"
+        for item in ir.components
+    )
+    framework_wrapper_calls = {
+        (
+            item.evidence.line,
+            item.name,
+            item.attributes.get("call"),
+            item.attributes.get("module"),
+            item.attributes.get("imported_symbol"),
+        )
+        for item in ir.components
+        if item.kind == "provider"
+        and item.evidence.path == "provider_framework_wrappers.py"
+        and item.attributes.get("resolution") == "exact-provider-sdk-import"
+    }
+    assert framework_wrapper_calls == {
+        (13, "Ollama", "agent_models.OllamaChatModel", "agentscope.model", "OllamaChatModel"),
+        (14, "Groq", "GroqProvider", "pydantic_ai.providers.groq", "GroqProvider"),
+        (
+            15,
+            "Mistral",
+            "MistralProvider",
+            "pydantic_ai.providers.mistral",
+            "MistralProvider",
+        ),
+        (
+            16,
+            "Cohere",
+            "CohereProvider",
+            "pydantic_ai.providers.cohere",
+            "CohereProvider",
+        ),
+        (
+            17,
+            "Ollama",
+            "OllamaProvider",
+            "pydantic_ai.providers.ollama",
+            "OllamaProvider",
+        ),
+        (18, "Groq", "PydanticGroqModel", "pydantic_ai.models.groq", "GroqModel"),
+        (
+            19,
+            "Mistral",
+            "MistralModel",
+            "pydantic_ai.models.mistral",
+            "MistralModel",
+        ),
+        (20, "Cohere", "CohereModel", "pydantic_ai.models.cohere", "CohereModel"),
+        (21, "Ollama", "OllamaModel", "pydantic_ai.models.ollama", "OllamaModel"),
+        (
+            22,
+            "Cohere",
+            "CohereEmbeddingModel",
+            "pydantic_ai.embeddings.cohere",
+            "CohereEmbeddingModel",
+        ),
+    }
+    assert {
+        (item.evidence.line, item.name, item.attributes["provider"])
+        for item in ir.components
+        if item.kind == "model"
+        and item.evidence.path == "provider_framework_wrappers.py"
+        and item.attributes.get("resolution") == "exact-provider-sdk-import"
+    } == {
+        (13, "qwen3:14b", "Ollama"),
+        (18, "llama-3.3-70b-versatile", "Groq"),
+        (19, "mistral-large-latest", "Mistral"),
+        (20, "command-r-plus", "Cohere"),
+        (21, "qwen3:14b", "Ollama"),
+        (22, "embed-v4.0", "Cohere"),
+    }
+    assert not any(
+        item.kind == "provider"
+        and item.evidence.path == "provider_framework_wrappers_rebound.py"
+        and item.attributes.get("resolution") == "exact-provider-sdk-import"
         for item in ir.components
     )
 

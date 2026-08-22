@@ -775,11 +775,23 @@ def main() -> int:
                     for item in python_provider_call_attributions
                 ),
                 "sdk_calls": sum(
-                    not str(item.attributes.get("module", "")).startswith("langchain_")
+                    item.attributes.get("call_kind") != "wrapper-constructor"
                     for item in python_provider_call_attributions
                 ),
                 "wrapper_calls": sum(
+                    item.attributes.get("call_kind") == "wrapper-constructor"
+                    for item in python_provider_call_attributions
+                ),
+                "langchain_wrapper_calls": sum(
                     str(item.attributes.get("module", "")).startswith("langchain_")
+                    for item in python_provider_call_attributions
+                ),
+                "pydantic_ai_wrapper_calls": sum(
+                    str(item.attributes.get("module", "")).startswith("pydantic_ai.")
+                    for item in python_provider_call_attributions
+                ),
+                "agentscope_wrapper_calls": sum(
+                    str(item.attributes.get("module", "")).startswith("agentscope.")
                     for item in python_provider_call_attributions
                 ),
                 "literal_models": len(python_provider_call_models),
@@ -2105,7 +2117,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 74,
+        "schema_version": 75,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2196,6 +2208,9 @@ def main() -> int:
                     "production_repositories",
                     "sdk_calls",
                     "wrapper_calls",
+                    "langchain_wrapper_calls",
+                    "pydantic_ai_wrapper_calls",
+                    "agentscope_wrapper_calls",
                     "literal_models",
                     "mistral",
                     "groq",

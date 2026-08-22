@@ -44,6 +44,11 @@ Schema v74 extends call attribution to official `@ai-sdk/mistral`, `@ai-sdk/groq
 provider factory calls, model calls through an immutable factory-created instance, and direct
 language/embedding/reranking calls. Reassignment, local shadowing, and near-name packages withhold
 attribution.
+Schema v75 recognizes exact AgentScope and PydanticAI provider wrapper APIs. AgentScope's public
+`agentscope.model.OllamaChatModel` reexport and PydanticAI's provider, model, and embedding modules
+retain identity through direct imports, module aliases, and function-local imports until rebinding.
+Literal keyword model values and model-wrapper-only positional strings inherit the proven provider;
+provider constructor positional arguments are never treated as model IDs.
 
 Names are intentionally not treated as globally unique. Python and TypeScript agent/tool definitions
 carry stable frontend-and-module-qualified `symbol_id` values; relationships carry `source_id` and

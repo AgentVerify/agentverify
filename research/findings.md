@@ -248,11 +248,11 @@ Bedrock in 14. Forty-four repositories contain two or more provider signals. An 
 materials should report providers and model configuration even when no security issue is present.
 The stricter engine promotes a subset only when selected source proves an exact SDK
 import, literal service selection, or recognized model prefix: OpenAI appears in 41 repositories,
-Google and Anthropic in 17 each, Azure OpenAI in 11, AWS Bedrock and Groq in six, Ollama in
-four, and Mistral and Cohere in three each. The four added SDK families enrich provider identity but
-do not increase the 48-repository provider-presence total because each occurs alongside another
-recognized provider. The difference from the research-wide lexical census is retained as
-unsupported/unselected evidence, not silently upgraded.
+Google and Anthropic in 17 each, Azure OpenAI in 11, AWS Bedrock and Groq in six, Ollama in five,
+and Mistral and Cohere in three each. Direct SDK evidence alone kept provider presence at 48 because
+each added SDK family occurred alongside another recognized provider; schema v75's AgentScope public
+Ollama wrapper raises the total to 49. The difference from the research-wide lexical census is
+retained as unsupported/unselected evidence, not silently upgraded.
 
 Schema v73 distinguishes provider presence from a configured provider call. Exact Python SDK and
 LangChain-wrapper imports for Mistral, Groq, Cohere, and Ollama now survive aliases but not rebinding.
@@ -269,6 +269,17 @@ and follows a factory into one immutable local provider instance. Mastra contrib
 production example: a dynamically imported `groq` export is called with the caller-selected model ID.
 The model remains unresolved because the argument is not literal, while the configured provider call
 is exact.
+
+Schema v75 covers exact framework provider APIs without falling back to class-name matching.
+AgentScope's public `agentscope.model.OllamaChatModel` reexport produces two production calls and two
+literal Ollama models, including the pinned
+[`qwen3:14b` example](https://github.com/agentscope-ai/agentscope/blob/ad4d2839e8ad57b6b9dffa7b583be7bee33009fb/scripts/model_examples/ollama_multiagent.py#L24).
+PydanticAI contributes 32 test-scoped calls through exact provider, model, and embedding modules,
+including its provider-wire
+[`GroqModel` case](https://github.com/pydantic/pydantic-ai/blob/5e59fef14bd5abc86c4cfab1480c4f380542acfe/tests/test_tool_failed_wire.py#L82).
+Positional strings become models only for the model wrappers, so an API key or base URL passed to a
+provider constructor cannot become a false model identity. Together with the native and LangChain
+paths, Python has 63 exact provider calls across eight repositories.
 
 ## 5. Controls are layered
 

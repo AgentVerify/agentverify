@@ -142,10 +142,10 @@ versioned audited evidence hints plus Python imports reached from MCP forwarding
 URL-security call sites, all charged against the same cap. This refresh materialized 176 dependency files across 21
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v74 carries both the 176-file total and the
+dependency count per repository; engine schema v75 carries both the 176-file total and the
 21-repository coverage.
 
-Engine benchmark schema v74 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v75 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It also publishes Python and TypeScript initial-origin control coverage
 plus source-proven Python and TypeScript secure transports, with redirect, DNS, proxy, configured
@@ -173,6 +173,14 @@ named aliases, destructured dynamic imports, provider factories, immutable confi
 direct language/embedding/reranking model calls. The pinned corpus has one production Groq model
 call in Mastra, reached through an exact dynamic import; its nonliteral model argument is not promoted
 to a model component. Four rebound or near-package negatives pin the conservative boundary.
+
+Schema v75 extends exact Python attribution through framework provider APIs. AgentScope's public
+`OllamaChatModel` reexport contributes two production calls and literal models. PydanticAI contributes
+32 test-scoped provider/model/embedding wrapper calls and 21 literal models. Combined with schema
+v73, the Python inventory has 63 calls across eight repositories: 20 native SDK and 43 wrapper calls,
+with wrapper splits of nine LangChain, 32 PydanticAI, and two AgentScope. Nine calls across six
+repositories are production-scoped; 54 are tests. Exact AgentScope evidence raises overall provider
+presence from 48 to 49 repositories and Ollama presence from four to five.
 
 Schema v63 retains A2A endpoint provenance as a separate authority class: four exact client-construction
 paths comprise two unconstrained remote-card-selected TypeScript origins and two same-origin-
@@ -238,7 +246,7 @@ Missing relative modules, duplicate or forward imports, module rebinding, and fu
 shadowing remain unresolved. Sixteen IR labels cover the local export/import boundary, six negative
 forms, and all seven pinned Google ADK edges; one rule label proves cross-file AV-FS001 reachability.
 
-Schema-v74 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
+Schema-v75 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
 resolves 3,480 endpoints by symbol ID, 645 by exact evidence location, and 23 by a unique display
 name; 38 remain ambiguous and 68 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
@@ -1134,12 +1142,12 @@ six unresolved ambiguity/shadowing/order forms, and all seven pinned Google ADK 
 tool-factory/adapter labels cover four local Agent edges, one hosted-MCP capability, one local
 Agent-as-tool delegation, eight conservative local negatives, two AutoGen factory edges, one Google
 ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent edge plus delegation.
-The 117 component-taxonomy labels add 79 exact local/pinned framework, provider, call,
-and model positives plus 38 near-name, rebound, and unrelated-service negatives. Twenty-five MCP
+The 148 component-taxonomy labels add 107 exact local/pinned framework, provider, call,
+and model positives plus 41 near-name, rebound, and unrelated-service negatives. Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
-four real repositories. All 652 IR labels pass:
-79 component-taxonomy positives/38 negatives, three approval positives/four negatives,
+four real repositories. All 683 IR labels pass:
+107 component-taxonomy positives/41 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
 contextual network-import positives,

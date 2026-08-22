@@ -11,8 +11,9 @@ never imported or executed.
 - `model_providers`: Anthropic and Azure OpenAI provider/model attribution.
 - `framework_provider_taxonomy`: exact frontend-specific framework and provider imports, Gemini and
   Bedrock proof, Vercel AI SDK TypeScript subpaths, import-proven Mistral/Groq/Cohere/Ollama calls and
-  literal models, official TypeScript AI SDK factories and dynamic imports, plus rebinding,
-  near-name, and unrelated-service negatives.
+  literal models, official TypeScript AI SDK factories and dynamic imports, AgentScope public model
+  reexports, PydanticAI provider/model wrappers, plus rebinding, near-name, and unrelated-service
+  negatives.
 - `mcp_forwarder`: dynamic MCP forwarding positive case plus fixed-tool negative case.
 - `external_actions`: browser, network, and consequential external-action graph inventory.
 - `typescript_eval`: TypeScript dynamic evaluation with a resolved agent/tool path.
