@@ -94,7 +94,10 @@ def main() -> int:
                 "imported-class-factory-return",
                 "contextual-imported-class-factory-return",
                 "literal-tools-list-context-manager",
+                "literal-tools-list-import-binding",
                 "literal-tools-list-inline-constructor",
+                "imported-callable-single-export",
+                "contextual-imported-callable-single-export",
                 "typed-parameter-callsite-consensus",
                 "contextual-absolute-import-single-export",
             }
@@ -748,6 +751,18 @@ def main() -> int:
                 "context_manager_bindings": sum(
                     item.attributes.get("binding")
                     == "literal-tools-list-context-manager"
+                    for item in python_agent_referenced_tools
+                ),
+                "import_bindings": sum(
+                    item.attributes.get("binding") == "literal-tools-list-import"
+                    for item in python_agent_referenced_tools
+                ),
+                "imported_callable_exports": sum(
+                    item.attributes.get("resolution")
+                    in {
+                        "imported-callable-single-export",
+                        "contextual-imported-callable-single-export",
+                    }
                     for item in python_agent_referenced_tools
                 ),
                 "module_single_definitions": sum(
@@ -1472,7 +1487,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 57,
+        "schema_version": 58,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -1616,6 +1631,8 @@ def main() -> int:
                     "constructor_bindings",
                     "inline_constructors",
                     "context_manager_bindings",
+                    "import_bindings",
+                    "imported_callable_exports",
                     "module_single_definitions",
                     "non_test_instances",
                     "capability_edges",

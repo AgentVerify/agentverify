@@ -13,14 +13,18 @@ decorated-tool bindings now receive occurrence-qualified IDs for exact source ed
 references are scope-aware for unique and repeated names; repeated targets resolve for a single
 direct, earlier definition in the same lexical/module scope, plus an exact single-mutation definition
 that dominates use in the same branch/with body.
-Schema v57 additionally inventories 15 import-proven OpenAI Agents Python `ComputerTool` instances
+Schema v58 additionally inventories 15 import-proven OpenAI Agents Python `ComputerTool` instances
 and resolves ten agent links to them, including three formerly ambiguous repeated bindings. Literal
-Python Agent tool lists now recover 707 exact role-proven tools: 177 callable definitions, 91
-constructor-bound instances, 437 inline constructors, and two direct context-manager bindings.
-They produce 762 exact Agent links; 507 tools are outside tests and 21 capability edges become
+Python Agent tool lists now recover 716 exact role-proven tools: 181 callable definitions, 91
+constructor-bound instances, 437 inline constructors, two direct context-manager bindings, and five
+absolute-import boundary tools. They produce 772 exact Agent links; 514 tools are outside tests and
+24 capability edges become
 reachable. Constructor promotion requires one immutable import from a module whose path establishes
-a tool namespace, while local subclasses require an exact imported tool base. Before wrapper recovery, six corpus targets in parameter,
-helper-return, wrapper-factory, or tuple-unpack forms remained unresolved. Import-proven OpenAI
+a tool namespace, while local subclasses require an exact imported tool base. Four of the callable
+tools resolve through one exact selected local export; three unavailable SDK definitions remain
+explicit import-boundary identities with no inferred capabilities. Only six default-scope
+Agent→tool references remain: two AutoGen dynamic-list aliases, two Composio router bindings, one
+OpenAI `as_tool` assignment, and one ADK integration wrapper. Import-proven OpenAI
 `function_tool(function)` assignments now recover 12 exact wrapper tools and Agent edges, including
 the two repeated SDK targets; three enable approval and all occur under tests. Exact same-class
 direct/tuple Agent-return summaries resolve three CrewAI composition edges to two source Agent
@@ -198,8 +202,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 349 pinned positive/negative locations, with 371 separately
-scored IR relationship labels. Schema-v57 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 350 pinned positive/negative locations, with 387 separately
+scored IR relationship labels. Schema-v58 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

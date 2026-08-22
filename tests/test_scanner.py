@@ -4129,6 +4129,67 @@ def test_literal_tool_bindings_require_role_and_exact_local_identity() -> None:
     ] == "module-single-definition"
 
 
+def test_imported_literal_tools_require_immutable_binding_or_exact_export() -> None:
+    ir = scan_repository(ROOT / "cases/python_imported_literal_tool")
+    edges = {
+        (edge.source_name, edge.target_name): edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent" and edge.target_kind == "tool"
+    }
+
+    imported = edges[("imported-operator", "imported_writer")]
+    assert imported.target_id == "py:pkg/tools.py#tool:imported_writer"
+    assert imported.attributes == {
+        "target_path": "pkg/tools.py",
+        "target_identity": "imported-callable-single-export",
+    }
+    external = edges[("imported-operator", "sdk_tool")]
+    assert external.target_id == "py:positive.py#tool:sdk_tool"
+    assert external.attributes == {
+        "target_identity": "literal-tools-list-import-binding"
+    }
+
+    for agent_name, tool_name in {
+        ("parameter-shadow", "parameter_tool"),
+        ("local-shadow", "local_shadow"),
+        ("class-shadow", "class_shadow"),
+        ("duplicate-import", "duplicated"),
+        ("forward-import", "forward_tool"),
+        ("duplicate-local-import", "duplicate_local"),
+    }:
+        assert edges[(agent_name, tool_name)].target_id is None
+
+    components = {
+        component.symbol_id: component
+        for component in ir.components
+        if component.kind == "tool"
+    }
+    assert components["py:pkg/tools.py#tool:imported_writer"].attributes == {
+        "decorators": [],
+        "needs_approval": False,
+        "registration": "agent-tool-reference",
+        "registration_path": "positive.py",
+        "registration_line": 6,
+        "resolution": "imported-callable-single-export",
+        "import_line": 3,
+    }
+    assert components["py:positive.py#tool:sdk_tool"].attributes == {
+        "binding": "literal-tools-list-import",
+        "module": "external_sdk.tools",
+        "imported_name": "sdk_tool",
+        "registration": "agent-tool-reference",
+        "registration_lines": [6],
+        "resolution": "literal-import-binding",
+        "scope": "production",
+    }
+    assert any(
+        finding.rule_id == "AV-FS001"
+        and finding.evidence.path == "pkg/tools.py"
+        and finding.evidence.line == 5
+        for finding in ir.findings
+    )
+
+
 def test_python_agent_helper_returns_require_exact_same_class_flow() -> None:
     ir = scan_repository(ROOT / "cases/python_agent_helper_return")
     edges = {

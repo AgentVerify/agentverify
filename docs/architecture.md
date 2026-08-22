@@ -71,6 +71,15 @@ Package re-exports, wildcard imports, dynamic lookups, conditional tool expressi
 wrapper-factory forms
 remain unresolved.
 
+An immutable top-level `from module import name` binding used directly in a literal Agent tool list
+also receives an exact import identity. If the selected repository contains one resolved module path
+and one unique undecorated top-level function export, the relationship targets that definition and
+its body is analyzed under the imported tool role. Contextual script-root imports require the same
+single-path proof. When an absolute SDK module is not present in the bounded checkout, the import
+statement itself becomes a tool-boundary component and no implementation capability is inferred.
+Missing relative modules, duplicate or forward imports, module rebinding, and function/class-local
+shadowing remain unresolved.
+
 Same-class Agent factory summaries are deliberately narrower than general interprocedural dataflow.
 A uniquely named method must have one direct top-level return. That return may be an Agent
 constructor, one immutable local assigned from an Agent constructor, or a tuple/list containing that

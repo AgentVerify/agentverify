@@ -108,6 +108,7 @@
     {"id":"mcp-python-sdk-registry-real-positive","target":{"kind":"repository","repository":"modelcontextprotocol/python-sdk","commit":"57394b0548d1e2dc2dce8d67d84985769df3b8bb"},"rule_id":"AV-MCP002","path":"src/mcp/client/session_group.py","line":241,"expected":true},
 
     {"id":"filesystem-dynamic-positive","target":{"kind":"local","path":"cases/filesystem_scope"},"rule_id":"AV-FS001","path":"agent.py","line":6,"expected":true},
+    {"id":"filesystem-imported-literal-tool-positive","target":{"kind":"local","path":"cases/python_imported_literal_tool"},"rule_id":"AV-FS001","path":"pkg/tools.py","line":5,"expected":true},
     {"id":"filesystem-fixed-negative","target":{"kind":"local","path":"cases/filesystem_scope"},"rule_id":"AV-FS001","path":"agent.py","line":12,"expected":false,"anchor":{"kind":"capability","name":"filesystem"}},
     {"id":"filesystem-arcade-real","target":{"kind":"repository","repository":"ArcadeAI/arcade-ai","commit":"597debaa1593b54172061ce36a414cc29aa8fc6a"},"rule_id":"AV-FS001","path":"examples/mcp_servers/local_filesystem/src/local_filesystem/tools.py","line":154,"expected":true},
     {"id":"filesystem-arcade-write-real","target":{"kind":"repository","repository":"ArcadeAI/arcade-ai","commit":"597debaa1593b54172061ce36a414cc29aa8fc6a"},"rule_id":"AV-FS001","path":"examples/mcp_servers/local_filesystem/src/local_filesystem/tools.py","line":164,"expected":true},

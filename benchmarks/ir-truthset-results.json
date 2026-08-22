@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T23:48:18.479234+00:00",
-  "labels": 371,
-  "passed": 371,
+  "generated_at": "2026-08-22T00:25:27.121598+00:00",
+  "labels": 387,
+  "passed": 387,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -184,6 +184,14 @@
       "tp": 10,
       "fp": 0,
       "tn": 5,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-IMPORTED-LITERAL-TOOL": {
+      "tp": 16,
+      "fp": 0,
+      "tn": 0,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -3728,6 +3736,150 @@
     {
       "id": "python-typed-tool-parameter-nested-constructor-shadow-unresolved",
       "check_id": "IR-PY-TYPED-TOOL-PARAMETER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-literal-callable-local",
+      "check_id": "IR-PY-IMPORTED-LITERAL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-literal-external-binding-local",
+      "check_id": "IR-PY-IMPORTED-LITERAL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-literal-callable-capability-local",
+      "check_id": "IR-PY-IMPORTED-LITERAL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-literal-parameter-shadow-unresolved",
+      "check_id": "IR-PY-IMPORTED-LITERAL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-literal-local-shadow-unresolved",
+      "check_id": "IR-PY-IMPORTED-LITERAL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-literal-class-shadow-unresolved",
+      "check_id": "IR-PY-IMPORTED-LITERAL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-literal-duplicate-import-unresolved",
+      "check_id": "IR-PY-IMPORTED-LITERAL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-literal-forward-import-unresolved",
+      "check_id": "IR-PY-IMPORTED-LITERAL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-literal-duplicate-local-export-unresolved",
+      "check_id": "IR-PY-IMPORTED-LITERAL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-literal-google-comment-real",
+      "check_id": "IR-PY-IMPORTED-LITERAL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-literal-google-label-real",
+      "check_id": "IR-PY-IMPORTED-LITERAL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-literal-google-convert-real",
+      "check_id": "IR-PY-IMPORTED-LITERAL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-literal-google-get-discussion-real",
+      "check_id": "IR-PY-IMPORTED-LITERAL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-literal-google-load-memory-real",
+      "check_id": "IR-PY-IMPORTED-LITERAL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-literal-google-preload-memory-real",
+      "check_id": "IR-PY-IMPORTED-LITERAL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-imported-literal-google-request-input-real",
+      "check_id": "IR-PY-IMPORTED-LITERAL-TOOL",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

@@ -328,6 +328,27 @@ class PythonImportResolution:
     basis: str
 
 
+@dataclass(frozen=True)
+class PythonToolRoleReference:
+    registration_path: str
+    registration_line: int
+    resolution: str
+    import_line: int | None = None
+
+
+@dataclass(frozen=True)
+class PythonImportedToolReference:
+    importer_path: str
+    local_name: str
+    original_name: str
+    module: str
+    import_line: int
+    agent_line: int
+    agent_col: int
+    import_resolution: str | None = None
+    target_path: str | None = None
+
+
 def resolve_python_import(
     root: Path,
     current_path: str,
@@ -2204,10 +2225,14 @@ class PythonVisitor(ast.NodeVisitor):
         node_scopes: dict[int, tuple[str, ...]],
         call_symbol_ids: dict[int, str],
         definition_symbol_ids: dict[int, str],
-        referenced_tool_functions: dict[int, tuple[ast.Call, str]],
+        referenced_tool_functions: dict[int, PythonToolRoleReference],
         wrapped_tool_functions: dict[int, PythonFunctionToolWrapper],
         inline_usage_tool_calls: dict[int, tuple[str, str]],
         decorated_tool_exports: dict[tuple[str, str], str],
+        imported_tool_export_usages: dict[
+            tuple[int, int, str], PythonImportedToolReference
+        ],
+        imported_tool_promoted_exports: set[tuple[str, str]],
         imported_agent_factory_target_paths: dict[str, str],
         registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
         network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
@@ -2281,6 +2306,8 @@ class PythonVisitor(ast.NodeVisitor):
         self.wrapped_tool_functions = wrapped_tool_functions
         self.inline_usage_tool_calls = inline_usage_tool_calls
         self.decorated_tool_exports = decorated_tool_exports
+        self.imported_tool_export_usages = imported_tool_export_usages
+        self.imported_tool_promoted_exports = imported_tool_promoted_exports
         self.imported_agent_factory_target_paths = imported_agent_factory_target_paths
         self.registry_class_exports = registry_class_exports
         self.network_helper_summaries = network_helper_summaries
@@ -2539,6 +2566,7 @@ class PythonVisitor(ast.NodeVisitor):
                     "imported-class-factory-return",
                     "contextual-imported-class-factory-return",
                     "literal-tools-list-context-manager",
+                    "literal-tools-list-import-binding",
                 }
                 else (dominating[0], None)
             )
@@ -3034,11 +3062,13 @@ class PythonVisitor(ast.NodeVisitor):
                 attributes.update(
                     {
                         "registration": "agent-tool-reference",
-                        "registration_path": self.path,
-                        "registration_line": tool_reference[0].lineno,
-                        "resolution": tool_reference[1],
+                        "registration_path": tool_reference.registration_path,
+                        "registration_line": tool_reference.registration_line,
+                        "resolution": tool_reference.resolution,
                     }
                 )
+                if tool_reference.import_line is not None:
+                    attributes["import_line"] = tool_reference.import_line
             if active_class_tool is None:
                 self.ir.add_component(
                     Component(
@@ -4122,10 +4152,40 @@ class PythonVisitor(ast.NodeVisitor):
                             original = self.imported_symbol_names.get(root_name, root_name)
                             resolved_name = f"{original}.{suffix}" if separator else original
                             import_basis = self.imported_symbol_resolutions.get(root_name)
+                            imported_callable_usage = self.imported_tool_export_usages.get(
+                                (node.lineno, node.col_offset, root_name)
+                            )
                             contextual_export_id = self.decorated_tool_exports.get(
                                 (imported_path, resolved_name)
                             )
-                            if import_basis != "contextual-absolute-import-single-path":
+                            if (
+                                target_kind == "tool"
+                                and imported_callable_usage is not None
+                                and imported_callable_usage.target_path == imported_path
+                                and imported_callable_usage.original_name == resolved_name
+                            ):
+                                attributes.update(
+                                    {
+                                        "target_path": imported_path,
+                                        "target_identity": (
+                                            "contextual-imported-callable-single-export"
+                                            if imported_callable_usage.import_resolution
+                                            == "contextual-absolute-import-single-path"
+                                            else "imported-callable-single-export"
+                                        ),
+                                    }
+                                )
+                                target_id = source_symbol(
+                                    "py",
+                                    imported_path,
+                                    "tool",
+                                    resolved_name,
+                                )
+                            elif import_basis != "contextual-absolute-import-single-path" and not (
+                                target_kind == "tool"
+                                and (imported_path, resolved_name)
+                                in self.imported_tool_promoted_exports
+                            ):
                                 attributes["target_path"] = imported_path
                                 target_id = source_symbol(
                                     "py", imported_path, target_kind, resolved_name
@@ -4788,6 +4848,10 @@ def scan_python(
     text: str,
     module_paths: dict[str, str],
     decorated_tool_exports: dict[tuple[str, str], str],
+    imported_tool_references: dict[str, tuple[PythonImportedToolReference, ...]],
+    imported_tool_export_references: dict[
+        tuple[str, str], tuple[PythonImportedToolReference, ...]
+    ],
     agent_factory_class_exports: dict[
         tuple[str, str], PythonAgentFactoryClassTarget
     ],
@@ -5348,7 +5412,28 @@ def scan_python(
             current = parent
         return None
 
-    referenced_tool_functions: dict[int, tuple[ast.Call, str]] = {}
+    current_imported_tool_references = imported_tool_references.get(relative, ())
+    referenced_tool_functions: dict[int, PythonToolRoleReference] = {}
+    for statement in tree.body:
+        if not isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        references = imported_tool_export_references.get(
+            (relative, statement.name), ()
+        )
+        if not references:
+            continue
+        reference = references[0]
+        referenced_tool_functions[id(statement)] = PythonToolRoleReference(
+            registration_path=reference.importer_path,
+            registration_line=reference.agent_line,
+            resolution=(
+                "contextual-imported-callable-single-export"
+                if reference.import_resolution
+                == "contextual-absolute-import-single-path"
+                else "imported-callable-single-export"
+            ),
+            import_line=reference.import_line,
+        )
     usage_tool_assignments: dict[int, tuple[ast.Assign, ast.Call, str]] = {}
     inline_usage_tool_candidates: dict[int, tuple[ast.Call, ast.Call]] = {}
     context_usage_tool_bindings: dict[
@@ -5429,7 +5514,12 @@ def scan_python(
                     definition.name == value.id
                 ):
                     referenced_tool_functions.setdefault(
-                        id(definition), (call, resolution)
+                        id(definition),
+                        PythonToolRoleReference(
+                            registration_path=relative,
+                            registration_line=call.lineno,
+                            resolution=resolution,
+                        ),
                     )
                     continue
                 if (
@@ -5505,6 +5595,48 @@ def scan_python(
     definition_symbol_ids: dict[int, str] = {}
     decorated_tools: list[tuple[ast.FunctionDef | ast.AsyncFunctionDef, str]] = []
     registered_class_tools: list[tuple[ast.ClassDef, PythonRegistryTool]] = []
+    external_import_tool_ids: dict[tuple[str, int], str] = {}
+    external_import_groups: dict[
+        tuple[str, int, str, str], list[PythonImportedToolReference]
+    ] = defaultdict(list)
+    for reference in current_imported_tool_references:
+        if reference.import_resolution is None:
+            external_import_groups[
+                (
+                    reference.local_name,
+                    reference.import_line,
+                    reference.module,
+                    reference.original_name,
+                )
+            ].append(reference)
+    for (
+        local_name,
+        import_line,
+        module,
+        original_name,
+    ), references in external_import_groups.items():
+        symbol_id = source_symbol("py", relative, "tool", local_name)
+        external_import_tool_ids[(local_name, import_line)] = symbol_id
+        symbol_candidates.setdefault(("tool", local_name), set()).add(symbol_id)
+        ir.add_component(
+            Component(
+                "tool",
+                local_name,
+                Evidence(relative, import_line, excerpt(text.splitlines(), import_line)),
+                {
+                    "binding": "literal-tools-list-import",
+                    "module": module,
+                    "imported_name": original_name,
+                    "registration": "agent-tool-reference",
+                    "registration_lines": sorted(
+                        {reference.agent_line for reference in references}
+                    ),
+                    "resolution": "literal-import-binding",
+                    "scope": source_scope(relative),
+                },
+                symbol_id,
+            )
+        )
 
     def collect_definitions(
         statements: list[ast.stmt],
@@ -6263,6 +6395,24 @@ def scan_python(
         )
         for call, parameter, symbol_id in typed_tool_parameter_resolutions
     }
+    agent_calls_by_location = {
+        (call.lineno, call.col_offset): call
+        for call in nodes
+        if isinstance(call, ast.Call)
+        and dotted_name(call.func).rsplit(".", 1)[-1] in AGENT_CALLS
+    }
+    dominating_symbol_ids.update(
+        {
+            (id(agent_calls_by_location[(reference.agent_line, reference.agent_col)]), "tool", reference.local_name): (
+                external_import_tool_ids[(reference.local_name, reference.import_line)],
+                "literal-tools-list-import-binding",
+            )
+            for reference in current_imported_tool_references
+            if reference.import_resolution is None
+            and (reference.agent_line, reference.agent_col) in agent_calls_by_location
+            and (reference.local_name, reference.import_line) in external_import_tool_ids
+        }
+    )
     dominating_symbol_ids.update(
         {
             (id(call), "tool", binding): (
@@ -6428,6 +6578,16 @@ def scan_python(
         wrapped_tool_functions=wrapped_tool_functions,
         inline_usage_tool_calls=inline_usage_tool_calls,
         decorated_tool_exports=decorated_tool_exports,
+        imported_tool_export_usages={
+            (
+                reference.agent_line,
+                reference.agent_col,
+                reference.local_name,
+            ): reference
+            for reference in current_imported_tool_references
+            if reference.target_path is not None
+        },
+        imported_tool_promoted_exports=set(imported_tool_export_references),
         imported_agent_factory_target_paths=imported_agent_factory_target_paths,
         registry_class_exports=registry_class_exports,
         network_helper_summaries=network_helper_summaries,
@@ -9200,6 +9360,213 @@ def build_python_decorated_tool_exports(
         for key, definitions in exports.items()
         if len(definitions) == 1
     }
+
+
+def build_python_literal_imported_tool_references(
+    root: Path,
+    paths: list[Path],
+    module_paths: dict[str, str],
+) -> tuple[
+    dict[str, tuple[PythonImportedToolReference, ...]],
+    dict[tuple[str, str], tuple[PythonImportedToolReference, ...]],
+]:
+    """Index immutable names imported directly into literal Python Agent tool lists."""
+    parsed: dict[str, ast.Module] = {}
+    callable_exports: dict[tuple[str, str], list[ast.FunctionDef | ast.AsyncFunctionDef]] = (
+        defaultdict(list)
+    )
+    for path in paths:
+        if (
+            path.is_symlink()
+            or not path.is_file()
+            or path.suffix.lower() != ".py"
+            or set(path.relative_to(root).parts) & SKIP_DIRECTORIES
+        ):
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            relative = path.relative_to(root).as_posix()
+            tree = ast.parse(
+                path.read_text(encoding="utf-8-sig", errors="ignore"),
+                filename=relative,
+            )
+        except (OSError, SyntaxError):
+            continue
+        parsed[relative] = tree
+        for statement in tree.body:
+            if not isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                continue
+            decorators = {
+                dotted_name(decorator.func)
+                if isinstance(decorator, ast.Call)
+                else dotted_name(decorator)
+                for decorator in statement.decorator_list
+            }
+            if decorators & TOOL_DECORATORS or any(
+                name.endswith(".tool") for name in decorators
+            ):
+                continue
+            callable_exports[(relative, statement.name)].append(statement)
+    unique_callable_exports = {
+        key for key, definitions in callable_exports.items() if len(definitions) == 1
+    }
+
+    references_by_importer: dict[str, list[PythonImportedToolReference]] = defaultdict(list)
+    references_by_export: dict[
+        tuple[str, str], list[PythonImportedToolReference]
+    ] = defaultdict(list)
+    for relative, tree in parsed.items():
+        nodes = list(ast.walk(tree))
+        parent_by_id = {
+            id(child): parent for parent in nodes for child in ast.iter_child_nodes(parent)
+        }
+        imports: dict[str, list[tuple[ast.ImportFrom, ast.alias]]] = defaultdict(list)
+        import_counts: Counter[str] = Counter()
+        for statement in tree.body:
+            if not isinstance(statement, (ast.Import, ast.ImportFrom)):
+                continue
+            for alias in statement.names:
+                if alias.name == "*":
+                    continue
+                local_name = alias.asname or alias.name.split(".", 1)[0]
+                import_counts[local_name] += 1
+                if isinstance(statement, ast.ImportFrom):
+                    imports[local_name].append((statement, alias))
+
+        module_mutations: set[str] = set()
+
+        def collect_module_mutations(candidate: ast.AST, mutations: set[str]) -> None:
+            if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                mutations.add(candidate.name)
+                return
+            if isinstance(candidate, (ast.Import, ast.ImportFrom, ast.Lambda)):
+                return
+            if isinstance(candidate, ast.Name) and isinstance(
+                candidate.ctx, (ast.Store, ast.Del)
+            ):
+                mutations.add(candidate.id)
+            for child in ast.iter_child_nodes(candidate):
+                collect_module_mutations(child, mutations)
+
+        for statement in tree.body:
+            if not isinstance(statement, (ast.Import, ast.ImportFrom)):
+                collect_module_mutations(statement, module_mutations)
+        module_mutations.update(
+            name
+            for candidate in nodes
+            if isinstance(candidate, ast.Global)
+            for name in candidate.names
+        )
+
+        for call in (
+            candidate
+            for candidate in nodes
+            if isinstance(candidate, ast.Call)
+            and dotted_name(candidate.func).rsplit(".", 1)[-1] in AGENT_CALLS
+        ):
+            for keyword in call.keywords:
+                if keyword.arg != "tools" or not isinstance(
+                    keyword.value, (ast.List, ast.Tuple)
+                ):
+                    continue
+                for value in keyword.value.elts:
+                    if not isinstance(value, ast.Name):
+                        continue
+                    name = value.id
+                    candidates = imports.get(name, [])
+                    if (
+                        len(candidates) != 1
+                        or import_counts[name] != 1
+                        or name in module_mutations
+                    ):
+                        continue
+                    shadowed = False
+                    parent = parent_by_id.get(id(call))
+                    while parent is not None:
+                        if isinstance(parent, (ast.FunctionDef, ast.AsyncFunctionDef)) and (
+                            name in python_function_local_bindings(parent)
+                        ):
+                            shadowed = True
+                            break
+                        if isinstance(parent, ast.ClassDef):
+                            class_bound_names = {
+                                child.id
+                                for statement in parent.body
+                                for child in ast.walk(statement)
+                                if isinstance(child, ast.Name)
+                                and isinstance(child.ctx, (ast.Store, ast.Del))
+                            }
+                            if name in class_bound_names:
+                                shadowed = True
+                                break
+                        parent = parent_by_id.get(id(parent))
+                    if shadowed:
+                        continue
+                    import_node, alias = candidates[0]
+                    if import_node.lineno >= call.lineno:
+                        continue
+                    resolution = resolve_python_import(
+                        root,
+                        relative,
+                        import_node,
+                        alias.name,
+                        module_paths,
+                    )
+                    if resolution is None and import_node.level:
+                        continue
+                    export_key = (
+                        (resolution.path, alias.name) if resolution is not None else None
+                    )
+                    target_path = (
+                        resolution.path
+                        if export_key is not None and export_key in unique_callable_exports
+                        else None
+                    )
+                    reference = PythonImportedToolReference(
+                        importer_path=relative,
+                        local_name=name,
+                        original_name=alias.name,
+                        module=import_node.module or "",
+                        import_line=import_node.lineno,
+                        agent_line=call.lineno,
+                        agent_col=call.col_offset,
+                        import_resolution=(resolution.basis if resolution else None),
+                        target_path=target_path,
+                    )
+                    references_by_importer[relative].append(reference)
+                    if target_path is not None:
+                        references_by_export[(target_path, alias.name)].append(reference)
+
+    return (
+        {
+            path: tuple(
+                sorted(
+                    references,
+                    key=lambda item: (
+                        item.import_line,
+                        item.agent_line,
+                        item.agent_col,
+                        item.local_name,
+                    ),
+                )
+            )
+            for path, references in references_by_importer.items()
+        },
+        {
+            key: tuple(
+                sorted(
+                    references,
+                    key=lambda item: (
+                        item.importer_path,
+                        item.agent_line,
+                        item.agent_col,
+                    ),
+                )
+            )
+            for key, references in references_by_export.items()
+        },
+    )
 
 
 def build_python_agent_factory_class_exports(
@@ -15796,6 +16163,14 @@ def scan_repository(
         )
     ]
     decorated_tool_exports = build_python_decorated_tool_exports(root, registry_paths)
+    (
+        imported_tool_references,
+        imported_tool_export_references,
+    ) = build_python_literal_imported_tool_references(
+        root,
+        registry_paths,
+        module_paths,
+    )
     agent_factory_class_exports = build_python_agent_factory_class_exports(
         root,
         registry_paths,
@@ -15885,6 +16260,8 @@ def scan_repository(
                 text,
                 module_paths,
                 decorated_tool_exports,
+                imported_tool_references,
+                imported_tool_export_references,
                 agent_factory_class_exports,
                 registry_class_exports,
                 network_helper_summaries,
