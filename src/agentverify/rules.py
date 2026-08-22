@@ -173,6 +173,7 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
             and component.attributes.get("analysis")
             in {
                 "python-mcp-sampling-callback-consent",
+                "python-pydantic-ai-mcp-sampling-model",
                 "typescript-mcp-sampling-handler-consent",
             }
             and component.attributes.get("input_authority") == "mcp-server"
@@ -196,6 +197,7 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
             and component.name == "user-elicitation"
             and component.attributes.get("analysis")
             in {
+                "python-fastmcp-elicitation-handler-consent",
                 "python-mcp-elicitation-callback-consent",
                 "typescript-mcp-elicitation-handler-consent",
             }

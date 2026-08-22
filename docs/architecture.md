@@ -343,6 +343,15 @@ decision must precede provider invocation. The TypeScript analysis separately re
 to the provider request. Named external callbacks and complex or indirect handlers remain explicit
 `unresolved-handler` settings rather than assumed safe or unsafe.
 
+The PydanticAI adapter path recognizes an exact, immutable module-scope import of
+`pydantic_ai.mcp.MCPToolset` and a constructor with a non-null `sampling_model`. PydanticAI converts
+that model into an SDK-generated sampling callback, so the IR records automatic fulfilment to a
+model provider even though no callback appears at the call site. A simultaneous non-null
+`sampling_handler`, expanded keyword arguments, a rebound constructor, and unrelated imports
+or imports inside conditional runtime branches withhold the path. The capability records
+`sdk-session-dependent` protocol compatibility because
+session support still depends on the MCP SDK surface used at runtime.
+
 The elicitation-consent pass models a separate server authority: a client advertises form and/or URL
 elicitation and returns `accept`, `decline`, or `cancel`. Python requires an exact `mcp.ClientSession`,
 a same-scope named async callback, and an exact `mcp.types.ElicitResult` action. TypeScript requires
@@ -353,6 +362,16 @@ helper is also recognized when its unique body collects input and can decline or
 acceptance. Decline-only and unresolved handlers remain distinct settings. The IR records advertised
 modes, server input authority, response destination, request disclosure, and an exact
 `mcp-elicitation-consent` control edge.
+
+The FastMCP adapter path recognizes an exact `fastmcp.Client`, a same-scope named async
+`elicitation_handler`, and an optional exact `ElicitResult`. FastMCP treats ordinary returned data,
+including the supplied `response_type(...)`, as protocol `accept`; explicit `ElicitResult` actions
+retain accept, decline, and cancel semantics. A direct input call is not enough to prove consent:
+acceptance is human-confirmed only when an earlier decision preserves decline/cancel outcomes.
+Rebound callbacks or response factories and unknown return calls remain unresolved. Request
+disclosure is derived only from values passed to recognized display/prompt calls, so the pinned CLI
+is correctly modeled as human-confirmed with message-only disclosure rather than full request-detail
+disclosure.
 
 A repository prepass builds bounded Python network summaries for unique top-level free functions in
 selected files. A summary records direct recognized HTTP calls and the formal parameters that can

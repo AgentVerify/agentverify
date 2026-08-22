@@ -148,15 +148,18 @@ TypeScript `Client.setRequestHandler('sampling/createMessage', ...)` handlers. T
 examples automatically return sampling responses without a proven user decision. The TypeScript SDK
 host is the counterexample: it displays the full request, fails closed on an awaited confirmation,
 caps server-requested tokens, and only then calls the provider. Named external callbacks, unrelated
-imports, disconnected receivers, and complex approval logic remain unresolved. Next cover PydanticAI
-and FastMCP model adapters while keeping elicitation, tool approval, and sampling as separate
-protocol authorities. Schema v70 now resolves that separate elicitation authority through exact
+imports, disconnected receivers, and complex approval logic remain unresolved. Schema v70 resolves
+the separate elicitation authority through exact
 Python `elicitation_callback` and TypeScript `elicitation/create` registrations. Three TypeScript SDK
 examples synthesize `accept` without direct user input; the SDK CLI host proves both an inline URL
 confirmation and an imported form collector, while the Microsoft Python tutorial proves a
-fail-closed interactive decision. Decline-only and unresolved handlers remain distinct. Next cover
-FastMCP/PydanticAI handler adapters, multi-round-trip input-required configuration, URL-origin
-controls, and indirect UI helpers without treating an `accept` test fixture as proof of deployment.
+fail-closed interactive decision. Schema v71 adds two exact framework adapters: PydanticAI
+`MCPToolset(sampling_model=...)` installs an SDK-generated sampling handler, while FastMCP maps a
+non-`ElicitResult` handler return to protocol `accept`. Pinned test paths expose both automatic
+behaviors without changing the three default-scope findings per rule; FastMCP's production CLI
+remains human-confirmed and records only message disclosure. Next cover multi-round-trip
+input-required configuration, URL-origin controls, and indirect UI helpers without treating an
+`accept` test fixture as proof of deployment.
 
 ## P1 — sandbox containment quality
 
@@ -253,8 +256,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 487 pinned positive/negative locations, with 589 separately
-scored IR component/relationship labels. Schema-v70 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 504 pinned positive/negative locations, with 608 separately
+scored IR component/relationship labels. Schema-v71 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

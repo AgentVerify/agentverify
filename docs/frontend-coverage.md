@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v70
+framework, wrapper, or configuration path. Counts come from schema-v71
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -302,23 +302,27 @@ limit, the chat-model call, and the response returned to the server. Callback-co
 policies remain unresolved rather than being credited as human review. The specialized
 `AV-MCP004` result replaces the generic auto-approval review at that source location.
 
-The raw MCP client surface adds six exact sampling handlers across the refreshed corpus. Five
-automatically return a result and one is human-confirmed; two automatic handlers are test-only, so
-`AV-MCP005` reports three default-scope examples across two repositories. Python requires an exact
-`ClientSession` callback and `mcp.types` result. TypeScript requires an exact MCP `Client`, literal
-sampling capability, proven receiver, and balanced `sampling/createMessage` handler. The TypeScript
-CLI host is the positive control: it
+The MCP sampling-consent surface adds ten exact handlers across the refreshed corpus: five Python
+and five TypeScript. Nine automatically return a result and one is human-confirmed; six automatic
+handlers are test-only, so `AV-MCP005` still reports three default-scope examples across two
+repositories. Raw Python requires an exact `ClientSession` callback and `mcp.types` result;
+PydanticAI additionally resolves four pinned `MCPToolset(sampling_model=...)` tests where the SDK
+generates the callback. TypeScript requires an exact MCP `Client`, literal sampling capability,
+proven receiver, and balanced `sampling/createMessage` handler. The TypeScript CLI host is the
+positive control: it
 displays the full request, rejects a negative awaited decision, caps requested tokens, and then calls
-the model provider. All six handlers produce protocol→model-sampling and configured-by edges; the
+the model provider. All ten handlers produce protocol→model-sampling and configured-by edges; the
 safe host adds one consent and one token-budget edge.
 
-The separate elicitation surface adds 13 exact handlers: one Python and 12 TypeScript. Nine
-automatically return `accept`, two decline, and two are human-confirmed; six automatic handlers and
-both decline-only handlers are under tests, so `AV-MCP006` reports three default-scope SDK examples.
-Five handlers are outside tests: the three reviews, the TypeScript CLI host, and the Microsoft Python
-tutorial. All 13 produce protocol→user-elicitation and configured-by edges. The two governed clients
-add consent edges and preserve message/request-detail disclosure; the TypeScript host resolves its
-form path through a unique imported input collector and its URL path through direct confirmation.
+The separate elicitation surface adds 15 exact handlers: three Python and 12 TypeScript. Ten
+automatically return `accept`, two decline, and three are human-confirmed; seven automatic handlers
+and both decline-only handlers are under tests, so `AV-MCP006` still reports three default-scope SDK
+examples. Six handlers are outside tests: the three reviews, the TypeScript CLI host, the Microsoft
+Python tutorial, and FastMCP's CLI client. FastMCP contributes one test where ordinary returned data
+is implicitly adapted to `accept`; its production CLI preserves decline/cancel before acceptance.
+All 15 produce protocol→user-elicitation and configured-by edges. The three governed clients add
+consent edges. The TypeScript host and Microsoft tutorial preserve message/request-detail disclosure,
+while FastMCP's CLI proves user confirmation but displays only the request message.
 
 The approval-callback resolver summarizes unique same-file functions and propagates only direct call
 edges into an OpenAI built-in tool's configured approval handler. Python covers a named handler and
@@ -393,7 +397,8 @@ and `network-ssrf-policy` edge.
   assumed to be human consent.
 - Generic MCP sampling consent requires exact Python or TypeScript client imports, a literal
   TypeScript sampling capability, a direct named Python async callback or inline TypeScript arrow
-  handler, and an exact sampling-result shape.
+  handler, and an exact sampling-result shape. The PydanticAI adapter additionally recognizes an
+  immutable direct `MCPToolset` import with a non-null `sampling_model` and no conflicting handler.
   Python methods/classes, callback aliases, normalized decision variables, nested decision blocks,
   TypeScript named handler functions, receiver fields, alternate UI libraries, and indirect budget
   propagation remain unresolved. A decision after provider invocation is not a governing control.
@@ -403,7 +408,8 @@ and `network-ssrf-policy` edge.
   `ElicitResult`/returned action objects, a literal TypeScript elicitation capability, and an immutable
   connected receiver. Direct awaited input/confirmation can govern later accepting branches; one unique local
   imported TypeScript helper is supported when it collects input and preserves decline/cancel.
-  Python methods and module-level callbacks, TypeScript named handlers, client factories, stateful
+  FastMCP direct returns are recognized through its implicit-accept adapter, but rebound handlers or
+  response factories remain unresolved. Python methods, TypeScript named handlers, client factories, stateful
   decisions, other UI APIs, multi-round-trip input-required responses, and indirect helpers remain
   unresolved. URL validation and navigation safety remain separate from the consent edge.
 - MetaGPT/Qwen registry decorators are recognized only through exact direct imports or unchanged
@@ -525,7 +531,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 487-label rule truth set and 589-label IR component/relationship set are curated regression suites. They
+The 504-label rule truth set and 608-label IR component/relationship set are curated regression suites. They
 guard known positives and negatives; they are not an unbiased accuracy estimate. A future holdout
 must be sampled separately across the categories above, externally reviewed, and kept sealed while
 rules change. Until then, precision/recall values apply only to the published seed labels.

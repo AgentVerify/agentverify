@@ -131,7 +131,7 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-22 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,771 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,114 relationships, and completed in 270.7738 seconds on the development machine. Three parse
+resolved 2,127 relationships, and completed in 267.6628 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -142,10 +142,10 @@ versioned audited evidence hints plus Python imports reached from MCP forwarding
 URL-security call sites, all charged against the same cap. This refresh materialized 176 dependency files across 21
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v70 carries both the 176-file total and the
+dependency count per repository; engine schema v71 carries both the 176-file total and the
 21-repository coverage.
 
-Engine benchmark schema v70 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v71 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It also publishes Python and TypeScript initial-origin control coverage
 plus source-proven Python and TypeScript secure transports, with redirect, DNS, proxy, configured
@@ -485,13 +485,18 @@ capability, a proven receiver, and a balanced inline `sampling/createMessage` ha
 MCP-protocol→model-sampling path, server input authority, response destination, fulfilment target,
 and configured policy.
 
-Six pinned handlers qualify: one Python and five TypeScript, including two test-only SDK handlers.
-Five automatically return results; the three default-scope instances raise reviews across two
-repositories. The TypeScript CLI host is the governed counterexample: it displays the full system
+Schema v71 additionally resolves PydanticAI's exact `MCPToolset(sampling_model=...)` adapter, where
+the SDK generates the sampling callback. A null model, a simultaneous non-null custom handler,
+expanded keyword arguments, rebound constructors, conditional imports, and unrelated imports withhold the path; protocol
+availability remains explicitly SDK-session-dependent.
+
+Ten pinned handlers qualify: five Python and five TypeScript, including six test-only automatic
+handlers. Nine automatically return results; the three default-scope instances raise reviews across
+two repositories. The TypeScript CLI host is the governed counterexample: it displays the full system
 prompt and messages, caps the server's token request, awaits an explicit decision, throws on
 rejection, and only then calls its provider. Direct Python rejection, unresolved callbacks, and a
 too-late TypeScript confirmation are separately regression-tested. A missing capability, unrelated imports, and a disconnected TypeScript receiver withhold
-the path. The rule matrix is 6 TP, 10 TN, 0 FP, and 0 FN; the IR matrix is 15 TP, 2 TN, 0 FP, and 0 FN.
+the path. The rule matrix is 7 TP, 15 TN, 0 FP, and 0 FN; the IR matrix is 17 TP, 7 TN, 0 FP, and 0 FN.
 
 ## AV-MCP006 — MCP elicitation is accepted without a proven user decision
 
@@ -505,14 +510,21 @@ response destination, acceptance policy, and consent control. The
 defines `accept` as user consent and requires explicit consent plus full-URL display before URL-mode
 navigation.
 
-Thirteen pinned handlers qualify: one Python and 12 TypeScript. Nine can return `accept`, including
-six test-only handlers; the three default-scope automatic acceptances raise reviews in the TypeScript
-SDK. Two test handlers decline only. The SDK CLI host is human-confirmed through direct URL
+Schema v71 additionally resolves FastMCP's exact `Client(elicitation_handler=...)` adapter. Ordinary
+returned data is implicit `accept`, while explicit `ElicitResult` preserves accept, decline, and
+cancel. Rebound callbacks or response factories, unknown returns, and unrelated imports remain
+unresolved or absent. This follows the
+[official FastMCP elicitation contract](https://gofastmcp.com/clients/elicitation).
+
+Fifteen pinned handlers qualify: three Python and 12 TypeScript. Ten can return `accept`, including
+seven test-only handlers; the three default-scope automatic acceptances raise reviews in the
+TypeScript SDK. Two test handlers decline only. The SDK CLI host is human-confirmed through direct URL
 confirmation plus a unique imported form collector that gathers input and preserves decline/cancel.
-The Microsoft Python tutorial independently prompts and branches on explicit user choices. Wrong
+The Microsoft Python tutorial independently prompts and branches on explicit user choices. FastMCP's
+production CLI is also human-confirmed, but its proven disclosure is message-only. Wrong
 imports, disconnected or reassigned receivers, missing capabilities, unreturned or nested action
-objects, and named external callbacks withhold the path. The rule matrix is 5 TP, 15 TN, 0 FP, and 0
-FN; the IR matrix is 18 TP, 3 TN, 0 FP, and 0 FN. All 487 cross-rule labels pass.
+objects, shadowing parameters, and named external callbacks withhold the path. The rule matrix is 7
+TP, 24 TN, 0 FP, and 0 FN; the IR matrix is 29 TP, 4 TN, 0 FP, and 0 FN. All 504 cross-rule labels pass.
 
 During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
 to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
@@ -972,14 +984,14 @@ and surfacing failed writes through metrics or alerts.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 487 exact labels across all 18 enabled rules: 262 positives and 225
+`benchmarks/truthset.json` contains 504 exact labels across all 18 enabled rules: 265 positives and 239
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
 Compose/Kubernetes/Docker SDK settings, host credential bind near misses, and exact/prompt-only MCP
-package launchers. All 487 currently pass;
+package launchers. All 504 currently pass;
 each rule's seed precision and recall are 1.0. Negative labels must retain either an observed Agent IR
 component anchor or verified source text at the exact pinned line, preventing a missing or drifting
 location from passing silently.
@@ -1097,7 +1109,7 @@ ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent 
 Eighty component-taxonomy labels add 51 exact local/pinned framework, provider, and model positives
 plus 29 near-name and unrelated-service negatives. Twenty-five MCP package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
-four real repositories. All 589 IR labels pass:
+four real repositories. All 608 IR labels pass:
 51 component-taxonomy positives/29 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
@@ -1134,6 +1146,6 @@ positives/one negative, plus four Composio conditional-runtime positives/one neg
 CLI upload positives/one negative, two Google ADK OpenAPI origin-lock positives/one negative, and two
 OpenAI Agents Python MCP-approval-default positives/one negative, six OpenAI Agents JS MCP approval
 composition positives/one negative, nine Agno MCP confirmation positives/one negative, nine Semantic
-Kernel MCP sampling positives/two negatives, 15 generic MCP sampling-consent positives/two negatives,
-17 generic MCP elicitation-consent positives/two negatives,
+Kernel MCP sampling positives/two negatives, 17 generic MCP sampling-consent positives/seven negatives,
+29 generic MCP elicitation-consent positives/four negatives,
 plus 22 MCP package-launcher positives/three negatives.

@@ -81,6 +81,15 @@
       "python/samples/concepts/mcp/agent_with_mcp_sampling.py",
       "python/semantic_kernel/connectors/mcp.py"
     ],
+    "pydantic/pydantic-ai": [
+      "pydantic_ai_slim/pydantic_ai/mcp.py",
+      "tests/test_mcp.py"
+    ],
+    "jlowin/fastmcp": [
+      "fastmcp_slim/fastmcp/client/elicitation.py",
+      "fastmcp_slim/fastmcp/cli/client.py",
+      "tests/test_mcp_config.py"
+    ],
     "openai/openai-agents-js": [
       "packages/agents-core/src/agent.ts",
       "packages/agents-core/src/mcp.ts",

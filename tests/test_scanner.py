@@ -2959,6 +2959,7 @@ def test_mcp_sampling_callbacks_require_a_proven_user_decision() -> None:
     ir = scan_repository(root)
     analyses = {
         "python-mcp-sampling-callback-consent",
+        "python-pydantic-ai-mcp-sampling-model",
         "typescript-mcp-sampling-handler-consent",
     }
     capabilities = {
@@ -2969,6 +2970,7 @@ def test_mcp_sampling_callbacks_require_a_proven_user_decision() -> None:
         and component.attributes.get("analysis") in analyses
     }
     assert set(capabilities) == {
+        "pydantic_automatic.py",
         "python_automatic.py",
         "python_denied.py",
         "python_human.py",
@@ -2977,6 +2979,22 @@ def test_mcp_sampling_callbacks_require_a_proven_user_decision() -> None:
         "typescript_human.ts",
         "typescript_late_confirm.ts",
         "typescript_unresolved.ts",
+    }
+    assert capabilities["pydantic_automatic.py"].attributes == {
+        "frontend": "python",
+        "input_authority": "mcp-server",
+        "response_destination": "mcp-server",
+        "approval_policy": "automatic-fulfilment",
+        "response_created": True,
+        "fulfilment_target": "model-provider",
+        "callback_definition_line": None,
+        "request_disclosure": "not-proven",
+        "scope": "production",
+        "analysis": "python-pydantic-ai-mcp-sampling-model",
+        "adapter": "pydantic-ai-mcp-toolset",
+        "configuration": "sampling-model",
+        "handler_origin": "sdk-generated",
+        "protocol_compatibility": "sdk-session-dependent",
     }
     assert capabilities["python_automatic.py"].attributes == {
         "frontend": "python",
@@ -3029,6 +3047,11 @@ def test_mcp_sampling_callbacks_require_a_proven_user_decision() -> None:
         for finding in findings
     ] == [
         (
+            "pydantic_automatic.py",
+            3,
+            ("protocol:MCP", "capability:model-sampling"),
+        ),
+        (
             "python_automatic.py",
             16,
             ("protocol:MCP", "capability:model-sampling"),
@@ -3053,6 +3076,11 @@ def test_mcp_sampling_callbacks_require_a_proven_user_decision() -> None:
         component.attributes.get("analysis") in analyses
         and component.evidence.path
         in {
+            "pydantic_conflict.py",
+            "pydantic_conditional_import.py",
+            "pydantic_none.py",
+            "pydantic_reassigned.py",
+            "pydantic_wrong_import.py",
             "python_wrong_import.py",
             "typescript_disconnected.ts",
             "typescript_missing_capability.ts",
@@ -3066,6 +3094,7 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
     root = ROOT / "cases/mcp_elicitation_consent"
     ir = scan_repository(root)
     analyses = {
+        "python-fastmcp-elicitation-handler-consent",
         "python-mcp-elicitation-callback-consent",
         "typescript-mcp-elicitation-handler-consent",
     }
@@ -3077,6 +3106,15 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
         and component.attributes.get("analysis") in analyses
     }
     assert set(capabilities) == {
+        "fastmcp_automatic.py",
+        "fastmcp_declined.py",
+        "fastmcp_human.py",
+        "fastmcp_input_only.py",
+        "fastmcp_reassigned.py",
+        "fastmcp_rebound_response_type.py",
+        "fastmcp_shadowed_callback.py",
+        "fastmcp_unknown_return.py",
+        "fastmcp_unresolved.py",
         "python_automatic.py",
         "python_declined.py",
         "python_human.py",
@@ -3087,6 +3125,45 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
         "typescript_nested_action.ts",
         "typescript_unreturned.ts",
         "typescript_unresolved.ts",
+    }
+    assert capabilities["fastmcp_automatic.py"].attributes["approval_policy"] == (
+        "automatic-accept"
+    )
+    assert capabilities["fastmcp_input_only.py"].attributes["approval_policy"] == (
+        "automatic-accept"
+    )
+    assert capabilities["fastmcp_declined.py"].attributes["approval_policy"] == (
+        "declined-handler"
+    )
+    assert capabilities["fastmcp_unknown_return.py"].attributes["approval_policy"] == (
+        "unresolved-handler"
+    )
+    assert capabilities["fastmcp_unresolved.py"].attributes["approval_policy"] == (
+        "unresolved-handler"
+    )
+    assert capabilities["fastmcp_reassigned.py"].attributes["approval_policy"] == (
+        "unresolved-handler"
+    )
+    assert capabilities["fastmcp_rebound_response_type.py"].attributes[
+        "approval_policy"
+    ] == "unresolved-handler"
+    assert capabilities["fastmcp_shadowed_callback.py"].attributes["approval_policy"] == (
+        "unresolved-handler"
+    )
+    assert capabilities["fastmcp_human.py"].attributes == {
+        "frontend": "python",
+        "input_authority": "mcp-server",
+        "response_destination": "mcp-server",
+        "approval_policy": "human-confirmed",
+        "response_created": True,
+        "acceptance_created": True,
+        "elicitation_modes": ("form", "url"),
+        "callback_definition_line": 5,
+        "request_disclosure": "message-and-request-details",
+        "scope": "production",
+        "analysis": "python-fastmcp-elicitation-handler-consent",
+        "adapter": "fastmcp-client",
+        "acceptance_semantics": "non-result-return-implies-accept",
     }
     assert capabilities["python_automatic.py"].attributes == {
         "frontend": "python",
@@ -3152,7 +3229,11 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
         and component.name == "mcp-elicitation-consent"
         and component.attributes.get("analysis") in analyses
     }
-    assert controls == {("python_human.py", 9), ("typescript_human.ts", 10)}
+    assert controls == {
+        ("fastmcp_human.py", 7),
+        ("python_human.py", 9),
+        ("typescript_human.ts", 10),
+    }
     assert sum(
         relationship.source_kind == "protocol"
         and relationship.source_name == "MCP"
@@ -3161,12 +3242,22 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
         and relationship.target_name == "user-elicitation"
         and relationship.attributes.get("analysis") in analyses
         for relationship in ir.relationships
-    ) == 10
+    ) == 19
     findings = [finding for finding in ir.findings if finding.rule_id == "AV-MCP006"]
     assert [
         (finding.evidence.path, finding.evidence.line, finding.ir_path)
         for finding in findings
     ] == [
+        (
+            "fastmcp_automatic.py",
+            8,
+            ("protocol:MCP", "capability:user-elicitation"),
+        ),
+        (
+            "fastmcp_input_only.py",
+            9,
+            ("protocol:MCP", "capability:user-elicitation"),
+        ),
         (
             "python_automatic.py",
             15,
@@ -3187,6 +3278,7 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
         component.attributes.get("analysis") in analyses
         and component.evidence.path
         in {
+            "fastmcp_wrong_import.py",
             "python_wrong_import.py",
             "typescript_disconnected.ts",
             "typescript_missing_capability.ts",

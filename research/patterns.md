@@ -140,6 +140,11 @@ completion notifications, schema validation, and a safe-looking URL do not estab
 A governing client path must present the request, collect or confirm the user's response, preserve
 decline/cancel outcomes, and—in URL mode—apply destination controls before navigation. Analyses must
 therefore attach consent to each accepting branch rather than infer it from comments or handler names.
+Framework adapters can hide that authority transition. PydanticAI turns a configured sampling model
+into an SDK-generated callback, while FastMCP turns ordinary elicitation-handler data into protocol
+`accept`. Analysis must model those adapter contracts explicitly, preserve SDK/session compatibility
+and disclosure gaps, and reject rebound constructors, callbacks, or response factories rather than
+equating a friendly framework API with consent.
 
 ## Observability as a cross-cutting control
 

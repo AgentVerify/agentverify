@@ -16481,6 +16481,49 @@ def python_exact_import_name(
     return binding
 
 
+def python_exact_module_scope_import_name(
+    tree: ast.Module,
+    module: str,
+    exported: str,
+) -> str | None:
+    """Return one immutable module binding, including imports inside try/with guards."""
+
+    def import_guard_statements(statements: list[ast.stmt]) -> list[ast.stmt]:
+        guarded: list[ast.stmt] = []
+        for statement in statements:
+            guarded.append(statement)
+            if isinstance(statement, (ast.With, ast.AsyncWith)):
+                guarded.extend(import_guard_statements(statement.body))
+            elif isinstance(statement, (ast.Try, ast.TryStar)):
+                guarded.extend(import_guard_statements(statement.body))
+                guarded.extend(import_guard_statements(statement.orelse))
+                guarded.extend(import_guard_statements(statement.finalbody))
+                for handler in statement.handlers:
+                    guarded.extend(import_guard_statements(handler.body))
+        return guarded
+
+    matches = [
+        alias.asname or alias.name
+        for statement in import_guard_statements(tree.body)
+        if isinstance(statement, ast.ImportFrom) and statement.module == module
+        for alias in statement.names
+        if alias.name == exported
+    ]
+    if len(matches) != 1:
+        return None
+    binding = matches[0]
+    if any(
+        isinstance(node, ast.Name)
+        and isinstance(node.ctx, (ast.Store, ast.Del))
+        and node.id == binding
+        for node in ast.walk(tree)
+    ) or any(
+        isinstance(node, ast.arg) and node.arg == binding for node in ast.walk(tree)
+    ):
+        return None
+    return binding
+
+
 def python_exact_module_import_name(tree: ast.Module, module: str) -> str | None:
     """Return one immutable module binding for an exact Python import."""
     matches = [
@@ -17382,6 +17425,7 @@ def add_mcp_sampling_consent_observation(
     consent_line: int | None = None,
     request_disclosure: str = "unresolved",
     token_budget_line: int | None = None,
+    extra_attributes: dict[str, object] | None = None,
 ) -> None:
     """Emit one exact MCP client sampling handler and its mediation state."""
     evidence = Evidence(relative, line, excerpt(lines, line))
@@ -17403,6 +17447,7 @@ def add_mcp_sampling_consent_observation(
         "request_disclosure": request_disclosure,
         "scope": source_scope(relative),
         "analysis": analysis,
+        **(extra_attributes or {}),
     }
     ir.add_component(
         Component(
@@ -17448,6 +17493,7 @@ def add_mcp_sampling_consent_observation(
         "approval_policy": approval_policy,
         "scope": source_scope(relative),
         "analysis": analysis,
+        **(extra_attributes or {}),
     }
     ir.add_component(
         Component(
@@ -17739,6 +17785,74 @@ def add_python_mcp_sampling_callback_consent_flow(
                         else "not-proven"
                     ),
                 )
+
+
+def add_python_pydantic_ai_mcp_sampling_model_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve PydanticAI's sampling_model shortcut into automatic MCP fulfilment."""
+    analysis = "python-pydantic-ai-mcp-sampling-model"
+    for path in paths:
+        if path.suffix.lower() != ".py" or not path.is_file():
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+            tree = ast.parse(text)
+        except (OSError, SyntaxError, ValueError):
+            continue
+        if "MCPToolset" not in text or "sampling_model" not in text:
+            continue
+        toolset_binding = python_exact_module_scope_import_name(
+            tree,
+            "pydantic_ai.mcp",
+            "MCPToolset",
+        )
+        if toolset_binding is None:
+            continue
+        relative = path.relative_to(root).as_posix()
+        lines = text.splitlines()
+        for call in ast.walk(tree):
+            if not (
+                isinstance(call, ast.Call)
+                and isinstance(call.func, ast.Name)
+                and call.func.id == toolset_binding
+                and not any(keyword.arg is None for keyword in call.keywords)
+            ):
+                continue
+            sampling_model = python_call_keyword(call, "sampling_model")
+            sampling_handler = python_call_keyword(call, "sampling_handler")
+            if sampling_model is None or (
+                isinstance(sampling_model, ast.Constant) and sampling_model.value is None
+            ):
+                continue
+            if sampling_handler is not None and not (
+                isinstance(sampling_handler, ast.Constant) and sampling_handler.value is None
+            ):
+                # The SDK rejects simultaneous model and handler configuration.
+                continue
+            add_mcp_sampling_consent_observation(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=call.lineno,
+                frontend="python",
+                analysis=analysis,
+                approval_policy="automatic-fulfilment",
+                response_created=True,
+                fulfilment_target="model-provider",
+                callback_line=None,
+                request_disclosure="not-proven",
+                extra_attributes={
+                    "adapter": "pydantic-ai-mcp-toolset",
+                    "configuration": "sampling-model",
+                    "handler_origin": "sdk-generated",
+                    "protocol_compatibility": "sdk-session-dependent",
+                },
+            )
 
 
 def typescript_sampling_response_offset(callback: str) -> int | None:
@@ -18047,6 +18161,7 @@ def add_mcp_elicitation_consent_observation(
     callback_line: int | None,
     consent_line: int | None = None,
     request_disclosure: str = "unresolved",
+    extra_attributes: dict[str, object] | None = None,
 ) -> None:
     """Emit one exact MCP client elicitation handler and its consent state."""
     evidence = Evidence(relative, line, excerpt(lines, line))
@@ -18069,6 +18184,7 @@ def add_mcp_elicitation_consent_observation(
         "request_disclosure": request_disclosure,
         "scope": source_scope(relative),
         "analysis": analysis,
+        **(extra_attributes or {}),
     }
     ir.add_component(
         Component(
@@ -18115,6 +18231,7 @@ def add_mcp_elicitation_consent_observation(
         "elicitation_modes": elicitation_modes,
         "scope": source_scope(relative),
         "analysis": analysis,
+        **(extra_attributes or {}),
     }
     ir.add_component(
         Component(
@@ -18168,18 +18285,23 @@ def add_mcp_elicitation_consent_observation(
 def python_mcp_elicitation_result_action(
     node: ast.AST | None,
     types_binding: str | None,
+    result_binding: str | None = None,
 ) -> str | None:
     """Return the literal action of one exact mcp.types elicitation result."""
-    if not (
-        isinstance(node, ast.Call)
-        and isinstance(node.func, ast.Attribute)
+    if not isinstance(node, ast.Call):
+        return None
+    constructor: str | None = None
+    if (
+        isinstance(node.func, ast.Attribute)
         and isinstance(node.func.value, ast.Name)
         and node.func.value.id == types_binding
     ):
-        return None
-    if node.func.attr == "ErrorData":
+        constructor = node.func.attr
+    elif isinstance(node.func, ast.Name) and node.func.id == result_binding:
+        constructor = "ElicitResult"
+    if constructor == "ErrorData":
         return "error"
-    if node.func.attr != "ElicitResult":
+    if constructor != "ElicitResult":
         return None
     action = python_call_keyword(node, "action")
     if isinstance(action, ast.Constant) and action.value in {
@@ -18191,6 +18313,20 @@ def python_mcp_elicitation_result_action(
     return None
 
 
+def python_elicitation_input_name(node: ast.AST) -> str | None:
+    """Return a direct input binding through exact string normalization calls."""
+    current = node
+    while (
+        isinstance(current, ast.Call)
+        and not current.args
+        and not current.keywords
+        and isinstance(current.func, ast.Attribute)
+        and current.func.attr in {"casefold", "lower", "strip"}
+    ):
+        current = current.func.value
+    return current.id if isinstance(current, ast.Name) else None
+
+
 def python_elicitation_decision_test(
     test: ast.AST,
     interactive_names: set[str],
@@ -18200,8 +18336,7 @@ def python_elicitation_decision_test(
     """Recognize a literal allow/deny comparison over direct user input."""
     if not (
         isinstance(test, ast.Compare)
-        and isinstance(test.left, ast.Name)
-        and test.left.id in interactive_names
+        and python_elicitation_input_name(test.left) in interactive_names
         and len(test.ops) == 1
         and len(test.comparators) == 1
     ):
@@ -18225,13 +18360,51 @@ def python_elicitation_decision_test(
     )
 
 
+def python_elicitation_rejection_test(
+    test: ast.AST,
+    interactive_names: set[str],
+) -> str | None:
+    """Return the user-input binding for a direct decline/cancel branch."""
+    if (
+        isinstance(test, ast.UnaryOp)
+        and isinstance(test.op, ast.Not)
+        and isinstance(test.operand, ast.Name)
+        and test.operand.id in interactive_names
+    ):
+        return test.operand.id
+    if not (
+        isinstance(test, ast.Compare)
+        and python_elicitation_input_name(test.left) in interactive_names
+        and len(test.ops) == 1
+        and isinstance(test.ops[0], (ast.Eq, ast.In))
+        and len(test.comparators) == 1
+    ):
+        return None
+    rejected = test.comparators[0]
+    denied_values = {False, "n", "no", "decline", "cancel", "reject", "deny"}
+    if isinstance(rejected, ast.Constant):
+        binding = python_elicitation_input_name(test.left)
+        return binding if rejected.value in denied_values else None
+    if (
+        isinstance(rejected, (ast.Set, ast.List, ast.Tuple))
+        and bool(rejected.elts)
+        and all(
+            isinstance(item, ast.Constant) and item.value in denied_values
+            for item in rejected.elts
+        )
+    ):
+        return python_elicitation_input_name(test.left)
+    return None
+
+
 def python_mcp_elicitation_human_consent(
     function: ast.AsyncFunctionDef,
     types_binding: str | None,
     accept_returns: list[ast.Return],
+    result_binding: str | None = None,
 ) -> int | None:
     """Prove every literal acceptance follows direct interactive input."""
-    interactive_names: dict[str, int] = {}
+    interactions: list[tuple[str, int]] = []
     nodes = python_scope_nodes(function.body)
     for node in nodes:
         if not isinstance(node, (ast.Assign, ast.AnnAssign)):
@@ -18255,46 +18428,87 @@ def python_mcp_elicitation_human_consent(
             )
             for call in ast.walk(node.value)
         ):
-            interactive_names[target.id] = node.lineno
-    if not interactive_names or not accept_returns:
+            interactions.append((target.id, node.lineno))
+    if not interactions or not accept_returns:
         return None
 
+    interactive_names = {name for name, _ in interactions}
     controlled: set[int] = set()
-    for statement in nodes:
-        if not isinstance(statement, ast.If):
-            continue
-        if python_elicitation_decision_test(
-            statement.test,
-            set(interactive_names),
-            positive=True,
-        ):
-            for returned in accept_returns:
-                if any(
-                    node is returned
-                    for child in statement.body
-                    for node in ast.walk(child)
-                ):
+    consent_lines: set[int] = set()
+    for returned in accept_returns:
+        for statement in nodes:
+            if not isinstance(statement, ast.If):
+                continue
+            if python_elicitation_decision_test(
+                statement.test,
+                interactive_names,
+                positive=True,
+            ) and any(
+                node is returned
+                for child in statement.body
+                for node in ast.walk(child)
+            ):
+                binding = (
+                    python_elicitation_input_name(statement.test.left)
+                    if isinstance(statement.test, ast.Compare)
+                    else None
+                )
+                candidate_lines = [
+                    line
+                    for name, line in interactions
+                    if name == binding and line <= statement.lineno
+                ]
+                if candidate_lines:
                     controlled.add(id(returned))
-        if not python_elicitation_decision_test(
-            statement.test,
-            set(interactive_names),
-            positive=False,
-        ):
-            continue
-        rejection_actions = {
-            python_mcp_elicitation_result_action(node.value, types_binding)
-            for child in statement.body
-            for node in ast.walk(child)
-            if isinstance(node, ast.Return)
-        }
-        if not rejection_actions & {"decline", "cancel", "error"}:
-            continue
-        for returned in accept_returns:
-            if returned.lineno > (statement.end_lineno or statement.lineno):
+                    consent_lines.add(max(candidate_lines))
+                    break
+            if python_elicitation_decision_test(
+                statement.test,
+                interactive_names,
+                positive=False,
+            ):
+                rejection_binding = (
+                    python_elicitation_input_name(statement.test.left)
+                    if isinstance(statement.test, ast.Compare)
+                    else None
+                )
+            else:
+                rejection_binding = python_elicitation_rejection_test(
+                    statement.test,
+                    interactive_names,
+                )
+            if rejection_binding is None or returned.lineno <= (
+                statement.end_lineno or statement.lineno
+            ):
+                continue
+            candidate_lines = [
+                line
+                for name, line in interactions
+                if name == rejection_binding and line <= statement.lineno
+            ]
+            if not candidate_lines:
+                continue
+            rejection_actions = {
+                python_mcp_elicitation_result_action(
+                    node.value,
+                    types_binding,
+                    result_binding,
+                )
+                for child in statement.body
+                for node in ast.walk(child)
+                if isinstance(node, ast.Return)
+            }
+            latest_input = max(candidate_lines)
+            if rejection_actions & {"decline", "cancel", "error"} and not any(
+                name == rejection_binding and latest_input < line < returned.lineno
+                for name, line in interactions
+            ):
                 controlled.add(id(returned))
+                consent_lines.add(latest_input)
+                break
     if len(controlled) != len(accept_returns):
         return None
-    return min(interactive_names.values())
+    return min(consent_lines) if consent_lines else None
 
 
 def add_python_mcp_elicitation_callback_consent_flow(
@@ -18420,6 +18634,280 @@ def add_python_mcp_elicitation_callback_consent_flow(
                         if consent_line is not None
                         else "not-proven"
                     ),
+                )
+
+
+def python_fastmcp_elicitation_return_action(
+    node: ast.AST | None,
+    result_binding: str | None,
+    response_type_binding: str | None,
+) -> str:
+    """Classify one FastMCP handler return through its implicit-accept adapter."""
+    if (
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == result_binding
+    ):
+        return python_mcp_elicitation_result_action(
+            node,
+            None,
+            result_binding,
+        ) or "unresolved"
+    if isinstance(node, (ast.Constant, ast.Dict, ast.List, ast.Set, ast.Tuple)):
+        return "accept"
+    if (
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == response_type_binding
+    ):
+        return "accept"
+    return "unresolved"
+
+
+def add_python_fastmcp_elicitation_handler_consent_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve FastMCP Client handlers, including its implicit acceptance adapter."""
+    analysis = "python-fastmcp-elicitation-handler-consent"
+    client_modules = ("fastmcp", "fastmcp.client", "fastmcp.client.client")
+    result_modules = ("fastmcp", "fastmcp.client", "fastmcp.client.elicitation")
+    for path in paths:
+        if path.suffix.lower() != ".py" or not path.is_file():
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+            tree = ast.parse(text)
+        except (OSError, SyntaxError, ValueError):
+            continue
+        if "Client" not in text or "elicitation_handler" not in text:
+            continue
+        client_bindings = {
+            binding
+            for module in client_modules
+            if (
+                binding := python_exact_module_scope_import_name(
+                    tree,
+                    module,
+                    "Client",
+                )
+            )
+            is not None
+        }
+        if len(client_bindings) != 1:
+            continue
+        client_binding = next(iter(client_bindings))
+        result_bindings = {
+            binding
+            for module in result_modules
+            if (
+                binding := python_exact_module_scope_import_name(
+                    tree,
+                    module,
+                    "ElicitResult",
+                )
+            )
+            is not None
+        }
+        result_binding = next(iter(result_bindings)) if len(result_bindings) == 1 else None
+        relative = path.relative_to(root).as_posix()
+        lines = text.splitlines()
+        module_nodes = python_scope_nodes(tree.body)
+        module_callbacks = {
+            node.name: node
+            for node in module_nodes
+            if isinstance(node, ast.AsyncFunctionDef)
+        }
+        scopes: list[
+            tuple[list[ast.AST], dict[str, ast.AsyncFunctionDef], set[str]]
+        ] = [
+            (module_nodes, module_callbacks, set())
+        ]
+        scopes.extend(
+            (
+                python_scope_nodes(function.body),
+                {
+                    **module_callbacks,
+                    **{
+                        node.name: node
+                        for node in python_scope_nodes(function.body)
+                        if isinstance(node, ast.AsyncFunctionDef)
+                    },
+                },
+                {
+                    argument.arg
+                    for argument in (
+                        *function.args.posonlyargs,
+                        *function.args.args,
+                        *function.args.kwonlyargs,
+                    )
+                }
+                | ({function.args.vararg.arg} if function.args.vararg is not None else set())
+                | ({function.args.kwarg.arg} if function.args.kwarg is not None else set()),
+            )
+            for function in module_nodes
+            if isinstance(function, (ast.FunctionDef, ast.AsyncFunctionDef))
+        )
+        seen_calls: set[int] = set()
+        for nodes, callbacks, shadowed_parameters in scopes:
+            for call in nodes:
+                if not (
+                    isinstance(call, ast.Call)
+                    and id(call) not in seen_calls
+                    and isinstance(call.func, ast.Name)
+                    and call.func.id == client_binding
+                    and not any(keyword.arg is None for keyword in call.keywords)
+                ):
+                    continue
+                callback_expression = python_call_keyword(call, "elicitation_handler")
+                if callback_expression is None or (
+                    isinstance(callback_expression, ast.Constant)
+                    and callback_expression.value is None
+                ):
+                    continue
+                seen_calls.add(id(call))
+                callback = (
+                    callbacks.get(callback_expression.id)
+                    if isinstance(callback_expression, ast.Name)
+                    else None
+                )
+                callback_rebound = (
+                    callback is not None
+                    and isinstance(callback_expression, ast.Name)
+                    and (
+                        callback_expression.id in shadowed_parameters
+                        and callback is module_callbacks.get(callback_expression.id)
+                        or any(
+                            isinstance(node, ast.Name)
+                            and isinstance(node.ctx, (ast.Store, ast.Del))
+                            and node.id == callback_expression.id
+                            and callback.lineno < getattr(node, "lineno", 0) <= call.lineno
+                            for node in (
+                                [*nodes, *module_nodes]
+                                if callback_expression.id in module_callbacks
+                                else nodes
+                            )
+                        )
+                    )
+                )
+                if callback is None or callback.lineno >= call.lineno or callback_rebound:
+                    add_mcp_elicitation_consent_observation(
+                        ir,
+                        relative=relative,
+                        lines=lines,
+                        line=call.lineno,
+                        frontend="python",
+                        analysis=analysis,
+                        approval_policy="unresolved-handler",
+                        response_created=False,
+                        acceptance_created=False,
+                        elicitation_modes=("form", "url"),
+                        callback_line=None,
+                        extra_attributes={
+                            "adapter": "fastmcp-client",
+                            "acceptance_semantics": "non-result-return-implies-accept",
+                        },
+                    )
+                    continue
+                parameters = [
+                    argument.arg
+                    for argument in (*callback.args.posonlyargs, *callback.args.args)
+                ]
+                response_type_binding = parameters[1] if len(parameters) >= 2 else None
+                if response_type_binding is not None and any(
+                    isinstance(node, ast.Name)
+                    and isinstance(node.ctx, (ast.Store, ast.Del))
+                    and node.id == response_type_binding
+                    for node in python_scope_nodes(callback.body)
+                ):
+                    response_type_binding = None
+                returned = [
+                    node
+                    for node in python_scope_nodes(callback.body)
+                    if isinstance(node, ast.Return)
+                ]
+                actions = {
+                    id(node): python_fastmcp_elicitation_return_action(
+                        node.value,
+                        result_binding,
+                        response_type_binding,
+                    )
+                    for node in returned
+                }
+                accept_returns = [
+                    node for node in returned if actions[id(node)] == "accept"
+                ]
+                consent_line = python_mcp_elicitation_human_consent(
+                    callback,
+                    None,
+                    accept_returns,
+                    result_binding,
+                )
+                action_values = set(actions.values())
+                if accept_returns and consent_line is None:
+                    approval_policy = "automatic-accept"
+                elif "unresolved" in action_values:
+                    approval_policy = "unresolved-handler"
+                elif accept_returns:
+                    approval_policy = "human-confirmed"
+                elif action_values and action_values <= {"decline", "cancel", "error"}:
+                    approval_policy = "declined-handler"
+                else:
+                    approval_policy = "unresolved-handler"
+                callback_nodes = python_scope_nodes(callback.body)
+
+                def displayed(
+                    name: str,
+                    callback_nodes: list[ast.AST] = callback_nodes,
+                ) -> bool:
+                    return any(
+                        isinstance(node, ast.Call)
+                        and (
+                            isinstance(node.func, ast.Name)
+                            and node.func.id in {"input", "print"}
+                            or isinstance(node.func, ast.Attribute)
+                            and node.func.attr
+                            in {"ask", "confirm", "input", "print", "question"}
+                        )
+                        and any(
+                            isinstance(candidate, ast.Name) and candidate.id == name
+                            for argument in (*node.args, *(item.value for item in node.keywords))
+                            for candidate in ast.walk(argument)
+                        )
+                        for node in callback_nodes
+                    )
+
+                has_message = bool(parameters) and displayed(parameters[0])
+                has_details = len(parameters) >= 3 and displayed(parameters[2])
+                add_mcp_elicitation_consent_observation(
+                    ir,
+                    relative=relative,
+                    lines=lines,
+                    line=call.lineno,
+                    frontend="python",
+                    analysis=analysis,
+                    approval_policy=approval_policy,
+                    response_created=bool(action_values - {"unresolved"}),
+                    acceptance_created=bool(accept_returns),
+                    elicitation_modes=("form", "url"),
+                    callback_line=callback.lineno,
+                    consent_line=consent_line,
+                    request_disclosure=(
+                        "message-and-request-details"
+                        if consent_line is not None and has_message and has_details
+                        else "message-only"
+                        if consent_line is not None and has_message
+                        else "interactive-decision"
+                        if consent_line is not None
+                        else "not-proven"
+                    ),
+                    extra_attributes={
+                        "adapter": "fastmcp-client",
+                        "acceptance_semantics": "non-result-return-implies-accept",
+                    },
                 )
 
 
@@ -20041,7 +20529,9 @@ def scan_repository(
     add_typescript_mcp_elicitation_handler_consent_flow(ir, root, registry_paths)
     add_python_agno_mcp_confirmation_flow(ir, root, registry_paths)
     add_python_mcp_sampling_callback_consent_flow(ir, root, registry_paths)
+    add_python_pydantic_ai_mcp_sampling_model_flow(ir, root, registry_paths)
     add_python_mcp_elicitation_callback_consent_flow(ir, root, registry_paths)
+    add_python_fastmcp_elicitation_handler_consent_flow(ir, root, registry_paths)
     add_python_semantic_kernel_mcp_sampling_flow(ir, root, registry_paths)
     add_python_adk_a2a_card_endpoint_policy(ir, root, registry_paths)
     add_python_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)

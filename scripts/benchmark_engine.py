@@ -569,6 +569,7 @@ def main() -> int:
             and item.attributes.get("analysis")
             in {
                 "python-mcp-sampling-callback-consent",
+                "python-pydantic-ai-mcp-sampling-model",
                 "typescript-mcp-sampling-handler-consent",
             }
         ]
@@ -579,6 +580,7 @@ def main() -> int:
             and item.name == "user-elicitation"
             and item.attributes.get("analysis")
             in {
+                "python-fastmcp-elicitation-handler-consent",
                 "python-mcp-elicitation-callback-consent",
                 "typescript-mcp-elicitation-handler-consent",
             }
@@ -1410,6 +1412,7 @@ def main() -> int:
                     and edge.attributes.get("analysis")
                     in {
                         "python-mcp-sampling-callback-consent",
+                        "python-pydantic-ai-mcp-sampling-model",
                         "typescript-mcp-sampling-handler-consent",
                     }
                     for edge in ir.relationships
@@ -1423,6 +1426,7 @@ def main() -> int:
                     and edge.attributes.get("analysis")
                     in {
                         "python-mcp-sampling-callback-consent",
+                        "python-pydantic-ai-mcp-sampling-model",
                         "typescript-mcp-sampling-handler-consent",
                     }
                     for edge in ir.relationships
@@ -1436,6 +1440,7 @@ def main() -> int:
                     and edge.attributes.get("analysis")
                     in {
                         "python-mcp-sampling-callback-consent",
+                        "python-pydantic-ai-mcp-sampling-model",
                         "typescript-mcp-sampling-handler-consent",
                     }
                     for edge in ir.relationships
@@ -1505,6 +1510,7 @@ def main() -> int:
                     and edge.target_name == "user-elicitation"
                     and edge.attributes.get("analysis")
                     in {
+                        "python-fastmcp-elicitation-handler-consent",
                         "python-mcp-elicitation-callback-consent",
                         "typescript-mcp-elicitation-handler-consent",
                     }
@@ -1518,6 +1524,7 @@ def main() -> int:
                     and edge.target_name == "mcp-elicitation-acceptance"
                     and edge.attributes.get("analysis")
                     in {
+                        "python-fastmcp-elicitation-handler-consent",
                         "python-mcp-elicitation-callback-consent",
                         "typescript-mcp-elicitation-handler-consent",
                     }
@@ -1531,6 +1538,7 @@ def main() -> int:
                     and edge.target_name == "mcp-elicitation-consent"
                     and edge.attributes.get("analysis")
                     in {
+                        "python-fastmcp-elicitation-handler-consent",
                         "python-mcp-elicitation-callback-consent",
                         "typescript-mcp-elicitation-handler-consent",
                     }
@@ -1987,7 +1995,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 70,
+        "schema_version": 71,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {

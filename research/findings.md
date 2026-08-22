@@ -121,7 +121,7 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the 487-label truth set.
+rule observations are pinned in the 504-label truth set.
 
 MCP configuration is also executable dependency configuration. Schema v65 resolves 50 literal
 `npx`/`uvx` package launchers in the bounded corpus: 45 unpinned, three floating, and two exact,
@@ -150,8 +150,13 @@ canned sampling result. Two TypeScript SDK examples register equivalent automati
 and displays the full server request, caps `maxTokens`, awaits a user confirmation, throws on
 rejection, and only then invokes its provider. `AV-MCP005` therefore reports three default-scope
 automatic handlers across two repositories; six positive and ten negative rule labels plus 15
-positive and two negative IR labels pin exact imports, capabilities, receivers, result shapes, denial, consent,
-budget, and unresolved callback states.
+positive and two negative IR labels originally pinned exact imports, capabilities, receivers, result
+shapes, denial, consent, budget, and unresolved callback states. Schema v71 adds PydanticAI's exact
+`MCPToolset(sampling_model=...)` adapter: the SDK generates a sampling callback that targets a model
+provider. Four pinned tests expose this automatic behavior, while a null model, a conflicting custom
+handler, a rebound constructor, and an unrelated import remain negative. The expanded matrix is seven
+positive and 15 negative rule labels plus 17 positive and seven negative IR labels. Runtime protocol
+availability is retained as SDK-session-dependent rather than assumed universally available.
 
 Schema v70 separates elicitation from sampling. The selected TypeScript SDK snapshot contains 12
 exact `elicitation/create` handlers: nine synthesize acceptance, two decline, and one collects or
@@ -160,12 +165,22 @@ form data, URL-mode completion, and a state-driven destructive confirmation harn
 the governed comparison: it displays the requesting server and URL, confirms before URL acceptance,
 and delegates form mode to an exact imported helper that gathers input and preserves decline/cancel.
 The Microsoft Python tutorial independently shows a direct prompt with explicit accept/decline
-branches. Five positive and 13 negative rule labels plus 17 positive and two negative IR labels
+branches. Five positive and 15 negative rule labels plus 18 positive and three negative IR labels
 pin exact imports, capability modes, connected receivers, response actions, direct and imported user
 interaction, decline-only behavior, and unresolved callbacks.
 This matches the [official elicitation security model](https://modelcontextprotocol.io/specification/2025-11-25/client/elicitation):
 `accept` represents user consent, and URL mode requires full destination disclosure and explicit
 consent before navigation.
+
+Schema v71 adds FastMCP's client adapter. Its
+[official client documentation](https://gofastmcp.com/clients/elicitation) and pinned implementation
+agree that ordinary handler data is implicitly wrapped as `ElicitResult(action="accept")`; explicit
+`ElicitResult` values preserve accept, decline, and cancel. One pinned test therefore adds an
+automatic acceptance, while the production CLI remains human-confirmed because it offers decline and
+cancel before acceptance. The CLI displays the message but does not prove full request-detail or URL
+disclosure, so the IR records `message-only`. Rebound callbacks, rebound response factories, unknown
+returns, and unrelated imports remain unresolved or absent. The expanded matrix is seven positive
+and 24 negative rule labels plus 29 positive and four negative IR labels.
 
 ## 3. Approval exists, but bypass behavior recurs
 
