@@ -3,9 +3,191 @@
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Mapping
+from dataclasses import asdict, dataclass
+from types import MappingProxyType
 
 from .analysis import component_context
 from .ir import Finding, RepositoryIR
+
+
+@dataclass(frozen=True)
+class RuleMetadata:
+    """Stable user-facing metadata for one enabled reporting rule."""
+
+    rule_id: str
+    result_kind: str
+    severity: str
+    confidence: str
+    summary: str
+    remediation: str
+
+    def to_dict(self) -> dict[str, str]:
+        return asdict(self)
+
+
+RULE_DEFINITIONS = tuple(
+    sorted(
+        (
+            RuleMetadata(
+                "AV-A2A001",
+                "review",
+                "high",
+                "medium",
+                "A remotely fetched A2A AgentCard can select an unconstrained downstream RPC origin",
+                "Require HTTPS and same-origin binding for every advertised RPC interface, then constrain redirects and egress.",
+            ),
+            RuleMetadata(
+                "AV-APPROVAL001",
+                "review",
+                "high",
+                "medium",
+                "Configuration or code exposes an approval-bypass path",
+                "Disable auto-approval for privileged tools or scope it to an explicit low-risk allowlist.",
+            ),
+            RuleMetadata(
+                "AV-APPROVAL002",
+                "review",
+                "high",
+                "high",
+                "A reachable local shell tool has approval disabled or exposes no SDK approval hook",
+                "Enable the SDK approval mechanism or enforce an equivalent authenticated per-action decision inside the executor.",
+            ),
+            RuleMetadata(
+                "AV-APPROVAL003",
+                "finding",
+                "high",
+                "high",
+                "An environment variable can auto-approve a reachable privileged local tool",
+                "Remove the environment-driven shortcut and require an authenticated per-action decision.",
+            ),
+            RuleMetadata(
+                "AV-APPROVAL004",
+                "review",
+                "high",
+                "high",
+                "A reachable writable local MCP filesystem server has SDK approval disabled by default",
+                "Expose a reviewed read-only allowlist or add authenticated per-action approval before mutating calls.",
+            ),
+            RuleMetadata(
+                "AV-APPROVAL005",
+                "review",
+                "high",
+                "high",
+                "A reachable Agno filesystem MCP toolkit leaves mutating tools unconfirmed",
+                "Require confirmation for every exposed mutation or restrict the toolkit to a reviewed read-only allowlist.",
+            ),
+            RuleMetadata(
+                "AV-AUDIT001",
+                "review",
+                "medium",
+                "high",
+                "A durable production action record leaves actor attribution unresolved",
+                "Require an authenticated actor identifier and retain execution correlation plus failed-write telemetry.",
+            ),
+            RuleMetadata(
+                "AV-EXEC001",
+                "finding",
+                "high",
+                "high",
+                "A dynamic command is executed through a system shell",
+                "Pass a fixed argv list with shell disabled, or strictly validate and allowlist the command.",
+            ),
+            RuleMetadata(
+                "AV-EXEC002",
+                "finding",
+                "high",
+                "medium",
+                "Dynamic input reaches a proven evaluator or interpreter",
+                "Replace dynamic evaluation with a typed parser or use a least-privilege sandbox.",
+            ),
+            RuleMetadata(
+                "AV-FS001",
+                "review",
+                "high",
+                "medium",
+                "An agent tool mutates a tool-input-controlled path without a proven narrow boundary",
+                "Resolve the path beneath a fixed workspace root and reject traversal outside it.",
+            ),
+            RuleMetadata(
+                "AV-FS002",
+                "review",
+                "high",
+                "high",
+                "An agent tool relies on a string-prefix filesystem boundary check",
+                "Compare resolved path components with a component-aware containment API.",
+            ),
+            RuleMetadata(
+                "AV-MCP002",
+                "review",
+                "high",
+                "medium",
+                "A dynamic MCP tool name and arguments are forwarded without a proven allowlist",
+                "Apply an explicit tool allowlist and argument policy before forwarding.",
+            ),
+            RuleMetadata(
+                "AV-MCP003",
+                "review",
+                "high",
+                "high",
+                "An MCP server is automatically installed from an unpinned or floating package reference",
+                "Pin the package to an exact reviewed version and update it through dependency review.",
+            ),
+            RuleMetadata(
+                "AV-MCP004",
+                "review",
+                "high",
+                "high",
+                "A reachable Semantic Kernel MCP server can auto-approve its own sampling requests",
+                "Use a fail-closed user decision with model allowlists and token-spend limits.",
+            ),
+            RuleMetadata(
+                "AV-MCP005",
+                "review",
+                "high",
+                "high",
+                "An MCP client automatically fulfills server sampling without a proven user decision",
+                "Show the complete request and require a fail-closed user decision before provider invocation.",
+            ),
+            RuleMetadata(
+                "AV-MCP006",
+                "review",
+                "high",
+                "high",
+                "An MCP client accepts server elicitation without a proven user decision",
+                "Show the complete request, offer decline and cancel, and validate submitted data or destinations.",
+            ),
+            RuleMetadata(
+                "AV-MCP007",
+                "review",
+                "high",
+                "high",
+                "An MCP client asks for URL consent without showing the full target URL",
+                "Display and validate the complete URL before an explicit user decision.",
+            ),
+            RuleMetadata(
+                "AV-NET001",
+                "review",
+                "high",
+                "medium",
+                "An agent tool can send an HTTP request to a parameter-controlled origin",
+                "Allowlist destinations, block local or reserved addresses, re-check DNS, and restrict egress.",
+            ),
+            RuleMetadata(
+                "AV-SANDBOX001",
+                "review",
+                "high",
+                "high",
+                "A container or workload crosses a host isolation boundary",
+                "Remove the host boundary or replace it with a narrowly scoped least-privilege interface.",
+            ),
+        ),
+        key=lambda item: item.rule_id,
+    )
+)
+RULE_CATALOG: Mapping[str, RuleMetadata] = MappingProxyType(
+    {definition.rule_id: definition for definition in RULE_DEFINITIONS}
+)
 
 
 def fingerprint(rule_id: str, path: str, line: int, message: str) -> str:
@@ -23,6 +205,20 @@ def make_finding(
     remediation: str,
     result_kind: str = "finding",
 ) -> Finding:
+    definition = RULE_CATALOG.get(rule_id)
+    if definition is None:
+        raise ValueError(f"unknown reporting rule: {rule_id}")
+    emitted_metadata = (result_kind, severity, confidence)
+    catalog_metadata = (
+        definition.result_kind,
+        definition.severity,
+        definition.confidence,
+    )
+    if emitted_metadata != catalog_metadata:
+        raise ValueError(
+            f"reporting metadata for {rule_id} does not match the rule catalog: "
+            f"{emitted_metadata!r} != {catalog_metadata!r}"
+        )
     evidence = component.evidence
     ir_path, analysis = component_context(ir, component)
     return Finding(

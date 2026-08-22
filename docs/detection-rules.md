@@ -60,3 +60,15 @@ Suppressions are exact-rule, single-line, and reason-bearing; reports preserve t
 rationale, optional ISO expiry, and active/expired/invalid status. Expired and malformed dates never
 suppress. CI can require dates with `--require-suppression-expiry`; UTC dates remain active through the
 stated day.
+
+## Runtime rule catalog
+
+`agentverify rules` is the authoritative discovery surface for enabled reporting rules. It lists
+each rule's result kind, default severity, confidence, summary, and baseline remediation. Use
+`agentverify rules AV-FS001` for one rule or `agentverify rules --format json` for a stable
+schema-versioned payload. The engine checks every emitted finding against the same catalog, so a
+call site cannot silently drift to a different kind, severity, or confidence. Inventory-only IDs in
+the specification table above are not reporting rules and therefore do not appear in the runtime
+catalog or emit policy-counted findings. SARIF rule descriptors use the catalog's stable summary,
+remediation, kind, severity, and confidence while individual results retain their context-specific
+messages.

@@ -30,6 +30,9 @@ agentverify scan ./project --include-tests
 agentverify scan ./project --baseline previous-agentverify.json
 agentverify scan ./project --paths-from changed-files.txt
 agentverify scan ./project --require-suppression-expiry --fail-on high
+agentverify rules
+agentverify rules AV-EXEC001
+agentverify rules --format json
 ```
 
 Reviewed exceptions can be suppressed only for the immediately following line, with a rule ID and
@@ -50,6 +53,9 @@ longer reported by a full scan. Partial selected-path scans leave that last coun
 Reports and schemas are written to standard output by default. Use `--output PATH` (or `-o PATH`)
 to write them directly to a file. Output write failures return exit code 2; successful scan writes
 still preserve policy and `--fail-on` exit decisions.
+`agentverify rules` lists every enabled reporting rule with its result kind, default severity,
+confidence, summary, and baseline remediation. Pass a rule ID for a focused explanation or
+`--format json` for policy tooling and editor integrations.
 
 Example finding:
 

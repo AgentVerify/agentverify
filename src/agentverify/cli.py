@@ -9,7 +9,15 @@ from pathlib import Path
 
 from . import __version__
 from .policy import SEVERITY_RANK, PolicyError, evaluate_policy, load_policy
-from .report import render_bom, render_json, render_sarif, render_schema, render_text
+from .report import (
+    render_bom,
+    render_json,
+    render_rules,
+    render_sarif,
+    render_schema,
+    render_text,
+)
+from .rules import RULE_CATALOG
 from .scanner import scan_repository
 
 
@@ -68,6 +76,16 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="PATH",
         help="write the schema to PATH instead of standard output",
     )
+    rules = subparsers.add_parser("rules", help="list enabled reporting rules")
+    rules.add_argument("rule_id", nargs="?", choices=tuple(RULE_CATALOG))
+    rules.add_argument("--format", choices=("text", "json"), default="text")
+    rules.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        metavar="PATH",
+        help="write rule metadata to PATH instead of standard output",
+    )
     return parser
 
 
@@ -118,6 +136,13 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "schema":
         return emit_output(render_schema(args.name), args.output) or 0
+    if args.command == "rules":
+        return (
+            emit_output(
+                render_rules(args.rule_id, output_format=args.format), args.output
+            )
+            or 0
+        )
     if not args.path.is_dir():
         print(f"agentverify: not a directory: {args.path}", file=sys.stderr)
         return 2

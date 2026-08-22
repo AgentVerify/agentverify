@@ -9,6 +9,7 @@ from importlib.resources import files
 
 from . import __version__
 from .ir import Component, Evidence, Relationship, RepositoryIR
+from .rules import RULE_CATALOG, RULE_DEFINITIONS
 
 
 def render_json(ir: RepositoryIR) -> str:
@@ -22,6 +23,36 @@ def render_schema(name: str) -> str:
     }
     schema = files("agentverify").joinpath(f"schemas/{filenames[name]}")
     return schema.read_text(encoding="utf-8")
+
+
+def render_rules(rule_id: str | None = None, *, output_format: str = "text") -> str:
+    """Render stable metadata for enabled reporting rules."""
+    definitions = (
+        (RULE_CATALOG[rule_id],) if rule_id is not None else RULE_DEFINITIONS
+    )
+    if output_format == "json":
+        return json.dumps(
+            {
+                "schema_version": 1,
+                "rules": [definition.to_dict() for definition in definitions],
+            },
+            indent=2,
+            sort_keys=True,
+        ) + "\n"
+    lines: list[str] = []
+    for definition in definitions:
+        lines.extend(
+            (
+                (
+                    f"{definition.rule_id} [{definition.result_kind}; "
+                    f"{definition.severity}; confidence {definition.confidence}]"
+                ),
+                f"  {definition.summary}",
+                f"  Remediation: {definition.remediation}",
+                "",
+            )
+        )
+    return "\n".join(lines)
 
 
 def render_bom_schema() -> str:
@@ -283,16 +314,18 @@ def render_sarif(ir: RepositoryIR) -> str:
     results = []
     level = {"high": "error", "medium": "warning", "low": "note", "info": "note"}
     for finding in ir.findings:
+        definition = RULE_CATALOG[finding.rule_id]
         rules.setdefault(
             finding.rule_id,
             {
                 "id": finding.rule_id,
                 "name": finding.rule_id,
-                "shortDescription": {"text": finding.message},
-                "help": {"text": finding.remediation},
+                "shortDescription": {"text": definition.summary},
+                "help": {"text": definition.remediation},
                 "properties": {
-                    "defaultSeverity": finding.severity,
-                    "precision": finding.confidence,
+                    "defaultSeverity": definition.severity,
+                    "precision": definition.confidence,
+                    "resultKind": definition.result_kind,
                 },
             },
         )

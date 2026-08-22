@@ -1,7 +1,51 @@
 from __future__ import annotations
 
+import ast
+from pathlib import Path
+
 from agentverify.ir import Component, Evidence, Relationship, RepositoryIR
-from agentverify.rules import run_rules
+from agentverify.rules import RULE_CATALOG, RULE_DEFINITIONS, run_rules
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_rule_catalog_covers_every_emission_site_with_matching_metadata() -> None:
+    assert tuple(RULE_CATALOG) == tuple(
+        definition.rule_id for definition in RULE_DEFINITIONS
+    )
+    assert len(RULE_CATALOG) == 19
+    assert all(
+        definition.summary and definition.remediation
+        for definition in RULE_DEFINITIONS
+    )
+
+    tree = ast.parse(
+        (ROOT / "src/agentverify/rules.py").read_text(encoding="utf-8")
+    )
+    emitted: set[str] = set()
+    for node in ast.walk(tree):
+        if not (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "make_finding"
+        ):
+            continue
+        rule_id, severity, confidence = (
+            node.args[index].value for index in (2, 3, 4)
+        )
+        result_kind = node.args[7].value if len(node.args) > 7 else "finding"
+        definition = RULE_CATALOG[rule_id]
+        assert (
+            result_kind,
+            severity,
+            confidence,
+        ) == (
+            definition.result_kind,
+            definition.severity,
+            definition.confidence,
+        )
+        emitted.add(rule_id)
+    assert emitted == set(RULE_CATALOG)
 
 
 def _audit_ir(

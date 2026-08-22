@@ -7718,6 +7718,7 @@ def test_sarif_contains_location_fingerprint_and_ir_context() -> None:
 
     sarif = json.loads(render_sarif(ir))
     result = sarif["runs"][0]["results"][0]
+    descriptor = sarif["runs"][0]["tool"]["driver"]["rules"][0]
     assert sarif["version"] == "2.1.0"
     assert "informationUri" not in sarif["runs"][0]["tool"]["driver"]
     assert sarif["runs"][0]["properties"] == {
@@ -7727,6 +7728,14 @@ def test_sarif_contains_location_fingerprint_and_ir_context() -> None:
         "policySummary": {},
     }
     assert result["ruleId"] == "AV-EXEC001"
+    assert descriptor["shortDescription"] == {
+        "text": "A dynamic command is executed through a system shell"
+    }
+    assert descriptor["properties"] == {
+        "defaultSeverity": "high",
+        "precision": "high",
+        "resultKind": "finding",
+    }
     assert result["locations"][0]["physicalLocation"]["region"]["startLine"] == 13
     assert result["partialFingerprints"]["agentverify/v1"]
     assert result["properties"]["irPath"][0] == "agent:operator"

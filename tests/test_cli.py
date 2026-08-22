@@ -185,6 +185,43 @@ def test_version(capsys) -> None:
     assert capsys.readouterr().out.strip() == "agentverify 0.1.0"
 
 
+def test_cli_lists_enabled_reporting_rules_as_json(capsys) -> None:
+    assert cli.main(["rules", "--format", "json"]) == 0
+
+    payload = __import__("json").loads(capsys.readouterr().out)
+    assert payload["schema_version"] == 1
+    assert [rule["rule_id"] for rule in payload["rules"]] == sorted(
+        rule["rule_id"] for rule in payload["rules"]
+    )
+    assert len(payload["rules"]) == 19
+    assert next(
+        rule for rule in payload["rules"] if rule["rule_id"] == "AV-EXEC001"
+    ) == {
+        "confidence": "high",
+        "remediation": (
+            "Pass a fixed argv list with shell disabled, or strictly validate and "
+            "allowlist the command."
+        ),
+        "result_kind": "finding",
+        "rule_id": "AV-EXEC001",
+        "severity": "high",
+        "summary": "A dynamic command is executed through a system shell",
+    }
+
+
+def test_cli_describes_one_rule_and_can_write_it(tmp_path: Path, capsys) -> None:
+    output = tmp_path / "rule.txt"
+
+    assert cli.main(["rules", "AV-FS001", "--output", str(output)]) == 0
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == ""
+    content = output.read_text(encoding="utf-8")
+    assert content.startswith("AV-FS001 [review; high; confidence medium]\n")
+    assert "AV-FS002" not in content
+    assert "Remediation:" in content
+
+
 def test_cli_emits_native_ai_bom(capsys) -> None:
     assert cli.main(["scan", str(ROOT / "examples/safe_agent"), "--format", "bom"]) == 0
 

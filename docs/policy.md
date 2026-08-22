@@ -3,6 +3,9 @@
 AgentVerify policies turn reported results into auditable CI gates without disabling rules or hiding
 evidence. Policies are JSON documents conforming to the bundled schema:
 
+Use `agentverify rules` to inspect enabled rule IDs and their default metadata, or
+`agentverify rules --format json` when generating policy configuration in tooling.
+
 ```console
 agentverify schema policy --output agentverify-policy.schema.json
 agentverify scan . --policy agentverify-policy.json
