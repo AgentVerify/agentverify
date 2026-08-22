@@ -448,6 +448,13 @@ imports, and rebindings remain unresolved. This raises strict Anthropic presence
 repositories while OpenAI remains 43 and Google remains 20 because the other native calls occur in
 already-attributed repositories.
 
+Schema v105 covers the exact CommonJS default-export pattern observed in two GPT Pilot templates.
+Each template constructs one OpenAI and one Anthropic client, adding four production calls and one
+call-attributed repository. TypeScript now has 53 exact calls across nine repositories: 21 native
+SDK constructors and 32 official AI SDK calls, split into 26 OpenAI, 19 Anthropic, six Google, one
+xAI, and one Groq. The proof is limited to one immutable direct module-level `const` require binding; provider
+presence remains unchanged because GPT Pilot's exact imports were already inventoried.
+
 ## 5. Controls are layered
 
 Sandboxing vocabulary appears in 64 repositories, audit/tracing in 57, human approval in 52, and

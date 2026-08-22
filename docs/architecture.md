@@ -74,6 +74,10 @@ Exact ESM default or named imports from `openai`, `@anthropic-ai/sdk`, and `@goo
 constructor identity until rebinding. Calls with no arguments or a literal, spread-free config
 without `baseURL`/`baseUrl` are accepted; CommonJS imports, unknown configs, nested custom endpoints,
 and similarly named constructors remain unresolved.
+Schema v105 adds a separate CommonJS proof for the exact OpenAI and Anthropic default-export shape:
+one direct module-level `const Client = require(exact-package)` declaration and no other declaration, assignment,
+parameter shadow, or custom/unknown endpoint configuration. Destructured, property-selected,
+mutable, and Google CommonJS forms are not generalized from this evidence.
 Schema v77 gives import-proven, assigned Python MCP stdio constructors stable component identities.
 An Agent receives an exact `uses` edge only when its literal `mcp_servers=[...]` list names an
 earlier, unreassigned server binding in the same statement block. Package and version facts remain

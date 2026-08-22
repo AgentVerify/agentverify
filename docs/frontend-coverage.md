@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v104
+framework, wrapper, or configuration path. Counts come from schema-v105
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -104,6 +104,14 @@ official AI SDK calls, TypeScript has 49 exact production calls across eight rep
 constructors require no arguments or a literal, spread-free configuration without `baseURL` or
 `baseUrl`; unknown configs, nested custom endpoints, rebindings, and CommonJS imports are withheld.
 Anthropic presence rises from 21 to 24 repositories; OpenAI remains 43 and Google remains 20.
+
+Schema v105 adds the exact CommonJS default-export form used by two GPT Pilot templates. Four
+additional production constructors—two OpenAI and two Anthropic—raise TypeScript attribution to 53
+calls across nine repositories: 21 native SDK constructors and 32 official AI SDK calls. The proof
+requires one immutable module-level `const Client = require('openai' | '@anthropic-ai/sdk')` binding; reassignment,
+shadowing, unknown/custom configs, non-default require shapes, and Google CommonJS calls remain
+unresolved. Provider-presence counts do not change because GPT Pilot already had exact import
+evidence for both providers.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
 Agent→MCP-server identities. Import-proven literal stdio constructor calls are inventoried for any
@@ -543,7 +551,9 @@ and `network-ssrf-policy` edge.
   generic compatible packages, and community Ollama providers are not conflated. Native OpenAI,
   Anthropic, and Google GenAI TypeScript SDK constructors are supported through exact
   ESM default/named imports when their endpoint configuration is statically default; CommonJS,
-  unknown/spread configs, and custom endpoints remain unresolved.
+  unknown/spread configs, and custom endpoints remain unresolved. The one supported CommonJS form
+  is an immutable direct module-level `const` require of the OpenAI or Anthropic package default constructor;
+  other require shapes remain unresolved.
   AgentScope's exact public Ollama model reexport and direct
   PydanticAI provider/model/embedding modules are supported, but general package reexports are not.
   Literal call-model arguments inherit the proven provider, and selected Mistral-owned prefixes are
@@ -759,7 +769,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 642-label rule truth set and 1,131-label IR component/relationship set are curated regression
+The 642-label rule truth set and 1,142-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

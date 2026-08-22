@@ -279,6 +279,22 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             None,
         ),
         (
+            "provider_native_calls_commonjs.js",
+            4,
+            "OpenAI",
+            "OpenAIClient",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
+            "provider_native_calls_commonjs.js",
+            5,
+            "Anthropic",
+            "AnthropicClient",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
             "provider_native_calls.ts",
             6,
             "OpenAI",
@@ -322,6 +338,12 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
     assert not any(
         item.kind == "provider"
         and item.evidence.path == "provider_calls_rebound.ts"
+        and item.attributes.get("resolution") == "exact-typescript-provider-import"
+        for item in ir.components
+    )
+    assert not any(
+        item.kind == "provider"
+        and item.evidence.path == "provider_native_calls_commonjs_scoped.js"
         and item.attributes.get("resolution") == "exact-typescript-provider-import"
         for item in ir.components
     )

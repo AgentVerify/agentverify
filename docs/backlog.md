@@ -39,6 +39,10 @@ near-name negatives. Schema v104 adds exact ESM constructors from the native Ope
 Google GenAI TypeScript SDKs. No-argument or literal spread-free default-endpoint configuration is
 required; CommonJS imports, unknown or custom-endpoint configs, and rebound constructors remain
 unresolved. The 337 component labels now pin 247 positives and 90 negatives.
+Schema v105 admits the observed CommonJS default-export form only for one immutable module-level
+`const Client = require(exact-package)` binding from the OpenAI or Anthropic SDK. Four GPT Pilot
+template calls expand the native TypeScript total to 21; rebound bindings and custom or unknown
+configs remain excluded. The 348 component labels now pin 253 positives and 95 negatives.
 Next generalize selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
@@ -379,8 +383,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 642 pinned positive/negative locations, with 1,131 separately
-scored IR component/relationship labels. Schema-v104 engine results and
+The curated regression set has reached 642 pinned positive/negative locations, with 1,142 separately
+scored IR component/relationship labels. Schema-v105 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

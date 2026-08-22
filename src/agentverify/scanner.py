@@ -11406,6 +11406,9 @@ TS_DEFAULT_IMPORT = re.compile(
     r"(?:,\s*\{([^}]*)\})?\s*from\s*['\"]([^'\"]+)['\"]",
     re.DOTALL,
 )
+TS_COMMONJS_DEFAULT_IMPORT = re.compile(
+    r"\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*require\(\s*['\"]([^'\"]+)['\"]\s*\)"
+)
 TS_DYNAMIC_NAMED_IMPORT = re.compile(
     r"\bconst\s*\{([^}]+)\}\s*=\s*(?:await\s*)?"
     r"import\s*\(\s*['\"]([^'\"]+)['\"]\s*\)",
@@ -12028,6 +12031,8 @@ def typescript_provider_sdk_imports(
 ) -> dict[str, TypeScriptProviderImportBinding]:
     """Return exact, unrebound native provider SDK constructor imports."""
     candidates: dict[str, list[TypeScriptProviderImportBinding]] = defaultdict(list)
+    commonjs_bindings: set[str] = set()
+    code = typescript_code_mask(text)
 
     def add(local: str, imported: str, module: str) -> None:
         exports = TYPESCRIPT_PROVIDER_SDK_EXPORTS.get(module)
@@ -12072,11 +12077,40 @@ def typescript_provider_sdk_imports(
             local = parts[2] if len(parts) >= 3 and parts[1] == "as" else original
             if original in supported:
                 add(local, original, module)
+    for match in TS_COMMONJS_DEFAULT_IMPORT.finditer(text):
+        prefix = code[: match.start()]
+        if prefix.count("{") != prefix.count("}"):
+            continue
+        local, module = match.groups()
+        exports = TYPESCRIPT_PROVIDER_SDK_EXPORTS.get(module)
+        if exports is None or exports["default"] is None:
+            continue
+        add(local, str(exports["default"]), module)
+        commonjs_bindings.add(local)
     return {
         local: values[0]
         for local, values in candidates.items()
-        if len(values) == 1 and not typescript_import_binding_is_shadowed(text, local)
+        if len(values) == 1
+        and (
+            typescript_commonjs_binding_is_stable(text, local)
+            if local in commonjs_bindings
+            else not typescript_import_binding_is_shadowed(text, local)
+        )
     }
+
+
+def typescript_commonjs_binding_is_stable(text: str, name: str) -> bool:
+    """Accept one module const-require binding with no shadow or later assignment."""
+    code = typescript_code_mask(text)
+    escaped = re.escape(name)
+    declarations = re.findall(rf"\b(?:const|let|var|function|class)\s+{escaped}\b", code)
+    assignments = re.findall(rf"(?<![\w$.]){escaped}\s*=(?!=)", code)
+    return bool(
+        len(declarations) == 1
+        and len(assignments) == 1
+        and not re.search(rf"\bfunction\s+\w*\s*\([^)]*\b{escaped}\b", code)
+        and not re.search(rf"\([^)]*\b{escaped}\b[^)]*\)\s*=>", code)
+    )
 
 
 def typescript_literal_first_call_argument(text: str, opening: int, end: int) -> str | None:

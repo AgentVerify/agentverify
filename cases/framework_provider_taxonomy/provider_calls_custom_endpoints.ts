@@ -40,3 +40,7 @@ const nativeNestedGoogle = new GoogleGenAI({
   apiKey: process.env.PROVIDER_API_KEY,
   httpOptions: { baseUrl: 'https://google-proxy.example/v1' },
 });
+const CommonJSOpenAI = require('openai');
+const CommonJSAnthropic = require('@anthropic-ai/sdk');
+const commonJSCustomOpenAI = new CommonJSOpenAI({ baseURL });
+const commonJSUnknownAnthropic = new CommonJSAnthropic(providerConfig);

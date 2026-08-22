@@ -41,3 +41,10 @@ GoogleGenAI = fakeProvider;
 const notNativeOpenAI = new NativeOpenAI();
 const notNativeAnthropic = new NativeAnthropic();
 const notNativeGoogle = new GoogleGenAI({});
+
+const CommonJSOpenAI = require('openai');
+const CommonJSAnthropic = require('@anthropic-ai/sdk');
+CommonJSOpenAI = fakeProvider;
+CommonJSAnthropic = fakeProvider;
+const notCommonJSOpenAI = new CommonJSOpenAI();
+const notCommonJSAnthropic = new CommonJSAnthropic();
