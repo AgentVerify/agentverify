@@ -57,10 +57,12 @@ The IR records the destination—not the source—as the governed path for two-p
 are resolved only when unshadowed; string `.replace()` calls and caller-shadowed `shutil` names are
 regression negatives.
 
-Browser-page evaluation is a separate execution boundary. Schema v63 inventories 80
-import-context `.evaluate(...)` calls across the corpus and proves seven receivers: two exact
-Playwright `Page` parameters in SWE-agent and five exact imported Skyvern page-factory results. The
-remaining 73 fixed-script observations retain explicit unresolved receiver state. Only one proven
+Browser-page evaluation is a separate execution boundary. The corpus contains 80 import-context
+`.evaluate(...)` calls. Schema v86 proves 22 receivers: two exact Playwright `Page` parameters in
+SWE-agent, five exact imported Skyvern page-factory results, and 15 exact class/`__init__` attribute
+annotations across CAMEL, LaVague, and MetaGPT. The class proof accepts immutable exact Playwright
+imports under `TYPE_CHECKING` but rejects conflicting types, near/rebound imports, and static
+methods. The remaining 58 fixed-script observations retain explicit unresolved receiver state. Only one proven
 receiver is directly controlled by a tool parameter: Skyvern's registered
 [`skyvern_evaluate`](https://github.com/Skyvern-AI/skyvern/blob/486c8975e9864a53037d4701b781f8619e698c40/skyvern/cli/mcp_tools/browser.py#L2458).
 That exact post-definition tool edge raises `AV-EXEC002` to 51 findings across 15 repositories.
@@ -121,7 +123,7 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the consolidated 516-label truth set.
+rule observations are pinned in the consolidated 525-label truth set.
 
 MCP configuration is also executable dependency configuration. Schema v65 resolves 50 literal
 `npx`/`uvx` package launchers in the bounded corpus: 45 unpinned, three floating, and two exact,

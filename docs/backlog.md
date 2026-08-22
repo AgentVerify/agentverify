@@ -104,10 +104,13 @@ package reexports and additional wrapper forms without falling back to display-n
 Python browser-page execution now inventories import-gated `.evaluate(...)` calls and promotes only
 direct tool-parameter/alias script flow. Dynamic calls additionally require an exact Playwright
 receiver annotation, one immutable alias of that parameter, or Skyvern's exact imported `get_page`
-factory result. Schema v38 proves seven of 80 corpus receivers; the other 73 fixed-script observations
-retain explicit unresolved state. Skyvern contributes 30 evaluator observations but one finding;
+factory result. Schema v86 adds exact class/`__init__` Playwright annotations and immutable
+`TYPE_CHECKING` imports, proving 15 more production receivers across CAMEL, LaVague, and MetaGPT.
+Twenty-two of 80 corpus receivers are now proven and the other 58 fixed-script observations retain
+explicit unresolved state. Skyvern contributes 30 evaluator observations but one finding;
 normalized numeric scroll JavaScript remains inventory-only. Next resolve constructor-bound page
-fields, locator chains, sanitizer and bounded builder summaries, imported helper flow, and other
+fields without exact annotations, inherited fields, locator chains, sanitizer and bounded builder
+summaries, imported helper flow, and other
 browser evaluator APIs without treating every dynamic JavaScript expression as tool-controlled.
 
 ## P0 — configuration and policy resolution
@@ -295,8 +298,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 516 pinned positive/negative locations, with 835 separately
-scored IR component/relationship labels. Schema-v85 engine results and
+The curated regression set has reached 525 pinned positive/negative locations, with 847 separately
+scored IR component/relationship labels. Schema-v86 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

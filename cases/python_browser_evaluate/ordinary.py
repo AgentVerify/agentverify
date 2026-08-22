@@ -38,3 +38,31 @@ def branch_page_alias(page: Page, script: str, enabled: bool):
 @agent.tool
 def container_page(pages: list[Page], script: str):
     return pages.evaluate(script)
+
+
+class WrongAnnotatedBrowser:
+    page: Calculator
+
+    @agent.tool
+    def evaluate_script(self, script: str):
+        return self.page.evaluate(script)
+
+
+class ReannotatedBrowser:
+    page: Page
+
+    def __init__(self):
+        self.page: Calculator = Calculator()
+
+    @agent.tool
+    def evaluate_script(self, script: str):
+        return self.page.evaluate(script)
+
+
+class StaticBrowser:
+    page: Page
+
+    @staticmethod
+    @agent.tool
+    def evaluate_script(self, script: str):
+        return self.page.evaluate(script)

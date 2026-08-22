@@ -24,3 +24,20 @@ async def aliased_evaluate(page: Page, suffix: str):
 async def aliased_page(page: Page, script: str):
     browser_page = page
     return await browser_page.evaluate(script)
+
+
+class AnnotatedBrowser:
+    page: Page
+
+    @agent.tool
+    async def class_evaluate(self, script: str):
+        return await self.page.evaluate(script)
+
+
+class InitAnnotatedBrowser:
+    def __init__(self):
+        self.browser_page: Page | None = None
+
+    @agent.tool
+    async def init_class_evaluate(self, script: str):
+        return await self.browser_page.evaluate(script)

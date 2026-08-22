@@ -31,7 +31,8 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
 - Detect shell invocation and distinguish constant argv from dynamic shell strings.
 - Detect direct code evaluation and interpreter tools.
 - Require a provenance-backed browser receiver before promoting dynamic `.evaluate(...)` input;
-  expand beyond typed parameters and the pinned Skyvern factory without semantic-name matching.
+  typed parameters, exact class attributes, and the pinned Skyvern factory are supported without
+  semantic-name matching; next cover untyped factory fields and alternate evaluator APIs.
 - Detect auto-approval/skip-confirmation configuration.
 - Detect broad filesystem roots, host mounts, Docker socket exposure, and unscoped file tools.
 - Detect MCP tool pass-throughs and enumerate statically registered server capabilities.

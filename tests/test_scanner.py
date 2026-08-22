@@ -4348,6 +4348,30 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
             True,
             "typed-parameter-alias",
         ),
+        (
+            "agent.py",
+            34,
+            "self.page.evaluate",
+            "browser-page",
+            True,
+            "class-attribute-annotation",
+        ),
+        (
+            "agent.py",
+            43,
+            "self.browser_page.evaluate",
+            "browser-page",
+            True,
+            "class-attribute-annotation",
+        ),
+        (
+            "type_checking.py",
+            17,
+            "self.page.evaluate",
+            "browser-page",
+            True,
+            "class-attribute-annotation",
+        ),
     ]
     assert [
         (edge.source_name, edge.evidence.line)
@@ -4358,6 +4382,9 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
         ("literal_evaluate", 14),
         ("aliased_evaluate", 20),
         ("aliased_page", 26),
+        ("class_evaluate", 34),
+        ("init_class_evaluate", 43),
+        ("evaluate_script", 17),
     ]
     assert [
         (finding.rule_id, finding.evidence.path, finding.evidence.line)
@@ -4366,6 +4393,9 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
         ("AV-EXEC002", "agent.py", 9),
         ("AV-EXEC002", "agent.py", 20),
         ("AV-EXEC002", "agent.py", 26),
+        ("AV-EXEC002", "agent.py", 34),
+        ("AV-EXEC002", "agent.py", 43),
+        ("AV-EXEC002", "type_checking.py", 17),
     ]
 
 
