@@ -1055,6 +1055,11 @@ def main() -> int:
                     == "immutable-class-field-constructor"
                     for item in typescript_provider_call_attributions
                 ),
+                "class_accessor_model_calls": sum(
+                    item.attributes.get("resolution_basis")
+                    == "same-class-lazy-getter-constructor"
+                    for item in typescript_provider_call_attributions
+                ),
                 "literal_models": len(typescript_provider_call_models),
                 **{
                     metric: sum(
@@ -2565,7 +2570,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 108,
+        "schema_version": 109,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2682,6 +2687,7 @@ def main() -> int:
                     "configured_instance_calls",
                     "typed_parameter_model_calls",
                     "class_field_model_calls",
+                    "class_accessor_model_calls",
                     "literal_models",
                     *TYPESCRIPT_PROVIDER_METRICS,
                 )

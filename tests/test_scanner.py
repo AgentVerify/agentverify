@@ -495,6 +495,54 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             None,
         ),
         (
+            "provider_native_class_getter.ts",
+            6,
+            "Anthropic",
+            "Anthropic",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
+            "provider_native_class_getter.ts",
+            9,
+            "Anthropic",
+            "this.client.messages.create",
+            "provider-sdk-model",
+            "Anthropic",
+        ),
+        (
+            "provider_native_class_getter_unresolved.ts",
+            16,
+            "OpenAI",
+            "OpenAI",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
+            "provider_native_class_getter_unresolved.ts",
+            29,
+            "OpenAI",
+            "OpenAI",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
+            "provider_native_class_getter_unresolved.ts",
+            38,
+            "OpenAI",
+            "OpenAI",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
+            "provider_native_class_getter_unresolved.ts",
+            48,
+            "OpenAI",
+            "OpenAI",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
             "provider_native_calls_commonjs.js",
             5,
             "Anthropic",
@@ -640,6 +688,19 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
     assert not any(
         item.kind in {"provider", "model"}
         and item.evidence.path == "provider_native_class_fields_unresolved.ts"
+        and (
+            item.attributes.get("call_kind") == "provider-sdk-model"
+            or (
+                item.kind == "model"
+                and item.attributes.get("resolution")
+                == "exact-typescript-provider-import"
+            )
+        )
+        for item in ir.components
+    )
+    assert not any(
+        item.kind in {"provider", "model"}
+        and item.evidence.path == "provider_native_class_getter_unresolved.ts"
         and (
             item.attributes.get("call_kind") == "provider-sdk-model"
             or (

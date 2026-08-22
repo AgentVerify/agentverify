@@ -12564,11 +12564,35 @@ def typescript_provider_class_definitions(text: str) -> list[TypeScriptProviderC
     return classes
 
 
+def add_typescript_provider_class_receiver(
+    receiver_bindings: dict[
+        str, tuple[TypeScriptProviderImportBinding, str, str]
+    ],
+    invalid_receivers: set[str],
+    receiver: str,
+    binding: TypeScriptProviderImportBinding,
+    configured_by: str,
+    resolution_basis: str,
+) -> None:
+    """Add one unambiguous class receiver, permanently invalidating duplicates."""
+    if receiver in invalid_receivers:
+        return
+    if receiver in receiver_bindings:
+        receiver_bindings.pop(receiver)
+        invalid_receivers.add(receiver)
+        return
+    receiver_bindings[receiver] = (
+        binding,
+        configured_by,
+        resolution_basis,
+    )
+
+
 def typescript_provider_class_field_calls(
     text: str,
     imports: dict[str, TypeScriptProviderImportBinding],
 ) -> list[TypeScriptProviderCall]:
-    """Resolve exact model methods on unique readonly native-provider class fields."""
+    """Resolve exact model methods on proven native-provider class receivers."""
     code = typescript_code_mask(text)
     observations = []
     class_definitions = typescript_provider_class_definitions(text)
@@ -12583,7 +12607,11 @@ def typescript_provider_class_field_calls(
 
     for class_definition in class_definitions:
         body_code = code[class_definition.body_start : class_definition.body_end]
-        field_bindings: dict[str, tuple[TypeScriptProviderImportBinding, str]] = {}
+        receiver_bindings: dict[
+            str, tuple[TypeScriptProviderImportBinding, str, str]
+        ] = {}
+        invalid_receivers: set[str] = set()
+
         for local_name, binding in imports.items():
             constructor = re.compile(rf"\bnew\s+{re.escape(local_name)}\s*\(")
             for match in constructor.finditer(
@@ -12642,17 +12670,106 @@ def typescript_provider_class_field_calls(
                     continue
                 if initializer is not None and assignment_count != 0:
                     continue
-                if field in field_bindings:
-                    field_bindings.pop(field, None)
-                    continue
-                field_bindings[field] = (binding, local_name)
+                add_typescript_provider_class_receiver(
+                    receiver_bindings,
+                    invalid_receivers,
+                    field,
+                    binding,
+                    local_name,
+                    "immutable-class-field-constructor",
+                )
 
-        for field, (binding, configured_by) in field_bindings.items():
+        getter_pattern = re.compile(
+            r"\bprivate\s+get\s+([A-Za-z_$][\w$]*)\s*\(\s*\)\s*"
+            r"(?:\:\s*[^{};]+)?\s*\{"
+        )
+        for getter in getter_pattern.finditer(
+            code, class_definition.body_start, class_definition.body_end
+        ):
+            if owning_class(getter.start()) != class_definition:
+                continue
+            getter_end = typescript_balanced_end(code, getter.end() - 1, "{", "}")
+            if getter_end is None or getter_end > class_definition.body_end:
+                continue
+            getter_body = code[getter.end() : getter_end - 1]
+            lazy_return = re.match(
+                r"\s*return\s+this\s*\.\s*([A-Za-z_$][\w$]*)\s*\?\?=\s*"
+                r"new\s+([A-Za-z_$][\w$]*)\s*\(",
+                getter_body,
+            )
+            if lazy_return is None:
+                continue
+            backing_field, local_name = lazy_return.groups()
+            binding = imports.get(local_name)
+            if binding is None:
+                continue
+            constructor_opening = getter.end() + lazy_return.end() - 1
+            constructor_end = typescript_balanced_end(
+                code, constructor_opening, "(", ")"
+            )
+            if (
+                constructor_end is None
+                or constructor_end > getter_end
+                or not re.fullmatch(
+                    r"\s*;?\s*", code[constructor_end : getter_end - 1]
+                )
+                or not typescript_provider_config_uses_default_endpoint(
+                    text, constructor_opening, constructor_end
+                )
+            ):
+                continue
+            backing_declarations = re.finditer(
+                rf"\bprivate\s+{re.escape(backing_field)}\s*"
+                rf"(?:\??\s*:\s*[^=;\n]+)?"
+                rf"(?:=\s*(?:null|undefined))?\s*;",
+                body_code,
+            )
+            if sum(
+                owning_class(class_definition.body_start + declaration.start())
+                == class_definition
+                for declaration in backing_declarations
+            ) != 1:
+                continue
+            backing_writes = [
+                write.group(1)
+                for write in re.finditer(
+                    rf"\bthis\s*\.\s*{re.escape(backing_field)}\s*"
+                    rf"(\?\?=|\|\|=|&&=|=(?!=))",
+                    body_code,
+                )
+                if owning_class(class_definition.body_start + write.start())
+                == class_definition
+            ]
+            if backing_writes != ["??="]:
+                continue
+            receiver = getter.group(1)
+            if any(
+                owning_class(class_definition.body_start + setter.start())
+                == class_definition
+                for setter in re.finditer(
+                    rf"\bset\s+{re.escape(receiver)}\s*\(", body_code
+                )
+            ):
+                continue
+            add_typescript_provider_class_receiver(
+                receiver_bindings,
+                invalid_receivers,
+                receiver,
+                binding,
+                local_name,
+                "same-class-lazy-getter-constructor",
+            )
+
+        for receiver, (
+            binding,
+            configured_by,
+            resolution_basis,
+        ) in receiver_bindings.items():
             for method_pattern, model_method in TYPESCRIPT_PROVIDER_SDK_MODEL_METHODS.get(
                 binding.provider, ()
             ):
                 pattern = re.compile(
-                    rf"\bthis\s*\.\s*{re.escape(field)}\s*\.\s*"
+                    rf"\bthis\s*\.\s*{re.escape(receiver)}\s*\.\s*"
                     rf"{method_pattern}\s*\("
                 )
                 for match in pattern.finditer(
@@ -12677,7 +12794,7 @@ def typescript_provider_class_field_calls(
                             ),
                             model_method,
                             configured_by,
-                            "immutable-class-field-constructor",
+                            resolution_basis,
                         )
                     )
     return observations

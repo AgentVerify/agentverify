@@ -97,6 +97,12 @@ does not invent a model component. The same receiver proof may cross a class fie
 declaration is readonly, the default-endpoint constructor is assigned exactly once inside the same
 balanced class, and the request method is also inside that class. Mutable or multiply assigned
 fields, custom endpoints, and generic `.create` methods stay unresolved.
+Schema v109 admits a same-class lazy accessor only when a private getter is a single direct
+`return this.<backing> ??= new ExactClient(defaultConfig)` expression. The backing field must be
+private, declared once with null/undefined or no initializer, and have no other writes; the getter
+must have no setter. Provider-owned requests on `this.<getter>` then inherit the constructor proof.
+Public or uncached getters, resets, custom endpoints, nested-class leakage, and unrelated methods do
+not establish the receiver.
 Schema v77 gives import-proven, assigned Python MCP stdio constructors stable component identities.
 An Agent receives an exact `uses` edge only when its literal `mcp_servers=[...]` list names an
 earlier, unreassigned server binding in the same statement block. Package and version facts remain

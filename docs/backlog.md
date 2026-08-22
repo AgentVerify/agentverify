@@ -63,6 +63,11 @@ readonly fields with one same-class default-endpoint assignment recover five Byt
 TypeScript SDK requests. Literal model components remain conservative. Mutable or reassigned
 fields, custom endpoints, and unrelated methods are pinned negatives. The 399 component labels now
 pin 292 positives and 107 negatives.
+Schema v109 resolves the private lazy-getter pattern used twice by the MCP TypeScript SDK
+quickstart. The getter must consist only of a cached `??=` default-endpoint constructor, its private
+backing field may have no other writes, and no setter may exist. Public, uncached, resettable, and
+custom-endpoint getters remain unresolved. The 406 component labels now pin 295 positives and 111
+negatives.
 Next generalize selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
@@ -403,8 +408,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 642 pinned positive/negative locations, with 1,193 separately
-scored IR component/relationship labels. Schema-v108 engine results and
+The curated regression set has reached 642 pinned positive/negative locations, with 1,200 separately
+scored IR component/relationship labels. Schema-v109 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

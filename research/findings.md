@@ -481,6 +481,14 @@ requests) plus 32 AI SDK calls. Literal-model count stays at 26. Mutable, multip
 custom-endpoint fields and unrelated methods remain unresolved, so the gain does not come from
 generic `.create` matching.
 
+Schema v109 closes the remaining default-endpoint class-receiver gap in the selected native SDK
+inventory. The MCP TypeScript SDK quickstart lazily caches an Anthropic client through a private
+getter and makes two same-class `messages.create` requests. Requiring a one-expression `??=` getter,
+a private backing field with no other writes, no setter, and default endpoint proof recovers those
+two calls without admitting Bytebot's explicit proxy or MCP's configurable OpenAI-compatible
+client. TypeScript reaches 70 calls across nine repositories—38 native (23 constructors and 15
+requests) plus 32 AI SDK calls; literal-model count remains 26.
+
 ## 5. Controls are layered
 
 Sandboxing vocabulary appears in 64 repositories, audit/tracing in 57, human approval in 52, and
