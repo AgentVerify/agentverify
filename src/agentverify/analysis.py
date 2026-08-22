@@ -45,6 +45,108 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
         )
         for control in capability_controls
     }
+    delegation_parents: dict[str, set[tuple[str, str]]] = {}
+    for edge in ir.relationships:
+        if (
+            edge.source_kind == "agent"
+            and edge.relation == "delegates-to"
+            and edge.target_kind == "agent"
+        ):
+            target_key = edge.target_id or f"name:{edge.target_name}"
+            source_key = edge.source_id or f"name:{edge.source_name}"
+            delegation_parents.setdefault(target_key, set()).add((source_key, edge.source_name))
+
+    def expand_to_root(agent_key: str, agent_name: str, seen: frozenset[str]) -> list[list[str]]:
+        parents = sorted(
+            (
+                parent
+                for parent in delegation_parents.get(agent_key, set())
+                if parent[0] not in seen
+            ),
+            key=lambda parent: (parent[1], parent[0]),
+        )
+        if not parents:
+            return [[agent_name]]
+        paths = []
+        for parent_key, parent_name in parents:
+            for parent_path in expand_to_root(parent_key, parent_name, seen | {parent_key}):
+                paths.append([*parent_path, agent_name])
+        return paths
+
+    mcp_server_edges = [
+        edge
+        for edge in ir.relationships
+        if edge.source_kind == "mcp-server"
+        and edge.relation == "uses"
+        and edge.target_kind == "capability"
+        and edge.target_name == component.name
+        and edge.evidence.path == component.evidence.path
+        and edge.evidence.line == component.evidence.line
+    ]
+    if mcp_server_edges:
+        server_edge = min(
+            mcp_server_edges, key=lambda edge: (edge.source_id or "", edge.source_name)
+        )
+        server_name = server_edge.source_name
+        server_id = server_edge.source_id
+        direct_agent_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "agent"
+            and edge.relation == "uses"
+            and edge.target_kind == "mcp-server"
+            and (
+                (server_id is not None and edge.target_id == server_id)
+                or (
+                    (server_id is None or edge.target_id is None)
+                    and edge.target_name == server_name
+                    and edge.evidence.path == component.evidence.path
+                )
+            )
+        ]
+        agent_paths = [
+            path
+            for edge in direct_agent_edges
+            for path in expand_to_root(
+                edge.source_id or f"name:{edge.source_name}",
+                edge.source_name,
+                frozenset({edge.source_id or f"name:{edge.source_name}"}),
+            )
+        ]
+        selected_agent_path = (
+            min(agent_paths, key=lambda path: (len(path), path)) if agent_paths else []
+        )
+        setting_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "mcp-server"
+            and edge.source_name == server_name
+            and edge.relation == "configured-by"
+            and edge.target_kind == "control-setting"
+            and (
+                (server_id is not None and edge.source_id == server_id)
+                or (
+                    (server_id is None or edge.source_id is None)
+                    and edge.evidence.path == component.evidence.path
+                )
+            )
+        ]
+        settings = sorted({edge.target_name for edge in setting_edges})
+        approval_policy = component.attributes.get("approval_policy", "unresolved")
+        return (
+            *(f"agent:{name}" for name in selected_agent_path),
+            f"mcp-server:{server_name}",
+            f"capability:{component.name}",
+        ), {
+            "direct_agents": sorted({edge.source_name for edge in direct_agent_edges}),
+            "reachable_agents": sorted({agent for path in agent_paths for agent in path}),
+            "mcp_server": server_name,
+            "control_settings": settings,
+            "governing_controls": capability_controls,
+            "governing_control_effects": capability_control_effects,
+            "approval_coverage": approval_policy,
+            "audit_coverage": _audit_coverage(capability_controls),
+        }
     tool_edges = [
         edge
         for edge in ir.relationships
@@ -146,34 +248,6 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
         )
         for control in controls
     }
-    delegation_parents: dict[str, set[tuple[str, str]]] = {}
-    for edge in ir.relationships:
-        if (
-            edge.source_kind == "agent"
-            and edge.relation == "delegates-to"
-            and edge.target_kind == "agent"
-        ):
-            target_key = edge.target_id or f"name:{edge.target_name}"
-            source_key = edge.source_id or f"name:{edge.source_name}"
-            delegation_parents.setdefault(target_key, set()).add((source_key, edge.source_name))
-
-    def expand_to_root(agent_key: str, agent_name: str, seen: frozenset[str]) -> list[list[str]]:
-        parents = sorted(
-            (
-                parent
-                for parent in delegation_parents.get(agent_key, set())
-                if parent[0] not in seen
-            ),
-            key=lambda parent: (parent[1], parent[0]),
-        )
-        if not parents:
-            return [[agent_name]]
-        paths = []
-        for parent_key, parent_name in parents:
-            for parent_path in expand_to_root(parent_key, parent_name, seen | {parent_key}):
-                paths.append([*parent_path, agent_name])
-        return paths
-
     agent_paths = [
         path
         for edge in direct_agent_edges

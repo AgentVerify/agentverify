@@ -516,6 +516,21 @@ def main() -> int:
             and item.attributes.get("analysis")
             == "python-openai-agents-mcp-approval-default"
         ]
+        typescript_openai_mcp_approval_servers = [
+            item
+            for item in ir.components
+            if item.kind == "mcp-server"
+            and item.attributes.get("analysis")
+            == "typescript-openai-agents-mcp-approval-default"
+        ]
+        typescript_openai_mcp_approval_capabilities = [
+            item
+            for item in ir.components
+            if item.kind == "capability"
+            and item.name == "filesystem"
+            and item.attributes.get("analysis")
+            == "typescript-openai-agents-mcp-approval-default"
+        ]
         approval_callback_bypass_tools = [
             item
             for item in ir.components
@@ -1170,6 +1185,38 @@ def main() -> int:
                     for edge in ir.relationships
                 ),
             },
+            "typescript_openai_mcp_approval_default": {
+                "servers": len(typescript_openai_mcp_approval_servers),
+                "writable_servers": sum(
+                    item.attributes.get("write_access") is True
+                    for item in typescript_openai_mcp_approval_capabilities
+                ),
+                "read_only_filtered": sum(
+                    item.attributes.get("write_access") is False
+                    and item.attributes.get("tool_filter") == "read-only-static"
+                    for item in typescript_openai_mcp_approval_capabilities
+                ),
+                "agent_server_edges": sum(
+                    edge.source_kind == "agent"
+                    and edge.relation == "uses"
+                    and edge.target_kind == "mcp-server"
+                    and edge.attributes.get("analysis")
+                    == "typescript-openai-agents-mcp-approval-default"
+                    for edge in ir.relationships
+                ),
+                "configured_by_edges": sum(
+                    edge.source_kind == "mcp-server"
+                    and edge.relation == "configured-by"
+                    and edge.target_kind == "control-setting"
+                    and edge.target_name == "mcp-tool-approval"
+                    and edge.attributes.get("analysis")
+                    == "typescript-openai-agents-mcp-approval-default"
+                    for edge in ir.relationships
+                ),
+                "findings": sum(
+                    finding.rule_id == "AV-APPROVAL004" for finding in ir.findings
+                ),
+            },
             "approval_callback_bypass": {
                 "tools": len(approval_callback_bypass_tools),
                 "python_tools": sum(
@@ -1617,7 +1664,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 65,
+        "schema_version": 66,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -1948,6 +1995,20 @@ def main() -> int:
                     "disabled_default",
                     "agent_server_edges",
                     "configured_by_edges",
+                )
+            },
+            "typescript_openai_mcp_approval_default": {
+                name: sum(
+                    result["typescript_openai_mcp_approval_default"][name]
+                    for result in successful
+                )
+                for name in (
+                    "servers",
+                    "writable_servers",
+                    "read_only_filtered",
+                    "agent_server_edges",
+                    "configured_by_edges",
+                    "findings",
                 )
             },
             "approval_callback_bypass": {

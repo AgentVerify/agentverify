@@ -2643,6 +2643,86 @@ def test_openai_agents_python_mcp_tools_inherit_disabled_approval_default(
         )
 
 
+def test_openai_agents_typescript_writable_mcp_tools_inherit_disabled_approval_default(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/typescript_openai_mcp_approval"
+    ir = scan_repository(root)
+    findings = [finding for finding in ir.findings if finding.rule_id == "AV-APPROVAL004"]
+    assert [
+        (finding.evidence.path, finding.evidence.line, finding.ir_path)
+        for finding in findings
+    ] == [
+        (
+            "app.ts",
+            3,
+            ("agent:Writer", "mcp-server:Writable Files", "capability:filesystem"),
+        ),
+        (
+            "app.ts",
+            10,
+            (
+                "agent:Package Writer",
+                "mcp-server:Resolved Package Files",
+                "capability:filesystem",
+            ),
+        ),
+        (
+            "app.ts",
+            30,
+            (
+                "agent:Unresolved Filter Agent",
+                "mcp-server:Unresolved Filter",
+                "capability:filesystem",
+            ),
+        ),
+    ]
+    assert all(finding.result_kind == "review" for finding in findings)
+    assert all(
+        finding.analysis["control_settings"] == ["mcp-tool-approval"]
+        and finding.analysis["approval_coverage"] == "disabled-default"
+        for finding in findings
+    )
+
+    read_only = next(
+        component
+        for component in ir.components
+        if component.kind == "capability"
+        and component.evidence.path == "app.ts"
+        and component.evidence.line == 20
+        and component.attributes.get("analysis")
+        == "typescript-openai-agents-mcp-approval-default"
+    )
+    assert read_only.attributes["write_access"] is False
+    assert read_only.attributes["tool_filter"] == "read-only-static"
+    assert any(
+        edge.source_kind == "capability"
+        and edge.source_name == "filesystem"
+        and edge.relation == "governed-by"
+        and edge.target_kind == "control"
+        and edge.target_name == "mcp-tool-filter"
+        and edge.evidence.line == 20
+        for edge in ir.relationships
+    )
+    assert not any(finding.evidence.line in {20, 40} for finding in findings)
+    assert not any(
+        component.attributes.get("analysis")
+        == "typescript-openai-agents-mcp-approval-default"
+        and component.evidence.path == "near_misses.ts"
+        for component in ir.components
+    )
+
+    incomplete = tmp_path / "missing-sdk-source"
+    shutil.copytree(root, incomplete)
+    (incomplete / "packages/agents-core/src/tool.ts").unlink()
+    incomplete_ir = scan_repository(incomplete)
+    assert not any(
+        edge.attributes.get("analysis")
+        == "typescript-openai-agents-mcp-approval-default"
+        for edge in incomplete_ir.relationships
+    )
+
+
 def test_typescript_a2a_remote_cards_preserve_endpoint_authority_and_transport(
     tmp_path: Path,
 ) -> None:
@@ -4774,7 +4854,7 @@ def test_mcp_package_launchers_require_literal_mcp_structure_and_auto_install() 
     ir = scan_repository(ROOT / "cases/mcp_package_launchers")
     servers = [component for component in ir.components if component.kind == "mcp-server"]
 
-    assert len(servers) == 22
+    assert len(servers) == 23
     assert {component.attributes["frontend"] for component in servers} == {
         "json",
         "python",
@@ -4814,6 +4894,7 @@ def test_mcp_package_launchers_require_literal_mcp_structure_and_auto_install() 
         ("AV-MCP003", "launchers.ts", 31),
         ("AV-MCP003", "launchers.ts", 32),
         ("AV-MCP003", "launchers.ts", 40),
+        ("AV-MCP003", "official-client.ts", 3),
     }
     assert not any(
         component.attributes.get("package")

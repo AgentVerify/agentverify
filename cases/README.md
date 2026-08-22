@@ -60,6 +60,10 @@ never imported or executed.
 - `python_openai_mcp_approval_default`: OpenAI Agents Python propagates the absent
   `MCPServerStdio.require_approval` argument through its disabled SDK default into every discovered
   MCP `FunctionTool`; explicit approval and broken import/binding/default propagation stay negative.
+- `typescript_openai_mcp_approval`: OpenAI Agents TypeScript converts writable local filesystem MCP
+  tools into reachable function tools whose omitted approval policy defaults to disabled; an exact
+  static read-only tool filter, unbound server, unrelated imports, and rebound constructors remain
+  negative.
 - `python_google_adk_bigquery_audit`: Google ADK Runner composition attaches its default-enabled
   BigQuery analytics plugin to one tool action while retaining an explicit disabled near miss.
 - `python_skyvern_action_history`: Skyvern Task v3 records post-dispatch browser actions in a

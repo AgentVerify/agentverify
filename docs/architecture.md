@@ -301,6 +301,15 @@ records both the agent→server edge and a disabled-default `mcp-tool-approval` 
 approval, changed defaults, hard-coded wrapper approval, wrong imports, or a different server binding
 withhold the edge; the policy does not itself create an approval finding.
 
+The TypeScript counterpart proves a narrower destructive path. It verifies the pinned OpenAI Agents
+JS sources that attach configured MCP servers to an Agent, convert every discovered MCP tool through
+`tool(...)` without a `needsApproval` override, and normalize an omitted override to `false`. Exact
+`MCPServerStdio` and `Agent` imports then connect a literal local filesystem package to the Agent.
+The IR records agent→MCP-server→filesystem reachability plus the disabled-default setting. A static
+filter is treated as read-only only when its literal allowlist contains exclusively known read-only
+filesystem tools; dynamic filters, writable entries, rebinding, and unbound servers do not satisfy
+that counterproof.
+
 A repository prepass builds bounded Python network summaries for unique top-level free functions in
 selected files. A summary records direct recognized HTTP calls and the formal parameters that can
 control their origins after fixed-prefix discrimination. At a tool call site, only an exact named

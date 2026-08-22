@@ -7811,6 +7811,25 @@ def typescript_literal_string_arguments(expression: str) -> list[str | None] | N
     return arguments
 
 
+def typescript_literal_identifier_arguments(expression: str) -> list[str] | None:
+    """Return a literal TypeScript array only when every item is an identifier."""
+    code = typescript_code_mask(expression)
+    opening = len(code) - len(code.lstrip())
+    if opening >= len(code) or code[opening] != "[":
+        return None
+    end = typescript_balanced_end(code, opening, "[", "]")
+    if end is None:
+        return None
+    suffix = code[end:].strip()
+    if suffix and not re.fullmatch(r"as\s+const", suffix):
+        return None
+    arguments = typescript_call_arguments(expression[opening + 1 : end - 1])
+    identifiers = [item.strip() for item, _ in arguments]
+    if any(re.fullmatch(r"[A-Za-z_$][\w$]*", item) is None for item in identifiers):
+        return None
+    return identifiers
+
+
 def typescript_import_binding_is_shadowed(text: str, name: str) -> bool:
     """Conservatively reject imported constructor aliases shadowed in local code."""
     code = typescript_code_mask(text)
@@ -7867,7 +7886,10 @@ def typescript_mcp_package_launchers(
 ) -> None:
     """Resolve literal MCP stdio package launchers without executing code."""
     code = typescript_code_mask(text)
-    imports = typescript_named_import_bindings(text, "@modelcontextprotocol/sdk")
+    imports = {
+        **typescript_named_import_bindings(text, "@modelcontextprotocol/sdk"),
+        **typescript_named_import_bindings(text, "@modelcontextprotocol/client"),
+    }
     for local_name, original_name in imports.items():
         if original_name != "StdioClientTransport" or typescript_import_binding_is_shadowed(
             text, local_name
@@ -15990,6 +16012,428 @@ def add_python_openai_agents_mcp_approval_default_flow(
     )
 
 
+TS_OPENAI_MCP_READ_ONLY_FILESYSTEM_TOOLS = frozenset(
+    {
+        "directory_tree",
+        "get_file_info",
+        "list_allowed_directories",
+        "list_directory",
+        "list_directory_with_sizes",
+        "read_file",
+        "read_media_file",
+        "read_multiple_files",
+        "read_text_file",
+        "search_files",
+    }
+)
+
+
+def typescript_literal_or_template_text(expression: str) -> str | None:
+    """Return a string/template body while retaining template substitutions as text."""
+    expression = expression.strip()
+    match = re.fullmatch(r"(['\"])(.*?)\1", expression, re.DOTALL)
+    if match is not None:
+        return match.group(2)
+    match = re.fullmatch(r"`(.*)`", expression, re.DOTALL)
+    return match.group(1) if match is not None else None
+
+
+def typescript_openai_mcp_filesystem_package(
+    text: str,
+    options: str,
+    server_offset: int,
+) -> str | None:
+    """Resolve the exact local filesystem MCP package from one stdio options object."""
+    full_command = typescript_literal_object_property_expression(options, "fullCommand")
+    if full_command is not None:
+        command_text = typescript_literal_or_template_text(full_command)
+        if command_text is not None:
+            interpolation = command_text.find("${")
+            literal_prefix = command_text if interpolation < 0 else command_text[:interpolation]
+            if re.search(r"(?:^|\s)mcp-server-filesystem(?:\s|$)", literal_prefix):
+                return "@modelcontextprotocol/server-filesystem"
+
+    command = typescript_literal_object_property_expression(options, "command")
+    arguments_expression = typescript_literal_object_property_expression(options, "args")
+    if command is None or command.strip() != "process.execPath" or arguments_expression is None:
+        return None
+    arguments_code = typescript_code_mask(arguments_expression)
+    opening = len(arguments_code) - len(arguments_code.lstrip())
+    if opening >= len(arguments_code) or arguments_code[opening] != "[":
+        return None
+    end = typescript_balanced_end(arguments_code, opening, "[", "]")
+    if end is None or arguments_code[end:].strip() not in {"", "as const"}:
+        return None
+    arguments = typescript_call_arguments(arguments_expression[opening + 1 : end - 1])
+    if not arguments:
+        return None
+    require_match = re.fullmatch(
+        r"([A-Za-z_$][\w$]*)\.resolve\s*\(\s*(['\"])"
+        r"@modelcontextprotocol/server-filesystem/dist/index\.js\2\s*\)",
+        arguments[0][0].strip(),
+        re.DOTALL,
+    )
+    if require_match is None:
+        return None
+    require_name = require_match.group(1)
+    node_imports = typescript_named_import_bindings(text, "node:module")
+    create_require_names = {
+        name
+        for name, original in node_imports.items()
+        if original == "createRequire" and not typescript_import_binding_is_shadowed(text, name)
+    }
+    if not create_require_names:
+        return None
+    require_assignments = [
+        match
+        for match in re.finditer(
+            rf"\bconst\s+{re.escape(require_name)}\s*=\s*"
+            r"([A-Za-z_$][\w$]*)\s*\(\s*import\.meta\.url\s*\)",
+            typescript_code_mask(text),
+        )
+        if match.group(1) in create_require_names and match.start() < server_offset
+    ]
+    if len(require_assignments) != 1:
+        return None
+    if re.search(
+        rf"(?<![\w$.]){re.escape(require_name)}\s*=(?!=)",
+        typescript_code_mask(text)[require_assignments[0].end() : server_offset],
+    ):
+        return None
+    return "@modelcontextprotocol/server-filesystem"
+
+
+def typescript_openai_mcp_read_only_filter(
+    text: str,
+    options: str,
+) -> tuple[bool, list[str]]:
+    """Prove a static MCP filter exposes only known read-only filesystem tools."""
+    expression = typescript_literal_object_property_expression(options, "toolFilter")
+    if expression is None:
+        return False, []
+    call = typescript_call_parts(expression)
+    if call is None:
+        return False, []
+    factory, body, _ = call
+    imports = typescript_named_import_bindings(text, "@openai/agents")
+    if (
+        imports.get(factory) != "createMCPToolStaticFilter"
+        or typescript_import_binding_is_shadowed(text, factory)
+    ):
+        return False, []
+    call_arguments = typescript_call_arguments(body)
+    if not call_arguments:
+        return False, []
+    allowed_expression = typescript_literal_object_property_expression(
+        call_arguments[0][0], "allowed"
+    )
+    if allowed_expression is None:
+        return False, []
+    allowed = typescript_literal_string_arguments(allowed_expression)
+    if not allowed or any(name is None for name in allowed):
+        return False, []
+    allowed_names = [name for name in allowed if name is not None]
+    return (
+        bool(allowed_names)
+        and set(allowed_names) <= TS_OPENAI_MCP_READ_ONLY_FILESYSTEM_TOOLS,
+        allowed_names,
+    )
+
+
+def add_typescript_openai_agents_mcp_approval_default_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve writable local MCP tools through the OpenAI Agents JS approval default."""
+    selected: dict[str, tuple[str, list[str]]] = {}
+    for path in paths:
+        if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        selected[path.relative_to(root).as_posix()] = (text, text.splitlines())
+
+    source_paths = {
+        "agent": "packages/agents-core/src/agent.ts",
+        "mcp": "packages/agents-core/src/mcp.ts",
+        "tool": "packages/agents-core/src/tool.ts",
+    }
+    if not all(path in selected for path in source_paths.values()):
+        return
+    agent_source = selected[source_paths["agent"]][0]
+    mcp_source = selected[source_paths["mcp"]][0]
+    tool_source = selected[source_paths["tool"]][0]
+    if not all(
+        marker in agent_source
+        for marker in (
+            "this.mcpServers = config.mcpServers ?? [];",
+            "return getAllMcpTools({",
+            "mcpServers: this.mcpServers,",
+            "return [...mcpTools, ...enabledTools];",
+        )
+    ):
+        return
+    mcp_conversion_offset = mcp_source.find("export function mcpToFunctionTool")
+    if mcp_conversion_offset < 0:
+        return
+    mcp_conversion = mcp_source[mcp_conversion_offset:]
+    if (
+        not mcp_conversion
+        or mcp_conversion.count("return tool({") < 2
+        or "needsApproval" in mcp_conversion
+        or "mcpTools.map((mcpTool, index) =>" not in mcp_source
+        or "mcpToFunctionTool(mcpTool, server" not in mcp_source
+    ):
+        return
+    if not re.search(
+        r"const\s+needsApproval[\s\S]{0,300}?typeof\s+options\.needsApproval\s*===\s*"
+        r"['\"]boolean['\"][\s\S]{0,100}?options\.needsApproval[\s\S]{0,100}?:\s*false",
+        tool_source,
+    ):
+        return
+
+    analysis = "typescript-openai-agents-mcp-approval-default"
+    for relative, (text, lines) in selected.items():
+        if relative in source_paths.values() or "MCPServerStdio" not in text:
+            continue
+        imports = typescript_named_import_bindings(text, "@openai/agents")
+        server_constructors = {
+            name
+            for name, original in imports.items()
+            if original == "MCPServerStdio"
+            and not typescript_import_binding_is_shadowed(text, name)
+        }
+        agent_constructors = {
+            name
+            for name, original in imports.items()
+            if original == "Agent" and not typescript_import_binding_is_shadowed(text, name)
+        }
+        if not server_constructors or not agent_constructors:
+            continue
+        code = typescript_code_mask(text)
+        declaration_counts = Counter(
+            re.findall(r"\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\b", code)
+        )
+        servers: dict[str, tuple[str, str, Evidence, bool, list[str]]] = {}
+        for constructor in server_constructors:
+            pattern = re.compile(
+                rf"\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*new\s+{re.escape(constructor)}\s*\("
+            )
+            for match in pattern.finditer(code):
+                binding = match.group(1)
+                if declaration_counts[binding] != 1:
+                    continue
+                opening = code.find("(", match.start(), match.end())
+                end = typescript_balanced_end(code, opening, "(", ")")
+                if end is None or re.search(
+                    rf"(?<![\w$.]){re.escape(binding)}\s*=(?!=)", code[end:]
+                ):
+                    continue
+                call_arguments = typescript_call_arguments(
+                    text[opening + 1 : end - 1], opening + 1
+                )
+                if not call_arguments:
+                    continue
+                options, _ = call_arguments[0]
+                package = typescript_openai_mcp_filesystem_package(
+                    text, options, match.start()
+                )
+                if package is None:
+                    continue
+                line = line_at(text, match.start())
+                evidence = Evidence(relative, line, excerpt(lines, line))
+                display_name = (
+                    typescript_literal_object_string_property(options, "name") or binding
+                )
+                filter_proven, allowed_tools = typescript_openai_mcp_read_only_filter(
+                    text, options
+                )
+                server_id = source_symbol("ts", relative, "mcp-server", binding)
+                servers[binding] = (
+                    display_name,
+                    server_id,
+                    evidence,
+                    filter_proven,
+                    allowed_tools,
+                )
+                server_attributes = {
+                    "transport": "stdio",
+                    "constructor": "MCPServerStdio",
+                    "framework": "OpenAI Agents SDK",
+                    "package": package,
+                    "capability": "filesystem",
+                    "approval_policy": "disabled-default",
+                    "approval_source": "sdk-function-tool-default",
+                    "tool_filter": "read-only-static" if filter_proven else "absent-or-unresolved",
+                    "scope": source_scope(relative),
+                    "analysis": analysis,
+                }
+                ir.add_component(
+                    Component(
+                        "mcp-server",
+                        display_name,
+                        evidence,
+                        server_attributes,
+                        server_id,
+                    )
+                )
+                capability_attributes = {
+                    "write_access": not filter_proven,
+                    "package": package,
+                    "approval_policy": "disabled-default",
+                    "tool_filter": server_attributes["tool_filter"],
+                    "scope": source_scope(relative),
+                    "analysis": analysis,
+                }
+                ir.add_component(
+                    Component("capability", "filesystem", evidence, capability_attributes)
+                )
+                ir.add_relationship(
+                    Relationship(
+                        "mcp-server",
+                        display_name,
+                        "uses",
+                        "capability",
+                        "filesystem",
+                        evidence,
+                        capability_attributes,
+                        source_id=server_id,
+                    )
+                )
+                setting_attributes = {
+                    "enabled": False,
+                    "approval_policy": "disabled-default",
+                    "approval_source": "sdk-function-tool-default",
+                    "policy_scope": "all-converted-local-mcp-tools",
+                    "agent_source_path": source_paths["agent"],
+                    "mcp_source_path": source_paths["mcp"],
+                    "tool_source_path": source_paths["tool"],
+                    "scope": source_scope(relative),
+                    "analysis": analysis,
+                }
+                ir.add_component(
+                    Component(
+                        "control-setting",
+                        "mcp-tool-approval",
+                        evidence,
+                        setting_attributes,
+                    )
+                )
+                ir.add_relationship(
+                    Relationship(
+                        "mcp-server",
+                        display_name,
+                        "configured-by",
+                        "control-setting",
+                        "mcp-tool-approval",
+                        evidence,
+                        setting_attributes,
+                        source_id=server_id,
+                    )
+                )
+                if filter_proven:
+                    control_attributes = {
+                        "policy_effect": "blocks-filesystem-mutation",
+                        "allowed_tools": allowed_tools,
+                        "scope": source_scope(relative),
+                        "analysis": analysis,
+                    }
+                    ir.add_component(
+                        Component("control", "mcp-tool-filter", evidence, control_attributes)
+                    )
+                    ir.add_relationship(
+                        Relationship(
+                            "capability",
+                            "filesystem",
+                            "governed-by",
+                            "control",
+                            "mcp-tool-filter",
+                            evidence,
+                            control_attributes,
+                        )
+                    )
+
+        if not servers:
+            continue
+        for constructor in agent_constructors:
+            pattern = re.compile(
+                rf"\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*new\s+{re.escape(constructor)}\s*\("
+            )
+            for match in pattern.finditer(code):
+                agent_binding = match.group(1)
+                opening = code.find("(", match.start(), match.end())
+                end = typescript_balanced_end(code, opening, "(", ")")
+                if end is None:
+                    continue
+                call_arguments = typescript_call_arguments(
+                    text[opening + 1 : end - 1], opening + 1
+                )
+                if not call_arguments:
+                    continue
+                options, _ = call_arguments[0]
+                servers_expression = typescript_literal_object_property_expression(
+                    options, "mcpServers"
+                )
+                server_bindings = (
+                    typescript_literal_identifier_arguments(servers_expression)
+                    if servers_expression is not None
+                    else None
+                )
+                if server_bindings is None:
+                    continue
+                agent_line = line_at(text, match.start())
+                agent_evidence = Evidence(
+                    relative, agent_line, excerpt(lines, agent_line)
+                )
+                agent_name = (
+                    typescript_literal_object_string_property(options, "name")
+                    or agent_binding
+                )
+                agent_id = source_symbol("ts", relative, "agent", agent_binding)
+                ir.add_component(
+                    Component(
+                        "agent",
+                        agent_name,
+                        agent_evidence,
+                        {
+                            "constructor": "Agent",
+                            "framework": "OpenAI Agents SDK",
+                            "scope": source_scope(relative),
+                            "analysis": analysis,
+                        },
+                        agent_id,
+                    )
+                )
+                for server_binding in server_bindings:
+                    if server_binding is None or server_binding not in servers:
+                        continue
+                    server_name, server_id, _evidence, filter_proven, _allowed = servers[
+                        server_binding
+                    ]
+                    ir.add_relationship(
+                        Relationship(
+                            "agent",
+                            agent_name,
+                            "uses",
+                            "mcp-server",
+                            server_name,
+                            agent_evidence,
+                            {
+                                "approval_policy": "disabled-default",
+                                "write_access": not filter_proven,
+                                "analysis": analysis,
+                            },
+                            source_id=agent_id,
+                            target_id=server_id,
+                        )
+                    )
+
+
 def add_python_google_adk_bigquery_audit_flow(
     ir: RepositoryIR,
     root: Path,
@@ -17338,6 +17782,7 @@ def scan_repository(
     add_typescript_composio_cli_file_upload_flow(ir, root, registry_paths)
     add_typescript_google_adk_openapi_rest_tool_flow(ir, root, registry_paths)
     add_typescript_a2a_card_endpoint_composition(ir, root, registry_paths)
+    add_typescript_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)
     add_python_adk_a2a_card_endpoint_policy(ir, root, registry_paths)
     add_python_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)
     add_python_google_adk_bigquery_audit_flow(ir, root, registry_paths)

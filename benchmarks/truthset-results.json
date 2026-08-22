@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T03:38:32.994517+00:00",
-  "labels": 423,
-  "passed": 423,
+  "generated_at": "2026-08-22T04:14:31.061248+00:00",
+  "labels": 432,
+  "passed": 432,
   "metrics": {
     "AV-A2A001": {
       "tp": 4,
@@ -32,6 +32,14 @@
       "tp": 3,
       "fp": 0,
       "tn": 6,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "AV-APPROVAL004": {
+      "tp": 6,
+      "fp": 0,
+      "tn": 3,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -932,6 +940,87 @@
     {
       "id": "approval-callback-openai-js-hosted-negative",
       "rule_id": "AV-APPROVAL003",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-mcp-ts-full-command-local",
+      "rule_id": "AV-APPROVAL004",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-mcp-ts-resolved-package-local",
+      "rule_id": "AV-APPROVAL004",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-mcp-ts-unresolved-filter-local",
+      "rule_id": "AV-APPROVAL004",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-mcp-ts-read-only-filter-local-negative",
+      "rule_id": "AV-APPROVAL004",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-mcp-ts-unbound-local-negative",
+      "rule_id": "AV-APPROVAL004",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-mcp-ts-docs-stdio-real",
+      "rule_id": "AV-APPROVAL004",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-mcp-ts-docs-tool-real",
+      "rule_id": "AV-APPROVAL004",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-mcp-ts-package-real",
+      "rule_id": "AV-APPROVAL004",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-mcp-ts-read-only-filter-real-negative",
+      "rule_id": "AV-APPROVAL004",
       "expected": false,
       "observed": false,
       "anchor_ok": true,

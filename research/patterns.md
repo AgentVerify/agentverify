@@ -113,6 +113,9 @@ SDK defaults are part of that policy surface. In an MCP bridge, an omitted serve
 argument may be normalized once and copied into every dynamically discovered tool wrapper. The
 agent→server binding, default normalization, per-name fallback, and final wrapper assignment must all
 be proven before reporting the effective default; absence alone is not a destructive-path finding.
+When a local MCP package has a known write surface, the effective default becomes actionable only
+after proving Agent reachability and excluding a literal read-only tool allowlist. Dynamic filters
+remain unresolved rather than being credited as mutation controls.
 
 ## Observability as a cross-cutting control
 

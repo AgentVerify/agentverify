@@ -1,6 +1,6 @@
 {
   "schema_version": 4,
-  "generated_at": "2026-08-21T19:17:59.439446+00:00",
+  "generated_at": "2026-08-22T03:58:41.481499+00:00",
   "method": {
     "collector": "scripts/collect_repositories.py",
     "max_files_per_repository": 220,
@@ -9,7 +9,7 @@
     "lock_file": "research/repository-data.json",
     "locked_repositories": 71,
     "selection_hints_file": "research/repository-selection-hints.json",
-    "hinted_repositories": 9,
+    "hinted_repositories": 11,
     "selection": "manifests, then explicit SSRF/URL-safety and general security/agent/tool/MCP-related sources, then shallow paths; plus audited evidence paths and a bounded local Python import closure for MCP forwarding and URL-security helper call sites"
   },
   "repositories": [
@@ -13764,9 +13764,9 @@
       "status": "ok",
       "commit": "0b944370c6fe019ac5b08364ca013826cd7d0668",
       "files_in_tree": 1490,
-      "files_scanned": 220,
-      "dependency_files_materialized": 0,
-      "bytes_scanned": 376595,
+      "files_scanned": 223,
+      "dependency_files_materialized": 3,
+      "bytes_scanned": 548859,
       "languages": [
         "TypeScript",
         "TypeScript",
@@ -13969,6 +13969,26 @@
               "line": 69,
               "excerpt": "\"examples:sandbox-basic\": \"pnpm -F sandbox start:basic\",",
               "pattern": "\\bsandbox(?:ed|ing)?\\b"
+            }
+          ],
+          "allowlist": [
+            {
+              "path": "packages/agents-core/src/tool.ts",
+              "line": 336,
+              "excerpt": "type: 'allowlist';",
+              "pattern": "\\ballowlist\\b"
+            },
+            {
+              "path": "packages/agents-core/src/tool.ts",
+              "line": 1018,
+              "excerpt": "type: 'allowlist',",
+              "pattern": "\\ballowlist\\b"
+            },
+            {
+              "path": "packages/agents-core/src/tool.ts",
+              "line": 1259,
+              "excerpt": "allowed_tools: toMcpAllowedToolsFilter(options.allowedTools),",
+              "pattern": "allowed_(?:tools|commands|paths)"
             }
           ],
           "authentication": [

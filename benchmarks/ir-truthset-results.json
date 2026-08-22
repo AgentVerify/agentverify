@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T03:38:00.790597+00:00",
-  "labels": 523,
-  "passed": 523,
+  "generated_at": "2026-08-22T04:17:06.452323+00:00",
+  "labels": 530,
+  "passed": 530,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -416,6 +416,14 @@
       "tp": 2,
       "fp": 0,
       "tn": 5,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-OPENAI-MCP-APPROVAL-DEFAULT": {
+      "tp": 6,
+      "fp": 0,
+      "tn": 1,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -2796,6 +2804,69 @@
     {
       "id": "python-openai-mcp-approval-default-real",
       "check_id": "IR-PY-OPENAI-MCP-APPROVAL-DEFAULT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-mcp-agent-server-local",
+      "check_id": "IR-TS-OPENAI-MCP-APPROVAL-DEFAULT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-mcp-capability-local",
+      "check_id": "IR-TS-OPENAI-MCP-APPROVAL-DEFAULT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-mcp-setting-local",
+      "check_id": "IR-TS-OPENAI-MCP-APPROVAL-DEFAULT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-mcp-read-only-filter-local",
+      "check_id": "IR-TS-OPENAI-MCP-APPROVAL-DEFAULT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-mcp-near-miss-local-negative",
+      "check_id": "IR-TS-OPENAI-MCP-APPROVAL-DEFAULT",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-mcp-agent-server-real",
+      "check_id": "IR-TS-OPENAI-MCP-APPROVAL-DEFAULT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-mcp-read-only-filter-real",
+      "check_id": "IR-TS-OPENAI-MCP-APPROVAL-DEFAULT",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

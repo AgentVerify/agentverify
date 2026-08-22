@@ -120,8 +120,8 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 ## Full-corpus engine benchmark
 
 The 2026-08-22 default scan covered 70 source-bearing repositories plus one docs-only upstream
-snapshot. It parsed 10,763 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,018 relationships, and completed in 227.3819 seconds on the development machine. Three parse
+snapshot. It parsed 10,766 selected Python/TypeScript/JavaScript files plus 155 configuration files,
+resolved 2,033 relationships, and completed in 230.5469 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -129,13 +129,13 @@ so the benchmark records zero suppressed findings.
 The locked collector prioritizes manifests, production SSRF/URL-safety sources, and then general
 security/agent/tool/MCP sources within the 220-file cap. It adds at most 20 local source files:
 versioned audited evidence hints plus Python imports reached from MCP forwarding or source-proven
-URL-security call sites, all charged against the same cap. This refresh materialized 168 dependency files across 18
+URL-security call sites, all charged against the same cap. This refresh materialized 171 dependency files across 19
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v64 carries both the 168-file total and the
-18-repository coverage.
+dependency count per repository; engine schema v66 carries both the 171-file total and the
+19-repository coverage.
 
-Engine benchmark schema v64 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v66 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It also publishes Python and TypeScript initial-origin control coverage
 plus source-proven Python and TypeScript secure transports, with redirect, DNS, proxy, configured
@@ -416,6 +416,21 @@ The Python path includes one named wrapper before the environment-backed prompt;
 paths use inline handlers that call a summarized helper. Six negatives preserve safe callbacks,
 unused helpers, hosted/container shells, and the manual Python HITL example. The rule matrix is 3 TP,
 6 TN, 0 FP, and 0 FN; the corresponding IR matrix is 6 TP, 2 TN, 0 FP, and 0 FN.
+
+## AV-APPROVAL004 — writable local MCP filesystem tools inherit disabled approval
+
+Schema v66 verifies the OpenAI Agents JS composition across its pinned SDK sources: configured MCP
+servers are attached to the Agent, discovered tools are converted through `tool(...)` without a
+`needsApproval` override, and the generic tool factory normalizes omission to `false`. Three
+reachable filesystem-package examples qualify: the docs `fullCommand` form, the tools docs form,
+and the `process.execPath` plus import-proven `createRequire.resolve` form. Each produces an exact
+agent→MCP-server→filesystem path and a high-confidence review.
+
+The static-filter example is the real counterexample: its literal allowlist contains only
+`read_file` and `list_directory`, so the capability records `write_access: false` and a
+`mcp-tool-filter` control. An unbound writable server is inventory-only. The rule matrix is 6 TP,
+3 TN, 0 FP, and 0 FN; seven IR labels cover local and real edges, the filter control, and a constructor
+provenance negative.
 
 During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
 to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
@@ -996,9 +1011,9 @@ tool-factory/adapter labels cover four local Agent edges, one hosted-MCP capabil
 Agent-as-tool delegation, eight conservative local negatives, two AutoGen factory edges, one Google
 ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent edge plus delegation.
 Eighty component-taxonomy labels add 51 exact local/pinned framework, provider, and model positives
-plus 29 near-name and unrelated-service negatives. Fourteen MCP package-launcher labels separately
+plus 29 near-name and unrelated-service negatives. Twenty-five MCP package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
-four real repositories. All 512 IR labels pass:
+four real repositories. All 530 IR labels pass:
 51 component-taxonomy positives/29 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
@@ -1033,5 +1048,5 @@ negative, two Flowise `secureFetch` positives/one negative, two Google ADK fetch
 negative, four Axios-instance positives/one negative, and two Activepieces filtering-client
 positives/one negative, plus four Composio conditional-runtime positives/one negative, two Composio
 CLI upload positives/one negative, two Google ADK OpenAPI origin-lock positives/one negative, and two
-OpenAI Agents Python MCP-approval-default positives/one negative, plus 13 MCP package-launcher
-positives/one negative.
+OpenAI Agents Python MCP-approval-default positives/one negative, six OpenAI Agents JS MCP approval
+composition positives/one negative, plus 22 MCP package-launcher positives/three negatives.

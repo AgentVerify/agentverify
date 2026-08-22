@@ -1,10 +1,10 @@
 # Repository corpus
 
-Generated at `2026-08-21T19:17:59.439446+00:00` from `scripts/collect_repositories.py`.
+Generated at `2026-08-22T03:58:41.481499+00:00` from `scripts/collect_repositories.py`.
 
 ## Method
 
-The initial corpus contains **71 repositories** across **14 categories**, all pinned to commits. The collector scanned 12,100 selected source/manifest files (92.1 MB). Selection prioritizes manifests and agent, tool, MCP, permission, approval, sandbox, executor, and security paths, then materializes 168 bounded local source dependencies reached from MCP forwarding/URL-security roots or listed as audited evidence paths in the versioned selection-hint manifest.
+The initial corpus contains **71 repositories** across **14 categories**, all pinned to commits. The collector scanned 12,103 selected source/manifest files (92.3 MB). Selection prioritizes manifests and agent, tool, MCP, permission, approval, sandbox, executor, and security paths, then materializes 171 bounded local source dependencies reached from MCP forwarding/URL-security roots or listed as audited evidence paths in the versioned selection-hint manifest.
 
 Signals mean code evidence was observed. Absence is not proof that a repository lacks a feature or control. Evidence in `repository-data.json` includes immutable commit, path, line, excerpt, and matched pattern.
 
@@ -62,7 +62,7 @@ Signals mean code evidence was observed. Absence is not proof that a repository 
 | [modelcontextprotocol/typescript-sdk](https://github.com/modelcontextprotocol/typescript-sdk) | mcp | `3924de99` | TypeScript, JavaScript | — | anthropic, google, openai | code-execution, database, filesystem, network | mcp | audit-or-tracing, authentication, human-approval | auto-approve |
 | [n8n-io/n8n](https://github.com/n8n-io/n8n) | workflow-platform | `258d4cbf` | TypeScript, Python, JavaScript | langchain, langgraph | anthropic, aws-bedrock, openai | browser, code-execution, database, filesystem, network, shell-execution | mcp | allowlist, audit-or-tracing, authentication, human-approval, sandboxing | — |
 | [openai/codex](https://github.com/openai/codex) | coding-agent | `d8ec2701` | Rust, TypeScript, Python, JavaScript | — | openai | browser, filesystem, network, shell-execution | mcp | allowlist, audit-or-tracing, authentication, human-approval, sandboxing | auto-approve, dynamic-shell-command, unrestricted-mcp-tool-proxy |
-| [openai/openai-agents-js](https://github.com/openai/openai-agents-js) | framework | `0b944370` | TypeScript, TypeScript, Python, JavaScript | openai-agents | openai | browser, code-execution, filesystem, network | mcp | audit-or-tracing, authentication, human-approval, sandboxing | auto-approve |
+| [openai/openai-agents-js](https://github.com/openai/openai-agents-js) | framework | `0b944370` | TypeScript, TypeScript, Python, JavaScript | openai-agents | openai | browser, code-execution, filesystem, network | mcp | allowlist, audit-or-tracing, authentication, human-approval, sandboxing | auto-approve |
 | [openai/openai-agents-python](https://github.com/openai/openai-agents-python) | framework | `17ba331b` | Python, JavaScript | openai-agents | openai | browser, code-execution, database, network, shell-execution | mcp | allowlist, audit-or-tracing, authentication, human-approval, sandboxing | auto-approve |
 | [OpenBMB/ChatDev](https://github.com/OpenBMB/ChatDev) | workflow-agent | `4fb2db0e` | Python, JavaScript | — | openai | database, filesystem, network, shell-execution | mcp | allowlist, audit-or-tracing, authentication, human-approval, sandboxing | dynamic-shell-command, shell-true, unrestricted-mcp-tool-proxy |
 | [OpenHands/OpenHands](https://github.com/OpenHands/OpenHands) | coding-agent | `4a8cabc5` | TypeScript, TypeScript, Python, JavaScript | — | anthropic, google, openai | browser, database, filesystem, network | mcp | allowlist, audit-or-tracing, authentication, sandboxing | — |

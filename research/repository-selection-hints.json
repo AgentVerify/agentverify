@@ -46,6 +46,18 @@
     "google-gemini/gemini-cli": [
       "packages/core/src/agents/a2a-client-manager.ts"
     ],
+    "modelcontextprotocol/typescript-sdk": [
+      "examples/caching/client.ts",
+      "examples/custom-version/client.ts",
+      "examples/extension-capabilities/client.ts",
+      "examples/guides/get-started/firstClient.examples.ts",
+      "examples/streaming/client.ts"
+    ],
+    "openai/openai-agents-js": [
+      "packages/agents-core/src/agent.ts",
+      "packages/agents-core/src/mcp.ts",
+      "packages/agents-core/src/tool.ts"
+    ],
     "composiohq/composio": [
       "ts/packages/cli/src/services/tool-file-uploads.ts",
       "ts/packages/cli/src/services/tools-executor.ts",

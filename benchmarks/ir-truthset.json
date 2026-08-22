@@ -3378,6 +3378,48 @@
       "relationship":{"source_kind":"mcp-server","source_name":"Reference Policy Server","relation":"configured-by","target_kind":"control-setting","target_name":"mcp-tool-approval","attributes":{"analysis":"python-openai-agents-mcp-approval-default","approval_policy":"disabled-default"}}
     },
     {
+      "id":"typescript-openai-mcp-agent-server-local",
+      "target":{"kind":"local","path":"cases/typescript_openai_mcp_approval"},
+      "check_id":"IR-TS-OPENAI-MCP-APPROVAL-DEFAULT","path":"app.ts","line":7,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Writer","relation":"uses","target_kind":"mcp-server","target_name":"Writable Files","source_id":"ts:app.ts#agent:writableAgent","target_id":"ts:app.ts#mcp-server:writable","attributes":{"analysis":"typescript-openai-agents-mcp-approval-default","write_access":true}}
+    },
+    {
+      "id":"typescript-openai-mcp-capability-local",
+      "target":{"kind":"local","path":"cases/typescript_openai_mcp_approval"},
+      "check_id":"IR-TS-OPENAI-MCP-APPROVAL-DEFAULT","path":"app.ts","line":3,"expected":true,
+      "relationship":{"source_kind":"mcp-server","source_name":"Writable Files","relation":"uses","target_kind":"capability","target_name":"filesystem","source_id":"ts:app.ts#mcp-server:writable","attributes":{"analysis":"typescript-openai-agents-mcp-approval-default","write_access":true,"approval_policy":"disabled-default"}}
+    },
+    {
+      "id":"typescript-openai-mcp-setting-local",
+      "target":{"kind":"local","path":"cases/typescript_openai_mcp_approval"},
+      "check_id":"IR-TS-OPENAI-MCP-APPROVAL-DEFAULT","path":"app.ts","line":3,"expected":true,
+      "relationship":{"source_kind":"mcp-server","source_name":"Writable Files","relation":"configured-by","target_kind":"control-setting","target_name":"mcp-tool-approval","source_id":"ts:app.ts#mcp-server:writable","attributes":{"analysis":"typescript-openai-agents-mcp-approval-default","approval_policy":"disabled-default"}}
+    },
+    {
+      "id":"typescript-openai-mcp-read-only-filter-local",
+      "target":{"kind":"local","path":"cases/typescript_openai_mcp_approval"},
+      "check_id":"IR-TS-OPENAI-MCP-APPROVAL-DEFAULT","path":"app.ts","line":20,"expected":true,
+      "relationship":{"source_kind":"capability","source_name":"filesystem","relation":"governed-by","target_kind":"control","target_name":"mcp-tool-filter","attributes":{"analysis":"typescript-openai-agents-mcp-approval-default","policy_effect":"blocks-filesystem-mutation"}}
+    },
+    {
+      "id":"typescript-openai-mcp-near-miss-local-negative",
+      "target":{"kind":"local","path":"cases/typescript_openai_mcp_approval"},
+      "check_id":"IR-TS-OPENAI-MCP-APPROVAL-DEFAULT","path":"near_misses.ts","line":3,"expected":false,"source_contains":"new OtherServer",
+      "relationship":{"source_kind":"mcp-server","relation":"uses","target_kind":"capability","target_name":"filesystem","attributes":{"analysis":"typescript-openai-agents-mcp-approval-default"}}
+    },
+    {
+      "id":"typescript-openai-mcp-agent-server-real",
+      "target":{"kind":"repository","repository":"openai/openai-agents-js","commit":"0b944370c6fe019ac5b08364ca013826cd7d0668"},
+      "check_id":"IR-TS-OPENAI-MCP-APPROVAL-DEFAULT","path":"examples/mcp/filesystem-example.ts","line":21,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"MCP Assistant","relation":"uses","target_kind":"mcp-server","target_name":"Filesystem Server, via local package","target_id":"ts:examples/mcp/filesystem-example.ts#mcp-server:mcpServer","attributes":{"analysis":"typescript-openai-agents-mcp-approval-default","write_access":true}}
+    },
+    {
+      "id":"typescript-openai-mcp-read-only-filter-real",
+      "target":{"kind":"repository","repository":"openai/openai-agents-js","commit":"0b944370c6fe019ac5b08364ca013826cd7d0668"},
+      "check_id":"IR-TS-OPENAI-MCP-APPROVAL-DEFAULT","path":"examples/mcp/tool-filter-example.ts","line":27,"expected":true,
+      "relationship":{"source_kind":"capability","source_name":"filesystem","relation":"governed-by","target_kind":"control","target_name":"mcp-tool-filter","attributes":{"analysis":"typescript-openai-agents-mcp-approval-default","policy_effect":"blocks-filesystem-mutation"}}
+    },
+    {
       "id":"python-google-adk-bigquery-audit-local",
       "target":{"kind":"local","path":"cases/python_google_adk_bigquery_audit"},
       "check_id":"IR-PY-GOOGLE-ADK-BIGQUERY-AUDIT","path":"app.py","line":13,"expected":true,

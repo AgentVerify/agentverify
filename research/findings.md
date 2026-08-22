@@ -114,14 +114,14 @@ that resolves `get_tool(name)`, rejects a missing tool, and only then executes. 
 retained as a required edge argument. This becomes the second `tool-registry` edge. A default-tool
 fallback remains unresolved, demonstrating why semantic names are not enforcement evidence.
 
-The collector's bounded dependency closure and audited evidence hints add 168 local source files
-across 18 repositories. It
+The collector's bounded dependency closure and audited evidence hints add 171 local source files
+across 19 repositories. It
 exposes the MCP Python SDK's `ToolManager` reexport and implementation: `MCPServer` binds one imported
 manager in its constructor, and that manager resolves `get_tool(name)` and rejects a miss before
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the 423-label truth set.
+rule observations are pinned in the 432-label truth set.
 
 MCP configuration is also executable dependency configuration. Schema v65 resolves 50 literal
 `npx`/`uvx` package launchers in the bounded corpus: 45 unpinned, three floating, and two exact,
@@ -163,6 +163,15 @@ chain, the privileged built-in tool, and a resolved Agent-to-tool edge. Safe cal
 environment helpers, manual HITL, and hosted/container shells are exact negatives. `AV-APPROVAL003`
 therefore has three positive and six negative pinned rule labels plus six positive and two negative
 IR labels.
+
+Schema v66 adds a bounded destructive MCP approval review. In OpenAI Agents JS, the selected SDK
+sources prove that Agent MCP servers are converted to function tools without a `needsApproval`
+override and that omission normalizes to `false`. Three directly reachable examples launch the local
+filesystem MCP package with its write surface intact and raise `AV-APPROVAL004`. A fourth writable
+server is unbound and remains inventory; the static-filter example exposes only `read_file` and
+`list_directory`, records `mcp-tool-filter`, and remains negative. The corpus therefore contains five
+resolved servers, four writable capabilities, four Agent bindings, one read-only filter, and three
+reviews.
 
 ## 4. Provider identity is a governance dependency
 

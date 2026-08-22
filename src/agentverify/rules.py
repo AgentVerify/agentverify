@@ -149,6 +149,28 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                 )
             )
         if (
+            component.kind == "capability"
+            and component.name == "filesystem"
+            and component.attributes.get("analysis")
+            == "typescript-openai-agents-mcp-approval-default"
+            and component.attributes.get("write_access") is True
+            and component.attributes.get("approval_policy") == "disabled-default"
+        ):
+            _, context = component_context(ir, component)
+            if context.get("direct_agents"):
+                ir.findings.append(
+                    make_finding(
+                        ir,
+                        component,
+                        "AV-APPROVAL004",
+                        "high",
+                        "high",
+                        "A reachable writable local MCP filesystem server has SDK approval disabled by default",
+                        "Expose only a reviewed read-only MCP tool allowlist, or add an authenticated per-action approval mediator before forwarding mutating MCP calls.",
+                        "review",
+                    )
+                )
+        if (
             component.kind == "mcp-server"
             and component.attributes.get("auto_install") is True
             and component.attributes.get("version_scope") in {"unpinned", "floating"}
