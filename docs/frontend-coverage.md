@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v66
+framework, wrapper, or configuration path. Counts come from schema-v67
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -287,6 +287,13 @@ allowlist. Four servers reach an Agent, producing three `AV-APPROVAL004` reviews
 server is unbound. The pass requires exact SDK source propagation and official imports, and supports
 both literal `fullCommand` launchers and `process.execPath` plus import-proven `createRequire.resolve`.
 
+Agno contributes a second destructive Python composition. Three pinned filesystem `MCPTools`
+instances reach Agents: two retain mutating tools with the empty default confirmation list and raise
+`AV-APPROVAL005`, while one exact `include_tools` list contains only read-only operations. The pass
+supports direct command construction and a `StdioServerParameters`/`ClientSession` composition with
+exact nested channel flow. A complete static mutation confirmation list becomes a human-approval
+control, a partial list remains reviewable, and nonliteral policies remain unresolved.
+
 The approval-callback resolver summarizes unique same-file functions and propagates only direct call
 edges into an OpenAI built-in tool's configured approval handler. Python covers a named handler and
 one transitive wrapper; TypeScript covers inline handlers that call a summarized helper. The IR adds
@@ -467,12 +474,12 @@ and `network-ssrf-policy` edge.
   `created_by` is nullable and unset, so actor attribution remains unresolved.
 - Selected-path scans parse only selected files. The research corpus adds at most 20 local source
   dependencies to each 220-file root sample: versioned audited evidence hints plus bounded Python
-  import closure, all charged against the same cap. This refresh added 171 files across 19 repositories. Unselected definitions
+  import closure, all charged against the same cap. This refresh added 174 files across 20 repositories. Unselected definitions
   and controls are not evidence of repository-wide coverage or absence.
 
 ## Quality interpretation
 
-The 432-label rule truth set and 530-label IR component/relationship set are curated regression suites. They
+The 441-label rule truth set and 540-label IR component/relationship set are curated regression suites. They
 guard known positives and negatives; they are not an unbiased accuracy estimate. A future holdout
 must be sampled separately across the categories above, externally reviewed, and kept sealed while
 rules change. Until then, precision/recall values apply only to the published seed labels.

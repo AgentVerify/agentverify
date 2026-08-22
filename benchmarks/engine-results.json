@@ -1,6 +1,6 @@
 {
-  "schema_version": 66,
-  "generated_at": "2026-08-22T04:09:21.616099+00:00",
+  "schema_version": 67,
+  "generated_at": "2026-08-22T04:49:26.054989+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -16,14 +16,14 @@
     "zero_source_repositories": [
       "daytonaio/daytona"
     ],
-    "files_scanned": 10766,
-    "dependency_files_materialized": 171,
-    "repositories_with_dependency_expansion": 19,
+    "files_scanned": 10769,
+    "dependency_files_materialized": 174,
+    "repositories_with_dependency_expansion": 20,
     "config_files_scanned": 155,
-    "relationships": 2033,
-    "symbolized_components": 9537,
-    "identified_symbol_endpoints": 3392,
-    "resolved_symbol_endpoints": 3392,
+    "relationships": 2045,
+    "symbolized_components": 9547,
+    "identified_symbol_endpoints": 3408,
+    "resolved_symbol_endpoints": 3408,
     "unmatched_identified_symbol_endpoints": 0,
     "ambiguous_repeated_binding_targets": 0,
     "resolved_binding_targets_by_basis": {
@@ -33,21 +33,22 @@
       "contextual-imported-callable-single-export": 4,
       "contextual-imported-class-factory-return": 14,
       "lexical-single-definition": 359,
-      "literal-tools-list-context-manager": 2,
+      "literal-tools-list-context-manager": 4,
       "literal-tools-list-import-binding": 6,
       "literal-tools-list-inline-constructor": 444,
       "same-class-helper-return": 3,
       "typed-parameter-callsite-consensus": 1
     },
-    "relationship_endpoints": 4066,
+    "relationship_endpoints": 4090,
     "bom_endpoint_resolutions": {
-      "ambiguous": 32,
-      "evidence-location": 556,
-      "symbol-id": 3392,
+      "ambiguous": 38,
+      "evidence-location": 564,
+      "symbol-id": 3402,
       "unique-display-name": 18,
       "unresolved": 68
     },
     "bom_ambiguous_endpoints_by_side_kind": {
+      "source:agent": 6,
       "source:control": 1,
       "source:protocol": 1,
       "target:control": 6,
@@ -55,7 +56,7 @@
       "target:tool": 21
     },
     "resolved_symbol_endpoints_by_frontend": {
-      "py": 3113,
+      "py": 3129,
       "ts": 279
     },
     "typescript_graph": {
@@ -99,25 +100,25 @@
       "resolved_agent_edges": 10
     },
     "python_agent_referenced_tools": {
-      "instances": 753,
+      "instances": 755,
       "callables": 181,
       "constructor_bindings": 100,
       "inline_constructors": 444,
-      "context_manager_bindings": 2,
+      "context_manager_bindings": 4,
       "agent_as_tool_adapters": 21,
       "agent_as_tool_delegations": 21,
       "import_bindings": 5,
       "imported_callable_exports": 4,
       "module_single_definitions": 30,
-      "non_test_instances": 524,
+      "non_test_instances": 526,
       "capability_edges": 30,
-      "resolved_agent_edges": 810
+      "resolved_agent_edges": 812
     },
     "python_agent_tool_edges": {
-      "total": 1182,
-      "resolved": 1110,
+      "total": 1184,
+      "resolved": 1112,
       "unresolved": 72,
-      "non_test": 598,
+      "non_test": 600,
       "unresolved_non_test": 0
     },
     "python_function_tool_wrappers": {
@@ -231,6 +232,15 @@
       "configured_by_edges": 5,
       "findings": 3
     },
+    "python_agno_mcp_confirmation": {
+      "servers": 3,
+      "writable_servers": 2,
+      "read_only_filtered": 1,
+      "fully_confirmed": 0,
+      "agent_server_edges": 3,
+      "configured_by_edges": 3,
+      "findings": 2
+    },
     "approval_callback_bypass": {
       "tools": 3,
       "python_tools": 1,
@@ -239,8 +249,8 @@
       "findings": 3
     },
     "mcp_package_launchers": {
-      "total": 55,
-      "non_test": 44,
+      "total": 58,
+      "non_test": 47,
       "auto_install": 47,
       "unpinned": 45,
       "floating": 3,
@@ -391,6 +401,7 @@
       "AV-APPROVAL002": 2,
       "AV-APPROVAL003": 3,
       "AV-APPROVAL004": 3,
+      "AV-APPROVAL005": 2,
       "AV-AUDIT001": 1,
       "AV-EXEC001": 21,
       "AV-EXEC002": 51,
@@ -407,6 +418,7 @@
       "AV-APPROVAL002": 1,
       "AV-APPROVAL003": 2,
       "AV-APPROVAL004": 1,
+      "AV-APPROVAL005": 1,
       "AV-AUDIT001": 1,
       "AV-EXEC001": 11,
       "AV-EXEC002": 15,
@@ -440,7 +452,7 @@
         "durable-action-record": 1,
         "fixed-tool-binding": 6,
         "human-approval": 3,
-        "mcp-tool-filter": 1,
+        "mcp-tool-filter": 2,
         "network-origin-policy": 2,
         "network-ssrf-policy": 7,
         "path-boundary": 4,
@@ -450,7 +462,8 @@
       },
       "control-setting": {
         "auto-approval": 5,
-        "mcp-tool-approval": 2
+        "mcp-tool-approval": 2,
+        "mcp-tool-confirmation": 1
       },
       "framework": {
         "AgentScope": 1,
@@ -612,7 +625,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 230.5469
+    "elapsed_seconds": 236.8013
   },
   "repositories": [
     {
@@ -818,6 +831,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -946,7 +968,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1065
+      "elapsed_seconds": 3.0943
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -1159,6 +1181,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -1292,7 +1323,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.5809
+      "elapsed_seconds": 5.8308
     },
     {
       "repository": "langchain-ai/langchain",
@@ -1501,6 +1532,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -1627,7 +1667,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0357
+      "elapsed_seconds": 2.1072
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -1840,6 +1880,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -1974,7 +2023,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.7145
+      "elapsed_seconds": 7.985
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -2192,6 +2241,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -2322,7 +2380,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3648
+      "elapsed_seconds": 0.3732
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -2545,6 +2603,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -2688,7 +2755,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.3357
+      "elapsed_seconds": 8.7826
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -2915,6 +2982,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -3065,7 +3141,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.3691
+      "elapsed_seconds": 5.5188
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -3288,6 +3364,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -3428,7 +3513,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5917
+      "elapsed_seconds": 0.574
     },
     {
       "repository": "microsoft/autogen",
@@ -3645,6 +3730,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -3780,7 +3874,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4304
+      "elapsed_seconds": 1.5994
     },
     {
       "repository": "microsoft/agent-framework",
@@ -3979,6 +4073,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -4105,7 +4208,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0452
+      "elapsed_seconds": 0.0458
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -4319,6 +4422,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -4454,7 +4566,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2014
+      "elapsed_seconds": 0.2156
     },
     {
       "repository": "openai/openai-agents-python",
@@ -4693,6 +4805,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 1,
         "python_tools": 1,
@@ -4840,7 +4961,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.3036
+      "elapsed_seconds": 9.7145
     },
     {
       "repository": "openai/openai-agents-js",
@@ -5073,6 +5194,15 @@
         "configured_by_edges": 5,
         "findings": 3
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 2,
         "python_tools": 0,
@@ -5210,7 +5340,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5217
+      "elapsed_seconds": 1.5153
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -5438,6 +5568,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -5576,7 +5715,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 19.3165
+      "elapsed_seconds": 20.4285
     },
     {
       "repository": "google/adk-python",
@@ -5807,6 +5946,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -5949,7 +6097,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.4726
+      "elapsed_seconds": 7.5085
     },
     {
       "repository": "google/adk-js",
@@ -6171,6 +6319,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -6304,7 +6461,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.8488
+      "elapsed_seconds": 3.8932
     },
     {
       "repository": "huggingface/smolagents",
@@ -6523,6 +6680,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -6665,29 +6831,37 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1802
+      "elapsed_seconds": 2.2862
     },
     {
       "repository": "agno-agi/agno",
       "category": "framework",
       "status": "ok",
-      "files_scanned": 205,
-      "dependency_files_materialized": 0,
+      "files_scanned": 208,
+      "dependency_files_materialized": 3,
       "config_files_scanned": 1,
       "components": {
-        "agent": 381,
-        "capability": 33,
-        "framework": 576,
-        "mcp": 2,
-        "mcp-server": 3,
-        "protocol": 2,
+        "agent": 386,
+        "capability": 36,
+        "control": 1,
+        "control-setting": 3,
+        "framework": 590,
+        "mcp": 6,
+        "mcp-server": 6,
+        "protocol": 6,
         "provider": 1,
-        "tool": 355
+        "tool": 357
       },
       "component_names": {
         "capability": [
           "filesystem",
           "network"
+        ],
+        "control": [
+          "mcp-tool-filter"
+        ],
+        "control-setting": [
+          "mcp-tool-confirmation"
         ],
         "framework": [
           "Agno"
@@ -6699,20 +6873,20 @@
           "Azure OpenAI"
         ]
       },
-      "relationships": 361,
-      "symbolized_components": 736,
-      "identified_symbol_endpoints": 718,
-      "resolved_symbol_endpoints": 718,
+      "relationships": 373,
+      "symbolized_components": 746,
+      "identified_symbol_endpoints": 734,
+      "resolved_symbol_endpoints": 734,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {
         "block-dominating-definition": 7,
         "lexical-single-definition": 7,
-        "literal-tools-list-context-manager": 2,
+        "literal-tools-list-context-manager": 4,
         "literal-tools-list-inline-constructor": 309
       },
       "resolved_symbol_endpoints_by_frontend": {
-        "py": 718,
+        "py": 734,
         "ts": 0
       },
       "typescript_graph": {
@@ -6756,25 +6930,25 @@
         "resolved_agent_edges": 0
       },
       "python_agent_referenced_tools": {
-        "instances": 354,
+        "instances": 356,
         "callables": 24,
         "constructor_bindings": 19,
         "inline_constructors": 309,
-        "context_manager_bindings": 2,
+        "context_manager_bindings": 4,
         "agent_as_tool_adapters": 0,
         "agent_as_tool_delegations": 0,
         "import_bindings": 0,
         "imported_callable_exports": 0,
         "module_single_definitions": 1,
-        "non_test_instances": 354,
+        "non_test_instances": 356,
         "capability_edges": 4,
-        "resolved_agent_edges": 356
+        "resolved_agent_edges": 358
       },
       "python_agent_tool_edges": {
-        "total": 357,
-        "resolved": 357,
+        "total": 359,
+        "resolved": 359,
         "unresolved": 0,
-        "non_test": 357,
+        "non_test": 359,
         "unresolved_non_test": 0
       },
       "python_function_tool_wrappers": {
@@ -6884,6 +7058,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 3,
+        "writable_servers": 2,
+        "read_only_filtered": 1,
+        "fully_confirmed": 0,
+        "agent_server_edges": 3,
+        "configured_by_edges": 3,
+        "findings": 2
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -6892,8 +7075,8 @@
         "findings": 0
       },
       "mcp_package_launchers": {
-        "total": 3,
-        "non_test": 3,
+        "total": 6,
+        "non_test": 6,
         "auto_install": 3,
         "unpinned": 1,
         "floating": 2,
@@ -7012,17 +7195,21 @@
         "typescript": 0
       },
       "bom_endpoint_resolutions": {
-        "evidence-location": 4,
-        "symbol-id": 718
+        "ambiguous": 6,
+        "evidence-location": 12,
+        "symbol-id": 728
       },
-      "bom_ambiguous_endpoints_by_side_kind": {},
+      "bom_ambiguous_endpoints_by_side_kind": {
+        "source:agent": 6
+      },
       "findings": {
+        "AV-APPROVAL005": 2,
         "AV-MCP003": 3
       },
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8118
+      "elapsed_seconds": 0.94
     },
     {
       "repository": "camel-ai/camel",
@@ -7246,6 +7433,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -7390,7 +7586,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.4911
+      "elapsed_seconds": 4.7297
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -7602,6 +7798,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -7731,7 +7936,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3555
+      "elapsed_seconds": 0.3518
     },
     {
       "repository": "run-llama/llama_index",
@@ -7945,6 +8150,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -8071,7 +8285,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4973
+      "elapsed_seconds": 1.6577
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -8291,6 +8505,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -8435,7 +8658,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.4229
+      "elapsed_seconds": 2.5515
     },
     {
       "repository": "InternLM/lagent",
@@ -8656,6 +8879,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -8795,7 +9027,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.095
+      "elapsed_seconds": 1.1369
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -9011,6 +9243,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -9152,7 +9393,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9849
+      "elapsed_seconds": 2.088
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -9368,6 +9609,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -9511,7 +9761,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6217
+      "elapsed_seconds": 2.7921
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -9724,6 +9974,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -9864,7 +10123,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6938
+      "elapsed_seconds": 1.7356
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -10078,6 +10337,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -10214,7 +10482,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.0833
+      "elapsed_seconds": 6.4077
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -10424,6 +10692,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -10559,7 +10836,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.045
+      "elapsed_seconds": 2.1009
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -10770,6 +11047,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -10896,7 +11182,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2443
+      "elapsed_seconds": 1.2417
     },
     {
       "repository": "letta-ai/letta-code",
@@ -11101,6 +11387,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -11227,7 +11522,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.984
+      "elapsed_seconds": 4.9381
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -11447,6 +11742,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -11587,7 +11891,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7732
+      "elapsed_seconds": 1.8479
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -11801,6 +12105,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -11942,7 +12255,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4031
+      "elapsed_seconds": 3.5956
     },
     {
       "repository": "mastra-ai/mastra",
@@ -12159,6 +12472,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -12291,7 +12613,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8401
+      "elapsed_seconds": 2.8212
     },
     {
       "repository": "vercel/ai",
@@ -12507,6 +12829,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -12638,7 +12969,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1104
+      "elapsed_seconds": 3.0795
     },
     {
       "repository": "cline/cline",
@@ -12859,6 +13190,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -12991,7 +13331,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.3562
+      "elapsed_seconds": 4.3025
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -13201,6 +13541,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -13327,7 +13676,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.6554
+      "elapsed_seconds": 4.5925
     },
     {
       "repository": "continuedev/continue",
@@ -13533,6 +13882,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -13659,7 +14017,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8667
+      "elapsed_seconds": 2.8413
     },
     {
       "repository": "Aider-AI/aider",
@@ -13868,6 +14226,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -14009,7 +14376,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.7339
+      "elapsed_seconds": 3.8286
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -14213,6 +14580,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -14347,7 +14723,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 1.3121
+      "elapsed_seconds": 1.3599
     },
     {
       "repository": "plandex-ai/plandex",
@@ -14538,6 +14914,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -14664,7 +15049,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0528
+      "elapsed_seconds": 0.0538
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -14870,6 +15255,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -15002,7 +15396,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9233
+      "elapsed_seconds": 2.0109
     },
     {
       "repository": "stitionai/devika",
@@ -15216,6 +15610,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -15346,7 +15749,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4729
+      "elapsed_seconds": 0.4889
     },
     {
       "repository": "block/goose",
@@ -15560,6 +15963,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -15696,7 +16108,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 6.1661
+      "elapsed_seconds": 6.1263
     },
     {
       "repository": "bytedance/trae-agent",
@@ -15917,6 +16329,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -16060,7 +16481,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0595
+      "elapsed_seconds": 1.0956
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -16273,6 +16694,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -16405,7 +16835,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.8834
+      "elapsed_seconds": 6.7731
     },
     {
       "repository": "openai/codex",
@@ -16603,6 +17033,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -16735,7 +17174,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9649
+      "elapsed_seconds": 0.9949
     },
     {
       "repository": "browser-use/browser-use",
@@ -16958,6 +17397,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -17102,7 +17550,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.694
+      "elapsed_seconds": 5.9382
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -17334,6 +17782,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -17478,7 +17935,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.911
+      "elapsed_seconds": 12.6108
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -17693,6 +18150,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -17830,7 +18296,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2031
+      "elapsed_seconds": 1.2256
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -18039,6 +18505,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -18167,7 +18642,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4724
+      "elapsed_seconds": 1.4712
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -18378,6 +18853,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -18514,7 +18998,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.514
+      "elapsed_seconds": 1.5006
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -18732,6 +19216,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -18867,7 +19360,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.9248
+      "elapsed_seconds": 4.0481
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -19080,6 +19573,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -19212,7 +19714,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.3925
+      "elapsed_seconds": 4.3663
     },
     {
       "repository": "github/github-mcp-server",
@@ -19413,6 +19915,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -19539,7 +20050,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0498
+      "elapsed_seconds": 0.0524
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -19741,6 +20252,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -19867,7 +20387,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1263
+      "elapsed_seconds": 0.1252
     },
     {
       "repository": "awslabs/mcp",
@@ -20080,6 +20600,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -20214,7 +20743,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1684
+      "elapsed_seconds": 3.2443
     },
     {
       "repository": "docker/mcp-gateway",
@@ -20416,6 +20945,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -20544,7 +21082,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0418
+      "elapsed_seconds": 0.0449
     },
     {
       "repository": "jlowin/fastmcp",
@@ -20754,6 +21292,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -20892,7 +21439,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.231
+      "elapsed_seconds": 4.4631
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -21083,6 +21630,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -21209,7 +21765,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0346
+      "elapsed_seconds": 0.0379
     },
     {
       "repository": "langflow-ai/langflow",
@@ -21429,6 +21985,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -21563,7 +22128,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.344
+      "elapsed_seconds": 4.4043
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -21772,6 +22337,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -21906,7 +22480,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.1994
+      "elapsed_seconds": 4.1246
     },
     {
       "repository": "langgenius/dify",
@@ -22100,6 +22674,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -22226,7 +22809,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7488
+      "elapsed_seconds": 2.8322
     },
     {
       "repository": "n8n-io/n8n",
@@ -22443,6 +23026,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -22577,7 +23169,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0143
+      "elapsed_seconds": 2.9892
     },
     {
       "repository": "activepieces/activepieces",
@@ -22802,6 +23394,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -22938,7 +23539,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9272
+      "elapsed_seconds": 1.9195
     },
     {
       "repository": "simstudioai/sim",
@@ -23138,6 +23739,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -23264,7 +23874,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.7844
+      "elapsed_seconds": 5.7158
     },
     {
       "repository": "composiohq/composio",
@@ -23492,6 +24102,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -23627,7 +24246,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3891
+      "elapsed_seconds": 2.4034
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -23849,6 +24468,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -23993,7 +24621,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.0248
+      "elapsed_seconds": 4.108
     },
     {
       "repository": "e2b-dev/E2B",
@@ -24192,6 +24820,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -24318,7 +24955,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1109
+      "elapsed_seconds": 3.1425
     },
     {
       "repository": "daytonaio/daytona",
@@ -24509,6 +25146,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -24635,7 +25281,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0002
+      "elapsed_seconds": 0.001
     },
     {
       "repository": "AgentOps-AI/agentops",
@@ -24855,6 +25501,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -24986,7 +25641,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.179
+      "elapsed_seconds": 2.2693
     },
     {
       "repository": "traceloop/openllmetry",
@@ -25218,6 +25873,15 @@
         "configured_by_edges": 0,
         "findings": 0
       },
+      "python_agno_mcp_confirmation": {
+        "servers": 0,
+        "writable_servers": 0,
+        "read_only_filtered": 0,
+        "fully_confirmed": 0,
+        "agent_server_edges": 0,
+        "configured_by_edges": 0,
+        "findings": 0
+      },
       "approval_callback_bypass": {
         "tools": 0,
         "python_tools": 0,
@@ -25352,7 +26016,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.733
+      "elapsed_seconds": 3.8005
     }
   ]
 }

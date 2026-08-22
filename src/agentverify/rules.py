@@ -171,6 +171,30 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                     )
                 )
         if (
+            component.kind == "capability"
+            and component.name == "filesystem"
+            and component.attributes.get("analysis")
+            == "python-agno-mcp-confirmation-default"
+            and component.attributes.get("write_access") is True
+            and component.attributes.get("unprotected_mutations")
+            and component.attributes.get("approval_policy")
+            in {"disabled-default", "disabled-explicit", "partial-static"}
+        ):
+            _, context = component_context(ir, component)
+            if context.get("direct_agents"):
+                ir.findings.append(
+                    make_finding(
+                        ir,
+                        component,
+                        "AV-APPROVAL005",
+                        "high",
+                        "high",
+                        "A reachable Agno filesystem MCP toolkit leaves mutating tools outside its confirmation policy",
+                        "Set requires_confirmation_tools for every exposed mutating filesystem tool, or restrict include_tools to a reviewed read-only allowlist.",
+                        "review",
+                    )
+                )
+        if (
             component.kind == "mcp-server"
             and component.attributes.get("auto_install") is True
             and component.attributes.get("version_scope") in {"unpinned", "floating"}

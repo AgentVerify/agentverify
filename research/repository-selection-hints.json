@@ -2,6 +2,12 @@
   "schema_version": 1,
   "description": "Audited source paths needed to reproduce security evidence that falls outside the bounded lexical root selection. Every path is charged against the repository dependency-file cap.",
   "repositories": {
+    "agno-agi/agno": [
+      "cookbook/91_tools/mcp/filesystem.py",
+      "cookbook/91_tools/mcp/include_tools.py",
+      "cookbook/91_tools/mcp_tools.py",
+      "libs/agno/agno/tools/mcp/mcp.py"
+    ],
     "langflow-ai/langflow": [
       "src/bundles/lfx-bundles/src/lfx_bundles/deepseek/deepseek.py",
       "src/bundles/lfx-bundles/src/lfx_bundles/glean/glean_search_api.py",

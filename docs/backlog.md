@@ -131,8 +131,12 @@ composition inventories the opposite policy state:
 an omitted `MCPServerStdio.require_approval` becomes `False` and is copied to every discovered
 `FunctionTool`. It remains non-finding inventory until a destructive MCP capability is resolved.
 `AV-APPROVAL004` now covers that destructive subset for OpenAI Agents JS: a directly reachable local
-filesystem MCP package, SDK-default-disabled approval, and no proven static read-only filter. Next
-generalize package capability manifests and approval mediation without inferring writes from names.
+filesystem MCP package, SDK-default-disabled approval, and no proven static read-only filter.
+`AV-APPROVAL005` resolves the Agno counterpart: omitted or incomplete
+`requires_confirmation_tools` on a reachable filesystem `MCPTools` instance is reviewable, a list
+covering all known mutations is controlled, and a static read-only `include_tools` list is a
+counterexample. Dynamic confirmation lists remain unresolved. Next generalize package capability
+manifests and approval mediation without inferring writes from names.
 
 ## P1 — sandbox containment quality
 
@@ -229,8 +233,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 432 pinned positive/negative locations, with 530 separately
-scored IR component/relationship labels. Schema-v66 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 441 pinned positive/negative locations, with 540 separately
+scored IR component/relationship labels. Schema-v67 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.

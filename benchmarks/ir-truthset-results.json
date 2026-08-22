@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T04:17:06.452323+00:00",
-  "labels": 530,
-  "passed": 530,
+  "generated_at": "2026-08-22T04:45:05.458448+00:00",
+  "labels": 540,
+  "passed": 540,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -102,6 +102,14 @@
     },
     "IR-PY-AGENT-HELPER-RETURN": {
       "tp": 10,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-AGNO-MCP-CONFIRMATION": {
+      "tp": 9,
       "fp": 0,
       "tn": 1,
       "fn": 0,
@@ -2867,6 +2875,96 @@
     {
       "id": "typescript-openai-mcp-read-only-filter-real",
       "check_id": "IR-TS-OPENAI-MCP-APPROVAL-DEFAULT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agno-mcp-agent-server-local",
+      "check_id": "IR-PY-AGNO-MCP-CONFIRMATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agno-mcp-capability-local",
+      "check_id": "IR-PY-AGNO-MCP-CONFIRMATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agno-mcp-setting-local",
+      "check_id": "IR-PY-AGNO-MCP-CONFIRMATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agno-mcp-read-only-filter-local",
+      "check_id": "IR-PY-AGNO-MCP-CONFIRMATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agno-mcp-complete-confirmation-local",
+      "check_id": "IR-PY-AGNO-MCP-CONFIRMATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agno-mcp-dynamic-policy-local",
+      "check_id": "IR-PY-AGNO-MCP-CONFIRMATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agno-mcp-wrong-import-local-negative",
+      "check_id": "IR-PY-AGNO-MCP-CONFIRMATION",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agno-mcp-agent-server-real",
+      "check_id": "IR-PY-AGNO-MCP-CONFIRMATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agno-mcp-session-real",
+      "check_id": "IR-PY-AGNO-MCP-CONFIRMATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agno-mcp-read-only-filter-real",
+      "check_id": "IR-PY-AGNO-MCP-CONFIRMATION",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

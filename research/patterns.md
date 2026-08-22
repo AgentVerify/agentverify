@@ -116,6 +116,11 @@ be proven before reporting the effective default; absence alone is not a destruc
 When a local MCP package has a known write surface, the effective default becomes actionable only
 after proving Agent reachability and excluding a literal read-only tool allowlist. Dynamic filters
 remain unresolved rather than being credited as mutation controls.
+Frameworks can express the same decision as a positive confirmation list instead of an approval
+boolean. A sound analysis compares a literal list against the known mutating server surface:
+omission and incomplete static coverage are actionable, complete coverage is a proven control, and
+dynamic policy expressions remain unresolved. Read-only tool inclusion is an independent
+counterproof and must not be inferred from a suggestive variable name.
 
 ## Observability as a cross-cutting control
 

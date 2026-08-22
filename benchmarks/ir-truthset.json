@@ -3420,6 +3420,66 @@
       "relationship":{"source_kind":"capability","source_name":"filesystem","relation":"governed-by","target_kind":"control","target_name":"mcp-tool-filter","attributes":{"analysis":"typescript-openai-agents-mcp-approval-default","policy_effect":"blocks-filesystem-mutation"}}
     },
     {
+      "id":"python-agno-mcp-agent-server-local",
+      "target":{"kind":"local","path":"cases/python_agno_mcp_confirmation"},
+      "check_id":"IR-PY-AGNO-MCP-CONFIRMATION","path":"direct.py","line":9,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Default Writer","relation":"uses","target_kind":"mcp-server","target_name":"Agno filesystem@6","source_id":"py:direct.py#agent:agent","target_id":"py:direct.py#mcp-server:filesystem_tools","attributes":{"analysis":"python-agno-mcp-confirmation-default","write_access":true,"approval_policy":"disabled-default"}}
+    },
+    {
+      "id":"python-agno-mcp-capability-local",
+      "target":{"kind":"local","path":"cases/python_agno_mcp_confirmation"},
+      "check_id":"IR-PY-AGNO-MCP-CONFIRMATION","path":"direct.py","line":6,"expected":true,
+      "relationship":{"source_kind":"mcp-server","source_name":"Agno filesystem@6","relation":"uses","target_kind":"capability","target_name":"filesystem","source_id":"py:direct.py#mcp-server:filesystem_tools","attributes":{"analysis":"python-agno-mcp-confirmation-default","write_access":true,"approval_policy":"disabled-default"}}
+    },
+    {
+      "id":"python-agno-mcp-setting-local",
+      "target":{"kind":"local","path":"cases/python_agno_mcp_confirmation"},
+      "check_id":"IR-PY-AGNO-MCP-CONFIRMATION","path":"direct.py","line":6,"expected":true,
+      "relationship":{"source_kind":"mcp-server","source_name":"Agno filesystem@6","relation":"configured-by","target_kind":"control-setting","target_name":"mcp-tool-confirmation","source_id":"py:direct.py#mcp-server:filesystem_tools","attributes":{"analysis":"python-agno-mcp-confirmation-default","approval_policy":"disabled-default","enabled":false}}
+    },
+    {
+      "id":"python-agno-mcp-read-only-filter-local",
+      "target":{"kind":"local","path":"cases/python_agno_mcp_confirmation"},
+      "check_id":"IR-PY-AGNO-MCP-CONFIRMATION","path":"read_only.py","line":6,"expected":true,
+      "relationship":{"source_kind":"capability","source_name":"filesystem","relation":"governed-by","target_kind":"control","target_name":"mcp-tool-filter","attributes":{"analysis":"python-agno-mcp-confirmation-default","policy_effect":"blocks-filesystem-mutation"}}
+    },
+    {
+      "id":"python-agno-mcp-complete-confirmation-local",
+      "target":{"kind":"local","path":"cases/python_agno_mcp_confirmation"},
+      "check_id":"IR-PY-AGNO-MCP-CONFIRMATION","path":"confirmed.py","line":6,"expected":true,
+      "relationship":{"source_kind":"capability","source_name":"filesystem","relation":"governed-by","target_kind":"control","target_name":"human-approval","attributes":{"analysis":"python-agno-mcp-confirmation-default","policy_effect":"requires-confirmation-for-filesystem-mutation"}}
+    },
+    {
+      "id":"python-agno-mcp-dynamic-policy-local",
+      "target":{"kind":"local","path":"cases/python_agno_mcp_confirmation"},
+      "check_id":"IR-PY-AGNO-MCP-CONFIRMATION","path":"dynamic_policy.py","line":6,"expected":true,
+      "relationship":{"source_kind":"mcp-server","relation":"configured-by","target_kind":"control-setting","target_name":"mcp-tool-confirmation","attributes":{"analysis":"python-agno-mcp-confirmation-default","approval_policy":"unresolved-explicit"}}
+    },
+    {
+      "id":"python-agno-mcp-wrong-import-local-negative",
+      "target":{"kind":"local","path":"cases/python_agno_mcp_confirmation"},
+      "check_id":"IR-PY-AGNO-MCP-CONFIRMATION","path":"wrong_import.py","line":6,"expected":false,"source_contains":"async with MCPTools",
+      "relationship":{"source_kind":"mcp-server","relation":"uses","target_kind":"capability","target_name":"filesystem","attributes":{"analysis":"python-agno-mcp-confirmation-default"}}
+    },
+    {
+      "id":"python-agno-mcp-agent-server-real",
+      "target":{"kind":"repository","repository":"agno-agi/agno","commit":"955931ab6e2c5e19cca29ddd45f27a1c8b74be1c"},
+      "check_id":"IR-PY-AGNO-MCP-CONFIRMATION","path":"cookbook/91_tools/mcp/filesystem.py","line":40,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"agent","relation":"uses","target_kind":"mcp-server","target_name":"Agno filesystem@37","target_id":"py:cookbook/91_tools/mcp/filesystem.py#mcp-server:mcp_tools","attributes":{"analysis":"python-agno-mcp-confirmation-default","write_access":true,"approval_policy":"disabled-default"}}
+    },
+    {
+      "id":"python-agno-mcp-session-real",
+      "target":{"kind":"repository","repository":"agno-agi/agno","commit":"955931ab6e2c5e19cca29ddd45f27a1c8b74be1c"},
+      "check_id":"IR-PY-AGNO-MCP-CONFIRMATION","path":"cookbook/91_tools/mcp_tools.py","line":24,"expected":true,
+      "relationship":{"source_kind":"mcp-server","source_name":"Agno filesystem@24","relation":"configured-by","target_kind":"control-setting","target_name":"mcp-tool-confirmation","attributes":{"analysis":"python-agno-mcp-confirmation-default","approval_policy":"disabled-default","enabled":false}}
+    },
+    {
+      "id":"python-agno-mcp-read-only-filter-real",
+      "target":{"kind":"repository","repository":"agno-agi/agno","commit":"955931ab6e2c5e19cca29ddd45f27a1c8b74be1c"},
+      "check_id":"IR-PY-AGNO-MCP-CONFIRMATION","path":"cookbook/91_tools/mcp/include_tools.py","line":26,"expected":true,
+      "relationship":{"source_kind":"capability","source_name":"filesystem","relation":"governed-by","target_kind":"control","target_name":"mcp-tool-filter","attributes":{"analysis":"python-agno-mcp-confirmation-default","policy_effect":"blocks-filesystem-mutation"}}
+    },
+    {
       "id":"python-google-adk-bigquery-audit-local",
       "target":{"kind":"local","path":"cases/python_google_adk_bigquery_audit"},
       "check_id":"IR-PY-GOOGLE-ADK-BIGQUERY-AUDIT","path":"app.py","line":13,"expected":true,

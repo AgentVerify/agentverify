@@ -531,6 +531,21 @@ def main() -> int:
             and item.attributes.get("analysis")
             == "typescript-openai-agents-mcp-approval-default"
         ]
+        python_agno_mcp_confirmation_servers = [
+            item
+            for item in ir.components
+            if item.kind == "mcp-server"
+            and item.attributes.get("analysis")
+            == "python-agno-mcp-confirmation-default"
+        ]
+        python_agno_mcp_confirmation_capabilities = [
+            item
+            for item in ir.components
+            if item.kind == "capability"
+            and item.name == "filesystem"
+            and item.attributes.get("analysis")
+            == "python-agno-mcp-confirmation-default"
+        ]
         approval_callback_bypass_tools = [
             item
             for item in ir.components
@@ -1217,6 +1232,43 @@ def main() -> int:
                     finding.rule_id == "AV-APPROVAL004" for finding in ir.findings
                 ),
             },
+            "python_agno_mcp_confirmation": {
+                "servers": len(python_agno_mcp_confirmation_servers),
+                "writable_servers": sum(
+                    item.attributes.get("write_access") is True
+                    for item in python_agno_mcp_confirmation_capabilities
+                ),
+                "read_only_filtered": sum(
+                    item.attributes.get("write_access") is False
+                    and item.attributes.get("tool_filter") == "read-only-static"
+                    for item in python_agno_mcp_confirmation_capabilities
+                ),
+                "fully_confirmed": sum(
+                    item.attributes.get("approval_policy")
+                    == "enabled-static-mutations"
+                    for item in python_agno_mcp_confirmation_capabilities
+                ),
+                "agent_server_edges": sum(
+                    edge.source_kind == "agent"
+                    and edge.relation == "uses"
+                    and edge.target_kind == "mcp-server"
+                    and edge.attributes.get("analysis")
+                    == "python-agno-mcp-confirmation-default"
+                    for edge in ir.relationships
+                ),
+                "configured_by_edges": sum(
+                    edge.source_kind == "mcp-server"
+                    and edge.relation == "configured-by"
+                    and edge.target_kind == "control-setting"
+                    and edge.target_name == "mcp-tool-confirmation"
+                    and edge.attributes.get("analysis")
+                    == "python-agno-mcp-confirmation-default"
+                    for edge in ir.relationships
+                ),
+                "findings": sum(
+                    finding.rule_id == "AV-APPROVAL005" for finding in ir.findings
+                ),
+            },
             "approval_callback_bypass": {
                 "tools": len(approval_callback_bypass_tools),
                 "python_tools": sum(
@@ -1664,7 +1716,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 66,
+        "schema_version": 67,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2006,6 +2058,21 @@ def main() -> int:
                     "servers",
                     "writable_servers",
                     "read_only_filtered",
+                    "agent_server_edges",
+                    "configured_by_edges",
+                    "findings",
+                )
+            },
+            "python_agno_mcp_confirmation": {
+                name: sum(
+                    result["python_agno_mcp_confirmation"][name]
+                    for result in successful
+                )
+                for name in (
+                    "servers",
+                    "writable_servers",
+                    "read_only_filtered",
+                    "fully_confirmed",
                     "agent_server_edges",
                     "configured_by_edges",
                     "findings",

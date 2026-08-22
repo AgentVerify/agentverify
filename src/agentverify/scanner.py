@@ -16434,6 +16434,560 @@ def add_typescript_openai_agents_mcp_approval_default_flow(
                     )
 
 
+AGNO_MCP_FILESYSTEM_MUTATING_TOOLS = frozenset(
+    {"create_directory", "edit_file", "move_file", "write_file"}
+)
+AGNO_MCP_FILESYSTEM_READ_ONLY_TOOLS = frozenset(
+    {
+        "directory_tree",
+        "get_file_info",
+        "list_allowed_directories",
+        "list_directory",
+        "list_directory_with_sizes",
+        "read_file",
+        "read_media_file",
+        "read_multiple_files",
+        "read_text_file",
+        "search_files",
+    }
+)
+
+
+def python_exact_import_name(
+    tree: ast.Module,
+    module: str,
+    exported: str,
+) -> str | None:
+    """Return one immutable module-level binding for an exact Python import."""
+    matches = [
+        alias.asname or alias.name
+        for statement in tree.body
+        if isinstance(statement, ast.ImportFrom) and statement.module == module
+        for alias in statement.names
+        if alias.name == exported
+    ]
+    if len(matches) != 1:
+        return None
+    binding = matches[0]
+    if any(
+        isinstance(node, ast.Name)
+        and isinstance(node.ctx, (ast.Store, ast.Del))
+        and node.id == binding
+        for node in ast.walk(tree)
+    ) or any(
+        isinstance(node, ast.arg) and node.arg == binding for node in ast.walk(tree)
+    ):
+        return None
+    return binding
+
+
+def python_scope_nodes(body: list[ast.stmt]) -> list[ast.AST]:
+    """Walk one lexical Python body without descending into nested definitions."""
+    nodes: list[ast.AST] = []
+
+    def visit(node: ast.AST) -> None:
+        nodes.append(node)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
+            return
+        for child in ast.iter_child_nodes(node):
+            visit(child)
+
+    for statement in body:
+        visit(statement)
+    return nodes
+
+
+def python_literal_string_list(node: ast.AST | None) -> list[str] | None:
+    """Return a list/tuple only when every element is a literal string."""
+    if not isinstance(node, (ast.List, ast.Tuple)):
+        return None
+    values = [
+        item.value
+        for item in node.elts
+        if isinstance(item, ast.Constant) and isinstance(item.value, str)
+    ]
+    return values if len(values) == len(node.elts) else None
+
+
+def python_call_keyword(call: ast.Call, name: str) -> ast.AST | None:
+    """Return one unambiguous named keyword value from a Python call."""
+    values = [keyword.value for keyword in call.keywords if keyword.arg == name]
+    return values[0] if len(values) == 1 else None
+
+
+def python_agno_filesystem_command(expression: ast.AST | None) -> str | None:
+    """Recognize an Agno full command for the official filesystem MCP package."""
+    if isinstance(expression, ast.Constant) and isinstance(expression.value, str):
+        try:
+            arguments = shlex.split(expression.value)
+        except ValueError:
+            return None
+        package = mcp_package_reference(arguments[0], arguments[1:]) if arguments else None
+        if package and package.get("package") == "@modelcontextprotocol/server-filesystem":
+            return expression.value
+        return None
+    if not isinstance(expression, ast.JoinedStr):
+        return None
+    structural = "".join(
+        value.value if isinstance(value, ast.Constant) and isinstance(value.value, str) else " <root> "
+        for value in expression.values
+    )
+    if re.search(
+        r"^\s*npx\s+(?:-y|--yes)\s+@modelcontextprotocol/server-filesystem(?:\s|$)",
+        structural,
+    ):
+        return ast.unparse(expression)
+    return None
+
+
+def add_python_agno_mcp_confirmation_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve Agno filesystem MCP exposure through its per-tool confirmation default."""
+    selected: dict[str, tuple[str, list[str], ast.Module]] = {}
+    for path in paths:
+        if path.suffix.lower() != ".py" or not path.is_file():
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+            tree = ast.parse(text)
+        except (OSError, SyntaxError, ValueError):
+            continue
+        selected[path.relative_to(root).as_posix()] = (text, text.splitlines(), tree)
+
+    sdk_path = "libs/agno/agno/tools/mcp/mcp.py"
+    if sdk_path not in selected:
+        return
+    sdk_source = selected[sdk_path][0]
+    if not all(
+        marker in sdk_source
+        for marker in (
+            'requires_confirmation_tools = kwargs.pop("requires_confirmation_tools", None)',
+            "self.requires_confirmation_tools = requires_confirmation_tools or []",
+            "if self.include_tools is None or tool.name in self.include_tools:",
+            "requires_confirmation=tool_name in self.requires_confirmation_tools",
+            "self.functions[f.name] = f",
+        )
+    ):
+        return
+
+    analysis = "python-agno-mcp-confirmation-default"
+    for relative, (text, lines, tree) in selected.items():
+        if relative == sdk_path or "server-filesystem" not in text:
+            continue
+        agent_constructor = python_exact_import_name(tree, "agno.agent", "Agent")
+        mcp_constructor = python_exact_import_name(tree, "agno.tools.mcp", "MCPTools")
+        if agent_constructor is None or mcp_constructor is None:
+            continue
+        stdio_parameters = python_exact_import_name(tree, "mcp", "StdioServerParameters")
+        client_session = python_exact_import_name(tree, "mcp", "ClientSession")
+        stdio_client_name = python_exact_import_name(
+            tree, "mcp.client.stdio", "stdio_client"
+        )
+
+        scopes: list[tuple[str, list[ast.stmt]]] = [("module", tree.body)]
+        scopes.extend(
+            (statement.name, statement.body)
+            for statement in tree.body
+            if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef))
+        )
+        for _scope_name, body in scopes:
+            nodes = python_scope_nodes(body)
+            store_counts = Counter(
+                node.id
+                for node in nodes
+                if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store)
+            )
+
+            server_parameters: list[tuple[str, ast.Call]] = []
+            if stdio_parameters is not None:
+                for node in nodes:
+                    if (
+                        isinstance(node, ast.Assign)
+                        and len(node.targets) == 1
+                        and isinstance(node.targets[0], ast.Name)
+                        and isinstance(node.value, ast.Call)
+                        and isinstance(node.value.func, ast.Name)
+                        and node.value.func.id == stdio_parameters
+                    ):
+                        command = python_call_keyword(node.value, "command")
+                        arguments = literal_string_arguments(
+                            python_call_keyword(node.value, "args")
+                        )
+                        package = (
+                            mcp_package_reference(command.value, arguments)
+                            if isinstance(command, ast.Constant)
+                            and isinstance(command.value, str)
+                            and arguments is not None
+                            else None
+                        )
+                        if (
+                            package
+                            and package.get("package")
+                            == "@modelcontextprotocol/server-filesystem"
+                            and store_counts[node.targets[0].id] == 1
+                        ):
+                            server_parameters.append((node.targets[0].id, node.value))
+
+            session_ranges: dict[str, list[tuple[int, int]]] = defaultdict(list)
+            if client_session is not None and stdio_client_name is not None:
+                stdio_parameter_names = {name for name, _call in server_parameters}
+                for stdio_with in nodes:
+                    if not isinstance(stdio_with, ast.AsyncWith):
+                        continue
+                    for stdio_item in stdio_with.items:
+                        stdio_call = stdio_item.context_expr
+                        channels = stdio_item.optional_vars
+                        if not (
+                            isinstance(stdio_call, ast.Call)
+                            and isinstance(stdio_call.func, ast.Name)
+                            and stdio_call.func.id == stdio_client_name
+                            and len(stdio_call.args) == 1
+                            and isinstance(stdio_call.args[0], ast.Name)
+                            and stdio_call.args[0].id in stdio_parameter_names
+                            and isinstance(channels, (ast.Tuple, ast.List))
+                            and len(channels.elts) == 2
+                            and all(isinstance(item, ast.Name) for item in channels.elts)
+                        ):
+                            continue
+                        channel_names = [
+                            item.id for item in channels.elts if isinstance(item, ast.Name)
+                        ]
+                        for session_with in python_scope_nodes(stdio_with.body):
+                            if not isinstance(session_with, ast.AsyncWith):
+                                continue
+                            for session_item in session_with.items:
+                                session_call = session_item.context_expr
+                                session_target = session_item.optional_vars
+                                if not (
+                                    isinstance(session_call, ast.Call)
+                                    and isinstance(session_call.func, ast.Name)
+                                    and session_call.func.id == client_session
+                                    and len(session_call.args) == 2
+                                    and [
+                                        argument.id
+                                        for argument in session_call.args
+                                        if isinstance(argument, ast.Name)
+                                    ]
+                                    == channel_names
+                                    and isinstance(session_target, ast.Name)
+                                    and store_counts[session_target.id] == 1
+                                ):
+                                    continue
+                                session_ranges[session_target.id].append(
+                                    (
+                                        session_with.lineno,
+                                        getattr(
+                                            session_with,
+                                            "end_lineno",
+                                            session_with.lineno,
+                                        ),
+                                    )
+                                )
+
+            mcp_candidates: list[tuple[str, ast.Call, ast.Call]] = []
+            for node in nodes:
+                binding: str | None = None
+                call: ast.Call | None = None
+                if (
+                    isinstance(node, ast.Assign)
+                    and len(node.targets) == 1
+                    and isinstance(node.targets[0], ast.Name)
+                    and isinstance(node.value, ast.Call)
+                ):
+                    binding = node.targets[0].id
+                    call = node.value
+                elif isinstance(node, ast.AsyncWith):
+                    for item in node.items:
+                        if isinstance(item.optional_vars, ast.Name) and isinstance(
+                            item.context_expr, ast.Call
+                        ):
+                            binding = item.optional_vars.id
+                            call = item.context_expr
+                            if (
+                                isinstance(call.func, ast.Name)
+                                and call.func.id == mcp_constructor
+                            ):
+                                break
+                            binding = None
+                            call = None
+                if (
+                    binding is None
+                    or call is None
+                    or not isinstance(call.func, ast.Name)
+                    or call.func.id != mcp_constructor
+                    or store_counts[binding] != 1
+                ):
+                    continue
+                command_expression = (
+                    call.args[0]
+                    if call.args
+                    else python_call_keyword(call, "command")
+                )
+                direct_command = python_agno_filesystem_command(command_expression)
+                session_expression = python_call_keyword(call, "session")
+                session_proven = (
+                    isinstance(session_expression, ast.Name)
+                    and any(
+                        start <= call.lineno <= end
+                        for start, end in session_ranges.get(session_expression.id, [])
+                    )
+                    and len(server_parameters) == 1
+                )
+                if direct_command is not None or session_proven:
+                    evidence_call = call if direct_command is not None else server_parameters[0][1]
+                    mcp_candidates.append((binding, call, evidence_call))
+
+            for mcp_binding, mcp_call, evidence_call in mcp_candidates:
+                include_expression = python_call_keyword(mcp_call, "include_tools")
+                include_tools = (
+                    python_literal_string_list(include_expression)
+                    if include_expression is not None
+                    else None
+                )
+                filter_proven = bool(include_tools) and set(include_tools or []) <= (
+                    AGNO_MCP_FILESYSTEM_READ_ONLY_TOOLS
+                )
+                available_mutations = (
+                    set()
+                    if filter_proven
+                    else set(AGNO_MCP_FILESYSTEM_MUTATING_TOOLS)
+                    if include_tools is None
+                    else set(include_tools) & set(AGNO_MCP_FILESYSTEM_MUTATING_TOOLS)
+                )
+                confirmation_expression = python_call_keyword(
+                    mcp_call, "requires_confirmation_tools"
+                )
+                confirmation_tools = (
+                    python_literal_string_list(confirmation_expression)
+                    if confirmation_expression is not None
+                    else None
+                )
+                if confirmation_expression is None:
+                    approval_policy = "disabled-default"
+                    setting_enabled: bool | None = False
+                    protected_mutations: set[str] = set()
+                elif confirmation_tools is None:
+                    approval_policy = "unresolved-explicit"
+                    setting_enabled = None
+                    protected_mutations = set()
+                else:
+                    protected_mutations = available_mutations & set(confirmation_tools)
+                    if not confirmation_tools:
+                        approval_policy = "disabled-explicit"
+                        setting_enabled = False
+                    elif available_mutations <= protected_mutations:
+                        approval_policy = "enabled-static-mutations"
+                        setting_enabled = True
+                    else:
+                        approval_policy = "partial-static"
+                        setting_enabled = True
+                unprotected_mutations = sorted(available_mutations - protected_mutations)
+
+                agent_calls: list[tuple[str, ast.Call]] = []
+                for node in nodes:
+                    if not (
+                        isinstance(node, ast.Call)
+                        and isinstance(node.func, ast.Name)
+                        and node.func.id == agent_constructor
+                        and node.lineno >= mcp_call.lineno
+                    ):
+                        continue
+                    tools_expression = python_call_keyword(node, "tools")
+                    if not isinstance(tools_expression, (ast.List, ast.Tuple)) or not any(
+                        isinstance(item, ast.Name) and item.id == mcp_binding
+                        for item in tools_expression.elts
+                    ):
+                        continue
+                    binding = f"Agent@{node.lineno}"
+                    for assignment in nodes:
+                        if (
+                            isinstance(assignment, ast.Assign)
+                            and assignment.value is node
+                            and len(assignment.targets) == 1
+                            and isinstance(assignment.targets[0], ast.Name)
+                            and store_counts[assignment.targets[0].id] == 1
+                        ):
+                            binding = assignment.targets[0].id
+                    agent_calls.append((binding, node))
+                if not agent_calls:
+                    continue
+
+                server_line = evidence_call.lineno
+                server_evidence = Evidence(
+                    relative, server_line, excerpt(lines, server_line)
+                )
+                server_name = f"Agno filesystem@{server_line}"
+                server_id = source_symbol("py", relative, "mcp-server", mcp_binding)
+                server_attributes = {
+                    "transport": "stdio",
+                    "framework": "Agno",
+                    "constructor": "MCPTools",
+                    "package": "@modelcontextprotocol/server-filesystem",
+                    "capability": "filesystem",
+                    "tool_filter": "read-only-static" if filter_proven else "absent-or-unresolved",
+                    "approval_policy": approval_policy,
+                    "approval_source": "agno-requires-confirmation-tools",
+                    "scope": source_scope(relative),
+                    "analysis": analysis,
+                }
+                ir.add_component(
+                    Component(
+                        "mcp-server",
+                        server_name,
+                        server_evidence,
+                        server_attributes,
+                        server_id,
+                    )
+                )
+                capability_attributes = {
+                    "write_access": bool(available_mutations),
+                    "package": "@modelcontextprotocol/server-filesystem",
+                    "tool_filter": server_attributes["tool_filter"],
+                    "approval_policy": approval_policy,
+                    "unprotected_mutations": unprotected_mutations,
+                    "scope": source_scope(relative),
+                    "analysis": analysis,
+                }
+                ir.add_component(
+                    Component("capability", "filesystem", server_evidence, capability_attributes)
+                )
+                ir.add_relationship(
+                    Relationship(
+                        "mcp-server",
+                        server_name,
+                        "uses",
+                        "capability",
+                        "filesystem",
+                        server_evidence,
+                        capability_attributes,
+                        source_id=server_id,
+                    )
+                )
+                setting_attributes = {
+                    "enabled": setting_enabled,
+                    "approval_policy": approval_policy,
+                    "approval_source": "agno-requires-confirmation-tools",
+                    "protected_mutations": sorted(protected_mutations),
+                    "unprotected_mutations": unprotected_mutations,
+                    "sdk_source_path": sdk_path,
+                    "scope": source_scope(relative),
+                    "analysis": analysis,
+                }
+                ir.add_component(
+                    Component(
+                        "control-setting",
+                        "mcp-tool-confirmation",
+                        server_evidence,
+                        setting_attributes,
+                    )
+                )
+                ir.add_relationship(
+                    Relationship(
+                        "mcp-server",
+                        server_name,
+                        "configured-by",
+                        "control-setting",
+                        "mcp-tool-confirmation",
+                        server_evidence,
+                        setting_attributes,
+                        source_id=server_id,
+                    )
+                )
+                if filter_proven:
+                    control_attributes = {
+                        "policy_effect": "blocks-filesystem-mutation",
+                        "allowed_tools": include_tools,
+                        "scope": source_scope(relative),
+                        "analysis": analysis,
+                    }
+                    ir.add_component(
+                        Component("control", "mcp-tool-filter", server_evidence, control_attributes)
+                    )
+                    ir.add_relationship(
+                        Relationship(
+                            "capability",
+                            "filesystem",
+                            "governed-by",
+                            "control",
+                            "mcp-tool-filter",
+                            server_evidence,
+                            control_attributes,
+                        )
+                    )
+                elif available_mutations and not unprotected_mutations:
+                    control_attributes = {
+                        "policy_effect": "requires-confirmation-for-filesystem-mutation",
+                        "protected_mutations": sorted(protected_mutations),
+                        "scope": source_scope(relative),
+                        "analysis": analysis,
+                    }
+                    ir.add_component(
+                        Component("control", "human-approval", server_evidence, control_attributes)
+                    )
+                    ir.add_relationship(
+                        Relationship(
+                            "capability",
+                            "filesystem",
+                            "governed-by",
+                            "control",
+                            "human-approval",
+                            server_evidence,
+                            control_attributes,
+                        )
+                    )
+
+                for agent_binding, agent_call in agent_calls:
+                    agent_name_expression = python_call_keyword(agent_call, "name")
+                    agent_name = (
+                        agent_name_expression.value
+                        if isinstance(agent_name_expression, ast.Constant)
+                        and isinstance(agent_name_expression.value, str)
+                        else agent_binding
+                    )
+                    agent_evidence = Evidence(
+                        relative,
+                        agent_call.lineno,
+                        excerpt(lines, agent_call.lineno),
+                    )
+                    agent_id = source_symbol("py", relative, "agent", agent_binding)
+                    ir.add_component(
+                        Component(
+                            "agent",
+                            agent_name,
+                            agent_evidence,
+                            {
+                                "constructor": "Agent",
+                                "framework": "Agno",
+                                "scope": source_scope(relative),
+                                "analysis": analysis,
+                            },
+                            agent_id,
+                        )
+                    )
+                    ir.add_relationship(
+                        Relationship(
+                            "agent",
+                            agent_name,
+                            "uses",
+                            "mcp-server",
+                            server_name,
+                            agent_evidence,
+                            {
+                                "approval_policy": approval_policy,
+                                "write_access": bool(available_mutations),
+                                "analysis": analysis,
+                            },
+                            source_id=agent_id,
+                            target_id=server_id,
+                        )
+                    )
+
+
 def add_python_google_adk_bigquery_audit_flow(
     ir: RepositoryIR,
     root: Path,
@@ -17783,6 +18337,7 @@ def scan_repository(
     add_typescript_google_adk_openapi_rest_tool_flow(ir, root, registry_paths)
     add_typescript_a2a_card_endpoint_composition(ir, root, registry_paths)
     add_typescript_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)
+    add_python_agno_mcp_confirmation_flow(ir, root, registry_paths)
     add_python_adk_a2a_card_endpoint_policy(ir, root, registry_paths)
     add_python_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)
     add_python_google_adk_bigquery_audit_flow(ir, root, registry_paths)

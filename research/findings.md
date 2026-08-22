@@ -114,14 +114,14 @@ that resolves `get_tool(name)`, rejects a missing tool, and only then executes. 
 retained as a required edge argument. This becomes the second `tool-registry` edge. A default-tool
 fallback remains unresolved, demonstrating why semantic names are not enforcement evidence.
 
-The collector's bounded dependency closure and audited evidence hints add 171 local source files
-across 19 repositories. It
+The collector's bounded dependency closure and audited evidence hints add 174 local source files
+across 20 repositories. It
 exposes the MCP Python SDK's `ToolManager` reexport and implementation: `MCPServer` binds one imported
 manager in its constructor, and that manager resolves `get_tool(name)` and rejects a miss before
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the 432-label truth set.
+rule observations are pinned in the 441-label truth set.
 
 MCP configuration is also executable dependency configuration. Schema v65 resolves 50 literal
 `npx`/`uvx` package launchers in the bounded corpus: 45 unpinned, three floating, and two exact,
@@ -172,6 +172,15 @@ server is unbound and remains inventory; the static-filter example exposes only 
 `list_directory`, records `mcp-tool-filter`, and remains negative. The corpus therefore contains five
 resolved servers, four writable capabilities, four Agent bindings, one read-only filter, and three
 reviews.
+
+Schema v67 adds the Agno confirmation-list counterpart. The selected SDK source proves that omitted
+`requires_confirmation_tools` becomes an empty list and that exact name membership controls each
+discovered MCP function's confirmation flag. Two pinned filesystem examples reach an Agent with the
+known write surface intact and raise `AV-APPROVAL005`; a third limits `include_tools` to known
+read-only operations and remains negative. The engine records three servers, two writable
+capabilities, three Agent bindings, three confirmation settings, one read-only filter, and two
+reviews. Complete static mutation coverage is represented as human approval, partial coverage
+remains reviewable, and a dynamic policy is unresolved rather than assumed safe or unsafe.
 
 ## 4. Provider identity is a governance dependency
 

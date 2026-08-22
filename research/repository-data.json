@@ -1,6 +1,6 @@
 {
   "schema_version": 4,
-  "generated_at": "2026-08-22T03:58:41.481499+00:00",
+  "generated_at": "2026-08-22T04:21:39.471054+00:00",
   "method": {
     "collector": "scripts/collect_repositories.py",
     "max_files_per_repository": 220,
@@ -9,7 +9,7 @@
     "lock_file": "research/repository-data.json",
     "locked_repositories": 71,
     "selection_hints_file": "research/repository-selection-hints.json",
-    "hinted_repositories": 11,
+    "hinted_repositories": 12,
     "selection": "manifests, then explicit SSRF/URL-safety and general security/agent/tool/MCP-related sources, then shallow paths; plus audited evidence paths and a bounded local Python import closure for MCP forwarding and URL-security helper call sites"
   },
   "repositories": [
@@ -1028,9 +1028,9 @@
       "status": "ok",
       "commit": "955931ab6e2c5e19cca29ddd45f27a1c8b74be1c",
       "files_in_tree": 5260,
-      "files_scanned": 220,
-      "dependency_files_materialized": 0,
-      "bytes_scanned": 585402,
+      "files_scanned": 223,
+      "dependency_files_materialized": 3,
+      "bytes_scanned": 626581,
       "languages": [
         "Python",
         "TypeScript",
@@ -1207,6 +1207,12 @@
               "path": "cookbook/91_tools/sofya_tools.py",
               "line": 54,
               "excerpt": "\"Extract the main content from https://modelcontextprotocol.io/introduction\",",
+              "pattern": "modelcontextprotocol"
+            },
+            {
+              "path": "cookbook/91_tools/mcp/filesystem.py",
+              "line": 38,
+              "excerpt": "f\"npx -y @modelcontextprotocol/server-filesystem {file_path}\"",
               "pattern": "modelcontextprotocol"
             }
           ],

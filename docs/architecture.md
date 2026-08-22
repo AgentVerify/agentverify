@@ -310,6 +310,16 @@ filter is treated as read-only only when its literal allowlist contains exclusiv
 filesystem tools; dynamic filters, writable entries, rebinding, and unbound servers do not satisfy
 that counterproof.
 
+The Agno Python pass proves a parallel confirmation policy without conflating the two SDKs. It
+verifies the pinned `MCPTools` implementation that defaults `requires_confirmation_tools` to an empty
+list and copies exact name membership into every discovered function's `requires_confirmation`
+field. Exact `agno.agent.Agent` and `agno.tools.mcp.MCPTools` imports connect either a direct
+filesystem command or an exactly nested `StdioServerParameters` → `stdio_client` → `ClientSession`
+composition to the Agent. Static confirmation lists must cover all known mutating filesystem tools;
+partial lists remain reviewable, complete lists add a human-approval control, and dynamic policies
+remain unresolved. A literal `include_tools` list containing only known read-only tools adds an
+`mcp-tool-filter` counterproof and suppresses the destructive capability claim.
+
 A repository prepass builds bounded Python network summaries for unique top-level free functions in
 selected files. A summary records direct recognized HTTP calls and the formal parameters that can
 control their origins after fixed-prefix discrimination. At a tool call site, only an exact named

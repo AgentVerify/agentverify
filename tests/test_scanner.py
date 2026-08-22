@@ -2723,6 +2723,126 @@ def test_openai_agents_typescript_writable_mcp_tools_inherit_disabled_approval_d
     )
 
 
+def test_agno_filesystem_mcp_confirmation_policy_is_resolved_per_mutating_tool(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/python_agno_mcp_confirmation"
+    ir = scan_repository(root)
+    findings = [finding for finding in ir.findings if finding.rule_id == "AV-APPROVAL005"]
+    assert [
+        (finding.evidence.path, finding.evidence.line, finding.ir_path)
+        for finding in findings
+    ] == [
+        (
+            "direct.py",
+            6,
+            (
+                "agent:Default Writer",
+                "mcp-server:Agno filesystem@6",
+                "capability:filesystem",
+            ),
+        ),
+        (
+            "partial.py",
+            6,
+            (
+                "agent:Partially Confirmed Writer",
+                "mcp-server:Agno filesystem@6",
+                "capability:filesystem",
+            ),
+        ),
+        (
+            "session.py",
+            8,
+            (
+                "agent:Session Writer",
+                "mcp-server:Agno filesystem@8",
+                "capability:filesystem",
+            ),
+        ),
+    ]
+    assert all(finding.result_kind == "review" for finding in findings)
+    assert all(
+        finding.analysis["control_settings"] == ["mcp-tool-confirmation"]
+        for finding in findings
+    )
+
+    read_only = next(
+        component
+        for component in ir.components
+        if component.kind == "capability"
+        and component.evidence.path == "read_only.py"
+        and component.attributes.get("analysis")
+        == "python-agno-mcp-confirmation-default"
+    )
+    assert read_only.attributes["write_access"] is False
+    assert read_only.attributes["unprotected_mutations"] == []
+    assert any(
+        edge.source_kind == "capability"
+        and edge.relation == "governed-by"
+        and edge.target_kind == "control"
+        and edge.target_name == "mcp-tool-filter"
+        and edge.evidence.path == "read_only.py"
+        for edge in ir.relationships
+    )
+
+    confirmed = next(
+        component
+        for component in ir.components
+        if component.kind == "capability"
+        and component.evidence.path == "confirmed.py"
+        and component.attributes.get("analysis")
+        == "python-agno-mcp-confirmation-default"
+    )
+    assert confirmed.attributes["approval_policy"] == "enabled-static-mutations"
+    assert confirmed.attributes["unprotected_mutations"] == []
+    assert any(
+        edge.source_kind == "capability"
+        and edge.relation == "governed-by"
+        and edge.target_kind == "control"
+        and edge.target_name == "human-approval"
+        and edge.evidence.path == "confirmed.py"
+        for edge in ir.relationships
+    )
+    assert not any(
+        finding.evidence.path
+        in {
+            "confirmed.py",
+            "disconnected_session.py",
+            "dynamic_policy.py",
+            "read_only.py",
+            "unbound.py",
+            "wrong_import.py",
+        }
+        for finding in findings
+    )
+    assert not any(
+        component.attributes.get("analysis") == "python-agno-mcp-confirmation-default"
+        and component.evidence.path
+        in {"disconnected_session.py", "unbound.py", "wrong_import.py"}
+        for component in ir.components
+    )
+
+    changed_sdk = tmp_path / "changed-sdk-default"
+    shutil.copytree(root, changed_sdk)
+    sdk_path = changed_sdk / "libs/agno/agno/tools/mcp/mcp.py"
+    sdk_source = sdk_path.read_text(encoding="utf-8")
+    before = "self.requires_confirmation_tools = requires_confirmation_tools or []"
+    assert before in sdk_source
+    sdk_path.write_text(
+        sdk_source.replace(
+            before,
+            'self.requires_confirmation_tools = requires_confirmation_tools or ["write_file"]',
+        ),
+        encoding="utf-8",
+    )
+    changed_ir = scan_repository(changed_sdk)
+    assert not any(
+        edge.attributes.get("analysis") == "python-agno-mcp-confirmation-default"
+        for edge in changed_ir.relationships
+    )
+
+
 def test_typescript_a2a_remote_cards_preserve_endpoint_authority_and_transport(
     tmp_path: Path,
 ) -> None:
