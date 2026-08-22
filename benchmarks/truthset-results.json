@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T15:01:38.804466+00:00",
-  "labels": 572,
-  "passed": 572,
+  "generated_at": "2026-08-22T15:36:27.320994+00:00",
+  "labels": 579,
+  "passed": 579,
   "metrics": {
     "AV-A2A001": {
       "tp": 4,
@@ -71,7 +71,7 @@
     "AV-EXEC002": {
       "tp": 38,
       "fp": 0,
-      "tn": 54,
+      "tn": 61,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -5299,6 +5299,69 @@
     },
     {
       "id": "exec-code-browser-contextmanager-skyvern-745-real-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-same-class-helper-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-same-class-mixed-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-same-class-mutable-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-same-class-invalid-literal-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-same-class-escaped-local-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-same-class-metagpt-69-real-negative",
+      "rule_id": "AV-EXEC002",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-browser-same-class-metagpt-71-real-negative",
       "rule_id": "AV-EXEC002",
       "expected": false,
       "observed": false,

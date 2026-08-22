@@ -487,8 +487,9 @@ emitted only when its receiver is an exact imported Playwright `Page`/`Locator`/
 one immutable alias of such a parameter, an exactly typed `self` attribute in the enclosing class,
 an immutable constructor-bound Playwright page field or its direct local alias, an exact built-in
 property with a Playwright return annotation, a straight-line locally constructed Playwright page,
-one uniquely annotated module-level Playwright receiver, or the first result of Skyvern's exact
-imported `get_page` factory. Module annotations require one binding and no top-level rebound or
+one uniquely annotated module-level Playwright receiver, a parameter of a private same-class helper
+whose selected-module call sites unanimously pass a locally proven Playwright browser, or the first
+result of Skyvern's exact imported `get_page` factory. Module annotations require one binding and no top-level rebound or
 duplicate annotation; function parameters and local bindings shadow them. Playwright imports in a
 top-level `try` are accepted only when every handler terminates, including an exact `sys.exit(...)`
 path through one uniquely bound `sys` import. Class attributes may use one
@@ -513,10 +514,17 @@ branches, rebinding, and shadowed factories are withheld. A unique local
 with one unconditional page yield. Its caller must use the helper directly in a top-level
 `async with` and bind one immutable name; multiple or conditional yields, exception handlers, nested
 control flow, unknown yielded objects, decorator/helper rebinding, and target reassignment are
-withheld. Property proof requires the built-in
+withheld. A local runtime may select `.chromium`, `.firefox`, or `.webkit` through built-in
+`getattr(...)` only when the `self` selector field has one immutable class-level annotation using an
+exact `typing.Literal` import, every literal is one of those three names, and its default is valid.
+The resulting browser may flow into one uniquely defined, private, undecorated instance helper only
+when every selected-module call is a direct same-class call or an immutable bound-method alias and
+the same parameter always receives a proven local browser. Mixed or unknown arguments, other-class
+attribute calls, escaped or rebound aliases, external helper definitions, and parameter reassignment
+withhold the proof. Property proof requires the built-in
 decorator, one getter definition, and an exact imported Playwright return type. Inherited fields, ambiguous
 wrapper-returned locators, sanitizer
-proofs, imported/transitive script builders, general helper-parameter/return provenance, and unsupported
+proofs, imported/transitive script builders, helper-return or non-unanimous helper-parameter provenance, and unsupported
 browser evaluator APIs remain unresolved.
 
 For TypeScript filesystem writes, a relative import can prove a `path-boundary` control only through

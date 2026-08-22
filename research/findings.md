@@ -80,8 +80,12 @@ Schema v92 proves four more fixed-script Skyvern test receivers through two uniq
 `@contextlib.asynccontextmanager` helpers. Each helper has one exact Playwright
 runtime→browser→context→page chain and one unconditional page yield, and each caller binds the
 helper directly with an immutable `async with` target. Current coverage is 48 proven of 93 and 45
-unresolved. Branch-dependent or ordinary-object yields, reassigned targets, helper parameters, and
-mutable lifecycle fields remain unresolved; production findings are unchanged.
+unresolved. Schema v93 resolves MetaGPT's exact `Literal`-bounded
+`getattr(playwright_runtime, self.browser_type)` selection and requires unanimous private
+same-class helper call sites, including one immutable bound-method alias. This proves two
+fixed-script production evaluators, bringing coverage to 50 proven of 93 and 43 unresolved. Mixed
+calls, mutable or escaped aliases, invalid literal selectors, external calls, and mutable lifecycle
+fields remain unresolved; production findings are unchanged.
 The constructor proof requires one exact imported Playwright runtime factory and a
 straight-line, single-mutation `__init__` chain through browser/context creation. Conflicting types,
 near/rebound imports, static methods, conditional or later field assignments, and shadowed factories
@@ -146,7 +150,7 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the consolidated 572-label truth set.
+rule observations are pinned in the consolidated 579-label truth set.
 
 MCP configuration is also executable dependency configuration. Schema v65 resolves 50 literal
 `npx`/`uvx` package launchers in the bounded corpus: 45 unpinned, three floating, and two exact,

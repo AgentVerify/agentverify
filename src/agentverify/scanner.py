@@ -1478,6 +1478,519 @@ def python_browser_contextmanager_page_factories(
     return factories
 
 
+def python_function_owned_nodes(
+    function: ast.FunctionDef | ast.AsyncFunctionDef,
+) -> tuple[list[ast.AST], dict[int, ast.AST]]:
+    """Return nodes whose nearest function scope is ``function``."""
+    parents = {
+        id(child): parent
+        for parent in ast.walk(function)
+        for child in ast.iter_child_nodes(parent)
+    }
+    owned: list[ast.AST] = []
+    for candidate in ast.walk(function):
+        parent = parents.get(id(candidate))
+        while parent is not None and not isinstance(
+            parent,
+            (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda),
+        ):
+            parent = parents.get(id(parent))
+        if parent is function:
+            owned.append(candidate)
+    return owned, parents
+
+
+def python_browser_literal_selector_attributes(
+    node: ast.ClassDef,
+    literal_type_names: set[str],
+) -> set[str]:
+    """Resolve immutable class fields restricted to Playwright browser names."""
+    allowed_values = {"chromium", "firefox", "webkit"}
+    candidates: dict[str, list[ast.AnnAssign]] = defaultdict(list)
+    direct_bindings: Counter[str] = Counter()
+    for statement in node.body:
+        targets: list[ast.AST] = []
+        if isinstance(statement, ast.Assign):
+            targets.extend(statement.targets)
+        elif isinstance(statement, ast.AnnAssign):
+            targets.append(statement.target)
+        for target in targets:
+            direct_bindings.update(python_assigned_names(target))
+        if not (
+            isinstance(statement, ast.AnnAssign)
+            and isinstance(statement.target, ast.Name)
+            and isinstance(statement.annotation, ast.Subscript)
+            and dotted_name(statement.annotation.value) in literal_type_names
+        ):
+            continue
+        candidates[statement.target.id].append(statement)
+
+    instance_mutations: Counter[str] = Counter()
+    for method in node.body:
+        if not isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        owned, _parents = python_function_owned_nodes(method)
+        instance_mutations.update(
+            candidate.attr
+            for candidate in owned
+            if isinstance(candidate, ast.Attribute)
+            and isinstance(candidate.value, ast.Name)
+            and candidate.value.id == "self"
+            and isinstance(candidate.ctx, (ast.Store, ast.Del))
+        )
+
+    resolved: set[str] = set()
+    for name, declarations in candidates.items():
+        if (
+            len(declarations) != 1
+            or direct_bindings[name] != 1
+            or instance_mutations[name]
+        ):
+            continue
+        declaration = declarations[0]
+        elements = (
+            declaration.annotation.slice.elts
+            if isinstance(declaration.annotation.slice, ast.Tuple)
+            else [declaration.annotation.slice]
+        )
+        values = {
+            element.value
+            for element in elements
+            if isinstance(element, ast.Constant)
+            and isinstance(element.value, str)
+        }
+        if (
+            len(values) != len(elements)
+            or not values
+            or not values <= allowed_values
+            or not isinstance(declaration.value, ast.Constant)
+            or declaration.value.value not in values
+        ):
+            continue
+        resolved.add(name)
+    return resolved
+
+
+def python_function_playwright_binding_kinds(
+    function: ast.FunctionDef | ast.AsyncFunctionDef,
+    browser_runtime_factories: set[str],
+    browser_selector_attributes: set[str],
+    *,
+    builtin_getattr_available: bool,
+) -> dict[str, tuple[str, int]]:
+    """Resolve immutable local Playwright runtime and browser bindings."""
+    owned, parents = python_function_owned_nodes(function)
+    mutation_counts: Counter[str] = Counter(
+        argument.arg
+        for argument in (
+            *function.args.posonlyargs,
+            *function.args.args,
+            *function.args.kwonlyargs,
+        )
+    )
+    if function.args.vararg:
+        mutation_counts[function.args.vararg.arg] += 1
+    if function.args.kwarg:
+        mutation_counts[function.args.kwarg.arg] += 1
+    mutation_counts.update(
+        candidate.id
+        for candidate in owned
+        if isinstance(candidate, ast.Name)
+        and isinstance(candidate.ctx, (ast.Store, ast.Del))
+    )
+    for candidate in owned:
+        if isinstance(candidate, (ast.Import, ast.ImportFrom)):
+            mutation_counts.update(
+                alias.asname or alias.name.split(".", 1)[0]
+                for alias in candidate.names
+            )
+        elif isinstance(
+            candidate,
+            (ast.ExceptHandler, ast.MatchAs, ast.MatchStar),
+        ) and candidate.name:
+            mutation_counts[candidate.name] += 1
+        elif isinstance(candidate, ast.MatchMapping) and candidate.rest:
+            mutation_counts[candidate.rest] += 1
+
+    browser_runtime_factories = {
+        factory
+        for factory in browser_runtime_factories
+        if mutation_counts[factory.split(".", 1)[0]] == 0
+    }
+    bindings: dict[str, str] = {}
+    binding_lines: dict[str, int] = {}
+    binding_scopes: dict[str, ast.With | ast.AsyncWith] = {}
+    for candidate in owned:
+        if (
+            not isinstance(candidate, (ast.With, ast.AsyncWith))
+            or parents.get(id(candidate)) is not function
+        ):
+            continue
+        for item in candidate.items:
+            if not (
+                isinstance(item.optional_vars, ast.Name)
+                and mutation_counts[item.optional_vars.id] == 1
+                and isinstance(item.context_expr, ast.Call)
+                and dotted_name(item.context_expr.func)
+                in browser_runtime_factories
+                and not item.context_expr.args
+                and not item.context_expr.keywords
+            ):
+                continue
+            bindings[item.optional_vars.id] = "local-playwright-runtime"
+            binding_lines[item.optional_vars.id] = candidate.lineno
+            binding_scopes[item.optional_vars.id] = candidate
+
+    def resolve(
+        expression: ast.AST,
+        line: int,
+        scope: ast.With | ast.AsyncWith,
+    ) -> str | None:
+        if isinstance(expression, ast.Await):
+            expression = expression.value
+        if isinstance(expression, ast.Name):
+            if (
+                binding_lines.get(expression.id, line) < line
+                and binding_scopes.get(expression.id) is scope
+            ):
+                return bindings.get(expression.id)
+            return None
+        if not isinstance(expression, ast.Call):
+            return None
+        if (
+            builtin_getattr_available
+            and mutation_counts["getattr"] == 0
+            and isinstance(expression.func, ast.Name)
+            and expression.func.id == "getattr"
+            and len(expression.args) == 2
+            and not expression.keywords
+            and resolve(expression.args[0], line, scope)
+            == "local-playwright-runtime"
+            and isinstance(expression.args[1], ast.Attribute)
+            and isinstance(expression.args[1].value, ast.Name)
+            and expression.args[1].value.id == "self"
+            and expression.args[1].attr in browser_selector_attributes
+        ):
+            return "local-playwright-browser-type"
+        if not isinstance(expression.func, ast.Attribute):
+            return None
+        receiver = expression.func.value
+        receiver_kind = resolve(receiver, line, scope)
+        if (
+            expression.func.attr == "launch"
+            and not isinstance(receiver, ast.Attribute)
+            and receiver_kind == "local-playwright-browser-type"
+        ):
+            return "local-playwright-browser"
+        if (
+            expression.func.attr == "launch"
+            and isinstance(receiver, ast.Attribute)
+            and receiver.attr in {"chromium", "firefox", "webkit"}
+            and resolve(receiver.value, line, scope) == "local-playwright-runtime"
+        ):
+            return "local-playwright-browser"
+        if (
+            expression.func.attr == "new_context"
+            and receiver_kind == "local-playwright-browser"
+        ):
+            return "local-playwright-context"
+        if expression.func.attr == "new_page" and receiver_kind in {
+            "local-playwright-browser",
+            "local-playwright-context",
+        }:
+            return "local-playwright-page"
+        return None
+
+    for assignment in sorted(
+        (candidate for candidate in owned if isinstance(candidate, ast.Assign)),
+        key=lambda candidate: candidate.lineno,
+    ):
+        if not (
+            len(assignment.targets) == 1
+            and isinstance(assignment.targets[0], ast.Name)
+            and mutation_counts[assignment.targets[0].id] == 1
+            and isinstance(
+                scope := parents.get(id(assignment)),
+                (ast.With, ast.AsyncWith),
+            )
+            and parents.get(id(scope)) is function
+        ):
+            continue
+        target = assignment.targets[0].id
+        if kind := resolve(assignment.value, assignment.lineno, scope):
+            bindings[target] = kind
+            binding_lines[target] = assignment.lineno
+            binding_scopes[target] = scope
+    return {
+        name: (kind, binding_lines[name])
+        for name, kind in bindings.items()
+    }
+
+
+def python_same_class_browser_parameter_proofs(
+    tree: ast.Module,
+    module_mutation_counts: Counter[str],
+    *,
+    builtin_getattr_available: bool,
+) -> dict[int, dict[str, str]]:
+    """Resolve private helper parameters from unanimous exact Playwright call sites."""
+    literal_imports: Counter[str] = Counter()
+    runtime_imports: Counter[str] = Counter()
+    for statement in tree.body:
+        if isinstance(statement, ast.ImportFrom):
+            if statement.module == "typing":
+                literal_imports.update(
+                    alias.asname or alias.name
+                    for alias in statement.names
+                    if alias.name == "Literal"
+                )
+            if statement.module in {
+                "playwright.async_api",
+                "playwright.sync_api",
+            }:
+                runtime_imports.update(
+                    alias.asname or alias.name
+                    for alias in statement.names
+                    if alias.name in {"async_playwright", "sync_playwright"}
+                )
+        elif isinstance(statement, ast.Import):
+            literal_imports.update(
+                f"{alias.asname or alias.name}.Literal"
+                for alias in statement.names
+                if alias.name == "typing"
+            )
+            for alias in statement.names:
+                if alias.name not in {
+                    "playwright.async_api",
+                    "playwright.sync_api",
+                }:
+                    continue
+                prefix = alias.asname or alias.name
+                runtime_imports.update(
+                    {
+                        f"{prefix}.async_playwright",
+                        f"{prefix}.sync_playwright",
+                    }
+                )
+    literal_type_names = {
+        name
+        for name, count in literal_imports.items()
+        if count == 1
+        and module_mutation_counts[name.split(".", 1)[0]] == 0
+    }
+    browser_runtime_factories = {
+        name
+        for name, count in runtime_imports.items()
+        if count == 1
+        and module_mutation_counts[name.split(".", 1)[0]] == 0
+    }
+    if not literal_type_names or not browser_runtime_factories:
+        return {}
+
+    module_parents = {
+        id(child): parent
+        for parent in ast.walk(tree)
+        for child in ast.iter_child_nodes(parent)
+    }
+    proofs: dict[int, dict[str, str]] = {}
+    for class_node in (
+        statement for statement in tree.body if isinstance(statement, ast.ClassDef)
+    ):
+        methods_by_name: dict[
+            str,
+            list[ast.FunctionDef | ast.AsyncFunctionDef],
+        ] = defaultdict(list)
+        for statement in class_node.body:
+            if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                methods_by_name[statement.name].append(statement)
+        methods = {
+            name: candidates[0]
+            for name, candidates in methods_by_name.items()
+            if len(candidates) == 1
+            and name.startswith("_")
+            and not name.startswith("__")
+            and not candidates[0].decorator_list
+            and candidates[0].args.args
+            and candidates[0].args.args[0].arg == "self"
+        }
+        if not methods:
+            continue
+        selector_attributes = python_browser_literal_selector_attributes(
+            class_node,
+            literal_type_names,
+        )
+        if not selector_attributes:
+            continue
+
+        unsafe_targets: set[str] = set()
+        for candidate in ast.walk(tree):
+            if not (
+                isinstance(candidate, ast.Attribute)
+                and candidate.attr in methods
+                and isinstance(candidate.ctx, ast.Load)
+            ):
+                continue
+            owner = module_parents.get(id(candidate))
+            while owner is not None and not isinstance(owner, ast.ClassDef):
+                owner = module_parents.get(id(owner))
+            if owner is not class_node:
+                unsafe_targets.add(candidate.attr)
+
+        call_arguments: dict[str, list[dict[str, str | None]]] = defaultdict(list)
+        for caller in (
+            statement
+            for statement in class_node.body
+            if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef))
+        ):
+            owned, parents = python_function_owned_nodes(caller)
+            binding_kinds = python_function_playwright_binding_kinds(
+                caller,
+                browser_runtime_factories,
+                selector_attributes,
+                builtin_getattr_available=builtin_getattr_available,
+            )
+            mutation_counts = Counter(
+                candidate.id
+                for candidate in owned
+                if isinstance(candidate, ast.Name)
+                and isinstance(candidate.ctx, (ast.Store, ast.Del))
+            )
+            alias_candidates: dict[str, set[str]] = defaultdict(set)
+            alias_lines: dict[tuple[str, str], int] = {}
+            for assignment in (
+                candidate for candidate in owned if isinstance(candidate, ast.Assign)
+            ):
+                if not (
+                    len(assignment.targets) == 1
+                    and isinstance(assignment.targets[0], ast.Name)
+                    and (
+                        parents.get(id(assignment)) is caller
+                        or (
+                            isinstance(
+                                alias_scope := parents.get(id(assignment)),
+                                (ast.With, ast.AsyncWith),
+                            )
+                            and parents.get(id(alias_scope)) is caller
+                        )
+                    )
+                    and isinstance(assignment.value, ast.Attribute)
+                    and isinstance(assignment.value.value, ast.Name)
+                    and assignment.value.value.id == "self"
+                    and assignment.value.attr in methods
+                ):
+                    continue
+                alias = assignment.targets[0].id
+                target = assignment.value.attr
+                alias_candidates[alias].add(target)
+                alias_lines[(alias, target)] = assignment.lineno
+
+            aliases = {
+                alias: next(iter(targets))
+                for alias, targets in alias_candidates.items()
+                if len(targets) == 1 and mutation_counts[alias] == 1
+            }
+            for candidate in owned:
+                if not (
+                    isinstance(candidate, ast.Name)
+                    and isinstance(candidate.ctx, ast.Load)
+                    and candidate.id in alias_candidates
+                ):
+                    continue
+                parent = parents.get(id(candidate))
+                if isinstance(parent, ast.Call) and parent.func is candidate:
+                    continue
+                unsafe_targets.update(alias_candidates[candidate.id])
+            for candidate in owned:
+                if not (
+                    isinstance(candidate, ast.Attribute)
+                    and isinstance(candidate.value, ast.Name)
+                    and candidate.value.id == "self"
+                    and candidate.attr in methods
+                    and isinstance(candidate.ctx, ast.Load)
+                ):
+                    continue
+                parent = parents.get(id(candidate))
+                if isinstance(parent, ast.Call) and parent.func is candidate:
+                    continue
+                if (
+                    isinstance(parent, ast.Assign)
+                    and parent.value is candidate
+                    and len(parent.targets) == 1
+                    and isinstance(parent.targets[0], ast.Name)
+                ):
+                    continue
+                unsafe_targets.add(candidate.attr)
+
+            for call in (candidate for candidate in owned if isinstance(candidate, ast.Call)):
+                target: str | None = None
+                if (
+                    isinstance(call.func, ast.Attribute)
+                    and isinstance(call.func.value, ast.Name)
+                    and call.func.value.id == "self"
+                    and call.func.attr in methods
+                ):
+                    target = call.func.attr
+                elif isinstance(call.func, ast.Name):
+                    target = aliases.get(call.func.id)
+                    if target is not None and alias_lines[(call.func.id, target)] >= call.lineno:
+                        target = None
+                    if target is None and call.func.id in alias_candidates:
+                        unsafe_targets.update(alias_candidates[call.func.id])
+                if target is None:
+                    continue
+                method = methods[target]
+                parameters = [*method.args.posonlyargs, *method.args.args][1:]
+                if (
+                    any(isinstance(argument, ast.Starred) for argument in call.args)
+                    or any(keyword.arg is None for keyword in call.keywords)
+                    or len(call.args) > len(parameters)
+                ):
+                    unsafe_targets.add(target)
+                    continue
+                arguments: dict[str, str | None] = {}
+                for index, parameter in enumerate(parameters):
+                    values: list[ast.AST] = []
+                    if index < len(call.args):
+                        values.append(call.args[index])
+                    values.extend(
+                        keyword.value
+                        for keyword in call.keywords
+                        if keyword.arg == parameter.arg
+                    )
+                    if len(values) != 1:
+                        arguments[parameter.arg] = None
+                        continue
+                    value = values[0]
+                    if isinstance(value, ast.Name):
+                        kind_and_line = binding_kinds.get(value.id)
+                        arguments[parameter.arg] = (
+                            kind_and_line[0]
+                            if kind_and_line is not None
+                            and kind_and_line[1] < call.lineno
+                            else None
+                        )
+                    else:
+                        arguments[parameter.arg] = None
+                call_arguments[target].append(arguments)
+
+        for target, calls in call_arguments.items():
+            if target in unsafe_targets or not calls:
+                continue
+            method = methods[target]
+            parameters = [*method.args.posonlyargs, *method.args.args][1:]
+            resolved = {
+                parameter.arg: "same-class-playwright-browser-parameter"
+                for parameter in parameters
+                if all(
+                    call.get(parameter.arg) == "local-playwright-browser"
+                    for call in calls
+                )
+            }
+            if resolved:
+                proofs[id(method)] = resolved
+    return proofs
+
+
 def python_class_browser_receiver_properties(
     node: ast.ClassDef,
     browser_type_names: set[str],
@@ -1688,6 +2201,7 @@ def python_browser_receiver_proofs(
     browser_page_factories: set[str],
     browser_runtime_factories: set[str],
     browser_contextmanager_page_factories: set[str],
+    browser_helper_parameter_proofs: dict[str, str],
     module_browser_variables: set[str],
     class_browser_attributes: dict[str, str],
 ) -> dict[int, str]:
@@ -1727,7 +2241,7 @@ def python_browser_receiver_proofs(
         argument.arg: "parameter-annotation"
         for argument in (*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs)
         if python_browser_annotation_is_type(argument.annotation, browser_type_names)
-    }
+    } | browser_helper_parameter_proofs
     binding_lines = {name: 0 for name in bindings}
     instance_method = bool(
         node.args.args
@@ -1821,11 +2335,21 @@ def python_browser_receiver_proofs(
             and receiver_kind == "local-playwright-browser"
         ):
             return "local-playwright-context"
+        if (
+            expression.func.attr == "new_context"
+            and receiver_kind == "same-class-playwright-browser-parameter"
+        ):
+            return "same-class-playwright-browser-context"
         if expression.func.attr == "new_page" and receiver_kind in {
             "local-playwright-browser",
             "local-playwright-context",
         }:
             return "local-playwright-page"
+        if (
+            expression.func.attr == "new_page"
+            and receiver_kind == "same-class-playwright-browser-context"
+        ):
+            return "same-class-helper-parameter"
         return None
 
     def assignment_dominates_continuation(candidate: ast.Assign) -> bool:
@@ -3607,6 +4131,7 @@ class PythonVisitor(ast.NodeVisitor):
         browser_page_factories: set[str],
         browser_runtime_factories: set[str],
         browser_contextmanager_page_factories: set[str],
+        same_class_browser_parameter_proofs: dict[int, dict[str, str]],
         module_browser_variables: set[str],
         builtin_property_available: bool,
         url_parser_names: set[str],
@@ -3652,6 +4177,9 @@ class PythonVisitor(ast.NodeVisitor):
         self.browser_runtime_factories = browser_runtime_factories
         self.browser_contextmanager_page_factories = (
             browser_contextmanager_page_factories
+        )
+        self.same_class_browser_parameter_proofs = (
+            same_class_browser_parameter_proofs
         )
         self.module_browser_variables = module_browser_variables
         self.builtin_property_available = builtin_property_available
@@ -4491,6 +5019,7 @@ class PythonVisitor(ast.NodeVisitor):
                 function_browser_factories,
                 function_browser_runtime_factories,
                 function_browser_contextmanager_page_factories,
+                self.same_class_browser_parameter_proofs.get(id(node), {}),
                 function_module_browser_variables,
                 class_browser_attributes,
             )
@@ -7301,6 +7830,16 @@ def scan_python(
             module_mutation_counts,
         )
     )
+    same_class_browser_parameter_proofs = (
+        python_same_class_browser_parameter_proofs(
+            tree,
+            module_mutation_counts,
+            builtin_getattr_available=(
+                "getattr" not in imported_bindings
+                and "getattr" not in module_mutations
+            ),
+        )
+    )
     filesystem_api_aliases = {
         alias.asname or alias.name: alias.name
         for statement in tree.body
@@ -9501,6 +10040,9 @@ def scan_python(
         browser_runtime_factories=browser_runtime_factories,
         browser_contextmanager_page_factories=(
             browser_contextmanager_page_factories
+        ),
+        same_class_browser_parameter_proofs=(
+            same_class_browser_parameter_proofs
         ),
         module_browser_variables=module_browser_variables,
         builtin_property_available=(

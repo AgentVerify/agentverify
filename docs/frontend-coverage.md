@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v92
+framework, wrapper, or configuration path. Counts come from schema-v93
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -627,7 +627,7 @@ and `network-ssrf-policy` edge.
   returned receivers remain unresolved rather than matching string/container methods by name.
   Arbitrary attribute `.open()` calls are deliberately excluded unless the receiver is proven to be
   a `pathlib.Path`; configured or fixed write paths remain inventory but do not raise AV-FS001.
-- Browser-page evaluation inventories 93 import-context calls and proves 48 receivers: two exact
+- Browser-page evaluation inventories 93 import-context calls and proves 50 receivers: two exact
   Playwright-annotated SWE-agent parameters, five Skyvern calls reached from an exact imported page
   factory, 15 exact class-attribute annotations across CAMEL, LaVague, and MetaGPT, and 13 Devika
   calls through an exact constructor-bound page field or immutable local alias. One further Skyvern
@@ -646,16 +646,20 @@ and `network-ssrf-policy` edge.
   Skyvern test calls through two unique local `@contextlib.asynccontextmanager` helpers. Each helper
   must contain one exact Playwright runtime→browser→context→page chain and exactly one unconditional
   page yield; the caller must bind that helper directly in a top-level `async with` and leave the
-  target immutable. Class or
+  target immutable. Schema v93 proves two MetaGPT production calls by resolving an exact
+  `Literal["chromium", "firefox", "webkit"]` selector through
+  `getattr(playwright_runtime, self.browser_type)`, then requiring unanimous private same-class
+  helper call sites. Direct calls and one immutable bound-method alias are accepted; mixed calls,
+  escaped or rebound aliases, and wider literal sets are withheld. Class or
   `__init__` annotations may use an exact immutable Playwright import under `TYPE_CHECKING`.
   Constructor flow requires a straight-line exact Playwright runtime→browser/context→page chain and
   one field mutation. Conflicting/wrong annotations, near or rebound imports, static methods, and
   conditional, repeated, late, or shadowed-factory fields are withheld. Six chained calls formerly
   missed by the dotted-name gate are now inventoried; five remain unresolved. Across all supported
-  APIs, 45 fixed-script observations retain unresolved receiver state. Dynamic promotion also supports one
+  APIs, 43 fixed-script observations retain unresolved receiver state. Dynamic promotion also supports one
   immutable alias of a typed parameter and known locator/get-by/filter/nth/and/or/first/last derivations;
   untyped/inherited fields, ambiguous wrapper locators, sanitizers,
-  structured JavaScript builders, general helper-parameter/return flow, mutable lifecycle fields,
+  structured JavaScript builders, helper-return and non-unanimous helper-parameter flow, mutable lifecycle fields,
   and unsupported evaluator APIs remain unresolved.
 - Helm templates are not rendered. Kubernetes RBAC, NetworkPolicy, pod scheduling, and the contents
   or sensitivity of arbitrary mounted paths are not inferred. Compose credential classification is
@@ -675,7 +679,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 572-label rule truth set and 897-label IR component/relationship set are curated regression
+The 579-label rule truth set and 904-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

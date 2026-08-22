@@ -132,10 +132,15 @@ ordinary same-named and unknown derivations stay negative. Schema v92 additional
 unique local `@contextlib.asynccontextmanager` only when it contains one exact Playwright
 runtime→browser→context→page chain and one unconditional page yield. Four Skyvern test consumers
 move from unresolved to `local-playwright-contextmanager-yield`, bringing current totals to 48
-proven of 93 and 45 unresolved; branch-dependent, ordinary-object, reassigned, helper-parameter, and
-mutable lifecycle flows remain withheld. Findings remain unchanged. Next resolve inherited fields, ambiguous
+proven of 93 and 45 unresolved; branch-dependent, ordinary-object, and reassigned yields remain
+withheld. Schema v93 additionally accepts exact `typing.Literal`-bounded browser selection through
+`getattr(playwright_runtime, self.browser_type)` and propagates the resulting local browser through
+private same-class helper parameters only when every direct or immutable bound-method-alias call
+agrees. This proves two fixed-script MetaGPT production evaluators, bringing current totals to 50
+proven of 93 and 43 unresolved. Mixed calls, mutable or escaped aliases, invalid selector literals,
+external calls, and mutable lifecycle flows remain withheld; findings remain unchanged. Next resolve inherited fields, ambiguous
 wrapper/locator flows, sanitizer and bounded builder summaries, imported helper flow, and bounded
-helper-parameter/return provenance without treating every dynamic JavaScript expression as
+helper-return provenance without treating every dynamic JavaScript expression as
 tool-controlled.
 
 ## P0 — configuration and policy resolution
@@ -323,8 +328,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 572 pinned positive/negative locations, with 897 separately
-scored IR component/relationship labels. Schema-v92 engine results and
+The curated regression set has reached 579 pinned positive/negative locations, with 904 separately
+scored IR component/relationship labels. Schema-v93 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.
