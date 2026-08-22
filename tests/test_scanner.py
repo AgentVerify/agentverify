@@ -350,6 +350,60 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "agentscope.model",
             "XAIChatModel",
         ),
+        (
+            46,
+            "Anthropic",
+            "AnthropicProvider",
+            "pydantic_ai.providers.anthropic",
+            "AnthropicProvider",
+        ),
+        (47, "Anthropic", "AnthropicModel", "pydantic_ai.models.anthropic", "AnthropicModel"),
+        (48, "Google", "GoogleProvider", "pydantic_ai.providers.google", "GoogleProvider"),
+        (
+            49,
+            "Google",
+            "GoogleCloudProvider",
+            "pydantic_ai.providers.google_cloud",
+            "GoogleCloudProvider",
+        ),
+        (50, "Google", "GoogleModel", "pydantic_ai.models.google", "GoogleModel"),
+        (
+            51,
+            "Google",
+            "GoogleEmbeddingModel",
+            "pydantic_ai.embeddings.google",
+            "GoogleEmbeddingModel",
+        ),
+        (
+            52,
+            "AWS Bedrock",
+            "BedrockProvider",
+            "pydantic_ai.providers.bedrock",
+            "BedrockProvider",
+        ),
+        (
+            53,
+            "AWS Bedrock",
+            "BedrockConverseModel",
+            "pydantic_ai.models.bedrock",
+            "BedrockConverseModel",
+        ),
+        (
+            54,
+            "AWS Bedrock",
+            "BedrockEmbeddingModel",
+            "pydantic_ai.embeddings.bedrock",
+            "BedrockEmbeddingModel",
+        ),
+        (55, "xAI", "XaiProvider", "pydantic_ai.providers.xai", "XaiProvider"),
+        (56, "xAI", "XaiModel", "pydantic_ai.models.xai", "XaiModel"),
+        (
+            57,
+            "DeepSeek",
+            "DeepSeekProvider",
+            "pydantic_ai.providers.deepseek",
+            "DeepSeekProvider",
+        ),
     }
     assert {
         (item.evidence.line, item.name, item.attributes["provider"])
@@ -372,6 +426,12 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         (28, "deepseek-chat", "DeepSeek"),
         (29, "kimi-k2.5", "Moonshot AI"),
         (30, "grok-3", "xAI"),
+        (47, "claude-sonnet-4-5", "Anthropic"),
+        (50, "gemini-2.5-flash", "Google"),
+        (51, "gemini-embedding-001", "Google"),
+        (53, "amazon.nova-lite-v1:0", "AWS Bedrock"),
+        (54, "amazon.titan-embed-text-v2:0", "AWS Bedrock"),
+        (56, "grok-4.3", "xAI"),
     }
     assert not any(
         item.kind == "provider"

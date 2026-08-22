@@ -411,6 +411,15 @@ production calls and 54 test calls. The provider-presence total remains 49 repos
 new families occur in AgentScope, which was already covered; rebinding any imported constructor
 withholds both provider and model attribution.
 
+Schema v101 adds dedicated PydanticAI modules for Anthropic, Google/Google Cloud, AWS Bedrock, xAI,
+and DeepSeek. The selected PydanticAI tests add 263 exact calls and 175 literal model values, while
+Marvin contributes three production calls: its Slack example constructs both `AnthropicModel` and
+`AnthropicProvider`, and its DeepSeek assistant constructs `DeepSeekProvider`. Across Python the
+inventory reaches 346 calls—20 native SDK and 326 framework wrappers—with 29 production calls and
+317 test calls. Generic PydanticAI `OpenAIModel`/`OpenAIProvider` calls remain unresolved because the
+same classes target Azure, DeepSeek, AIMLAPI, and caller-selected compatible endpoints in the pinned
+source; attributing them to OpenAI by class name would be incorrect.
+
 ## 5. Controls are layered
 
 Sandboxing vocabulary appears in 64 repositories, audit/tracing in 57, human approval in 52, and

@@ -56,6 +56,10 @@ imports share the same exact export map, while reassignment still invalidates th
 Schema v100 adds the exact AgentScope DashScope, DeepSeek, Moonshot, and xAI chat-model exports to
 that symbol map. Literal model arguments inherit the corresponding provider only while the module
 alias or named import remains unrebound; adjacent or arbitrary model-class names remain unresolved.
+Schema v101 extends exact-module attribution to PydanticAI's dedicated Anthropic, Google/Google
+Cloud, AWS Bedrock, xAI, and DeepSeek provider surfaces. Dedicated model and embedding constructors
+may contribute a positional literal model ID; provider constructors may not. The generic
+OpenAI-compatible model/provider modules remain unresolved without endpoint/provider provenance.
 Schema v77 gives import-proven, assigned Python MCP stdio constructors stable component identities.
 An Agent receives an exact `uses` edge only when its literal `mcp_servers=[...]` list names an
 earlier, unreassigned server binding in the same statement block. Package and version facts remain

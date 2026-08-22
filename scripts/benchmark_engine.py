@@ -27,6 +27,7 @@ PYTHON_PROVIDER_METRICS = {
     "openai": "OpenAI",
     "anthropic": "Anthropic",
     "google": "Google",
+    "aws_bedrock": "AWS Bedrock",
     "mistral": "Mistral",
     "groq": "Groq",
     "cohere": "Cohere",
@@ -2530,7 +2531,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 100,
+        "schema_version": 101,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
