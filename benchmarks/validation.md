@@ -572,19 +572,27 @@ review, and arbitrary object `.open(...)` methods are not filesystem capabilitie
 URLs remain inventory-only when a dynamic path or query is concatenated to a proven module constant
 or formatted through an immutable `self` URL field.
 
-Python imported network summaries add 11 corpus capabilities across nine unique top-level helpers;
-all have exact tool edges and seven are dynamic. Qwen's `simple_doc_parser`
+Python imported network summaries add 14 corpus capabilities across ten unique top-level helpers;
+all have exact tool edges and two remain dynamic. Qwen's `simple_doc_parser`
 passes its tool-controlled URL to the imported `save_url_to_local_work_dir`, whose corresponding
 formal reaches `requests.get`. Smolagents' `visualizer` performs a function-local self-import of
-`encode_image`; its image-path parameter reaches another `requests.get`. Google ADK contributes nine
+`encode_image`; its image-path parameter reaches another `requests.get`. Google ADK contributes 12
 call sites across its issue-formatting and PR-triaging sample packages. Their package-qualified
-absolute imports each have one importer-ancestor candidate; five caller-built GitHub URLs remain
-dynamic and produce AV-NET001 reviews, while four fixed-origin calls remain inventory. The edge is attached at the
+absolute imports each have one importer-ancestor candidate. Schema v112 resolves seven of those
+arguments to two immutable imported `https://api.github.com` constants; five formerly dynamic calls
+become fixed-origin inventory, removing all Google ADK Python AV-NET001 reviews. The edge is attached at the
 tool call site and retains the helper path, definition line, and network sink lines. Exact named
 imports, unique top-level definitions, direct formal flow, and recognized clients are required;
 multiple ancestor candidates are rejected;
 module-object calls, nested helpers, reexports, transitive calls, local aliases, and any relevant
 binding or client rebinding remain unresolved.
+
+Across direct and summarized requests, imported literal-origin provenance covers nine capabilities
+from four source bindings: seven Google ADK helper calls and two production Deep Agents PyPI
+requests. Each records the source path and line. Exact literal exports, alias/local propagation, and
+fixed-origin f-string prefixes are accepted; environment/composed values, duplicate or globally
+mutated exports, consumer rebinding, local shadowing, module-qualified access, and ambiguous imports
+remain unresolved. Ten focused IR labels pass at 3 TP / 7 TN.
 
 An iterative class pass adds four more capabilities and exact tool edges, all dynamic and all in
 Qwen-Agent. It first summarizes `SimpleDocParser.call` from its proven imported-function network
@@ -820,7 +828,7 @@ Two default-scope clients qualify: the Microsoft tutorial and FastMCP CLI both a
 do not show the target URL. The TypeScript SDK host is the negative control: it displays the full URL,
 rejects unsafe non-HTTPS/non-loopback destinations, and asks before proceeding. The rule matrix is 4
 TP, 3 TN, 0 FP, and 0 FN; seven additional positive IR labels pin full versus missing disclosure.
-All 616 cross-rule labels pass.
+All 655 cross-rule labels pass (294 positives and 361 negatives).
 
 During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
 to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
@@ -1301,14 +1309,14 @@ and surfacing failed writes through metrics or alerts.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 616 exact labels across all 19 enabled rules: 289 positives and 327
+`benchmarks/truthset.json` contains 655 exact labels across all 19 enabled rules: 294 positives and 361
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
 Compose/Kubernetes/Docker SDK settings, host credential bind near misses, and exact/prompt-only MCP
-package launchers. All 616 currently pass;
+package launchers. All 655 currently pass;
 each rule's seed precision and recall are 1.0. Negative labels must retain either an observed Agent IR
 component anchor or verified source text at the exact pinned line, preventing a missing or drifting
 location from passing silently.
@@ -1431,18 +1439,18 @@ six unresolved ambiguity/shadowing/order forms, and all seven pinned Google ADK 
 tool-factory/adapter labels cover four local Agent edges, one hosted-MCP capability, one local
 Agent-as-tool delegation, eight conservative local negatives, two AutoGen factory edges, one Google
 ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent edge plus delegation.
-The 381 component-taxonomy labels add 278 exact local/pinned framework, provider, call,
-and model positives plus 103 near-name, rebound, custom-endpoint, scoped-binding, nonliteral-request,
+The 420 component-taxonomy labels add 301 exact local/pinned framework, provider, call,
+and model positives plus 119 near-name, rebound, custom-endpoint, scoped-binding, nonliteral-request,
 and unrelated-service negatives.
 Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,175 IR labels pass (835 positives and 340 negatives):
+negatives. All 1,224 IR labels pass (861 positives and 363 negatives):
 278 component-taxonomy positives/103 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
-contextual network-import positives,
+contextual network-import positives, three imported-literal-origin positives/seven negatives,
 four import-shadow positives/one negative, eight block-dominance positives/three negatives, 20
 Agent-helper-return positives/seven negatives, seven imported-Agent-factory proof labels,
 23 tool-factory/adapter proof labels,

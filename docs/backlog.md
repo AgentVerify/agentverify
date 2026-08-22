@@ -76,6 +76,12 @@ Schema v111 extends the same proof to exact official AI SDK first model argument
 Activepieces `text-embedding-3-small` constant without changing its already exact OpenAI provider
 call; runtime parameters and mutable, composed, shadowed, rebound, or forward identifiers remain
 unresolved. The 420 component labels now pin 301 positives and 119 negatives.
+Schema v112 resolves fixed Python HTTP origins through exact named imports of immutable top-level
+string literals. Nine corpus capabilities retain four source bindings; seven Google ADK helper calls
+now have source-path/line provenance, removing five AV-NET001 false positives, while two Deep Agents
+PyPI requests gain inventory provenance. Environment/composed values, duplicate or globally mutated
+exports, consumer rebinding, local shadowing, module-qualified access, and ambiguous imports stay
+unresolved. Ten focused IR labels pin three positives and seven negatives.
 Next generalize selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
@@ -416,8 +422,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 642 pinned positive/negative locations, with 1,214 separately
-scored IR component/relationship labels. Schema-v111 engine results and
+The curated regression set has reached 655 pinned positive/negative locations, with 1,224 separately
+scored IR component/relationship labels. Schema-v112 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

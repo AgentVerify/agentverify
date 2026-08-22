@@ -587,6 +587,18 @@ def main() -> int:
             if item.attributes.get("import_resolution")
             == "contextual-absolute-import-single-path"
         ]
+        python_imported_literal_origins = [
+            item
+            for item in ir.components
+            if item.kind == "capability"
+            and item.name == "network"
+            and item.attributes.get("origin_resolution")
+            == "imported-module-literal"
+        ]
+        python_imported_literal_origin_locations = {
+            (item.evidence.path, item.evidence.line)
+            for item in python_imported_literal_origins
+        }
         python_imported_network_locations = {
             (item.evidence.path, item.evidence.line)
             for item in python_imported_network_helpers
@@ -1523,6 +1535,28 @@ def main() -> int:
                     and edge.target_name == "network"
                     and (edge.evidence.path, edge.evidence.line)
                     in python_imported_network_locations
+                    for edge in ir.relationships
+                ),
+            },
+            "python_imported_literal_origins": {
+                "capabilities": len(python_imported_literal_origins),
+                "source_bindings": len(
+                    {
+                        (item.attributes.get("origin_path"), item.attributes.get("origin_line"))
+                        for item in python_imported_literal_origins
+                    }
+                ),
+                "contextual_helper_capabilities": sum(
+                    item.attributes.get("summary") == "imported-function"
+                    and item.attributes.get("import_resolution")
+                    == "contextual-absolute-import-single-path"
+                    for item in python_imported_literal_origins
+                ),
+                "capability_edges": sum(
+                    edge.target_kind == "capability"
+                    and edge.target_name == "network"
+                    and (edge.evidence.path, edge.evidence.line)
+                    in python_imported_literal_origin_locations
                     for edge in ir.relationships
                 ),
             },
@@ -2575,7 +2609,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 111,
+        "schema_version": 112,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2969,6 +3003,18 @@ def main() -> int:
             "python_imported_network_helpers": {
                 name: sum(result["python_imported_network_helpers"][name] for result in successful)
                 for name in ("capabilities", "dynamic_origins", "helpers", "capability_edges")
+            },
+            "python_imported_literal_origins": {
+                name: sum(
+                    result["python_imported_literal_origins"][name]
+                    for result in successful
+                )
+                for name in (
+                    "capabilities",
+                    "source_bindings",
+                    "contextual_helper_capabilities",
+                    "capability_edges",
+                )
             },
             "python_imported_class_network_helpers": {
                 name: sum(

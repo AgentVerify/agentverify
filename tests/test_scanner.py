@@ -2165,6 +2165,58 @@ def test_parameter_controlled_http_origin_is_reported_but_fixed_host_is_not() ->
     }
 
 
+def test_python_imported_literal_http_origins_require_exact_immutable_proof() -> None:
+    ir = scan_repository(ROOT / "cases/python_imported_literal_origin")
+
+    network = {
+        item.evidence.line: item.attributes
+        for item in ir.components
+        if item.kind == "capability"
+        and item.name == "network"
+        and item.evidence.path == "agent.py"
+    }
+    assert sorted(network) == [23, 28, 33, 38, 43, 48, 53, 58, 63, 68, 75]
+    for line, source_line in ((23, 4), (28, 5), (33, 4)):
+        assert network[line] == {
+            "scope": "production",
+            "api": "requests.get",
+            "dynamic_origin": False,
+            "origin_resolution": "imported-module-literal",
+            "origin_path": "pkg/settings.py",
+            "origin_line": source_line,
+        }
+    assert {
+        line: attributes["dynamic_origin"]
+        for line, attributes in network.items()
+        if line >= 38
+    } == {
+        38: True,
+        43: True,
+        48: True,
+        53: True,
+        58: True,
+        63: True,
+        68: True,
+        75: True,
+    }
+    assert [
+        finding.evidence.line
+        for finding in ir.findings
+        if finding.rule_id == "AV-NET001"
+        and finding.evidence.path == "agent.py"
+    ] == [38, 43, 48, 53, 58, 63, 68, 75]
+    derived = next(
+        item
+        for item in ir.components
+        if item.kind == "capability"
+        and item.name == "network"
+        and item.evidence.path == "derived_mutation.py"
+    )
+    assert derived.evidence.line == 17
+    assert derived.attributes["dynamic_origin"] is True
+    assert "origin_resolution" not in derived.attributes
+
+
 def test_python_network_origin_guards_require_fail_closed_scheme_and_host_checks() -> None:
     ir = scan_repository(ROOT / "cases/network_dynamic_origin")
 

@@ -615,9 +615,15 @@ def python_static_url_prefix(
     if isinstance(node, ast.JoinedStr):
         prefix = []
         for value in node.values:
-            if not isinstance(value, ast.Constant) or not isinstance(value.value, str):
-                break
-            prefix.append(value.value)
+            if isinstance(value, ast.Constant) and isinstance(value.value, str):
+                prefix.append(value.value)
+                continue
+            if isinstance(value, ast.FormattedValue) and (
+                formatted_prefix := python_static_url_prefix(value.value, known_prefixes)
+            ):
+                prefix.append(formatted_prefix)
+                continue
+            break
         return "".join(prefix)
     if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
         return python_static_url_prefix(node.left, known_prefixes)
@@ -639,6 +645,27 @@ def python_http_origin_is_dynamic(
         return False
     prefix = python_static_url_prefix(node, known_prefixes)
     return re.match(r"^https?://[^/?#]+", prefix, re.IGNORECASE) is None
+
+
+@dataclass(frozen=True)
+class PythonStaticHttpPrefixProof:
+    prefix: str
+    path: str
+    line: int
+    resolution: str = "imported-module-literal"
+
+
+def python_static_http_prefix_proof(
+    node: ast.AST | None,
+    known_proofs: dict[str, PythonStaticHttpPrefixProof],
+) -> PythonStaticHttpPrefixProof | None:
+    """Return one unambiguous imported-literal proof used by an expression."""
+    proofs = {
+        known_proofs[name]
+        for name in python_expression_names(node)
+        if name in known_proofs
+    }
+    return next(iter(proofs)) if len(proofs) == 1 else None
 
 
 def python_urllib_request_url(
@@ -1136,6 +1163,10 @@ def python_function_local_bindings(
             return
         if isinstance(candidate, ast.ExceptHandler) and candidate.name:
             bindings.add(candidate.name)
+        if isinstance(candidate, (ast.MatchAs, ast.MatchStar)) and candidate.name:
+            bindings.add(candidate.name)
+        if isinstance(candidate, ast.MatchMapping) and candidate.rest:
+            bindings.add(candidate.rest)
         if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
             bindings.add(candidate.id)
         for child in ast.iter_child_nodes(candidate):
@@ -5373,6 +5404,7 @@ class PythonVisitor(ast.NodeVisitor):
         registry_function_tools: dict[int, PythonRegistryTool],
         registry_class_tools: dict[int, PythonRegistryTool],
         module_static_http_prefixes: dict[str, str],
+        module_static_http_prefix_proofs: dict[str, PythonStaticHttpPrefixProof],
         module_rebound_names: set[str],
         path_constructors: set[str],
         filesystem_api_aliases: dict[str, str],
@@ -5482,8 +5514,10 @@ class PythonVisitor(ast.NodeVisitor):
         self.registry_class_tools = registry_class_tools
         self.active_registry_class_tools: list[tuple[PythonRegistryTool, str] | None] = []
         self.module_static_http_prefixes = module_static_http_prefixes
+        self.module_static_http_prefix_proofs = module_static_http_prefix_proofs
         self.class_static_http_prefixes: list[dict[str, str]] = []
         self.static_http_prefixes = dict(module_static_http_prefixes)
+        self.static_http_prefix_proofs = dict(module_static_http_prefix_proofs)
         self.module_rebound_names = module_rebound_names
         self.path_constructors = path_constructors
         self.filesystem_api_aliases = filesystem_api_aliases
@@ -5538,6 +5572,16 @@ class PythonVisitor(ast.NodeVisitor):
                         },
                     )
                 )
+
+    def static_http_origin_attributes(self, node: ast.AST | None) -> dict[str, object]:
+        proof = python_static_http_prefix_proof(node, self.static_http_prefix_proofs)
+        if proof is None:
+            return {}
+        return {
+            "origin_resolution": proof.resolution,
+            "origin_path": proof.path,
+            "origin_line": proof.line,
+        }
 
     def add_python_path_boundary_control(
         self, capability_node: ast.AST, proof: PythonPathBoundaryProof
@@ -5992,6 +6036,9 @@ class PythonVisitor(ast.NodeVisitor):
             static_http_prefix = python_static_url_prefix(
                 origin_value, self.static_http_prefixes
             )
+            static_http_prefix_proof = python_static_http_prefix_proof(
+                origin_value, self.static_http_prefix_proofs
+            )
             for target in node.targets:
                 if not isinstance(target, ast.Name):
                     continue
@@ -6007,6 +6054,10 @@ class PythonVisitor(ast.NodeVisitor):
                     self.static_http_prefixes[target.id] = static_http_prefix
                 else:
                     self.static_http_prefixes.pop(target.id, None)
+                if static_http_prefix and static_http_prefix_proof is not None:
+                    self.static_http_prefix_proofs[target.id] = static_http_prefix_proof
+                else:
+                    self.static_http_prefix_proofs.pop(target.id, None)
         if isinstance(node.value, ast.Call):
             constructor = dotted_name(node.value.func)
             if constructor in {
@@ -6151,6 +6202,7 @@ class PythonVisitor(ast.NodeVisitor):
         previous_http_client_names = self.http_client_names
         previous_approval_environment_flags = self.approval_environment_flags
         previous_static_http_prefixes = self.static_http_prefixes
+        previous_static_http_prefix_proofs = self.static_http_prefix_proofs
         previous_network_helper_bindings = self.network_helper_bindings
         self.network_helper_bindings = dict(self.network_helper_bindings)
         self.allowlisted_names = set()
@@ -6166,8 +6218,12 @@ class PythonVisitor(ast.NodeVisitor):
                     else {}
                 ),
             }
+            self.static_http_prefix_proofs = dict(
+                self.module_static_http_prefix_proofs
+            )
         else:
             self.static_http_prefixes = dict(self.static_http_prefixes)
+            self.static_http_prefix_proofs = dict(self.static_http_prefix_proofs)
         if self.function_depth == 0:
             self.approval_environment_flags = self.module_approval_environment_flags.copy()
         else:
@@ -6177,6 +6233,9 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_fixed_binding_sources.append(self.fixed_function_parameter_bindings(node))
         self.function_escaping_children.append(self.escaping_nested_function_names(node))
         local_bindings = python_function_local_bindings(node)
+        for local_name in local_bindings:
+            self.static_http_prefixes.pop(local_name, None)
+            self.static_http_prefix_proofs.pop(local_name, None)
         previous_imported_symbol_paths = self.imported_symbol_paths
         previous_imported_symbol_names = self.imported_symbol_names
         previous_imported_symbol_resolutions = self.imported_symbol_resolutions
@@ -6589,6 +6648,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_network_origin_guards.pop()
         self.approval_environment_flags = previous_approval_environment_flags
         self.static_http_prefixes = previous_static_http_prefixes
+        self.static_http_prefix_proofs = previous_static_http_prefix_proofs
         self.network_helper_bindings = previous_network_helper_bindings
         self.imported_symbol_paths = previous_imported_symbol_paths
         self.imported_symbol_names = previous_imported_symbol_names
@@ -8401,6 +8461,7 @@ class PythonVisitor(ast.NodeVisitor):
                         source_id=self.current_tool_id,
                     )
                 )
+
         browser_evaluator, browser_script_argument = (
             python_browser_evaluator_script_argument(node)
         )
@@ -8651,6 +8712,7 @@ class PythonVisitor(ast.NodeVisitor):
                         self.dynamic_http_origin_names,
                         self.static_http_prefixes,
                     ),
+                    **self.static_http_origin_attributes(url_expression),
                     **(
                         {
                             "network_origin_guard": True,
@@ -8703,6 +8765,7 @@ class PythonVisitor(ast.NodeVisitor):
                         self.dynamic_http_origin_names,
                         self.static_http_prefixes,
                     ),
+                    **self.static_http_origin_attributes(url_expression),
                     **(
                         {
                             "network_origin_guard": True,
@@ -8718,6 +8781,24 @@ class PythonVisitor(ast.NodeVisitor):
         if helper := self.imported_network_helper(node):
             summary, arguments, import_resolution = helper
             secure_policy = summary.secure_policy
+            origin_proofs = {
+                proof
+                for argument in arguments
+                if (
+                    proof := python_static_http_prefix_proof(
+                        argument, self.static_http_prefix_proofs
+                    )
+                )
+                is not None
+            }
+            origin_attributes: dict[str, object] = {}
+            if len(origin_proofs) == 1:
+                origin_proof = next(iter(origin_proofs))
+                origin_attributes = {
+                    "origin_resolution": origin_proof.resolution,
+                    "origin_path": origin_proof.path,
+                    "origin_line": origin_proof.line,
+                }
             self.add_capability(
                 "network",
                 node,
@@ -8750,6 +8831,7 @@ class PythonVisitor(ast.NodeVisitor):
                     "helper_path": summary.path,
                     "helper_line": summary.line,
                     "helper_network_lines": list(summary.network_lines),
+                    **origin_attributes,
                     **(
                         {"import_resolution": import_resolution}
                         if import_resolution
@@ -8805,6 +8887,7 @@ def scan_python(
     network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
     registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
     browser_class_exports: dict[tuple[str, str], frozenset[str]],
+    literal_http_exports: dict[tuple[str, str], PythonStaticHttpPrefixProof],
 ) -> None:
     relative = path.relative_to(root).as_posix()
     try:
@@ -8850,6 +8933,15 @@ def scan_python(
             return
         if isinstance(candidate, (ast.Import, ast.ImportFrom, ast.Lambda)):
             return
+        if isinstance(candidate, ast.ExceptHandler) and candidate.name:
+            module_mutations.add(candidate.name)
+            module_mutation_counts[candidate.name] += 1
+        if isinstance(candidate, (ast.MatchAs, ast.MatchStar)) and candidate.name:
+            module_mutations.add(candidate.name)
+            module_mutation_counts[candidate.name] += 1
+        if isinstance(candidate, ast.MatchMapping) and candidate.rest:
+            module_mutations.add(candidate.rest)
+            module_mutation_counts[candidate.rest] += 1
         if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
             module_mutations.add(candidate.id)
             module_mutation_counts[candidate.id] += 1
@@ -8877,7 +8969,32 @@ def scan_python(
         )
         if isinstance(target, ast.Name)
     )
-    module_static_http_prefixes: dict[str, str] = {}
+    imported_static_http_prefix_proofs: dict[str, PythonStaticHttpPrefixProof] = {}
+    for statement in tree.body:
+        if not isinstance(statement, ast.ImportFrom):
+            continue
+        for alias in statement.names:
+            if alias.name == "*":
+                continue
+            local_name = alias.asname or alias.name
+            if (
+                module_import_binding_counts[local_name] != 1
+                or local_name in module_rebound_names
+            ):
+                continue
+            resolution = resolve_python_import(
+                root, relative, statement, alias.name, module_paths
+            )
+            if resolution is None:
+                continue
+            if proof := literal_http_exports.get((resolution.path, alias.name)):
+                imported_static_http_prefix_proofs[local_name] = proof
+
+    module_static_http_prefixes: dict[str, str] = {
+        name: proof.prefix
+        for name, proof in imported_static_http_prefix_proofs.items()
+    }
+    module_static_http_prefix_proofs = dict(imported_static_http_prefix_proofs)
     for statement in tree.body:
         if not isinstance(statement, (ast.Assign, ast.AnnAssign)):
             continue
@@ -8885,11 +9002,18 @@ def scan_python(
         if len(targets) != 1 or not isinstance(targets[0], ast.Name):
             continue
         target = targets[0].id
-        if module_assignment_counts[target] != 1:
+        if (
+            module_assignment_counts[target] != 1
+            or module_mutation_counts[target] != 1
+        ):
             continue
         prefix = python_static_url_prefix(statement.value, module_static_http_prefixes)
         if prefix:
             module_static_http_prefixes[target] = prefix
+            if proof := python_static_http_prefix_proof(
+                statement.value, module_static_http_prefix_proofs
+            ):
+                module_static_http_prefix_proofs[target] = proof
 
     def literal_string_collection(expression: ast.AST) -> tuple[str, ...] | None:
         container: ast.AST
@@ -11374,6 +11498,7 @@ def scan_python(
         registry_function_tools=registry_function_tools,
         registry_class_tools=registry_class_tools,
         module_static_http_prefixes=module_static_http_prefixes,
+        module_static_http_prefix_proofs=module_static_http_prefix_proofs,
         module_rebound_names=module_rebound_names,
         path_constructors=path_constructors,
         filesystem_api_aliases=filesystem_api_aliases,
@@ -18056,6 +18181,98 @@ def build_python_configurable_pinned_network_helper_summaries(
                 policy,
             )
     return summaries
+
+
+def build_python_literal_http_exports(
+    root: Path,
+    paths: list[Path],
+) -> dict[tuple[str, str], PythonStaticHttpPrefixProof]:
+    """Index immutable top-level literal HTTP origins from selected Python files."""
+    exports: dict[tuple[str, str], PythonStaticHttpPrefixProof] = {}
+    for path in paths:
+        if (
+            path.is_symlink()
+            or not path.is_file()
+            or path.suffix.lower() != ".py"
+            or set(path.relative_to(root).parts) & SKIP_DIRECTORIES
+        ):
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", SyntaxWarning)
+                tree = ast.parse(text, filename=relative)
+        except SyntaxError:
+            continue
+
+        binding_counts: Counter[str] = Counter()
+
+        def collect_module_bindings(
+            candidate: ast.AST,
+            counts: Counter[str] = binding_counts,
+        ) -> None:
+            if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                counts[candidate.name] += 1
+                for nested in ast.walk(candidate):
+                    if isinstance(nested, ast.Global):
+                        counts.update(nested.names)
+                return
+            if isinstance(candidate, ast.Import):
+                counts.update(
+                    alias.asname or alias.name.split(".", 1)[0]
+                    for alias in candidate.names
+                )
+                return
+            if isinstance(candidate, ast.ImportFrom):
+                counts.update(alias.asname or alias.name for alias in candidate.names)
+                return
+            if isinstance(candidate, ast.ExceptHandler) and candidate.name:
+                counts[candidate.name] += 1
+            if isinstance(candidate, (ast.MatchAs, ast.MatchStar)) and candidate.name:
+                counts[candidate.name] += 1
+            if isinstance(candidate, ast.MatchMapping) and candidate.rest:
+                counts[candidate.rest] += 1
+            if isinstance(candidate, ast.Name) and isinstance(
+                candidate.ctx, (ast.Store, ast.Del)
+            ):
+                counts[candidate.id] += 1
+            for child in ast.iter_child_nodes(candidate):
+                collect_module_bindings(child)
+
+        for statement in tree.body:
+            collect_module_bindings(statement)
+
+        for statement in tree.body:
+            if not isinstance(statement, (ast.Assign, ast.AnnAssign)):
+                continue
+            targets = (
+                statement.targets
+                if isinstance(statement, ast.Assign)
+                else [statement.target]
+            )
+            if len(targets) != 1 or not isinstance(targets[0], ast.Name):
+                continue
+            target = targets[0].id
+            value = statement.value
+            if (
+                binding_counts[target] != 1
+                or not isinstance(value, ast.Constant)
+                or not isinstance(value.value, str)
+                or re.match(r"^https?://[^/?#]+", value.value, re.IGNORECASE) is None
+            ):
+                continue
+            exports[(relative, target)] = PythonStaticHttpPrefixProof(
+                value.value,
+                relative,
+                statement.lineno,
+            )
+    return exports
 
 
 def build_python_network_helper_summaries(
@@ -26002,6 +26219,7 @@ def scan_repository(
         registry_paths,
         module_paths,
     )
+    literal_http_exports = build_python_literal_http_exports(root, registry_paths)
     network_helper_summaries = build_python_network_helper_summaries(
         root,
         registry_paths,
@@ -26091,6 +26309,7 @@ def scan_repository(
                 network_helper_summaries,
                 registered_tool_functions,
                 browser_class_exports,
+                literal_http_exports,
             )
         else:
             scan_typescript(ir, root, path, text)

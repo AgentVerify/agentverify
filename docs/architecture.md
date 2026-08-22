@@ -292,8 +292,14 @@ Within decorated Python tools and structurally resolved TypeScript execution cal
 parameters begin as potential dynamic HTTP origins. Direct assignment aliases preserve that state,
 while reassignment to a literal or a URL expression whose literal prefix contains a complete HTTP
 scheme and host clears it. Python also propagates a proven fixed origin through unique module string
-assignments, immutable `self` fields initialized in `__init__`, concatenation, and `.format(...)`;
-dynamic paths and queries on that origin remain inventory-only. The TypeScript frontend also resolves unique module string constants used
+assignments, immutable `self` fields initialized in `__init__`, concatenation, `.format(...)`, and
+f-strings whose resolved prefix contains the complete origin. Schema v112 additionally resolves an
+exact named import to one selected Python module when the exported value is a single immutable
+top-level HTTP(S) string literal. The capability records `origin_resolution`, `origin_path`, and
+`origin_line`; aliases and one local propagation step retain that proof. Environment/computed values,
+duplicate or global-mutated source bindings, consumer rebinding or function-local shadowing,
+wildcards, reexports, ambiguous imports, and module-qualified access remain unresolved. Dynamic
+paths and queries on a proven origin remain inventory-only. The TypeScript frontend also resolves unique module string constants used
 as a template prefix. For a uniquely named same-file free function or static method containing a
 recognized network call, a bounded summary records which formal parameters can control the origin;
 tool calls map positional and destructured-object arguments back to those parameters. `AV-NET001`

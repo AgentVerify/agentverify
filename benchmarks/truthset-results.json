@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T18:14:46.912852+00:00",
-  "labels": 642,
-  "passed": 642,
+  "generated_at": "2026-08-22T22:42:53.041031+00:00",
+  "labels": 655,
+  "passed": 655,
   "metrics": {
     "AV-A2A001": {
       "tp": 4,
@@ -141,9 +141,9 @@
       "recall": 1.0
     },
     "AV-NET001": {
-      "tp": 44,
+      "tp": 49,
       "fp": 0,
-      "tn": 42,
+      "tn": 50,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -4688,8 +4688,26 @@
     {
       "id": "net-contextual-google-adk-issue-real",
       "rule_id": "AV-NET001",
-      "expected": true,
-      "observed": true,
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-contextual-google-adk-issue-post-real-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-contextual-google-adk-issue-comments-real-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true
@@ -4697,8 +4715,17 @@
     {
       "id": "net-contextual-google-adk-pr-real",
       "rule_id": "AV-NET001",
-      "expected": true,
-      "observed": true,
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-contextual-google-adk-pr-post-real-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true
@@ -4708,6 +4735,96 @@
       "rule_id": "AV-NET001",
       "expected": false,
       "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-python-imported-literal-direct-local-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-python-imported-literal-alias-local-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-python-imported-literal-module-alias-local-negative",
+      "rule_id": "AV-NET001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-python-imported-literal-env-local-review",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-python-imported-literal-composed-local-review",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-python-imported-literal-source-reassigned-local-review",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-python-imported-literal-global-mutated-local-review",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-python-imported-literal-consumer-rebound-local-review",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-python-imported-literal-shadowed-local-review",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "net-python-imported-literal-qualified-local-review",
+      "rule_id": "AV-NET001",
+      "expected": true,
+      "observed": true,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

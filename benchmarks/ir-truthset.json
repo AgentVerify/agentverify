@@ -4815,7 +4815,7 @@
       "id":"python-contextual-network-google-adk-issue-real",
       "target":{"kind":"repository","repository":"google/adk-python","commit":"775c1bd36e205eec65e207ad29fdc4cf2184e47e"},
       "check_id":"IR-PY-CONTEXTUAL-IMPORT","path":"contributing/samples/adk_team/adk_issue_formatting_agent/agent.py","line":85,"expected":true,
-      "anchor":{"kind":"capability","name":"network","attributes":{"summary":"imported-function","dynamic_origin":true,"import_resolution":"contextual-absolute-import-single-path","helper_path":"contributing/samples/adk_team/adk_issue_formatting_agent/utils.py"}},
+      "anchor":{"kind":"capability","name":"network","attributes":{"summary":"imported-function","dynamic_origin":false,"import_resolution":"contextual-absolute-import-single-path","helper_path":"contributing/samples/adk_team/adk_issue_formatting_agent/utils.py","origin_resolution":"imported-module-literal","origin_path":"contributing/samples/adk_team/adk_issue_formatting_agent/settings.py","origin_line":21}},
       "relationship":{"source_kind":"tool","source_name":"get_issue","relation":"uses","target_kind":"capability","target_name":"network"}
     },
     {
@@ -4829,8 +4829,68 @@
       "id":"python-contextual-network-google-adk-pr-real",
       "target":{"kind":"repository","repository":"google/adk-python","commit":"775c1bd36e205eec65e207ad29fdc4cf2184e47e"},
       "check_id":"IR-PY-CONTEXTUAL-IMPORT","path":"contributing/samples/adk_team/adk_pr_triaging_agent/agent.py","line":148,"expected":true,
-      "anchor":{"kind":"capability","name":"network","attributes":{"summary":"imported-function","dynamic_origin":true,"import_resolution":"contextual-absolute-import-single-path","helper_path":"contributing/samples/adk_team/adk_pr_triaging_agent/utils.py"}},
+      "anchor":{"kind":"capability","name":"network","attributes":{"summary":"imported-function","dynamic_origin":false,"import_resolution":"contextual-absolute-import-single-path","helper_path":"contributing/samples/adk_team/adk_pr_triaging_agent/utils.py","origin_resolution":"imported-module-literal","origin_path":"contributing/samples/adk_team/adk_pr_triaging_agent/settings.py","origin_line":21}},
       "relationship":{"source_kind":"tool","source_name":"get_pull_request_details","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id":"python-imported-literal-origin-direct-local",
+      "target":{"kind":"local","path":"cases/python_imported_literal_origin"},
+      "check_id":"IR-PY-IMPORTED-LITERAL-ORIGIN","path":"agent.py","line":23,"expected":true,
+      "component":{"kind":"capability","name":"network","attributes":{"dynamic_origin":false,"origin_resolution":"imported-module-literal","origin_path":"pkg/settings.py","origin_line":4}}
+    },
+    {
+      "id":"python-imported-literal-origin-alias-local",
+      "target":{"kind":"local","path":"cases/python_imported_literal_origin"},
+      "check_id":"IR-PY-IMPORTED-LITERAL-ORIGIN","path":"agent.py","line":28,"expected":true,
+      "component":{"kind":"capability","name":"network","attributes":{"dynamic_origin":false,"origin_resolution":"imported-module-literal","origin_path":"pkg/settings.py","origin_line":5}}
+    },
+    {
+      "id":"python-imported-literal-origin-propagated-local",
+      "target":{"kind":"local","path":"cases/python_imported_literal_origin"},
+      "check_id":"IR-PY-IMPORTED-LITERAL-ORIGIN","path":"agent.py","line":33,"expected":true,
+      "component":{"kind":"capability","name":"network","attributes":{"dynamic_origin":false,"origin_resolution":"imported-module-literal","origin_path":"pkg/settings.py","origin_line":4}}
+    },
+    {
+      "id":"python-imported-literal-origin-env-local-negative",
+      "target":{"kind":"local","path":"cases/python_imported_literal_origin"},
+      "check_id":"IR-PY-IMPORTED-LITERAL-ORIGIN","path":"agent.py","line":38,"expected":false,"source_contains":"ENV_BASE",
+      "component":{"kind":"capability","name":"network","attributes":{"origin_resolution":"imported-module-literal"}}
+    },
+    {
+      "id":"python-imported-literal-origin-composed-local-negative",
+      "target":{"kind":"local","path":"cases/python_imported_literal_origin"},
+      "check_id":"IR-PY-IMPORTED-LITERAL-ORIGIN","path":"agent.py","line":43,"expected":false,"source_contains":"COMPOSED_BASE",
+      "component":{"kind":"capability","name":"network","attributes":{"origin_resolution":"imported-module-literal"}}
+    },
+    {
+      "id":"python-imported-literal-origin-source-reassigned-local-negative",
+      "target":{"kind":"local","path":"cases/python_imported_literal_origin"},
+      "check_id":"IR-PY-IMPORTED-LITERAL-ORIGIN","path":"agent.py","line":48,"expected":false,"source_contains":"REASSIGNED_SOURCE_BASE",
+      "component":{"kind":"capability","name":"network","attributes":{"origin_resolution":"imported-module-literal"}}
+    },
+    {
+      "id":"python-imported-literal-origin-global-mutated-local-negative",
+      "target":{"kind":"local","path":"cases/python_imported_literal_origin"},
+      "check_id":"IR-PY-IMPORTED-LITERAL-ORIGIN","path":"agent.py","line":53,"expected":false,"source_contains":"GLOBAL_MUTATED_BASE",
+      "component":{"kind":"capability","name":"network","attributes":{"origin_resolution":"imported-module-literal"}}
+    },
+    {
+      "id":"python-imported-literal-origin-consumer-rebound-local-negative",
+      "target":{"kind":"local","path":"cases/python_imported_literal_origin"},
+      "check_id":"IR-PY-IMPORTED-LITERAL-ORIGIN","path":"agent.py","line":58,"expected":false,"source_contains":"REBOUND_BASE",
+      "component":{"kind":"capability","name":"network","attributes":{"origin_resolution":"imported-module-literal"}}
+    },
+    {
+      "id":"python-imported-literal-origin-shadowed-local-negative",
+      "target":{"kind":"local","path":"cases/python_imported_literal_origin"},
+      "check_id":"IR-PY-IMPORTED-LITERAL-ORIGIN","path":"agent.py","line":63,"expected":false,"source_contains":"FIXED_BASE",
+      "component":{"kind":"capability","name":"network","attributes":{"origin_resolution":"imported-module-literal"}}
+    },
+    {
+      "id":"python-imported-literal-origin-qualified-local-negative",
+      "target":{"kind":"local","path":"cases/python_imported_literal_origin"},
+      "check_id":"IR-PY-IMPORTED-LITERAL-ORIGIN","path":"agent.py","line":68,"expected":false,"source_contains":"settings.FIXED_BASE",
+      "component":{"kind":"capability","name":"network","attributes":{"origin_resolution":"imported-module-literal"}}
     },
     {
       "id":"taxonomy-local-agno-python",

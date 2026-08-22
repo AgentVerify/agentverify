@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v111
+framework, wrapper, or configuration path. Counts come from schema-v112
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -454,9 +454,11 @@ edges.
 The Composio CLI also contributes one exact unsafe tool path. `ToolsExecutor.execute` maps
 `params.arguments` into `uploadToolInputFiles`; schema-marked `file_uploadable` values recurse into
 the URL branch and raw global `fetch(url)`. The symbolized tool edge records
-`origin_authority: tool-execution-arguments` and `destination_policy: absent-on-proven-path`, raising
-the corpus to 23 AV-NET001 reviews across 12 repositories. A guarded transport, fixed argument map,
-broken schema gate, or wrong import withholds the path.
+`origin_authority: tool-execution-arguments` and `destination_policy: absent-on-proven-path`.
+Schema v112 then resolves five Google ADK Python helper arguments back to two immutable imported
+`https://api.github.com` constants, reducing the corpus to 18 AV-NET001 reviews across 11
+repositories. Each fixed-origin capability retains the source module and line. A guarded transport,
+fixed argument map, broken schema gate, or wrong import withholds a dynamic path.
 
 Google ADK's generated OpenAPI tools contribute the configured-origin comparison path. The exact
 `OpenAPIToolset → OpenApiSpecParser → RestApiTool.runAsync` composition reaches raw global fetch,
@@ -699,6 +701,11 @@ and `network-ssrf-policy` edge.
   candidates remain unresolved. Module-qualified calls, package reexports, nested or transitive helpers,
   client instances, formal-parameter aliases inside the helper, and star imports
   remain unresolved; any observed binding or HTTP-client rebinding invalidates the bounded proof.
+- Python imported literal-origin proof requires an exact named import from one selected module and a
+  single immutable top-level HTTP(S) string literal. Import aliases and f-string/local-prefix
+  propagation are supported. Environment or composed values, source duplication or `global`
+  mutation, consumer rebinding, function-local shadowing, wildcard/reexport forms, ambiguous imports,
+  and module-qualified access remain unresolved.
 - Python urllib coverage requires an exact module-level `urllib`/`urllib.request` import or named
   `urlopen` import. It unwraps only a direct import-proven `Request(url)` expression or immutable
   local assignment. Function-local imports, opener aliases assigned later, custom opener objects,
@@ -825,7 +832,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 642-label rule truth set and 1,214-label IR component/relationship set are curated regression
+The 655-label rule truth set and 1,224-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed
