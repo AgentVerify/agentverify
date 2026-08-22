@@ -83,6 +83,13 @@ model methods: OpenAI chat completions/responses, Anthropic messages, and Google
 generation. A direct literal `model` property creates provider-call and model components at the
 request location. Mutation, nonliteral request objects, generic `.create` matching, and parameter
 flow invalidate or withhold this propagation without removing the original constructor inventory.
+Schema v107 parses actual TypeScript parameter bindings so a constructor used only as a type is not
+mistaken for a shadow. For exact imported client annotations on unique non-exported free functions,
+a fixed-point dataflow resolves a parameter only if every direct same-file call argument is the same
+provider: an inline default-endpoint constructor, an immutable constructor binding, or an already
+resolved typed parameter. Function-name references must all be definitions or direct analyzed calls,
+so callback/value escape withholds proof. Cycles need a concrete root; exports, mixed call sites,
+mutation, and real parameter-name shadowing also withhold the downstream proof.
 Schema v77 gives import-proven, assigned Python MCP stdio constructors stable component identities.
 An Agent receives an exact `uses` edge only when its literal `mcp_servers=[...]` list names an
 earlier, unreassigned server binding in the same statement block. Package and version facts remain

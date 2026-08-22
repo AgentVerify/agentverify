@@ -11546,6 +11546,19 @@ class TypeScriptProviderCall:
     model: str | None = None
     model_method: str | None = None
     configured_by: str | None = None
+    resolution_basis: str | None = None
+
+
+@dataclass(frozen=True)
+class TypeScriptProviderFunction:
+    name: str
+    name_offset: int
+    body_start: int
+    body_end: int
+    parameters: tuple[TypeScriptHelperParameter, ...]
+    provider_parameters: tuple[
+        tuple[int, str, TypeScriptProviderImportBinding], ...
+    ]
 
 
 @dataclass(frozen=True)
@@ -11974,6 +11987,31 @@ def typescript_literal_identifier_arguments(expression: str) -> list[str] | None
     return identifiers
 
 
+def typescript_parameter_binding_is_declared(text: str, name: str) -> bool:
+    """Return whether a function/arrow parameter binds the exact local name."""
+    code = typescript_code_mask(text)
+    patterns = (
+        re.compile(r"\bfunction\s+[A-Za-z_$][\w$]*\s*\("),
+        re.compile(r"\("),
+    )
+    seen: set[int] = set()
+    for pattern_index, pattern in enumerate(patterns):
+        for match in pattern.finditer(code):
+            opening = code.find("(", match.start(), match.end())
+            if opening in seen:
+                continue
+            end = typescript_balanced_end(code, opening, "(", ")")
+            if end is None:
+                continue
+            if pattern_index == 1 and not re.match(r"\s*=>", code[end:]):
+                continue
+            seen.add(opening)
+            parameters = typescript_function_parameters(text[opening + 1 : end - 1])
+            if any(parameter.local_name == name for parameter in parameters):
+                return True
+    return bool(re.search(rf"(?<![\w$]){re.escape(name)}\s*=>", code))
+
+
 def typescript_import_binding_is_shadowed(text: str, name: str) -> bool:
     """Conservatively reject imported constructor aliases shadowed in local code."""
     code = typescript_code_mask(text)
@@ -11981,8 +12019,7 @@ def typescript_import_binding_is_shadowed(text: str, name: str) -> bool:
     return bool(
         re.search(rf"\b(?:const|let|var|function|class)\s+{escaped}\b", code)
         or re.search(rf"(?<![\w$.]){escaped}\s*=(?!=)", code)
-        or re.search(rf"\bfunction\s+\w*\s*\([^)]*\b{escaped}\b", code)
-        or re.search(rf"\([^)]*\b{escaped}\b[^)]*\)\s*=>", code)
+        or typescript_parameter_binding_is_declared(text, name)
     )
 
 
@@ -12322,6 +12359,184 @@ def typescript_ai_sdk_provider_calls(text: str) -> list[TypeScriptProviderCall]:
     return sorted(observations, key=lambda item: item.offset)
 
 
+def typescript_provider_function_definitions(
+    text: str,
+    imports: dict[str, TypeScriptProviderImportBinding],
+) -> dict[str, TypeScriptProviderFunction]:
+    """Return unique local functions with exact native-provider parameter types."""
+    code = typescript_code_mask(text)
+    pattern = re.compile(
+        r"\b(?P<export>export\s+)?(?:async\s+)?function\s+"
+        r"(?P<name>[A-Za-z_$][\w$]*)\s*\("
+    )
+    definitions: list[TypeScriptProviderFunction] = []
+    for match in pattern.finditer(code):
+        if match.group("export"):
+            continue
+        opening = code.find("(", match.start(), match.end())
+        parameter_end = typescript_balanced_end(code, opening, "(", ")")
+        if parameter_end is None:
+            continue
+        body_opening = code.find("{", parameter_end)
+        if body_opening < 0 or body_opening - parameter_end > 500:
+            continue
+        if code.find(";", parameter_end, body_opening) >= 0:
+            continue
+        body_end = typescript_balanced_end(code, body_opening, "{", "}")
+        if body_end is None:
+            continue
+        parameter_text = text[opening + 1 : parameter_end - 1]
+        parameters = typescript_function_parameters(parameter_text)
+        provider_parameters = []
+        raw_parameters = typescript_call_arguments(parameter_text)
+        for index, (raw_parameter, _) in enumerate(raw_parameters):
+            typed = re.match(
+                r"\s*([A-Za-z_$][\w$]*)\s*\??\s*:\s*"
+                r"([A-Za-z_$][\w$]*)\b",
+                typescript_code_mask(raw_parameter),
+            )
+            if typed is None or typed.group(2) not in imports:
+                continue
+            provider_parameters.append(
+                (index, typed.group(1), imports[typed.group(2)])
+            )
+        if not provider_parameters:
+            continue
+        definitions.append(
+            TypeScriptProviderFunction(
+                match.group("name"),
+                match.start("name"),
+                body_opening + 1,
+                body_end - 1,
+                parameters,
+                tuple(provider_parameters),
+            )
+        )
+    counts = Counter(item.name for item in definitions)
+    return {item.name: item for item in definitions if counts[item.name] == 1}
+
+
+def typescript_inline_provider_constructor_binding(
+    expression: str,
+    imports: dict[str, TypeScriptProviderImportBinding],
+) -> TypeScriptProviderImportBinding | None:
+    """Resolve one direct native provider constructor argument with default endpoint proof."""
+    code = typescript_code_mask(expression).strip()
+    match = re.match(r"new\s+([A-Za-z_$][\w$]*)\s*\(", code)
+    if match is None or match.group(1) not in imports:
+        return None
+    opening = code.find("(", match.start(), match.end())
+    end = typescript_balanced_end(code, opening, "(", ")")
+    if end is None or code[end:].strip():
+        return None
+    if not typescript_provider_config_uses_default_endpoint(expression, opening, end):
+        return None
+    return imports[match.group(1)]
+
+
+def typescript_provider_typed_parameter_bindings(
+    text: str,
+    imports: dict[str, TypeScriptProviderImportBinding],
+    configured_instances: dict[str, TypeScriptProviderImportBinding],
+) -> tuple[
+    dict[tuple[str, int], TypeScriptProviderImportBinding],
+    dict[str, TypeScriptProviderFunction],
+]:
+    """Resolve exact provider parameters when every same-file call site agrees."""
+    code = typescript_code_mask(text)
+    definitions = typescript_provider_function_definitions(text, imports)
+    call_sites: dict[str, list[tuple[int, list[str]]]] = defaultdict(list)
+    call_offsets: dict[str, set[int]] = defaultdict(set)
+    for name, definition in definitions.items():
+        pattern = re.compile(rf"(?<![\w$.]){re.escape(name)}\s*\(")
+        for match in pattern.finditer(code):
+            if match.start() == definition.name_offset:
+                continue
+            opening = code.find("(", match.start(), match.end())
+            end = typescript_balanced_end(code, opening, "(", ")")
+            if end is None:
+                continue
+            call_offsets[name].add(match.start())
+            call_sites[name].append(
+                (
+                    match.start(),
+                    [
+                        argument
+                        for argument, _ in typescript_call_arguments(
+                            text[opening + 1 : end - 1]
+                        )
+                    ],
+                )
+            )
+    escaped_functions = {
+        name
+        for name, definition in definitions.items()
+        if any(
+            match.start() not in {definition.name_offset, *call_offsets.get(name, set())}
+            for match in re.finditer(rf"\b{re.escape(name)}\b", code)
+        )
+    }
+
+    resolved: dict[tuple[str, int], TypeScriptProviderImportBinding] = {}
+
+    def enclosing_function(offset: int) -> TypeScriptProviderFunction | None:
+        candidates = [
+            item
+            for item in definitions.values()
+            if item.body_start <= offset < item.body_end
+        ]
+        return min(candidates, key=lambda item: item.body_end - item.body_start) if candidates else None
+
+    changed = True
+    while changed:
+        changed = False
+        for name, definition in definitions.items():
+            if name in escaped_functions:
+                continue
+            sites = call_sites.get(name, [])
+            if not sites:
+                continue
+            for index, parameter_name, declared_binding in definition.provider_parameters:
+                key = (name, index)
+                if key in resolved:
+                    continue
+                site_bindings = []
+                valid = True
+                for offset, arguments in sites:
+                    if index >= len(arguments):
+                        valid = False
+                        break
+                    argument = arguments[index].strip()
+                    binding = configured_instances.get(argument)
+                    if binding is None:
+                        binding = typescript_inline_provider_constructor_binding(
+                            argument, imports
+                        )
+                    if binding is None and re.fullmatch(
+                        r"[A-Za-z_$][\w$]*", argument
+                    ):
+                        caller = enclosing_function(offset)
+                        if caller is not None:
+                            for (
+                                caller_index,
+                                caller_parameter,
+                                _,
+                            ) in caller.provider_parameters:
+                                if caller_parameter == argument:
+                                    binding = resolved.get(
+                                        (caller.name, caller_index)
+                                    )
+                                    break
+                    if binding != declared_binding:
+                        valid = False
+                        break
+                    site_bindings.append(binding)
+                if valid and site_bindings:
+                    resolved[key] = declared_binding
+                    changed = True
+    return resolved, definitions
+
+
 def typescript_provider_sdk_calls(text: str) -> list[TypeScriptProviderCall]:
     """Resolve exact native provider SDK constructors with default endpoint proof."""
     code = typescript_code_mask(text)
@@ -12389,6 +12604,58 @@ def typescript_provider_sdk_calls(text: str) -> list[TypeScriptProviderCall]:
                         model,
                         model_method,
                         binding.local_name,
+                        "immutable-constructor-binding",
+                    )
+                )
+
+    stable_instances = {
+        instance_name: binding
+        for instance_name, binding, _ in configured_instances
+    }
+    typed_parameters, definitions = typescript_provider_typed_parameter_bindings(
+        text, imports, stable_instances
+    )
+    for (function_name, parameter_index), binding in typed_parameters.items():
+        definition = definitions[function_name]
+        parameter_name = next(
+            name
+            for index, name, _ in definition.provider_parameters
+            if index == parameter_index
+        )
+        body = text[definition.body_start : definition.body_end]
+        if typescript_import_binding_is_shadowed(body, parameter_name):
+            continue
+        for method_pattern, model_method in TYPESCRIPT_PROVIDER_SDK_MODEL_METHODS.get(
+            binding.provider, ()
+        ):
+            pattern = re.compile(
+                rf"(?<![\w$.]){re.escape(parameter_name)}\s*\.\s*"
+                rf"{method_pattern}\s*\("
+            )
+            for match in pattern.finditer(
+                code, definition.body_start, definition.body_end
+            ):
+                opening = code.find("(", match.start(), match.end())
+                end = typescript_balanced_end(code, opening, "(", ")")
+                if end is None or end > definition.body_end:
+                    continue
+                model = typescript_literal_call_object_string_property(
+                    text, opening, end, "model"
+                )
+                if model is None:
+                    continue
+                observations.append(
+                    TypeScriptProviderCall(
+                        match.start(),
+                        re.sub(r"\s+", "", code[match.start() : opening]),
+                        "provider-sdk-model",
+                        binding.module,
+                        binding.imported_symbol,
+                        binding.provider,
+                        model,
+                        model_method,
+                        binding.local_name,
+                        "same-file-typed-parameter-callsite-consensus",
                     )
                 )
     return sorted(observations, key=lambda item: item.offset)
@@ -14401,6 +14668,8 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
             attributes["model_method"] = provider_call.model_method
         if provider_call.configured_by is not None:
             attributes["configured_by"] = provider_call.configured_by
+        if provider_call.resolution_basis is not None:
+            attributes["resolution_basis"] = provider_call.resolution_basis
         ir.add_component(
             Component("provider", provider_call.provider, ev, attributes)
         )

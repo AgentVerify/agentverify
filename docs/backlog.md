@@ -49,6 +49,14 @@ Schema v106 follows an immutable native SDK constructor result into exact OpenAI
 nonliteral request objects, unrelated methods, and typed-parameter flow remain unresolved. Three
 pinned OpenAI calls add exact model identity, and the 369 component labels now pin 271 positives and
 98 negatives.
+Schema v107 distinguishes TypeScript type references from real parameter shadowing and propagates
+native provider identity through unique, non-exported same-file functions only when every direct
+call site resolves to the same exact default-endpoint constructor and the function never escapes as
+a value. A fixed-point pass covers the
+four-hop OpenAI Agents JS helper chain; exported functions, mixed/unproven call sites, rootless
+cycles, and actual constructor-name parameters remain unresolved. It also recovers one Anthropic
+constructor previously hidden by qualified SDK types. The 381 component labels now pin 278
+positives and 103 negatives.
 Next generalize selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
@@ -389,8 +397,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 642 pinned positive/negative locations, with 1,163 separately
-scored IR component/relationship labels. Schema-v106 engine results and
+The curated regression set has reached 642 pinned positive/negative locations, with 1,175 separately
+scored IR component/relationship labels. Schema-v107 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

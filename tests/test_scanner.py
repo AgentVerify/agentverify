@@ -343,6 +343,38 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             None,
         ),
         (
+            "provider_native_typed_parameter_calls.ts",
+            4,
+            "OpenAI",
+            "OpenAI",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
+            "provider_native_typed_parameter_calls.ts",
+            12,
+            "OpenAI",
+            "client.responses.create",
+            "provider-sdk-model",
+            "OpenAI",
+        ),
+        (
+            "provider_native_typed_parameter_calls_unresolved.ts",
+            11,
+            "OpenAI",
+            "OpenAI",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
+            "provider_native_typed_parameter_calls_unresolved.ts",
+            28,
+            "OpenAI",
+            "OpenAI",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
             "provider_native_model_calls_unresolved.ts",
             7,
             "OpenAI",
@@ -419,9 +451,37 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "Anthropic",
         ),
     }
+    assert any(
+        item.kind == "model"
+        and item.evidence.path == "provider_native_typed_parameter_calls.ts"
+        and item.evidence.line == 12
+        and item.name == "gpt-5.4"
+        and item.attributes.get("provider") == "OpenAI"
+        and item.attributes.get("resolution") == "exact-typescript-provider-import"
+        for item in ir.components
+    )
     assert not any(
         item.kind == "provider"
         and item.evidence.path == "provider_calls_rebound.ts"
+        and item.attributes.get("resolution") == "exact-typescript-provider-import"
+        for item in ir.components
+    )
+    assert not any(
+        item.kind in {"provider", "model"}
+        and item.evidence.path == "provider_native_typed_parameter_calls_unresolved.ts"
+        and (
+            item.attributes.get("call_kind") == "provider-sdk-model"
+            or (
+                item.kind == "model"
+                and item.attributes.get("resolution")
+                == "exact-typescript-provider-import"
+            )
+        )
+        for item in ir.components
+    )
+    assert not any(
+        item.kind == "provider"
+        and item.evidence.path == "provider_native_import_shadowed.ts"
         and item.attributes.get("resolution") == "exact-typescript-provider-import"
         for item in ir.components
     )

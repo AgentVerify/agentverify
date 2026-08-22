@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v106
+framework, wrapper, or configuration path. Counts come from schema-v107
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -120,6 +120,15 @@ across nine repositories: 21 constructors, three native model calls, and 32 offi
 Only the exact OpenAI, Anthropic, and Google method chains with a direct first-argument object and
 literal `model` property are supported. Rebound clients, nonliteral request objects, unrelated
 methods, and typed-parameter client propagation remain unresolved.
+
+Schema v107 resolves one typed-parameter model path through a same-file fixed point. OpenAI Agents
+JS passes an inline default-endpoint client through four unique non-exported helpers before calling
+`client.responses.create({model: 'gpt-5.4'})`. Type annotations and qualified SDK types no longer
+count as constructor shadowing, which also recovers an Anthropic constructor in MCP TypeScript SDK.
+TypeScript reaches 59 exact calls across nine repositories: 23 constructors, four native model
+calls, and 32 AI SDK calls. The typed proof requires unanimous direct call sites; exported helpers,
+mixed or unproven arguments, cycles without a constructor root, and actual parameter shadowing are
+withheld, as are functions passed or stored as values.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
 Agent→MCP-server identities. Import-proven literal stdio constructor calls are inventoried for any
@@ -563,7 +572,9 @@ and `network-ssrf-policy` edge.
   supported form is an immutable direct module-level `const` require of the OpenAI or Anthropic
   package default constructor. Immutable native instances expose exact OpenAI chat/response,
   Anthropic message, and Google content-generation model calls only when the direct request object
-  contains a literal `model`; other require shapes and instance/method flows remain unresolved.
+  contains a literal `model`. Exact imported type annotations can carry provider identity through
+  unique non-exported same-file helpers when every direct call site agrees; other require shapes,
+  exported/ambiguous helper graphs, and instance/method flows remain unresolved.
   AgentScope's exact public Ollama model reexport and direct
   PydanticAI provider/model/embedding modules are supported, but general package reexports are not.
   Literal call-model arguments inherit the proven provider, and selected Mistral-owned prefixes are
@@ -779,7 +790,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 642-label rule truth set and 1,163-label IR component/relationship set are curated regression
+The 642-label rule truth set and 1,175-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

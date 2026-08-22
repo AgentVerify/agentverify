@@ -1045,6 +1045,11 @@ def main() -> int:
                     bool(item.attributes.get("configured_by"))
                     for item in typescript_provider_call_attributions
                 ),
+                "typed_parameter_model_calls": sum(
+                    item.attributes.get("resolution_basis")
+                    == "same-file-typed-parameter-callsite-consensus"
+                    for item in typescript_provider_call_attributions
+                ),
                 "literal_models": len(typescript_provider_call_models),
                 **{
                     metric: sum(
@@ -2555,7 +2560,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 106,
+        "schema_version": 107,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2670,6 +2675,7 @@ def main() -> int:
                     "factory_calls",
                     "model_calls",
                     "configured_instance_calls",
+                    "typed_parameter_model_calls",
                     "literal_models",
                     *TYPESCRIPT_PROVIDER_METRICS,
                 )

@@ -463,6 +463,15 @@ three model requests) plus 32 official AI SDK calls. Rebound clients, nonliteral
 unrelated methods, and typed-parameter propagation remain unresolved; provider-presence counts do
 not change.
 
+Schema v107 corrects a TypeScript shadowing false negative: constructor names used as type
+annotations or qualified SDK namespaces are references, not new parameter bindings. This recovers
+an OpenAI constructor in OpenAI Agents JS and an Anthropic constructor in MCP TypeScript SDK. A
+unanimous same-file fixed point then follows the inline OpenAI client through four non-exported
+helpers to the literal `gpt-5.4` Responses request. TypeScript reaches 59 exact calls across nine
+repositories—27 native (23 constructors and four model requests) plus 32 AI SDK calls. Exported
+helpers, mixed call sites, rootless cycles, callback/value escapes, and actual parameter shadowing
+remain unresolved.
+
 ## 5. Controls are layered
 
 Sandboxing vocabulary appears in 64 repositories, audit/tracing in 57, human approval in 52, and
