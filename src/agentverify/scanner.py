@@ -6,6 +6,7 @@ import ast
 import json
 import os
 import re
+import shlex
 import warnings
 from collections import Counter, defaultdict
 from dataclasses import dataclass
@@ -132,6 +133,158 @@ APPROVAL_BYPASS_ENV_NAME = re.compile(
     re.IGNORECASE,
 )
 APPROVAL_GATE_NAME = re.compile(r"approv|confirm|consent|permission", re.IGNORECASE)
+MCP_PACKAGE_LAUNCHERS = {"npx", "uvx"}
+MCP_LAUNCHER_CONSTRUCTORS = {
+    "MCPServer",
+    "MCPServerStdio",
+    "MCPTools",
+    "StdioServerParameters",
+}
+
+
+def literal_string_arguments(node: ast.AST | None) -> list[str | None] | None:
+    """Return a literal-preserving argument sequence, including an unresolved suffix."""
+    if isinstance(node, (ast.List, ast.Tuple)):
+        return [
+            item.value
+            if isinstance(item, ast.Constant) and isinstance(item.value, str)
+            else None
+            for item in node.elts
+        ]
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+        prefix = literal_string_arguments(node.left)
+        return [*prefix, None] if prefix is not None else None
+    return None
+
+
+def mcp_package_reference(
+    command: str,
+    arguments: list[str | None],
+) -> dict[str, object] | None:
+    """Resolve the package selected by a literal npx/uvx MCP launcher."""
+    if command not in MCP_PACKAGE_LAUNCHERS:
+        return None
+    automatic = command == "uvx"
+    no_install = False
+    package_spec: str | None = None
+    uvx_source_spec: str | None = None
+    index = 0
+    while index < len(arguments):
+        value = arguments[index]
+        if value is None:
+            return None
+        if command == "npx":
+            if value in {"-y", "--yes"}:
+                automatic = True
+                index += 1
+                continue
+            if value == "--no-install":
+                no_install = True
+                index += 1
+                continue
+            if value in {"--quiet", "-q"}:
+                index += 1
+                continue
+            if value in {"-p", "--package", "-c", "--call"} or value.startswith(
+                ("--package=", "--call=")
+            ):
+                return None
+        else:
+            if value in {"--isolated", "--no-cache", "--refresh", "--offline"}:
+                index += 1
+                continue
+            if value in {
+                "--with",
+                "--with-editable",
+                "--python",
+                "--index",
+                "--default-index",
+                "--index-url",
+                "--extra-index-url",
+                "--find-links",
+            }:
+                if index + 1 >= len(arguments) or arguments[index + 1] is None:
+                    return None
+                index += 2
+                continue
+            if value == "--from":
+                if index + 1 >= len(arguments) or arguments[index + 1] is None:
+                    return None
+                uvx_source_spec = arguments[index + 1]
+                index += 2
+                continue
+            if value.startswith("--from="):
+                uvx_source_spec = value.split("=", 1)[1]
+                index += 1
+                continue
+            if value.startswith(
+                (
+                    "--with=",
+                    "--with-editable=",
+                    "--python=",
+                    "--index=",
+                    "--default-index=",
+                    "--index-url=",
+                    "--extra-index-url=",
+                    "--find-links=",
+                )
+            ):
+                index += 1
+                continue
+        if value.startswith("-"):
+            return None
+        package_spec = uvx_source_spec or value
+        break
+    if package_spec is None:
+        return None
+
+    package_name = package_spec
+    reference = ""
+    if command == "npx":
+        if package_spec.startswith("@"):
+            slash = package_spec.find("/")
+            separator = package_spec.rfind("@")
+            if slash <= 1 or separator <= slash:
+                separator = -1
+        else:
+            separator = package_spec.rfind("@")
+        if separator > 0:
+            package_name = package_spec[:separator]
+            reference = package_spec[separator + 1 :]
+        if not re.fullmatch(r"(?:@[\w.-]+/)?[\w.-]+", package_name):
+            return None
+    else:
+        exact = re.fullmatch(r"([A-Za-z0-9_.-]+)==([^=<>!~]+)", package_spec)
+        if exact:
+            package_name, reference = exact.groups()
+        elif not re.fullmatch(r"[A-Za-z0-9_.-]+", package_spec):
+            return None
+
+    exact_version = bool(
+        reference
+        and (
+            command == "uvx"
+            or re.fullmatch(
+                r"v?\d+(?:\.\d+){1,3}(?:[-+][0-9A-Za-z.-]+)?",
+                reference,
+            )
+        )
+    )
+    return {
+        "package": package_name,
+        "package_spec": package_spec,
+        "version_scope": (
+            "exact" if exact_version else "floating" if reference else "unpinned"
+        ),
+        "auto_install": automatic and not no_install,
+        "install_mode": (
+            "disabled"
+            if no_install
+            else "automatic"
+            if automatic
+            else "prompt-or-local-cache"
+        ),
+    }
 
 
 @dataclass(frozen=True)
@@ -2460,6 +2613,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.imported_symbol_paths: dict[str, str] = {}
         self.imported_symbol_names: dict[str, str] = {}
         self.imported_symbol_resolutions: dict[str, str] = {}
+        self.mcp_launcher_constructors: dict[str, tuple[str, str]] = {}
         self.network_helper_bindings: dict[str, PythonNetworkHelperSummary] = {}
         self.module_paths = module_paths
         self.local_symbol_ids = local_symbol_ids
@@ -2711,6 +2865,79 @@ class PythonVisitor(ast.NodeVisitor):
         line = getattr(node, "lineno", 1)
         return Evidence(self.path, line, excerpt(self.lines, line))
 
+    def add_mcp_package_launcher(
+        self,
+        node: ast.AST,
+        *,
+        name: str,
+        command: str,
+        arguments: list[str | None],
+        constructor: str,
+        analysis: str,
+    ) -> None:
+        package = mcp_package_reference(command, arguments)
+        if package is None:
+            return
+        self.ir.add_component(
+            Component(
+                "mcp-server",
+                name,
+                self.ev(node),
+                {
+                    "transport": "stdio",
+                    "command": command,
+                    "package_manager": command,
+                    "constructor": constructor,
+                    "analysis": analysis,
+                    "frontend": "python",
+                    "scope": source_scope(self.path),
+                    **package,
+                },
+            )
+        )
+
+    def visit_Dict(self, node: ast.Dict) -> None:
+        entries = {
+            key.value: value
+            for key, value in zip(node.keys, node.values, strict=True)
+            if isinstance(key, ast.Constant) and isinstance(key.value, str)
+        }
+        servers = entries.get("mcpServers")
+        if isinstance(servers, ast.Dict):
+            for key, config in zip(servers.keys, servers.values, strict=True):
+                if not (
+                    isinstance(key, ast.Constant)
+                    and isinstance(key.value, str)
+                    and isinstance(config, ast.Dict)
+                ):
+                    continue
+                config_entries = {
+                    config_key.value: config_value
+                    for config_key, config_value in zip(
+                        config.keys, config.values, strict=True
+                    )
+                    if isinstance(config_key, ast.Constant)
+                    and isinstance(config_key.value, str)
+                }
+                command_node = config_entries.get("command")
+                if not (
+                    isinstance(command_node, ast.Constant)
+                    and isinstance(command_node.value, str)
+                ):
+                    continue
+                arguments = literal_string_arguments(config_entries.get("args"))
+                if arguments is None:
+                    continue
+                self.add_mcp_package_launcher(
+                    config,
+                    name=key.value,
+                    command=command_node.value,
+                    arguments=arguments,
+                    constructor="mcpServers",
+                    analysis="python-mcp-config-literal",
+                )
+        self.generic_visit(node)
+
     def resolve_local_symbol(
         self, kind: str, name: str, node: ast.AST
     ) -> tuple[str | None, str | None]:
@@ -2759,6 +2986,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.imported_symbol_paths.pop(name, None)
         self.imported_symbol_names.pop(name, None)
         self.imported_symbol_resolutions.pop(name, None)
+        self.mcp_launcher_constructors.pop(name, None)
 
     def visit_Import(self, node: ast.Import) -> None:
         for alias in node.names:
@@ -2774,6 +3002,17 @@ class PythonVisitor(ast.NodeVisitor):
         for alias in node.names:
             local_name = alias.asname or alias.name
             self.invalidate_imported_symbol(local_name)
+            module = node.module or ""
+            if (
+                self.function_depth == 0
+                and not self.class_stack
+                and alias.name in MCP_LAUNCHER_CONSTRUCTORS
+                and (
+                re.search(r"(?:^|[._])mcp(?:[._]|$)", module, re.IGNORECASE)
+                or "modelcontextprotocol" in module.lower()
+                )
+            ):
+                self.mcp_launcher_constructors[local_name] = (module, alias.name)
             helper_import_scope = not self.class_stack or self.function_depth > 0
             if helper_import_scope:
                 self.network_helper_bindings.pop(local_name, None)
@@ -3035,6 +3274,7 @@ class PythonVisitor(ast.NodeVisitor):
         previous_imported_symbol_paths = self.imported_symbol_paths
         previous_imported_symbol_names = self.imported_symbol_names
         previous_imported_symbol_resolutions = self.imported_symbol_resolutions
+        previous_mcp_launcher_constructors = self.mcp_launcher_constructors
         self.imported_symbol_paths = {
             name: target
             for name, target in self.imported_symbol_paths.items()
@@ -3048,6 +3288,11 @@ class PythonVisitor(ast.NodeVisitor):
         self.imported_symbol_resolutions = {
             name: basis
             for name, basis in self.imported_symbol_resolutions.items()
+            if name not in local_bindings
+        }
+        self.mcp_launcher_constructors = {
+            name: constructor
+            for name, constructor in self.mcp_launcher_constructors.items()
             if name not in local_bindings
         }
         previous_urllib_openers = self.urllib_openers
@@ -3342,6 +3587,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.imported_symbol_paths = previous_imported_symbol_paths
         self.imported_symbol_names = previous_imported_symbol_names
         self.imported_symbol_resolutions = previous_imported_symbol_resolutions
+        self.mcp_launcher_constructors = previous_mcp_launcher_constructors
         self.urllib_openers = previous_urllib_openers
         self.urllib_request_constructors = previous_urllib_request_constructors
 
@@ -4086,6 +4332,59 @@ class PythonVisitor(ast.NodeVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         call_name = dotted_name(node.func)
         short_name = call_name.rsplit(".", 1)[-1]
+        imported_mcp_constructor = (
+            self.mcp_launcher_constructors.get(node.func.id)
+            if isinstance(node.func, ast.Name)
+            and (not self.class_stack or self.function_depth > 0)
+            else None
+        )
+        if imported_mcp_constructor is not None:
+            _, constructor = imported_mcp_constructor
+            keywords = {
+                keyword.arg: keyword.value
+                for keyword in node.keywords
+                if keyword.arg is not None
+            }
+            if constructor == "MCPTools":
+                command_node = node.args[0] if node.args else keywords.get("command")
+                if (
+                    isinstance(command_node, ast.Constant)
+                    and isinstance(command_node.value, str)
+                ):
+                    try:
+                        invocation = shlex.split(command_node.value)
+                    except ValueError:
+                        invocation = []
+                    if invocation:
+                        self.add_mcp_package_launcher(
+                            node,
+                            name=f"{constructor}@{node.lineno}",
+                            command=invocation[0],
+                            arguments=list(invocation[1:]),
+                            constructor=constructor,
+                            analysis="python-import-bound-mcp-constructor",
+                        )
+            else:
+                command_node = keywords.get("command")
+                if command_node is None and node.args:
+                    command_node = node.args[0]
+                arguments_node = keywords.get("args")
+                if arguments_node is None and len(node.args) > 1:
+                    arguments_node = node.args[1]
+                arguments = literal_string_arguments(arguments_node)
+                if (
+                    isinstance(command_node, ast.Constant)
+                    and isinstance(command_node.value, str)
+                    and arguments is not None
+                ):
+                    self.add_mcp_package_launcher(
+                        node,
+                        name=f"{constructor}@{node.lineno}",
+                        command=command_node.value,
+                        arguments=arguments,
+                        constructor=constructor,
+                        analysis="python-import-bound-mcp-constructor",
+                    )
         if self.has_openai_agents_import and short_name in BUILTIN_TOOL_CAPABILITIES:
             tool_name = f"{short_name}@{node.lineno}"
             tool_id = self.call_symbol_ids.get(id(node)) or source_symbol(
@@ -9587,7 +9886,11 @@ def scan_mcp_config(ir: RepositoryIR, root: Path, path: Path) -> None:
     for name, config in servers.items():
         if not isinstance(config, dict):
             continue
-        attributes = {"transport": "unknown"}
+        attributes = {
+            "transport": "unknown",
+            "frontend": "json",
+            "scope": source_scope(relative),
+        }
         if command := config.get("command"):
             attributes.update({"command": command, "transport": "stdio"})
         if url := config.get("url"):
@@ -9625,6 +9928,19 @@ def scan_mcp_config(ir: RepositoryIR, root: Path, path: Path) -> None:
                 else:
                     sanitized_args.append(value)
             attributes["args"] = sanitized_args
+            if isinstance(command, str) and all(
+                isinstance(argument, str) for argument in args
+            ):
+                package = mcp_package_reference(command, list(args))
+                if package is not None:
+                    attributes.update(
+                        {
+                            "package_manager": command,
+                            "constructor": "mcpServers",
+                            "analysis": "json-mcp-config",
+                            **package,
+                        }
+                    )
         environment = config.get("env")
         if isinstance(environment, dict):
             attributes["environment_names"] = sorted(str(key) for key in environment)

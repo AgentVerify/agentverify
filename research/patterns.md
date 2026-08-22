@@ -44,6 +44,12 @@ export a class whose method has the same rejecting registry pattern, and the con
 imported constructor once in `__init__` without rebinding either the attribute or constructor name.
 This resolves the MCP Python SDK path while keeping mutable and fallback managers unknown.
 
+MCP stdio configuration is also a package-install boundary. `uvx` and `npx -y` can resolve and run a
+server package at startup, so a missing version or floating tag makes future executions depend on
+mutable registry state. Exact package pins narrow that state but do not prove artifact integrity,
+transitive dependency stability, publisher identity, or server capability safety. Analysis should
+keep package resolution separate from tool authorization and runtime containment.
+
 ## Local versus isolated execution
 
 Code and shell tools run directly, in local containers, or in remote sandboxes. “Sandbox present” is

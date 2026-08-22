@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T02:44:10.841123+00:00",
-  "labels": 498,
-  "passed": 498,
+  "generated_at": "2026-08-22T03:01:16.440632+00:00",
+  "labels": 512,
+  "passed": 512,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -78,6 +78,14 @@
     },
     "IR-MCP-METHOD-REGISTRY": {
       "tp": 2,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-MCP-PACKAGE-LAUNCHER": {
+      "tp": 13,
       "fp": 0,
       "tn": 1,
       "fn": 0,
@@ -4932,6 +4940,132 @@
       "check_id": "IR-APPROVAL-CALLBACK-BYPASS",
       "expected": false,
       "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-json-local",
+      "check_id": "IR-MCP-PACKAGE-LAUNCHER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-constructor-local",
+      "check_id": "IR-MCP-PACKAGE-LAUNCHER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-floating-local",
+      "check_id": "IR-MCP-PACKAGE-LAUNCHER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-uvx-with-local",
+      "check_id": "IR-MCP-PACKAGE-LAUNCHER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-dict-prefix-local",
+      "check_id": "IR-MCP-PACKAGE-LAUNCHER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-exact-local",
+      "check_id": "IR-MCP-PACKAGE-LAUNCHER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-no-install-local",
+      "check_id": "IR-MCP-PACKAGE-LAUNCHER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-fake-constructor-local-negative",
+      "check_id": "IR-MCP-PACKAGE-LAUNCHER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-marvin-real",
+      "check_id": "IR-MCP-PACKAGE-LAUNCHER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-qwen-real",
+      "check_id": "IR-MCP-PACKAGE-LAUNCHER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-agno-real",
+      "check_id": "IR-MCP-PACKAGE-LAUNCHER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-camel-real",
+      "check_id": "IR-MCP-PACKAGE-LAUNCHER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-openhands-pin-real",
+      "check_id": "IR-MCP-PACKAGE-LAUNCHER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-camel-no-yes-real",
+      "check_id": "IR-MCP-PACKAGE-LAUNCHER",
+      "expected": true,
+      "observed": true,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

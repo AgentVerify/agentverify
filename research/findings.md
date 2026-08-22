@@ -40,7 +40,7 @@ definitions are immutable module globals referenced from a nested Agent configur
 and its [conditional `copy`/`copy2` callable](https://github.com/ArcadeAI/arcade-ai/blob/597debaa1593b54172061ce36a414cc29aa8fc6a/examples/mcp_servers/local_filesystem/src/local_filesystem/tools.py#L329-L331),
 and CrewAI Examples'
 [`copytree` destination](https://github.com/crewAIInc/crewAI-examples/blob/da94a91e691e1cf5b3151416bb15b5b62729bea8/crews/landing_page_generator/src/landing_page_generator/tools/template_tools.py#L86-L90).
-That copy and three sibling sinks rely on `str(resolved).startswith(str(root))`; schema v63 preserves
+That copy and three sibling sinks rely on `str(resolved).startswith(str(root))`; schema v64 preserves
 the checks as weak, non-suppressing control edges because string prefixes do not enforce path-component
 boundaries. AV-FS002 takes precedence at those sinks and recommends `Path.is_relative_to`,
 `Path.relative_to`, or `os.path.commonpath`.
@@ -105,7 +105,7 @@ name matching from inventing this control.
 Five more calls bind a tool source through an escaping callback: three browser-use actions are
 registered and two ArcadeAI wrappers are returned. Equivalent retry closures in the MCP Python SDK
 and FastMCP do not qualify because the public caller still selects the name for each operation.
-Schema v63 therefore reports five instance and five closure fixed-binding edges, without suppressing
+Schema v64 therefore reports five instance and five closure fixed-binding edges, without suppressing
 any review.
 
 FastMCP adds an interprocedural routing fact: its middleware recursion reaches a same-class callee
@@ -121,7 +121,15 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the 373-label truth set.
+rule observations are pinned in the 406-label truth set.
+
+MCP configuration is also executable dependency configuration. Schema v64 resolves 24 literal
+`npx`/`uvx` package launchers in the bounded corpus: 19 unpinned, three floating, and two exact.
+Sixteen default-scope automatic installs across Marvin, Qwen-Agent, Agno, and CAMEL raise
+`AV-MCP003`; the two exact pins occur together in an OpenHands SDK example and remain inventory-only.
+The rule requires MCP structure and literal package selection, so ordinary package scripts,
+prompt/cache-only `npx`, `--no-install`, and dynamic launcher expressions are not promoted. This is a
+dependency-review signal, not evidence that a named package or registry is compromised.
 
 ## 3. Approval exists, but bypass behavior recurs
 
@@ -144,7 +152,7 @@ vulnerabilities, but they prove that deployment-time approval overrides recur in
 need auditable policy. Status flags and branches with an additional safety condition are regression
 negatives.
 
-Schema v63 promotes three of those reviews into a separate demonstrated flow without redefining the
+Schema v64 promotes three of those reviews into a separate demonstrated flow without redefining the
 examples as vulnerabilities. OpenAI Agents Python's local shell callback reaches
 `SHELL_AUTO_APPROVE`; OpenAI Agents JS has the corresponding local-shell flow and an apply-patch
 callback reaching `APPLY_PATCH_AUTO_APPROVE`. In each case the engine proves the same-file callback
@@ -158,7 +166,7 @@ IR labels.
 OpenAI signals appear in 51 repositories, Anthropic in 37, Google in 28, Azure OpenAI in 18, and AWS
 Bedrock in 14. Forty-four repositories contain two or more provider signals. An AI bill of
 materials should report providers and model configuration even when no security issue is present.
-The stricter schema-v63 engine promotes a subset only when selected source proves an exact SDK
+The stricter schema-v64 engine promotes a subset only when selected source proves an exact SDK
 import, literal service selection, or recognized model prefix: OpenAI appears in 41 repositories,
 Google and Anthropic in 17 each, Azure OpenAI in 11, AWS Bedrock in six, Groq in five, Ollama in
 four, and Mistral and Cohere in three each. The four added SDK families enrich provider identity but
@@ -419,7 +427,7 @@ is a distinct provenance boundary. In the pinned Google ADK JS path,
 unauthenticated-first card fetch; its SDK transports use an Undici agent or configured proxy, while
 the card-selected gRPC URL chooses secure versus insecure channel credentials. Neither exact
 TypeScript path proves that every advertised endpoint is HTTPS or bound to the configured card
-origin, so schema v63 emits two `AV-A2A001` reviews.
+origin, so schema v64 emits two `AV-A2A001` reviews.
 
 The pinned ADK Python client demonstrates the corresponding control. Both its per-invocation and
 cached construction paths call `_validate_agent_card` first. The validator enumerates every RPC URL,

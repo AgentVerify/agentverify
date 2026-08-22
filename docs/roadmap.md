@@ -5,12 +5,12 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
 
 | Priority | Capability | Impact | Frequency | Feasibility | Score | Evidence |
 |---:|---|---:|---:|---:|---:|---|
-| 1 | Agent bill of materials: models, providers, frameworks, tools, MCP | 4 | 5 | 5 | 100 | 44 multi-provider research signals; schema v63 proves exact selected-path framework/provider evidence in 40/48 repos; 50 have MCP signals and 69 have privileged-capability signals |
+| 1 | Agent bill of materials: models, providers, frameworks, tools, MCP | 4 | 5 | 5 | 100 | 44 multi-provider research signals; schema v64 proves exact selected-path framework/provider evidence in 40/48 repos; 50 have MCP signals and 69 have privileged-capability signals |
 | 2 | Dangerous shell and code execution | 5 | 4 | 4 | 80 | 42 shell-capable repos; 8 `shell=True` candidates |
-| 3 | MCP server/tool trust-boundary analysis | 5 | 4 | 4 | 80 | 50 MCP repos; 17 generic forwarding shapes |
+| 3 | MCP server/tool trust-boundary analysis | 5 | 4 | 4 | 80 | 50 MCP repos; 49 forwarding reviews plus 16 automatic unpinned/floating package installs across four pinned repositories |
 | 4 | Approval coverage and bypass paths | 5 | 4 | 3 | 60 | 52 approval-positive; 18 auto-approval candidates; three exact environment-backed callbacks reach privileged OpenAI built-ins, while one Python agent→MCP binding inherits a disabled default without a destructive-capability claim |
 | 5 | Filesystem scope and destructive writes | 5 | 4 | 3 | 60 | 59 writable-filesystem repos |
-| 6 | Sandbox boundary quality | 5 | 4 | 3 | 60 | 64 sandbox-positive; schema v63 finds 20 exact host/privilege/credential boundary reviews across 10 repos |
+| 6 | Sandbox boundary quality | 5 | 4 | 3 | 60 | 64 sandbox-positive; schema v64 finds 20 exact host/privilege/credential boundary reviews across 10 repos |
 | 7 | Parameter-controlled network origins | 5 | 2 | 4 | 40 | 18 reviews across 11 repositories; Composio CLI adds a schema-gated tool-argument URL upload through raw fetch, while Google ADK OpenAPI provides a fixed-origin counterexample with encoded model path segments, alongside the existing exact Python, n8n, Flowise, Google ADK load-page, Activepieces, and Composio conditional-runtime control states |
 | 8 | A2A AgentCard endpoint provenance | 5 | 2 | 4 | 40 | Two pinned TypeScript clients accept remote-card-selected RPC origins; ADK Python supplies two guarded comparison paths |
 | 9 | Consequential-action audit coverage | 4 | 4 | 2 | 32 | 57 tracing-positive; ADK BigQuery supplies attributable test storage, while one exact Skyvern production actor gap now raises AV-AUDIT001 without generic absence inference |
@@ -35,6 +35,8 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
 - Detect auto-approval/skip-confirmation configuration.
 - Detect broad filesystem roots, host mounts, Docker socket exposure, and unscoped file tools.
 - Detect MCP tool pass-throughs and enumerate statically registered server capabilities.
+- Resolve literal MCP `npx`/`uvx` launchers and review automatic installs unless the selected package
+  carries an exact version.
 - Detect tool parameters used as HTTP origins while preserving fixed-host URL templates and urllib
   `Request` objects as negatives.
 - Attach exact fail-closed Python scheme/hostname allowlists to their initial-origin capability while

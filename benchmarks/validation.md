@@ -121,7 +121,7 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-22 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,763 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,018 relationships, and completed in 231.4633 seconds on the development machine. Three parse
+resolved 2,018 relationships, and completed in 227.3819 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -132,10 +132,10 @@ versioned audited evidence hints plus Python imports reached from MCP forwarding
 URL-security call sites, all charged against the same cap. This refresh materialized 168 dependency files across 18
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v63 carries both the 168-file total and the
+dependency count per repository; engine schema v64 carries both the 168-file total and the
 18-repository coverage.
 
-Engine benchmark schema v63 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v64 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It also publishes Python and TypeScript initial-origin control coverage
 plus source-proven Python and TypeScript secure transports, with redirect, DNS, proxy, configured
@@ -509,6 +509,24 @@ one same-function lookup, one same-class method summary, and one imported-class 
 retain their AV-MCP002 reviews as routing-only discovery controls rather than authorization
 allowlists.
 
+## AV-MCP003 — automatic unpinned MCP package launch
+
+Schema v64 resolves 24 literal MCP package launchers: 19 unpinned, three floating, and two exact.
+Twenty-two use an automatic installation mode; tests remain inventoried but excluded from findings.
+The rule reports 16 default-scope launchers across four repositories: one Marvin `uvx` server, nine
+Qwen-Agent `uvx`/`npx -y` configurations, three Agno launchers (including two `@latest` references),
+and three CAMEL configurations. These are supply-chain review points, not claims that the referenced
+packages are malicious.
+
+The resolver requires standard MCP structure: an MCP-module-bound Python constructor, a literal
+nested Python `mcpServers` dictionary, or MCP JSON. `uvx` is automatic by definition; `npx` requires
+literal `-y`/`--yes`. Exact npm `package@version` and Python `package==version` references are
+inventory negatives. The same pinned OpenHands example supplies both real exact-version negatives,
+while CAMEL supplies prompt/cache-only `npx` negatives. Dynamic package selection,
+`npx --no-install`, arbitrary package scripts, lookalike constructors, and unsupported launcher options
+remain negative or unresolved. Remediation is to pin a reviewed exact package version and update it
+through a controlled dependency-review process.
+
 ## AV-FS001 — dynamic writable tool path
 
 The rule requires a writable tool-input-derived path inside a resolved tool; ordinary application
@@ -855,13 +873,14 @@ and surfacing failed writes through metrics or alerts.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 373 exact labels across all twelve enabled rules: 206 positives and 167
+`benchmarks/truthset.json` contains 406 exact labels across all thirteen enabled rules: 228 positives and 178
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
-Compose/Kubernetes/Docker SDK settings and host credential bind near misses. All 373 currently pass;
+Compose/Kubernetes/Docker SDK settings, host credential bind near misses, and exact/prompt-only MCP
+package launchers. All 406 currently pass;
 each rule's seed precision and recall are 1.0. Negative labels must retain either an observed Agent IR
 component anchor or verified source text at the exact pinned line, preventing a missing or drifting
 location from passing silently.
@@ -977,7 +996,9 @@ tool-factory/adapter labels cover four local Agent edges, one hosted-MCP capabil
 Agent-as-tool delegation, eight conservative local negatives, two AutoGen factory edges, one Google
 ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent edge plus delegation.
 Eighty component-taxonomy labels add 51 exact local/pinned framework, provider, and model positives
-plus 29 near-name and unrelated-service negatives. All 498 IR labels pass:
+plus 29 near-name and unrelated-service negatives. Fourteen MCP package-launcher labels separately
+pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
+four real repositories. All 512 IR labels pass:
 51 component-taxonomy positives/29 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
@@ -1012,4 +1033,5 @@ negative, two Flowise `secureFetch` positives/one negative, two Google ADK fetch
 negative, four Axios-instance positives/one negative, and two Activepieces filtering-client
 positives/one negative, plus four Composio conditional-runtime positives/one negative, two Composio
 CLI upload positives/one negative, two Google ADK OpenAPI origin-lock positives/one negative, and two
-OpenAI Agents Python MCP-approval-default positives/one negative.
+OpenAI Agents Python MCP-approval-default positives/one negative, plus 13 MCP package-launcher
+positives/one negative.

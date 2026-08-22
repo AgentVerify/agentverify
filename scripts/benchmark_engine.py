@@ -523,6 +523,11 @@ def main() -> int:
             and item.attributes.get("approval_bypass_resolution")
             == "same-file-transitive-callback"
         ]
+        mcp_package_launchers = [
+            item
+            for item in ir.components
+            if item.kind == "mcp-server" and item.attributes.get("package")
+        ]
         python_google_adk_bigquery_audit_controls = [
             item
             for item in ir.components
@@ -1188,6 +1193,40 @@ def main() -> int:
                     finding.rule_id == "AV-APPROVAL003" for finding in ir.findings
                 ),
             },
+            "mcp_package_launchers": {
+                "total": len(mcp_package_launchers),
+                "non_test": sum(
+                    item.attributes.get("scope") != "test"
+                    for item in mcp_package_launchers
+                ),
+                "auto_install": sum(
+                    item.attributes.get("auto_install") is True
+                    for item in mcp_package_launchers
+                ),
+                "unpinned": sum(
+                    item.attributes.get("version_scope") == "unpinned"
+                    for item in mcp_package_launchers
+                ),
+                "floating": sum(
+                    item.attributes.get("version_scope") == "floating"
+                    for item in mcp_package_launchers
+                ),
+                "exact": sum(
+                    item.attributes.get("version_scope") == "exact"
+                    for item in mcp_package_launchers
+                ),
+                "python": sum(
+                    item.attributes.get("frontend") == "python"
+                    for item in mcp_package_launchers
+                ),
+                "json": sum(
+                    item.attributes.get("frontend") == "json"
+                    for item in mcp_package_launchers
+                ),
+                "findings": sum(
+                    finding.rule_id == "AV-MCP003" for finding in ir.findings
+                ),
+            },
             "python_google_adk_bigquery_audit": {
                 "available_controls": sum(
                     item.attributes.get("deployment_state") == "framework-available"
@@ -1574,7 +1613,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 63,
+        "schema_version": 64,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -1917,6 +1956,23 @@ def main() -> int:
                     "python_tools",
                     "typescript_tools",
                     "configured_by_edges",
+                    "findings",
+                )
+            },
+            "mcp_package_launchers": {
+                name: sum(
+                    result["mcp_package_launchers"][name]
+                    for result in successful
+                )
+                for name in (
+                    "total",
+                    "non_test",
+                    "auto_install",
+                    "unpinned",
+                    "floating",
+                    "exact",
+                    "python",
+                    "json",
                     "findings",
                 )
             },

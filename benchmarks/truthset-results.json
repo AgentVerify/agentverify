@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T02:41:47.480568+00:00",
-  "labels": 373,
-  "passed": 373,
+  "generated_at": "2026-08-22T02:57:51.130790+00:00",
+  "labels": 406,
+  "passed": 406,
   "metrics": {
     "AV-A2A001": {
       "tp": 4,
@@ -80,6 +80,14 @@
       "tp": 16,
       "fp": 0,
       "tn": 3,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "AV-MCP003": {
+      "tp": 22,
+      "fp": 0,
+      "tn": 11,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -1088,6 +1096,303 @@
       "rule_id": "AV-MCP002",
       "expected": true,
       "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-json-unpinned-local",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-constructor-unpinned-local",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-floating-local",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-uvx-with-local",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-dict-uvx-local",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-dict-prefix-local",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-python-pin-local-negative",
+      "rule_id": "AV-MCP003",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-npm-pin-local-negative",
+      "rule_id": "AV-MCP003",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-no-install-local-negative",
+      "rule_id": "AV-MCP003",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-npx-prompt-local-negative",
+      "rule_id": "AV-MCP003",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-dynamic-local-negative",
+      "rule_id": "AV-MCP003",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-fake-constructor-local-negative",
+      "rule_id": "AV-MCP003",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-dict-pin-local-negative",
+      "rule_id": "AV-MCP003",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-marvin-real",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-qwen-sqlite-real",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-qwen-time-real",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-qwen-fetch-real",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-qwen-npx-real",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-qwen3-time-real",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-qwen3-fetch-real",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-qwen-coder-time-real",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-qwen-coder-fetch-real",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-qwen-coder-npx-real",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-agno-filesystem-real",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-agno-floating-first-real",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-agno-floating-second-real",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-camel-gdrive-real",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-camel-minimax-real",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-camel-notion-real",
+      "rule_id": "AV-MCP003",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-openhands-uvx-pin-real-negative",
+      "rule_id": "AV-MCP003",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-openhands-npx-pin-real-negative",
+      "rule_id": "AV-MCP003",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-camel-no-yes-real-negative",
+      "rule_id": "AV-MCP003",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "mcp-package-camel-floating-no-yes-real-negative",
+      "rule_id": "AV-MCP003",
+      "expected": false,
+      "observed": false,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

@@ -4770,6 +4770,49 @@ def test_typescript_and_mcp_config() -> None:
     assert servers["remote"]["attributes"]["url"] == "https://[REDACTED]@example.invalid/mcp"
 
 
+def test_mcp_package_launchers_require_literal_mcp_structure_and_auto_install() -> None:
+    ir = scan_repository(ROOT / "cases/mcp_package_launchers")
+    servers = [component for component in ir.components if component.kind == "mcp-server"]
+
+    assert len(servers) == 14
+    assert {
+        (
+            component.attributes["package_spec"],
+            component.attributes["version_scope"],
+            component.attributes["auto_install"],
+        )
+        for component in servers
+    } >= {
+        ("@modelcontextprotocol/server-filesystem", "unpinned", True),
+        ("@x402scan/mcp@latest", "floating", True),
+        ("mcp-server-git", "unpinned", True),
+        ("mcp-server-fetch==2026.7.10", "exact", True),
+        ("alternate-mcp-server==1.0.0rc1", "exact", True),
+        ("restored-server@3.0.0", "exact", True),
+        ("repomix@1.4.2", "exact", True),
+        ("@scope/local-server", "unpinned", False),
+        ("unreviewed-server", "unpinned", False),
+        ("@playwright/mcp", "unpinned", True),
+        ("@scope/server@2.3.4", "exact", True),
+    }
+    assert {
+        (finding.rule_id, finding.evidence.path, finding.evidence.line)
+        for finding in ir.findings
+    } == {
+        ("AV-MCP003", ".mcp.json", 1),
+        ("AV-MCP003", "launchers.py", 11),
+        ("AV-MCP003", "launchers.py", 15),
+        ("AV-MCP003", "launchers.py", 16),
+        ("AV-MCP003", "launchers.py", 36),
+        ("AV-MCP003", "launchers.py", 37),
+    }
+    assert not any(
+        component.attributes.get("package")
+        in {"not-an-mcp-constructor", "ordinary-package", "shadowed-package"}
+        for component in servers
+    )
+
+
 def test_cli_fail_on_high(capsys) -> None:
     exit_code = main(["scan", str(ROOT / "cases/python_dangerous"), "--fail-on", "high"])
     assert exit_code == 1

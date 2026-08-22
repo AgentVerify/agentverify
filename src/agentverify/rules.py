@@ -149,6 +149,25 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                 )
             )
         if (
+            component.kind == "mcp-server"
+            and component.attributes.get("auto_install") is True
+            and component.attributes.get("version_scope") in {"unpinned", "floating"}
+        ):
+            package = component.attributes.get("package", "MCP server package")
+            version_scope = component.attributes["version_scope"]
+            ir.findings.append(
+                make_finding(
+                    ir,
+                    component,
+                    "AV-MCP003",
+                    "high",
+                    "high",
+                    f"MCP server auto-installs {version_scope} package {package}",
+                    "Pin the MCP server package to an exact reviewed version and update it through a controlled dependency-review process.",
+                    "review",
+                )
+            )
+        if (
             component.kind == "capability"
             and component.name == "filesystem"
             and component.attributes.get("write_access")
