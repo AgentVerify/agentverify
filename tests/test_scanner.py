@@ -4405,6 +4405,22 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
             "constructor-bound-playwright-page",
         ),
         (
+            "local_construction.py",
+            16,
+            "page.evaluate",
+            "browser-page",
+            True,
+            "local-playwright-page",
+        ),
+        (
+            "property.py",
+            18,
+            "self.page.evaluate",
+            "browser-page",
+            True,
+            "class-property-return-annotation",
+        ),
+        (
             "type_checking.py",
             17,
             "self.page.evaluate",
@@ -4429,6 +4445,8 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
         ("direct_evaluate", 16),
         ("aliased_evaluate", 21),
         ("evaluate_script", 33),
+        ("local_page_evaluate", 16),
+        ("property_evaluate", 18),
         ("evaluate_script", 17),
     ]
     assert [
@@ -4445,6 +4463,8 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
         ("AV-EXEC002", "constructor.py", 16),
         ("AV-EXEC002", "constructor.py", 21),
         ("AV-EXEC002", "constructor.py", 33),
+        ("AV-EXEC002", "local_construction.py", 16),
+        ("AV-EXEC002", "property.py", 18),
         ("AV-EXEC002", "type_checking.py", 17),
     ]
 

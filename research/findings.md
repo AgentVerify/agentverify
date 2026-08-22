@@ -58,15 +58,16 @@ are resolved only when unshadowed; string `.replace()` calls and caller-shadowed
 regression negatives.
 
 Browser-page evaluation is a separate execution boundary. The corpus contains 86 import-context
-`.evaluate(...)` calls. Schema v88 proves 36 receivers: two exact Playwright `Page` parameters in
+`.evaluate(...)` calls. Schema v89 proves 40 receivers: two exact Playwright `Page` parameters in
 SWE-agent, five exact imported Skyvern page-factory results, 15 exact class/`__init__` attribute
 annotations across CAMEL, LaVague, and MetaGPT, and 13 constructor-bound field or immutable-alias
-uses in Devika. One additional Skyvern locator chain derives from an exact page-factory result.
-Schema v88 inventories six formerly invisible chained calls; five retain unresolved receiver state.
+uses in Devika. One additional Skyvern locator chain derives from an exact page-factory result; one
+OpenAI Agents Python property and three straight-line local page uses in Aider and Skyvern are also
+proven. Schema v88 inventories six formerly invisible chained calls; five retain unresolved receiver state.
 The constructor proof requires one exact imported Playwright runtime factory and a
 straight-line, single-mutation `__init__` chain through browser/context creation. Conflicting types,
 near/rebound imports, static methods, conditional or later field assignments, and shadowed factories
-are withheld. The remaining 50 fixed-script observations retain explicit unresolved receiver state. Only one proven
+are withheld. The remaining 46 fixed-script observations retain explicit unresolved receiver state. Only one proven
 receiver is directly controlled by a tool parameter: Skyvern's registered
 [`skyvern_evaluate`](https://github.com/Skyvern-AI/skyvern/blob/486c8975e9864a53037d4701b781f8619e698c40/skyvern/cli/mcp_tools/browser.py#L2458).
 That exact post-definition tool edge raises `AV-EXEC002` to 51 findings across 15 repositories.
@@ -127,7 +128,7 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the consolidated 538-label truth set.
+rule observations are pinned in the consolidated 549-label truth set.
 
 MCP configuration is also executable dependency configuration. Schema v65 resolves 50 literal
 `npx`/`uvx` package launchers in the bounded corpus: 45 unpinned, three floating, and two exact,

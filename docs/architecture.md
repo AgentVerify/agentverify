@@ -482,8 +482,9 @@ a current tool parameter or its direct assignment alias; literals, module consta
 derived solely from normalized intermediates remain inventory-only. A dynamic browser evaluator is
 emitted only when its receiver is an exact imported Playwright `Page`/`Locator`/handle annotation,
 one immutable alias of such a parameter, an exactly typed `self` attribute in the enclosing class,
-an immutable constructor-bound Playwright page field or its direct local alias, or the first result
-of Skyvern's exact imported `get_page` factory. Class attributes may use one
+an immutable constructor-bound Playwright page field or its direct local alias, an exact built-in
+property with a Playwright return annotation, a straight-line locally constructed Playwright page,
+or the first result of Skyvern's exact imported `get_page` factory. Class attributes may use one
 direct annotation in the class body or `__init__`; exact Playwright imports under an immutable
 top-level `TYPE_CHECKING` guard are accepted for deferred annotations. Conflicting annotations,
 rebound or near-package type imports, and static/class methods are withheld. Constructor flow must
@@ -497,7 +498,11 @@ receives an exact tool edge when it occurs in a resolved tool body, including po
 FastMCP tools. The call gate is structural, so chained receiver calls are inventoried even when
 their dotted name cannot be reconstructed. A locator/get-by/filter/nth/and/or call or first/last property rooted
 in an existing exact receiver remains proven through direct chains and one immutable local alias;
-ordinary same-named methods and unknown derivations are withheld. Inherited fields, ambiguous
+ordinary same-named methods and unknown derivations are withheld. Local construction requires a
+unique exact module or direct same-function Playwright runtime import, a top-level context manager
+or direct `.start()`, and immutable straight-line browser/context/page bindings; conditional imports,
+branches, rebinding, and shadowed factories are withheld. Property proof requires the built-in
+decorator, one getter definition, and an exact imported Playwright return type. Inherited fields, ambiguous
 wrapper-returned locators, sanitizer
 proofs, imported/transitive script builders, and alternate browser evaluator APIs remain unresolved.
 

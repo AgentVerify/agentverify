@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T13:15:52.549335+00:00",
-  "labels": 863,
-  "passed": 863,
+  "generated_at": "2026-08-22T13:52:53.951246+00:00",
+  "labels": 874,
+  "passed": 874,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -157,9 +157,9 @@
       "recall": 1.0
     },
     "IR-PY-BROWSER-RECEIVER": {
-      "tp": 18,
+      "tp": 24,
       "fp": 0,
-      "tn": 18,
+      "tn": 23,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -2588,6 +2588,105 @@
     },
     {
       "id": "python-browser-receiver-chained-inventory-skyvern-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-local-construction-local",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-local-shadowed-factory-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-local-conditional-page-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-local-reassigned-page-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-property-local",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-repeated-property-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-shadowed-property-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-property-openai-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-local-aider-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-local-skyvern-commit-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-local-skyvern-not-commit-real",
       "check_id": "IR-PY-BROWSER-RECEIVER",
       "expected": true,
       "observed": true,
