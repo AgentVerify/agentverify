@@ -102,6 +102,7 @@ def main() -> int:
                 "lexical-single-definition",
                 "module-single-definition",
                 "same-class-helper-return",
+                "same-block-function-factory-return",
                 "imported-class-factory-return",
                 "contextual-imported-class-factory-return",
                 "literal-tools-list-context-manager",
@@ -133,6 +134,21 @@ def main() -> int:
         ):
             raise RuntimeError(
                 f"{repository}: same-class Agent helper return lacks an exact Agent edge"
+            )
+        python_local_agent_factory_return_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.attributes.get("target_identity")
+            == "same-block-function-factory-return"
+        ]
+        if any(
+            edge.source_kind != "agent"
+            or edge.target_kind != "agent"
+            or edge.target_id is None
+            for edge in python_local_agent_factory_return_edges
+        ):
+            raise RuntimeError(
+                f"{repository}: local Agent factory return lacks an exact Agent edge"
             )
         python_typed_tool_parameter_edges = [
             edge
@@ -1188,6 +1204,20 @@ def main() -> int:
                     not is_test_path(edge.evidence.path)
                     for edge in python_agent_helper_return_edges
                 ),
+            },
+            "python_local_agent_factory_returns": {
+                "resolved_edges": len(python_local_agent_factory_return_edges),
+                "unique_agent_targets": len(
+                    {
+                        edge.target_id
+                        for edge in python_local_agent_factory_return_edges
+                    }
+                ),
+                "non_test_edges": sum(
+                    not is_test_path(edge.evidence.path)
+                    for edge in python_local_agent_factory_return_edges
+                ),
+                "repositories": bool(python_local_agent_factory_return_edges),
             },
             "python_typed_tool_parameters": {
                 "parameter_bindings": len(python_typed_tool_parameters),
@@ -2322,7 +2352,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 81,
+        "schema_version": 82,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2599,6 +2629,18 @@ def main() -> int:
                     "resolved_edges",
                     "unique_agent_targets",
                     "non_test_edges",
+                )
+            },
+            "python_local_agent_factory_returns": {
+                name: sum(
+                    result["python_local_agent_factory_returns"][name]
+                    for result in successful
+                )
+                for name in (
+                    "resolved_edges",
+                    "unique_agent_targets",
+                    "non_test_edges",
+                    "repositories",
                 )
             },
             "python_typed_tool_parameters": {

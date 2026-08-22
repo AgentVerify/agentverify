@@ -5354,7 +5354,8 @@ def test_python_agent_helper_returns_require_exact_same_class_flow() -> None:
     edges = {
         edge.evidence.line: edge
         for edge in ir.relationships
-        if edge.source_kind == "agent"
+        if edge.evidence.path == "app.py"
+        and edge.source_kind == "agent"
         and edge.source_name == "Crew"
         and edge.target_kind == "agent"
     }
@@ -5372,6 +5373,43 @@ def test_python_agent_helper_returns_require_exact_same_class_flow() -> None:
         assert edges[line].attributes == {
             "target_identity": "ambiguous-repeated-binding"
         }
+
+    function_edges = {
+        edge.evidence.line: edge
+        for edge in ir.relationships
+        if edge.evidence.path == "local_function.py"
+        and edge.source_kind == "agent"
+        and edge.source_name == "Crew"
+        and edge.target_kind == "agent"
+    }
+    for edge in (function_edges[10],):
+        assert edge.target_id == "py:local_function.py#agent:Agent@6"
+        assert edge.attributes == {
+            "target_identity": "same-block-function-factory-return"
+        }
+    assert len(
+        [
+            edge
+            for edge in ir.relationships
+            if edge.evidence.path == "local_function.py"
+            and edge.evidence.line == 10
+            and edge.source_kind == "agent"
+            and edge.source_name == "Crew"
+            and edge.target_kind == "agent"
+            and edge.target_id == "py:local_function.py#agent:Agent@6"
+        ]
+    ) == 2
+    negative_function_edges = {
+        edge.evidence.line: edge
+        for edge in ir.relationships
+        if edge.evidence.path == "local_function_negative.py"
+        and edge.source_kind == "agent"
+        and edge.source_name == "Crew"
+        and edge.target_kind == "agent"
+    }
+    for line in (11, 20, 29, 38, 46, 55):
+        assert negative_function_edges[line].target_id is None
+        assert negative_function_edges[line].attributes == {}
 
 
 def test_imported_agent_factory_requires_exact_class_and_same_block_flow() -> None:

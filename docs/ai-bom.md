@@ -122,6 +122,11 @@ method has one direct top-level return of an exact Agent constructor or immutabl
 caller binds the direct/tuple result, and that binding solely dominates composition. The endpoint
 retains the constructor's source symbol rather than inventing an identity at the helper call.
 
+The equivalent local-function proof is narrower: one undecorated helper must directly return an
+import-proven Agent and be the sole earlier same-block binding at each assigned call. Multiple calls
+retain the returned definition's symbol while their local binding names remain distinct on graph
+edges. Conditional/indirect returns and any helper, constructor, or result mutation stay unresolved.
+
 A typed OpenAI built-in tool parameter can instead become an exact parameter asset with
 `target_identity: typed-parameter-callsite-consensus`. Its annotation must be import-proven, its
 top-level helper and parameter immutable, and every direct same-module call site must supply the same

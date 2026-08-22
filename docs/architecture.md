@@ -82,6 +82,11 @@ subclasses an exact imported `MCPServer`, has one immutable module export, and d
 `list_tools` and `call_tool`. A unique local import and an earlier same-scope instance can then feed
 the existing literal Agent binding. Near bases, incomplete adapters, rebound imports/instances, and
 forward uses remain disconnected.
+Schema v82 resolves a direct local function factory only when the helper is defined once in the same
+statement block before the call, is undecorated, and has one direct top-level return of an
+import-proven Agent constructor. Each direct assigned result may then point to that observed Agent
+definition. Conditional or indirect returns, forward/rebound helpers, constructor shadowing, and
+result rebinding remain unresolved.
 
 Names are intentionally not treated as globally unique. Python and TypeScript agent/tool definitions
 carry stable frontend-and-module-qualified `symbol_id` values; relationships carry `source_id` and

@@ -6059,6 +6059,70 @@
     {
       "id":"python-agent-mcp-subclass-edge-skyvern-real","target":{"kind":"repository","repository":"Skyvern-AI/skyvern","commit":"486c8975e9864a53037d4701b781f8619e698c40"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"skyvern/forge/sdk/copilot/agent.py","line":3443,"expected":true,
       "relationship":{"source_kind":"agent","source_name":"workflow-copilot","relation":"uses","target_kind":"mcp-server","target_name":"SkyvernOverlayMCPServer@3435","source_id":"py:skyvern/forge/sdk/copilot/agent.py#agent:agent","target_id":"py:skyvern/forge/sdk/copilot/agent.py#mcp-server:mcp_server","attributes":{"binding":"mcp_server","target_identity":"literal-mcp-servers-list-binding"}}
+    },
+    {
+      "id":"python-agent-local-factory-first-local","target":{"kind":"local","path":"cases/python_agent_helper_return"},"check_id":"IR-PY-AGENT-HELPER-RETURN","path":"local_function.py","line":10,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"first","source_id":"py:local_function.py#agent:Crew@10","target_id":"py:local_function.py#agent:Agent@6","attributes":{"target_identity":"same-block-function-factory-return"}}
+    },
+    {
+      "id":"python-agent-local-factory-second-local","target":{"kind":"local","path":"cases/python_agent_helper_return"},"check_id":"IR-PY-AGENT-HELPER-RETURN","path":"local_function.py","line":10,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"second","source_id":"py:local_function.py#agent:Crew@10","target_id":"py:local_function.py#agent:Agent@6","attributes":{"target_identity":"same-block-function-factory-return"}}
+    },
+    {
+      "id":"python-agent-local-factory-conditional-negative","target":{"kind":"local","path":"cases/python_agent_helper_return"},"check_id":"IR-PY-AGENT-HELPER-RETURN","path":"local_function_negative.py","line":11,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"worker","attributes":{"target_identity":"same-block-function-factory-return"}}
+    },
+    {
+      "id":"python-agent-local-factory-indirect-negative","target":{"kind":"local","path":"cases/python_agent_helper_return"},"check_id":"IR-PY-AGENT-HELPER-RETURN","path":"local_function_negative.py","line":20,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"worker","attributes":{"target_identity":"same-block-function-factory-return"}}
+    },
+    {
+      "id":"python-agent-local-factory-rebound-negative","target":{"kind":"local","path":"cases/python_agent_helper_return"},"check_id":"IR-PY-AGENT-HELPER-RETURN","path":"local_function_negative.py","line":29,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"worker","attributes":{"target_identity":"same-block-function-factory-return"}}
+    },
+    {
+      "id":"python-agent-local-factory-forward-negative","target":{"kind":"local","path":"cases/python_agent_helper_return"},"check_id":"IR-PY-AGENT-HELPER-RETURN","path":"local_function_negative.py","line":38,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"worker","attributes":{"target_identity":"same-block-function-factory-return"}}
+    },
+    {
+      "id":"python-agent-local-factory-constructor-shadow-negative","target":{"kind":"local","path":"cases/python_agent_helper_return"},"check_id":"IR-PY-AGENT-HELPER-RETURN","path":"local_function_negative.py","line":46,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"worker","attributes":{"target_identity":"same-block-function-factory-return"}}
+    },
+    {
+      "id":"python-agent-local-factory-result-rebound-negative","target":{"kind":"local","path":"cases/python_agent_helper_return"},"check_id":"IR-PY-AGENT-HELPER-RETURN","path":"local_function_negative.py","line":55,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"Crew","relation":"delegates-to","target_kind":"agent","target_name":"worker","attributes":{"target_identity":"same-block-function-factory-return"}}
+    },
+    {
+      "id":"python-agent-local-factory-first-alpha-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-AGENT-HELPER-RETURN","path":"tests/sandbox/test_runtime.py","line":3448,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"triage","relation":"delegates-to","target_kind":"agent","target_name":"first_alpha","source_id":"py:tests/sandbox/test_runtime.py#agent:first_root","target_id":"py:tests/sandbox/test_runtime.py#agent:sandbox@3435","attributes":{"target_identity":"same-block-function-factory-return"}}
+    },
+    {
+      "id":"python-agent-local-factory-first-beta-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-AGENT-HELPER-RETURN","path":"tests/sandbox/test_runtime.py","line":3448,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"triage","relation":"delegates-to","target_kind":"agent","target_name":"first_beta","source_id":"py:tests/sandbox/test_runtime.py#agent:first_root","target_id":"py:tests/sandbox/test_runtime.py#agent:sandbox@3435","attributes":{"target_identity":"same-block-function-factory-return"}}
+    },
+    {
+      "id":"python-agent-local-factory-second-alpha-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-AGENT-HELPER-RETURN","path":"tests/sandbox/test_runtime.py","line":3454,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"triage","relation":"delegates-to","target_kind":"agent","target_name":"second_alpha","source_id":"py:tests/sandbox/test_runtime.py#agent:second_root","target_id":"py:tests/sandbox/test_runtime.py#agent:sandbox@3435","attributes":{"target_identity":"same-block-function-factory-return"}}
+    },
+    {
+      "id":"python-agent-local-factory-second-beta-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-AGENT-HELPER-RETURN","path":"tests/sandbox/test_runtime.py","line":3454,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"triage","relation":"delegates-to","target_kind":"agent","target_name":"second_beta","source_id":"py:tests/sandbox/test_runtime.py#agent:second_root","target_id":"py:tests/sandbox/test_runtime.py#agent:sandbox@3435","attributes":{"target_identity":"same-block-function-factory-return"}}
+    },
+    {
+      "id":"python-agent-local-factory-first-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-AGENT-HELPER-RETURN","path":"tests/sandbox/test_runtime.py","line":4762,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"triage","relation":"delegates-to","target_kind":"agent","target_name":"first","source_id":"py:tests/sandbox/test_runtime.py#agent:root","target_id":"py:tests/sandbox/test_runtime.py#agent:sandbox@4752","attributes":{"target_identity":"same-block-function-factory-return"}}
+    },
+    {
+      "id":"python-agent-local-factory-second-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-AGENT-HELPER-RETURN","path":"tests/sandbox/test_runtime.py","line":4762,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"triage","relation":"delegates-to","target_kind":"agent","target_name":"second","source_id":"py:tests/sandbox/test_runtime.py#agent:root","target_id":"py:tests/sandbox/test_runtime.py#agent:sandbox@4752","attributes":{"target_identity":"same-block-function-factory-return"}}
+    },
+    {
+      "id":"python-agent-local-factory-restored-first-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-AGENT-HELPER-RETURN","path":"tests/sandbox/test_runtime.py","line":4795,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"triage","relation":"delegates-to","target_kind":"agent","target_name":"restored_first","source_id":"py:tests/sandbox/test_runtime.py#agent:restored_root","target_id":"py:tests/sandbox/test_runtime.py#agent:sandbox@4752","attributes":{"target_identity":"same-block-function-factory-return"}}
+    },
+    {
+      "id":"python-agent-local-factory-restored-second-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-AGENT-HELPER-RETURN","path":"tests/sandbox/test_runtime.py","line":4795,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"triage","relation":"delegates-to","target_kind":"agent","target_name":"restored_second","source_id":"py:tests/sandbox/test_runtime.py#agent:restored_root","target_id":"py:tests/sandbox/test_runtime.py#agent:sandbox@4752","attributes":{"target_identity":"same-block-function-factory-return"}}
     }
   ]
 }

@@ -59,10 +59,11 @@ the edge retains the imported Agent symbol and file. The final repeated-binding 
 parameter only when its OpenAI built-in annotation is import-proven and every direct same-module
 call site supplies the same exact constructor type. The pinned `ApplyPatchTool` helper records ten
 verified call sites and ten concrete target IDs without selecting one runtime instance or inheriting
-instance-specific policy. Two `ambiguous-repeated-binding` targets remain on one test-scoped OpenAI
-sandbox Agent statement, while cross-branch, forward, inconsistent/untyped parameters,
-conditional/transformed returns, external
-receivers, shadowed factories, lambdas, and reassigned fixture cases stay withheld. Next add broader
+instance-specific policy. Schema v82 resolves the final two `ambiguous-repeated-binding` targets by
+proving eight test-scoped OpenAI handoff edges through two unique same-block local Agent factories.
+Conditional/indirect returns, forward or rebound helpers, constructor shadowing, result mutation,
+cross-branch flow, inconsistent/untyped parameters, external receivers, and lambdas stay withheld.
+Next add broader
 branch/reassignment dataflow and resolve Python/TS package re-exports, wildcard imports, other
 wrapper factories, and type-driven symbols. Schema v77 already gives exact IDs to import-proven
 assigned Python MCP stdio servers and resolves direct literal `mcp_servers=[server]` lists only
@@ -284,8 +285,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 511 pinned positive/negative locations, with 756 separately
-scored IR component/relationship labels. Schema-v81 engine results and
+The curated regression set has reached 511 pinned positive/negative locations, with 772 separately
+scored IR component/relationship labels. Schema-v82 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

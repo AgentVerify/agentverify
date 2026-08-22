@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T10:10:08.074922+00:00",
-  "labels": 756,
-  "passed": 756,
+  "generated_at": "2026-08-22T10:30:18.541426+00:00",
+  "labels": 772,
+  "passed": 772,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -117,9 +117,9 @@
       "recall": 1.0
     },
     "IR-PY-AGENT-HELPER-RETURN": {
-      "tp": 10,
+      "tp": 20,
       "fp": 0,
-      "tn": 1,
+      "tn": 7,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -7308,6 +7308,150 @@
     {
       "id": "python-agent-mcp-subclass-edge-skyvern-real",
       "check_id": "IR-PY-AGENT-MCP-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-local-factory-first-local",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-local-factory-second-local",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-local-factory-conditional-negative",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-local-factory-indirect-negative",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-local-factory-rebound-negative",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-local-factory-forward-negative",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-local-factory-constructor-shadow-negative",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-local-factory-result-rebound-negative",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-local-factory-first-alpha-openai-real",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-local-factory-first-beta-openai-real",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-local-factory-second-alpha-openai-real",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-local-factory-second-beta-openai-real",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-local-factory-first-openai-real",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-local-factory-second-openai-real",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-local-factory-restored-first-openai-real",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-local-factory-restored-second-openai-real",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

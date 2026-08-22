@@ -3149,7 +3149,11 @@ class PythonVisitor(ast.NodeVisitor):
                 dominating
                 if repeated
                 or dominating[1]
-                in {"same-class-helper-return", "typed-parameter-callsite-consensus"}
+                in {
+                    "same-class-helper-return",
+                    "same-block-function-factory-return",
+                    "typed-parameter-callsite-consensus",
+                }
                 or dominating[1]
                 in {
                     "imported-class-factory-return",
@@ -6351,6 +6355,41 @@ def scan_python(
         and import_binding_counts[alias.asname or alias.name] == 1
         and nonimport_binding_counts[alias.asname or alias.name] == 0
     }
+    python_framework_modules = {
+        prefix
+        for prefix in (
+            *(
+                prefix
+                for prefixes in IMPORT_SIGNATURES["framework"].values()
+                for prefix in prefixes
+            ),
+            *(
+                prefix
+                for prefixes in FRONTEND_IMPORT_SIGNATURES["python"][
+                    "framework"
+                ].values()
+                for prefix in prefixes
+            ),
+        )
+        if not prefix.startswith("@")
+    }
+    local_agent_factory_constructors = agent_constructor_bindings | {
+        alias.asname or alias.name
+        for statement in tree.body
+        if isinstance(statement, ast.ImportFrom)
+        and statement.level == 0
+        and statement.module is not None
+        and any(
+            statement.module == prefix
+            or statement.module.startswith(f"{prefix}.")
+            for prefix in python_framework_modules
+        )
+        for alias in statement.names
+        if alias.asname is None
+        and alias.name in AGENT_CALLS
+        and import_binding_counts[alias.asname or alias.name] == 1
+        and nonimport_binding_counts[alias.asname or alias.name] == 0
+    }
 
     def is_agent_call(call: ast.Call) -> bool:
         call_name = dotted_name(call.func)
@@ -7630,6 +7669,81 @@ def scan_python(
                 agent_factory_returns[(id(class_node), method.name)] = returned_ids
 
     helper_agent_assignments: list[tuple[ast.Assign, str, str, str]] = []
+    local_function_agent_returns: dict[int, str] = {}
+    for function in (
+        node for node in nodes if isinstance(node, ast.FunctionDef)
+    ):
+        if (
+            function.decorator_list
+            or not isinstance(
+                parent_by_id.get(id(function)),
+                (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef),
+            )
+        ):
+            continue
+        block = enclosing_statement_block(function)
+        if block is None:
+            continue
+        statements, _definition_index = block
+        if sum(
+            function.name in statement_mutations(statement)
+            for statement in statements
+        ) != 1:
+            continue
+        returns = direct_method_returns(function)
+        if (
+            len(returns) != 1
+            or parent_by_id.get(id(returns[0])) is not function
+            or not isinstance(returns[0].value, ast.Call)
+            or not isinstance(returns[0].value.func, ast.Name)
+            or returns[0].value.func.id not in local_agent_factory_constructors
+            or returns[0].value.func.id in python_function_local_bindings(function)
+            or shadowed_in_enclosing_functions(
+                function, returns[0].value.func.id
+            )
+        ):
+            continue
+        local_function_agent_returns[id(function)] = agent_call_symbol_id(
+            returns[0].value
+        )
+
+    for assignment in (node for node in nodes if isinstance(node, ast.Assign)):
+        if not (
+            len(assignment.targets) == 1
+            and isinstance(assignment.targets[0], ast.Name)
+            and isinstance(assignment.value, ast.Call)
+            and isinstance(assignment.value.func, ast.Name)
+        ):
+            continue
+        block = enclosing_statement_block(assignment)
+        if block is None:
+            continue
+        statements, assignment_index = block
+        factory_name = assignment.value.func.id
+        factory_mutations = [
+            statement
+            for statement in statements[:assignment_index]
+            if factory_name in statement_mutations(statement)
+        ]
+        if len(factory_mutations) != 1:
+            continue
+        factory = factory_mutations[0]
+        if not isinstance(factory, ast.FunctionDef):
+            continue
+        returned_id = local_function_agent_returns.get(id(factory))
+        if returned_id is None:
+            continue
+        binding = assignment.targets[0].id
+        helper_agent_assignments.append(
+            (
+                assignment,
+                binding,
+                returned_id,
+                "same-block-function-factory-return",
+            )
+        )
+        symbol_candidates.setdefault(("agent", binding), set()).add(returned_id)
+
     for assignment in (node for node in nodes if isinstance(node, ast.Assign)):
         if not (
             isinstance(assignment.value, ast.Call)

@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v81
+framework, wrapper, or configuration path. Counts come from schema-v82
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -108,9 +108,15 @@ unreassigned local import and earlier same-scope instance can then use the stand
 binding. Skyvern contributes the one corpus instance and edge; it is production-scoped. Near bases,
 incomplete adapters, rebound bindings, and forward references remain withheld.
 
+Schema v82 resolves eight test-scoped OpenAI SandboxAgent handoff edges through two exact local
+function definitions. Each helper is undecorated, uniquely defined before its direct same-block
+calls, and has one direct top-level return of an import-proven Agent constructor. Six fixture forms
+with conditional or indirect returns, helper rebinding, forward use, constructor shadowing, or
+result rebinding stay unresolved. No production edge is added.
+
 Across the selected snapshot, 10,005 observations have module-qualified symbol IDs. Of
-4,554 relationship endpoint observations, all 3,789 identified endpoints resolve to an observed
-component (3,476 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
+4,554 relationship endpoint observations, all 3,797 identified endpoints resolve to an observed
+component (3,484 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
 withheld because a function parameter and assignment shadow the same-named package import.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
 edges resolve exactly. The current schema records 376 Python lexical-single-definition, 20 same-block
@@ -120,9 +126,9 @@ resolutions, four context-manager resolutions, four contextual imported-callable
 absolute-import binding edges, and one typed-tool-parameter
 resolution. The latter uses an import-proven `ApplyPatchTool` annotation and ten unanimous
 same-module constructor call sites to create an occurrence-qualified parameter component that
-retains every concrete target ID. Two `ambiguous-repeated-binding` targets remain on one test-scoped
-OpenAI sandbox Agent statement; inconsistent, uncalled, rebound, shadowed, reassigned, and non-exact
-typed fixture forms stay unresolved.
+retains every concrete target ID. Eight same-block function-factory resolutions remove the final two
+`ambiguous-repeated-binding` targets. Inconsistent, uncalled, rebound, shadowed, reassigned, and
+non-exact typed fixture forms stay unresolved.
 All seven exact Python Agent→MCP-server edges resolve both endpoints. Marvin contributes five—two
 same-block and three immutable-module bindings—and OpenAI Agents Python contributes the
 context-managed edge. Skyvern contributes one same-block imported-adapter edge. Six edges are outside
@@ -147,11 +153,11 @@ Capability/control taxonomy endpoints intentionally lack
 source-symbol IDs, so the endpoint fraction is inventory coverage rather than an accuracy or recall
 metric.
 
-The native AI BOM 1.2 resolver independently classifies all 4,554 endpoints: 3,781 by symbol ID, 645
-by exact relationship evidence, 22 by a unique display name, 42 as ambiguous, and 64 as unresolved.
+The native AI BOM 1.2 resolver independently classifies all 4,554 endpoints: 3,789 by symbol ID, 645
+by exact relationship evidence, 20 by a unique display name, 42 as ambiguous, and 58 as unresolved.
 Evidence-local resolution removes capability/control ambiguities; occurrence-qualified bindings
 resolve repeated source agent/tool observations, and conservative lexical resolution removes further
-target ambiguities. The remaining 40 ambiguous endpoints are agent, protocol, control, or tool targets without a unique
+target ambiguities. The remaining 42 ambiguous endpoints are agent, protocol, control, or tool targets without a unique
 local symbol or target location.
 
 The TypeScript graph contains 99 structure-backed agent edges: 14 agent-as-tool delegations, 81
@@ -617,7 +623,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 511-label rule truth set and 756-label IR component/relationship set are curated regression
+The 511-label rule truth set and 772-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed
