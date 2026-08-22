@@ -4413,6 +4413,22 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
             "local-playwright-page",
         ),
         (
+            "module_annotation.py",
+            19,
+            "locator.evaluate",
+            "browser-page",
+            True,
+            "module-variable-derived-receiver",
+        ),
+        (
+            "module_guarded_import.py",
+            20,
+            "guarded_page.evaluate",
+            "browser-page",
+            True,
+            "module-variable-annotation",
+        ),
+        (
             "property.py",
             18,
             "self.page.evaluate",
@@ -4446,6 +4462,8 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
         ("aliased_evaluate", 21),
         ("evaluate_script", 33),
         ("local_page_evaluate", 16),
+        ("module_page_evaluate", 19),
+        ("guarded_module_page_evaluate", 20),
         ("property_evaluate", 18),
         ("evaluate_script", 17),
     ]
@@ -4464,6 +4482,8 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
         ("AV-EXEC002", "constructor.py", 21),
         ("AV-EXEC002", "constructor.py", 33),
         ("AV-EXEC002", "local_construction.py", 16),
+        ("AV-EXEC002", "module_annotation.py", 19),
+        ("AV-EXEC002", "module_guarded_import.py", 20),
         ("AV-EXEC002", "property.py", 18),
         ("AV-EXEC002", "type_checking.py", 17),
     ]

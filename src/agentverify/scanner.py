@@ -1095,6 +1095,54 @@ def python_class_browser_receiver_attributes(
     }
 
 
+def python_module_browser_receiver_variables(
+    tree: ast.Module, browser_type_names: set[str]
+) -> set[str]:
+    """Resolve uniquely annotated Playwright receiver variables at module scope."""
+    annotations: dict[str, list[ast.AST]] = defaultdict(list)
+    bindings: Counter[str] = Counter()
+    for statement in tree.body:
+        if isinstance(statement, ast.AnnAssign) and isinstance(
+            statement.target, ast.Name
+        ):
+            annotations[statement.target.id].append(statement.annotation)
+
+    def collect_module_bindings(candidate: ast.AST) -> None:
+        if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            bindings[candidate.name] += 1
+            return
+        if isinstance(candidate, ast.Lambda):
+            return
+        if isinstance(candidate, (ast.Import, ast.ImportFrom)):
+            bindings.update(
+                alias.asname or alias.name.split(".", 1)[0]
+                for alias in candidate.names
+            )
+            return
+        if isinstance(candidate, ast.ExceptHandler) and candidate.name:
+            bindings[candidate.name] += 1
+        if isinstance(candidate, (ast.MatchAs, ast.MatchStar)) and candidate.name:
+            bindings[candidate.name] += 1
+        if isinstance(candidate, ast.MatchMapping) and candidate.rest:
+            bindings[candidate.rest] += 1
+        if isinstance(candidate, ast.Name) and isinstance(
+            candidate.ctx, (ast.Store, ast.Del)
+        ):
+            bindings[candidate.id] += 1
+        for child in ast.iter_child_nodes(candidate):
+            collect_module_bindings(child)
+
+    for statement in tree.body:
+        collect_module_bindings(statement)
+    return {
+        name
+        for name, candidates in annotations.items()
+        if len(candidates) == 1
+        and bindings[name] == 1
+        and python_browser_annotation_is_type(candidates[0], browser_type_names)
+    }
+
+
 def python_class_browser_receiver_properties(
     node: ast.ClassDef,
     browser_type_names: set[str],
@@ -1304,6 +1352,7 @@ def python_browser_receiver_proofs(
     browser_type_names: set[str],
     browser_page_factories: set[str],
     browser_runtime_factories: set[str],
+    module_browser_variables: set[str],
     class_browser_attributes: dict[str, str],
 ) -> dict[int, str]:
     """Prove direct browser-page evaluate receivers without semantic name matching."""
@@ -1337,6 +1386,8 @@ def python_browser_receiver_proofs(
         return False
 
     bindings = {
+        name: "module-variable-annotation" for name in module_browser_variables
+    } | {
         argument.arg: "parameter-annotation"
         for argument in (*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs)
         if python_browser_annotation_is_type(argument.annotation, browser_type_names)
@@ -1465,6 +1516,25 @@ def python_browser_receiver_proofs(
             parent = parents.get(id(parent))
         return parent is node
 
+    def assignment_dominates_candidate(
+        assignment: ast.Assign, candidate: ast.AST
+    ) -> bool:
+        """Prove ordering within one exact statement-list branch."""
+        owner = parents.get(id(assignment))
+        if owner is None:
+            return False
+        for _, value in ast.iter_fields(owner):
+            if not isinstance(value, list) or assignment not in value:
+                continue
+            child = candidate
+            while parents.get(id(child)) is not owner:
+                parent = parents.get(id(child))
+                if parent is None:
+                    return False
+                child = parent
+            return child in value and value.index(assignment) < value.index(child)
+        return False
+
     def direct_receiver_proof(expression: ast.AST, line: int) -> str | None:
         if isinstance(expression, ast.Name):
             proof = bindings.get(expression.id)
@@ -1481,21 +1551,29 @@ def python_browser_receiver_proofs(
         return None
 
     def derived_receiver_proof(expression: ast.AST, line: int) -> str | None:
-        if direct_receiver_proof(expression, line):
+        direct_proof = direct_receiver_proof(expression, line)
+        if direct_proof in {
+            "module-variable-annotation",
+            "module-variable-derived-receiver",
+        }:
+            return "module-variable-derived-receiver"
+        if direct_proof:
             return "playwright-derived-receiver"
         if (
             isinstance(expression, ast.Attribute)
             and expression.attr in {"first", "last"}
-            and derived_receiver_proof(expression.value, line)
         ):
-            return "playwright-derived-receiver"
+            nested_proof = derived_receiver_proof(expression.value, line)
+            if nested_proof:
+                return nested_proof
         if (
             isinstance(expression, ast.Call)
             and isinstance(expression.func, ast.Attribute)
             and expression.func.attr in browser_derivation_methods
-            and derived_receiver_proof(expression.func.value, line)
         ):
-            return "playwright-derived-receiver"
+            nested_proof = derived_receiver_proof(expression.func.value, line)
+            if nested_proof:
+                return nested_proof
         return None
 
     for candidate in sorted(ast.walk(node), key=lambda item: getattr(item, "lineno", 0)):
@@ -1572,10 +1650,33 @@ def python_browser_receiver_proofs(
             elif (
                 isinstance(target, ast.Name)
                 and mutation_counts[target.id] == 1
-                and derived_receiver_proof(value, candidate.lineno)
+                and (
+                    derived_proof := derived_receiver_proof(
+                        value, candidate.lineno
+                    )
+                )
             ):
-                bindings[target.id] = "playwright-derived-receiver"
+                bindings[target.id] = derived_proof
                 binding_lines[target.id] = candidate.lineno
+
+    scoped_derived_bindings: dict[str, tuple[str, ast.Assign]] = {}
+    for candidate in sorted(ast.walk(node), key=lambda item: getattr(item, "lineno", 0)):
+        if not (
+            belongs_to_function(candidate)
+            and isinstance(candidate, ast.Assign)
+            and not assignment_dominates_continuation(candidate)
+            and len(candidate.targets) == 1
+            and isinstance(candidate.targets[0], ast.Name)
+            and mutation_counts[candidate.targets[0].id] == 1
+        ):
+            continue
+        value = candidate.value.value if isinstance(candidate.value, ast.Await) else candidate.value
+        derived_proof = derived_receiver_proof(value, candidate.lineno)
+        if derived_proof:
+            scoped_derived_bindings[candidate.targets[0].id] = (
+                derived_proof,
+                candidate,
+            )
 
     proofs: dict[int, str] = {}
     for candidate in ast.walk(node):
@@ -1590,6 +1691,12 @@ def python_browser_receiver_proofs(
         proof = direct_receiver_proof(
             receiver_node, candidate.lineno
         ) or derived_receiver_proof(receiver_node, candidate.lineno)
+        if not proof and isinstance(receiver_node, ast.Name):
+            scoped_binding = scoped_derived_bindings.get(receiver_node.id)
+            if scoped_binding and assignment_dominates_candidate(
+                scoped_binding[1], candidate
+            ):
+                proof = scoped_binding[0]
         if proof:
             proofs[id(candidate)] = proof
     return proofs
@@ -3146,6 +3253,7 @@ class PythonVisitor(ast.NodeVisitor):
         browser_type_names: set[str],
         browser_page_factories: set[str],
         browser_runtime_factories: set[str],
+        module_browser_variables: set[str],
         builtin_property_available: bool,
         url_parser_names: set[str],
         module_literal_string_sets: dict[str, tuple[str, ...]],
@@ -3188,6 +3296,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.browser_type_names = browser_type_names
         self.browser_page_factories = browser_page_factories
         self.browser_runtime_factories = browser_runtime_factories
+        self.module_browser_variables = module_browser_variables
         self.builtin_property_available = builtin_property_available
         self.url_parser_names = url_parser_names
         self.module_literal_string_sets = module_literal_string_sets
@@ -3999,6 +4108,9 @@ class PythonVisitor(ast.NodeVisitor):
         function_browser_runtime_factories.update(
             name for name, count in local_browser_runtime_imports.items() if count == 1
         )
+        function_module_browser_variables = {
+            name for name in self.module_browser_variables if name not in local_bindings
+        }
         class_browser_attributes = (
             self.class_browser_receiver_attributes[-1]
             if self.class_browser_receiver_attributes
@@ -4016,6 +4128,7 @@ class PythonVisitor(ast.NodeVisitor):
                 function_browser_types,
                 function_browser_factories,
                 function_browser_runtime_factories,
+                function_module_browser_variables,
                 class_browser_attributes,
             )
             if self.has_browser_import
@@ -6649,6 +6762,80 @@ def scan_python(
         for statement in tree.body
         if isinstance(statement, (ast.Import, ast.ImportFrom))
     ]
+    module_sys_bindings = 0
+    module_sys_exit_mutated = False
+
+    def collect_module_sys_bindings(candidate: ast.AST) -> None:
+        nonlocal module_sys_bindings, module_sys_exit_mutated
+        if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            return
+        if isinstance(candidate, (ast.Import, ast.ImportFrom)):
+            module_sys_bindings += sum(
+                1
+                for alias in candidate.names
+                if (alias.asname or alias.name.split(".", 1)[0]) == "sys"
+            )
+            return
+        if isinstance(candidate, ast.ExceptHandler) and candidate.name == "sys":
+            module_sys_bindings += 1
+        if isinstance(candidate, (ast.MatchAs, ast.MatchStar)) and candidate.name == "sys":
+            module_sys_bindings += 1
+        if isinstance(candidate, ast.MatchMapping) and candidate.rest == "sys":
+            module_sys_bindings += 1
+        if (
+            isinstance(candidate, ast.Name)
+            and candidate.id == "sys"
+            and isinstance(candidate.ctx, (ast.Store, ast.Del))
+        ):
+            module_sys_bindings += 1
+        if (
+            isinstance(candidate, ast.Attribute)
+            and dotted_name(candidate) == "sys.exit"
+            and isinstance(candidate.ctx, (ast.Store, ast.Del))
+        ):
+            module_sys_exit_mutated = True
+        for child in ast.iter_child_nodes(candidate):
+            collect_module_sys_bindings(child)
+
+    for statement in tree.body:
+        collect_module_sys_bindings(statement)
+    exact_sys_exit = (
+        module_sys_bindings == 1
+        and not module_sys_exit_mutated
+        and any(
+            isinstance(statement, ast.Import)
+            and any(
+                alias.name == "sys" and (alias.asname or alias.name) == "sys"
+                for alias in statement.names
+            )
+            for statement in tree.body
+        )
+    )
+
+    def browser_import_handler_terminates(handler: ast.ExceptHandler) -> bool:
+        if python_block_always_terminates(handler.body):
+            return True
+        if not exact_sys_exit or not handler.body:
+            return False
+        final = handler.body[-1]
+        return bool(
+            isinstance(final, ast.Expr)
+            and isinstance(final.value, ast.Call)
+            and dotted_name(final.value.func) == "sys.exit"
+        )
+
+    browser_import_statements.extend(
+        child
+        for statement in tree.body
+        if isinstance(statement, ast.Try)
+        and statement.handlers
+        and all(
+            browser_import_handler_terminates(handler)
+            for handler in statement.handlers
+        )
+        for child in statement.body
+        if isinstance(child, (ast.Import, ast.ImportFrom))
+    )
     browser_import_statements.extend(
         child
         for statement in tree.body
@@ -6716,6 +6903,9 @@ def scan_python(
         if browser_import_binding_counts[factory.split(".", 1)[0]] == 1
         if factory.split(".", 1)[0] not in module_mutations
     }
+    module_browser_variables = python_module_browser_receiver_variables(
+        tree, browser_type_names
+    )
     browser_page_factories: set[str] = set()
     for statement in tree.body:
         if not isinstance(statement, ast.ImportFrom):
@@ -8935,6 +9125,7 @@ def scan_python(
         browser_type_names=browser_type_names,
         browser_page_factories=browser_page_factories,
         browser_runtime_factories=browser_runtime_factories,
+        module_browser_variables=module_browser_variables,
         builtin_property_available=(
             "property" not in imported_bindings and "property" not in module_mutations
         ),

@@ -484,7 +484,11 @@ emitted only when its receiver is an exact imported Playwright `Page`/`Locator`/
 one immutable alias of such a parameter, an exactly typed `self` attribute in the enclosing class,
 an immutable constructor-bound Playwright page field or its direct local alias, an exact built-in
 property with a Playwright return annotation, a straight-line locally constructed Playwright page,
-or the first result of Skyvern's exact imported `get_page` factory. Class attributes may use one
+one uniquely annotated module-level Playwright receiver, or the first result of Skyvern's exact
+imported `get_page` factory. Module annotations require one binding and no top-level rebound or
+duplicate annotation; function parameters and local bindings shadow them. Playwright imports in a
+top-level `try` are accepted only when every handler terminates, including an exact `sys.exit(...)`
+path through one uniquely bound `sys` import. Class attributes may use one
 direct annotation in the class body or `__init__`; exact Playwright imports under an immutable
 top-level `TYPE_CHECKING` guard are accepted for deferred annotations. Conflicting annotations,
 rebound or near-package type imports, and static/class methods are withheld. Constructor flow must

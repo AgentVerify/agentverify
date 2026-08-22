@@ -116,7 +116,9 @@ Schema v88 structurally
 inventories six chained evaluators that the earlier dotted-name gate missed and proves one Skyvern
 Locator chain rooted in `get_page`. Schema v89 proves one exact Playwright-returning property in
 OpenAI Agents Python and three straight-line local page constructions in Aider and Skyvern, bringing
-the current totals to 40 proven of 86 and 46 unresolved. Known
+the totals to 40 proven of 86 and 46 unresolved. Schema v90 proves Browser-Use's uniquely annotated
+module page through a fail-closed dependency guard and same-branch Locator assignment, bringing the
+current totals to 41 proven and 45 unresolved. Known
 Playwright locator/get-by/filter/nth/and/or/first/last derivations and immutable aliases are supported, while
 ordinary same-named and unknown derivations stay negative. Next resolve inherited fields, ambiguous
 wrapper/locator flows, sanitizer and bounded builder summaries, imported helper flow, and other
@@ -307,8 +309,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 549 pinned positive/negative locations, with 874 separately
-scored IR component/relationship labels. Schema-v89 engine results and
+The curated regression set has reached 557 pinned positive/negative locations, with 882 separately
+scored IR component/relationship labels. Schema-v90 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.
