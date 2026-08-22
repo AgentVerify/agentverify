@@ -221,6 +221,15 @@ LangChain, 298 PydanticAI, 19 AgentScope, and 220 Agno calls. Two hundred thirty
 scoped, 331 are tests, and 445 carry literal models. Eight rebinding and two custom-endpoint
 negatives pin the boundary.
 
+Schema v103 expands official TypeScript AI SDK call attribution to OpenAI, Anthropic, Google, and
+xAI. With the existing Groq call, the selected corpus contains 32 production calls across OpenAI
+Agents JS, Mastra, Activepieces, Vercel AI, and Composio: 30 model calls, two factory calls, three
+inline/configured-instance calls, and 22 literal model IDs. The provider split is 14 OpenAI, 13
+Anthropic, three Google, one xAI, and one Groq. Exact direct/dynamic imports, image models, and
+observed inline embedding methods are included. Literal `baseURL`, unknown or spread factory configs,
+generic compatible packages, and rebindings are withheld; local and pinned negatives cover
+Inception, Azure-hosted Anthropic, and mock OpenAI endpoints.
+
 Schema v77 assigns stable IDs to results of exact imported Python MCP stdio constructors and
 resolves a direct Agent edge only for an earlier, unreassigned same-block binding selected in a literal
 `mcp_servers=[...]` list. Literal non-package processes such as Marvin's Deno server remain inventory
@@ -1392,14 +1401,14 @@ six unresolved ambiguity/shadowing/order forms, and all seven pinned Google ADK 
 tool-factory/adapter labels cover four local Agent edges, one hosted-MCP capability, one local
 Agent-as-tool delegation, eight conservative local negatives, two AutoGen factory edges, one Google
 ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent edge plus delegation.
-The 283 component-taxonomy labels add 215 exact local/pinned framework, provider, call,
-and model positives plus 68 near-name, rebound, custom-endpoint, and unrelated-service negatives.
+The 318 component-taxonomy labels add 237 exact local/pinned framework, provider, call,
+and model positives plus 81 near-name, rebound, custom-endpoint, and unrelated-service negatives.
 Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,077 IR labels pass (772 positives and 305 negatives):
-215 component-taxonomy positives/68 negatives, three approval positives/four negatives,
+negatives. All 1,112 IR labels pass (794 positives and 318 negatives):
+237 component-taxonomy positives/81 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
 contextual network-import positives,

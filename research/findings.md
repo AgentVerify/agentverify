@@ -429,6 +429,16 @@ inventory to 566 exact calls—20 native SDK and 546 framework wrappers—with 2
 and Groq in seven. Rebound constructors and custom OpenAI/Groq `base_url` calls remain unresolved;
 no selected Agno call uses either form.
 
+Schema v103 closes the largest TypeScript provider-call gap with exact official AI SDK exports for
+OpenAI, Anthropic, Google, and xAI. Together with the existing Groq path, five repositories contain
+32 production calls: 30 model calls, two provider factories, three inline/configured-instance calls,
+and 22 literal model IDs. They comprise 14 OpenAI, 13 Anthropic, three Google, one xAI, and one Groq
+call. Anthropic presence rises to 21 repositories, Google to 20, and xAI to three; OpenAI remains at
+43 because every newly attributed OpenAI repository already had separate exact provider evidence.
+Factory calls are accepted only without configuration or with a literal, spread-free object lacking
+`baseURL`. This withholds the selected Inception, Azure-hosted Anthropic, and mock OpenAI calls, as
+well as generic `@ai-sdk/openai-compatible` providers and unknown configs.
+
 ## 5. Controls are layered
 
 Sandboxing vocabulary appears in 64 repositories, audit/tracing in 57, human approval in 52, and

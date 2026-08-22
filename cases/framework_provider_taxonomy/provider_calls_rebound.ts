@@ -14,3 +14,18 @@ async function nearNamePackage() {
   const { groq } = await import('@ai-sdk/groq-adapter');
   return groq('llama-3.3-70b-versatile');
 }
+
+import { createAnthropic } from '@ai-sdk/anthropic';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { openai } from '@ai-sdk/openai';
+import { xai } from '@ai-sdk/xai';
+
+openai = fakeProvider;
+createAnthropic = fakeFactory;
+createGoogleGenerativeAI = fakeFactory;
+xai = fakeProvider;
+
+const notOpenAI = openai('gpt-5-mini');
+const notAnthropic = createAnthropic({});
+const notGoogle = createGoogleGenerativeAI({});
+const notXai = xai('grok-4');

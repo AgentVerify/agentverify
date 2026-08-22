@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T19:06:26.901842+00:00",
-  "labels": 1077,
-  "passed": 1077,
+  "generated_at": "2026-08-22T19:35:06.862753+00:00",
+  "labels": 1112,
+  "passed": 1112,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -37,9 +37,9 @@
       "recall": 1.0
     },
     "IR-COMPONENT-TAXONOMY": {
-      "tp": 215,
+      "tp": 237,
       "fp": 0,
-      "tn": 68,
+      "tn": 81,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -10220,6 +10220,321 @@
     },
     {
       "id": "provider-wrapper-agno-groq-custom-endpoint-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-openai-model-call-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-openai-model-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-openai-image-call-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-openai-image-model-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-anthropic-factory-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-anthropic-configured-call-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-anthropic-model-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-google-inline-embedding-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-google-inline-embedding-model-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-xai-model-call-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-xai-model-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-openai-rebound-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-anthropic-rebound-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-google-rebound-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-xai-rebound-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-openai-custom-endpoint-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-anthropic-custom-endpoint-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-google-unknown-config-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-openai-spread-config-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-compatible-package-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-openai-agents-js-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-openai-agents-js-model-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-openai-image-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-openai-image-model-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-anthropic-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-anthropic-model-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-google-dynamic-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-xai-dynamic-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-openai-inline-embedding-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-google-inline-embedding-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-anthropic-factory-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-openai-custom-endpoint-real-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-anthropic-azure-endpoint-real-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-openai-mock-endpoint-real-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-openai-getter-endpoint-local-negative",
       "check_id": "IR-COMPONENT-TAXONOMY",
       "expected": false,
       "observed": false,

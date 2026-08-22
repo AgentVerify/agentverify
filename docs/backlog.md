@@ -9,7 +9,8 @@ Schema v63 retains fourteen recurring framework families and six provider famili
 original taxonomy. The selected corpus now reports framework evidence in 40 repositories and
 provider evidence in 49. New exact-import observations include Vercel AI SDK in five repositories,
 Microsoft Agent Framework in two, and CAMEL, Qwen-Agent, Lagent, MetaGPT, Marvin, and AgentScope in
-one each. Groq appears in six repositories, Ollama in five, and Mistral and Cohere in three each.
+one each. Groq appears in seven repositories, Ollama in five, and Mistral, Cohere, and xAI in three
+each.
 Python and TypeScript signatures are separated so the TypeScript-only `ai` package does not classify
 a Python import. Google model attribution additionally accepts Gemini prefixes, while Bedrock
 requires an exact runtime SDK/import or literal `bedrock-runtime` service selection. Schema v73 adds
@@ -29,8 +30,12 @@ model/provider wrappers, which the corpus configures for Azure, DeepSeek, AIMLAP
 gateways. Schema v102 adds exact Agno public/direct model modules for OpenAI Chat/Responses, Google
 Gemini, Anthropic Claude, Azure OpenAI, and Groq. Both `id=` and positional literal model IDs are
 accepted only for those model wrappers; rebinding or a custom OpenAI/Groq `base_url` withholds
-attribution. The 283 component labels pin 215 local/real positives and 68 unrelated, rebound,
-custom-endpoint, or near-name negatives.
+attribution. Schema v103 expands official TypeScript AI SDK call proof to OpenAI, Anthropic, Google,
+and xAI, including direct, dynamic, image, factory-created, and inline embedding forms. A factory is
+accepted only with no arguments or a literal, spread-free configuration without `baseURL`; generic
+compatible packages, unknown configs, rebindings, and custom endpoints remain unresolved. The 318
+component labels pin 237 local/real positives and 81 unrelated, rebound, custom-endpoint, or
+near-name negatives.
 Next generalize selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
@@ -371,8 +376,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 642 pinned positive/negative locations, with 1,077 separately
-scored IR component/relationship labels. Schema-v102 engine results and
+The curated regression set has reached 642 pinned positive/negative locations, with 1,112 separately
+scored IR component/relationship labels. Schema-v103 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

@@ -267,19 +267,46 @@ PYTHON_PROVIDER_POSITIONAL_MODEL_CALLS = {
 TYPESCRIPT_AI_SDK_PROVIDER_EXPORTS = {
     "@ai-sdk/mistral": {
         "provider": "Mistral",
-        "instance": "mistral",
-        "factory": "createMistral",
+        "instances": ("mistral",),
+        "factories": ("createMistral",),
     },
     "@ai-sdk/groq": {
         "provider": "Groq",
-        "instance": "groq",
-        "factory": "createGroq",
+        "instances": ("groq",),
+        "factories": ("createGroq",),
     },
     "@ai-sdk/cohere": {
         "provider": "Cohere",
-        "instance": "cohere",
-        "factory": "createCohere",
+        "instances": ("cohere",),
+        "factories": ("createCohere",),
     },
+    "@ai-sdk/openai": {
+        "provider": "OpenAI",
+        "instances": ("openai",),
+        "factories": ("createOpenAI",),
+    },
+    "@ai-sdk/anthropic": {
+        "provider": "Anthropic",
+        "instances": ("anthropic",),
+        "factories": ("createAnthropic",),
+    },
+    "@ai-sdk/google": {
+        "provider": "Google",
+        "instances": ("google",),
+        "factories": ("createGoogle", "createGoogleGenerativeAI"),
+    },
+    "@ai-sdk/xai": {
+        "provider": "xAI",
+        "instances": ("xai",),
+        "factories": ("createXai",),
+    },
+}
+TYPESCRIPT_AI_SDK_MODEL_METHODS = {
+    "embedding": "embedding",
+    "embeddingModel": "embedding",
+    "textEmbeddingModel": "embedding",
+    "reranking": "reranking",
+    "image": "image",
 }
 BUILTIN_TOOL_CAPABILITIES = {
     "ShellTool": ("shell-execution",),
@@ -11936,7 +11963,10 @@ def typescript_ai_sdk_provider_imports(
         provider_exports = TYPESCRIPT_AI_SDK_PROVIDER_EXPORTS.get(module)
         if provider_exports is None:
             return
-        supported = {provider_exports["instance"], provider_exports["factory"]}
+        supported = {
+            *provider_exports["instances"],
+            *provider_exports["factories"],
+        }
         for imported in imports.split(","):
             imported = imported.strip()
             if not imported or imported.startswith("type "):
@@ -12001,39 +12031,120 @@ def typescript_const_provider_binding_is_stable(
     )
 
 
+def typescript_ai_sdk_factory_uses_default_endpoint(
+    text: str,
+    opening: int,
+    end: int,
+) -> bool:
+    """Accept factory attribution only when a custom endpoint cannot be supplied."""
+    arguments = typescript_call_arguments(text[opening + 1 : end - 1])
+    if not arguments:
+        return True
+    config = arguments[0][0].strip()
+    code = typescript_code_mask(config).strip()
+    if not code.startswith("{"):
+        return False
+    config_end = typescript_balanced_end(code, 0, "{", "}")
+    if config_end is None or code[config_end:].strip():
+        return False
+    for property_text, _ in typescript_literal_object_items(config):
+        property_code = typescript_code_mask(property_text).strip().rstrip(",").strip()
+        if property_code.startswith(("...", "[")):
+            return False
+        named_property = typescript_named_object_property(property_text)
+        if named_property is not None and named_property[0] in {"baseURL", "baseUrl"}:
+            return False
+        if named_property is None:
+            if property_code in {"baseURL", "baseUrl"}:
+                return False
+            if re.fullmatch(r"[A-Za-z_$][\w$]*", property_code) is None:
+                return False
+    return True
+
+
 def typescript_ai_sdk_provider_calls(text: str) -> list[TypeScriptProviderCall]:
     """Resolve exact official AI SDK factories and model calls through stable bindings."""
     code = typescript_code_mask(text)
     imports = typescript_ai_sdk_provider_imports(text)
     observations: list[TypeScriptProviderCall] = []
     configured_instances: list[tuple[str, TypeScriptProviderImportBinding, int]] = []
+    model_methods = "|".join(
+        re.escape(name)
+        for name in sorted(TYPESCRIPT_AI_SDK_MODEL_METHODS, key=len, reverse=True)
+    )
 
     for local_name, binding in imports.items():
         provider_exports = TYPESCRIPT_AI_SDK_PROVIDER_EXPORTS[binding.module]
-        is_factory = binding.imported_symbol == provider_exports["factory"]
-        methods = "" if is_factory else r"(?:\.(embedding|reranking))?"
+        is_factory = binding.imported_symbol in provider_exports["factories"]
+        methods = "" if is_factory else rf"(?:\.({model_methods}))?"
         call_pattern = re.compile(rf"(?<![\w$.]){re.escape(local_name)}{methods}\s*\(")
         for match in call_pattern.finditer(code):
             opening = code.find("(", match.start(), match.end())
             end = typescript_balanced_end(code, opening, "(", ")")
             if end is None:
                 continue
-            model_method = None if is_factory else (match.group(1) or "language")
-            observations.append(
-                TypeScriptProviderCall(
-                    match.start(),
-                    code[match.start() : opening].strip(),
-                    "ai-sdk-provider-factory" if is_factory else "ai-sdk-provider-model",
-                    binding.module,
-                    binding.imported_symbol,
-                    binding.provider,
-                    None
-                    if is_factory
-                    else typescript_literal_first_call_argument(text, opening, end),
-                    model_method,
-                )
+            if is_factory and not typescript_ai_sdk_factory_uses_default_endpoint(
+                text, opening, end
+            ):
+                continue
+            method_name = None if is_factory else match.group(1)
+            model_method = (
+                None
+                if is_factory
+                else TYPESCRIPT_AI_SDK_MODEL_METHODS.get(method_name, "language")
             )
+            chained_model = False
+            if is_factory:
+                chained_method = re.match(
+                    rf"\s*\.\s*({model_methods})\s*\(", code[end:]
+                )
+                if chained_method is not None:
+                    method_name = chained_method.group(1)
+                    method_opening = code.find(
+                        "(", end + chained_method.start(), end + chained_method.end()
+                    )
+                    method_end = typescript_balanced_end(
+                        code, method_opening, "(", ")"
+                    )
+                    if method_end is not None:
+                        observations.append(
+                            TypeScriptProviderCall(
+                                match.start(),
+                                f"{local_name}.{method_name}",
+                                "ai-sdk-provider-model",
+                                binding.module,
+                                binding.imported_symbol,
+                                binding.provider,
+                                typescript_literal_first_call_argument(
+                                    text, method_opening, method_end
+                                ),
+                                TYPESCRIPT_AI_SDK_MODEL_METHODS[method_name],
+                                binding.local_name,
+                            )
+                        )
+                        chained_model = True
+            if not chained_model:
+                observations.append(
+                    TypeScriptProviderCall(
+                        match.start(),
+                        code[match.start() : opening].strip(),
+                        (
+                            "ai-sdk-provider-factory"
+                            if is_factory
+                            else "ai-sdk-provider-model"
+                        ),
+                        binding.module,
+                        binding.imported_symbol,
+                        binding.provider,
+                        None
+                        if is_factory
+                        else typescript_literal_first_call_argument(text, opening, end),
+                        model_method,
+                    )
+                )
             if not is_factory:
+                continue
+            if chained_model:
                 continue
             prefix = code[max(0, match.start() - 240) : match.start()]
             assignment = re.search(
@@ -12051,7 +12162,7 @@ def typescript_ai_sdk_provider_calls(text: str) -> list[TypeScriptProviderCall]:
 
     for instance_name, binding, initializer_end in configured_instances:
         call_pattern = re.compile(
-            rf"(?<![\w$.]){re.escape(instance_name)}(?:\.(embedding|reranking))?\s*\("
+            rf"(?<![\w$.]){re.escape(instance_name)}(?:\.({model_methods}))?\s*\("
         )
         for match in call_pattern.finditer(code, initializer_end):
             opening = code.find("(", match.start(), match.end())
@@ -12067,7 +12178,7 @@ def typescript_ai_sdk_provider_calls(text: str) -> list[TypeScriptProviderCall]:
                     binding.imported_symbol,
                     binding.provider,
                     typescript_literal_first_call_argument(text, opening, end),
-                    match.group(1) or "language",
+                    TYPESCRIPT_AI_SDK_MODEL_METHODS.get(match.group(1), "language"),
                     binding.local_name,
                 )
             )

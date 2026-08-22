@@ -37,6 +37,15 @@ PYTHON_PROVIDER_METRICS = {
     "moonshot_ai": "Moonshot AI",
     "xai": "xAI",
 }
+TYPESCRIPT_PROVIDER_METRICS = {
+    "openai": "OpenAI",
+    "anthropic": "Anthropic",
+    "google": "Google",
+    "xai": "xAI",
+    "mistral": "Mistral",
+    "groq": "Groq",
+    "cohere": "Cohere",
+}
 
 
 def is_test_path(path: str) -> bool:
@@ -1027,11 +1036,11 @@ def main() -> int:
                 ),
                 "literal_models": len(typescript_provider_call_models),
                 **{
-                    provider.lower(): sum(
+                    metric: sum(
                         item.name == provider
                         for item in typescript_provider_call_attributions
                     )
-                    for provider in ("Mistral", "Groq", "Cohere")
+                    for metric, provider in TYPESCRIPT_PROVIDER_METRICS.items()
                 },
             },
             "relationships": len(ir.relationships),
@@ -2535,7 +2544,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 102,
+        "schema_version": 103,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2649,9 +2658,7 @@ def main() -> int:
                     "model_calls",
                     "configured_instance_calls",
                     "literal_models",
-                    "mistral",
-                    "groq",
-                    "cohere",
+                    *TYPESCRIPT_PROVIDER_METRICS,
                 )
             },
             "typescript_graph": {

@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v102
+framework, wrapper, or configuration path. Counts come from schema-v103
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -32,8 +32,8 @@ Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK
 (8), LlamaIndex (6), Vercel AI SDK (5), CrewAI (4), Agno (3), Google ADK (3), PydanticAI (3),
 Microsoft Agent Framework (2), Semantic Kernel (2), smolagents (2), AgentScope (1), AutoGen (1),
 CAMEL (1), Cline SDK (1), Lagent (1), Marvin (1), Mastra (1), MetaGPT (1), and Qwen-Agent (1).
-Provider observations are OpenAI (43), Anthropic (20), Google (19), Azure OpenAI (11), Groq (7),
-AWS Bedrock (6), Ollama (5), Cohere and Mistral (3 each), DeepSeek and xAI (2 each), and Alibaba
+Provider observations are OpenAI (43), Anthropic (21), Google (20), Azure OpenAI (11), Groq (7),
+AWS Bedrock (6), Ollama (5), Cohere, Mistral, and xAI (3 each), DeepSeek (2), and Alibaba
 DashScope and Moonshot AI (1 each). These overlapping exact-import/call, literal-service, and
 model-string observations are lower than research-wide lexical signals.
 
@@ -86,6 +86,16 @@ native SDK calls and 546 wrappers, split into nine LangChain, 298 PydanticAI, 19
 Agno calls. Two hundred thirty-five calls across nine repositories are production-scoped; 331 are
 tests, and 445 carry literal models. No selected Agno call overrides its provider or endpoint;
 custom OpenAI/Groq `base_url` calls are explicitly withheld.
+
+Schema v103 expands official TypeScript AI SDK call attribution to OpenAI, Anthropic, Google, and
+xAI. Together with the existing Groq path, the corpus now contains 32 production calls across five
+repositories: 30 model calls and two provider factories. Three inline or immutable configured
+instance calls are identified, and 22 direct literal model IDs are retained. The provider split is
+14 OpenAI, 13 Anthropic, three Google, one xAI, and one Groq. Exact static/dynamic imports, direct
+language and image calls, and observed embedding factory chains are supported. Factories with a
+literal `baseURL`, object spread, or nonliteral config are withheld, as are generic
+`@ai-sdk/openai-compatible` calls; pinned negatives cover Inception, Azure-hosted Anthropic, and a
+mock OpenAI endpoint.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
 Agent→MCP-server identities. Import-proven literal stdio constructor calls are inventoried for any
@@ -519,9 +529,11 @@ and `network-ssrf-policy` edge.
   AWS Bedrock requires its exact TypeScript runtime SDK, a recognized `langchain_aws` constructor
   import, or a literal `bedrock-runtime` service selection. Mistral, Groq, Cohere, and Ollama support
   exact Python SDK imports plus import/alias-proven native and LangChain wrapper calls. Rebinding
-  withholds call attribution. The official Mistral, Groq, and Cohere TypeScript AI SDK providers also
-  support exact named/dynamic imports, factories, and immutable configured instances; community
-  Ollama providers are not conflated. AgentScope's exact public Ollama model reexport and direct
+  withholds call attribution. The official OpenAI, Anthropic, Google, xAI, Mistral, Groq, and Cohere
+  TypeScript AI SDK providers also support selected exact named/dynamic imports, factories, and
+  immutable or inline configured instances; custom factory endpoints, unknown/spread configs,
+  generic compatible packages, and community Ollama providers are not conflated. AgentScope's exact
+  public Ollama model reexport and direct
   PydanticAI provider/model/embedding modules are supported, but general package reexports are not.
   Literal call-model arguments inherit the proven provider, and selected Mistral-owned prefixes are
   recognized; third-party model names hosted by Groq or Ollama and indirect factories remain
@@ -736,7 +748,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 642-label rule truth set and 1,077-label IR component/relationship set are curated regression
+The 642-label rule truth set and 1,112-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

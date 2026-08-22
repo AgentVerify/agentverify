@@ -222,6 +222,54 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "ai-sdk-provider-model",
             None,
         ),
+        (
+            "provider_calls.ts",
+            20,
+            "OpenAI",
+            "openai",
+            "ai-sdk-provider-model",
+            None,
+        ),
+        (
+            "provider_calls.ts",
+            21,
+            "OpenAI",
+            "openai.image",
+            "ai-sdk-provider-model",
+            None,
+        ),
+        (
+            "provider_calls.ts",
+            22,
+            "Anthropic",
+            "createAnthropic",
+            "ai-sdk-provider-factory",
+            None,
+        ),
+        (
+            "provider_calls.ts",
+            23,
+            "Anthropic",
+            "configuredAnthropic",
+            "ai-sdk-provider-model",
+            "createAnthropic",
+        ),
+        (
+            "provider_calls.ts",
+            24,
+            "Google",
+            "createGoogleGenerativeAI.textEmbeddingModel",
+            "ai-sdk-provider-model",
+            "createGoogleGenerativeAI",
+        ),
+        (
+            "provider_calls.ts",
+            27,
+            "xAI",
+            "xai",
+            "ai-sdk-provider-model",
+            None,
+        ),
     }
     assert {
         (item.evidence.line, item.name, item.attributes["provider"])
@@ -233,10 +281,21 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         (5, "mistral-small-latest", "Mistral"),
         (7, "llama-3.3-70b-versatile", "Groq"),
         (8, "embed-english-v3.0", "Cohere"),
+        (20, "gpt-5-mini", "OpenAI"),
+        (21, "gpt-image-2", "OpenAI"),
+        (23, "claude-sonnet-4-5", "Anthropic"),
+        (24, "gemini-embedding-001", "Google"),
+        (27, "grok-4", "xAI"),
     }
     assert not any(
         item.kind == "provider"
         and item.evidence.path == "provider_calls_rebound.ts"
+        and item.attributes.get("resolution") == "exact-typescript-provider-import"
+        for item in ir.components
+    )
+    assert not any(
+        item.kind in {"provider", "model"}
+        and item.evidence.path == "provider_calls_custom_endpoints.ts"
         and item.attributes.get("resolution") == "exact-typescript-provider-import"
         for item in ir.components
     )
