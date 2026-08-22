@@ -96,6 +96,11 @@ Every selected-module caller passes a page yielded by one of the already proven 
 managers; the helper is private, uniquely defined, and never escapes. The separate `_observe_data`
 helper remains unresolved because its call sites are not unanimous. Coverage rises to 56 proven of
 93 and 37 unresolved; production findings remain unchanged.
+Schema v96 proves all 12 fixed-script CAMEL `AsyncBaseBrowser` evaluators. The `Any`-annotated page
+field has one exact locally imported Playwright root; every non-`None` assignment derives from a
+browser context, an existing context page, or the exact result of `expect_event("popup")`. Coverage
+rises to 68 proven of 93 and 25 unresolved; unknown writes and other event types remain withheld and
+findings remain unchanged.
 The constructor proof requires one exact imported Playwright runtime factory and a
 straight-line, single-mutation `__init__` chain through browser/context creation. Conflicting types,
 near/rebound imports, static methods, conditional or later field assignments, and shadowed factories
@@ -160,7 +165,7 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the consolidated 596-label truth set.
+rule observations are pinned in the consolidated 616-label truth set.
 
 MCP configuration is also executable dependency configuration. Schema v65 resolves 50 literal
 `npx`/`uvx` package launchers in the bounded corpus: 45 unpinned, three floating, and two exact,

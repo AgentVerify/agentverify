@@ -2542,6 +2542,390 @@ def python_class_lifecycle_browser_receivers(
     return resolved
 
 
+def python_class_branching_lifecycle_browser_receivers(
+    node: ast.ClassDef,
+    browser_runtime_factories: set[str],
+) -> set[str]:
+    """Resolve page fields whose complete branching lifecycle stays Playwright-derived."""
+    methods = [
+        statement
+        for statement in node.body
+        if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and statement.args.args
+        and statement.args.args[0].arg == "self"
+    ]
+    initializers = [method for method in methods if method.name == "__init__"]
+    if len(initializers) != 1:
+        return set()
+    initializer = initializers[0]
+
+    initializer_parameters = {
+        argument.arg
+        for argument in (
+            *initializer.args.posonlyargs,
+            *initializer.args.args,
+            *initializer.args.kwonlyargs,
+        )
+    }
+    local_runtime_imports: Counter[str] = Counter()
+    all_initializer_imports: Counter[str] = Counter()
+    for statement in initializer.body:
+        if not isinstance(statement, (ast.Import, ast.ImportFrom)):
+            continue
+        all_initializer_imports.update(
+            alias.asname or alias.name.split(".", 1)[0]
+            for alias in statement.names
+        )
+        if (
+            isinstance(statement, ast.ImportFrom)
+            and statement.module in {"playwright.async_api", "playwright.sync_api"}
+        ):
+            local_runtime_imports.update(
+                alias.asname or alias.name
+                for alias in statement.names
+                if alias.name in {"async_playwright", "sync_playwright"}
+            )
+    initializer_owned, _ = python_function_owned_nodes(initializer)
+    initializer_stores = Counter(
+        candidate.id
+        for candidate in initializer_owned
+        if isinstance(candidate, ast.Name)
+        and isinstance(candidate.ctx, (ast.Store, ast.Del))
+    )
+    local_factories = {
+        name
+        for name, count in local_runtime_imports.items()
+        if count == 1
+        and all_initializer_imports[name] == 1
+        and name not in initializer_parameters
+        and initializer_stores[name] == 0
+    }
+    initializer_bindings = python_function_local_bindings(initializer)
+    factories = local_factories | {
+        factory
+        for factory in browser_runtime_factories
+        if factory.split(".", 1)[0] not in initializer_bindings
+    }
+    if not factories:
+        return set()
+
+    def self_attribute(target: ast.AST) -> str | None:
+        if (
+            isinstance(target, ast.Attribute)
+            and isinstance(target.value, ast.Name)
+            and target.value.id == "self"
+        ):
+            return target.attr
+        return None
+
+    def nested_self_attributes(target: ast.AST) -> set[str]:
+        if name := self_attribute(target):
+            return {name}
+        if isinstance(target, (ast.Tuple, ast.List)):
+            return {
+                name
+                for element in target.elts
+                for name in nested_self_attributes(element)
+            }
+        return set()
+
+    assignments: dict[
+        str,
+        list[tuple[ast.FunctionDef | ast.AsyncFunctionDef, ast.AST]],
+    ] = defaultdict(list)
+    initial_none_attributes: set[str] = set()
+    unsafe_attributes: set[str] = set()
+    dynamic_self_setattr = False
+    method_owned: dict[int, list[ast.AST]] = {}
+    for method in methods:
+        owned, parents = python_function_owned_nodes(method)
+        method_owned[id(method)] = owned
+        for candidate in owned:
+            setattr_name: ast.AST | None = None
+            if isinstance(candidate, ast.Call):
+                call_name = dotted_name(candidate.func)
+                if (
+                    (call_name == "setattr" or call_name.endswith(".__setattr__"))
+                    and candidate.args
+                    and isinstance(candidate.args[0], ast.Name)
+                    and candidate.args[0].id == "self"
+                    and len(candidate.args) > 1
+                ):
+                    setattr_name = candidate.args[1]
+                elif (
+                    isinstance(candidate.func, ast.Attribute)
+                    and candidate.func.attr == "__setattr__"
+                    and isinstance(candidate.func.value, ast.Name)
+                    and candidate.func.value.id == "self"
+                    and candidate.args
+                ):
+                    setattr_name = candidate.args[0]
+            if setattr_name is not None:
+                if (
+                    isinstance(setattr_name, ast.Constant)
+                    and isinstance(setattr_name.value, str)
+                ):
+                    unsafe_attributes.add(setattr_name.value)
+                else:
+                    dynamic_self_setattr = True
+            targets: list[ast.AST] = []
+            value: ast.AST | None = None
+            if isinstance(candidate, ast.Assign):
+                targets.extend(candidate.targets)
+                value = candidate.value
+            elif isinstance(candidate, ast.AnnAssign):
+                targets.append(candidate.target)
+                value = candidate.value
+            elif isinstance(
+                candidate,
+                (ast.AugAssign, ast.NamedExpr, ast.For, ast.AsyncFor),
+            ):
+                targets.append(candidate.target)
+            elif isinstance(candidate, ast.Delete):
+                targets.extend(candidate.targets)
+            elif isinstance(candidate, (ast.With, ast.AsyncWith)):
+                targets.extend(
+                    item.optional_vars
+                    for item in candidate.items
+                    if item.optional_vars is not None
+                )
+            for target in targets:
+                if (
+                    isinstance(target, ast.Subscript)
+                    and isinstance(target.value, ast.Attribute)
+                    and target.value.attr == "__dict__"
+                    and isinstance(target.value.value, ast.Name)
+                    and target.value.value.id == "self"
+                ):
+                    if (
+                        isinstance(target.slice, ast.Constant)
+                        and isinstance(target.slice.value, str)
+                    ):
+                        unsafe_attributes.add(target.slice.value)
+                    else:
+                        dynamic_self_setattr = True
+                    continue
+                name = self_attribute(target)
+                if name is None:
+                    unsafe_attributes.update(nested_self_attributes(target))
+                    continue
+                if value is None or len(targets) != 1:
+                    unsafe_attributes.add(name)
+                    continue
+                assignments[name].append((method, value))
+                if (
+                    method is initializer
+                    and parents.get(id(candidate)) is initializer
+                    and isinstance(value, ast.Constant)
+                    and value.value is None
+                ):
+                    initial_none_attributes.add(name)
+    if dynamic_self_setattr:
+        return set()
+
+    popup_aliases: dict[int, dict[str, str]] = {}
+    for method in methods:
+        owned = method_owned[id(method)]
+        popup_infos: dict[str, str] = {}
+        local_values: dict[str, list[ast.AST]] = defaultdict(list)
+        local_mutations: Counter[str] = Counter()
+        for candidate in owned:
+            if isinstance(candidate, (ast.With, ast.AsyncWith)):
+                for item in candidate.items:
+                    context = (
+                        item.context_expr.value
+                        if isinstance(item.context_expr, ast.Await)
+                        else item.context_expr
+                    )
+                    if not (
+                        isinstance(item.optional_vars, ast.Name)
+                        and isinstance(context, ast.Call)
+                        and isinstance(context.func, ast.Attribute)
+                        and context.func.attr == "expect_event"
+                        and isinstance(context.func.value, ast.Attribute)
+                        and isinstance(context.func.value.value, ast.Name)
+                        and context.func.value.value.id == "self"
+                        and len(context.args) >= 1
+                        and isinstance(context.args[0], ast.Constant)
+                        and context.args[0].value == "popup"
+                        and not any(isinstance(argument, ast.Starred) for argument in context.args)
+                        and not any(keyword.arg is None for keyword in context.keywords)
+                    ):
+                        continue
+                    popup_infos[item.optional_vars.id] = context.func.value.attr
+            targets: list[ast.AST] = []
+            value: ast.AST | None = None
+            if isinstance(candidate, ast.Assign):
+                targets.extend(candidate.targets)
+                value = candidate.value
+            elif isinstance(candidate, ast.AnnAssign):
+                targets.append(candidate.target)
+                value = candidate.value
+            elif isinstance(
+                candidate,
+                (ast.AugAssign, ast.NamedExpr, ast.For, ast.AsyncFor),
+            ):
+                targets.append(candidate.target)
+            elif isinstance(candidate, ast.Delete):
+                targets.extend(candidate.targets)
+            elif isinstance(candidate, (ast.With, ast.AsyncWith)):
+                targets.extend(
+                    item.optional_vars
+                    for item in candidate.items
+                    if item.optional_vars is not None
+                )
+            for target in targets:
+                local_mutations.update(python_assigned_names(target))
+                if (
+                    value is not None
+                    and len(targets) == 1
+                    and isinstance(target, ast.Name)
+                ):
+                    local_values[target.id].append(value)
+
+        aliases: dict[str, str] = {}
+        for name, values in local_values.items():
+            sources: set[str] = set()
+            valid = True
+            non_none = 0
+            for value in values:
+                if isinstance(value, ast.Constant) and value.value is None:
+                    continue
+                non_none += 1
+                expression = value.value if isinstance(value, ast.Await) else value
+                if not (
+                    isinstance(expression, ast.Attribute)
+                    and expression.attr == "value"
+                    and isinstance(expression.value, ast.Name)
+                    and expression.value.id in popup_infos
+                    and local_mutations[expression.value.id] == 1
+                ):
+                    valid = False
+                    break
+                sources.add(popup_infos[expression.value.id])
+            if (
+                valid
+                and non_none
+                and len(sources) == 1
+                and local_mutations[name] == len(values)
+            ):
+                aliases[name] = next(iter(sources))
+        popup_aliases[id(method)] = aliases
+
+    field_kinds: dict[str, str] = {}
+
+    def resolve(
+        expression: ast.AST | None,
+        method: ast.FunctionDef | ast.AsyncFunctionDef,
+    ) -> str | None:
+        if isinstance(expression, ast.Await):
+            expression = expression.value
+        if expression is None:
+            return None
+        if (
+            isinstance(expression, ast.Attribute)
+            and isinstance(expression.value, ast.Name)
+            and expression.value.id == "self"
+        ):
+            return field_kinds.get(expression.attr)
+        if isinstance(expression, ast.Subscript):
+            collection = expression.value
+            if (
+                isinstance(collection, ast.Attribute)
+                and collection.attr == "pages"
+                and resolve(collection.value, method) == "playwright-context"
+                and isinstance(expression.slice, ast.Constant)
+                and isinstance(expression.slice.value, int)
+                and not isinstance(expression.slice.value, bool)
+            ):
+                return "playwright-page"
+            return None
+        if not isinstance(expression, ast.Call):
+            return None
+        if (
+            method is initializer
+            and dotted_name(expression.func) in factories
+            and not expression.args
+            and not expression.keywords
+        ):
+            return "playwright-context-manager"
+        if not isinstance(expression.func, ast.Attribute):
+            return None
+        receiver = expression.func.value
+        if (
+            expression.func.attr == "start"
+            and not expression.args
+            and not expression.keywords
+            and resolve(receiver, method) == "playwright-context-manager"
+        ):
+            return "playwright-runtime"
+        if (
+            expression.func.attr in {"launch", "launch_persistent_context"}
+            and isinstance(receiver, ast.Attribute)
+            and receiver.attr in {"chromium", "firefox", "webkit"}
+            and resolve(receiver.value, method) == "playwright-runtime"
+        ):
+            return (
+                "playwright-context"
+                if expression.func.attr == "launch_persistent_context"
+                else "playwright-browser"
+            )
+        receiver_kind = resolve(receiver, method)
+        if expression.func.attr == "new_context" and receiver_kind == "playwright-browser":
+            return "playwright-context"
+        if expression.func.attr == "new_page" and receiver_kind in {
+            "playwright-browser",
+            "playwright-context",
+        }:
+            return "playwright-page"
+        return None
+
+    changed = True
+    while changed:
+        changed = False
+        for name, values in assignments.items():
+            if name in field_kinds or name in unsafe_attributes:
+                continue
+            resolved_values: list[str] = []
+            deferred_popup_sources: list[str] = []
+            valid = True
+            for method, value in values:
+                if isinstance(value, ast.Constant) and value.value is None:
+                    continue
+                if (
+                    isinstance(value, ast.Name)
+                    and value.id in popup_aliases[id(method)]
+                ):
+                    deferred_popup_sources.append(popup_aliases[id(method)][value.id])
+                    continue
+                kind = resolve(value, method)
+                if kind is None:
+                    valid = False
+                    break
+                resolved_values.append(kind)
+            if (
+                not valid
+                or not resolved_values
+                or len(set(resolved_values)) != 1
+                or (
+                    deferred_popup_sources
+                    and (
+                        resolved_values[0] != "playwright-page"
+                        or any(source != name for source in deferred_popup_sources)
+                    )
+                )
+            ):
+                continue
+            field_kinds[name] = resolved_values[0]
+            changed = True
+
+    return {
+        name
+        for name, kind in field_kinds.items()
+        if kind == "playwright-page" and name in initial_none_attributes
+    }
+
+
 def python_browser_receiver_proofs(
     node: ast.FunctionDef | ast.AsyncFunctionDef,
     browser_type_names: set[str],
@@ -5771,6 +6155,11 @@ class PythonVisitor(ast.NodeVisitor):
         lifecycle_browser_attributes = python_class_lifecycle_browser_receivers(
             node, self.browser_runtime_factories
         )
+        branching_lifecycle_browser_attributes = (
+            python_class_branching_lifecycle_browser_receivers(
+                node, self.browser_runtime_factories
+            )
+        )
         self.class_browser_receiver_attributes.append(
             {
                 **{
@@ -5780,6 +6169,10 @@ class PythonVisitor(ast.NodeVisitor):
                 **{
                     name: "lifecycle-bound-playwright-page"
                     for name in lifecycle_browser_attributes
+                },
+                **{
+                    name: "branching-lifecycle-playwright-page"
+                    for name in branching_lifecycle_browser_attributes
                 },
                 **{
                     name: "class-attribute-annotation"

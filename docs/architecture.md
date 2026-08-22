@@ -531,6 +531,10 @@ the helper has one immutable definition, every selected-module call passes a pro
 and the helper is never loaded as a value. Missing or mixed arguments, star expansion, ordinary
 objects, function escape, module-level calls, and calls inside lambdas withhold the summary.
 Caller-local shadowing of the helper or context-manager factory name also withholds the summary.
+An `Any`-annotated lifecycle field may be proven across branches only when one exact Playwright
+runtime root reaches every non-`None` field assignment through runtime, browser, context, page, or
+exact `"popup"` event-result transitions. Unknown, tuple, or dynamic `setattr` writes, other event
+names, and shadowed runtime factories withhold the field-wide summary.
 Property proof requires the built-in decorator, one getter definition, and an exact imported
 Playwright return type. Inherited fields, ambiguous wrapper-returned locators, sanitizer
 proofs, imported/transitive script builders, helper-return or non-unanimous helper-parameter provenance, and unsupported

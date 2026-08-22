@@ -149,8 +149,13 @@ every selected-module call passes such a page directly. Three Skyvern test evalu
 `same-module-contextmanager-page-parameter`, bringing totals to 56 proven of 93 and 37 unresolved.
 Mixed calls, function escape, lambda-hidden calls, and caller-local helper or factory shadowing remain
 withheld.
-Next resolve inherited fields, ambiguous
-wrapper/locator flows, sanitizer and bounded builder summaries, imported helper flow, and bounded
+Schema v96 proves branching lifecycle fields only when every non-`None` assignment stays on an exact
+Playwright runtime→browser/context→page graph, including exact popup page events. Twelve CAMEL
+production evaluators move to `branching-lifecycle-playwright-page`, bringing totals to 68 proven of
+93 and 25 unresolved. Unknown or tuple field writes, dynamic `setattr`, non-popup events, and
+shadowed runtime factories remain withheld.
+Next resolve inherited fields, ambiguous wrapper/locator flows, sanitizer and bounded builder
+summaries, imported helper flow, and bounded
 helper-return provenance without treating every dynamic JavaScript expression as
 tool-controlled.
 
@@ -339,8 +344,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 596 pinned positive/negative locations, with 921 separately
-scored IR component/relationship labels. Schema-v95 engine results and
+The curated regression set has reached 616 pinned positive/negative locations, with 941 separately
+scored IR component/relationship labels. Schema-v96 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

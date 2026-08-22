@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T16:40:11.275583+00:00",
-  "labels": 921,
-  "passed": 921,
+  "generated_at": "2026-08-22T17:00:24.668555+00:00",
+  "labels": 941,
+  "passed": 941,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -157,9 +157,9 @@
       "recall": 1.0
     },
     "IR-PY-BROWSER-RECEIVER": {
-      "tp": 43,
+      "tp": 56,
       "fp": 0,
-      "tn": 44,
+      "tn": 51,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -8816,6 +8816,186 @@
     },
     {
       "id": "python-browser-receiver-same-module-factory-shadowed-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-lifecycle-local",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-reassigned-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-wrong-event-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-setattr-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-shadowed-factory-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-camel-401-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-camel-422-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-camel-426-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-camel-458-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-camel-463-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-camel-482-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-camel-488-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-camel-742-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-camel-754-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-camel-828-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-camel-889-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-camel-890-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-tuple-reassigned-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-pages-slice-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-branching-popup-info-reassigned-local-negative",
       "check_id": "IR-PY-BROWSER-RECEIVER",
       "expected": false,
       "observed": false,
