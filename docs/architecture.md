@@ -490,7 +490,11 @@ reports are explicitly marked partial.
 Configuration discovery includes Compose, devcontainers, and Kubernetes/Helm paths. Exact dangerous
 boolean settings are reported as review results; templates and values are not rendered or executed,
 and AgentVerify does not infer that a chart value governs a workload unless that relationship is
-explicitly resolved.
+explicitly resolved. Compose short-syntax bind mounts are parsed into host path, container path,
+credential class, and read-only state only when the source is an explicit host path. Sensitive SSH,
+cloud, cluster, registry, package-manager, netrc, and Git credential locations become
+`host-credential-mount` boundaries. Named volumes, adjacent path names, and ordinary workspaces do
+not inherit sensitivity from their container destination.
 
 The native AI BOM serializes the same evidence graph with stable observation IDs. Relationship
 endpoints expose symbol-ID, evidence-location, unique-display-name, ambiguous, or unresolved

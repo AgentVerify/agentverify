@@ -90,7 +90,8 @@ never imported or executed.
   transports stay negative.
 - `python_a2a_card_endpoint`: both ADK client-construction paths are governed by all-interface
   HTTPS/loopback and same-origin validation; incomplete predicates withhold the control.
-- `sandbox_boundary`: Compose and Kubernetes host/privilege boundaries plus explicit safe negatives.
+- `sandbox_boundary`: Compose and Kubernetes host/privilege boundaries, exact host credential bind
+  mounts, named-volume/near-name negatives, and literal privileged Docker SDK calls.
 - `constant_eval`: constant Python evaluation negative case.
 - `python_browser_evaluate`: exact Playwright `Page` annotations and immutable aliases prove dynamic
   receivers; ordinary same-module `.evaluate(...)` methods and reassigned pages remain negative.

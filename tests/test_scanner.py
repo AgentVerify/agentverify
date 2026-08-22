@@ -3524,9 +3524,10 @@ def test_container_host_boundaries_but_not_safe_compose_are_reviewed() -> None:
         "A container explicitly allows privilege escalation",
         "A container mounts the host filesystem root",
         "A Kubernetes workload mounts a host path",
+        "A container mounts host credential material",
     }
-    assert len(findings) == 12
-    assert ir.config_files_scanned == 4
+    assert len(findings) == 21
+    assert ir.config_files_scanned == 5
     assert all(finding.result_kind == "review" for finding in findings)
     host_path = next(
         component
@@ -3539,6 +3540,35 @@ def test_container_host_boundaries_but_not_safe_compose_are_reviewed() -> None:
         and component.name == "privileged-container"
         and component.attributes.get("api") == "client.containers.run"
         for component in ir.components
+    )
+    credential_mounts = [
+        component
+        for component in ir.components
+        if component.kind == "sandbox-boundary"
+        and component.name == "host-credential-mount"
+    ]
+    assert {component.attributes["credential_kind"] for component in credential_mounts} == {
+        "aws",
+        "docker-registry",
+        "gcp",
+        "git",
+        "kubernetes",
+        "netrc",
+        "npm",
+        "pypi",
+        "ssh",
+    }
+    assert all(component.attributes["read_only"] is True for component in credential_mounts)
+    credential_findings = [
+        finding
+        for finding in findings
+        if finding.message == "A container mounts host credential material"
+    ]
+    assert all("short-lived credentials" in finding.remediation for finding in credential_findings)
+    assert not any(
+        component.evidence.path == "docker-compose.credentials.yml"
+        and component.evidence.line in {13, 14, 15}
+        for component in credential_mounts
     )
 
 

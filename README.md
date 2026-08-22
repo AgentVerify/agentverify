@@ -8,7 +8,7 @@ The initial research corpus contains 71 pinned repositories spanning frameworks,
 agents, MCP servers, workflow platforms, tool integrations, sandboxes, and observability systems.
 The first engine supports Python AST analysis, structure-aware TypeScript/JavaScript discovery, MCP
 configuration, framework/provider/tool inventory, deterministic JSON, and initial
-agent-security review rules. Its curated cross-rule regression set contains 350 pinned positive and
+agent-security review rules. Its curated cross-rule regression set contains 364 pinned positive and
 negative labels, plus 490 separately scored Agent IR component and relationship labels.
 
 ## Install and scan

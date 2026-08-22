@@ -73,6 +73,13 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                 "privilege-escalation": "A container explicitly allows privilege escalation",
                 "root-host-mount": "A container mounts the host filesystem root",
                 "host-path-mount": "A Kubernetes workload mounts a host path",
+                "host-credential-mount": "A container mounts host credential material",
+            }
+            remediations = {
+                "host-credential-mount": (
+                    "Remove the host credential bind mount; use narrowly scoped, short-lived "
+                    "credentials or a mediated credential agent instead."
+                )
             }
             ir.findings.append(
                 make_finding(
@@ -82,7 +89,10 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                     "high",
                     "high",
                     messages.get(component.name, "A container crosses a host isolation boundary"),
-                    "Remove the host boundary, or replace it with a narrowly scoped least-privilege interface.",
+                    remediations.get(
+                        component.name,
+                        "Remove the host boundary, or replace it with a narrowly scoped least-privilege interface.",
+                    ),
                     "review",
                 )
             )

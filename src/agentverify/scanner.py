@@ -9416,6 +9416,53 @@ def is_container_config(path: Path) -> bool:
     )
 
 
+HOST_CREDENTIAL_PATHS = (
+    (re.compile(r"(?:^|/)\.ssh(?:/|$)"), "ssh"),
+    (re.compile(r"(?:^|/)\.aws(?:/|$)"), "aws"),
+    (re.compile(r"(?:^|/)\.kube(?:/|$)"), "kubernetes"),
+    (re.compile(r"(?:^|/)\.config/gcloud(?:/|$)"), "gcp"),
+    (re.compile(r"(?:^|/)\.docker/config\.json$"), "docker-registry"),
+    (re.compile(r"(?:^|/)\.npmrc$"), "npm"),
+    (re.compile(r"(?:^|/)\.pypirc$"), "pypi"),
+    (re.compile(r"(?:^|/)\.netrc$"), "netrc"),
+    (re.compile(r"(?:^|/)\.git-credentials$"), "git"),
+)
+
+
+def compose_host_credential_mount(stripped: str) -> dict[str, object] | None:
+    """Return exact short-syntax host credential bind-mount evidence."""
+    if not stripped.startswith("-"):
+        return None
+    payload = stripped[1:].strip().split(" #", 1)[0].strip()
+    if len(payload) >= 2 and payload[0] == payload[-1] and payload[0] in {'"', "'"}:
+        payload = payload[1:-1]
+    parts = payload.split(":")
+    if len(parts) < 2:
+        return None
+    source, target, *options = parts
+    if not target.startswith("/") or not source.startswith(
+        ("/", "./", "../", "~", "$HOME/", "${HOME}/")
+    ):
+        return None
+    credential_kind = next(
+        (kind for pattern, kind in HOST_CREDENTIAL_PATHS if pattern.search(source)),
+        None,
+    )
+    if credential_kind is None:
+        return None
+    option_names = {
+        option
+        for value in options
+        for option in value.lower().split(",")
+    }
+    return {
+        "host_path": source,
+        "container_path": target,
+        "credential_kind": credential_kind,
+        "read_only": "ro" in option_names,
+    }
+
+
 def scan_container_config(ir: RepositoryIR, root: Path, path: Path) -> None:
     relative = path.relative_to(root).as_posix()
     try:
@@ -9465,6 +9512,9 @@ def scan_container_config(ir: RepositoryIR, root: Path, path: Path) -> None:
             host_path = host_path_match.group(1)
             boundary = "root-host-mount" if host_path == "/" else "host-path-mount"
             attributes["host_path"] = host_path
+        elif credential_mount := compose_host_credential_mount(stripped):
+            boundary = "host-credential-mount"
+            attributes.update(credential_mount)
         host_path_pending = bool(re.match(r"^hostPath\s*:\s*$", stripped))
         if boundary:
             ir.add_component(

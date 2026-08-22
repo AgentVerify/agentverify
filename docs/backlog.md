@@ -5,7 +5,7 @@ the local repository has an approved remote.
 
 ## P0 — framework and provider taxonomy
 
-Schema v61 promotes fourteen recurring framework families and six provider families beyond the
+Schema v62 promotes fourteen recurring framework families and six provider families beyond the
 original taxonomy. The selected corpus now reports framework evidence in 40 repositories and
 provider evidence in 48. New exact-import observations include Vercel AI SDK in five repositories,
 Microsoft Agent Framework in two, and CAMEL, Qwen-Agent, Lagent, MetaGPT, Marvin, and AgentScope in
@@ -27,7 +27,7 @@ decorated-tool bindings now receive occurrence-qualified IDs for exact source ed
 references are scope-aware for unique and repeated names; repeated targets resolve for a single
 direct, earlier definition in the same lexical/module scope, plus an exact single-mutation definition
 that dominates use in the same branch/with body.
-Schema v61 additionally inventories 15 import-proven OpenAI Agents Python `ComputerTool` instances
+Schema v62 additionally inventories 15 import-proven OpenAI Agents Python `ComputerTool` instances
 and resolves ten agent links to them, including three formerly ambiguous repeated bindings. Literal
 Python Agent tool lists now recover 753 exact role-proven tools: 181 callable definitions, 100
 constructor-bound instances, 444 inline constructors, two direct context-manager bindings, 21
@@ -131,7 +131,11 @@ an omitted `MCPServerStdio.require_approval` becomes `False` and is copied to ev
 
 Kubernetes privileged mode, host network/PID/IPC, service-account token mounts, explicit privilege
 escalation, arbitrary `hostPath` mounts, and literal privileged Docker SDK calls are covered alongside
-Compose. Next resolve network policy, Linux capabilities, device passthrough, and credential-volume
+Compose. Schema v62 additionally reports exact short-syntax host credential binds for SSH, cloud,
+cluster, registry, package-manager, netrc, and Git credential paths. Goose contributes one pinned
+read-only `~/.ssh` mount; read-only prevents mutation but not credential use or exfiltration. Named
+volumes, `.gitconfig`, near-name paths, and ordinary workspace binds remain negative. Next resolve
+network policy, Linux capabilities, device passthrough, long-syntax binds, and rendered-template
 semantics. Model containment as a control attached to the exact code/shell capability.
 
 ## P1 — network destination policy
@@ -218,8 +222,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 350 pinned positive/negative locations, with 490 separately
-scored IR component/relationship labels. Schema-v61 engine results and `docs/frontend-coverage.md` publish
+The curated regression set has reached 364 pinned positive/negative locations, with 490 separately
+scored IR component/relationship labels. Schema-v62 engine results and `docs/frontend-coverage.md` publish
 category-stratified observations and unsupported syntax. Next create a separately sampled, externally
 reviewed holdout set and keep its labels sealed until rule changes are complete. Keep discovery
 sampling metrics separate from detection-quality metrics.
