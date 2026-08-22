@@ -441,6 +441,62 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
     )
 
 
+def test_agno_provider_wrappers_require_exact_unrebound_imports() -> None:
+    ir = scan_repository(ROOT / "cases/framework_provider_taxonomy")
+
+    assert {
+        (
+            item.evidence.line,
+            item.name,
+            item.attributes.get("call"),
+            item.attributes.get("module"),
+            item.attributes.get("imported_symbol"),
+        )
+        for item in ir.components
+        if item.kind == "provider"
+        and item.evidence.path == "provider_agno_wrappers.py"
+        and item.attributes.get("resolution") == "exact-provider-sdk-import"
+    } == {
+        (10, "OpenAI", "OpenAIChat", "agno.models.openai", "OpenAIChat"),
+        (11, "OpenAI", "OpenAIResponses", "agno.models.openai", "OpenAIResponses"),
+        (12, "OpenAI", "DirectOpenAIChat", "agno.models.openai.chat", "OpenAIChat"),
+        (13, "Google", "Gemini", "agno.models.google", "Gemini"),
+        (14, "Google", "DirectGemini", "agno.models.google.gemini", "Gemini"),
+        (15, "Anthropic", "Claude", "agno.models.anthropic", "Claude"),
+        (16, "Azure OpenAI", "AzureOpenAI", "agno.models.azure", "AzureOpenAI"),
+        (17, "Groq", "Groq", "agno.models.groq", "Groq"),
+    }
+    assert {
+        (item.evidence.line, item.name, item.attributes["provider"])
+        for item in ir.components
+        if item.kind == "model"
+        and item.evidence.path == "provider_agno_wrappers.py"
+        and item.attributes.get("resolution") == "exact-provider-sdk-import"
+    } == {
+        (10, "gpt-5-mini", "OpenAI"),
+        (11, "gpt-5-mini", "OpenAI"),
+        (12, "gpt-5-mini", "OpenAI"),
+        (13, "gemini-2.5-flash", "Google"),
+        (14, "gemini-2.5-flash", "Google"),
+        (15, "claude-sonnet-4-5", "Anthropic"),
+        (16, "gpt-5-mini", "Azure OpenAI"),
+        (17, "openai/gpt-oss-120b", "Groq"),
+    }
+    assert not any(
+        item.kind == "provider"
+        and item.evidence.path == "provider_agno_wrappers_rebound.py"
+        and item.attributes.get("resolution") == "exact-provider-sdk-import"
+        for item in ir.components
+    )
+    assert not any(
+        item.kind in {"provider", "model"}
+        and item.evidence.path == "provider_agno_wrappers.py"
+        and item.evidence.line in {18, 19}
+        and item.attributes.get("resolution") == "exact-provider-sdk-import"
+        for item in ir.components
+    )
+
+
 def test_python_agent_inventory_and_dynamic_shell_finding() -> None:
     ir = scan_repository(ROOT / "cases/python_dangerous")
 

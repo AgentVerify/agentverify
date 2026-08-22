@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v101
+framework, wrapper, or configuration path. Counts come from schema-v102
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -32,8 +32,8 @@ Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK
 (8), LlamaIndex (6), Vercel AI SDK (5), CrewAI (4), Agno (3), Google ADK (3), PydanticAI (3),
 Microsoft Agent Framework (2), Semantic Kernel (2), smolagents (2), AgentScope (1), AutoGen (1),
 CAMEL (1), Cline SDK (1), Lagent (1), Marvin (1), Mastra (1), MetaGPT (1), and Qwen-Agent (1).
-Provider observations are OpenAI (42), Anthropic (19), Google (18), Azure OpenAI (11), AWS Bedrock
-and Groq (6 each), Ollama (5), Cohere and Mistral (3 each), DeepSeek and xAI (2 each), and Alibaba
+Provider observations are OpenAI (43), Anthropic (20), Google (19), Azure OpenAI (11), Groq (7),
+AWS Bedrock (6), Ollama (5), Cohere and Mistral (3 each), DeepSeek and xAI (2 each), and Alibaba
 DashScope and Moonshot AI (1 each). These overlapping exact-import/call, literal-service, and
 model-string observations are lower than research-wide lexical signals.
 
@@ -77,6 +77,15 @@ wrappers, split into nine LangChain, 298 PydanticAI, and 19 AgentScope calls. Tw
 across seven repositories are production-scoped, 317 are tests, and 227 carry literal models. The
 generic PydanticAI `OpenAIModel` and `OpenAIProvider` remain excluded because selected production
 code configures the same surfaces for Azure, DeepSeek, AIMLAPI, and arbitrary compatible endpoints.
+
+Schema v102 adds Agno's dedicated public and direct model modules for OpenAI Chat/Responses, Google
+Gemini, Anthropic Claude, Azure OpenAI, and Groq. The corpus contains 220 exact calls: 200 production
+calls in Agno, six production calls in AgentOps, and 14 OpenLLMetry tests. Of these, 218 retain a
+literal `id=` or positional model value. Python now has 566 exact calls across 11 repositories: 20
+native SDK calls and 546 wrappers, split into nine LangChain, 298 PydanticAI, 19 AgentScope, and 220
+Agno calls. Two hundred thirty-five calls across nine repositories are production-scoped; 331 are
+tests, and 445 carry literal models. No selected Agno call overrides its provider or endpoint;
+custom OpenAI/Groq `base_url` calls are explicitly withheld.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
 Agent→MCP-server identities. Import-proven literal stdio constructor calls are inventoried for any
@@ -727,7 +736,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 642-label rule truth set and 1,035-label IR component/relationship set are curated regression
+The 642-label rule truth set and 1,077-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

@@ -165,6 +165,13 @@ PYTHON_PROVIDER_SDK_CALLS = {
     "pydantic_ai.providers.bedrock": ("BedrockProvider",),
     "pydantic_ai.providers.xai": ("XaiProvider",),
     "pydantic_ai.providers.deepseek": ("DeepSeekProvider",),
+    "agno.models.openai": ("OpenAIChat", "OpenAIResponses"),
+    "agno.models.openai.chat": ("OpenAIChat",),
+    "agno.models.google": ("Gemini",),
+    "agno.models.google.gemini": ("Gemini",),
+    "agno.models.anthropic": ("Claude",),
+    "agno.models.azure": ("AzureOpenAI",),
+    "agno.models.groq": ("Groq",),
 }
 PYTHON_PROVIDER_MODULES = {
     "mistralai": "Mistral",
@@ -198,6 +205,13 @@ PYTHON_PROVIDER_MODULES = {
     "pydantic_ai.providers.bedrock": "AWS Bedrock",
     "pydantic_ai.providers.xai": "xAI",
     "pydantic_ai.providers.deepseek": "DeepSeek",
+    "agno.models.openai": "OpenAI",
+    "agno.models.openai.chat": "OpenAI",
+    "agno.models.google": "Google",
+    "agno.models.google.gemini": "Google",
+    "agno.models.anthropic": "Anthropic",
+    "agno.models.azure": "Azure OpenAI",
+    "agno.models.groq": "Groq",
 }
 # Most supported modules have one provider identity. Public wrapper modules that
 # span providers override that default for each exact exported symbol.
@@ -213,7 +227,28 @@ PYTHON_PROVIDER_SYMBOL_PROVIDERS = {
     ("agentscope.model", "XAIChatModel"): "xAI",
 }
 PYTHON_PROVIDER_SDK_FUNCTIONS = {("ollama", "chat"), ("ollama", "generate")}
-PYTHON_PROVIDER_WRAPPER_MODULE_PREFIXES = ("agentscope.", "langchain_", "pydantic_ai.")
+PYTHON_PROVIDER_WRAPPER_MODULE_PREFIXES = (
+    "agentscope.",
+    "agno.models.",
+    "langchain_",
+    "pydantic_ai.",
+)
+PYTHON_PROVIDER_ID_MODEL_CALLS = {
+    ("agno.models.openai", "OpenAIChat"),
+    ("agno.models.openai", "OpenAIResponses"),
+    ("agno.models.openai.chat", "OpenAIChat"),
+    ("agno.models.google", "Gemini"),
+    ("agno.models.google.gemini", "Gemini"),
+    ("agno.models.anthropic", "Claude"),
+    ("agno.models.azure", "AzureOpenAI"),
+    ("agno.models.groq", "Groq"),
+}
+PYTHON_PROVIDER_CONFIGURABLE_ENDPOINT_CALLS = {
+    ("agno.models.openai", "OpenAIChat"),
+    ("agno.models.openai", "OpenAIResponses"),
+    ("agno.models.openai.chat", "OpenAIChat"),
+    ("agno.models.groq", "Groq"),
+}
 PYTHON_PROVIDER_POSITIONAL_MODEL_CALLS = {
     ("ollama", "chat"),
     ("ollama", "generate"),
@@ -228,7 +263,7 @@ PYTHON_PROVIDER_POSITIONAL_MODEL_CALLS = {
     ("pydantic_ai.embeddings.cohere", "CohereEmbeddingModel"),
     ("pydantic_ai.embeddings.google", "GoogleEmbeddingModel"),
     ("pydantic_ai.embeddings.bedrock", "BedrockEmbeddingModel"),
-}
+} | PYTHON_PROVIDER_ID_MODEL_CALLS
 TYPESCRIPT_AI_SDK_PROVIDER_EXPORTS = {
     "@ai-sdk/mistral": {
         "provider": "Mistral",
@@ -7768,6 +7803,13 @@ class PythonVisitor(ast.NodeVisitor):
                     imported_provider = (provider, module, short_name)
         if imported_provider:
             provider, module, imported_symbol = imported_provider
+            if (
+                (module, imported_symbol) in PYTHON_PROVIDER_CONFIGURABLE_ENDPOINT_CALLS
+                and any(keyword.arg == "base_url" for keyword in node.keywords)
+            ):
+                imported_provider = None
+        if imported_provider:
+            provider, module, imported_symbol = imported_provider
             call_kind = (
                 "wrapper-constructor"
                 if module.startswith(PYTHON_PROVIDER_WRAPPER_MODULE_PREFIXES)
@@ -7789,11 +7831,14 @@ class PythonVisitor(ast.NodeVisitor):
                     },
                 )
             )
+            model_keywords = {"model", "model_id", "model_name"}
+            if (module, imported_symbol) in PYTHON_PROVIDER_ID_MODEL_CALLS:
+                model_keywords.add("id")
             model_value = next(
                 (
                     keyword.value.value
                     for keyword in node.keywords
-                    if keyword.arg in {"model", "model_id", "model_name"}
+                    if keyword.arg in model_keywords
                     and isinstance(keyword.value, ast.Constant)
                     and isinstance(keyword.value.value, str)
                 ),

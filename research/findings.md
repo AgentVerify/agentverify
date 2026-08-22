@@ -420,6 +420,15 @@ inventory reaches 346 calls—20 native SDK and 326 framework wrappers—with 29
 same classes target Azure, DeepSeek, AIMLAPI, and caller-selected compatible endpoints in the pinned
 source; attributing them to OpenAI by class name would be incorrect.
 
+Schema v102 adds Agno's dedicated model modules without falling back to class-name matching. The
+selected corpus proves 220 calls: 200 production calls in Agno, six production calls in AgentOps,
+and 14 OpenLLMetry tests. They comprise 188 OpenAI, 23 Google, seven Anthropic, one Azure OpenAI,
+and one Groq call; 218 retain a literal `id=` or positional model. Across Python this raises the
+inventory to 566 exact calls—20 native SDK and 546 framework wrappers—with 235 production calls and
+331 test calls. Provider presence rises to OpenAI in 43 repositories, Anthropic in 20, Google in 19,
+and Groq in seven. Rebound constructors and custom OpenAI/Groq `base_url` calls remain unresolved;
+no selected Agno call uses either form.
+
 ## 5. Controls are layered
 
 Sandboxing vocabulary appears in 64 repositories, audit/tracing in 57, human approval in 52, and

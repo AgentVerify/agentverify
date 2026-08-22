@@ -26,9 +26,11 @@ calls and literal models: four Alibaba DashScope, one DeepSeek, two Moonshot AI,
 Schema v101 adds exact PydanticAI Anthropic, Google/Google Cloud, AWS Bedrock, xAI, and DeepSeek
 provider, model, and embedding modules. It deliberately excludes the generic OpenAI-compatible
 model/provider wrappers, which the corpus configures for Azure, DeepSeek, AIMLAPI, and custom
-gateways. Positional model IDs are accepted only on model wrappers, never provider constructors.
-The 241 component labels pin 183 local/real positives and 58 unrelated, rebound, or near-name
-negatives.
+gateways. Schema v102 adds exact Agno public/direct model modules for OpenAI Chat/Responses, Google
+Gemini, Anthropic Claude, Azure OpenAI, and Groq. Both `id=` and positional literal model IDs are
+accepted only for those model wrappers; rebinding or a custom OpenAI/Groq `base_url` withholds
+attribution. The 283 component labels pin 215 local/real positives and 68 unrelated, rebound,
+custom-endpoint, or near-name negatives.
 Next generalize selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
@@ -369,8 +371,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 642 pinned positive/negative locations, with 1,035 separately
-scored IR component/relationship labels. Schema-v101 engine results and
+The curated regression set has reached 642 pinned positive/negative locations, with 1,077 separately
+scored IR component/relationship labels. Schema-v102 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.
