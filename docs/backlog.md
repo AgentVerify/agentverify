@@ -154,7 +154,13 @@ Playwright runtime→browser/context→page graph, including exact popup page ev
 production evaluators move to `branching-lifecycle-playwright-page`, bringing totals to 68 proven of
 93 and 25 unresolved. Unknown or tuple field writes, dynamic `setattr`, non-popup events, and
 shadowed runtime factories remain withheld.
-Next resolve inherited fields, ambiguous wrapper/locator flows, sanitizer and bounded builder
+Schema v97 resolves Skyvern's exact imported-page wrapper scope only when the receiver comes from the
+pinned `get_page` factory and an unshadowed built-in `getattr` selects exactly `_locator_scope` or
+falls back through `.page` to the same receiver. One production evaluator moves to
+`imported-browser-wrapper-scope`, bringing totals to 69 proven of 93 and 24 unresolved. Wrong
+attributes or fallbacks, shadowed `getattr`, and assignments that do not dominate the evaluator stay
+unresolved.
+Next resolve inherited fields, additional bounded wrapper/locator flows, sanitizer and bounded builder
 summaries, imported helper flow, and bounded
 helper-return provenance without treating every dynamic JavaScript expression as
 tool-controlled.
@@ -344,8 +350,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 616 pinned positive/negative locations, with 941 separately
-scored IR component/relationship labels. Schema-v96 engine results and
+The curated regression set has reached 622 pinned positive/negative locations, with 947 separately
+scored IR component/relationship labels. Schema-v97 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

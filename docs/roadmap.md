@@ -41,8 +41,10 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
   when `None` initialization is followed by one exact straight-line async Playwright chain. Private
   same-module helper parameters are resolved when every call passes an exact local
   context-manager page and the helper never escapes. Branching lifecycle fields are resolved only
-  when all writes stay on one exact Playwright construction or popup-page graph. Next cover inherited
-  fields, imported wrapper-returned locator flows, and helper returns.
+  when all writes stay on one exact Playwright construction or popup-page graph. Skyvern's exact
+  imported-page wrapper scope is resolved only for its literal `_locator_scope`/`.page` fallback
+  expression with unshadowed `getattr` and statement dominance. Next cover inherited fields,
+  additional bounded wrapper-returned locator flows, and helper returns.
 - Detect auto-approval/skip-confirmation configuration.
 - Detect broad filesystem roots, host mounts, Docker socket exposure, and unscoped file tools.
 - Detect MCP tool pass-throughs and enumerate statically registered server capabilities.

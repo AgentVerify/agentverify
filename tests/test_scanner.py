@@ -4321,7 +4321,9 @@ def test_python_post_definition_tool_registration_is_exact_and_cross_file() -> N
     ]
 
 
-def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_input() -> None:
+def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_input(
+    tmp_path: Path,
+) -> None:
     ir = scan_repository(ROOT / "cases/python_browser_evaluate")
 
     executions = [
@@ -4716,6 +4718,46 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
             True,
             "class-attribute-annotation",
         ),
+        (
+            "wrapper_scope.py",
+            13,
+            "first.evaluate",
+            "browser-page",
+            False,
+            "imported-browser-wrapper-scope",
+        ),
+        (
+            "wrapper_scope.py",
+            21,
+            "first.evaluate",
+            "browser-page",
+            False,
+            "unresolved-browser-import-context",
+        ),
+        (
+            "wrapper_scope.py",
+            29,
+            "first.evaluate",
+            "browser-page",
+            False,
+            "unresolved-browser-import-context",
+        ),
+        (
+            "wrapper_scope.py",
+            37,
+            "first.evaluate",
+            "browser-page",
+            False,
+            "unresolved-browser-import-context",
+        ),
+        (
+            "wrapper_scope.py",
+            45,
+            "first.evaluate",
+            "browser-page",
+            False,
+            "unresolved-browser-import-context",
+        ),
     ]
     assert [
         (edge.source_name, edge.evidence.line)
@@ -4773,6 +4815,32 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
         ("AV-EXEC002", "property.py", 18),
         ("AV-EXEC002", "type_checking.py", 17),
     ]
+
+    module_shadowed = tmp_path / "module-shadowed-getattr"
+    shutil.copytree(ROOT / "cases/python_browser_evaluate", module_shadowed)
+    wrapper_path = module_shadowed / "wrapper_scope.py"
+    wrapper_source = wrapper_path.read_text(encoding="utf-8")
+    marker = "BrowserReceiver = Page"
+    assert marker in wrapper_source
+    wrapper_path.write_text(
+        wrapper_source.replace(
+            marker,
+            f"{marker}\ngetattr = lambda value, name, default: default",
+        ),
+        encoding="utf-8",
+    )
+    shadowed_ir = scan_repository(module_shadowed)
+    shadowed_exact = next(
+        item
+        for item in shadowed_ir.components
+        if item.kind == "capability"
+        and item.name == "code-execution"
+        and item.evidence.path == "wrapper_scope.py"
+        and item.evidence.line == 14
+    )
+    assert shadowed_exact.attributes["receiver_proof"] == (
+        "unresolved-browser-import-context"
+    )
 
 
 def test_python_registry_decorators_are_import_proven_and_entrypoint_scoped() -> None:

@@ -489,7 +489,10 @@ an immutable constructor-bound Playwright page field or its direct local alias, 
 property with a Playwright return annotation, a straight-line locally constructed Playwright page,
 one uniquely annotated module-level Playwright receiver, a parameter of a private same-class helper
 whose selected-module call sites unanimously pass a locally proven Playwright browser, or the first
-result of Skyvern's exact imported `get_page` factory. Module annotations require one binding and no top-level rebound or
+result of Skyvern's exact imported `get_page` factory. An exact Skyvern wrapper scope derived from
+that result is also accepted when an unshadowed built-in `getattr` selects `_locator_scope` with a
+`None` default or falls back through `.page` to the same receiver, and the annotated assignment
+dominates the evaluator. Module annotations require one binding and no top-level rebound or
 duplicate annotation; function parameters and local bindings shadow them. Playwright imports in a
 top-level `try` are accepted only when every handler terminates, including an exact `sys.exit(...)`
 path through one uniquely bound `sys` import. Class attributes may use one
@@ -535,8 +538,9 @@ An `Any`-annotated lifecycle field may be proven across branches only when one e
 runtime root reaches every non-`None` field assignment through runtime, browser, context, page, or
 exact `"popup"` event-result transitions. Unknown, tuple, or dynamic `setattr` writes, other event
 names, and shadowed runtime factories withhold the field-wide summary.
+Wrong wrapper attributes or fallbacks, shadowed `getattr`, and cross-branch use are withheld.
 Property proof requires the built-in decorator, one getter definition, and an exact imported
-Playwright return type. Inherited fields, ambiguous wrapper-returned locators, sanitizer
+Playwright return type. Inherited fields, other ambiguous wrapper-returned locators, sanitizer
 proofs, imported/transitive script builders, helper-return or non-unanimous helper-parameter provenance, and unsupported
 browser evaluator APIs remain unresolved.
 

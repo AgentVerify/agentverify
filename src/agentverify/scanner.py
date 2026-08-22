@@ -2935,6 +2935,8 @@ def python_browser_receiver_proofs(
     browser_helper_parameter_proofs: dict[str, str],
     module_browser_variables: set[str],
     class_browser_attributes: dict[str, str],
+    *,
+    builtin_getattr_available: bool,
 ) -> dict[int, str]:
     """Prove direct browser-page evaluate receivers without semantic name matching."""
     browser_derivation_methods = {
@@ -2957,6 +2959,7 @@ def python_browser_receiver_proofs(
         for parent in ast.walk(node)
         for child in ast.iter_child_nodes(parent)
     }
+    function_local_bindings = python_function_local_bindings(node)
 
     def belongs_to_function(candidate: ast.AST) -> bool:
         parent = parents.get(id(candidate))
@@ -3083,7 +3086,9 @@ def python_browser_receiver_proofs(
             return "same-class-helper-parameter"
         return None
 
-    def assignment_dominates_continuation(candidate: ast.Assign) -> bool:
+    def assignment_dominates_continuation(
+        candidate: ast.Assign | ast.AnnAssign,
+    ) -> bool:
         child: ast.AST = candidate
         parent = parents.get(id(child))
         while parent is not None and parent is not node:
@@ -3113,7 +3118,7 @@ def python_browser_receiver_proofs(
         return parent is node
 
     def assignment_dominates_candidate(
-        assignment: ast.Assign, candidate: ast.AST
+        assignment: ast.Assign | ast.AnnAssign, candidate: ast.AST
     ) -> bool:
         """Prove ordering within one exact statement-list branch."""
         owner = parents.get(id(assignment))
@@ -3172,6 +3177,59 @@ def python_browser_receiver_proofs(
                 return nested_proof
         return None
 
+    def imported_wrapper_scope_proof(
+        expression: ast.AST, line: int
+    ) -> str | None:
+        if not (
+            builtin_getattr_available
+            and "getattr" not in function_local_bindings
+            and mutation_counts["getattr"] == 0
+            and isinstance(expression, ast.BoolOp)
+            and isinstance(expression.op, ast.Or)
+            and len(expression.values) == 2
+        ):
+            return None
+        left, right = expression.values
+
+        def getattr_parts(candidate: ast.AST) -> tuple[str, ast.AST] | None:
+            if not (
+                isinstance(candidate, ast.Call)
+                and isinstance(candidate.func, ast.Name)
+                and candidate.func.id == "getattr"
+                and len(candidate.args) == 3
+                and not candidate.keywords
+                and isinstance(candidate.args[0], ast.Name)
+                and isinstance(candidate.args[1], ast.Constant)
+                and isinstance(candidate.args[1].value, str)
+            ):
+                return None
+            if (
+                direct_receiver_proof(candidate.args[0], line)
+                != "imported-browser-factory"
+            ):
+                return None
+            return candidate.args[1].value, candidate.args[2]
+
+        left_parts = getattr_parts(left)
+        right_parts = getattr_parts(right)
+        if left_parts is None or right_parts is None:
+            return None
+        if not (
+            left_parts[0] == "_locator_scope"
+            and isinstance(left_parts[1], ast.Constant)
+            and left_parts[1].value is None
+            and right_parts[0] == "page"
+            and isinstance(right, ast.Call)
+            and isinstance(right.args[0], ast.Name)
+            and isinstance(right_parts[1], ast.Name)
+            and right_parts[1].id == right.args[0].id
+            and isinstance(left, ast.Call)
+            and isinstance(left.args[0], ast.Name)
+            and left.args[0].id == right.args[0].id
+        ):
+            return None
+        return "imported-browser-wrapper-scope"
+
     for candidate in sorted(ast.walk(node), key=lambda item: getattr(item, "lineno", 0)):
         if belongs_to_function(candidate) and isinstance(candidate, (ast.With, ast.AsyncWith)):
             if candidate not in node.body:
@@ -3202,6 +3260,22 @@ def python_browser_receiver_proofs(
                     continue
                 bindings[target.id] = "local-playwright-runtime"
                 binding_lines[target.id] = candidate.lineno
+            continue
+        if (
+            belongs_to_function(candidate)
+            and isinstance(candidate, ast.AnnAssign)
+            and isinstance(candidate.target, ast.Name)
+            and candidate.value is not None
+            and mutation_counts[candidate.target.id] == 1
+            and parents.get(id(candidate)) is node
+            and (
+                wrapper_proof := imported_wrapper_scope_proof(
+                    candidate.value, candidate.lineno
+                )
+            )
+        ):
+            bindings[candidate.target.id] = wrapper_proof
+            binding_lines[candidate.target.id] = candidate.lineno
             continue
         if not (
             belongs_to_function(candidate)
@@ -3267,8 +3341,28 @@ def python_browser_receiver_proofs(
                 bindings[target.id] = derived_proof
                 binding_lines[target.id] = candidate.lineno
 
-    scoped_derived_bindings: dict[str, tuple[str, ast.Assign]] = {}
+    scoped_derived_bindings: dict[
+        str, tuple[str, ast.Assign | ast.AnnAssign]
+    ] = {}
     for candidate in sorted(ast.walk(node), key=lambda item: getattr(item, "lineno", 0)):
+        if (
+            belongs_to_function(candidate)
+            and isinstance(candidate, ast.AnnAssign)
+            and isinstance(candidate.target, ast.Name)
+            and candidate.value is not None
+            and mutation_counts[candidate.target.id] == 1
+            and not assignment_dominates_continuation(candidate)
+            and (
+                wrapper_proof := imported_wrapper_scope_proof(
+                    candidate.value, candidate.lineno
+                )
+            )
+        ):
+            scoped_derived_bindings[candidate.target.id] = (
+                wrapper_proof,
+                candidate,
+            )
+            continue
         if not (
             belongs_to_function(candidate)
             and isinstance(candidate, ast.Assign)
@@ -3287,6 +3381,30 @@ def python_browser_receiver_proofs(
             )
 
     proofs: dict[int, str] = {}
+
+    def scoped_derived_receiver_proof(
+        expression: ast.AST, evaluator: ast.Call
+    ) -> str | None:
+        if isinstance(expression, ast.Name):
+            scoped_binding = scoped_derived_bindings.get(expression.id)
+            if scoped_binding and assignment_dominates_candidate(
+                scoped_binding[1], evaluator
+            ):
+                return scoped_binding[0]
+            return None
+        if (
+            isinstance(expression, ast.Attribute)
+            and expression.attr in {"first", "last"}
+        ):
+            return scoped_derived_receiver_proof(expression.value, evaluator)
+        if (
+            isinstance(expression, ast.Call)
+            and isinstance(expression.func, ast.Attribute)
+            and expression.func.attr in browser_derivation_methods
+        ):
+            return scoped_derived_receiver_proof(expression.func.value, evaluator)
+        return None
+
     for candidate in ast.walk(node):
         if not (
             belongs_to_function(candidate)
@@ -3299,12 +3417,8 @@ def python_browser_receiver_proofs(
         proof = direct_receiver_proof(
             receiver_node, candidate.lineno
         ) or derived_receiver_proof(receiver_node, candidate.lineno)
-        if not proof and isinstance(receiver_node, ast.Name):
-            scoped_binding = scoped_derived_bindings.get(receiver_node.id)
-            if scoped_binding and assignment_dominates_candidate(
-                scoped_binding[1], candidate
-            ):
-                proof = scoped_binding[0]
+        if not proof:
+            proof = scoped_derived_receiver_proof(receiver_node, candidate)
         if proof:
             proofs[id(candidate)] = proof
     return proofs
@@ -4865,6 +4979,7 @@ class PythonVisitor(ast.NodeVisitor):
         same_class_browser_parameter_proofs: dict[int, dict[str, str]],
         module_browser_variables: set[str],
         builtin_property_available: bool,
+        builtin_getattr_available: bool,
         url_parser_names: set[str],
         module_literal_string_sets: dict[str, tuple[str, ...]],
         approval_bypass_function_summaries: dict[str, tuple[str, ...]],
@@ -4914,6 +5029,7 @@ class PythonVisitor(ast.NodeVisitor):
         )
         self.module_browser_variables = module_browser_variables
         self.builtin_property_available = builtin_property_available
+        self.builtin_getattr_available = builtin_getattr_available
         self.url_parser_names = url_parser_names
         self.module_literal_string_sets = module_literal_string_sets
         self.approval_bypass_function_summaries = approval_bypass_function_summaries
@@ -5753,6 +5869,7 @@ class PythonVisitor(ast.NodeVisitor):
                 self.same_class_browser_parameter_proofs.get(id(node), {}),
                 function_module_browser_variables,
                 class_browser_attributes,
+                builtin_getattr_available=self.builtin_getattr_available,
             )
             if self.has_browser_import
             else {}
@@ -10802,6 +10919,9 @@ def scan_python(
         module_browser_variables=module_browser_variables,
         builtin_property_available=(
             "property" not in imported_bindings and "property" not in module_mutations
+        ),
+        builtin_getattr_available=(
+            "getattr" not in imported_bindings and "getattr" not in module_mutations
         ),
         url_parser_names=url_parser_names,
         module_literal_string_sets=module_literal_string_sets,
