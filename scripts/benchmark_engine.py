@@ -662,6 +662,18 @@ def main() -> int:
             == "python-import-bound-mcp-server-constructor"
             and item.attributes.get("transport") == "in-process"
         ]
+        python_imported_mcp_server_subclasses = [
+            item
+            for item in ir.components
+            if item.kind == "mcp-server"
+            and item.attributes.get("analysis")
+            == "python-imported-mcp-server-subclass"
+        ]
+        python_imported_mcp_server_subclass_ids = {
+            item.symbol_id
+            for item in python_imported_mcp_server_subclasses
+            if item.symbol_id
+        }
         python_provider_call_attributions = [
             item
             for item in ir.components
@@ -1912,6 +1924,18 @@ def main() -> int:
                 ),
                 "repositories": bool(python_import_bound_mcp_in_process_servers),
             },
+            "python_imported_mcp_server_subclasses": {
+                "instances": len(python_imported_mcp_server_subclasses),
+                "non_test_instances": sum(
+                    not is_test_path(item.evidence.path)
+                    for item in python_imported_mcp_server_subclasses
+                ),
+                "resolved_agent_edges": sum(
+                    edge.target_id in python_imported_mcp_server_subclass_ids
+                    for edge in python_agent_mcp_server_edges
+                ),
+                "repositories": bool(python_imported_mcp_server_subclasses),
+            },
             "python_google_adk_bigquery_audit": {
                 "available_controls": sum(
                     item.attributes.get("deployment_state") == "framework-available"
@@ -2298,7 +2322,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 80,
+        "schema_version": 81,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2869,6 +2893,18 @@ def main() -> int:
                     "symbolized_assigned",
                     "symbolized_context_managed",
                     "symbolized_bound",
+                    "repositories",
+                )
+            },
+            "python_imported_mcp_server_subclasses": {
+                name: sum(
+                    result["python_imported_mcp_server_subclasses"][name]
+                    for result in successful
+                )
+                for name in (
+                    "instances",
+                    "non_test_instances",
+                    "resolved_agent_edges",
                     "repositories",
                 )
             },

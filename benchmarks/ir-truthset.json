@@ -6027,6 +6027,38 @@
     {
       "id":"python-agent-mcp-context-edge-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"examples/sandbox/sandbox_agent_with_tools.py","line":77,"expected":true,
       "relationship":{"source_kind":"agent","source_name":"Renewal Review Assistant","relation":"uses","target_kind":"mcp-server","target_name":"Reference Policy Server","source_id":"py:examples/sandbox/sandbox_agent_with_tools.py#agent:agent","target_id":"py:examples/sandbox/sandbox_agent_with_tools.py#mcp-server:server","attributes":{"binding":"server","target_identity":"literal-mcp-servers-list-context-manager","approval_policy":"disabled-default"}}
+    },
+    {
+      "id":"python-agent-mcp-subclass-component-local","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"subclass_positive.py","line":7,"expected":true,
+      "component":{"kind":"mcp-server","name":"ProjectMCPServer@7","symbol_id":"py:subclass_positive.py#mcp-server:project_server","attributes":{"transport":"adapter","analysis":"python-imported-mcp-server-subclass","adapter_definition_path":"subclass_adapter.py","adapter_base_module":"agents.mcp.server"}}
+    },
+    {
+      "id":"python-agent-mcp-subclass-edge-local","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"subclass_positive.py","line":8,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"subclass-agent","relation":"uses","target_kind":"mcp-server","target_name":"ProjectMCPServer@7","source_id":"py:subclass_positive.py#agent:subclass-agent@8","target_id":"py:subclass_positive.py#mcp-server:project_server","attributes":{"binding":"project_server","target_identity":"literal-mcp-servers-list-binding"}}
+    },
+    {
+      "id":"python-agent-mcp-near-subclass-edge-local-negative","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"subclass_negative.py","line":7,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"near-subclass","relation":"uses","target_kind":"mcp-server"}
+    },
+    {
+      "id":"python-agent-mcp-incomplete-subclass-edge-local-negative","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"subclass_negative.py","line":10,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"incomplete-subclass","relation":"uses","target_kind":"mcp-server"}
+    },
+    {
+      "id":"python-agent-mcp-rebound-subclass-edge-local-negative","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"subclass_negative.py","line":14,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"rebound-subclass","relation":"uses","target_kind":"mcp-server"}
+    },
+    {
+      "id":"python-agent-mcp-forward-subclass-edge-local-negative","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"subclass_negative.py","line":16,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"forward-subclass","relation":"uses","target_kind":"mcp-server"}
+    },
+    {
+      "id":"python-agent-mcp-subclass-component-skyvern-real","target":{"kind":"repository","repository":"Skyvern-AI/skyvern","commit":"486c8975e9864a53037d4701b781f8619e698c40"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"skyvern/forge/sdk/copilot/agent.py","line":3435,"expected":true,
+      "component":{"kind":"mcp-server","name":"SkyvernOverlayMCPServer@3435","symbol_id":"py:skyvern/forge/sdk/copilot/agent.py#mcp-server:mcp_server","attributes":{"transport":"adapter","analysis":"python-imported-mcp-server-subclass","adapter_definition_path":"skyvern/forge/sdk/copilot/mcp_adapter.py","adapter_definition_line":748,"adapter_base_module":"agents.mcp.server","adapter_base_name":"MCPServer","import_resolution":"repository-module-single-path"}}
+    },
+    {
+      "id":"python-agent-mcp-subclass-edge-skyvern-real","target":{"kind":"repository","repository":"Skyvern-AI/skyvern","commit":"486c8975e9864a53037d4701b781f8619e698c40"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"skyvern/forge/sdk/copilot/agent.py","line":3443,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"workflow-copilot","relation":"uses","target_kind":"mcp-server","target_name":"SkyvernOverlayMCPServer@3435","source_id":"py:skyvern/forge/sdk/copilot/agent.py#agent:agent","target_id":"py:skyvern/forge/sdk/copilot/agent.py#mcp-server:mcp_server","attributes":{"binding":"mcp_server","target_identity":"literal-mcp-servers-list-binding"}}
     }
   ]
 }

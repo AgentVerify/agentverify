@@ -111,6 +111,12 @@ package provenance. Exact `agents.sandbox` import proof separately identifies Op
 `SandboxAgent` assets, including the context-managed edge whose server also carries the SDK's
 disabled-default approval setting.
 
+A project-local MCP adapter receives the same server identity only through exact nominal and
+behavioral proof: one direct `MCPServer` base imported from a supported SDK module, plus direct
+`list_tools` and `call_tool` methods. The adapter export, import, and instance binding must remain
+unambiguous and unreassigned. This records an adapter transport and its definition provenance
+without inferring package-launcher or approval facts.
+
 An Agent endpoint can additionally resolve as `same-class-helper-return` when a unique same-class
 method has one direct top-level return of an exact Agent constructor or immutable Agent local, the
 caller binds the direct/tuple result, and that binding solely dominates composition. The endpoint

@@ -5814,6 +5814,41 @@ def test_python_agent_mcp_servers_require_exact_direct_literal_bindings() -> Non
         for edge in ir.relationships
     )
 
+    adapter_server = next(
+        component
+        for component in ir.components
+        if component.attributes.get("analysis")
+        == "python-imported-mcp-server-subclass"
+        and component.evidence.path == "subclass_positive.py"
+    )
+    assert adapter_server.name == "ProjectMCPServer@7"
+    assert adapter_server.symbol_id == (
+        "py:subclass_positive.py#mcp-server:project_server"
+    )
+    assert adapter_server.attributes["adapter_definition_path"] == (
+        "subclass_adapter.py"
+    )
+    assert adapter_server.attributes["adapter_base_module"] == "agents.mcp.server"
+    adapter_edge = next(
+        edge
+        for edge in ir.relationships
+        if edge.source_name == "subclass-agent"
+        and edge.target_kind == "mcp-server"
+    )
+    assert adapter_edge.source_id == (
+        "py:subclass_positive.py#agent:subclass-agent@8"
+    )
+    assert adapter_edge.target_id == (
+        "py:subclass_positive.py#mcp-server:project_server"
+    )
+    assert not any(
+        edge.source_kind == "agent"
+        and edge.source_name
+        in {"near-subclass", "incomplete-subclass", "rebound-subclass", "forward-subclass"}
+        and edge.target_kind == "mcp-server"
+        for edge in ir.relationships
+    )
+
     module_servers = {
         component.evidence.line: component
         for component in ir.components

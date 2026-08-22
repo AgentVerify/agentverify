@@ -729,6 +729,15 @@ class PythonAgentFactoryClassTarget:
 
 
 @dataclass(frozen=True)
+class PythonMCPServerSubclassTarget:
+    path: str
+    name: str
+    line: int
+    base_module: str
+    base_name: str
+
+
+@dataclass(frozen=True)
 class PythonSecureNetworkPolicy:
     evidence: Evidence
     schemes: tuple[str, ...]
@@ -2673,6 +2682,7 @@ class PythonVisitor(ast.NodeVisitor):
         mcp_server_binding_resolutions: dict[int, str],
         mcp_in_process_server_bindings: dict[str, tuple[str, str]],
         agent_constructor_bindings: set[str],
+        observed_mcp_server_ids: set[str],
         definition_symbol_ids: dict[int, str],
         referenced_tool_functions: dict[int, PythonToolRoleReference],
         wrapped_tool_functions: dict[int, PythonFunctionToolWrapper],
@@ -2744,7 +2754,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.imported_symbol_names: dict[str, str] = {}
         self.imported_symbol_resolutions: dict[str, str] = {}
         self.mcp_server_constructors: dict[str, tuple[str, str]] = {}
-        self.observed_mcp_server_ids: set[str] = set()
+        self.observed_mcp_server_ids = set(observed_mcp_server_ids)
         self.provider_call_bindings: dict[str, tuple[str, str, str]] = {}
         self.provider_module_bindings: dict[str, tuple[str, str]] = {}
         self.network_helper_bindings: dict[str, PythonNetworkHelperSummary] = {}
@@ -5803,6 +5813,9 @@ def scan_python(
     agent_factory_class_exports: dict[
         tuple[str, str], PythonAgentFactoryClassTarget
     ],
+    mcp_server_subclass_exports: dict[
+        tuple[str, str], PythonMCPServerSubclassTarget
+    ],
     registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
     network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
     registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
@@ -6346,6 +6359,45 @@ def scan_python(
             or call_name in agent_constructor_bindings
         )
 
+    def lexical_owner(node: ast.AST) -> ast.AST:
+        current = node
+        while parent := parent_by_id.get(id(current)):
+            if isinstance(parent, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+                return parent
+            current = parent
+        return tree
+
+    mcp_adapter_import_candidates: dict[
+        str,
+        list[tuple[PythonMCPServerSubclassTarget, ast.ImportFrom, ast.AST, str]],
+    ] = defaultdict(list)
+    for statement in (
+        candidate for candidate in nodes if isinstance(candidate, ast.ImportFrom)
+    ):
+        for alias in statement.names:
+            resolution = resolve_python_import(
+                root,
+                relative,
+                statement,
+                alias.name,
+                module_paths,
+            )
+            if resolution is None:
+                continue
+            target = mcp_server_subclass_exports.get((resolution.path, alias.name))
+            if target is None:
+                continue
+            mcp_adapter_import_candidates[alias.asname or alias.name].append(
+                (target, statement, lexical_owner(statement), resolution.basis)
+            )
+    imported_mcp_adapter_constructors = {
+        name: candidates[0]
+        for name, candidates in mcp_adapter_import_candidates.items()
+        if len(candidates) == 1
+        and import_binding_counts[name] == 1
+        and nonimport_binding_counts[name] == 0
+    }
+
     local_tool_constructor_classes = {
         statement.name
         for statement in tree.body
@@ -6760,6 +6812,9 @@ def scan_python(
         symbol_candidates.setdefault(("tool", node.name), set()).add(symbol_id)
         definition_symbol_ids[id(node)] = symbol_id
     assigned_constructors: list[tuple[ast.Assign, str, str]] = []
+    mcp_adapter_assignments: dict[
+        int, tuple[PythonMCPServerSubclassTarget, str]
+    ] = {}
     for node in nodes:
         if (
             isinstance(node, ast.Assign)
@@ -6769,6 +6824,18 @@ def scan_python(
         ):
             binding = node.targets[0].id
             short_name = dotted_name(node.value.func).rsplit(".", 1)[-1]
+            adapter_import = (
+                imported_mcp_adapter_constructors.get(node.value.func.id)
+                if isinstance(node.value.func, ast.Name)
+                else None
+            )
+            adapter_target = (
+                adapter_import[0]
+                if adapter_import is not None
+                and adapter_import[1].lineno < node.lineno
+                and adapter_import[2] is lexical_owner(node)
+                else None
+            )
             kind = (
                 "agent"
                 if is_agent_call(node.value)
@@ -6779,11 +6846,19 @@ def scan_python(
                 or id(node) in agent_as_tool_assignments
                 else "mcp-server"
                 if isinstance(node.value.func, ast.Name)
-                and node.value.func.id in imported_mcp_constructors
+                and (
+                    node.value.func.id in imported_mcp_constructors
+                    or adapter_target is not None
+                )
                 else None
             )
             if kind:
                 assigned_constructors.append((node, kind, binding))
+                if kind == "mcp-server" and adapter_target is not None:
+                    mcp_adapter_assignments[id(node)] = (
+                        adapter_target,
+                        adapter_import[3],
+                    )
     context_mcp_servers: list[
         tuple[ast.With | ast.AsyncWith, ast.Call, str, str]
     ] = []
@@ -6828,6 +6903,8 @@ def scan_python(
 
     def mcp_server_constructor(call: ast.Call) -> str:
         constructor_binding = dotted_name(call.func)
+        if adapter := imported_mcp_adapter_constructors.get(constructor_binding):
+            return adapter[0].name
         return imported_mcp_constructor_names.get(
             constructor_binding, constructor_binding.rsplit(".", 1)[-1]
         )
@@ -6873,6 +6950,39 @@ def scan_python(
             for _with_node, call, _binding, _constructor in context_mcp_servers
         }
     )
+    observed_mcp_server_ids: set[str] = set()
+    for node, kind, _binding in assigned_constructors:
+        adapter = mcp_adapter_assignments.get(id(node))
+        if kind != "mcp-server" or adapter is None:
+            continue
+        target, import_resolution = adapter
+        symbol_id = call_symbol_ids[id(node.value)]
+        observed_mcp_server_ids.add(symbol_id)
+        ir.add_component(
+            Component(
+                "mcp-server",
+                mcp_server_symbol_names[symbol_id],
+                Evidence(
+                    relative,
+                    node.value.lineno,
+                    excerpt(text.splitlines(), node.value.lineno),
+                ),
+                {
+                    "transport": "adapter",
+                    "constructor": target.name,
+                    "adapter_definition_path": target.path,
+                    "adapter_definition_line": target.line,
+                    "adapter_base_module": target.base_module,
+                    "adapter_base_name": target.base_name,
+                    "import_resolution": import_resolution,
+                    "binding_resolution": "assignment",
+                    "analysis": "python-imported-mcp-server-subclass",
+                    "frontend": "python",
+                    "scope": source_scope(relative),
+                },
+                symbol_id,
+            )
+        )
     context_mcp_server_scope_candidates: dict[
         tuple[int, str], list[tuple[ast.Call, str]]
     ] = defaultdict(list)
@@ -7906,6 +8016,7 @@ def scan_python(
         mcp_server_binding_resolutions=mcp_server_binding_resolutions,
         mcp_in_process_server_bindings=mcp_in_process_server_bindings,
         agent_constructor_bindings=agent_constructor_bindings,
+        observed_mcp_server_ids=observed_mcp_server_ids,
         definition_symbol_ids=definition_symbol_ids,
         referenced_tool_functions=referenced_tool_functions,
         wrapped_tool_functions=wrapped_tool_functions,
@@ -11504,6 +11615,99 @@ def build_python_literal_imported_tool_references(
             for key, references in references_by_export.items()
         },
     )
+
+
+def build_python_mcp_server_subclass_exports(
+    root: Path,
+    paths: list[Path],
+) -> dict[tuple[str, str], PythonMCPServerSubclassTarget]:
+    """Index immutable project classes implementing an exact SDK MCPServer contract."""
+    exports: dict[
+        tuple[str, str], list[PythonMCPServerSubclassTarget]
+    ] = defaultdict(list)
+    exact_bases = {
+        ("agents.mcp", "MCPServer"),
+        ("agents.mcp.server", "MCPServer"),
+        ("pydantic_ai.mcp", "MCPServer"),
+    }
+    for path in paths:
+        if (
+            path.is_symlink()
+            or not path.is_file()
+            or path.suffix.lower() != ".py"
+            or set(path.relative_to(root).parts) & SKIP_DIRECTORIES
+        ):
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+            if "MCPServer" not in text or "call_tool" not in text or "list_tools" not in text:
+                continue
+            tree = ast.parse(text, filename=path.relative_to(root).as_posix())
+        except (OSError, SyntaxError):
+            continue
+        binding_counts: Counter[str] = Counter()
+        for statement in tree.body:
+            if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                binding_counts[statement.name] += 1
+            elif isinstance(statement, (ast.Import, ast.ImportFrom)):
+                binding_counts.update(
+                    alias.asname or alias.name.split(".", 1)[0]
+                    for alias in statement.names
+                    if alias.name != "*"
+                )
+            else:
+                binding_counts.update(
+                    candidate.id
+                    for candidate in ast.walk(statement)
+                    if isinstance(candidate, ast.Name)
+                    and isinstance(candidate.ctx, (ast.Store, ast.Del))
+                )
+        base_bindings = {
+            alias.asname or alias.name: (statement.module or "", alias.name)
+            for statement in tree.body
+            if isinstance(statement, ast.ImportFrom)
+            and statement.level == 0
+            for alias in statement.names
+            if (statement.module or "", alias.name) in exact_bases
+            and binding_counts[alias.asname or alias.name] == 1
+        }
+        relative = path.relative_to(root).as_posix()
+        for class_node in (
+            statement for statement in tree.body if isinstance(statement, ast.ClassDef)
+        ):
+            if (
+                binding_counts[class_node.name] != 1
+                or class_node.decorator_list
+                or class_node.keywords
+                or len(class_node.bases) != 1
+                or not isinstance(class_node.bases[0], ast.Name)
+                or class_node.bases[0].id not in base_bindings
+            ):
+                continue
+            method_counts = Counter(
+                statement.name
+                for statement in class_node.body
+                if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef))
+            )
+            if method_counts["list_tools"] != 1 or method_counts["call_tool"] != 1:
+                continue
+            base_module, base_name = base_bindings[class_node.bases[0].id]
+            exports[(relative, class_node.name)].append(
+                PythonMCPServerSubclassTarget(
+                    relative,
+                    class_node.name,
+                    class_node.lineno,
+                    base_module,
+                    base_name,
+                )
+            )
+    return {
+        key: targets[0]
+        for key, targets in exports.items()
+        if len(targets) == 1
+    }
 
 
 def build_python_agent_factory_class_exports(
@@ -21409,6 +21613,10 @@ def scan_repository(
         root,
         registry_paths,
     )
+    mcp_server_subclass_exports = build_python_mcp_server_subclass_exports(
+        root,
+        registry_paths,
+    )
     registry_class_exports = build_python_registry_class_exports(
         root,
         registry_paths,
@@ -21497,6 +21705,7 @@ def scan_repository(
                 imported_tool_references,
                 imported_tool_export_references,
                 agent_factory_class_exports,
+                mcp_server_subclass_exports,
                 registry_class_exports,
                 network_helper_summaries,
                 registered_tool_functions,

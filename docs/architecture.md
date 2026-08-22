@@ -77,6 +77,11 @@ remain disconnected.
 OpenAI's `MCPServerStdio(params={...})` shape retains identity even when its executable or arguments
 are dynamic, while package provenance still requires a literal `npx` or `uvx` selection. The
 OpenAI `SandboxAgent` constructor is recognized only through an exact `agents.sandbox` import.
+Schema v81 extends that identity proof to a project-local adapter class only when it directly
+subclasses an exact imported `MCPServer`, has one immutable module export, and directly defines both
+`list_tools` and `call_tool`. A unique local import and an earlier same-scope instance can then feed
+the existing literal Agent binding. Near bases, incomplete adapters, rebound imports/instances, and
+forward uses remain disconnected.
 
 Names are intentionally not treated as globally unique. Python and TypeScript agent/tool definitions
 carry stable frontend-and-module-qualified `symbol_id` values; relationships carry `source_id` and

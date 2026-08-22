@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v80
+framework, wrapper, or configuration path. Counts come from schema-v81
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -101,25 +101,32 @@ Exact `agents.sandbox` imports also identify 156 OpenAI `SandboxAgent` assets, 1
 has the context-managed MCP edge. Duplicate, rebound, escaped, nested, and near-import forms remain
 withheld.
 
-Across the selected snapshot, 10,004 observations have module-qualified symbol IDs. Of
-4,552 relationship endpoint observations, all 3,787 identified endpoints resolve to an observed
-component (3,474 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
+Schema v81 resolves a project-local adapter only when its immutable top-level class directly
+subclasses an exact `agents.mcp.MCPServer`, `agents.mcp.server.MCPServer`, or
+`pydantic_ai.mcp.MCPServer` import and directly defines both `list_tools` and `call_tool`. A unique,
+unreassigned local import and earlier same-scope instance can then use the standard literal Agent
+binding. Skyvern contributes the one corpus instance and edge; it is production-scoped. Near bases,
+incomplete adapters, rebound bindings, and forward references remain withheld.
+
+Across the selected snapshot, 10,005 observations have module-qualified symbol IDs. Of
+4,554 relationship endpoint observations, all 3,789 identified endpoints resolve to an observed
+component (3,476 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
 withheld because a function parameter and assignment shadow the same-named package import.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
-edges resolve exactly. Schema v63 records 359 Python lexical-single-definition, 20 same-block
+edges resolve exactly. The current schema records 376 Python lexical-single-definition, 20 same-block
 dominating-definition, 25 contextual-absolute-import resolutions, three same-class helper-return
 resolutions, 14 contextual imported-class Agent-factory resolutions, 444 inline constructor
 resolutions, four context-manager resolutions, four contextual imported-callable exports, six
 absolute-import binding edges, and one typed-tool-parameter
 resolution. The latter uses an import-proven `ApplyPatchTool` annotation and ten unanimous
 same-module constructor call sites to create an occurrence-qualified parameter component that
-retains every concrete target ID. No `ambiguous-repeated-binding` target remains in the pinned
-corpus; inconsistent, uncalled, rebound, shadowed, reassigned, and non-exact typed fixture forms stay
-unresolved.
-All six exact Python Agent→MCP-server edges resolve both endpoints. Marvin contributes five—two
+retains every concrete target ID. Two `ambiguous-repeated-binding` targets remain on one test-scoped
+OpenAI sandbox Agent statement; inconsistent, uncalled, rebound, shadowed, reassigned, and non-exact
+typed fixture forms stay unresolved.
+All seven exact Python Agent→MCP-server edges resolve both endpoints. Marvin contributes five—two
 same-block and three immutable-module bindings—and OpenAI Agents Python contributes the
-context-managed edge. Five edges are outside tests. Package facts remain isolated to the relevant
-launcher.
+context-managed edge. Skyvern contributes one same-block imported-adapter edge. Six edges are outside
+tests. Package facts remain isolated to the relevant launcher.
 Literal Python Agent tool lists recover 755 exact role-proven tools: 181 callables, 100
 constructor-bound instances, 444 inline constructors, four direct context-manager bindings, 21 exact
 Agent-as-tool adapters, and five absolute-import boundary tools. Of these, 526 are outside tests;
@@ -140,7 +147,7 @@ Capability/control taxonomy endpoints intentionally lack
 source-symbol IDs, so the endpoint fraction is inventory coverage rather than an accuracy or recall
 metric.
 
-The native AI BOM 1.2 resolver independently classifies all 4,552 endpoints: 3,779 by symbol ID, 645
+The native AI BOM 1.2 resolver independently classifies all 4,554 endpoints: 3,781 by symbol ID, 645
 by exact relationship evidence, 22 by a unique display name, 42 as ambiguous, and 64 as unresolved.
 Evidence-local resolution removes capability/control ambiguities; occurrence-qualified bindings
 resolve repeated source agent/tool observations, and conservative lexical resolution removes further
@@ -610,7 +617,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 511-label rule truth set and 748-label IR component/relationship set are curated regression
+The 511-label rule truth set and 756-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed
