@@ -329,6 +329,31 @@ def main() -> int:
             }
             and edge.evidence.path.endswith(".py")
         ]
+        python_fastmcp_server_tool_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "mcp-server"
+            and edge.target_kind == "tool"
+            and edge.attributes.get("target_identity") == "exact-fastmcp-registrar"
+            and edge.evidence.path.endswith(".py")
+        ]
+        agent_reachable_fastmcp_server_ids = {
+            edge.target_id
+            for edge in python_agent_mcp_server_edges
+            if edge.target_id is not None
+        }
+        agent_reachable_fastmcp_tool_ids = {
+            edge.target_id
+            for edge in python_fastmcp_server_tool_edges
+            if edge.source_id in agent_reachable_fastmcp_server_ids
+            and edge.target_id is not None
+        }
+        python_fastmcp_agent_capability_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_id in agent_reachable_fastmcp_tool_ids
+            and edge.target_kind == "capability"
+        ]
         python_agent_referenced_tool_ids = {
             item.symbol_id for item in python_agent_referenced_tools if item.symbol_id
         }
@@ -1078,6 +1103,26 @@ def main() -> int:
                     for edge in python_agent_mcp_server_edges
                 ),
                 "repositories": bool(python_agent_mcp_server_edges),
+            },
+            "python_fastmcp_server_tool_edges": {
+                "total": len(python_fastmcp_server_tool_edges),
+                "resolved": sum(
+                    edge.source_id is not None and edge.target_id is not None
+                    for edge in python_fastmcp_server_tool_edges
+                ),
+                "non_test": sum(
+                    not is_test_path(edge.evidence.path)
+                    for edge in python_fastmcp_server_tool_edges
+                ),
+                "agent_reachable_tools": len(agent_reachable_fastmcp_tool_ids),
+                "agent_reachable_capabilities": len(
+                    python_fastmcp_agent_capability_edges
+                ),
+                "non_test_agent_reachable_capabilities": sum(
+                    not is_test_path(edge.evidence.path)
+                    for edge in python_fastmcp_agent_capability_edges
+                ),
+                "repositories": bool(python_fastmcp_server_tool_edges),
             },
             "python_function_tool_wrappers": {
                 "instances": len(python_function_tool_wrappers),
@@ -2205,7 +2250,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 78,
+        "schema_version": 79,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2429,6 +2474,21 @@ def main() -> int:
                     "non_test",
                     "same_block",
                     "immutable_module",
+                    "repositories",
+                )
+            },
+            "python_fastmcp_server_tool_edges": {
+                name: sum(
+                    result["python_fastmcp_server_tool_edges"][name]
+                    for result in successful
+                )
+                for name in (
+                    "total",
+                    "resolved",
+                    "non_test",
+                    "agent_reachable_tools",
+                    "agent_reachable_capabilities",
+                    "non_test_agent_reachable_capabilities",
                     "repositories",
                 )
             },

@@ -2663,6 +2663,7 @@ class PythonVisitor(ast.NodeVisitor):
         node_scopes: dict[int, tuple[str, ...]],
         call_symbol_ids: dict[int, str],
         mcp_server_symbol_names: dict[str, str],
+        mcp_in_process_server_bindings: dict[str, tuple[str, str]],
         definition_symbol_ids: dict[int, str],
         referenced_tool_functions: dict[int, PythonToolRoleReference],
         wrapped_tool_functions: dict[int, PythonFunctionToolWrapper],
@@ -2747,6 +2748,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.node_scopes = node_scopes
         self.call_symbol_ids = call_symbol_ids
         self.mcp_server_symbol_names = mcp_server_symbol_names
+        self.mcp_in_process_server_bindings = mcp_in_process_server_bindings
         self.definition_symbol_ids = definition_symbol_ids
         self.referenced_tool_functions = referenced_tool_functions
         self.wrapped_tool_functions = wrapped_tool_functions
@@ -3695,6 +3697,44 @@ class PythonVisitor(ast.NodeVisitor):
                         tool_id,
                     )
                 )
+                fastmcp_registrations: dict[str, Evidence] = {}
+                for decorator in node.decorator_list:
+                    decorator_name = (
+                        dotted_name(decorator.func)
+                        if isinstance(decorator, ast.Call)
+                        else dotted_name(decorator)
+                    )
+                    if decorator_name.endswith(".tool"):
+                        fastmcp_registrations[
+                            decorator_name.removesuffix(".tool")
+                        ] = self.ev(decorator)
+                if registration and registration.registrar.endswith(".tool"):
+                    fastmcp_registrations[
+                        registration.registrar.removesuffix(".tool")
+                    ] = registration.evidence
+                for registrar, registration_evidence in sorted(
+                    fastmcp_registrations.items()
+                ):
+                    server = self.mcp_in_process_server_bindings.get(registrar)
+                    if server is None:
+                        continue
+                    server_name, server_id = server
+                    self.ir.add_relationship(
+                        Relationship(
+                            "mcp-server",
+                            server_name,
+                            "uses",
+                            "tool",
+                            tool_name,
+                            registration_evidence,
+                            {
+                                "registrar": f"{registrar}.tool",
+                                "target_identity": "exact-fastmcp-registrar",
+                            },
+                            server_id,
+                            tool_id,
+                        )
+                    )
             if needs_approval:
                 approval_evidence = (
                     registration.evidence
@@ -6156,6 +6196,22 @@ def scan_python(
     import_binding_counts: Counter[str] = Counter()
     tool_constructor_import_candidates: dict[str, list[ast.ImportFrom]] = defaultdict(list)
     mcp_constructor_import_candidates: dict[str, list[ast.ImportFrom]] = defaultdict(list)
+
+    def module_mcp_constructor_import(statement: ast.ImportFrom) -> bool:
+        if statement in tree.body:
+            return True
+        parent = parent_by_id.get(id(statement))
+        return bool(
+            isinstance(parent, ast.Try)
+            and parent in tree.body
+            and statement in parent.body
+            and parent.handlers
+            and all(
+                python_block_always_terminates(handler.body)
+                for handler in parent.handlers
+            )
+        )
+
     for statement in (candidate for candidate in nodes if isinstance(candidate, ast.ImportFrom)):
         module_parts = re.split(r"[._]", statement.module or "")
         for alias in statement.names:
@@ -6167,7 +6223,7 @@ def scan_python(
             ) in EXACT_TOOL_CONSTRUCTOR_IMPORTS:
                 tool_constructor_import_candidates[local_name].append(statement)
             if (
-                statement in tree.body
+                module_mcp_constructor_import(statement)
                 and alias.name
                 in MCP_LAUNCHER_CONSTRUCTORS | MCP_IN_PROCESS_SERVER_CONSTRUCTORS
                 and is_mcp_server_constructor_module(
@@ -6661,19 +6717,34 @@ def scan_python(
         call_symbol_ids[id(node.value)] = symbol_id
         if wrapper := wrapped_tool_assignments.get(id(node)):
             definition_symbol_ids[id(wrapper.function)] = symbol_id
-    def assigned_mcp_server_name(node: ast.Assign) -> str:
+    def assigned_mcp_server_constructor(node: ast.Assign) -> str:
         if not isinstance(node.value, ast.Call):
             raise TypeError("assigned MCP server must originate from a call")
         constructor_binding = dotted_name(node.value.func)
-        constructor = imported_mcp_constructor_names.get(
+        return imported_mcp_constructor_names.get(
             constructor_binding, constructor_binding.rsplit(".", 1)[-1]
         )
+
+    def assigned_mcp_server_name(node: ast.Assign) -> str:
+        constructor = assigned_mcp_server_constructor(node)
         return f"{constructor}@{node.value.lineno}"
 
     mcp_server_symbol_names = {
         call_symbol_ids[id(node.value)]: assigned_mcp_server_name(node)
         for node, kind, _binding in assigned_constructors
         if kind == "mcp-server"
+    }
+    mcp_in_process_server_bindings = {
+        binding: (
+            mcp_server_symbol_names[call_symbol_ids[id(node.value)]],
+            call_symbol_ids[id(node.value)],
+        )
+        for node, kind, binding in assigned_constructors
+        if kind == "mcp-server"
+        and assigned_mcp_server_constructor(node)
+        in MCP_IN_PROCESS_SERVER_CONSTRUCTORS
+        and isinstance(parent_by_id.get(id(node)), ast.Module)
+        and module_mutation_counts[binding] == 1
     }
     immutable_module_mcp_servers = {
         binding: (node.lineno, call_symbol_ids[id(node.value)])
@@ -7635,6 +7706,7 @@ def scan_python(
         node_scopes=node_scopes,
         call_symbol_ids=call_symbol_ids,
         mcp_server_symbol_names=mcp_server_symbol_names,
+        mcp_in_process_server_bindings=mcp_in_process_server_bindings,
         definition_symbol_ids=definition_symbol_ids,
         referenced_tool_functions=referenced_tool_functions,
         wrapped_tool_functions=wrapped_tool_functions,

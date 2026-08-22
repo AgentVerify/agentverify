@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v78
+framework, wrapper, or configuration path. Counts come from schema-v79
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -82,9 +82,18 @@ results receive stable IDs and 22 calls are outside tests. Python Agent→MCP co
 fully resolved edges in Marvin: two same-block and two immutable-module bindings, with three outside
 tests.
 
-Across the selected snapshot, 9,834 observations have module-qualified symbol IDs. Of
-4,262 relationship endpoint observations, all 3,494 identified endpoints resolve to an observed
-component (3,181 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
+Schema v79 resolves top-level `try` imports only when every handler terminates, then connects an
+immutable exact FastMCP registrar to its decorated or post-registered tools. Capability context
+traverses the resulting Agent→server→tool chain. Optional imports that continue, rebound servers,
+ambiguous registrations, and name-only matches remain disconnected.
+The fail-closed import raises assigned in-process identities to 228 and Agent→server edges to five.
+Across eight repositories, 121 exact FastMCP server→tool edges resolve both symbol endpoints; 89 are
+outside tests. Marvin contributes four production Agent→server edges, three
+Agent-reachable registered tools, and one production filesystem capability with the full path.
+
+Across the selected snapshot, 9,835 observations have module-qualified symbol IDs. Of
+4,506 relationship endpoint observations, all 3,738 identified endpoints resolve to an observed
+component (3,425 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
 withheld because a function parameter and assignment shadow the same-named package import.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
 edges resolve exactly. Schema v63 records 359 Python lexical-single-definition, 20 same-block
@@ -97,8 +106,8 @@ same-module constructor call sites to create an occurrence-qualified parameter c
 retains every concrete target ID. No `ambiguous-repeated-binding` target remains in the pinned
 corpus; inconsistent, uncalled, rebound, shadowed, reassigned, and non-exact typed fixture forms stay
 unresolved.
-All four exact Python Agent→MCP-server edges occur in Marvin and resolve to assigned component IDs.
-The two same-block stdio edges and production FastMCP module edge are outside tests; the second
+All five exact Python Agent→MCP-server edges occur in Marvin and resolve to assigned component IDs.
+Two same-block stdio edges and two FastMCP module edges are outside tests; the remaining
 immutable-module edge is a stdio test fixture. Package facts remain isolated to the relevant
 launcher.
 Literal Python Agent tool lists recover 755 exact role-proven tools: 181 callables, 100
@@ -121,7 +130,7 @@ Capability/control taxonomy endpoints intentionally lack
 source-symbol IDs, so the endpoint fraction is inventory coverage rather than an accuracy or recall
 metric.
 
-The native AI BOM 1.2 resolver independently classifies all 4,262 endpoints: 3,486 by symbol ID, 645
+The native AI BOM 1.2 resolver independently classifies all 4,506 endpoints: 3,730 by symbol ID, 645
 by exact relationship evidence, 23 by a unique display name, 40 as ambiguous, and 68 as unresolved.
 Evidence-local resolution removes capability/control ambiguities; occurrence-qualified bindings
 resolve repeated source agent/tool observations, and conservative lexical resolution removes further
@@ -591,7 +600,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 511-label rule truth set and 732-label IR component/relationship set are curated regression
+The 511-label rule truth set and 740-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

@@ -5797,6 +5797,56 @@ def test_python_agent_mcp_servers_require_exact_direct_literal_bindings() -> Non
         for component in ir.components
     )
 
+    fastmcp_registration = next(
+        edge
+        for edge in ir.relationships
+        if edge.source_kind == "mcp-server"
+        and edge.target_kind == "tool"
+        and edge.evidence.path == "fastmcp_chain_positive.py"
+    )
+    assert fastmcp_registration.evidence.line == 10
+    assert fastmcp_registration.source_id == (
+        "py:fastmcp_chain_positive.py#mcp-server:server"
+    )
+    assert fastmcp_registration.target_id == (
+        "py:fastmcp_chain_positive.py#tool:write_file"
+    )
+    assert fastmcp_registration.attributes == {
+        "registrar": "server.tool",
+        "target_identity": "exact-fastmcp-registrar",
+    }
+    filesystem = next(
+        component
+        for component in ir.components
+        if component.kind == "capability"
+        and component.evidence.path == "fastmcp_chain_positive.py"
+        and component.evidence.line == 12
+    )
+    path, context = component_context(ir, filesystem)
+    assert path == (
+        "agent:filesystem-agent",
+        "mcp-server:FastMCP@7",
+        "tool:write_file",
+        "capability:filesystem",
+    )
+    assert context["mcp_server"] == "FastMCP@7"
+    assert context["reachable_agents"] == ["filesystem-agent"]
+    assert not any(
+        edge.source_kind == "mcp-server"
+        and edge.target_kind == "tool"
+        and edge.evidence.path
+        in {"fastmcp_chain_negative.py", "module_negative.py"}
+        for edge in ir.relationships
+    )
+    optional_server = next(
+        component
+        for component in ir.components
+        if component.kind == "mcp-server"
+        and component.evidence.path == "module_negative.py"
+        and component.evidence.line == 34
+    )
+    assert optional_server.symbol_id is None
+
 
 def test_mcp_package_launchers_require_literal_mcp_structure_and_auto_install() -> None:
     ir = scan_repository(ROOT / "cases/mcp_package_launchers")

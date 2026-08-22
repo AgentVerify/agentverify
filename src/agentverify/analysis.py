@@ -193,6 +193,40 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
     tool_edge = min(tool_edges, key=lambda edge: (edge.source_id or "", edge.source_name))
     tool_name = tool_edge.source_name
     tool_id = tool_edge.source_id
+    mcp_tool_edges = [
+        edge
+        for edge in ir.relationships
+        if edge.source_kind == "mcp-server"
+        and edge.relation == "uses"
+        and edge.target_kind == "tool"
+        and (
+            (tool_id is not None and edge.target_id == tool_id)
+            or (
+                (tool_id is None or edge.target_id is None)
+                and edge.target_name == tool_name
+                and edge.evidence.path == component.evidence.path
+            )
+        )
+    ]
+    mcp_agent_routes = [
+        (server_edge, agent_edge)
+        for server_edge in mcp_tool_edges
+        for agent_edge in ir.relationships
+        if agent_edge.source_kind == "agent"
+        and agent_edge.relation == "uses"
+        and agent_edge.target_kind == "mcp-server"
+        and (
+            (
+                server_edge.source_id is not None
+                and agent_edge.target_id == server_edge.source_id
+            )
+            or (
+                (server_edge.source_id is None or agent_edge.target_id is None)
+                and agent_edge.target_name == server_edge.source_name
+                and agent_edge.evidence.path == component.evidence.path
+            )
+        )
+    ]
     direct_agent_edges = [
         edge
         for edge in ir.relationships
@@ -213,7 +247,10 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
             )
         )
     ]
-    direct_agents = sorted({edge.source_name for edge in direct_agent_edges})
+    direct_agents = sorted(
+        {edge.source_name for edge in direct_agent_edges}
+        | {edge.source_name for _server, edge in mcp_agent_routes}
+    )
     governing_control_edges = [
         edge
         for edge in ir.relationships
@@ -250,8 +287,8 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
         )
         for control in controls
     }
-    agent_paths = [
-        path
+    direct_agent_paths = [
+        (path, None)
         for edge in direct_agent_edges
         for path in expand_to_root(
             edge.source_id or f"name:{edge.source_name}",
@@ -259,16 +296,38 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
             frozenset({edge.source_id or f"name:{edge.source_name}"}),
         )
     ]
-    selected_agent_path = (
-        min(agent_paths, key=lambda path: (len(path), path)) if agent_paths else []
+    mcp_agent_paths = [
+        (path, server_edge.source_name)
+        for server_edge, edge in mcp_agent_routes
+        for path in expand_to_root(
+            edge.source_id or f"name:{edge.source_name}",
+            edge.source_name,
+            frozenset({edge.source_id or f"name:{edge.source_name}"}),
+        )
+    ]
+    agent_paths = [*direct_agent_paths, *mcp_agent_paths]
+    selected_agent_path, selected_mcp_server = (
+        min(
+            agent_paths,
+            key=lambda item: (
+                len(item[0]) + (1 if item[1] else 0),
+                item[0],
+                item[1] or "",
+            ),
+        )
+        if agent_paths
+        else ([], None)
     )
-    reachable_agents = sorted({agent for path in agent_paths for agent in path})
+    reachable_agents = sorted(
+        {agent for agent_path, _server in agent_paths for agent in agent_path}
+    )
     path = (
         *(f"agent:{name}" for name in selected_agent_path),
+        *((f"mcp-server:{selected_mcp_server}",) if selected_mcp_server else ()),
         f"tool:{tool_name}",
         f"capability:{component.name}",
     )
-    return path, {
+    context = {
         "direct_agents": direct_agents,
         "reachable_agents": reachable_agents,
         "tool": tool_name,
@@ -277,3 +336,6 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
         "approval_coverage": "present" if "human-approval" in controls else "unresolved",
         "audit_coverage": _audit_coverage(controls),
     }
+    if selected_mcp_server:
+        context["mcp_server"] = selected_mcp_server
+    return path, context

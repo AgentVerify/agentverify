@@ -69,7 +69,10 @@ under same-block dominance; forward, rebound, indirect-list, and module-global-t
 remain explicit negatives. Schema v78 resolves the module-global case only for one earlier immutable
 assignment with no lexical shadowing, and adds exact `fastmcp`/`mcp.server` in-process server
 constructors. Conditional definitions, indirect containers, local imports, and other server
-frameworks remain future work.
+frameworks remain future work. Schema v79 narrowly resolves a top-level fail-closed `try` import and
+links immutable FastMCP registrars to exact registered tools, enabling
+Agent→server→tool→capability context. Optional imports, general control-flow imports, rebound
+registrars, and cross-file server/tool registration remain unresolved.
 Contextual absolute-import proof additionally resolves 25 project-local CrewAI Agent-to-class-tool
 edges across eight exact decorated method targets, the 14 Agent-factory delegations, and nine Google
 ADK imported-helper network call sites. Multiple ancestor candidates, missing exports, reimports,
@@ -276,8 +279,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 511 pinned positive/negative locations, with 732 separately
-scored IR component/relationship labels. Schema-v78 engine results and
+The curated regression set has reached 511 pinned positive/negative locations, with 740 separately
+scored IR component/relationship labels. Schema-v79 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

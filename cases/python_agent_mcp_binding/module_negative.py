@@ -24,3 +24,19 @@ def forward_agent():
 
 forward_server = MCPServerStdio(command="uvx", args=["mcp-server-git"])
 near_server = NearFastMCP("not an exact FastMCP package")
+
+
+try:
+    from fastmcp import FastMCP as OptionalFastMCP
+except ImportError:
+    pass
+
+optional_server = OptionalFastMCP("optional server")
+
+
+@optional_server.tool()
+def optional_tool() -> str:
+    return "optional"
+
+
+optional_agent = Agent(name="optional-import", mcp_servers=[optional_server])

@@ -96,6 +96,13 @@ shadowed, indirect-container, and near-package forms remain unresolved. Package 
 independent: a non-package or in-process server can have an exact identity without gaining
 `npx`/`uvx` package attributes.
 
+An immutable exact FastMCP server can also own an exact registered tool. The BOM records the
+server→tool relationship only for a decorator or post-registration call on that proven registrar,
+with both symbol IDs. A top-level `try` import can retain identity only when every handler
+terminates; an optional import that falls through remains inventory without graph identity.
+Capability paths may therefore contain `agent → mcp-server → tool → capability` without resolving
+any endpoint by a coincidental display name.
+
 An Agent endpoint can additionally resolve as `same-class-helper-return` when a unique same-class
 method has one direct top-level return of an exact Agent constructor or immutable Agent local, the
 caller binds the direct/tuple result, and that binding solely dominates composition. The endpoint

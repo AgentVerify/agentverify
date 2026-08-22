@@ -5962,7 +5962,39 @@
     },
     {
       "id":"python-agent-mcp-fastmcp-try-component-marvin-real","target":{"kind":"repository","repository":"PrefectHQ/marvin","commit":"eaf1040642b205973318769cab65f0c62b4b6ca4"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"examples/you_have_been_goosed/goose_em.py","line":14,"expected":true,
-      "component":{"kind":"mcp-server","name":"FastMCP@14","attributes":{"transport":"in-process","constructor":"FastMCP"}}
+      "component":{"kind":"mcp-server","name":"FastMCP@14","symbol_id":"py:examples/you_have_been_goosed/goose_em.py#mcp-server:goose_server","attributes":{"transport":"in-process","constructor":"FastMCP"}}
+    },
+    {
+      "id":"python-fastmcp-server-tool-edge-local","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"fastmcp_chain_positive.py","line":10,"expected":true,
+      "relationship":{"source_kind":"mcp-server","source_name":"FastMCP@7","relation":"uses","target_kind":"tool","target_name":"write_file","source_id":"py:fastmcp_chain_positive.py#mcp-server:server","target_id":"py:fastmcp_chain_positive.py#tool:write_file","attributes":{"registrar":"server.tool","target_identity":"exact-fastmcp-registrar"}}
+    },
+    {
+      "id":"python-fastmcp-agent-server-edge-local","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"fastmcp_chain_positive.py","line":17,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"filesystem-agent","relation":"uses","target_kind":"mcp-server","target_name":"FastMCP@7","source_id":"py:fastmcp_chain_positive.py#agent:agent","target_id":"py:fastmcp_chain_positive.py#mcp-server:server","attributes":{"binding":"server","target_identity":"literal-mcp-servers-list-module-binding"}}
+    },
+    {
+      "id":"python-fastmcp-rebound-server-tool-edge-local-negative","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"fastmcp_chain_negative.py","line":8,"expected":false,"source_contains":"@server.tool",
+      "relationship":{"source_kind":"mcp-server","relation":"uses","target_kind":"tool","target_name":"unrelated_tool"}
+    },
+    {
+      "id":"python-fastmcp-optional-import-agent-edge-local-negative","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"module_negative.py","line":42,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"optional-import","relation":"uses","target_kind":"mcp-server"}
+    },
+    {
+      "id":"python-fastmcp-server-tool-edge-marvin-real","target":{"kind":"repository","repository":"PrefectHQ/marvin","commit":"eaf1040642b205973318769cab65f0c62b4b6ca4"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"examples/fastmcp/hello.py","line":8,"expected":true,
+      "relationship":{"source_kind":"mcp-server","source_name":"FastMCP@5","relation":"uses","target_kind":"tool","target_name":"get_the_value_of_schleeb","source_id":"py:examples/fastmcp/hello.py#mcp-server:server","target_id":"py:examples/fastmcp/hello.py#tool:get_the_value_of_schleeb","attributes":{"registrar":"server.tool","target_identity":"exact-fastmcp-registrar"}}
+    },
+    {
+      "id":"python-fastmcp-goose-agent-server-edge-marvin-real","target":{"kind":"repository","repository":"PrefectHQ/marvin","commit":"eaf1040642b205973318769cab65f0c62b4b6ca4"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"examples/you_have_been_goosed/goose_em.py","line":94,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Agent","relation":"uses","target_kind":"mcp-server","target_name":"FastMCP@14","source_id":"py:examples/you_have_been_goosed/goose_em.py#agent:agent","target_id":"py:examples/you_have_been_goosed/goose_em.py#mcp-server:goose_server","attributes":{"binding":"goose_server","target_identity":"literal-mcp-servers-list-module-binding"}}
+    },
+    {
+      "id":"python-fastmcp-goose-write-tool-edge-marvin-real","target":{"kind":"repository","repository":"PrefectHQ/marvin","commit":"eaf1040642b205973318769cab65f0c62b4b6ca4"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"examples/you_have_been_goosed/goose_em.py","line":63,"expected":true,
+      "relationship":{"source_kind":"mcp-server","source_name":"FastMCP@14","relation":"uses","target_kind":"tool","target_name":"write_a_goose_horror_story","source_id":"py:examples/you_have_been_goosed/goose_em.py#mcp-server:goose_server","target_id":"py:examples/you_have_been_goosed/goose_em.py#tool:write_a_goose_horror_story","attributes":{"registrar":"goose_server.tool","target_identity":"exact-fastmcp-registrar"}}
+    },
+    {
+      "id":"python-fastmcp-goose-inspect-tool-edge-marvin-real","target":{"kind":"repository","repository":"PrefectHQ/marvin","commit":"eaf1040642b205973318769cab65f0c62b4b6ca4"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"examples/you_have_been_goosed/goose_em.py","line":75,"expected":true,
+      "relationship":{"source_kind":"mcp-server","source_name":"FastMCP@14","relation":"uses","target_kind":"tool","target_name":"inspect_this_server","source_id":"py:examples/you_have_been_goosed/goose_em.py#mcp-server:goose_server","target_id":"py:examples/you_have_been_goosed/goose_em.py#tool:inspect_this_server","attributes":{"registrar":"goose_server.tool","target_identity":"exact-fastmcp-registrar"}}
     }
   ]
 }

@@ -64,6 +64,12 @@ Agent list inside a function or module control block. The assignment must be the
 only mutation, precede the Agent expression, and remain unshadowed through every enclosing lexical
 scope. Conditional definitions, rebinding, forward lexical order, and near-name FastMCP packages
 remain unresolved.
+Schema v79 admits a constructor import nested in one top-level `try` only when every exception
+handler terminates, so continuation proves the imported binding exists. For an immutable exact
+FastMCP assignment, `@server.tool()` and equivalent exact post-registration calls create
+server→tool edges with both symbol endpoints. Capability context can then follow
+Agent→server→tool→capability. Optional/fall-through imports, rebound registrars, ambiguous tool
+targets, and name-only server matches remain disconnected.
 
 Names are intentionally not treated as globally unique. Python and TypeScript agent/tool definitions
 carry stable frontend-and-module-qualified `symbol_id` values; relationships carry `source_id` and
