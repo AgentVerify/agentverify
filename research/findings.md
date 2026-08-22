@@ -19,7 +19,7 @@ The initial matcher found `shell=True` in eight repositories. Reviewable example
 
 The links are locked corpus snapshots; only an explicit collector `--refresh` pins newer commits.
 
-Schema v62 reports 20 exact container/host boundary reviews across ten repositories. The new pinned
+Schema v63 reports 20 exact container/host boundary reviews across ten repositories. The new pinned
 case is Goose's development container mounting the developer's entire
 [`~/.ssh` directory read-only](https://github.com/block/goose/blob/48d480f91163bbcdc0f69f01befa3841a93a1d3e/documentation/docs/docker/docker-compose.yml#L15).
 Read-only prevents the container from changing a private key but does not prevent an agent from using
@@ -27,7 +27,7 @@ or exfiltrating it. The adjacent `.gitconfig` bind, named volumes, `.ssh-public`
 workspace binds are explicit negatives; the rule requires a host-source credential path rather than
 inferring sensitivity from the container destination.
 
-Filesystem mutation is broader than `open()` and `write_text()`. Schema v62 resolves 449 Python
+Filesystem mutation is broader than `open()` and `write_text()`. Schema v63 resolves 449 Python
 filesystem mutations in selected files: 179 creates, 191 deletes, 46 copies, and 33 moves. The move
 inventory includes 20 `Path.rename`/`Path.replace` calls proven through explicit constructors or
 immutable Path-derived bindings, including ChatDev's
@@ -40,7 +40,7 @@ definitions are immutable module globals referenced from a nested Agent configur
 and its [conditional `copy`/`copy2` callable](https://github.com/ArcadeAI/arcade-ai/blob/597debaa1593b54172061ce36a414cc29aa8fc6a/examples/mcp_servers/local_filesystem/src/local_filesystem/tools.py#L329-L331),
 and CrewAI Examples'
 [`copytree` destination](https://github.com/crewAIInc/crewAI-examples/blob/da94a91e691e1cf5b3151416bb15b5b62729bea8/crews/landing_page_generator/src/landing_page_generator/tools/template_tools.py#L86-L90).
-That copy and three sibling sinks rely on `str(resolved).startswith(str(root))`; schema v62 preserves
+That copy and three sibling sinks rely on `str(resolved).startswith(str(root))`; schema v63 preserves
 the checks as weak, non-suppressing control edges because string prefixes do not enforce path-component
 boundaries. AV-FS002 takes precedence at those sinks and recommends `Path.is_relative_to`,
 `Path.relative_to`, or `os.path.commonpath`.
@@ -57,7 +57,7 @@ The IR records the destination—not the source—as the governed path for two-p
 are resolved only when unshadowed; string `.replace()` calls and caller-shadowed `shutil` names are
 regression negatives.
 
-Browser-page evaluation is a separate execution boundary. Schema v62 inventories 80
+Browser-page evaluation is a separate execution boundary. Schema v63 inventories 80
 import-context `.evaluate(...)` calls across the corpus and proves seven receivers: two exact
 Playwright `Page` parameters in SWE-agent and five exact imported Skyvern page-factory results. The
 remaining 73 fixed-script observations retain explicit unresolved receiver state. Only one proven
@@ -105,7 +105,7 @@ name matching from inventing this control.
 Five more calls bind a tool source through an escaping callback: three browser-use actions are
 registered and two ArcadeAI wrappers are returned. Equivalent retry closures in the MCP Python SDK
 and FastMCP do not qualify because the public caller still selects the name for each operation.
-Schema v62 therefore reports five instance and five closure fixed-binding edges, without suppressing
+Schema v63 therefore reports five instance and five closure fixed-binding edges, without suppressing
 any review.
 
 FastMCP adds an interprocedural routing fact: its middleware recursion reaches a same-class callee
@@ -121,7 +121,7 @@ manager in its constructor, and that manager resolves `get_tool(name)` and rejec
 execution. This is the third routing-only `tool-registry` edge. Mutable manager fields, fallback
 managers, and rebound constructor imports are regression negatives. The same dependency refresh
 exposes six OpenAI Agents SDK forwarding reviews and CAMEL's parameter-fed `exec` helper; both new
-rule observations are pinned in the 364-label truth set.
+rule observations are pinned in the 373-label truth set.
 
 ## 3. Approval exists, but bypass behavior recurs
 
@@ -144,12 +144,21 @@ vulnerabilities, but they prove that deployment-time approval overrides recur in
 need auditable policy. Status flags and branches with an additional safety condition are regression
 negatives.
 
+Schema v63 promotes three of those reviews into a separate demonstrated flow without redefining the
+examples as vulnerabilities. OpenAI Agents Python's local shell callback reaches
+`SHELL_AUTO_APPROVE`; OpenAI Agents JS has the corresponding local-shell flow and an apply-patch
+callback reaching `APPLY_PATCH_AUTO_APPROVE`. In each case the engine proves the same-file callback
+chain, the privileged built-in tool, and a resolved Agent-to-tool edge. Safe callbacks, unused
+environment helpers, manual HITL, and hosted/container shells are exact negatives. `AV-APPROVAL003`
+therefore has three positive and six negative pinned rule labels plus six positive and two negative
+IR labels.
+
 ## 4. Provider identity is a governance dependency
 
 OpenAI signals appear in 51 repositories, Anthropic in 37, Google in 28, Azure OpenAI in 18, and AWS
 Bedrock in 14. Forty-four repositories contain two or more provider signals. An AI bill of
 materials should report providers and model configuration even when no security issue is present.
-The stricter schema-v62 engine promotes a subset only when selected source proves an exact SDK
+The stricter schema-v63 engine promotes a subset only when selected source proves an exact SDK
 import, literal service selection, or recognized model prefix: OpenAI appears in 41 repositories,
 Google and Anthropic in 17 each, Azure OpenAI in 11, AWS Bedrock in six, Groq in five, Ollama in
 four, and Mistral and Cohere in three each. The four added SDK families enrich provider identity but
@@ -169,7 +178,7 @@ repository-wide “filesystem safe” flag. Its configured root scope remains un
 is retained rather than treating the presence of validation as sufficient policy.
 ChatDev contributes the Python exception form: its local-tool creation route resolves a candidate,
 calls [`target_path.relative_to(tools_dir)`](https://github.com/OpenBMB/ChatDev/blob/4fb2db0ea90375ce1059f44fe03ffbd191a7a169/server/routes/tools.py#L58),
-and terminates the `ValueError` handler before writing. Schema v62 records this as a distinct
+and terminates the `ValueError` handler before writing. Schema v63 records this as a distinct
 `Path.relative_to` control edge with unresolved root scope; handlers that continue are not controls.
 OpenAI Agents Python demonstrates the interprocedural variant: its `_resolve()` helper returns the
 same checked Path to create, update, and delete callers. Three sink edges retain the helper's exact
@@ -180,15 +189,15 @@ Audit evidence has the same layering problem. Tracing vocabulary appears in 57 r
 generic span does not prove durable or attributable records. In pinned Google ADK Python source, the
 BigQuery Agent Analytics plugin receives tool start/completed/error callbacks through `Runner` and
 `PluginManager`, records event, agent, user, session, invocation, and tool identity, and writes through
-the BigQuery Storage Write API. Schema v62 therefore records one available durable audit control and
+the BigQuery Storage Write API. Schema v63 therefore records one available durable audit control and
 one storage edge. Both observed compositions are tests, however: production deployments and governed
 production external actions are zero, delivery is best-effort with drop accounting, and retention is
 unresolved. Skyvern supplies the production comparison: its Task v3 loop records each billable or
 recordable browser action after dispatch and commits an `ActionModel` row with organization,
-workflow, task, step, type, status, and ordering fields. Schema v62 records one production
+workflow, task, step, type, status, and ordering fields. Schema v63 records one production
 `durable-action-record`, one governed external action, and one SQL storage edge. The record is not a
 fully attributable audit because `created_by` is nullable and unset in this path, and callback/database
-failures are contained. Schema v62 raises one `AV-AUDIT001` review only on that explicit production
+failures are contained. Schema v63 raises one `AV-AUDIT001` review only on that explicit production
 actor gap. It does not infer a finding for generic unrecorded actions, OpenTelemetry instrumentation,
 or the attributable ADK control; two positive and two negative labels pin that narrow contract.
 
@@ -215,7 +224,7 @@ and TypeScript bindings were a second identity failure: one file-level ID could 
 constructor occurrences. Occurrence-qualified IDs resolve all 688 source agent/tool ambiguities, and
 141 unsafe target IDs become unresolved instead of pointing at multiple assets. Intermediate
 benchmark schema v5 recorded all 289 target references whose duplicated raw binding ID was withheld.
-Schema v62 resolves 359 repeated-name targets from one earlier lexical definition, 20 targets from a
+Schema v63 resolves 359 repeated-name targets from one earlier lexical definition, 20 targets from a
 sole same-block assignment or callable definition, three CrewAI composition edges from exact
 same-class direct/tuple Agent returns, 14 production CrewAI composition edges from exact imported
 class Agent factories, and the final repeated-binding miss through an exact typed
@@ -410,7 +419,7 @@ is a distinct provenance boundary. In the pinned Google ADK JS path,
 unauthenticated-first card fetch; its SDK transports use an Undici agent or configured proxy, while
 the card-selected gRPC URL chooses secure versus insecure channel credentials. Neither exact
 TypeScript path proves that every advertised endpoint is HTTPS or bound to the configured card
-origin, so schema v62 emits two `AV-A2A001` reviews.
+origin, so schema v63 emits two `AV-A2A001` reviews.
 
 The pinned ADK Python client demonstrates the corresponding control. Both its per-invocation and
 cached construction paths call `_validate_agent_card` first. The validator enumerates every RPC URL,

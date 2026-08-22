@@ -328,6 +328,104 @@ def python_approval_environment_names(node: ast.AST) -> set[str]:
     return names
 
 
+def python_approval_bypass_function_summaries(
+    tree: ast.Module,
+) -> dict[str, tuple[str, ...]]:
+    """Resolve same-file approval callbacks that can return true from an env flag."""
+    module_flags: dict[str, set[str]] = {}
+    for statement in tree.body:
+        value = None
+        targets: list[ast.expr] = []
+        if isinstance(statement, ast.Assign):
+            value = statement.value
+            targets = statement.targets
+        elif isinstance(statement, ast.AnnAssign) and statement.value is not None:
+            value = statement.value
+            targets = [statement.target]
+        if value is None:
+            continue
+        environment_names = python_approval_environment_names(value)
+        if not environment_names:
+            continue
+        for target in targets:
+            if isinstance(target, ast.Name) and APPROVAL_BYPASS_ENV_NAME.search(target.id):
+                module_flags[target.id] = environment_names
+
+    functions = [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+    ]
+    name_counts = Counter(node.name for node in functions)
+    functions_by_name = {node.name: node for node in functions if name_counts[node.name] == 1}
+
+    class OwnedBodyVisitor(ast.NodeVisitor):
+        def __init__(self, root: ast.FunctionDef | ast.AsyncFunctionDef) -> None:
+            self.root = root
+            self.nodes: list[ast.AST] = []
+
+        def generic_visit(self, node: ast.AST) -> None:
+            self.nodes.append(node)
+            super().generic_visit(node)
+
+        def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+            if node is self.root:
+                self.generic_visit(node)
+
+        def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
+            if node is self.root:
+                self.generic_visit(node)
+
+        def visit_ClassDef(self, node: ast.ClassDef) -> None:
+            return
+
+        def visit_Lambda(self, node: ast.Lambda) -> None:
+            return
+
+    direct: dict[str, set[str]] = {}
+    calls: dict[str, set[str]] = {}
+    for name, function in functions_by_name.items():
+        visitor = OwnedBodyVisitor(function)
+        visitor.visit(function)
+        environment_names: set[str] = set()
+        called_functions: set[str] = set()
+        for node in visitor.nodes:
+            if isinstance(node, ast.If):
+                branch_returns_true = bool(
+                    node.body
+                    and isinstance(node.body[0], ast.Return)
+                    and isinstance(node.body[0].value, ast.Constant)
+                    and node.body[0].value.value is True
+                )
+                if branch_returns_true:
+                    environment_names.update(python_approval_environment_names(node.test))
+                    for candidate in ast.walk(node.test):
+                        if isinstance(candidate, (ast.Name, ast.Attribute)):
+                            environment_names.update(
+                                module_flags.get(dotted_name(candidate), set())
+                            )
+            elif isinstance(node, ast.Call):
+                called_functions.add(dotted_name(node.func).rsplit(".", 1)[-1])
+        if environment_names:
+            direct[name] = environment_names
+        calls[name] = called_functions
+
+    resolved = {name: set(values) for name, values in direct.items()}
+    changed = True
+    while changed:
+        changed = False
+        for name, called_functions in calls.items():
+            inherited = {
+                environment_name
+                for called in called_functions
+                for environment_name in resolved.get(called, set())
+            }
+            if inherited - resolved.get(name, set()):
+                resolved.setdefault(name, set()).update(inherited)
+                changed = True
+    return {name: tuple(sorted(values)) for name, values in resolved.items()}
+
+
 RegistryLiteralRequirement = tuple[str, int | None, bool]
 RegistryMethodSummary = tuple[
     int | None,
@@ -2317,6 +2415,7 @@ class PythonVisitor(ast.NodeVisitor):
         browser_page_factories: set[str],
         url_parser_names: set[str],
         module_literal_string_sets: dict[str, tuple[str, ...]],
+        approval_bypass_function_summaries: dict[str, tuple[str, ...]],
     ) -> None:
         self.ir = ir
         self.root = root
@@ -2355,6 +2454,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.browser_page_factories = browser_page_factories
         self.url_parser_names = url_parser_names
         self.module_literal_string_sets = module_literal_string_sets
+        self.approval_bypass_function_summaries = approval_bypass_function_summaries
         self.function_stack: list[str] = []
         self.function_depth = 0
         self.imported_symbol_paths: dict[str, str] = {}
@@ -3998,6 +4098,7 @@ class PythonVisitor(ast.NodeVisitor):
                 "sdk-computer-safety-check" if short_name == "ComputerTool" else "sdk-default"
             )
             approval_handler = "none"
+            approval_bypass_environment_names: tuple[str, ...] = ()
             safety_check_handler = "none"
             execution_environment = (
                 "local"
@@ -4021,6 +4122,10 @@ class PythonVisitor(ast.NodeVisitor):
                     isinstance(keyword.value, ast.Constant) and keyword.value.value is None
                 ):
                     approval_handler = "configured"
+                    handler_name = dotted_name(keyword.value).rsplit(".", 1)[-1]
+                    approval_bypass_environment_names = (
+                        self.approval_bypass_function_summaries.get(handler_name, ())
+                    )
                 elif (
                     short_name == "ComputerTool"
                     and keyword.arg == "on_safety_check"
@@ -4058,6 +4163,16 @@ class PythonVisitor(ast.NodeVisitor):
                         "approval_source": approval_source,
                         "execution_environment": execution_environment,
                         "scope": source_scope(self.path),
+                        **(
+                            {
+                                "approval_bypass_environment_names": list(
+                                    approval_bypass_environment_names
+                                ),
+                                "approval_bypass_resolution": "same-file-transitive-callback",
+                            }
+                            if approval_bypass_environment_names
+                            else {}
+                        ),
                         **(
                             {"safety_check_handler": safety_check_handler}
                             if short_name == "ComputerTool"
@@ -4107,6 +4222,24 @@ class PythonVisitor(ast.NodeVisitor):
                         "control",
                         "human-approval",
                         approval_evidence,
+                        source_id=tool_id,
+                    )
+                )
+            if approval_bypass_environment_names:
+                self.ir.add_relationship(
+                    Relationship(
+                        "tool",
+                        tool_name,
+                        "configured-by",
+                        "control-setting",
+                        "auto-approval",
+                        approval_evidence,
+                        {
+                            "environment_names": list(
+                                approval_bypass_environment_names
+                            ),
+                            "resolution": "same-file-transitive-callback",
+                        },
                         source_id=tool_id,
                     )
                 )
@@ -6856,6 +6989,12 @@ def scan_python(
         browser_page_factories=browser_page_factories,
         url_parser_names=url_parser_names,
         module_literal_string_sets=module_literal_string_sets,
+        approval_bypass_function_summaries=(
+            python_approval_bypass_function_summaries(tree)
+            if "on_approval" in text
+            and re.search(r"\b(?:from|import)\s+agents\b", text)
+            else {}
+        ),
     ).visit(tree)
 
 
@@ -7699,6 +7838,47 @@ def typescript_function_definitions(
     return definitions
 
 
+def typescript_approval_bypass_function_summaries(
+    text: str,
+) -> dict[str, tuple[str, ...]]:
+    """Resolve unique same-file functions that transitively return env-backed approval."""
+    definitions = typescript_function_definitions(text)
+    name_counts = Counter(name for name, _, _, _ in definitions)
+    unique_definitions = {
+        name: body for name, _, _, body in definitions if name_counts[name] == 1
+    }
+    resolved: dict[str, set[str]] = {}
+    calls: dict[str, set[str]] = {}
+    for name, body in unique_definitions.items():
+        environment_names = {
+            environment_name
+            for _, names in typescript_environment_approval_guards(body)
+            for environment_name in names
+        }
+        if environment_names:
+            resolved[name] = environment_names
+        body_code = typescript_code_mask(body)
+        calls[name] = {
+            candidate
+            for candidate in unique_definitions
+            if re.search(rf"\b{re.escape(candidate)}\s*\(", body_code)
+        }
+
+    changed = True
+    while changed:
+        changed = False
+        for name, called_functions in calls.items():
+            inherited = {
+                environment_name
+                for called in called_functions
+                for environment_name in resolved.get(called, set())
+            }
+            if inherited - resolved.get(name, set()):
+                resolved.setdefault(name, set()).update(inherited)
+                changed = True
+    return {name: tuple(sorted(values)) for name, values in resolved.items()}
+
+
 def typescript_network_helper_summaries(
     text: str,
     literal_bindings: dict[str, str],
@@ -8291,6 +8471,7 @@ def add_typescript_tool_observation(
     call_body: str,
     call_offset: int,
     body_offset: int,
+    approval_bypass_function_summaries: dict[str, tuple[str, ...]],
 ) -> None:
     """Add one structure-backed TypeScript tool, its capabilities, and literal approval control."""
     line = line_at(text, call_offset)
@@ -8298,6 +8479,20 @@ def add_typescript_tool_observation(
     literal_options = typescript_code_mask(call_body).lstrip().startswith("{")
     approval_expression = typescript_object_property_expression(call_body, "needsApproval")
     approval_handler_expression = typescript_object_property_expression(call_body, "onApproval")
+    handler_code = typescript_code_mask(approval_handler_expression or "").strip()
+    handler_functions = {
+        name
+        for name in approval_bypass_function_summaries
+        if re.fullmatch(re.escape(name), handler_code)
+        or re.search(rf"\b{re.escape(name)}\s*\(", handler_code)
+    }
+    approval_bypass_environment_names = sorted(
+        {
+            environment_name
+            for name in handler_functions
+            for environment_name in approval_bypass_function_summaries.get(name, ())
+        }
+    )
     if constructor not in TS_OPENAI_APPROVAL_BUILTINS:
         approval_policy = "not-applicable"
     elif approval_expression == "true":
@@ -8335,6 +8530,14 @@ def add_typescript_tool_observation(
         ),
         "execution_environment": execution_environment,
         "scope": source_scope(relative),
+        **(
+            {
+                "approval_bypass_environment_names": approval_bypass_environment_names,
+                "approval_bypass_resolution": "same-file-transitive-callback",
+            }
+            if approval_bypass_environment_names
+            else {}
+        ),
     }
     ir.add_component(Component("tool", tool_name, evidence, attributes, tool_id))
     capability_attributes = {
@@ -8375,6 +8578,22 @@ def add_typescript_tool_observation(
                 "control",
                 "human-approval",
                 approval_evidence,
+                source_id=tool_id,
+            )
+        )
+    if approval_bypass_environment_names:
+        ir.add_relationship(
+            Relationship(
+                "tool",
+                tool_name,
+                "configured-by",
+                "control-setting",
+                "auto-approval",
+                evidence,
+                {
+                    "environment_names": approval_bypass_environment_names,
+                    "resolution": "same-file-transitive-callback",
+                },
                 source_id=tool_id,
             )
         )
@@ -8491,6 +8710,12 @@ def typescript_graph(
     cline_imports = typescript_named_import_bindings(text, "@cline/sdk")
     mastra_imports = typescript_named_import_bindings(text, "@mastra/core/tools")
     literal_bindings = typescript_literal_string_bindings(text)
+    approval_bypass_function_summaries = (
+        typescript_approval_bypass_function_summaries(text)
+        if "onApproval" in text
+        and set(openai_imports.values()) & TS_OPENAI_APPROVAL_BUILTINS
+        else {}
+    )
     has_mcp_import = "@modelcontextprotocol/" in text or bool(
         re.search(r"from\s+['\"][^'\"]*mcp[^'\"]*['\"]", text, re.IGNORECASE)
     )
@@ -8577,6 +8802,7 @@ def typescript_graph(
                 call_body=body,
                 call_offset=match.start(2),
                 body_offset=opening + 1,
+                approval_bypass_function_summaries=approval_bypass_function_summaries,
             )
         else:
             add_typescript_generic_tool(
@@ -8796,6 +9022,7 @@ def typescript_graph(
                     call_body=call_body,
                     call_offset=item_offset,
                     body_offset=item_offset + relative_body_offset,
+                    approval_bypass_function_summaries=approval_bypass_function_summaries,
                 )
             else:
                 tool_name = local_factory

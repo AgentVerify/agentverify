@@ -94,6 +94,11 @@ Approval may apply per tool, per argument pattern, per session, or only to destr
 Auto-approve lists and skip-confirmation modes can silently widen authority. Analysis must represent
 gate scope and the configuration that bypasses it.
 
+Approval callbacks are another policy layer. A literal `needs_approval` setting can coexist with a
+handler that automatically returns approval under an environment flag. A demonstrated bypass
+requires the callback binding, same-file call chain, enabled-value comparison, privileged tool, and
+Agent reachability; merely finding an auto-approval helper elsewhere in the file is insufficient.
+
 SDK defaults are part of that policy surface. In an MCP bridge, an omitted server-level approval
 argument may be normalized once and copied into every dynamically discovered tool wrapper. The
 agent→server binding, default normalization, per-name fallback, and final wrapper assignment must all

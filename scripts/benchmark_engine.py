@@ -516,6 +516,13 @@ def main() -> int:
             and item.attributes.get("analysis")
             == "python-openai-agents-mcp-approval-default"
         ]
+        approval_callback_bypass_tools = [
+            item
+            for item in ir.components
+            if item.kind == "tool"
+            and item.attributes.get("approval_bypass_resolution")
+            == "same-file-transitive-callback"
+        ]
         python_google_adk_bigquery_audit_controls = [
             item
             for item in ir.components
@@ -1158,6 +1165,29 @@ def main() -> int:
                     for edge in ir.relationships
                 ),
             },
+            "approval_callback_bypass": {
+                "tools": len(approval_callback_bypass_tools),
+                "python_tools": sum(
+                    item.evidence.path.endswith(".py")
+                    for item in approval_callback_bypass_tools
+                ),
+                "typescript_tools": sum(
+                    item.evidence.path.endswith((".ts", ".tsx", ".js", ".jsx"))
+                    for item in approval_callback_bypass_tools
+                ),
+                "configured_by_edges": sum(
+                    edge.source_kind == "tool"
+                    and edge.relation == "configured-by"
+                    and edge.target_kind == "control-setting"
+                    and edge.target_name == "auto-approval"
+                    and edge.attributes.get("resolution")
+                    == "same-file-transitive-callback"
+                    for edge in ir.relationships
+                ),
+                "findings": sum(
+                    finding.rule_id == "AV-APPROVAL003" for finding in ir.findings
+                ),
+            },
             "python_google_adk_bigquery_audit": {
                 "available_controls": sum(
                     item.attributes.get("deployment_state") == "framework-available"
@@ -1544,7 +1574,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 62,
+        "schema_version": 63,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -1875,6 +1905,19 @@ def main() -> int:
                     "disabled_default",
                     "agent_server_edges",
                     "configured_by_edges",
+                )
+            },
+            "approval_callback_bypass": {
+                name: sum(
+                    result["approval_callback_bypass"][name]
+                    for result in successful
+                )
+                for name in (
+                    "tools",
+                    "python_tools",
+                    "typescript_tools",
+                    "configured_by_edges",
+                    "findings",
                 )
             },
             "python_google_adk_bigquery_audit": {

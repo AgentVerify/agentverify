@@ -73,6 +73,10 @@ constructor spelling. An exact imported class may also create a tool through the
 `from_settings` factory method, provided the class import is immutable and already establishes tool
 role. `agents.HostedMCPTool` and `google.adk.integrations.langchain.LangchainTool` are explicit
 integration adapters; the hosted MCP adapter records MCP access but does not invent approval state.
+For OpenAI built-in approval handlers, unique same-file Python/TypeScript functions can also be
+summarized transitively when an approval-specific environment comparison has an immediate true
+return. A resolved handler adds a tool-to-auto-approval configuration edge; ambiguous definitions,
+unused helpers, safe returns, and cross-file callback chains stay unresolved.
 An assigned `agent.as_tool()` adapter requires one sole same-block adapter mutation and one earlier,
 unreassigned direct Agent-constructor receiver. It receives its own tool identity and an exact
 tool-to-Agent delegation edge; parameters, forward receivers, arbitrary objects, and receiver or
@@ -418,6 +422,10 @@ OpenAI Agents SDK, literal
 tool-to-control edge when no automatic approval handler is configured; literal false is recorded as
 explicitly disabled. An omitted value records the SDK's documented disabled default. Callback,
 handler-controlled, and other non-literal approval policies remain unresolved.
+`AV-APPROVAL003` is the bounded exception: when a configured handler resolves through unique
+same-file calls to an immediate environment-backed true return, and the tool is a reachable local
+shell or apply-patch built-in, the engine reports the demonstrated bypass flow. The finding retains
+the exact environment names and callback-resolution basis.
 Import-proven `ComputerTool` instances instead emit a local computer-control capability. Their
 optional `on_safety_check` callback is recorded as SDK safety-check state, not promoted to a generic
 human-approval control because it applies only when the model response carries safety checks.

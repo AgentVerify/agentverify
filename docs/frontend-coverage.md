@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v62
+framework, wrapper, or configuration path. Counts come from schema-v63
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -41,7 +41,7 @@ Across the selected snapshot, 9,531 agent/tool observations have module-qualifie
 component (3,112 Python and 259 TypeScript). Two former false IDs on CrewAI test edges are now
 withheld because a function parameter and assignment shadow the same-named package import.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
-edges resolve exactly. Schema v62 records 359 Python lexical-single-definition, 20 same-block
+edges resolve exactly. Schema v63 records 359 Python lexical-single-definition, 20 same-block
 dominating-definition, 25 contextual-absolute-import resolutions, three same-class helper-return
 resolutions, 14 contextual imported-class Agent-factory resolutions, 444 inline constructor
 resolutions, two context-manager resolutions, four contextual imported-callable exports, six
@@ -146,7 +146,7 @@ fields as an inventory-only edge.
 
 Exact same-function Python scheme and hostname rejection can govern a direct network capability as
 `network-origin-allowlist`. The proof is statement-ordered and import-proven, and records explicit
-redirect disabling separately from unresolved DNS and redirect scope. The full schema-v62 corpus run
+redirect disabling separately from unresolved DNS and redirect scope. The full schema-v63 corpus run
 finds zero qualifying controls on the Python AV-NET001 review paths; imported validators and runtime
 egress policy remain outside this bounded observation.
 
@@ -230,7 +230,7 @@ and uses an Undici dispatcher that reconnects only to validated addresses. Calle
 non-stock global dispatchers, and `NODE_USE_ENV_PROXY` routes intentionally retain preflight-only
 behavior because the proxy resolves the destination. The edge implementation fails closed for the
 caller-selected upload URL, but three `ssrfSafeFetchWhereSupported` API-response transfers fall back
-to unguarded edge-runtime fetch. Schema v62 therefore reports nine TypeScript secure-network
+to unguarded edge-runtime fetch. Schema v63 therefore reports nine TypeScript secure-network
 controls: the prior five plus one Composio all-runtime/fail-closed edge and three runtime-conditional
 edges.
 
@@ -257,7 +257,7 @@ select the later RPC origin without a proven source-origin binding, so `AV-A2A00
 reviews. Gemini additionally records unpinned dispatcher DNS, configuration-dependent proxying, and
 the card-selected gRPC scheme. Google ADK Python provides two guarded paths: before either cached or
 per-invocation client construction, it checks every advertised RPC URL, requires HTTPS except an
-explicit loopback policy, and binds the endpoint to the network card source origin. Schema v62 thus
+explicit loopback policy, and binds the endpoint to the network card source origin. Schema v63 thus
 separates two unconstrained TypeScript paths from two same-origin-constrained Python paths; configured
 card selection is not mislabeled as model-controlled `AV-NET001` input.
 
@@ -267,7 +267,7 @@ Two checks govern both a parent-directory creation and its write/copy action. Th
 `AV-FS002` result explains the sibling-prefix weakness without duplicating `AV-FS001` at the same
 sink.
 
-Schema v62 records 14 exact MCP-forwarding control edges: one explicit allowlist, three discovery
+Schema v63 records 14 exact MCP-forwarding control edges: one explicit allowlist, three discovery
 registries, and ten fixed bindings. The fixed-binding edges split evenly between constructor-bound
 instance sources and escaping returned/registered closures. Same-operation retry closures do not
 qualify. The ten bindings and discovery registries retain their reviews; only the explicit allowlist
@@ -280,6 +280,14 @@ result is passed into every generated `FunctionTool`. The IR records one agentâ†
 one disabled-default `mcp-tool-approval` setting. It intentionally creates no AV-APPROVAL002 result:
 the referenced policy tools are not a proven destructive capability, and the rule remains narrower
 than a general missing-approval claim.
+
+The approval-callback resolver summarizes unique same-file functions and propagates only direct call
+edges into an OpenAI built-in tool's configured approval handler. Python covers a named handler and
+one transitive wrapper; TypeScript covers inline handlers that call a summarized helper. The IR adds
+`tool configured-by control-setting:auto-approval` only when the helper has an unconditional true
+return under an approval-specific enabled environment comparison. Schema v63 resolves three pinned
+tools and three configuration edges. Unused helpers, safe callbacks, ambiguous function names, and
+hosted/container shell tools do not produce `AV-APPROVAL003`.
 
 The Python frontend inventories 449 canonical/import/callable-aliased and proven-`Path` mutations:
 179 creates, 191 deletes, 46 copies, and 33 moves. Of these, 434 use non-literal path expressions;
@@ -392,7 +400,7 @@ and `network-ssrf-policy` edge.
   plus hostname rejection before the direct request. Late, partial, continuing, rebound, shadowed,
   normalized-expression, positive-branch, and imported-validator forms remain unresolved. The
   control covers the initial origin only; redirect disabling and unresolved redirect/DNS scope are
-  preserved separately. Schema v62 observes zero such controls on the Python corpus reviews.
+  preserved separately. Schema v63 observes zero such controls on the Python corpus reviews.
 - Python secure-network helper proof requires selected local source for the validator, transport,
   adapter/backend, caller, and any defaults that affect enforcement. One structural family proves
   every redirect, disables proxies, and pins all connections; another distinguishes redirect-disabled
@@ -451,7 +459,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 364-label rule truth set and 490-label IR component/relationship set are curated regression suites. They
+The 373-label rule truth set and 498-label IR component/relationship set are curated regression suites. They
 guard known positives and negatives; they are not an unbiased accuracy estimate. A future holdout
 must be sampled separately across the categories above, externally reviewed, and kept sealed while
 rules change. Until then, precision/recall values apply only to the published seed labels.

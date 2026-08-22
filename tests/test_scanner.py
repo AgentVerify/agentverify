@@ -190,6 +190,51 @@ def test_python_enabled_auto_approval_is_review_candidate() -> None:
     assert ir.findings[0].result_kind == "review"
 
 
+def test_approval_callback_bypass_is_resolved_to_reachable_privileged_tools() -> None:
+    ir = scan_repository(ROOT / "cases/approval_callback_bypass")
+
+    findings = [finding for finding in ir.findings if finding.rule_id == "AV-APPROVAL003"]
+    assert [
+        (finding.evidence.path, finding.evidence.line, finding.analysis["tool"])
+        for finding in findings
+    ] == [
+        ("approval.py", 33, "ShellTool@33"),
+        ("approval.ts", 27, "shellTool@27"),
+        ("approval.ts", 32, "applyPatchTool@32"),
+    ]
+    assert {
+        tuple(finding.analysis["approval_bypass_environment_names"])
+        for finding in findings
+    } == {("SHELL_AUTO_APPROVE",), ("APPLY_PATCH_AUTO_APPROVE",)}
+    assert all(finding.result_kind == "finding" for finding in findings)
+    assert all(finding.analysis["direct_agents"] == ["operator"] for finding in findings)
+
+    bypass_tools = {
+        component.name: component.attributes["approval_bypass_environment_names"]
+        for component in ir.components
+        if component.kind == "tool"
+        and component.attributes.get("approval_bypass_environment_names")
+    }
+    assert bypass_tools == {
+        "ShellTool@33": ["SHELL_AUTO_APPROVE"],
+        "ShellTool@43": ["SHELL_AUTO_APPROVE"],
+        "shellTool@27": ["SHELL_AUTO_APPROVE"],
+        "applyPatchTool@32": ["APPLY_PATCH_AUTO_APPROVE"],
+        "shellTool@37": ["SHELL_AUTO_APPROVE"],
+    }
+    configured_edges = [
+        edge
+        for edge in ir.relationships
+        if edge.relation == "configured-by"
+        and edge.target_kind == "control-setting"
+        and edge.target_name == "auto-approval"
+    ]
+    assert len(configured_edges) == 5
+    assert {
+        edge.attributes["resolution"] for edge in configured_edges
+    } == {"same-file-transitive-callback"}
+
+
 def test_builtin_tool_constructor_approval_is_instance_scoped() -> None:
     ir = scan_repository(ROOT / "cases/builtin_tool_approval")
 

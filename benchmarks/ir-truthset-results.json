@@ -1,13 +1,21 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T02:14:03.436536+00:00",
-  "labels": 490,
-  "passed": 490,
+  "generated_at": "2026-08-22T02:44:10.841123+00:00",
+  "labels": 498,
+  "passed": 498,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
       "fp": 0,
       "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-APPROVAL-CALLBACK-BYPASS": {
+      "tp": 6,
+      "fp": 0,
+      "tn": 2,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -4852,6 +4860,78 @@
       "check_id": "IR-COMPONENT-TAXONOMY",
       "expected": true,
       "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-callback-python-tool-real",
+      "check_id": "IR-APPROVAL-CALLBACK-BYPASS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-callback-js-shell-tool-real",
+      "check_id": "IR-APPROVAL-CALLBACK-BYPASS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-callback-js-patch-tool-real",
+      "check_id": "IR-APPROVAL-CALLBACK-BYPASS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-callback-python-edge-real",
+      "check_id": "IR-APPROVAL-CALLBACK-BYPASS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-callback-js-shell-edge-real",
+      "check_id": "IR-APPROVAL-CALLBACK-BYPASS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-callback-js-patch-edge-real",
+      "check_id": "IR-APPROVAL-CALLBACK-BYPASS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-callback-python-safe-negative",
+      "check_id": "IR-APPROVAL-CALLBACK-BYPASS",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-callback-js-safe-negative",
+      "check_id": "IR-APPROVAL-CALLBACK-BYPASS",
+      "expected": false,
+      "observed": false,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

@@ -4759,6 +4759,54 @@
       "target":{"kind":"repository","repository":"bytedance/trae-agent","commit":"e839e559ac61bdd0e057c375dd1dee391fee797d"},
       "check_id":"IR-COMPONENT-TAXONOMY","path":"trae_agent/utils/llm_clients/ollama_client.py","line":13,"expected":true,
       "component":{"kind":"provider","name":"Ollama","attributes":{"module":"ollama"}}
+    },
+    {
+      "id":"approval-callback-python-tool-real",
+      "target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},
+      "check_id":"IR-APPROVAL-CALLBACK-BYPASS","path":"examples/tools/shell.py","line":117,"expected":true,
+      "component":{"kind":"tool","name":"ShellTool@117","attributes":{"approval_bypass_environment_names":["SHELL_AUTO_APPROVE"],"approval_bypass_resolution":"same-file-transitive-callback"}}
+    },
+    {
+      "id":"approval-callback-js-shell-tool-real",
+      "target":{"kind":"repository","repository":"openai/openai-agents-js","commit":"0b944370c6fe019ac5b08364ca013826cd7d0668"},
+      "check_id":"IR-APPROVAL-CALLBACK-BYPASS","path":"examples/tools/local-shell.ts","line":104,"expected":true,
+      "component":{"kind":"tool","name":"shellTool@104","attributes":{"approval_bypass_environment_names":["SHELL_AUTO_APPROVE"],"approval_bypass_resolution":"same-file-transitive-callback"}}
+    },
+    {
+      "id":"approval-callback-js-patch-tool-real",
+      "target":{"kind":"repository","repository":"openai/openai-agents-js","commit":"0b944370c6fe019ac5b08364ca013826cd7d0668"},
+      "check_id":"IR-APPROVAL-CALLBACK-BYPASS","path":"examples/tools/apply-patch.ts","line":121,"expected":true,
+      "component":{"kind":"tool","name":"applyPatchTool@121","attributes":{"approval_bypass_environment_names":["APPLY_PATCH_AUTO_APPROVE"],"approval_bypass_resolution":"same-file-transitive-callback"}}
+    },
+    {
+      "id":"approval-callback-python-edge-real",
+      "target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},
+      "check_id":"IR-APPROVAL-CALLBACK-BYPASS","path":"examples/tools/shell.py","line":119,"expected":true,
+      "relationship":{"source_kind":"tool","source_name":"ShellTool@117","relation":"configured-by","target_kind":"control-setting","target_name":"auto-approval","attributes":{"environment_names":["SHELL_AUTO_APPROVE"],"resolution":"same-file-transitive-callback"}}
+    },
+    {
+      "id":"approval-callback-js-shell-edge-real",
+      "target":{"kind":"repository","repository":"openai/openai-agents-js","commit":"0b944370c6fe019ac5b08364ca013826cd7d0668"},
+      "check_id":"IR-APPROVAL-CALLBACK-BYPASS","path":"examples/tools/local-shell.ts","line":104,"expected":true,
+      "relationship":{"source_kind":"tool","source_name":"shellTool@104","relation":"configured-by","target_kind":"control-setting","target_name":"auto-approval","attributes":{"environment_names":["SHELL_AUTO_APPROVE"],"resolution":"same-file-transitive-callback"}}
+    },
+    {
+      "id":"approval-callback-js-patch-edge-real",
+      "target":{"kind":"repository","repository":"openai/openai-agents-js","commit":"0b944370c6fe019ac5b08364ca013826cd7d0668"},
+      "check_id":"IR-APPROVAL-CALLBACK-BYPASS","path":"examples/tools/apply-patch.ts","line":121,"expected":true,
+      "relationship":{"source_kind":"tool","source_name":"applyPatchTool@121","relation":"configured-by","target_kind":"control-setting","target_name":"auto-approval","attributes":{"environment_names":["APPLY_PATCH_AUTO_APPROVE"],"resolution":"same-file-transitive-callback"}}
+    },
+    {
+      "id":"approval-callback-python-safe-negative",
+      "target":{"kind":"local","path":"cases/approval_callback_bypass"},
+      "check_id":"IR-APPROVAL-CALLBACK-BYPASS","path":"approval.py","line":38,"expected":false,
+      "component":{"kind":"tool","name":"ShellTool@38","attributes":{"approval_bypass_resolution":"same-file-transitive-callback"}}
+    },
+    {
+      "id":"approval-callback-js-safe-negative",
+      "target":{"kind":"local","path":"cases/approval_callback_bypass"},
+      "check_id":"IR-APPROVAL-CALLBACK-BYPASS","path":"approval.ts","line":42,"expected":false,
+      "component":{"kind":"tool","name":"shellTool@42","attributes":{"approval_bypass_resolution":"same-file-transitive-callback"}}
     }
   ]
 }

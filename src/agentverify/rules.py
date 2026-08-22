@@ -204,6 +204,63 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                         "review",
                     )
                 )
+        if component.kind == "capability" and component.name in {
+            "shell-execution",
+            "filesystem",
+        }:
+            _, context = component_context(ir, component)
+            tool_name = context.get("tool")
+            tool = next(
+                (
+                    candidate
+                    for candidate in ir.components
+                    if candidate.kind == "tool"
+                    and candidate.name == tool_name
+                    and candidate.evidence.path == component.evidence.path
+                    and candidate.evidence.line == component.evidence.line
+                ),
+                None,
+            )
+            constructor = str(tool.attributes.get("constructor", "")) if tool else ""
+            exact_privileged_tool = (
+                component.name == "shell-execution"
+                and component.attributes.get("execution_environment") == "local"
+                and constructor.rsplit(".", 1)[-1] in {"ShellTool", "shellTool"}
+            ) or (
+                component.name == "filesystem"
+                and component.attributes.get("write_access")
+                and constructor.rsplit(".", 1)[-1]
+                in {"ApplyPatchTool", "applyPatchTool"}
+            )
+            environment_names = (
+                tool.attributes.get("approval_bypass_environment_names", []) if tool else []
+            )
+            if (
+                exact_privileged_tool
+                and context.get("direct_agents")
+                and environment_names
+                and tool.attributes.get("approval_bypass_resolution")
+                == "same-file-transitive-callback"
+            ):
+                capability_label = (
+                    "local shell" if component.name == "shell-execution" else "filesystem-write"
+                )
+                finding = make_finding(
+                    ir,
+                    component,
+                    "AV-APPROVAL003",
+                    "high",
+                    "high",
+                    f"An environment variable can auto-approve a reachable {capability_label} tool",
+                    "Remove the environment-driven approval shortcut and require an authenticated, per-action decision before executing the tool.",
+                )
+                finding.analysis.update(
+                    {
+                        "approval_bypass_environment_names": environment_names,
+                        "approval_bypass_resolution": "same-file-transitive-callback",
+                    }
+                )
+                ir.findings.append(finding)
         if component.kind == "capability" and component.name == "external-action":
             actor_gap_edges = [
                 edge
