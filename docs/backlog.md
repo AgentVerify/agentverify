@@ -106,11 +106,13 @@ direct tool-parameter/alias script flow. Dynamic calls additionally require an e
 receiver annotation, one immutable alias of that parameter, or Skyvern's exact imported `get_page`
 factory result. Schema v86 adds exact class/`__init__` Playwright annotations and immutable
 `TYPE_CHECKING` imports, proving 15 more production receivers across CAMEL, LaVague, and MetaGPT.
-Twenty-two of 80 corpus receivers are now proven and the other 58 fixed-script observations retain
-explicit unresolved state. Skyvern contributes 30 evaluator observations but one finding;
-normalized numeric scroll JavaScript remains inventory-only. Next resolve constructor-bound page
-fields without exact annotations, inherited fields, locator chains, sanitizer and bounded builder
-summaries, imported helper flow, and other
+Schema v87 additionally proves 13 Devika receivers through an exact imported Playwright runtime,
+straight-line browser/context construction, one immutable `self.page` assignment in `__init__`, and
+one immutable local alias. Thirty-five of 80 corpus receivers are now proven and the other 45
+fixed-script observations retain explicit unresolved state. Conditional, later, repeated, near-factory,
+and shadowed-factory bindings remain negative. Skyvern contributes 30 evaluator observations but one
+finding; normalized numeric scroll JavaScript remains inventory-only. Next resolve inherited fields,
+locator chains, sanitizer and bounded builder summaries, imported helper flow, and other
 browser evaluator APIs without treating every dynamic JavaScript expression as tool-controlled.
 
 ## P0 — configuration and policy resolution
@@ -298,8 +300,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 525 pinned positive/negative locations, with 847 separately
-scored IR component/relationship labels. Schema-v86 engine results and
+The curated regression set has reached 533 pinned positive/negative locations, with 857 separately
+scored IR component/relationship labels. Schema-v87 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

@@ -482,15 +482,19 @@ a current tool parameter or its direct assignment alias; literals, module consta
 derived solely from normalized intermediates remain inventory-only. A dynamic browser evaluator is
 emitted only when its receiver is an exact imported Playwright `Page`/`Locator`/handle annotation,
 one immutable alias of such a parameter, an exactly typed `self` attribute in the enclosing class,
-or the first result of Skyvern's exact imported `get_page` factory. Class attributes may use one
+an immutable constructor-bound Playwright page field or its direct local alias, or the first result
+of Skyvern's exact imported `get_page` factory. Class attributes may use one
 direct annotation in the class body or `__init__`; exact Playwright imports under an immutable
 top-level `TYPE_CHECKING` guard are accepted for deferred annotations. Conflicting annotations,
-rebound or near-package type imports, and static/class methods are withheld. Parameter reassignment
+rebound or near-package type imports, and static/class methods are withheld. Constructor flow must
+begin at one exact imported `sync_playwright` call, continue through direct
+browser/context creation, and assign the page field once in straight-line `__init__` code.
+Conditional, repeated, later-method, and shadowed-factory assignments are withheld. Parameter reassignment
 invalidates its proof, and module browser imports alone cannot promote an ordinary object's
 `.evaluate(...)`. Fixed-script observations remain inventory with
 `unresolved-browser-import-context` when their receiver is not yet proven. The capability still
 receives an exact tool edge when it occurs in a resolved tool body, including post-definition
-FastMCP tools. Untyped constructor-bound fields, inherited fields, chained locators, sanitizer
+FastMCP tools. Inherited fields, chained locators, sanitizer
 proofs, imported/transitive script builders, and alternate browser evaluator APIs remain unresolved.
 
 For TypeScript filesystem writes, a relative import can prove a `path-boundary` control only through

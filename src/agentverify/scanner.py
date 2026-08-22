@@ -1095,11 +1095,167 @@ def python_class_browser_receiver_attributes(
     }
 
 
+def python_class_constructor_browser_receivers(
+    node: ast.ClassDef, browser_runtime_factories: set[str]
+) -> set[str]:
+    """Resolve immutable Playwright pages constructed directly in ``__init__``."""
+    initializers = [
+        statement
+        for statement in node.body
+        if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and statement.name == "__init__"
+        and statement.args.args
+        and statement.args.args[0].arg == "self"
+    ]
+    if len(initializers) != 1:
+        return set()
+    initializer = initializers[0]
+    initializer_bindings = python_function_local_bindings(initializer)
+    browser_runtime_factories = {
+        factory
+        for factory in browser_runtime_factories
+        if factory.split(".", 1)[0] not in initializer_bindings
+    }
+
+    def self_attributes(target: ast.AST) -> set[str]:
+        if (
+            isinstance(target, ast.Attribute)
+            and isinstance(target.value, ast.Name)
+            and target.value.id == "self"
+        ):
+            return {target.attr}
+        if isinstance(target, (ast.Tuple, ast.List)):
+            return {
+                name for element in target.elts for name in self_attributes(element)
+            }
+        return set()
+
+    attribute_mutations: Counter[str] = Counter()
+    for candidate in ast.walk(node):
+        targets: list[ast.AST] = []
+        if isinstance(candidate, ast.Assign):
+            targets.extend(candidate.targets)
+        elif isinstance(
+            candidate,
+            (ast.AnnAssign, ast.AugAssign, ast.NamedExpr, ast.For, ast.AsyncFor),
+        ):
+            targets.append(candidate.target)
+        elif isinstance(candidate, ast.Delete):
+            targets.extend(candidate.targets)
+        elif isinstance(candidate, (ast.With, ast.AsyncWith)):
+            targets.extend(
+                item.optional_vars
+                for item in candidate.items
+                if item.optional_vars is not None
+            )
+        for target in targets:
+            attribute_mutations.update(self_attributes(target))
+
+    local_mutations: Counter[str] = Counter()
+    for candidate in ast.walk(initializer):
+        targets: list[ast.AST] = []
+        if isinstance(candidate, ast.Assign):
+            targets.extend(candidate.targets)
+        elif isinstance(
+            candidate,
+            (ast.AnnAssign, ast.AugAssign, ast.NamedExpr, ast.For, ast.AsyncFor),
+        ):
+            targets.append(candidate.target)
+        elif isinstance(candidate, ast.Delete):
+            targets.extend(candidate.targets)
+        elif isinstance(candidate, (ast.With, ast.AsyncWith)):
+            targets.extend(
+                item.optional_vars
+                for item in candidate.items
+                if item.optional_vars is not None
+            )
+        for target in targets:
+            local_mutations.update(python_assigned_names(target))
+
+    bindings: dict[str, str] = {}
+
+    def unwrap(expression: ast.AST | None) -> ast.AST | None:
+        return expression.value if isinstance(expression, ast.Await) else expression
+
+    def resolve(expression: ast.AST | None) -> str | None:
+        expression = unwrap(expression)
+        if expression is None:
+            return None
+        name = dotted_name(expression)
+        if name in bindings:
+            return bindings[name]
+        if not isinstance(expression, ast.Call):
+            return None
+        call_name = dotted_name(expression.func)
+        if (
+            call_name in browser_runtime_factories
+            and not expression.args
+            and not expression.keywords
+        ):
+            return "playwright-context-manager"
+        if not isinstance(expression.func, ast.Attribute):
+            return None
+        receiver = expression.func.value
+        if (
+            expression.func.attr == "start"
+            and not expression.args
+            and not expression.keywords
+            and resolve(receiver) == "playwright-context-manager"
+        ):
+            return "playwright-runtime"
+        if (
+            expression.func.attr == "launch"
+            and isinstance(receiver, ast.Attribute)
+            and receiver.attr in {"chromium", "firefox", "webkit"}
+            and resolve(receiver.value) == "playwright-runtime"
+        ):
+            return "playwright-browser"
+        receiver_kind = resolve(receiver)
+        if expression.func.attr == "new_context" and receiver_kind == "playwright-browser":
+            return "playwright-context"
+        if expression.func.attr == "new_page" and receiver_kind in {
+            "playwright-browser",
+            "playwright-context",
+        }:
+            return "playwright-page"
+        return None
+
+    for statement in initializer.body:
+        if not isinstance(statement, (ast.Assign, ast.AnnAssign)):
+            continue
+        targets = statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+        value = statement.value
+        if len(targets) != 1 or value is None:
+            continue
+        target = targets[0]
+        target_name = dotted_name(target)
+        if isinstance(target, ast.Name):
+            if local_mutations[target.id] != 1:
+                continue
+        elif (
+            isinstance(target, ast.Attribute)
+            and isinstance(target.value, ast.Name)
+            and target.value.id == "self"
+        ):
+            if attribute_mutations[target.attr] != 1:
+                continue
+        else:
+            continue
+        if binding := resolve(value):
+            bindings[target_name] = binding
+
+    return {
+        name.removeprefix("self.")
+        for name, binding in bindings.items()
+        if name.startswith("self.") and binding == "playwright-page"
+    }
+
+
 def python_browser_receiver_proofs(
     node: ast.FunctionDef | ast.AsyncFunctionDef,
     browser_type_names: set[str],
     browser_page_factories: set[str],
-    class_browser_attributes: set[str],
+    class_browser_attributes: dict[str, str],
 ) -> dict[int, str]:
     """Prove direct browser-page evaluate receivers without semantic name matching."""
     parents = {
@@ -1199,6 +1355,17 @@ def python_browser_receiver_proofs(
                 bindings[target.id] = "typed-parameter-alias"
                 binding_lines[target.id] = candidate.lineno
             elif (
+                isinstance(target, ast.Name)
+                and mutation_counts[target.id] == 1
+                and isinstance(value, ast.Attribute)
+                and isinstance(value.value, ast.Name)
+                and value.value.id == "self"
+                and class_browser_attributes.get(value.attr)
+                == "constructor-bound-playwright-page"
+            ):
+                bindings[target.id] = "constructor-bound-playwright-page-alias"
+                binding_lines[target.id] = candidate.lineno
+            elif (
                 factory_call is not None
                 and isinstance(target, (ast.Tuple, ast.List))
                 and target.elts
@@ -1236,7 +1403,7 @@ def python_browser_receiver_proofs(
                 for decorator in node.decorator_list
             )
         ):
-            proofs[id(candidate)] = "class-attribute-annotation"
+            proofs[id(candidate)] = class_browser_attributes[receiver_node.attr]
     return proofs
 
 
@@ -2790,6 +2957,7 @@ class PythonVisitor(ast.NodeVisitor):
         urllib_request_constructors: set[str],
         browser_type_names: set[str],
         browser_page_factories: set[str],
+        browser_runtime_factories: set[str],
         url_parser_names: set[str],
         module_literal_string_sets: dict[str, tuple[str, ...]],
         approval_bypass_function_summaries: dict[str, tuple[str, ...]],
@@ -2816,7 +2984,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.class_registry_method_summaries: list[dict[str, RegistryMethodSummary]] = []
         self.class_registry_manager_bindings: list[dict[str, RegistryClassTarget]] = []
         self.class_path_helper_summaries: list[dict[str, PythonPathHelperSummary]] = []
-        self.class_browser_receiver_attributes: list[set[str]] = []
+        self.class_browser_receiver_attributes: list[dict[str, str]] = []
         self.function_fixed_binding_sources: list[dict[str, Evidence]] = []
         self.function_escaping_children: list[set[str]] = []
         self.function_path_boundary_calls: list[dict[int, PythonPathBoundaryProof]] = []
@@ -2830,6 +2998,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.urllib_request_constructors = urllib_request_constructors
         self.browser_type_names = browser_type_names
         self.browser_page_factories = browser_page_factories
+        self.browser_runtime_factories = browser_runtime_factories
         self.url_parser_names = url_parser_names
         self.module_literal_string_sets = module_literal_string_sets
         self.approval_bypass_function_summaries = approval_bypass_function_summaries
@@ -3624,16 +3793,23 @@ class PythonVisitor(ast.NodeVisitor):
             for factory in self.browser_page_factories
             if factory.split(".", 1)[0] not in local_bindings
         }
+        class_browser_attributes = (
+            self.class_browser_receiver_attributes[-1]
+            if self.class_browser_receiver_attributes
+            else {}
+        )
+        if node.name == "__init__":
+            class_browser_attributes = {
+                name: proof
+                for name, proof in class_browser_attributes.items()
+                if proof != "constructor-bound-playwright-page"
+            }
         self.function_browser_receiver_proofs.append(
             python_browser_receiver_proofs(
                 node,
                 function_browser_types,
                 function_browser_factories,
-                (
-                    self.class_browser_receiver_attributes[-1]
-                    if self.class_browser_receiver_attributes
-                    else set()
-                ),
+                class_browser_attributes,
             )
             if self.has_browser_import
             else {}
@@ -4022,8 +4198,23 @@ class PythonVisitor(ast.NodeVisitor):
                 node, self.path, self.lines, self.path_constructors
             )
         )
+        annotated_browser_attributes = python_class_browser_receiver_attributes(
+            node, self.browser_type_names
+        )
+        constructed_browser_attributes = python_class_constructor_browser_receivers(
+            node, self.browser_runtime_factories
+        )
         self.class_browser_receiver_attributes.append(
-            python_class_browser_receiver_attributes(node, self.browser_type_names)
+            {
+                **{
+                    name: "constructor-bound-playwright-page"
+                    for name in constructed_browser_attributes
+                },
+                **{
+                    name: "class-attribute-annotation"
+                    for name in annotated_browser_attributes
+                },
+            }
         )
         class_environment_flags: dict[str, set[str]] = {}
         for statement in node.body:
@@ -6287,6 +6478,28 @@ def scan_python(
         if browser_import_binding_counts[type_name.split(".", 1)[0]] == 1
         if type_name.split(".", 1)[0] not in module_mutations
     }
+    browser_runtime_import_counts = Counter(
+        alias.asname or alias.name
+        for statement in tree.body
+        if isinstance(statement, ast.ImportFrom)
+        and statement.module == "playwright.sync_api"
+        for alias in statement.names
+        if alias.name == "sync_playwright"
+    )
+    browser_runtime_import_counts.update(
+        f"{alias.asname or alias.name}.sync_playwright"
+        for statement in tree.body
+        if isinstance(statement, ast.Import)
+        for alias in statement.names
+        if alias.name == "playwright.sync_api"
+    )
+    browser_runtime_factories = {
+        factory
+        for factory, count in browser_runtime_import_counts.items()
+        if count == 1
+        if browser_import_binding_counts[factory.split(".", 1)[0]] == 1
+        if factory.split(".", 1)[0] not in module_mutations
+    }
     browser_page_factories: set[str] = set()
     for statement in tree.body:
         if not isinstance(statement, ast.ImportFrom):
@@ -8505,6 +8718,7 @@ def scan_python(
         urllib_request_constructors=urllib_request_constructors,
         browser_type_names=browser_type_names,
         browser_page_factories=browser_page_factories,
+        browser_runtime_factories=browser_runtime_factories,
         url_parser_names=url_parser_names,
         module_literal_string_sets=module_literal_string_sets,
         approval_bypass_function_summaries=(

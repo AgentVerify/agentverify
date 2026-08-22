@@ -147,10 +147,10 @@ versioned audited evidence hints plus Python imports reached from MCP forwarding
 URL-security call sites, all charged against the same cap. This refresh materialized 176 dependency files across 21
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v86 carries both the 176-file total and the
+dependency count per repository; engine schema v87 carries both the 176-file total and the
 21-repository coverage.
 
-Engine benchmark schema v86 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v87 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It also publishes Python and TypeScript initial-origin control coverage
 plus source-proven Python and TypeScript secure transports, with redirect, DNS, proxy, configured
@@ -281,6 +281,14 @@ imports, and static/class methods are withheld. This proves 15 production receiv
 one each in LaVague and MetaGPT—raising receiver proof from seven to 22 of 80 observations. The
 other 58 remain explicitly unresolved, the sole dynamic tool-input path is unchanged, and no
 AV-EXEC002 finding is added or removed.
+
+Schema v87 adds a separate exact constructor proof without trusting field names. One immutable
+`sync_playwright` import must flow through straight-line browser or context
+construction to a page field assigned once in `__init__`; one immutable local alias is also
+accepted. Conditional, later-method, repeated, parameter-supplied, and shadowed-factory bindings are
+withheld. This proves 13 additional production receivers in Devika—four direct field uses and nine
+aliases—raising coverage to 35 of 80 and leaving 45 explicitly unresolved. The sole dynamic
+tool-input path and the 51 corpus AV-EXEC002 findings remain unchanged.
 
 Schema v63 retains A2A endpoint provenance as a separate authority class: four exact client-construction
 paths comprise two unconstrained remote-card-selected TypeScript origins and two same-origin-
@@ -670,7 +678,7 @@ Two default-scope clients qualify: the Microsoft tutorial and FastMCP CLI both a
 do not show the target URL. The TypeScript SDK host is the negative control: it displays the full URL,
 rejects unsafe non-HTTPS/non-loopback destinations, and asks before proceeding. The rule matrix is 4
 TP, 3 TN, 0 FP, and 0 FN; seven additional positive IR labels pin full versus missing disclosure.
-All 525 cross-rule labels pass.
+All 533 cross-rule labels pass.
 
 During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
 to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
@@ -691,15 +699,16 @@ parameter reaches `exec`. Browser-aware evaluation adds one more exact path: Sky
 [`skyvern_evaluate`](https://github.com/Skyvern-AI/skyvern/blob/486c8975e9864a53037d4701b781f8619e698c40/skyvern/cli/mcp_tools/browser.py#L2458)
 passes its tool parameter to Playwright `page.evaluate`. Across 80 inventoried browser-page
 evaluations, this is the only one with direct tool-parameter flow, raising `AV-EXEC002` to 51 across
-15 repositories. Schema v86 proves 22 receivers: two exact Playwright `Page` parameters in
-SWE-agent, five results of Skyvern's exact imported `get_page` factory, and 15 exact typed class
-attributes across CAMEL, LaVague, and MetaGPT. The other 58 fixed-script observations remain
+15 repositories. Schema v87 proves 35 receivers: two exact Playwright `Page` parameters in
+SWE-agent, five results of Skyvern's exact imported `get_page` factory, 15 exact typed class
+attributes across CAMEL, LaVague, and MetaGPT, and 13 exact constructor-field/alias uses in Devika.
+The other 45 fixed-script observations remain
 inventory with unresolved receiver state. Dynamic calls with only browser-import context are
 withheld: local regressions cover an ordinary calculator's `.evaluate(...)`, a reassigned typed
 page, one immutable typed-page alias, conflicting class types, and ambiguous/rebound/near type-only
 imports. Skyvern's normalized numeric scroll
-JavaScript at line 1664 remains a real negative. Registry and receiver fixtures bring the rule to 24
-positive and 21 negative exact labels.
+JavaScript at line 1664 remains a real negative. Registry and receiver fixtures bring the rule to 27
+positive and 26 negative exact labels.
 
 ## AV-MCP002 — dynamic MCP forwarding
 
@@ -1132,14 +1141,14 @@ and surfacing failed writes through metrics or alerts.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 525 exact labels across all 19 enabled rules: 275 positives and 250
+`benchmarks/truthset.json` contains 533 exact labels across all 19 enabled rules: 278 positives and 255
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
 Compose/Kubernetes/Docker SDK settings, host credential bind near misses, and exact/prompt-only MCP
-package launchers. All 525 currently pass;
+package launchers. All 533 currently pass;
 each rule's seed precision and recall are 1.0. Negative labels must retain either an observed Agent IR
 component anchor or verified source text at the exact pinned line, preventing a missing or drifting
 location from passing silently.
@@ -1218,10 +1227,11 @@ Seven urllib labels cover two local dynamic origins, one local fixed origin, two
 negatives, and two pinned Qwen fixed-origin tool edges. Nine Python network-origin-control labels cover
 two fail-closed local guards and seven late, partial, continuing, rebound, shadowed, mutable-policy,
 or rejection-branch-sink negatives. Seven TypeScript network-origin-policy labels cover the local and
-MCP Servers edges plus late, rebound, nested-call, scheme-only, and branch-only negatives. Twenty
-browser-receiver labels cover nine exact parameter, alias, factory, class-field, and pinned-real
-proofs plus 11 ordinary, reassigned, late/branch, container, conflicting/wrong type, static-method,
-near-package, rebound, and duplicate-import negatives. Six secure-network-helper
+MCP Servers edges plus late, rebound, nested-call, scheme-only, and branch-only negatives. Thirty
+browser-receiver labels cover 14 exact parameter, alias, factory, annotated/constructed class-field,
+and pinned-real proofs plus 16 ordinary, reassigned, late/branch, container, conflicting/wrong type,
+static-method, near-package, rebound, duplicate-import, conditional-construction, near-factory, and
+shadowed-factory negatives. Six secure-network-helper
 labels cover two local and two CrewAI edges plus incomplete-redirect and rebound-import negatives.
 Five proxy-conditional secure-network labels cover two local and two Composio edges plus an ordinary
 request negative. Five configurable pinned-network labels cover two local and two Langflow edges plus
@@ -1260,7 +1270,7 @@ and model positives plus 42 near-name, rebound, and unrelated-service negatives.
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 847 IR labels pass (628 positives and 219 negatives):
+negatives. All 857 IR labels pass (633 positives and 224 negatives):
 131 component-taxonomy positives/42 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
@@ -1283,8 +1293,8 @@ six path-prefix positives/two negatives,
 negatives, two MCP-registry positives/one negative, three
 fixed-instance positives/one negative, two closure positives/two negatives, two method-registry
 positives/one negative, four post-registration positives/three negatives, three transparent-wrapper
-positives/three negatives, two browser-evaluation positives/one negative, nine browser-receiver
-positives/11 negatives, eight Python registry-tool
+positives/three negatives, two browser-evaluation positives/one negative, 14 browser-receiver
+positives/16 negatives, eight Python registry-tool
 positives/five negatives, six Python imported-network positives/five negatives, ten Python
 imported-class-network positives/five negatives, five urllib-network positives/two negatives, two
 Python network-origin-control positives/seven negatives, two TypeScript network-origin-policy

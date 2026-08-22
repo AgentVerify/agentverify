@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T12:17:30.984403+00:00",
-  "labels": 847,
-  "passed": 847,
+  "generated_at": "2026-08-22T12:48:19.141373+00:00",
+  "labels": 857,
+  "passed": 857,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -157,9 +157,9 @@
       "recall": 1.0
     },
     "IR-PY-BROWSER-RECEIVER": {
-      "tp": 9,
+      "tp": 14,
       "fp": 0,
-      "tn": 11,
+      "tn": 16,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -2371,6 +2371,78 @@
       "passed": true
     },
     {
+      "id": "python-browser-receiver-constructor-field-local",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-constructor-alias-local",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-context-field-local",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-constructor-reassigned-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-constructor-conditional-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-constructor-near-factory-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-constructor-shadowed-factory-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-constructor-late-binding-local-negative",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
       "id": "python-browser-receiver-wrong-class-annotation-local-negative",
       "check_id": "IR-PY-BROWSER-RECEIVER",
       "expected": false,
@@ -2444,6 +2516,24 @@
     },
     {
       "id": "python-browser-receiver-class-annotation-metagpt-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-constructor-field-devika-real",
+      "check_id": "IR-PY-BROWSER-RECEIVER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-browser-receiver-constructor-alias-devika-real",
       "check_id": "IR-PY-BROWSER-RECEIVER",
       "expected": true,
       "observed": true,

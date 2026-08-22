@@ -2917,6 +2917,38 @@
       "component":{"kind":"capability","name":"code-execution","attributes":{"execution_context":"browser-page","dynamic_input":true,"receiver_proof":"class-attribute-annotation"}}
     },
     {
+      "id":"python-browser-receiver-constructor-field-local","target":{"kind":"local","path":"cases/python_browser_evaluate"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"constructor.py","line":16,"expected":true,
+      "component":{"kind":"capability","name":"code-execution","attributes":{"execution_context":"browser-page","dynamic_input":true,"receiver_proof":"constructor-bound-playwright-page"}}
+    },
+    {
+      "id":"python-browser-receiver-constructor-alias-local","target":{"kind":"local","path":"cases/python_browser_evaluate"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"constructor.py","line":21,"expected":true,
+      "component":{"kind":"capability","name":"code-execution","attributes":{"execution_context":"browser-page","dynamic_input":true,"receiver_proof":"constructor-bound-playwright-page-alias"}}
+    },
+    {
+      "id":"python-browser-receiver-context-field-local","target":{"kind":"local","path":"cases/python_browser_evaluate"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"constructor.py","line":33,"expected":true,
+      "component":{"kind":"capability","name":"code-execution","attributes":{"execution_context":"browser-page","dynamic_input":true,"receiver_proof":"constructor-bound-playwright-page"}}
+    },
+    {
+      "id":"python-browser-receiver-constructor-reassigned-local-negative","target":{"kind":"local","path":"cases/python_browser_evaluate"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"constructor.py","line":49,"expected":false,
+      "component":{"kind":"capability","name":"code-execution","attributes":{"receiver_proof":"constructor-bound-playwright-page"}}
+    },
+    {
+      "id":"python-browser-receiver-constructor-conditional-local-negative","target":{"kind":"local","path":"cases/python_browser_evaluate"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"constructor.py","line":60,"expected":false,
+      "component":{"kind":"capability","name":"code-execution","attributes":{"receiver_proof":"constructor-bound-playwright-page"}}
+    },
+    {
+      "id":"python-browser-receiver-constructor-near-factory-local-negative","target":{"kind":"local","path":"cases/python_browser_evaluate"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"constructor.py","line":69,"expected":false,
+      "component":{"kind":"capability","name":"code-execution","attributes":{"receiver_proof":"constructor-bound-playwright-page"}}
+    },
+    {
+      "id":"python-browser-receiver-constructor-shadowed-factory-local-negative","target":{"kind":"local","path":"cases/python_browser_evaluate"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"constructor.py","line":79,"expected":false,
+      "component":{"kind":"capability","name":"code-execution","attributes":{"receiver_proof":"constructor-bound-playwright-page"}}
+    },
+    {
+      "id":"python-browser-receiver-constructor-late-binding-local-negative","target":{"kind":"local","path":"cases/python_browser_evaluate"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"constructor.py","line":92,"expected":false,
+      "component":{"kind":"capability","name":"code-execution","attributes":{"receiver_proof":"constructor-bound-playwright-page"}}
+    },
+    {
       "id":"python-browser-receiver-wrong-class-annotation-local-negative","target":{"kind":"local","path":"cases/python_browser_evaluate"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"ordinary.py","line":48,"expected":false,
       "component":{"kind":"capability","name":"code-execution","attributes":{"receiver_proof":"class-attribute-annotation"}}
     },
@@ -2951,6 +2983,14 @@
     {
       "id":"python-browser-receiver-class-annotation-metagpt-real","target":{"kind":"repository","repository":"FoundationAgents/MetaGPT","commit":"11cdf466d042aece04fc6cfd13b28e1a70341b1f"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"metagpt/tools/libs/image_getter.py","line":78,"expected":true,
       "component":{"kind":"capability","name":"code-execution","attributes":{"execution_context":"browser-page","dynamic_input":false,"receiver_proof":"class-attribute-annotation","scope":"production"}}
+    },
+    {
+      "id":"python-browser-receiver-constructor-field-devika-real","target":{"kind":"repository","repository":"stitionai/devika","commit":"80bb343cbe4a4e5f5a0ba08d2524920139baceb6"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"src/browser/interaction.py","line":173,"expected":true,
+      "component":{"kind":"capability","name":"code-execution","attributes":{"execution_context":"browser-page","dynamic_input":false,"receiver_proof":"constructor-bound-playwright-page","scope":"production"}}
+    },
+    {
+      "id":"python-browser-receiver-constructor-alias-devika-real","target":{"kind":"repository","repository":"stitionai/devika","commit":"80bb343cbe4a4e5f5a0ba08d2524920139baceb6"},"check_id":"IR-PY-BROWSER-RECEIVER","path":"src/browser/interaction.py","line":238,"expected":true,
+      "component":{"kind":"capability","name":"code-execution","attributes":{"execution_context":"browser-page","dynamic_input":false,"receiver_proof":"constructor-bound-playwright-page-alias","scope":"production"}}
     },
     {
       "id": "python-secure-network-helper-local",

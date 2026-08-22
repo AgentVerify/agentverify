@@ -4365,6 +4365,30 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
             "class-attribute-annotation",
         ),
         (
+            "constructor.py",
+            16,
+            "self.page.evaluate",
+            "browser-page",
+            True,
+            "constructor-bound-playwright-page",
+        ),
+        (
+            "constructor.py",
+            21,
+            "page.evaluate",
+            "browser-page",
+            True,
+            "constructor-bound-playwright-page-alias",
+        ),
+        (
+            "constructor.py",
+            33,
+            "self.page.evaluate",
+            "browser-page",
+            True,
+            "constructor-bound-playwright-page",
+        ),
+        (
             "type_checking.py",
             17,
             "self.page.evaluate",
@@ -4384,6 +4408,9 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
         ("aliased_page", 26),
         ("class_evaluate", 34),
         ("init_class_evaluate", 43),
+        ("direct_evaluate", 16),
+        ("aliased_evaluate", 21),
+        ("evaluate_script", 33),
         ("evaluate_script", 17),
     ]
     assert [
@@ -4395,6 +4422,9 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
         ("AV-EXEC002", "agent.py", 26),
         ("AV-EXEC002", "agent.py", 34),
         ("AV-EXEC002", "agent.py", 43),
+        ("AV-EXEC002", "constructor.py", 16),
+        ("AV-EXEC002", "constructor.py", 21),
+        ("AV-EXEC002", "constructor.py", 33),
         ("AV-EXEC002", "type_checking.py", 17),
     ]
 
