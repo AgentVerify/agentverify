@@ -372,6 +372,32 @@ def main() -> int:
             raise RuntimeError(
                 f"{repository}: Python CodeInterpreterTool lacks an exact code edge"
             )
+        python_openai_hosted_tools = [
+            item
+            for item in ir.components
+            if item.kind == "tool"
+            and item.attributes.get("hosting_policy") == "sdk-provider-hosted"
+            and item.attributes.get("execution_environment") == "hosted"
+        ]
+        python_openai_hosted_tool_ids = {
+            item.symbol_id for item in python_openai_hosted_tools if item.symbol_id
+        }
+        if len(python_openai_hosted_tool_ids) != len(python_openai_hosted_tools):
+            raise RuntimeError(
+                f"{repository}: Python OpenAI hosted tool lacks a unique symbol ID"
+            )
+        python_openai_hosted_capability_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_id in python_openai_hosted_tool_ids
+            and edge.target_kind == "capability"
+        ]
+        if len(python_openai_hosted_capability_edges) != len(
+            python_openai_hosted_tools
+        ):
+            raise RuntimeError(
+                f"{repository}: Python OpenAI hosted tool lacks an exact capability edge"
+            )
         python_sandbox_agents = [
             item
             for item in ir.components
@@ -1158,6 +1184,45 @@ def main() -> int:
                     if edge.source_kind == "agent" and edge.target_kind == "tool"
                 ),
                 "repositories": bool(python_code_interpreter_tools),
+            },
+            "python_openai_hosted_tools": {
+                "instances": len(python_openai_hosted_tools),
+                "non_test_instances": sum(
+                    not is_test_path(item.evidence.path)
+                    for item in python_openai_hosted_tools
+                ),
+                "approval_unavailable": sum(
+                    item.attributes.get("approval_policy") == "unavailable"
+                    for item in python_openai_hosted_tools
+                ),
+                "web_search": sum(
+                    item.name.startswith("WebSearchTool@")
+                    for item in python_openai_hosted_tools
+                ),
+                "web_external_access_sdk_default": sum(
+                    item.attributes.get("external_web_access") == "sdk-default"
+                    for item in python_openai_hosted_tools
+                ),
+                "file_search": sum(
+                    item.name.startswith("FileSearchTool@")
+                    for item in python_openai_hosted_tools
+                ),
+                "literal_vector_store_scope": sum(
+                    item.attributes.get("vector_store_scope")
+                    in {"literal-empty", "literal-ids"}
+                    for item in python_openai_hosted_tools
+                ),
+                "image_generation": sum(
+                    item.name.startswith("ImageGenerationTool@")
+                    for item in python_openai_hosted_tools
+                ),
+                "capability_edges": len(python_openai_hosted_capability_edges),
+                "resolved_agent_edges": sum(
+                    edge.target_id in python_openai_hosted_tool_ids
+                    for edge in ir.relationships
+                    if edge.source_kind == "agent" and edge.target_kind == "tool"
+                ),
+                "repositories": bool(python_openai_hosted_tools),
             },
             "python_sandbox_agents": {
                 "total": len(python_sandbox_agents),
@@ -2449,7 +2514,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 84,
+        "schema_version": 85,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2652,6 +2717,25 @@ def main() -> int:
                     "non_test_instances",
                     "approval_unavailable",
                     "auto_containers",
+                    "capability_edges",
+                    "resolved_agent_edges",
+                    "repositories",
+                )
+            },
+            "python_openai_hosted_tools": {
+                name: sum(
+                    result["python_openai_hosted_tools"][name]
+                    for result in successful
+                )
+                for name in (
+                    "instances",
+                    "non_test_instances",
+                    "approval_unavailable",
+                    "web_search",
+                    "web_external_access_sdk_default",
+                    "file_search",
+                    "literal_vector_store_scope",
+                    "image_generation",
                     "capability_edges",
                     "resolved_agent_edges",
                     "repositories",

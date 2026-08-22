@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v84
+framework, wrapper, or configuration path. Counts come from schema-v85
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -128,9 +128,19 @@ containers and resolve directly from their Agents. All five record that the SDK 
 no approval parameter. Symbolic or casted container configs remain unresolved, and near-package or
 rebound constructors remain unclassified. These sandboxed inventory facts do not raise AV-EXEC002.
 
-Across the selected snapshot, 10,015 observations have module-qualified symbol IDs. Of
-4,578 relationship endpoint observations, all 3,815 identified endpoints resolve to an observed
-component (3,502 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
+Schema v85 extends the exact-import inventory to provider-hosted `WebSearchTool`,
+`FileSearchTool`, and `ImageGenerationTool`. Thirteen instances across three repositories include
+seven production assets, 13 capability edges, and eight exact Agent bindings. Six web-search assets
+retain the SDK-default external-access state, four file-search assets distinguish two literal
+vector-store scopes from unresolved configuration, and three image-generation assets record their
+provider-hosted media boundary. All 13 expose no constructor approval parameter. Exact `agents` or
+`agents.tool` imports are required, so same-named smolagents, PydanticAI, CrewAI, near-package, and
+rebound constructors stay unclassified. Provider-hosted web search is inventory, not AV-NET001,
+because it does not expose a source-proven parameter-controlled origin.
+
+Across the selected snapshot, 10,028 observations have module-qualified symbol IDs. Of
+4,620 relationship endpoint observations, all 3,844 identified endpoints resolve to an observed
+component (3,531 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
 withheld because a function parameter and assignment shadow the same-named package import.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
 edges resolve exactly. The current schema records 379 Python lexical-single-definition, 20 same-block
@@ -156,7 +166,7 @@ exact delegation edge to its same-block Agent receiver. Thirty use immutable mod
 resolve to exact selected local definitions; unavailable absolute-import sources retain a boundary
 identity without inferred capabilities. Imported `from_settings` tool factories, exact
 `HostedMCPTool` and `LangchainTool` constructors, and exact same-block `Agent.as_tool()` adapters
-resolve the final six former production misses. Across all 1,201 Python Agent→tool edges, all 603
+resolve the final six former production misses. Across all 1,209 Python Agent→tool edges, all 610
 outside tests resolve; the 70 unresolved edges are confined to tests and conservative fixtures.
 Import-proven OpenAI `function_tool(function)`
 assignments recover 12 wrappers and 12 Agent edges; all are tests, three enable approval, and their
@@ -166,11 +176,13 @@ constructors contribute 15 computer-control assets and ten exact agent links; th
 two configure the callback, and one occurs outside test paths in the pinned SDK example.
 Exact-import `LocalShellTool` adds five local shell assets and five capability edges, all under tests;
 four Agent edges resolve, and all five assets record that the SDK exposes no approval parameter.
+The exact provider-hosted built-ins add 13 assets and capability edges, including seven production
+assets and eight resolved Agent edges.
 Capability/control taxonomy endpoints intentionally lack
 source-symbol IDs, so the endpoint fraction is inventory coverage rather than an accuracy or recall
 metric.
 
-The native AI BOM 1.2 resolver independently classifies all 4,578 endpoints: 3,807 by symbol ID, 655
+The native AI BOM 1.2 resolver independently classifies all 4,620 endpoints: 3,836 by symbol ID, 668
 by exact relationship evidence, 20 by a unique display name, 38 as ambiguous, and 58 as unresolved.
 Evidence-local resolution removes capability/control ambiguities; occurrence-qualified bindings
 resolve repeated source agent/tool observations, and conservative lexical resolution removes further
@@ -640,7 +652,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 516-label rule truth set and 802-label IR component/relationship set are curated regression
+The 516-label rule truth set and 835-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

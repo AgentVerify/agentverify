@@ -665,6 +665,72 @@ def test_code_interpreter_tool_requires_exact_import_and_records_hosted_sandbox(
     assert not any(finding.rule_id == "AV-EXEC002" for finding in ir.findings)
 
 
+def test_openai_hosted_tools_require_exact_import_and_preserve_scope() -> None:
+    ir = scan_repository(ROOT / "cases/python_openai_hosted_tools")
+    tools = {
+        component.evidence.line: component
+        for component in ir.components
+        if component.kind == "tool"
+        and component.attributes.get("hosting_policy") == "sdk-provider-hosted"
+    }
+    assert set(tools) == {5, 8, 11, 14, 19}
+    assert all(
+        tool.attributes.get("approval_policy") == "unavailable"
+        and tool.attributes.get("approval_source") == "sdk-no-approval-parameter"
+        and tool.attributes.get("execution_environment") == "hosted"
+        for tool in tools.values()
+    )
+    assert tools[5].attributes["external_web_access"] == "disabled-explicit"
+    assert tools[8].attributes["external_web_access"] == "sdk-default"
+    assert tools[11].attributes["vector_store_scope"] == "literal-ids"
+    assert tools[14].attributes["vector_store_scope"] == "unresolved"
+    capabilities = {
+        component.evidence.line: component
+        for component in ir.components
+        if component.kind == "capability"
+        and component.attributes.get("hosting_policy") == "sdk-provider-hosted"
+    }
+    assert {line: component.name for line, component in capabilities.items()} == {
+        5: "network",
+        8: "network",
+        11: "data-retrieval",
+        14: "data-retrieval",
+        19: "media-generation",
+    }
+    assert capabilities[5].attributes["dynamic_origin"] is False
+    assert capabilities[5].attributes["network_scope"] == (
+        "provider-hosted-web-search"
+    )
+    assert capabilities[11].attributes["data_scope"] == "hosted-vector-store"
+    assert capabilities[19].attributes["generation_scope"] == (
+        "provider-hosted-image"
+    )
+    edges = {
+        edge.source_name: edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent" and edge.target_kind == "tool"
+    }
+    assert edges["web"].target_id == "py:positive.py#tool:web"
+    assert edges["aliased-web"].target_id == "py:positive.py#tool:aliased_web"
+    assert edges["files"].target_id == "py:positive.py#tool:files"
+    assert edges["dynamic-files"].target_id == "py:positive.py#tool:dynamic_files"
+    assert edges["images"].target_id == (
+        "py:positive.py#tool:ImageGenerationTool@19"
+    )
+    assert all(
+        edges[name].target_id is None
+        for name in (
+            "near-web",
+            "near-files",
+            "near-image",
+            "rebound-web",
+            "rebound-files",
+            "rebound-image",
+        )
+    )
+    assert not any(finding.rule_id == "AV-NET001" for finding in ir.findings)
+
+
 def test_python_computer_tool_has_exact_agent_and_capability_identity() -> None:
     ir = scan_repository(ROOT / "cases/python_computer_tool")
     tools = [

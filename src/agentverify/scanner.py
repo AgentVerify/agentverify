@@ -212,12 +212,26 @@ BUILTIN_TOOL_CAPABILITIES = {
     "ShellTool": ("shell-execution",),
     "LocalShellTool": ("shell-execution",),
     "CodeInterpreterTool": ("code-execution",),
+    "FileSearchTool": ("data-retrieval",),
+    "ImageGenerationTool": ("media-generation",),
+    "WebSearchTool": ("network",),
     "ApplyPatchTool": ("filesystem",),
     "ComputerTool": ("computer-control",),
     "CustomTool": ("external-action",),
 }
-EXACT_IMPORT_OPENAI_BUILTINS = frozenset({"CodeInterpreterTool", "LocalShellTool"})
+EXACT_IMPORT_OPENAI_BUILTINS = frozenset(
+    {
+        "CodeInterpreterTool",
+        "FileSearchTool",
+        "ImageGenerationTool",
+        "LocalShellTool",
+        "WebSearchTool",
+    }
+)
 OPENAI_BUILTINS_WITHOUT_APPROVAL = EXACT_IMPORT_OPENAI_BUILTINS
+OPENAI_PROVIDER_HOSTED_BUILTINS = frozenset(
+    {"FileSearchTool", "ImageGenerationTool", "WebSearchTool"}
+)
 EXACT_TOOL_CONSTRUCTOR_IMPORTS = {
     ("agents", "HostedMCPTool"),
     ("google.adk.integrations.langchain", "LangchainTool"),
@@ -4721,12 +4735,25 @@ class PythonVisitor(ast.NodeVisitor):
             execution_environment = (
                 "hosted-sandbox"
                 if builtin_name == "CodeInterpreterTool"
+                else "hosted"
+                if builtin_name in OPENAI_PROVIDER_HOSTED_BUILTINS
                 else "local"
                 if builtin_name in {"ComputerTool", "LocalShellTool"}
                 or (builtin_name == "ShellTool" and node.args)
                 else "unresolved"
             )
             container_policy = "unresolved"
+            external_web_access = "sdk-default"
+            vector_store_scope = "unresolved"
+            if builtin_name == "FileSearchTool" and node.args:
+                vector_store_ids = node.args[0]
+                if isinstance(vector_store_ids, (ast.List, ast.Tuple)) and all(
+                    isinstance(item, ast.Constant) and isinstance(item.value, str)
+                    for item in vector_store_ids.elts
+                ):
+                    vector_store_scope = (
+                        "literal-ids" if vector_store_ids.elts else "literal-empty"
+                    )
             approval_evidence = self.ev(node)
             for keyword in node.keywords:
                 if (
@@ -4820,6 +4847,27 @@ class PythonVisitor(ast.NodeVisitor):
                                 if container_type == "auto"
                                 else "existing-reference"
                             )
+                elif builtin_name == "WebSearchTool" and keyword.arg == "external_web_access":
+                    if isinstance(keyword.value, ast.Constant) and isinstance(
+                        keyword.value.value, bool
+                    ):
+                        external_web_access = (
+                            "enabled-explicit"
+                            if keyword.value.value
+                            else "disabled-explicit"
+                        )
+                    else:
+                        external_web_access = "unresolved"
+                elif builtin_name == "FileSearchTool" and keyword.arg == "vector_store_ids":
+                    if isinstance(keyword.value, (ast.List, ast.Tuple)) and all(
+                        isinstance(item, ast.Constant) and isinstance(item.value, str)
+                        for item in keyword.value.elts
+                    ):
+                        vector_store_scope = (
+                            "literal-ids" if keyword.value.elts else "literal-empty"
+                        )
+                    else:
+                        vector_store_scope = "unresolved"
             if approval_state == "enabled" and approval_handler == "configured":
                 approval_state = "unresolved-handler"
             self.ir.add_component(
@@ -4840,6 +4888,21 @@ class PythonVisitor(ast.NodeVisitor):
                                 "sandbox_policy": "sdk-hosted",
                             }
                             if builtin_name == "CodeInterpreterTool"
+                            else {}
+                        ),
+                        **(
+                            {"hosting_policy": "sdk-provider-hosted"}
+                            if builtin_name in OPENAI_PROVIDER_HOSTED_BUILTINS
+                            else {}
+                        ),
+                        **(
+                            {"external_web_access": external_web_access}
+                            if builtin_name == "WebSearchTool"
+                            else {}
+                        ),
+                        **(
+                            {"vector_store_scope": vector_store_scope}
+                            if builtin_name == "FileSearchTool"
                             else {}
                         ),
                         **(
@@ -4892,6 +4955,30 @@ class PythonVisitor(ast.NodeVisitor):
                             "sandbox_policy": "sdk-hosted",
                         }
                     )
+                elif builtin_name in OPENAI_PROVIDER_HOSTED_BUILTINS:
+                    attributes.update(
+                        {
+                            "execution_environment": execution_environment,
+                            "hosting_policy": "sdk-provider-hosted",
+                        }
+                    )
+                    if builtin_name == "WebSearchTool":
+                        attributes.update(
+                            {
+                                "dynamic_origin": False,
+                                "external_web_access": external_web_access,
+                                "network_scope": "provider-hosted-web-search",
+                            }
+                        )
+                    elif builtin_name == "FileSearchTool":
+                        attributes.update(
+                            {
+                                "data_scope": "hosted-vector-store",
+                                "vector_store_scope": vector_store_scope,
+                            }
+                        )
+                    elif builtin_name == "ImageGenerationTool":
+                        attributes["generation_scope"] = "provider-hosted-image"
                 self.ir.add_component(
                     Component("capability", capability, self.ev(node), attributes)
                 )

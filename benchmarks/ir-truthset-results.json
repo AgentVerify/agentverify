@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T11:17:57.570969+00:00",
-  "labels": 802,
-  "passed": 802,
+  "generated_at": "2026-08-22T11:44:53.518241+00:00",
+  "labels": 835,
+  "passed": 835,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -288,6 +288,14 @@
       "tp": 2,
       "fp": 0,
       "tn": 7,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-OPENAI-HOSTED-TOOLS": {
+      "tp": 27,
+      "fp": 0,
+      "tn": 6,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -7738,6 +7746,303 @@
     {
       "id": "python-code-interpreter-edge-agentops-real",
       "check_id": "IR-PY-CODE-INTERPRETER-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-web-component-local",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-web-alias-component-local",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-web-capability-local",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-web-edge-local",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-file-component-local",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-file-dynamic-component-local",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-file-capability-local",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-file-edge-local",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-image-component-local",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-image-capability-local",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-image-edge-local",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-near-web-component-local-negative",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-near-file-component-local-negative",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-near-image-component-local-negative",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-rebound-web-edge-local-negative",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-rebound-file-edge-local-negative",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-rebound-image-edge-local-negative",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-web-component-openai-real",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-web-capability-openai-real",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-web-edge-openai-real",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-web-filter-edge-openai-real",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-file-component-openai-real",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-file-capability-openai-real",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-file-edge-openai-real",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-image-component-openai-real",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-image-capability-openai-real",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-image-edge-openai-real",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-web-edge-agentops-real",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-file-edge-agentops-real",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-image-edge-agentops-real",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-web-component-traceloop-real",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-web-capability-traceloop-real",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-web-edge-traceloop-real",
+      "check_id": "IR-PY-OPENAI-HOSTED-TOOLS",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

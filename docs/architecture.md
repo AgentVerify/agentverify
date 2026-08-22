@@ -102,6 +102,14 @@ establish container policy; symbolic and casted expressions remain unresolved. B
 source-proven sandboxed inventory without a direct dynamic evaluator primitive, it does not satisfy
 AV-EXEC002's finding contract.
 
+Schema v85 adds `WebSearchTool`, `FileSearchTool`, and `ImageGenerationTool` to the same exact-import
+map. Their execution environment and hosting policy are provider-hosted, their absent constructor
+approval hook is explicit, and aliases retain canonical API identity. Web search preserves literal
+or SDK-default external-access state, file search preserves literal or unresolved vector-store
+scope, and image generation records a provider-hosted media boundary. These facts do not imply a
+caller-selected network origin, local data access, or provider retention guarantee. Same-named
+constructors from other frameworks, near packages, duplicate imports, and rebound names are withheld.
+
 Names are intentionally not treated as globally unique. Python and TypeScript agent/tool definitions
 carry stable frontend-and-module-qualified `symbol_id` values; relationships carry `source_id` and
 `target_id` when resolution succeeds. Context analysis prefers those IDs and falls back to the older
@@ -581,6 +589,10 @@ Import-proven `CodeInterpreterTool` instances similarly expose that their SDK co
 approval hook, but they carry `execution_environment: hosted-sandbox` and
 `sandbox_policy: sdk-hosted`. Literal auto-container selection is preserved as configuration
 evidence; it is not treated as proof about network, persistence, or data-retention isolation.
+Import-proven provider-hosted web-search, file-search, and image-generation tools use the same
+unavailable-approval distinction. They emit network, data-retrieval, and media-generation
+capabilities respectively, while retaining provider-hosted scope and withholding local execution or
+parameter-controlled-origin claims.
 
 Control presence is not automatically policy satisfaction. An uncaught lookup in an internal MCP
 tool registry creates a `tool-registry` edge because it proves the name is routable and rejects

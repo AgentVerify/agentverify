@@ -123,6 +123,12 @@ container config requests automatic allocation or an existing reference. Symboli
 configs remain unresolved; sandbox inventory does not imply network, retention, or data-egress
 guarantees that the selected source does not prove.
 
+Exact `WebSearchTool`, `FileSearchTool`, and `ImageGenerationTool` imports produce provider-hosted
+assets with network, data-retrieval, and media-generation capability edges. The BOM preserves the
+SDK-default or literal web-access state, literal or unresolved vector-store scope, hosted execution,
+and unavailable constructor approval hook. It does not reinterpret provider hosting as a local
+network primitive, local filesystem access, or a guarantee about retention and egress.
+
 A project-local MCP adapter receives the same server identity only through exact nominal and
 behavioral proof: one direct `MCPServer` base imported from a supported SDK module, plus direct
 `list_tools` and `call_tool` methods. The adapter export, import, and instance binding must remain
