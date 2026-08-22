@@ -325,6 +325,14 @@ TYPESCRIPT_PROVIDER_SDK_EXPORTS = {
         "named": ("GoogleGenAI",),
     },
 }
+TYPESCRIPT_PROVIDER_SDK_MODEL_METHODS = {
+    "OpenAI": (
+        (r"chat\s*\.\s*completions\s*\.\s*create", "language"),
+        (r"responses\s*\.\s*create", "language"),
+    ),
+    "Anthropic": ((r"messages\s*\.\s*create", "language"),),
+    "Google": ((r"models\s*\.\s*generateContent", "language"),),
+}
 BUILTIN_TOOL_CAPABILITIES = {
     "ShellTool": ("shell-execution",),
     "LocalShellTool": ("shell-execution",),
@@ -12125,6 +12133,19 @@ def typescript_literal_first_call_argument(text: str, opening: int, end: int) ->
     return match.group(2)
 
 
+def typescript_literal_call_object_string_property(
+    text: str,
+    opening: int,
+    end: int,
+    name: str,
+) -> str | None:
+    """Return a literal string property from a call's direct first object argument."""
+    arguments = typescript_call_arguments(text[opening + 1 : end - 1])
+    if not arguments:
+        return None
+    return typescript_literal_object_string_property(arguments[0][0], name)
+
+
 def typescript_const_provider_binding_is_stable(
     text: str,
     name: str,
@@ -12304,8 +12325,10 @@ def typescript_ai_sdk_provider_calls(text: str) -> list[TypeScriptProviderCall]:
 def typescript_provider_sdk_calls(text: str) -> list[TypeScriptProviderCall]:
     """Resolve exact native provider SDK constructors with default endpoint proof."""
     code = typescript_code_mask(text)
+    imports = typescript_provider_sdk_imports(text)
     observations: list[TypeScriptProviderCall] = []
-    for local_name, binding in typescript_provider_sdk_imports(text).items():
+    configured_instances: list[tuple[str, TypeScriptProviderImportBinding, int]] = []
+    for local_name, binding in imports.items():
         pattern = re.compile(rf"\bnew\s+{re.escape(local_name)}\s*\(")
         for match in pattern.finditer(code):
             opening = code.find("(", match.start(), match.end())
@@ -12324,6 +12347,50 @@ def typescript_provider_sdk_calls(text: str) -> list[TypeScriptProviderCall]:
                     binding.provider,
                 )
             )
+            prefix = code[max(0, match.start() - 240) : match.start()]
+            assignment = re.search(
+                r"\bconst\s+([A-Za-z_$][\w$]*)\s*(?:\:\s*[^=;\n]+)?=\s*$",
+                prefix,
+            )
+            if assignment is None:
+                continue
+            instance_name = assignment.group(1)
+            if instance_name in imports or not typescript_const_provider_binding_is_stable(
+                text, instance_name, end
+            ):
+                continue
+            configured_instances.append((instance_name, binding, end))
+
+    for instance_name, binding, initializer_end in configured_instances:
+        for method_pattern, model_method in TYPESCRIPT_PROVIDER_SDK_MODEL_METHODS.get(
+            binding.provider, ()
+        ):
+            pattern = re.compile(
+                rf"(?<![\w$.]){re.escape(instance_name)}\s*\.\s*{method_pattern}\s*\("
+            )
+            for match in pattern.finditer(code, initializer_end):
+                opening = code.find("(", match.start(), match.end())
+                end = typescript_balanced_end(code, opening, "(", ")")
+                if end is None:
+                    continue
+                model = typescript_literal_call_object_string_property(
+                    text, opening, end, "model"
+                )
+                if model is None:
+                    continue
+                observations.append(
+                    TypeScriptProviderCall(
+                        match.start(),
+                        re.sub(r"\s+", "", code[match.start() : opening]),
+                        "provider-sdk-model",
+                        binding.module,
+                        binding.imported_symbol,
+                        binding.provider,
+                        model,
+                        model_method,
+                        binding.local_name,
+                    )
+                )
     return sorted(observations, key=lambda item: item.offset)
 
 

@@ -78,6 +78,11 @@ Schema v105 adds a separate CommonJS proof for the exact OpenAI and Anthropic de
 one direct module-level `const Client = require(exact-package)` declaration and no other declaration, assignment,
 parameter shadow, or custom/unknown endpoint configuration. Destructured, property-selected,
 mutable, and Google CommonJS forms are not generalized from this evidence.
+Schema v106 retains an immutable constructor result and recognizes only provider-owned downstream
+model methods: OpenAI chat completions/responses, Anthropic messages, and Google GenAI content
+generation. A direct literal `model` property creates provider-call and model components at the
+request location. Mutation, nonliteral request objects, generic `.create` matching, and parameter
+flow invalidate or withhold this propagation without removing the original constructor inventory.
 Schema v77 gives import-proven, assigned Python MCP stdio constructors stable component identities.
 An Agent receives an exact `uses` edge only when its literal `mcp_servers=[...]` list names an
 earlier, unreassigned server binding in the same statement block. Package and version facts remain

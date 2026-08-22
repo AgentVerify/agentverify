@@ -1023,7 +1023,7 @@ def main() -> int:
                     for item in typescript_provider_call_attributions
                 ),
                 "native_sdk_calls": sum(
-                    item.attributes.get("call_kind") == "provider-sdk-constructor"
+                    str(item.attributes.get("call_kind", "")).startswith("provider-sdk-")
                     for item in typescript_provider_call_attributions
                 ),
                 "ai_sdk_calls": sum(
@@ -1037,7 +1037,8 @@ def main() -> int:
                     for item in typescript_provider_call_attributions
                 ),
                 "model_calls": sum(
-                    item.attributes.get("call_kind") == "ai-sdk-provider-model"
+                    item.attributes.get("call_kind")
+                    in {"ai-sdk-provider-model", "provider-sdk-model"}
                     for item in typescript_provider_call_attributions
                 ),
                 "configured_instance_calls": sum(
@@ -2554,7 +2555,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 105,
+        "schema_version": 106,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {

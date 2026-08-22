@@ -455,6 +455,14 @@ SDK constructors and 32 official AI SDK calls, split into 26 OpenAI, 19 Anthropi
 xAI, and one Groq. The proof is limited to one immutable direct module-level `const` require binding; provider
 presence remains unchanged because GPT Pilot's exact imports were already inventoried.
 
+Schema v106 links immutable native SDK constructor results to exact provider-owned request methods
+without generic `.create` matching. Composio contributes literal `gpt-4o` and `gpt-4o-mini` chat
+completion calls; AgentGPT contributes `gpt-3.5-turbo`. These three production paths raise
+TypeScript attribution to 56 calls across nine repositories: 24 native calls (21 constructors and
+three model requests) plus 32 official AI SDK calls. Rebound clients, nonliteral request objects,
+unrelated methods, and typed-parameter propagation remain unresolved; provider-presence counts do
+not change.
+
 ## 5. Controls are layered
 
 Sandboxing vocabulary appears in 64 repositories, audit/tracing in 57, human approval in 52, and

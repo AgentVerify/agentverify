@@ -43,6 +43,12 @@ Schema v105 admits the observed CommonJS default-export form only for one immuta
 `const Client = require(exact-package)` binding from the OpenAI or Anthropic SDK. Four GPT Pilot
 template calls expand the native TypeScript total to 21; rebound bindings and custom or unknown
 configs remain excluded. The 348 component labels now pin 253 positives and 95 negatives.
+Schema v106 follows an immutable native SDK constructor result into exact OpenAI
+`chat.completions.create`/`responses.create`, Anthropic `messages.create`, or Google
+`models.generateContent` calls. Only a direct literal `model` property is promoted; rebound clients,
+nonliteral request objects, unrelated methods, and typed-parameter flow remain unresolved. Three
+pinned OpenAI calls add exact model identity, and the 369 component labels now pin 271 positives and
+98 negatives.
 Next generalize selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
@@ -383,8 +389,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 642 pinned positive/negative locations, with 1,142 separately
-scored IR component/relationship labels. Schema-v105 engine results and
+The curated regression set has reached 642 pinned positive/negative locations, with 1,163 separately
+scored IR component/relationship labels. Schema-v106 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

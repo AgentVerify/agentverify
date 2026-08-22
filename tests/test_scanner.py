@@ -279,10 +279,74 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             None,
         ),
         (
+            "provider_native_calls.ts",
+            10,
+            "OpenAI",
+            "openAIClient.chat.completions.create",
+            "provider-sdk-model",
+            "OpenAI",
+        ),
+        (
+            "provider_native_calls.ts",
+            11,
+            "OpenAI",
+            "namedOpenAIClient.responses.create",
+            "provider-sdk-model",
+            "NamedOpenAI",
+        ),
+        (
+            "provider_native_calls.ts",
+            12,
+            "Anthropic",
+            "anthropicClient.messages.create",
+            "provider-sdk-model",
+            "Anthropic",
+        ),
+        (
+            "provider_native_calls.ts",
+            13,
+            "Google",
+            "googleClient.models.generateContent",
+            "provider-sdk-model",
+            "GeminiClient",
+        ),
+        (
+            "provider_native_calls_commonjs.js",
+            7,
+            "OpenAI",
+            "openaiClient.responses.create",
+            "provider-sdk-model",
+            "OpenAIClient",
+        ),
+        (
+            "provider_native_calls_commonjs.js",
+            8,
+            "Anthropic",
+            "anthropicClient.messages.create",
+            "provider-sdk-model",
+            "AnthropicClient",
+        ),
+        (
             "provider_native_calls_commonjs.js",
             4,
             "OpenAI",
             "OpenAIClient",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
+            "provider_native_model_calls_unresolved.ts",
+            3,
+            "OpenAI",
+            "OpenAI",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
+            "provider_native_model_calls_unresolved.ts",
+            7,
+            "OpenAI",
+            "OpenAI",
             "provider-sdk-constructor",
             None,
         ),
@@ -335,6 +399,26 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         (24, "gemini-embedding-001", "Google"),
         (27, "grok-4", "xAI"),
     }
+    assert {
+        (item.evidence.path, item.evidence.line, item.name, item.attributes["provider"])
+        for item in ir.components
+        if item.kind == "model"
+        and item.evidence.path
+        in {"provider_native_calls.ts", "provider_native_calls_commonjs.js"}
+        and item.attributes.get("resolution") == "exact-typescript-provider-import"
+    } == {
+        ("provider_native_calls.ts", 10, "gpt-5-mini", "OpenAI"),
+        ("provider_native_calls.ts", 11, "gpt-5.4", "OpenAI"),
+        ("provider_native_calls.ts", 12, "claude-sonnet-4-6", "Anthropic"),
+        ("provider_native_calls.ts", 13, "gemini-2.5-flash", "Google"),
+        ("provider_native_calls_commonjs.js", 7, "gpt-5-mini", "OpenAI"),
+        (
+            "provider_native_calls_commonjs.js",
+            8,
+            "claude-sonnet-4-6",
+            "Anthropic",
+        ),
+    }
     assert not any(
         item.kind == "provider"
         and item.evidence.path == "provider_calls_rebound.ts"
@@ -345,6 +429,19 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         item.kind == "provider"
         and item.evidence.path == "provider_native_calls_commonjs_scoped.js"
         and item.attributes.get("resolution") == "exact-typescript-provider-import"
+        for item in ir.components
+    )
+    assert not any(
+        item.kind in {"provider", "model"}
+        and item.evidence.path == "provider_native_model_calls_unresolved.ts"
+        and (
+            (
+                item.kind == "model"
+                and item.attributes.get("resolution")
+                == "exact-typescript-provider-import"
+            )
+            or item.attributes.get("call_kind") == "provider-sdk-model"
+        )
         for item in ir.components
     )
     assert not any(

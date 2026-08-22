@@ -245,6 +245,13 @@ CommonJS proof requires one module-level `const` require binding with no reassig
 and unknown configs share the ESM endpoint boundary. Six positive and five negative labels pin the
 new local and real-source behavior.
 
+Schema v106 follows immutable native client instances into exact provider-owned model methods. The
+corpus adds three production OpenAI requests and model components across Composio and AgentGPT,
+raising TypeScript attribution to 56 calls: 21 constructors, three native model calls, and 32 AI SDK
+calls. Exact method chains and a literal `model` property in the direct request object are required.
+Eighteen positive labels cover ESM/CommonJS local paths and all three pinned provider/model pairs;
+three negatives pin rebound instances, nonliteral request objects, and unrelated SDK methods.
+
 Schema v77 assigns stable IDs to results of exact imported Python MCP stdio constructors and
 resolves a direct Agent edge only for an earlier, unreassigned same-block binding selected in a literal
 `mcp_servers=[...]` list. Literal non-package processes such as Marvin's Deno server remain inventory
@@ -1416,14 +1423,15 @@ six unresolved ambiguity/shadowing/order forms, and all seven pinned Google ADK 
 tool-factory/adapter labels cover four local Agent edges, one hosted-MCP capability, one local
 Agent-as-tool delegation, eight conservative local negatives, two AutoGen factory edges, one Google
 ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent edge plus delegation.
-The 348 component-taxonomy labels add 253 exact local/pinned framework, provider, call,
-and model positives plus 95 near-name, rebound, custom-endpoint, scoped-binding, and unrelated-service negatives.
+The 369 component-taxonomy labels add 271 exact local/pinned framework, provider, call,
+and model positives plus 98 near-name, rebound, custom-endpoint, scoped-binding, nonliteral-request,
+and unrelated-service negatives.
 Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,142 IR labels pass (810 positives and 332 negatives):
-253 component-taxonomy positives/95 negatives, three approval positives/four negatives,
+negatives. All 1,163 IR labels pass (828 positives and 335 negatives):
+271 component-taxonomy positives/98 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
 contextual network-import positives,
