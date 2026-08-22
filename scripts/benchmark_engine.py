@@ -317,6 +317,15 @@ def main() -> int:
             for edge in python_agent_tool_edges
             if not is_test_path(edge.evidence.path)
         ]
+        python_agent_mcp_server_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "agent"
+            and edge.target_kind == "mcp-server"
+            and edge.attributes.get("target_identity")
+            == "literal-mcp-servers-list-binding"
+            and edge.evidence.path.endswith(".py")
+        ]
         python_agent_referenced_tool_ids = {
             item.symbol_id for item in python_agent_referenced_tools if item.symbol_id
         }
@@ -596,6 +605,13 @@ def main() -> int:
             item
             for item in ir.components
             if item.kind == "mcp-server" and item.attributes.get("package")
+        ]
+        python_import_bound_mcp_stdio_servers = [
+            item
+            for item in ir.components
+            if item.kind == "mcp-server"
+            and item.attributes.get("analysis")
+            == "python-import-bound-mcp-constructor"
         ]
         python_provider_call_attributions = [
             item
@@ -1030,6 +1046,17 @@ def main() -> int:
                     edge.target_id is None
                     for edge in python_non_test_agent_tool_edges
                 ),
+            },
+            "python_agent_mcp_server_edges": {
+                "total": len(python_agent_mcp_server_edges),
+                "resolved": sum(
+                    edge.target_id is not None for edge in python_agent_mcp_server_edges
+                ),
+                "non_test": sum(
+                    not is_test_path(edge.evidence.path)
+                    for edge in python_agent_mcp_server_edges
+                ),
+                "repositories": bool(python_agent_mcp_server_edges),
             },
             "python_function_tool_wrappers": {
                 "instances": len(python_function_tool_wrappers),
@@ -1739,6 +1766,26 @@ def main() -> int:
                     finding.rule_id == "AV-MCP003" for finding in ir.findings
                 ),
             },
+            "python_import_bound_mcp_stdio_servers": {
+                "total": len(python_import_bound_mcp_stdio_servers),
+                "non_test": sum(
+                    item.attributes.get("scope") != "test"
+                    for item in python_import_bound_mcp_stdio_servers
+                ),
+                "symbolized_assigned": sum(
+                    item.symbol_id is not None
+                    for item in python_import_bound_mcp_stdio_servers
+                ),
+                "package_backed": sum(
+                    bool(item.attributes.get("package"))
+                    for item in python_import_bound_mcp_stdio_servers
+                ),
+                "non_package": sum(
+                    not item.attributes.get("package")
+                    for item in python_import_bound_mcp_stdio_servers
+                ),
+                "repositories": bool(python_import_bound_mcp_stdio_servers),
+            },
             "python_google_adk_bigquery_audit": {
                 "available_controls": sum(
                     item.attributes.get("deployment_state") == "framework-available"
@@ -2125,7 +2172,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 76,
+        "schema_version": 77,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2337,6 +2384,13 @@ def main() -> int:
                     "non_test",
                     "unresolved_non_test",
                 )
+            },
+            "python_agent_mcp_server_edges": {
+                name: sum(
+                    result["python_agent_mcp_server_edges"][name]
+                    for result in successful
+                )
+                for name in ("total", "resolved", "non_test", "repositories")
             },
             "python_function_tool_wrappers": {
                 name: sum(
@@ -2625,6 +2679,20 @@ def main() -> int:
                     "json",
                     "typescript",
                     "findings",
+                )
+            },
+            "python_import_bound_mcp_stdio_servers": {
+                name: sum(
+                    result["python_import_bound_mcp_stdio_servers"][name]
+                    for result in successful
+                )
+                for name in (
+                    "total",
+                    "non_test",
+                    "symbolized_assigned",
+                    "package_backed",
+                    "non_package",
+                    "repositories",
                 )
             },
             "python_google_adk_bigquery_audit": {

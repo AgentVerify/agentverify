@@ -15,6 +15,8 @@ never imported or executed.
   AgentScope public model reexports, PydanticAI provider/model wrappers, plus rebinding, near-name,
   and unrelated-service negatives.
 - `mcp_forwarder`: dynamic MCP forwarding positive case plus fixed-tool negative case.
+- `python_agent_mcp_binding`: import-proven assigned Python MCP servers linked through direct literal
+  Agent `mcp_servers` lists, with forward, rebound, and indirect-list negatives.
 - `external_actions`: browser, network, and consequential external-action graph inventory.
 - `typescript_eval`: TypeScript dynamic evaluation with a resolved agent/tool path.
 - `filesystem_scope`: dynamic writable tool path plus fixed-path negative case.

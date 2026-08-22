@@ -5684,11 +5684,86 @@ def test_typescript_and_mcp_config() -> None:
     assert servers["remote"]["attributes"]["url"] == "https://[REDACTED]@example.invalid/mcp"
 
 
+def test_python_agent_mcp_servers_require_exact_direct_literal_bindings() -> None:
+    ir = scan_repository(ROOT / "cases/python_agent_mcp_binding")
+
+    servers = [
+        component
+        for component in ir.components
+        if component.kind == "mcp-server"
+        and component.evidence.path == "positive.py"
+    ]
+    assert {
+        (component.evidence.line, component.name, component.symbol_id)
+        for component in servers
+    } == {
+        (
+            5,
+            "MCPServerStdio@5",
+            "py:positive.py#mcp-server:python_server",
+        ),
+        (9, "MCPServerStdio@9", "py:positive.py#mcp-server:git_server"),
+    }
+    assert "package" not in next(
+        component.attributes
+        for component in servers
+        if component.evidence.line == 5
+    )
+    assert next(
+        component.attributes["package"]
+        for component in servers
+        if component.evidence.line == 9
+    ) == "mcp-server-git"
+    assert {
+        finding.evidence.line
+        for finding in ir.findings
+        if finding.rule_id == "AV-MCP003"
+        and finding.evidence.path == "positive.py"
+    } == {9}
+
+    edges = {
+        edge.target_name: edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent"
+        and edge.target_kind == "mcp-server"
+        and edge.evidence.path == "positive.py"
+    }
+    assert set(edges) == {"MCPServerStdio@5", "MCPServerStdio@9"}
+    assert edges["MCPServerStdio@5"].target_id == (
+        "py:positive.py#mcp-server:python_server"
+    )
+    assert edges["MCPServerStdio@9"].target_id == "py:positive.py#mcp-server:git_server"
+    assert {edge.source_id for edge in edges.values()} == {
+        "py:positive.py#agent:agent"
+    }
+    assert {tuple(sorted(edge.attributes.items())) for edge in edges.values()} == {
+        (
+            ("binding", "git_server"),
+            ("target_identity", "literal-mcp-servers-list-binding"),
+        ),
+        (
+            ("binding", "python_server"),
+            ("target_identity", "literal-mcp-servers-list-binding"),
+        ),
+    }
+    assert not any(
+        edge.source_kind == "agent"
+        and edge.target_kind == "mcp-server"
+        and edge.evidence.path == "negative.py"
+        for edge in ir.relationships
+    )
+
+
 def test_mcp_package_launchers_require_literal_mcp_structure_and_auto_install() -> None:
     ir = scan_repository(ROOT / "cases/mcp_package_launchers")
     servers = [component for component in ir.components if component.kind == "mcp-server"]
 
-    assert len(servers) == 23
+    assert len(servers) == 25
+    assert {
+        (component.evidence.path, component.evidence.line)
+        for component in servers
+        if "package" not in component.attributes
+    } >= {("launchers.py", 31), ("launchers.py", 45)}
     assert {component.attributes["frontend"] for component in servers} == {
         "json",
         "python",
@@ -5701,6 +5776,7 @@ def test_mcp_package_launchers_require_literal_mcp_structure_and_auto_install() 
             component.attributes["auto_install"],
         )
         for component in servers
+        if "package_spec" in component.attributes
     } >= {
         ("@modelcontextprotocol/server-filesystem", "unpinned", True),
         ("@x402scan/mcp@latest", "floating", True),

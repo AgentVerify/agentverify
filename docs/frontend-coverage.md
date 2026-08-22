@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v76
+framework, wrapper, or configuration path. Counts come from schema-v77
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -60,9 +60,21 @@ PydanticAI, and ten AgentScope calls. Seventeen calls across six repositories ar
 54 are tests. All 43 literal call-model arguments retain the exact provider proof. Repository
 presence remains 49, while OpenAI rises to 42 repositories and Anthropic and Google to 18 each.
 
-Across the selected snapshot, 9,584 agent/tool observations have module-qualified symbol IDs. Of
-4,254 relationship endpoint observations, all 3,486 identified endpoints resolve to an observed
-component (3,173 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
+Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
+Agent→MCP-server identities. Import-proven literal stdio constructor calls are inventoried for any
+literal command; their assigned results receive stable IDs. Package/version/install facts are
+attached only when `npx` or `uvx` proves a package selection. A direct edge requires an earlier,
+unreassigned same-block binding named in a
+literal `mcp_servers=[...]` list. Forward references, rebound servers, indirect list variables, and
+cross-scope module globals are deliberately unresolved.
+The pinned corpus contains 27 such literal constructor calls across seven repositories: 23 assigned
+servers receive stable IDs, 20 calls launch non-package processes, and seven select packages. Ten
+calls are production-scoped. The only two exact Agent edges are both production-scoped and resolve
+the Deno and `uvx` bindings in Marvin.
+
+Across the selected snapshot, 9,607 observations have module-qualified symbol IDs. Of
+4,258 relationship endpoint observations, all 3,490 identified endpoints resolve to an observed
+component (3,177 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
 withheld because a function parameter and assignment shadow the same-named package import.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
 edges resolve exactly. Schema v63 records 359 Python lexical-single-definition, 20 same-block
@@ -75,6 +87,9 @@ same-module constructor call sites to create an occurrence-qualified parameter c
 retains every concrete target ID. No `ambiguous-repeated-binding` target remains in the pinned
 corpus; inconsistent, uncalled, rebound, shadowed, reassigned, and non-exact typed fixture forms stay
 unresolved.
+Both exact direct Python Agent→MCP-server edges occur outside tests in Marvin and resolve to their
+assigned stdio component IDs. One is a non-package Deno process and one is an `uvx` package launcher;
+the graph does not borrow the latter's package facts for the former.
 Literal Python Agent tool lists recover 755 exact role-proven tools: 181 callables, 100
 constructor-bound instances, 444 inline constructors, four direct context-manager bindings, 21 exact
 Agent-as-tool adapters, and five absolute-import boundary tools. Of these, 526 are outside tests;
@@ -564,7 +579,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 511-label rule truth set and 708-label IR component/relationship set are curated regression
+The 511-label rule truth set and 719-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

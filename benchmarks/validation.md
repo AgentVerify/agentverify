@@ -131,7 +131,7 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-22 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,771 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,127 relationships, and completed in 267.1379 seconds on the development machine. Three parse
+resolved 2,129 relationships, and completed in 278.7206 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -142,10 +142,10 @@ versioned audited evidence hints plus Python imports reached from MCP forwarding
 URL-security call sites, all charged against the same cap. This refresh materialized 176 dependency files across 21
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v76 carries both the 176-file total and the
+dependency count per repository; engine schema v77 carries both the 176-file total and the
 21-repository coverage.
 
-Engine benchmark schema v76 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v77 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It also publishes Python and TypeScript initial-origin control coverage
 plus source-proven Python and TypeScript secure transports, with redirect, DNS, proxy, configured
@@ -189,6 +189,16 @@ SDK and 51 wrapper calls, split into nine LangChain, 32 PydanticAI, and ten Agen
 Seventeen calls are production-scoped, 54 are tests, and all 43 literal call-model values inherit
 exact import proof. Overall provider presence remains 49 repositories; OpenAI rises to 42 and
 Anthropic and Google to 18 each.
+
+Schema v77 assigns stable IDs to results of exact imported Python MCP stdio constructors and
+resolves a direct Agent edge only for an earlier, unreassigned same-block binding selected in a literal
+`mcp_servers=[...]` list. Literal non-package processes such as Marvin's Deno server remain inventory
+without package facts; its `uvx mcp-server-git` peer retains package provenance. Eight positive and
+three negative local/pinned labels cover both component and edge behavior plus forward, rebound, and
+indirect-container withholding. Across the corpus, 27 import-bound literal constructor calls span
+seven repositories: 23 assigned calls receive stable IDs, 20 are non-package processes, seven are
+package-backed, and ten are production-scoped. Both resolved Agent edges are production-scoped and
+occur in Marvin.
 
 Schema v63 retains A2A endpoint provenance as a separate authority class: four exact client-construction
 paths comprise two unconstrained remote-card-selected TypeScript origins and two same-origin-
@@ -254,13 +264,13 @@ Missing relative modules, duplicate or forward imports, module rebinding, and fu
 shadowing remain unresolved. Sixteen IR labels cover the local export/import boundary, six negative
 forms, and all seven pinned Google ADK edges; one rule label proves cross-file AV-FS001 reachability.
 
-Schema-v76 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
-resolves 3,480 endpoints by symbol ID, 645 by exact evidence location, and 23 by a unique display
-name; 38 remain ambiguous and 68 unresolved. Before evidence-local and occurrence-qualified
+Schema-v77 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
+resolves 3,482 endpoints by symbol ID, 645 by exact evidence location, and 23 by a unique display
+name; 40 remain ambiguous and 68 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
 and mark unsafe targets explicitly unresolved. Conservative lexical resolution removes further target
-ambiguities. The 38 remaining ambiguities are agent, protocol, control, or tool endpoints without a unique local definition, so the
+ambiguities. The 40 remaining ambiguities are agent, protocol, control, or tool endpoints without a unique local definition, so the
 resolver does not use a nearby source location to invent an identity.
 
 The Python frontend resolves unambiguous absolute imports rooted at the repository, `src/`, or
@@ -1154,7 +1164,8 @@ The 173 component-taxonomy labels add 131 exact local/pinned framework, provider
 and model positives plus 42 near-name, rebound, and unrelated-service negatives. Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
-four real repositories. All 708 IR labels pass:
+four real repositories. Eleven Python Agent→MCP-binding labels add eight positives and three
+negatives. All 719 IR labels pass:
 131 component-taxonomy positives/42 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
@@ -1193,4 +1204,5 @@ OpenAI Agents Python MCP-approval-default positives/one negative, six OpenAI Age
 composition positives/one negative, nine Agno MCP confirmation positives/one negative, nine Semantic
 Kernel MCP sampling positives/two negatives, 17 generic MCP sampling-consent positives/seven negatives,
 36 generic MCP elicitation-consent positives/four negatives,
-plus 22 MCP package-launcher positives/three negatives.
+plus 22 MCP package-launcher positives/three negatives, and eight Python Agent→MCP-binding
+positives/three negatives.

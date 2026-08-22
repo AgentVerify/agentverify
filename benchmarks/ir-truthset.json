@@ -5867,6 +5867,50 @@
     {
       "id":"provider-wrapper-agentscope-openai-response-multimodal-model-real","target":{"kind":"repository","repository":"agentscope-ai/agentscope","commit":"ad4d2839e8ad57b6b9dffa7b583be7bee33009fb"},"check_id":"IR-COMPONENT-TAXONOMY","path":"scripts/model_examples/openai_response_multiagent_multimodal.py","line":23,"expected":true,
       "component":{"kind":"model","name":"gpt-4.1","attributes":{"provider":"OpenAI","resolution":"exact-provider-sdk-import"}}
+    },
+    {
+      "id":"python-agent-mcp-deno-component-local","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"positive.py","line":5,"expected":true,
+      "component":{"kind":"mcp-server","name":"MCPServerStdio@5","symbol_id":"py:positive.py#mcp-server:python_server","attributes":{"command":"deno","analysis":"python-import-bound-mcp-constructor"}}
+    },
+    {
+      "id":"python-agent-mcp-git-component-local","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"positive.py","line":9,"expected":true,
+      "component":{"kind":"mcp-server","name":"MCPServerStdio@9","symbol_id":"py:positive.py#mcp-server:git_server","attributes":{"package":"mcp-server-git","analysis":"python-import-bound-mcp-constructor"}}
+    },
+    {
+      "id":"python-agent-mcp-deno-edge-local","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"positive.py","line":11,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"operator","relation":"uses","target_kind":"mcp-server","target_name":"MCPServerStdio@5","source_id":"py:positive.py#agent:agent","target_id":"py:positive.py#mcp-server:python_server","attributes":{"binding":"python_server","target_identity":"literal-mcp-servers-list-binding"}}
+    },
+    {
+      "id":"python-agent-mcp-git-edge-local","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"positive.py","line":11,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"operator","relation":"uses","target_kind":"mcp-server","target_name":"MCPServerStdio@9","source_id":"py:positive.py#agent:agent","target_id":"py:positive.py#mcp-server:git_server","attributes":{"binding":"git_server","target_identity":"literal-mcp-servers-list-binding"}}
+    },
+    {
+      "id":"python-agent-mcp-forward-edge-local-negative","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"negative.py","line":5,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"forward","relation":"uses","target_kind":"mcp-server"}
+    },
+    {
+      "id":"python-agent-mcp-rebound-edge-local-negative","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"negative.py","line":10,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"rebound","relation":"uses","target_kind":"mcp-server"}
+    },
+    {
+      "id":"python-agent-mcp-indirect-list-local-negative","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"negative.py","line":14,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"indirect","relation":"uses","target_kind":"mcp-server"}
+    },
+    {
+      "id":"python-agent-mcp-deno-component-marvin-real","target":{"kind":"repository","repository":"PrefectHQ/marvin","commit":"eaf1040642b205973318769cab65f0c62b4b6ca4"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"examples/agent_mcp.py","line":18,"expected":true,
+      "component":{"kind":"mcp-server","name":"MCPServerStdio@18","symbol_id":"py:examples/agent_mcp.py#mcp-server:run_python_server","attributes":{"command":"deno","analysis":"python-import-bound-mcp-constructor"}}
+    },
+    {
+      "id":"python-agent-mcp-git-component-marvin-real","target":{"kind":"repository","repository":"PrefectHQ/marvin","commit":"eaf1040642b205973318769cab65f0c62b4b6ca4"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"examples/agent_mcp.py","line":24,"expected":true,
+      "component":{"kind":"mcp-server","name":"MCPServerStdio@24","symbol_id":"py:examples/agent_mcp.py#mcp-server:git_server","attributes":{"package":"mcp-server-git","analysis":"python-import-bound-mcp-constructor"}}
+    },
+    {
+      "id":"python-agent-mcp-deno-edge-marvin-real","target":{"kind":"repository","repository":"PrefectHQ/marvin","commit":"eaf1040642b205973318769cab65f0c62b4b6ca4"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"examples/agent_mcp.py","line":36,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Linus","relation":"uses","target_kind":"mcp-server","target_name":"MCPServerStdio@18","source_id":"py:examples/agent_mcp.py#agent:linus","target_id":"py:examples/agent_mcp.py#mcp-server:run_python_server","attributes":{"binding":"run_python_server","target_identity":"literal-mcp-servers-list-binding"}}
+    },
+    {
+      "id":"python-agent-mcp-git-edge-marvin-real","target":{"kind":"repository","repository":"PrefectHQ/marvin","commit":"eaf1040642b205973318769cab65f0c62b4b6ca4"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"examples/agent_mcp.py","line":36,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Linus","relation":"uses","target_kind":"mcp-server","target_name":"MCPServerStdio@24","source_id":"py:examples/agent_mcp.py#agent:linus","target_id":"py:examples/agent_mcp.py#mcp-server:git_server","attributes":{"binding":"git_server","target_identity":"literal-mcp-servers-list-binding"}}
     }
   ]
 }

@@ -134,6 +134,16 @@ The rule requires MCP structure and literal package selection, so ordinary packa
 prompt/cache-only `npx`, `--no-install`, and dynamic launcher expressions are not promoted. This is a
 dependency-review signal, not evidence that a named package or registry is compromised.
 
+Schema v77 keeps process identity separate from that package review. Marvin's pinned
+[`MCPServerStdio` example](https://github.com/PrefectHQ/marvin/blob/eaf1040642b205973318769cab65f0c62b4b6ca4/examples/agent_mcp.py#L18-L37)
+assigns both a Deno-hosted local server and an `uvx mcp-server-git` launcher, then passes both names
+directly in an Agent's literal `mcp_servers` list. Both servers and both Agent edges receive exact
+symbol identities, while only the `uvx` launcher receives package/version/install facts. Forward,
+rebound, indirect-list, and cross-scope flows remain unresolved rather than borrowing identity from
+a matching name. Across the selected corpus, 27 import-bound literal constructor calls span seven
+repositories; 23 assigned calls receive stable IDs, 20 are non-package processes, seven are
+package-backed, and ten occur outside tests. Marvin supplies the only two exact direct Agent edges.
+
 Schema v68 models MCP sampling as a separate server-to-client authority. Semantic Kernel registers a
 sampling callback on each MCP client session; a server request can supply the system prompt,
 messages, model hint, temperature, and token limit, invoke the client's chat model, and receive the

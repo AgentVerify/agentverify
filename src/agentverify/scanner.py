@@ -2649,6 +2649,7 @@ class PythonVisitor(ast.NodeVisitor):
         scope_bound_names: set[tuple[tuple[str, ...], str]],
         node_scopes: dict[int, tuple[str, ...]],
         call_symbol_ids: dict[int, str],
+        mcp_server_symbol_names: dict[str, str],
         definition_symbol_ids: dict[int, str],
         referenced_tool_functions: dict[int, PythonToolRoleReference],
         wrapped_tool_functions: dict[int, PythonFunctionToolWrapper],
@@ -2720,6 +2721,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.imported_symbol_names: dict[str, str] = {}
         self.imported_symbol_resolutions: dict[str, str] = {}
         self.mcp_launcher_constructors: dict[str, tuple[str, str]] = {}
+        self.observed_mcp_server_ids: set[str] = set()
         self.provider_call_bindings: dict[str, tuple[str, str, str]] = {}
         self.provider_module_bindings: dict[str, tuple[str, str]] = {}
         self.network_helper_bindings: dict[str, PythonNetworkHelperSummary] = {}
@@ -2731,6 +2733,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.scope_bound_names = scope_bound_names
         self.node_scopes = node_scopes
         self.call_symbol_ids = call_symbol_ids
+        self.mcp_server_symbol_names = mcp_server_symbol_names
         self.definition_symbol_ids = definition_symbol_ids
         self.referenced_tool_functions = referenced_tool_functions
         self.wrapped_tool_functions = wrapped_tool_functions
@@ -2973,7 +2976,7 @@ class PythonVisitor(ast.NodeVisitor):
         line = getattr(node, "lineno", 1)
         return Evidence(self.path, line, excerpt(self.lines, line))
 
-    def add_mcp_package_launcher(
+    def add_mcp_stdio_server(
         self,
         node: ast.AST,
         *,
@@ -2983,26 +2986,30 @@ class PythonVisitor(ast.NodeVisitor):
         constructor: str,
         analysis: str,
     ) -> None:
+        """Record an import-proven literal stdio server and optional package proof."""
         package = mcp_package_reference(command, arguments)
-        if package is None:
-            return
+        symbol_id = self.call_symbol_ids.get(id(node))
+        attributes: dict[str, object] = {
+            "transport": "stdio",
+            "command": command,
+            "constructor": constructor,
+            "analysis": analysis,
+            "frontend": "python",
+            "scope": source_scope(self.path),
+        }
+        if package is not None:
+            attributes.update({"package_manager": command, **package})
         self.ir.add_component(
             Component(
                 "mcp-server",
                 name,
                 self.ev(node),
-                {
-                    "transport": "stdio",
-                    "command": command,
-                    "package_manager": command,
-                    "constructor": constructor,
-                    "analysis": analysis,
-                    "frontend": "python",
-                    "scope": source_scope(self.path),
-                    **package,
-                },
+                attributes,
+                symbol_id,
             )
         )
+        if symbol_id is not None:
+            self.observed_mcp_server_ids.add(symbol_id)
 
     def visit_Dict(self, node: ast.Dict) -> None:
         entries = {
@@ -3036,7 +3043,7 @@ class PythonVisitor(ast.NodeVisitor):
                 arguments = literal_string_arguments(config_entries.get("args"))
                 if arguments is None:
                     continue
-                self.add_mcp_package_launcher(
+                self.add_mcp_stdio_server(
                     config,
                     name=key.value,
                     command=command_node.value,
@@ -4493,7 +4500,7 @@ class PythonVisitor(ast.NodeVisitor):
                     except ValueError:
                         invocation = []
                     if invocation:
-                        self.add_mcp_package_launcher(
+                        self.add_mcp_stdio_server(
                             node,
                             name=f"{constructor}@{node.lineno}",
                             command=invocation[0],
@@ -4514,7 +4521,7 @@ class PythonVisitor(ast.NodeVisitor):
                     and isinstance(command_node.value, str)
                     and arguments is not None
                 ):
-                    self.add_mcp_package_launcher(
+                    self.add_mcp_stdio_server(
                         node,
                         name=f"{constructor}@{node.lineno}",
                         command=command_node.value,
@@ -4862,6 +4869,38 @@ class PythonVisitor(ast.NodeVisitor):
                             model_value,
                             self.ev(node),
                             {"provider": provider_for_model(model_value), "configured_on": name},
+                        )
+                    )
+            for keyword in node.keywords:
+                if keyword.arg != "mcp_servers" or not isinstance(
+                    keyword.value, (ast.List, ast.Tuple)
+                ):
+                    continue
+                for value in keyword.value.elts:
+                    binding = dotted_name(value)
+                    dominating = self.dominating_symbol_ids.get(
+                        (id(node), "mcp-server", binding)
+                    )
+                    if dominating is None:
+                        continue
+                    target_id, _ = dominating
+                    target_name = self.mcp_server_symbol_names.get(target_id)
+                    if target_name is None or target_id not in self.observed_mcp_server_ids:
+                        continue
+                    self.ir.add_relationship(
+                        Relationship(
+                            "agent",
+                            name,
+                            "uses",
+                            "mcp-server",
+                            target_name,
+                            self.ev(node),
+                            {
+                                "binding": binding,
+                                "target_identity": "literal-mcp-servers-list-binding",
+                            },
+                            agent_id,
+                            target_id,
                         )
                     )
             for keyword in node.keywords:
@@ -6067,6 +6106,7 @@ def scan_python(
 
     import_binding_counts: Counter[str] = Counter()
     tool_constructor_import_candidates: dict[str, list[ast.ImportFrom]] = defaultdict(list)
+    mcp_constructor_import_candidates: dict[str, list[ast.ImportFrom]] = defaultdict(list)
     for statement in (candidate for candidate in nodes if isinstance(candidate, ast.ImportFrom)):
         module_parts = re.split(r"[._]", statement.module or "")
         for alias in statement.names:
@@ -6077,6 +6117,19 @@ def scan_python(
                 alias.name,
             ) in EXACT_TOOL_CONSTRUCTOR_IMPORTS:
                 tool_constructor_import_candidates[local_name].append(statement)
+            if (
+                statement in tree.body
+                and alias.name in MCP_LAUNCHER_CONSTRUCTORS
+                and (
+                    re.search(
+                        r"(?:^|[._])mcp(?:[._]|$)",
+                        statement.module or "",
+                        re.IGNORECASE,
+                    )
+                    or "modelcontextprotocol" in (statement.module or "").lower()
+                )
+            ):
+                mcp_constructor_import_candidates[local_name].append(statement)
     for statement in (candidate for candidate in nodes if isinstance(candidate, ast.Import)):
         import_binding_counts.update(
             alias.asname or alias.name.split(".", 1)[0]
@@ -6097,6 +6150,21 @@ def scan_python(
         if len(imports) == 1
         and import_binding_counts[name] == 1
         and nonimport_binding_counts[name] == 0
+    }
+    imported_mcp_constructors = {
+        name: imports[0]
+        for name, imports in mcp_constructor_import_candidates.items()
+        if len(imports) == 1
+        and import_binding_counts[name] == 1
+        and nonimport_binding_counts[name] == 0
+    }
+    imported_mcp_constructor_names = {
+        name: next(
+            alias.name
+            for alias in statement.names
+            if (alias.asname or alias.name) == name
+        )
+        for name, statement in imported_mcp_constructors.items()
     }
     local_tool_constructor_classes = {
         statement.name
@@ -6533,6 +6601,9 @@ def scan_python(
                 or id(node) in wrapped_tool_assignments
                 or id(node) in usage_tool_assignments
                 or id(node) in agent_as_tool_assignments
+                else "mcp-server"
+                if isinstance(node.value.func, ast.Name)
+                and node.value.func.id in imported_mcp_constructors
                 else None
             )
             if kind:
@@ -6545,6 +6616,20 @@ def scan_python(
         call_symbol_ids[id(node.value)] = symbol_id
         if wrapper := wrapped_tool_assignments.get(id(node)):
             definition_symbol_ids[id(wrapper.function)] = symbol_id
+    def assigned_mcp_server_name(node: ast.Assign) -> str:
+        if not isinstance(node.value, ast.Call):
+            raise TypeError("assigned MCP server must originate from a call")
+        constructor_binding = dotted_name(node.value.func)
+        constructor = imported_mcp_constructor_names.get(
+            constructor_binding, constructor_binding.rsplit(".", 1)[-1]
+        )
+        return f"{constructor}@{node.value.lineno}"
+
+    mcp_server_symbol_names = {
+        call_symbol_ids[id(node.value)]: assigned_mcp_server_name(node)
+        for node, kind, _binding in assigned_constructors
+        if kind == "mcp-server"
+    }
 
     usage_tool_assignment_ids = set(usage_tool_assignments)
     for node, kind, binding in assigned_constructors:
@@ -7428,12 +7513,23 @@ def scan_python(
             statements, use_index = block
             references: set[tuple[str, str]] = set()
             for keyword in call.keywords:
-                if keyword.arg not in {"tools", "handoffs", "agents"} or not isinstance(
+                if keyword.arg not in {
+                    "tools",
+                    "handoffs",
+                    "agents",
+                    "mcp_servers",
+                } or not isinstance(
                     keyword.value, (ast.List, ast.Tuple)
                 ):
                     continue
                 for value in keyword.value.elts:
-                    kind = "tool" if keyword.arg == "tools" else "agent"
+                    kind = (
+                        "tool"
+                        if keyword.arg == "tools"
+                        else "mcp-server"
+                        if keyword.arg == "mcp_servers"
+                        else "agent"
+                    )
                     name = dotted_name(value)
                     if isinstance(value, ast.Call) and dotted_name(value.func).endswith(".as_tool"):
                         kind = "agent"
@@ -7472,6 +7568,7 @@ def scan_python(
         scope_bound_names=scope_bound_names,
         node_scopes=node_scopes,
         call_symbol_ids=call_symbol_ids,
+        mcp_server_symbol_names=mcp_server_symbol_names,
         definition_symbol_ids=definition_symbol_ids,
         referenced_tool_functions=referenced_tool_functions,
         wrapped_tool_functions=wrapped_tool_functions,

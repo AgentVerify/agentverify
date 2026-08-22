@@ -63,7 +63,10 @@ instance-specific policy. No `ambiguous-repeated-binding` target remains in the 
 cross-branch, forward, inconsistent/untyped parameters, conditional/transformed returns, external
 receivers, shadowed factories, lambdas, and reassigned fixture cases stay withheld. Next add broader
 branch/reassignment dataflow and resolve Python/TS package re-exports, wildcard imports, other
-wrapper factories, and type-driven symbols.
+wrapper factories, and type-driven symbols. Schema v77 already gives exact IDs to import-proven
+assigned Python MCP stdio servers and resolves direct literal `mcp_servers=[server]` lists only
+under same-block dominance; forward, rebound, indirect-list, and module-global-to-function flows
+remain explicit negatives.
 Contextual absolute-import proof additionally resolves 25 project-local CrewAI Agent-to-class-tool
 edges across eight exact decorated method targets, the 14 Agent-factory delegations, and nine Google
 ADK imported-helper network call sites. Multiple ancestor candidates, missing exports, reimports,
@@ -270,8 +273,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 511 pinned positive/negative locations, with 708 separately
-scored IR component/relationship labels. Schema-v76 engine results and
+The curated regression set has reached 511 pinned positive/negative locations, with 719 separately
+scored IR component/relationship labels. Schema-v77 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

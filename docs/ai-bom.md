@@ -39,8 +39,8 @@ The top-level document contains:
   source and gate. `root` is always `.` and evidence paths are relative to it, so local checkout paths
   are not disclosed.
 - `assets`: every Agent IR component with a stable `avc-*` ID, kind, display name, attributes, and
-  exact path/line/excerpt evidence. Source-defined agents and tools also retain their Agent IR
-  `symbol_id`.
+  exact path/line/excerpt evidence. Source-defined agents and tools, plus exact assigned Python MCP
+  stdio servers, also retain their Agent IR `symbol_id`.
 - `relationships`: sorted `avr-*` graph observations with evidence and source/target identity status.
 - `governance`: control and sandbox-boundary asset IDs, assets carrying unresolved policy values, and
   risk counts by rule, result kind, and severity.
@@ -86,6 +86,12 @@ candidate, and a locally bound name cannot fall back to a same-named module defi
 Reassignments, cross-branch or forward definitions, unproven parameters, tool-helper returns, lambdas,
 multiply wrapped functions, shadowed factories, and otherwise unproven references record
 `ambiguous-repeated-binding` or remain unresolved.
+
+Assigned Python MCP stdio constructors follow the same conservative identity contract. An exact
+Agent→server edge requires the binding to dominate a literal `mcp_servers=[...]` list in the same
+statement block. Forward and rebound bindings, indirect container variables, and cross-scope
+module-global references remain unresolved. Package provenance is independent: a non-package
+literal command can have an exact server identity without gaining `npx`/`uvx` package attributes.
 
 An Agent endpoint can additionally resolve as `same-class-helper-return` when a unique same-class
 method has one direct top-level return of an exact Agent constructor or immutable Agent local, the

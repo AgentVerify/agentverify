@@ -53,6 +53,11 @@ Schema v76 makes provider identity symbol-specific within a public wrapper modul
 `agentscope.model` reexport can therefore prove OpenAI Chat/Responses, Anthropic, Google Gemini, or
 Ollama without assigning one provider to every symbol in the module. Module aliases and named
 imports share the same exact export map, while reassignment still invalidates the binding.
+Schema v77 gives import-proven, assigned Python MCP stdio constructors stable component identities.
+An Agent receives an exact `uses` edge only when its literal `mcp_servers=[...]` list names an
+earlier, unreassigned server binding in the same statement block. Package and version facts remain
+conditional on literal `npx` or `uvx` package selection; a literal non-package command such as
+`deno` is still valid MCP inventory without invented supply-chain metadata.
 
 Names are intentionally not treated as globally unique. Python and TypeScript agent/tool definitions
 carry stable frontend-and-module-qualified `symbol_id` values; relationships carry `source_id` and
@@ -563,10 +568,12 @@ mutable attributes, fallback-returning managers, wildcard imports, and module-qu
 aliases remain unresolved. The relationship cites both the consumer call and the imported rejecting
 branch and carries `summary: imported-class-method`; its effect remains `routing-only`.
 
-MCP stdio launchers carry a separate supply-chain fact set on the `mcp-server` component:
+MCP stdio launchers may carry a separate supply-chain fact set on the `mcp-server` component:
 `package_manager`, `package`, `package_spec`, `version_scope`, `auto_install`, and `install_mode`.
 The Python frontend requires an MCP-module-bound constructor or a literal nested `mcpServers`
-configuration; the TypeScript frontend requires an exact `@modelcontextprotocol/sdk` named import of
+configuration. Import-proven Python constructors with another literal stdio command remain MCP
+components but do not receive package facts. The TypeScript frontend requires an exact
+`@modelcontextprotocol/sdk` named import of
 `StdioClientTransport` or a literal `mcpServers` object, and rejects rebound/shadowed imports; the
 JSON frontend requires the standard top-level `mcpServers` object. `uvx` is an automatic installer,
 while `npx` is treated as automatic only with `-y`/`--yes`. An exact npm
