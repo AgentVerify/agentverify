@@ -49,6 +49,10 @@ Schema v75 recognizes exact AgentScope and PydanticAI provider wrapper APIs. Age
 retain identity through direct imports, module aliases, and function-local imports until rebinding.
 Literal keyword model values and model-wrapper-only positional strings inherit the proven provider;
 provider constructor positional arguments are never treated as model IDs.
+Schema v76 makes provider identity symbol-specific within a public wrapper module. The same
+`agentscope.model` reexport can therefore prove OpenAI Chat/Responses, Anthropic, Google Gemini, or
+Ollama without assigning one provider to every symbol in the module. Module aliases and named
+imports share the same exact export map, while reassignment still invalidates the binding.
 
 Names are intentionally not treated as globally unique. Python and TypeScript agent/tool definitions
 carry stable frontend-and-module-qualified `symbol_id` values; relationships carry `source_id` and

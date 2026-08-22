@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v75
+framework, wrapper, or configuration path. Counts come from schema-v76
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -32,7 +32,7 @@ Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK
 (8), LlamaIndex (6), Vercel AI SDK (5), CrewAI (4), Agno (3), Google ADK (3), PydanticAI (3),
 Microsoft Agent Framework (2), Semantic Kernel (2), smolagents (2), AgentScope (1), AutoGen (1),
 CAMEL (1), Cline SDK (1), Lagent (1), Marvin (1), Mastra (1), MetaGPT (1), and Qwen-Agent (1).
-Provider observations are OpenAI (41), Anthropic (17), Google (17), Azure OpenAI (11), AWS Bedrock
+Provider observations are OpenAI (42), Anthropic (18), Google (18), Azure OpenAI (11), AWS Bedrock
 and Groq (6 each), Ollama (5), Cohere (3), and Mistral (3). These overlapping exact-import/call,
 literal-service, and model-string observations are lower than research-wide lexical signals.
 
@@ -52,6 +52,13 @@ calls and 43 wrappers, comprising nine LangChain, 32 PydanticAI, and two AgentSc
 across six repositories are production-scoped; 54 are tests. Of 35 literal call-model arguments, the
 two production values come from AgentScope's public Ollama model reexport and the other 33 are tests.
 This exact wrapper evidence raises provider presence to 49 repositories and Ollama presence to five.
+
+Schema v76 makes the AgentScope reexport map symbol-specific and adds eight production calls: four
+OpenAI Chat/Responses, two Anthropic, and two Google Gemini. Python therefore has 71 exact provider
+calls across eight repositories: 20 native SDK calls and 51 wrappers, split into nine LangChain, 32
+PydanticAI, and ten AgentScope calls. Seventeen calls across six repositories are production-scoped;
+54 are tests. All 43 literal call-model arguments retain the exact provider proof. Repository
+presence remains 49, while OpenAI rises to 42 repositories and Anthropic and Google to 18 each.
 
 Across the selected snapshot, 9,584 agent/tool observations have module-qualified symbol IDs. Of
 4,254 relationship endpoint observations, all 3,486 identified endpoints resolve to an observed
@@ -557,7 +564,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 511-label rule truth set and 683-label IR component/relationship set are curated regression
+The 511-label rule truth set and 708-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

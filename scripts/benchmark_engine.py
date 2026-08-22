@@ -800,7 +800,15 @@ def main() -> int:
                         item.name == provider
                         for item in python_provider_call_attributions
                     )
-                    for provider in ("Mistral", "Groq", "Cohere", "Ollama")
+                    for provider in (
+                        "OpenAI",
+                        "Anthropic",
+                        "Google",
+                        "Mistral",
+                        "Groq",
+                        "Cohere",
+                        "Ollama",
+                    )
                 },
             },
             "typescript_provider_call_attribution": {
@@ -2117,7 +2125,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 75,
+        "schema_version": 76,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2212,6 +2220,9 @@ def main() -> int:
                     "pydantic_ai_wrapper_calls",
                     "agentscope_wrapper_calls",
                     "literal_models",
+                    "openai",
+                    "anthropic",
+                    "google",
                     "mistral",
                     "groq",
                     "cohere",

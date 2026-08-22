@@ -294,6 +294,34 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "pydantic_ai.embeddings.cohere",
             "CohereEmbeddingModel",
         ),
+        (
+            23,
+            "Anthropic",
+            "agent_models.AnthropicChatModel",
+            "agentscope.model",
+            "AnthropicChatModel",
+        ),
+        (
+            24,
+            "Google",
+            "agent_models.GeminiChatModel",
+            "agentscope.model",
+            "GeminiChatModel",
+        ),
+        (
+            25,
+            "OpenAI",
+            "agent_models.OpenAIChatModel",
+            "agentscope.model",
+            "OpenAIChatModel",
+        ),
+        (
+            26,
+            "OpenAI",
+            "agent_models.OpenAIResponseModel",
+            "agentscope.model",
+            "OpenAIResponseModel",
+        ),
     }
     assert {
         (item.evidence.line, item.name, item.attributes["provider"])
@@ -308,6 +336,10 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         (20, "command-r-plus", "Cohere"),
         (21, "qwen3:14b", "Ollama"),
         (22, "embed-v4.0", "Cohere"),
+        (23, "claude-opus-4-5", "Anthropic"),
+        (24, "gemini-2.5-flash", "Google"),
+        (25, "gpt-4.1", "OpenAI"),
+        (26, "gpt-4.1", "OpenAI"),
     }
     assert not any(
         item.kind == "provider"

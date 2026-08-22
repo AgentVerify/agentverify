@@ -247,8 +247,8 @@ OpenAI signals appear in 51 repositories, Anthropic in 37, Google in 28, Azure O
 Bedrock in 14. Forty-four repositories contain two or more provider signals. An AI bill of
 materials should report providers and model configuration even when no security issue is present.
 The stricter engine promotes a subset only when selected source proves an exact SDK
-import, literal service selection, or recognized model prefix: OpenAI appears in 41 repositories,
-Google and Anthropic in 17 each, Azure OpenAI in 11, AWS Bedrock and Groq in six, Ollama in five,
+import, literal service selection, or recognized model prefix: OpenAI appears in 42 repositories,
+Google and Anthropic in 18 each, Azure OpenAI in 11, AWS Bedrock and Groq in six, Ollama in five,
 and Mistral and Cohere in three each. Direct SDK evidence alone kept provider presence at 48 because
 each added SDK family occurred alongside another recognized provider; schema v75's AgentScope public
 Ollama wrapper raises the total to 49. The difference from the research-wide lexical census is
@@ -280,6 +280,19 @@ including its provider-wire
 Positional strings become models only for the model wrappers, so an API key or base URL passed to a
 provider constructor cannot become a false model identity. Together with the native and LangChain
 paths, Python has 63 exact provider calls across eight repositories.
+
+Schema v76 removes the remaining single-provider assumption from the AgentScope wrapper module.
+Exact exported symbols now distinguish four
+[`OpenAIChatModel`/Responses](https://github.com/agentscope-ai/agentscope/blob/ad4d2839e8ad57b6b9dffa7b583be7bee33009fb/scripts/model_examples/openai_chat_multiagent.py#L26)
+calls, two
+[`AnthropicChatModel`](https://github.com/agentscope-ai/agentscope/blob/ad4d2839e8ad57b6b9dffa7b583be7bee33009fb/scripts/model_examples/anthropic_multiagent.py#L27)
+calls, two
+[`GeminiChatModel`](https://github.com/agentscope-ai/agentscope/blob/ad4d2839e8ad57b6b9dffa7b583be7bee33009fb/scripts/model_examples/gemini_multiagent.py#L27)
+calls, and the two Ollama calls already covered. Every call is production-scoped and uses a literal
+model value in the pinned examples. Across the Python corpus this produces 71 exact calls—20 native
+SDK and 51 framework wrappers—with 17 production calls and 54 test calls. The symbol-specific map
+increases strict selected-source presence to OpenAI in 42 repositories and Anthropic and Google in
+18 each without trusting arbitrary model-class names.
 
 ## 5. Controls are layered
 

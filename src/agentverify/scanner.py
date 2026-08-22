@@ -126,7 +126,13 @@ PYTHON_PROVIDER_SDK_CALLS = {
     "langchain_groq": ("ChatGroq",),
     "langchain_cohere": ("ChatCohere", "CohereEmbeddings", "CohereRerank"),
     "langchain_ollama": ("ChatOllama", "OllamaEmbeddings", "OllamaLLM"),
-    "agentscope.model": ("OllamaChatModel",),
+    "agentscope.model": (
+        "AnthropicChatModel",
+        "GeminiChatModel",
+        "OllamaChatModel",
+        "OpenAIChatModel",
+        "OpenAIResponseModel",
+    ),
     "pydantic_ai.models.groq": ("GroqModel",),
     "pydantic_ai.models.mistral": ("MistralModel",),
     "pydantic_ai.models.cohere": ("CohereModel",),
@@ -157,6 +163,15 @@ PYTHON_PROVIDER_MODULES = {
     "pydantic_ai.providers.mistral": "Mistral",
     "pydantic_ai.providers.cohere": "Cohere",
     "pydantic_ai.providers.ollama": "Ollama",
+}
+# Most supported modules have one provider identity. Public wrapper modules that
+# span providers override that default for each exact exported symbol.
+PYTHON_PROVIDER_SYMBOL_PROVIDERS = {
+    ("agentscope.model", "AnthropicChatModel"): "Anthropic",
+    ("agentscope.model", "GeminiChatModel"): "Google",
+    ("agentscope.model", "OllamaChatModel"): "Ollama",
+    ("agentscope.model", "OpenAIChatModel"): "OpenAI",
+    ("agentscope.model", "OpenAIResponseModel"): "OpenAI",
 }
 PYTHON_PROVIDER_SDK_FUNCTIONS = {("ollama", "chat"), ("ollama", "generate")}
 PYTHON_PROVIDER_WRAPPER_MODULE_PREFIXES = ("agentscope.", "langchain_", "pydantic_ai.")
@@ -3101,7 +3116,9 @@ class PythonVisitor(ast.NodeVisitor):
             self.invalidate_imported_symbol(local_name)
             module = node.module or ""
             if (
-                (provider := PYTHON_PROVIDER_MODULES.get(module))
+                (provider := PYTHON_PROVIDER_SYMBOL_PROVIDERS.get(
+                    (module, alias.name), PYTHON_PROVIDER_MODULES.get(module)
+                ))
                 and alias.name in PYTHON_PROVIDER_SDK_CALLS[module]
             ):
                 self.provider_call_bindings[local_name] = (
@@ -4705,7 +4722,7 @@ class PythonVisitor(ast.NodeVisitor):
             root_name, separator, call_suffix = call_name.partition(".")
             module_binding = self.provider_module_bindings.get(root_name)
             if separator and module_binding:
-                provider, module = module_binding
+                default_provider, module = module_binding
                 expected_prefix = (
                     f"{module.split('.', 1)[1]}."
                     if "." in module and root_name == module.split(".", 1)[0]
@@ -4716,6 +4733,9 @@ class PythonVisitor(ast.NodeVisitor):
                     call_suffix == expected_call
                     and short_name in PYTHON_PROVIDER_SDK_CALLS[module]
                 ):
+                    provider = PYTHON_PROVIDER_SYMBOL_PROVIDERS.get(
+                        (module, short_name), default_provider
+                    )
                     imported_provider = (provider, module, short_name)
         if imported_provider:
             provider, module, imported_symbol = imported_provider

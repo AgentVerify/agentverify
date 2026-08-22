@@ -163,6 +163,9 @@ local binding is immutable and unshadowed.
 Framework public APIs can provide equivalent proof when the module and exported constructor are
 both exact. Positional arguments need signature-level treatment: a model wrapper's first string may
 be a model ID, while a provider constructor's first string may instead be a credential or endpoint.
+A public module can reexport constructors for several providers, so provider identity belongs to the
+exact `(module, exported symbol)` pair rather than the module alone. This also keeps module aliases
+precise without trusting unrelated exports from the same package.
 
 ## Observability as a cross-cutting control
 

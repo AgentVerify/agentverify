@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T08:26:20.684316+00:00",
-  "labels": 683,
-  "passed": 683,
+  "generated_at": "2026-08-22T08:34:43.104176+00:00",
+  "labels": 708,
+  "passed": 708,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -37,9 +37,9 @@
       "recall": 1.0
     },
     "IR-COMPONENT-TAXONOMY": {
-      "tp": 107,
+      "tp": 131,
       "fp": 0,
-      "tn": 41,
+      "tn": 42,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -6642,6 +6642,231 @@
     },
     {
       "id": "provider-wrapper-pydantic-cohere-embedding-model-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-anthropic-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-anthropic-model-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-google-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-google-model-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-openai-chat-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-openai-chat-model-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-openai-response-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-openai-response-model-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-openai-rebound-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-anthropic-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-anthropic-model-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-anthropic-multimodal-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-anthropic-multimodal-model-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-google-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-google-model-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-google-multimodal-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-google-multimodal-model-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-openai-chat-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-openai-chat-model-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-openai-chat-multimodal-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-openai-chat-multimodal-model-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-openai-response-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-openai-response-model-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-openai-response-multimodal-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-wrapper-agentscope-openai-response-multimodal-model-real",
       "check_id": "IR-COMPONENT-TAXONOMY",
       "expected": true,
       "observed": true,

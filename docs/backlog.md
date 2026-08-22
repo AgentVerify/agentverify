@@ -18,10 +18,12 @@ and Ollama. Literal model arguments inherit that constructor proof, while Mistra
 recognized separately; Groq/Ollama third-party model IDs do not establish provider identity alone.
 Schema v74 adds official TypeScript AI SDK imports, dynamic imports, factories, immutable configured
 instances, and direct model calls for Mistral, Groq, and Cohere. Schema v75 adds AgentScope's public
-Ollama model reexport plus exact PydanticAI provider, model, and embedding wrappers. Positional model
-IDs are accepted only on model wrappers, never provider constructors. The 148 component labels pin
-107 local/real positives and 41 unrelated, rebound, or near-name negatives. Next generalize selected
-package reexports without trusting generic `Client` names or framework-adjacent packages.
+Ollama model reexport plus exact PydanticAI provider, model, and embedding wrappers. Schema v76 maps
+the AgentScope module's OpenAI Chat/Responses, Anthropic, Gemini, and Ollama exports independently.
+Positional model IDs are accepted only on model wrappers, never provider constructors. The 173
+component labels pin 131 local/real positives and 42 unrelated, rebound, or near-name negatives.
+Next generalize selected package reexports without trusting generic `Client` names or
+framework-adjacent packages.
 
 ## P0 — module-qualified symbols and graph identities
 
@@ -268,8 +270,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 511 pinned positive/negative locations, with 683 separately
-scored IR component/relationship labels. Schema-v75 engine results and
+The curated regression set has reached 511 pinned positive/negative locations, with 708 separately
+scored IR component/relationship labels. Schema-v76 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.
