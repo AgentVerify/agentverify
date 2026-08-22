@@ -23,5 +23,5 @@ jobs:
       - run: pytest -q
       - run: ruff check src tests scripts
       - run: agentverify scan examples/safe_agent --fail-on high
-      - run: agentverify scan cases/python_dangerous --format sarif > /tmp/agentverify.sarif
+      - run: agentverify scan cases/python_dangerous --format sarif --output /tmp/agentverify.sarif
       - run: python -m json.tool /tmp/agentverify.sarif > /dev/null

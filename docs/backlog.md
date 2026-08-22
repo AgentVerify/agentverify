@@ -308,7 +308,9 @@ changes are complete. Keep discovery sampling metrics separate from detection-qu
 
 The repository now includes a GitHub code-scanning workflow and copy-ready SARIF upload guidance
 with a stable category, an auditable `--paths-from` mode for changed-file scans, and baseline diff
-counts that avoid false resolution claims on partial scans. Inline suppressions now retain optional
+counts that avoid false resolution claims on partial scans. Machine-readable CI artifacts use the
+first-class `--output`/`-o` path instead of shell redirection; write failures are explicit usage
+errors while policy and severity gate exits remain intact. Inline suppressions now retain optional
 expiry status, and CI can require an active ISO date. A distributable pre-commit manifest and local
 setup are included; publishing its remote form waits for an approved repository URL and release tag.
 Schema-backed JSON policies now provide per-rule/result-kind/severity count budgets with decision

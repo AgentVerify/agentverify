@@ -20,6 +20,102 @@ def test_cli_handles_closed_output_pipe(monkeypatch: pytest.MonkeyPatch) -> None
     assert cli.main(["scan", str(ROOT / "examples/safe_agent")]) == 0
 
 
+def test_cli_writes_report_to_output_file(tmp_path: Path, capsys) -> None:
+    output = tmp_path / "agentverify.json"
+
+    assert (
+        cli.main(
+            [
+                "scan",
+                str(ROOT / "examples/safe_agent"),
+                "--format",
+                "json",
+                "--output",
+                str(output),
+            ]
+        )
+        == 0
+    )
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == ""
+    payload = __import__("json").loads(output.read_text(encoding="utf-8"))
+    assert payload["files_scanned"] == 1
+
+
+def test_cli_output_preserves_threshold_exit_and_short_alias(
+    tmp_path: Path, capsys
+) -> None:
+    output = tmp_path / "agentverify.sarif"
+
+    assert (
+        cli.main(
+            [
+                "scan",
+                str(ROOT / "cases/python_dangerous"),
+                "--format",
+                "sarif",
+                "-o",
+                str(output),
+                "--fail-on",
+                "high",
+            ]
+        )
+        == 1
+    )
+    assert capsys.readouterr().out == ""
+    payload = __import__("json").loads(output.read_text(encoding="utf-8"))
+    assert [result["ruleId"] for result in payload["runs"][0]["results"]] == [
+        "AV-EXEC001"
+    ]
+
+
+def test_cli_output_preserves_policy_exit(tmp_path: Path, capsys) -> None:
+    policy = tmp_path / "strict.json"
+    policy.write_text(
+        '{"schema_version":1,"gates":[{"id":"no-high","max_count":0}]}',
+        encoding="utf-8",
+    )
+    output = tmp_path / "agentverify.json"
+
+    assert (
+        cli.main(
+            [
+                "scan",
+                str(ROOT / "cases/python_dangerous"),
+                "--format",
+                "json",
+                "--output",
+                str(output),
+                "--policy",
+                str(policy),
+            ]
+        )
+        == 1
+    )
+    assert capsys.readouterr().out == ""
+    payload = __import__("json").loads(output.read_text(encoding="utf-8"))
+    assert payload["policy_summary"]["passed"] is False
+    assert payload["policy_summary"]["gates"][0]["matched_count"] == 1
+
+
+def test_cli_reports_output_write_errors(tmp_path: Path, capsys) -> None:
+    assert (
+        cli.main(
+            [
+                "scan",
+                str(ROOT / "examples/safe_agent"),
+                "--output",
+                str(tmp_path),
+            ]
+        )
+        == 2
+    )
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "agentverify: cannot write output:" in captured.err
+
+
 def test_review_does_not_fail_by_default_but_can_be_opted_in(capsys) -> None:
     path = str(ROOT / "cases/python_auto_approval")
 
@@ -120,6 +216,18 @@ def test_cli_prints_bundled_policy_schema(capsys) -> None:
             (ROOT / "examples/repository-policy.json").read_text(encoding="utf-8")
         )
     )
+    assert schema["title"] == "AgentVerify Policy 1"
+
+
+def test_cli_writes_bundled_schema_to_output_file(tmp_path: Path, capsys) -> None:
+    output = tmp_path / "agentverify-policy.schema.json"
+
+    assert cli.main(["schema", "policy", "--output", str(output)]) == 0
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == ""
+    schema = __import__("json").loads(output.read_text(encoding="utf-8"))
+    Draft202012Validator.check_schema(schema)
     assert schema["title"] == "AgentVerify Policy 1"
 
 

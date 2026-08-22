@@ -3,8 +3,8 @@
 AgentVerify can emit a deterministic, evidence-first inventory of an agent application:
 
 ```console
-agentverify scan . --format bom > agentverify.bom.json
-agentverify schema bom > agentverify-ai-bom.schema.json
+agentverify scan . --format bom --output agentverify.bom.json
+agentverify schema bom --output agentverify-ai-bom.schema.json
 ```
 
 The format is defined by

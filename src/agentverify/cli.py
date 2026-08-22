@@ -22,6 +22,13 @@ def build_parser() -> argparse.ArgumentParser:
     scan = subparsers.add_parser("scan", help="scan a repository")
     scan.add_argument("path", type=Path)
     scan.add_argument("--format", choices=("text", "json", "bom", "sarif"), default="text")
+    scan.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        metavar="PATH",
+        help="write the report to PATH instead of standard output",
+    )
     scan.add_argument("--fail-on", choices=("none", "medium", "high"), default="none")
     scan.add_argument(
         "--fail-on-kind",
@@ -54,6 +61,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     schema = subparsers.add_parser("schema", help="print a bundled machine-readable schema")
     schema.add_argument("name", choices=("bom", "policy"))
+    schema.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        metavar="PATH",
+        help="write the schema to PATH instead of standard output",
+    )
     return parser
 
 
@@ -84,14 +98,26 @@ def baseline_fingerprints(path: Path) -> set[str]:
     return fingerprints
 
 
+def emit_output(content: str, output: Path | None) -> int | None:
+    """Emit content and return an early CLI exit code only on handled I/O conditions."""
+    if output is None:
+        try:
+            print(content, end="")
+        except BrokenPipeError:
+            return 0
+        return None
+    try:
+        output.write_text(content, encoding="utf-8")
+    except OSError as error:
+        print(f"agentverify: cannot write output: {error}", file=sys.stderr)
+        return 2
+    return None
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "schema":
-        try:
-            print(render_schema(args.name), end="")
-        except BrokenPipeError:
-            return 0
-        return 0
+        return emit_output(render_schema(args.name), args.output) or 0
     if not args.path.is_dir():
         print(f"agentverify: not a directory: {args.path}", file=sys.stderr)
         return 2
@@ -143,16 +169,14 @@ def main(argv: list[str] | None = None) -> int:
         policy_passed = evaluate_policy(
             ir, loaded_policy, source=args.policy.name, digest=policy_digest
         )
-    try:
-        report = {
-            "bom": render_bom,
-            "json": render_json,
-            "sarif": render_sarif,
-            "text": render_text,
-        }[args.format](ir)
-        print(report, end="")
-    except BrokenPipeError:
-        return 0
+    report = {
+        "bom": render_bom,
+        "json": render_json,
+        "sarif": render_sarif,
+        "text": render_text,
+    }[args.format](ir)
+    if (output_exit := emit_output(report, args.output)) is not None:
+        return output_exit
     considered = [
         finding
         for finding in ir.findings

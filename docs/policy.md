@@ -4,7 +4,7 @@ AgentVerify policies turn reported results into auditable CI gates without disab
 evidence. Policies are JSON documents conforming to the bundled schema:
 
 ```console
-agentverify schema policy > agentverify-policy.schema.json
+agentverify schema policy --output agentverify-policy.schema.json
 agentverify scan . --policy agentverify-policy.json
 ```
 

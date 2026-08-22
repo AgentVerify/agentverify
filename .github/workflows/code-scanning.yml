@@ -27,7 +27,7 @@ jobs:
         run: python -m pip install .
       - name: Scan repository
         # This project keeps intentionally vulnerable regression cases outside src/.
-        run: agentverify scan src --format sarif > agentverify.sarif
+        run: agentverify scan src --format sarif --output agentverify.sarif
       - name: Upload SARIF to GitHub code scanning
         uses: github/codeql-action/upload-sarif@v4
         with:

@@ -24,7 +24,7 @@ Use `github/codeql-action/upload-sarif@v4` with a stable category:
 
 ```yaml
 - name: Scan repository
-  run: agentverify scan . --format sarif > agentverify.sarif
+  run: agentverify scan . --format sarif --output agentverify.sarif
 - name: Upload SARIF to GitHub code scanning
   uses: github/codeql-action/upload-sarif@v4
   with:
@@ -64,7 +64,7 @@ file to AgentVerify:
 
 ```console
 git diff --name-only --diff-filter=ACMR "$BASE_SHA"...HEAD > changed-files.txt
-agentverify scan . --paths-from changed-files.txt --format sarif > agentverify.sarif
+agentverify scan . --paths-from changed-files.txt --format sarif --output agentverify.sarif
 ```
 
 Absolute paths and paths containing `..` are rejected. Directory entries select their descendants;
