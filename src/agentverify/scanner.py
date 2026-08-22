@@ -11562,6 +11562,13 @@ class TypeScriptProviderFunction:
 
 
 @dataclass(frozen=True)
+class TypeScriptProviderClass:
+    name: str
+    body_start: int
+    body_end: int
+
+
+@dataclass(frozen=True)
 class TypeScriptNetworkOriginHelper:
     name: str
     evidence: Evidence
@@ -12537,6 +12544,145 @@ def typescript_provider_typed_parameter_bindings(
     return resolved, definitions
 
 
+def typescript_provider_class_definitions(text: str) -> list[TypeScriptProviderClass]:
+    """Return balanced TypeScript class bodies for field-scoped provider analysis."""
+    code = typescript_code_mask(text)
+    pattern = re.compile(
+        r"\b(?:export\s+)?(?:abstract\s+)?class\s+([A-Za-z_$][\w$]*)\b"
+    )
+    classes = []
+    for match in pattern.finditer(code):
+        body_opening = code.find("{", match.end())
+        if body_opening < 0 or body_opening - match.end() > 500:
+            continue
+        body_end = typescript_balanced_end(code, body_opening, "{", "}")
+        if body_end is None:
+            continue
+        classes.append(
+            TypeScriptProviderClass(match.group(1), body_opening + 1, body_end - 1)
+        )
+    return classes
+
+
+def typescript_provider_class_field_calls(
+    text: str,
+    imports: dict[str, TypeScriptProviderImportBinding],
+) -> list[TypeScriptProviderCall]:
+    """Resolve exact model methods on unique readonly native-provider class fields."""
+    code = typescript_code_mask(text)
+    observations = []
+    class_definitions = typescript_provider_class_definitions(text)
+
+    def owning_class(offset: int) -> TypeScriptProviderClass | None:
+        candidates = [
+            definition
+            for definition in class_definitions
+            if definition.body_start <= offset < definition.body_end
+        ]
+        return max(candidates, key=lambda definition: definition.body_start, default=None)
+
+    for class_definition in class_definitions:
+        body_code = code[class_definition.body_start : class_definition.body_end]
+        field_bindings: dict[str, tuple[TypeScriptProviderImportBinding, str]] = {}
+        for local_name, binding in imports.items():
+            constructor = re.compile(rf"\bnew\s+{re.escape(local_name)}\s*\(")
+            for match in constructor.finditer(
+                code, class_definition.body_start, class_definition.body_end
+            ):
+                if owning_class(match.start()) != class_definition:
+                    continue
+                opening = code.find("(", match.start(), match.end())
+                end = typescript_balanced_end(code, opening, "(", ")")
+                if end is None or end > class_definition.body_end:
+                    continue
+                if not typescript_provider_config_uses_default_endpoint(
+                    text, opening, end
+                ):
+                    continue
+                prefix = code[max(class_definition.body_start, match.start() - 300) : match.start()]
+                assignment = re.search(
+                    r"\bthis\s*\.\s*([A-Za-z_$][\w$]*)\s*=\s*$", prefix
+                )
+                initializer = None
+                if assignment is None:
+                    initializer = re.search(
+                        r"\b(?:public\s+|private\s+|protected\s+)?"
+                        r"readonly\s+([A-Za-z_$][\w$]*)"
+                        r"\s*(?:\??\s*:[^=;\n]+)?=\s*$",
+                        prefix,
+                    )
+                field = (
+                    assignment.group(1)
+                    if assignment is not None
+                    else initializer.group(1)
+                    if initializer is not None
+                    else None
+                )
+                if field is None:
+                    continue
+                readonly_declarations = re.finditer(
+                    rf"\b(?:public\s+|private\s+|protected\s+)?readonly\s+"
+                    rf"{re.escape(field)}\b",
+                    body_code,
+                )
+                if not any(
+                    owning_class(class_definition.body_start + declaration.start())
+                    == class_definition
+                    for declaration in readonly_declarations
+                ):
+                    continue
+                assignment_count = sum(
+                    owning_class(class_definition.body_start + field_assignment.start())
+                    == class_definition
+                    for field_assignment in re.finditer(
+                        rf"\bthis\s*\.\s*{re.escape(field)}\s*=(?!=)", body_code
+                    )
+                )
+                if assignment is not None and assignment_count != 1:
+                    continue
+                if initializer is not None and assignment_count != 0:
+                    continue
+                if field in field_bindings:
+                    field_bindings.pop(field, None)
+                    continue
+                field_bindings[field] = (binding, local_name)
+
+        for field, (binding, configured_by) in field_bindings.items():
+            for method_pattern, model_method in TYPESCRIPT_PROVIDER_SDK_MODEL_METHODS.get(
+                binding.provider, ()
+            ):
+                pattern = re.compile(
+                    rf"\bthis\s*\.\s*{re.escape(field)}\s*\.\s*"
+                    rf"{method_pattern}\s*\("
+                )
+                for match in pattern.finditer(
+                    code, class_definition.body_start, class_definition.body_end
+                ):
+                    if owning_class(match.start()) != class_definition:
+                        continue
+                    opening = code.find("(", match.start(), match.end())
+                    end = typescript_balanced_end(code, opening, "(", ")")
+                    if end is None or end > class_definition.body_end:
+                        continue
+                    observations.append(
+                        TypeScriptProviderCall(
+                            match.start(),
+                            re.sub(r"\s+", "", code[match.start() : opening]),
+                            "provider-sdk-model",
+                            binding.module,
+                            binding.imported_symbol,
+                            binding.provider,
+                            typescript_literal_call_object_string_property(
+                                text, opening, end, "model"
+                            ),
+                            model_method,
+                            configured_by,
+                            "immutable-class-field-constructor",
+                        )
+                    )
+    return observations
+
+
 def typescript_provider_sdk_calls(text: str) -> list[TypeScriptProviderCall]:
     """Resolve exact native provider SDK constructors with default endpoint proof."""
     code = typescript_code_mask(text)
@@ -12591,8 +12737,6 @@ def typescript_provider_sdk_calls(text: str) -> list[TypeScriptProviderCall]:
                 model = typescript_literal_call_object_string_property(
                     text, opening, end, "model"
                 )
-                if model is None:
-                    continue
                 observations.append(
                     TypeScriptProviderCall(
                         match.start(),
@@ -12642,8 +12786,6 @@ def typescript_provider_sdk_calls(text: str) -> list[TypeScriptProviderCall]:
                 model = typescript_literal_call_object_string_property(
                     text, opening, end, "model"
                 )
-                if model is None:
-                    continue
                 observations.append(
                     TypeScriptProviderCall(
                         match.start(),
@@ -12658,6 +12800,7 @@ def typescript_provider_sdk_calls(text: str) -> list[TypeScriptProviderCall]:
                         "same-file-typed-parameter-callsite-consensus",
                     )
                 )
+    observations.extend(typescript_provider_class_field_calls(text, imports))
     return sorted(observations, key=lambda item: item.offset)
 
 

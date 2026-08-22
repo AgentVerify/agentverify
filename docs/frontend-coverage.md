@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v107
+framework, wrapper, or configuration path. Counts come from schema-v108
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -129,6 +129,17 @@ TypeScript reaches 59 exact calls across nine repositories: 23 constructors, fou
 calls, and 32 AI SDK calls. The typed proof requires unanimous direct call sites; exported helpers,
 mixed or unproven arguments, cycles without a constructor root, and actual parameter shadowing are
 withheld, as are functions passed or stored as values.
+
+Schema v108 separates exact provider-request identity from literal model identity. A proven native
+client now contributes an exact provider call for its provider-owned request method even when the
+request object or `model` value is runtime data; a model component is still created only for a
+direct literal `model` property. Four dynamic-model requests in GPT Pilot are recovered from
+immutable direct bindings. Five more requests flow through readonly fields assigned exactly once in
+the same class: OpenAI, Anthropic, and Google in Bytebot plus Anthropic and Google in MCP TypeScript
+SDK. TypeScript reaches 68 exact production calls across nine repositories: 23 constructors, 13
+native request calls, and 32 AI SDK calls. Five native requests use the class-field proof, while 26
+literal models remain unchanged. Mutable or multiply assigned fields, custom endpoints, nonliteral
+constructor configs, and unrelated methods remain withheld.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
 Agent→MCP-server identities. Import-proven literal stdio constructor calls are inventoried for any
@@ -790,7 +801,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 642-label rule truth set and 1,175-label IR component/relationship set are curated regression
+The 642-label rule truth set and 1,193-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

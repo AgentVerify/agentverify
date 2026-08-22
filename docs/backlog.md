@@ -57,6 +57,12 @@ four-hop OpenAI Agents JS helper chain; exported functions, mixed/unproven call 
 cycles, and actual constructor-name parameters remain unresolved. It also recovers one Anthropic
 constructor previously hidden by qualified SDK types. The 381 component labels now pin 278
 positives and 103 negatives.
+Schema v108 records an exact native provider request independently of whether its request object
+contains a literal model. Immutable direct clients recover four runtime-model GPT Pilot requests;
+readonly fields with one same-class default-endpoint assignment recover five Bytebot and MCP
+TypeScript SDK requests. Literal model components remain conservative. Mutable or reassigned
+fields, custom endpoints, and unrelated methods are pinned negatives. The 399 component labels now
+pin 292 positives and 107 negatives.
 Next generalize selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
@@ -397,8 +403,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 642 pinned positive/negative locations, with 1,175 separately
-scored IR component/relationship labels. Schema-v107 engine results and
+The curated regression set has reached 642 pinned positive/negative locations, with 1,193 separately
+scored IR component/relationship labels. Schema-v108 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

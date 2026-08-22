@@ -472,6 +472,15 @@ repositories—27 native (23 constructors and four model requests) plus 32 AI SD
 helpers, mixed call sites, rootless cycles, callback/value escapes, and actual parameter shadowing
 remain unresolved.
 
+Schema v108 shows that provider use and literal model identity are distinct evidence layers. Four
+GPT Pilot request methods are exact OpenAI or Anthropic calls even though their `model` values are
+parameters. Bytebot contributes three request methods and MCP TypeScript SDK contributes two through
+readonly fields assigned once from exact default-endpoint constructors. These nine production paths
+raise TypeScript attribution to 68 calls across nine repositories—36 native (23 constructors and 13
+requests) plus 32 AI SDK calls. Literal-model count stays at 26. Mutable, multiply assigned, or
+custom-endpoint fields and unrelated methods remain unresolved, so the gain does not come from
+generic `.create` matching.
+
 ## 5. Controls are layered
 
 Sandboxing vocabulary appears in 64 repositories, audit/tracing in 57, human approval in 52, and

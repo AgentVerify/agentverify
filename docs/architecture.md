@@ -90,6 +90,13 @@ provider: an inline default-endpoint constructor, an immutable constructor bindi
 resolved typed parameter. Function-name references must all be definitions or direct analyzed calls,
 so callback/value escape withholds proof. Cycles need a concrete root; exports, mixed call sites,
 mutation, and real parameter-name shadowing also withhold the downstream proof.
+Schema v108 treats provider-request and model-value attribution as separate facts. Once an exact
+native client receiver is proven, only the provider-owned OpenAI chat/responses, Anthropic messages,
+or Google content-generation method is needed for a provider-call component; a nonliteral request
+does not invent a model component. The same receiver proof may cross a class field only when its
+declaration is readonly, the default-endpoint constructor is assigned exactly once inside the same
+balanced class, and the request method is also inside that class. Mutable or multiply assigned
+fields, custom endpoints, and generic `.create` methods stay unresolved.
 Schema v77 gives import-proven, assigned Python MCP stdio constructors stable component identities.
 An Agent receives an exact `uses` edge only when its literal `mcp_servers=[...]` list names an
 earlier, unreassigned server binding in the same statement block. Package and version facts remain
