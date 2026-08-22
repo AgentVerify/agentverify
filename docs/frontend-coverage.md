@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v103
+framework, wrapper, or configuration path. Counts come from schema-v104
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -32,7 +32,7 @@ Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK
 (8), LlamaIndex (6), Vercel AI SDK (5), CrewAI (4), Agno (3), Google ADK (3), PydanticAI (3),
 Microsoft Agent Framework (2), Semantic Kernel (2), smolagents (2), AgentScope (1), AutoGen (1),
 CAMEL (1), Cline SDK (1), Lagent (1), Marvin (1), Mastra (1), MetaGPT (1), and Qwen-Agent (1).
-Provider observations are OpenAI (43), Anthropic (21), Google (20), Azure OpenAI (11), Groq (7),
+Provider observations are OpenAI (43), Anthropic (24), Google (20), Azure OpenAI (11), Groq (7),
 AWS Bedrock (6), Ollama (5), Cohere, Mistral, and xAI (3 each), DeepSeek (2), and Alibaba
 DashScope and Moonshot AI (1 each). These overlapping exact-import/call, literal-service, and
 model-string observations are lower than research-wide lexical signals.
@@ -96,6 +96,14 @@ language and image calls, and observed embedding factory chains are supported. F
 literal `baseURL`, object spread, or nonliteral config are withheld, as are generic
 `@ai-sdk/openai-compatible` calls; pinned negatives cover Inception, Azure-hosted Anthropic, and a
 mock OpenAI endpoint.
+
+Schema v104 adds native TypeScript SDK constructor proof for exact ESM imports from `openai`,
+`@anthropic-ai/sdk`, and `@google/genai`. The corpus contributes 17 production constructors across
+five repositories: ten OpenAI, four Anthropic, and three Google. Combined with schema v103's 32
+official AI SDK calls, TypeScript has 49 exact production calls across eight repositories. Native
+constructors require no arguments or a literal, spread-free configuration without `baseURL` or
+`baseUrl`; unknown configs, nested custom endpoints, rebindings, and CommonJS imports are withheld.
+Anthropic presence rises from 21 to 24 repositories; OpenAI remains 43 and Google remains 20.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
 Agent→MCP-server identities. Import-proven literal stdio constructor calls are inventoried for any
@@ -532,8 +540,11 @@ and `network-ssrf-policy` edge.
   withholds call attribution. The official OpenAI, Anthropic, Google, xAI, Mistral, Groq, and Cohere
   TypeScript AI SDK providers also support selected exact named/dynamic imports, factories, and
   immutable or inline configured instances; custom factory endpoints, unknown/spread configs,
-  generic compatible packages, and community Ollama providers are not conflated. AgentScope's exact
-  public Ollama model reexport and direct
+  generic compatible packages, and community Ollama providers are not conflated. Native OpenAI,
+  Anthropic, and Google GenAI TypeScript SDK constructors are supported through exact
+  ESM default/named imports when their endpoint configuration is statically default; CommonJS,
+  unknown/spread configs, and custom endpoints remain unresolved.
+  AgentScope's exact public Ollama model reexport and direct
   PydanticAI provider/model/embedding modules are supported, but general package reexports are not.
   Literal call-model arguments inherit the proven provider, and selected Mistral-owned prefixes are
   recognized; third-party model names hosted by Groq or Ollama and indirect factories remain
@@ -748,7 +759,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 642-label rule truth set and 1,112-label IR component/relationship set are curated regression
+The 642-label rule truth set and 1,131-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

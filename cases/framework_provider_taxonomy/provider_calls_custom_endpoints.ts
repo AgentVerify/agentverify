@@ -2,6 +2,9 @@ import { createAnthropic } from '@ai-sdk/anthropic';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
+import NativeAnthropic from '@anthropic-ai/sdk';
+import { GoogleGenAI } from '@google/genai';
+import NativeOpenAI from 'openai';
 
 const baseURL = 'https://gateway.example/v1';
 const providerConfig = { apiKey: process.env.PROVIDER_API_KEY };
@@ -30,3 +33,10 @@ const getterOpenAI = createOpenAI({
   apiKey: process.env.PROVIDER_API_KEY,
 });
 const getterOpenAIModel = getterOpenAI('getter-custom');
+const nativeCustomOpenAI = new NativeOpenAI({ baseURL });
+const nativeUnknownAnthropic = new NativeAnthropic(providerConfig);
+const nativeSpreadGoogle = new GoogleGenAI({ ...providerConfig });
+const nativeNestedGoogle = new GoogleGenAI({
+  apiKey: process.env.PROVIDER_API_KEY,
+  httpOptions: { baseUrl: 'https://google-proxy.example/v1' },
+});

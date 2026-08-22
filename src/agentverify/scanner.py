@@ -308,6 +308,23 @@ TYPESCRIPT_AI_SDK_MODEL_METHODS = {
     "reranking": "reranking",
     "image": "image",
 }
+TYPESCRIPT_PROVIDER_SDK_EXPORTS = {
+    "openai": {
+        "provider": "OpenAI",
+        "default": "OpenAI",
+        "named": ("OpenAI",),
+    },
+    "@anthropic-ai/sdk": {
+        "provider": "Anthropic",
+        "default": "Anthropic",
+        "named": ("Anthropic",),
+    },
+    "@google/genai": {
+        "provider": "Google",
+        "default": None,
+        "named": ("GoogleGenAI",),
+    },
+}
 BUILTIN_TOOL_CAPABILITIES = {
     "ShellTool": ("shell-execution",),
     "LocalShellTool": ("shell-execution",),
@@ -11384,6 +11401,11 @@ def scan_python(
 
 TS_IMPORT = re.compile(r"(?:from\s+|require\s*\(\s*)['\"]([^'\"]+)['\"]")
 TS_NAMED_IMPORT = re.compile(r"\bimport\s*\{([^}]+)\}\s*from\s*['\"]([^'\"]+)['\"]", re.DOTALL)
+TS_DEFAULT_IMPORT = re.compile(
+    r"\bimport\s+(?!type\b)([A-Za-z_$][\w$]*)\s*"
+    r"(?:,\s*\{([^}]*)\})?\s*from\s*['\"]([^'\"]+)['\"]",
+    re.DOTALL,
+)
 TS_DYNAMIC_NAMED_IMPORT = re.compile(
     r"\bconst\s*\{([^}]+)\}\s*=\s*(?:await\s*)?"
     r"import\s*\(\s*['\"]([^'\"]+)['\"]\s*\)",
@@ -12001,6 +12023,62 @@ def typescript_ai_sdk_provider_imports(
     }
 
 
+def typescript_provider_sdk_imports(
+    text: str,
+) -> dict[str, TypeScriptProviderImportBinding]:
+    """Return exact, unrebound native provider SDK constructor imports."""
+    candidates: dict[str, list[TypeScriptProviderImportBinding]] = defaultdict(list)
+
+    def add(local: str, imported: str, module: str) -> None:
+        exports = TYPESCRIPT_PROVIDER_SDK_EXPORTS.get(module)
+        if exports is None or re.fullmatch(r"[A-Za-z_$][\w$]*", local) is None:
+            return
+        candidates[local].append(
+            TypeScriptProviderImportBinding(
+                local,
+                imported,
+                module,
+                str(exports["provider"]),
+            )
+        )
+
+    for match in TS_DEFAULT_IMPORT.finditer(text):
+        module = match.group(3)
+        exports = TYPESCRIPT_PROVIDER_SDK_EXPORTS.get(module)
+        if exports is not None and exports["default"] is not None:
+            add(match.group(1), str(exports["default"]), module)
+        if exports is not None and match.group(2):
+            supported = set(exports["named"])
+            for imported in match.group(2).split(","):
+                parts = imported.strip().split()
+                if not parts:
+                    continue
+                original = parts[0]
+                local = parts[2] if len(parts) >= 3 and parts[1] == "as" else original
+                if original in supported:
+                    add(local, original, module)
+    for match in TS_NAMED_IMPORT.finditer(text):
+        module = match.group(2)
+        exports = TYPESCRIPT_PROVIDER_SDK_EXPORTS.get(module)
+        if exports is None:
+            continue
+        supported = set(exports["named"])
+        for imported in match.group(1).split(","):
+            imported = imported.strip()
+            if not imported or imported.startswith("type "):
+                continue
+            parts = imported.split()
+            original = parts[0]
+            local = parts[2] if len(parts) >= 3 and parts[1] == "as" else original
+            if original in supported:
+                add(local, original, module)
+    return {
+        local: values[0]
+        for local, values in candidates.items()
+        if len(values) == 1 and not typescript_import_binding_is_shadowed(text, local)
+    }
+
+
 def typescript_literal_first_call_argument(text: str, opening: int, end: int) -> str | None:
     """Return a direct literal first argument from one balanced TypeScript call."""
     arguments = typescript_call_arguments(text[opening + 1 : end - 1])
@@ -12031,18 +12109,22 @@ def typescript_const_provider_binding_is_stable(
     )
 
 
-def typescript_ai_sdk_factory_uses_default_endpoint(
+def typescript_provider_config_uses_default_endpoint(
     text: str,
     opening: int,
     end: int,
 ) -> bool:
-    """Accept factory attribution only when a custom endpoint cannot be supplied."""
+    """Accept provider configuration only when a custom endpoint cannot be supplied."""
     arguments = typescript_call_arguments(text[opening + 1 : end - 1])
     if not arguments:
         return True
     config = arguments[0][0].strip()
     code = typescript_code_mask(config).strip()
     if not code.startswith("{"):
+        return False
+    if re.search(r"\bbase(?:URL|Url)\b", code) or re.search(
+        r"(['\"])base(?:URL|Url)\1\s*:", config
+    ):
         return False
     config_end = typescript_balanced_end(code, 0, "{", "}")
     if config_end is None or code[config_end:].strip():
@@ -12083,7 +12165,7 @@ def typescript_ai_sdk_provider_calls(text: str) -> list[TypeScriptProviderCall]:
             end = typescript_balanced_end(code, opening, "(", ")")
             if end is None:
                 continue
-            if is_factory and not typescript_ai_sdk_factory_uses_default_endpoint(
+            if is_factory and not typescript_provider_config_uses_default_endpoint(
                 text, opening, end
             ):
                 continue
@@ -12180,6 +12262,32 @@ def typescript_ai_sdk_provider_calls(text: str) -> list[TypeScriptProviderCall]:
                     typescript_literal_first_call_argument(text, opening, end),
                     TYPESCRIPT_AI_SDK_MODEL_METHODS.get(match.group(1), "language"),
                     binding.local_name,
+                )
+            )
+    return sorted(observations, key=lambda item: item.offset)
+
+
+def typescript_provider_sdk_calls(text: str) -> list[TypeScriptProviderCall]:
+    """Resolve exact native provider SDK constructors with default endpoint proof."""
+    code = typescript_code_mask(text)
+    observations: list[TypeScriptProviderCall] = []
+    for local_name, binding in typescript_provider_sdk_imports(text).items():
+        pattern = re.compile(rf"\bnew\s+{re.escape(local_name)}\s*\(")
+        for match in pattern.finditer(code):
+            opening = code.find("(", match.start(), match.end())
+            end = typescript_balanced_end(code, opening, "(", ")")
+            if end is None or not typescript_provider_config_uses_default_endpoint(
+                text, opening, end
+            ):
+                continue
+            observations.append(
+                TypeScriptProviderCall(
+                    match.start(),
+                    local_name,
+                    "provider-sdk-constructor",
+                    binding.module,
+                    binding.imported_symbol,
+                    binding.provider,
                 )
             )
     return sorted(observations, key=lambda item: item.offset)
@@ -14171,7 +14279,14 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
         for item in ir.components
         if item.kind == "agent" and item.evidence.path == relative
     }
-    for provider_call in typescript_ai_sdk_provider_calls(text):
+    provider_calls = sorted(
+        (
+            *typescript_ai_sdk_provider_calls(text),
+            *typescript_provider_sdk_calls(text),
+        ),
+        key=lambda item: item.offset,
+    )
+    for provider_call in provider_calls:
         line_number = line_at(text, provider_call.offset)
         ev = Evidence(relative, line_number, excerpt(lines, line_number))
         attributes = {

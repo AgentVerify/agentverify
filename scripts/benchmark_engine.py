@@ -1022,6 +1022,16 @@ def main() -> int:
                     not is_test_path(item.evidence.path)
                     for item in typescript_provider_call_attributions
                 ),
+                "native_sdk_calls": sum(
+                    item.attributes.get("call_kind") == "provider-sdk-constructor"
+                    for item in typescript_provider_call_attributions
+                ),
+                "ai_sdk_calls": sum(
+                    str(item.attributes.get("call_kind", "")).startswith(
+                        "ai-sdk-provider-"
+                    )
+                    for item in typescript_provider_call_attributions
+                ),
                 "factory_calls": sum(
                     item.attributes.get("call_kind") == "ai-sdk-provider-factory"
                     for item in typescript_provider_call_attributions
@@ -2544,7 +2554,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 103,
+        "schema_version": 104,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2654,6 +2664,8 @@ def main() -> int:
                     "test_calls",
                     "repositories",
                     "production_repositories",
+                    "native_sdk_calls",
+                    "ai_sdk_calls",
                     "factory_calls",
                     "model_calls",
                     "configured_instance_calls",

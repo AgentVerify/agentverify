@@ -29,3 +29,15 @@ const notOpenAI = openai('gpt-5-mini');
 const notAnthropic = createAnthropic({});
 const notGoogle = createGoogleGenerativeAI({});
 const notXai = xai('grok-4');
+
+import NativeAnthropic from '@anthropic-ai/sdk';
+import { GoogleGenAI } from '@google/genai';
+import NativeOpenAI from 'openai';
+
+NativeOpenAI = fakeProvider;
+NativeAnthropic = fakeProvider;
+GoogleGenAI = fakeProvider;
+
+const notNativeOpenAI = new NativeOpenAI();
+const notNativeAnthropic = new NativeAnthropic();
+const notNativeGoogle = new GoogleGenAI({});

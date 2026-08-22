@@ -69,6 +69,11 @@ and xAI. Direct singleton and dynamic-import calls, image calls, immutable facto
 and observed inline embedding methods retain provider and literal model identity. Factory proof
 requires no config or a literal, spread-free object without `baseURL`; a custom endpoint, unknown or
 spread config, rebinding, near-name module, or generic compatible provider invalidates attribution.
+Schema v104 applies the same default-endpoint boundary to native TypeScript provider constructors.
+Exact ESM default or named imports from `openai`, `@anthropic-ai/sdk`, and `@google/genai` establish
+constructor identity until rebinding. Calls with no arguments or a literal, spread-free config
+without `baseURL`/`baseUrl` are accepted; CommonJS imports, unknown configs, nested custom endpoints,
+and similarly named constructors remain unresolved.
 Schema v77 gives import-proven, assigned Python MCP stdio constructors stable component identities.
 An Agent receives an exact `uses` edge only when its literal `mcp_servers=[...]` list names an
 earlier, unreassigned server binding in the same statement block. Package and version facts remain

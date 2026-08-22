@@ -439,6 +439,15 @@ Factory calls are accepted only without configuration or with a literal, spread-
 `baseURL`. This withholds the selected Inception, Azure-hosted Anthropic, and mock OpenAI calls, as
 well as generic `@ai-sdk/openai-compatible` providers and unknown configs.
 
+Schema v104 adds exact native TypeScript SDK constructors for OpenAI, Anthropic, and Google GenAI.
+Five repositories contribute 17 production calls: ten OpenAI, four Anthropic, and three Google.
+Together with the official AI SDK paths, TypeScript attribution reaches 49 calls across eight
+repositories. Exact ESM default/named imports and default-endpoint configuration are required;
+unknown or spread configs, literal `baseURL`/`baseUrl` overrides at any nesting depth, CommonJS
+imports, and rebindings remain unresolved. This raises strict Anthropic presence from 21 to 24
+repositories while OpenAI remains 43 and Google remains 20 because the other native calls occur in
+already-attributed repositories.
+
 ## 5. Controls are layered
 
 Sandboxing vocabulary appears in 64 repositories, audit/tracing in 57, human approval in 52, and

@@ -35,7 +35,10 @@ and xAI, including direct, dynamic, image, factory-created, and inline embedding
 accepted only with no arguments or a literal, spread-free configuration without `baseURL`; generic
 compatible packages, unknown configs, rebindings, and custom endpoints remain unresolved. The 318
 component labels pin 237 local/real positives and 81 unrelated, rebound, custom-endpoint, or
-near-name negatives.
+near-name negatives. Schema v104 adds exact ESM constructors from the native OpenAI, Anthropic, and
+Google GenAI TypeScript SDKs. No-argument or literal spread-free default-endpoint configuration is
+required; CommonJS imports, unknown or custom-endpoint configs, and rebound constructors remain
+unresolved. The 337 component labels now pin 247 positives and 90 negatives.
 Next generalize selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
@@ -376,8 +379,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 642 pinned positive/negative locations, with 1,112 separately
-scored IR component/relationship labels. Schema-v103 engine results and
+The curated regression set has reached 642 pinned positive/negative locations, with 1,131 separately
+scored IR component/relationship labels. Schema-v104 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

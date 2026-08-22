@@ -270,6 +270,38 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "ai-sdk-provider-model",
             None,
         ),
+        (
+            "provider_native_calls.ts",
+            5,
+            "OpenAI",
+            "OpenAI",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
+            "provider_native_calls.ts",
+            6,
+            "OpenAI",
+            "NamedOpenAI",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
+            "provider_native_calls.ts",
+            7,
+            "Anthropic",
+            "Anthropic",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
+            "provider_native_calls.ts",
+            8,
+            "Google",
+            "GeminiClient",
+            "provider-sdk-constructor",
+            None,
+        ),
     }
     assert {
         (item.evidence.line, item.name, item.attributes["provider"])
