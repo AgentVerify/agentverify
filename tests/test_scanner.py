@@ -602,6 +602,69 @@ def test_local_shell_tool_requires_exact_import_and_reports_missing_sdk_approval
     )
 
 
+def test_code_interpreter_tool_requires_exact_import_and_records_hosted_sandbox() -> None:
+    ir = scan_repository(ROOT / "cases/python_code_interpreter_tool")
+    tools = {
+        component.evidence.line: component
+        for component in ir.components
+        if component.kind == "tool"
+        and component.name.startswith("CodeInterpreterTool@")
+    }
+    assert set(tools) == {5, 10, 18}
+    assert {
+        (
+            tool.attributes["approval_policy"],
+            tool.attributes["approval_source"],
+            tool.attributes["execution_environment"],
+            tool.attributes["sandbox_policy"],
+        )
+        for tool in tools.values()
+    } == {
+        (
+            "unavailable",
+            "sdk-no-approval-parameter",
+            "hosted-sandbox",
+            "sdk-hosted",
+        )
+    }
+    assert tools[5].attributes["container_policy"] == "auto"
+    assert tools[10].attributes["container_policy"] == "existing-reference"
+    assert tools[18].attributes["container_policy"] == "auto"
+    capabilities = [
+        component
+        for component in ir.components
+        if component.kind == "capability"
+        and component.name == "code-execution"
+        and component.attributes.get("api") == "CodeInterpreterTool"
+    ]
+    assert {component.evidence.line for component in capabilities} == {5, 10, 18}
+    assert all(
+        component.attributes.get("sandbox_policy") == "sdk-hosted"
+        and component.attributes.get("builtin_tool") is True
+        for component in capabilities
+    )
+    edges = {
+        edge.source_name: edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent" and edge.target_kind == "tool"
+    }
+    assert set(edges) == {
+        "assigned-code",
+        "aliased-code",
+        "inline-code",
+        "near-code",
+        "rebound-code",
+    }
+    assert edges["assigned-code"].target_id == "py:positive.py#tool:assigned"
+    assert edges["aliased-code"].target_id == "py:positive.py#tool:aliased"
+    assert edges["inline-code"].target_id == (
+        "py:positive.py#tool:CodeInterpreterTool@18"
+    )
+    assert edges["near-code"].target_id is None
+    assert edges["rebound-code"].target_id is None
+    assert not any(finding.rule_id == "AV-EXEC002" for finding in ir.findings)
+
+
 def test_python_computer_tool_has_exact_agent_and_capability_identity() -> None:
     ir = scan_repository(ROOT / "cases/python_computer_tool")
     tools = [

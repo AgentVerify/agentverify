@@ -47,7 +47,7 @@ known method on a role-proven class; `HostedMCPTool`, `LangchainTool`, and `Agen
 separate exact adapter proofs. Four of the callable
 tools resolve through one exact selected local export; three unavailable SDK definitions remain
 explicit import-boundary identities with no inferred capabilities. These proofs resolve the final
-six former default-scope misses. The benchmark now reports zero unresolved among 601 non-test Python
+six former default-scope misses. The benchmark now reports zero unresolved among 603 non-test Python
 Agent→tool edges; all 70 unresolved edges occur in tests or conservative fixtures. Import-proven OpenAI
 `function_tool(function)` assignments now recover 12 exact wrapper tools and Agent edges, including
 the two repeated SDK targets; three enable approval and all occur under tests. Exact same-class
@@ -66,6 +66,9 @@ cross-branch flow, inconsistent/untyped parameters, external receivers, and lamb
 Schema v83 adds five exact-import OpenAI `LocalShellTool` test assets, five shell-capability edges,
 and four resolved Agent links while explicitly recording that the SDK exposes no approval parameter.
 Two resumed-state references remain ambiguous instead of selecting a repeated tool occurrence.
+Schema v84 adds five exact-import OpenAI `CodeInterpreterTool` assets across two repositories, five
+hosted-sandbox code-execution edges, and two production Agent links. Literal auto-container configs
+are distinguished from symbolic/casted unresolved configs; neither becomes an AV-EXEC002 finding.
 Next add broader
 branch/reassignment dataflow and resolve Python/TS package re-exports, wildcard imports, other
 wrapper factories, and type-driven symbols. Schema v77 already gives exact IDs to import-proven
@@ -288,8 +291,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 516 pinned positive/negative locations, with 787 separately
-scored IR component/relationship labels. Schema-v83 engine results and
+The curated regression set has reached 516 pinned positive/negative locations, with 802 separately
+scored IR component/relationship labels. Schema-v84 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

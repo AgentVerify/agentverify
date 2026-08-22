@@ -117,6 +117,12 @@ constructor exposes no approval parameter, so the BOM preserves the missing hook
 that a custom executor has no equivalent control. Aliased exact imports retain canonical API
 provenance; near-package and rebound imports do not become built-in assets.
 
+Exact `CodeInterpreterTool` imports produce hosted-sandbox code-execution assets. The native BOM
+preserves the SDK's unavailable approval hook, `sdk-hosted` sandbox policy, and whether a literal
+container config requests automatic allocation or an existing reference. Symbolic and casted
+configs remain unresolved; sandbox inventory does not imply network, retention, or data-egress
+guarantees that the selected source does not prove.
+
 A project-local MCP adapter receives the same server identity only through exact nominal and
 behavioral proof: one direct `MCPServer` base imported from a supported SDK module, plus direct
 `list_tools` and `call_tool` methods. The adapter export, import, and instance binding must remain

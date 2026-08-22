@@ -131,7 +131,7 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-22 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,771 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,282 relationships, and completed in 282.2704 seconds on the development machine. Three parse
+resolved 2,289 relationships, and completed in 280.6334 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -142,10 +142,10 @@ versioned audited evidence hints plus Python imports reached from MCP forwarding
 URL-security call sites, all charged against the same cap. This refresh materialized 176 dependency files across 21
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v83 carries both the 176-file total and the
+dependency count per repository; engine schema v84 carries both the 176-file total and the
 21-repository coverage.
 
-Engine benchmark schema v83 retains stable component-name taxonomies, category presence counts,
+Engine benchmark schema v84 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
 forwarding-control counts. It also publishes Python and TypeScript initial-origin control coverage
 plus source-proven Python and TypeScript secure transports, with redirect, DNS, proxy, configured
@@ -253,6 +253,13 @@ instances, five local shell-capability edges, and four exact Agent bindings. All
 `approval_policy: unavailable` because the SDK constructor exposes no approval parameter. Two
 resumed-state references remain ambiguous rather than selecting a repeated occurrence.
 
+Schema v84 extends exact-import built-in proof to OpenAI Agents Python `CodeInterpreterTool`. The
+pinned corpus contributes five hosted-sandbox code-execution assets and edges across OpenAI and
+AgentOps; two production examples use literal auto-managed containers and resolve directly from
+their Agents. All five expose no SDK constructor approval parameter. Symbolic and casted test configs
+retain unresolved container policy, and near-package or rebound constructors remain negative. These
+sandboxed inventory assets do not raise AV-EXEC002.
+
 Schema v63 retains A2A endpoint provenance as a separate authority class: four exact client-construction
 paths comprise two unconstrained remote-card-selected TypeScript origins and two same-origin-
 constrained ADK Python paths. The guarded paths validate every advertised interface; the Gemini path
@@ -266,9 +273,9 @@ one address-filtering control with configured allowlist and environment-proxy re
 Composio edges separately count configured-route pinning residuals, one edge-runtime fail-closed path,
 and three edge-runtime unguarded fallbacks.
 
-The benchmark now also measures identity coverage: 10,010 component observations carry
-module-qualified IDs. Of 4,564 relationship endpoints, all 3,806 identified symbol endpoints resolve
-to an observed component (3,493 Python and 313 TypeScript). The current schema records 379
+The benchmark now also measures identity coverage: 10,015 component observations carry
+module-qualified IDs. Of 4,578 relationship endpoints, all 3,815 identified symbol endpoints resolve
+to an observed component (3,502 Python and 313 TypeScript). The current schema records 379
 `lexical-single-definition` targets, 20 exact same-block dominating definitions, 25 contextual
 absolute-import targets, and three exact same-class helper-return edges to two Agent source
 definitions. Fourteen production CrewAI delegations resolve through an exact contextual import,
@@ -285,7 +292,7 @@ Agent-as-tool adapters, and five absolute-import boundary tools. Of these, 526 a
 they add 30 capability edges and 812 exact Agent edges. Every adapter has an exact delegation edge
 to its proven Agent receiver. Imported `from_settings` tool factories plus exact
 `HostedMCPTool`, `LangchainTool`, and `Agent.as_tool()` adapters resolve the last six production
-misses. The schema publishes 1,199 Python Agent→tool edges in total: all 601 non-test edges resolve,
+misses. The schema publishes 1,201 Python Agent→tool edges in total: all 603 non-test edges resolve,
 while the 70 unresolved edges are confined to tests and conservative fixtures. Import-proven OpenAI
 `function_tool(function)` assignments add 12 wrapper tools and 12 exact Agent edges; three explicitly
 enable approval, all occur under tests, and none of their selected bodies contains a recognized
@@ -319,8 +326,8 @@ Missing relative modules, duplicate or forward imports, module rebinding, and fu
 shadowing remain unresolved. Sixteen IR labels cover the local export/import boundary, six negative
 forms, and all seven pinned Google ADK edges; one rule label proves cross-file AV-FS001 reachability.
 
-Schema-v83 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
-resolves 3,798 endpoints by symbol ID, 650 by exact evidence location, and 20 by a unique display
+Schema-v84 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
+resolves 3,807 endpoints by symbol ID, 655 by exact evidence location, and 20 by a unique display
 name; 38 remain ambiguous and 58 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
@@ -1228,7 +1235,7 @@ and model positives plus 42 near-name, rebound, and unrelated-service negatives.
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 787 IR labels pass (584 positives and 203 negatives):
+negatives. All 802 IR labels pass (595 positives and 207 negatives):
 131 component-taxonomy positives/42 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
@@ -1238,7 +1245,8 @@ Agent-helper-return positives/seven negatives, seven imported-Agent-factory proo
 23 tool-factory/adapter proof labels,
 16 imported-literal-tool proof labels, 16 literal-tool-binding proof labels,
 16 typed-tool-parameter positives/two negatives, seven
-Python ComputerTool positives/one negative, 11 Python LocalShellTool positives/four negatives, eight
+Python ComputerTool positives/one negative, 11 Python LocalShellTool positives/four negatives,
+11 Python CodeInterpreterTool positives/four negatives, eight
 direct-callable positives/two negatives, 12
 function-tool-wrapper positives/one negative, three
 TypeScript graph

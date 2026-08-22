@@ -413,7 +413,7 @@ become reachable. Each Agent-as-tool adapter delegates to one exact same-block A
 Four imported callable definitions resolve through exact local exports; three unavailable production
 SDK sources remain import-boundary identities without inferred capabilities. Exact imported
 `from_settings` factories, `HostedMCPTool` and `LangchainTool` constructors, and same-block
-`Agent.as_tool()` adapters resolve those final six former production misses. All 601 non-test Python
+`Agent.as_tool()` adapters resolve those final six former production misses. All 603 non-test Python
 Agent→tool edges now resolve; 70 unresolved edges remain only in tests and conservative fixtures.
 Import-proven OpenAI `function_tool(function)` assignments
 recover 12 wrapper tools and 12 exact Agent edges; three enable approval, all occur under tests, and
@@ -422,7 +422,10 @@ resolve through one importer-ancestor path and one exact decorated export. The 1
 four production example projects and require one exact imported class, immutable local construction,
 and a direct Agent return. Exact `LocalShellTool` imports add five test-scoped local shell assets,
 five capability edges, and four resolved Agent links while preserving the SDK's unavailable approval
-hook as distinct from a disabled option. The final export resolves 3,798 endpoints by symbol ID, 650
+hook as distinct from a disabled option. Exact `CodeInterpreterTool` imports add five hosted-sandbox
+code-execution assets and edges across OpenAI and AgentOps; two literal auto-container examples are
+production Agent paths, while symbolic/casted configs remain unresolved and no AV-EXEC002 finding is
+created. The final export resolves 3,807 endpoints by symbol ID, 655
 by exact evidence location, and 20 by unique display name; 38 remain ambiguous
 agent/protocol/control/tool endpoints, and 58 unresolved. Two resumed-state LocalShellTool references
 remain `ambiguous-repeated-binding` targets rather than selecting an occurrence;
@@ -430,7 +433,7 @@ cross-branch, forward, inconsistent/untyped parameters, conditional/transformed 
 external receivers, shadowed factories, lambdas, and reassigned fixture cases stay unresolved. Two apparent CrewAI
 re-export misses were false identities:
 a function parameter and a local assignment shadowed the imported `tool` binding. Scope-isolating
-module and function imports now withhold those IDs, so all 3,806 identified endpoints resolve.
+module and function imports now withhold those IDs, so all 3,815 identified endpoints resolve.
 A governance export that collapses those references
 by name would silently attach controls or risks to the wrong asset.
 

@@ -95,6 +95,13 @@ conditional, duplicate, or rebound bindings are withheld. The asset records loca
 and `approval_policy: unavailable` / `approval_source: sdk-no-approval-parameter`; it does not infer
 that the caller-supplied executor lacks an equivalent control.
 
+Schema v84 extends that exact-import map to `CodeInterpreterTool`. The IR records a hosted-sandbox
+code-execution capability, an unavailable SDK approval hook, and either `auto`,
+`existing-reference`, or `unresolved` container policy. Only literal `tool_config` dictionaries
+establish container policy; symbolic and casted expressions remain unresolved. Because this is
+source-proven sandboxed inventory without a direct dynamic evaluator primitive, it does not satisfy
+AV-EXEC002's finding contract.
+
 Names are intentionally not treated as globally unique. Python and TypeScript agent/tool definitions
 carry stable frontend-and-module-qualified `symbol_id` values; relationships carry `source_id` and
 `target_id` when resolution succeeds. Context analysis prefers those IDs and falls back to the older
@@ -570,6 +577,10 @@ Import-proven `LocalShellTool` instances emit local shell execution and explicit
 SDK with no approval hook from one whose approval option is merely disabled. A reachable instance
 can therefore trigger AV-APPROVAL002 as a review while preserving the executor as an unresolved
 possible compensating control.
+Import-proven `CodeInterpreterTool` instances similarly expose that their SDK constructor has no
+approval hook, but they carry `execution_environment: hosted-sandbox` and
+`sandbox_policy: sdk-hosted`. Literal auto-container selection is preserved as configuration
+evidence; it is not treated as proof about network, persistence, or data-retention isolation.
 
 Control presence is not automatically policy satisfaction. An uncaught lookup in an internal MCP
 tool registry creates a `tool-registry` edge because it proves the name is routable and rejects

@@ -6183,6 +6183,66 @@
     {
       "id":"python-local-shell-metadata-component-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-LOCAL-SHELL-TOOL","path":"tests/test_tool_metadata.py","line":49,"expected":true,
       "component":{"kind":"tool","name":"LocalShellTool@49","symbol_id":"py:tests/test_tool_metadata.py#tool:LocalShellTool@49","attributes":{"approval_policy":"unavailable","execution_environment":"local","scope":"test"}}
+    },
+    {
+      "id":"python-code-interpreter-component-local","target":{"kind":"local","path":"cases/python_code_interpreter_tool"},"check_id":"IR-PY-CODE-INTERPRETER-TOOL","path":"positive.py","line":5,"expected":true,
+      "component":{"kind":"tool","name":"CodeInterpreterTool@5","symbol_id":"py:positive.py#tool:assigned","attributes":{"constructor":"CodeInterpreterTool","approval_policy":"unavailable","approval_source":"sdk-no-approval-parameter","execution_environment":"hosted-sandbox","sandbox_policy":"sdk-hosted","container_policy":"auto"}}
+    },
+    {
+      "id":"python-code-interpreter-alias-component-local","target":{"kind":"local","path":"cases/python_code_interpreter_tool"},"check_id":"IR-PY-CODE-INTERPRETER-TOOL","path":"positive.py","line":10,"expected":true,
+      "component":{"kind":"tool","name":"CodeInterpreterTool@10","symbol_id":"py:positive.py#tool:aliased","attributes":{"constructor":"AliasedCodeInterpreterTool","execution_environment":"hosted-sandbox","sandbox_policy":"sdk-hosted","container_policy":"existing-reference"}}
+    },
+    {
+      "id":"python-code-interpreter-capability-local","target":{"kind":"local","path":"cases/python_code_interpreter_tool"},"check_id":"IR-PY-CODE-INTERPRETER-TOOL","path":"positive.py","line":5,"expected":true,
+      "component":{"kind":"capability","name":"code-execution","attributes":{"api":"CodeInterpreterTool","builtin_tool":true,"execution_environment":"hosted-sandbox","sandbox_policy":"sdk-hosted","container_policy":"auto"}}
+    },
+    {
+      "id":"python-code-interpreter-assigned-edge-local","target":{"kind":"local","path":"cases/python_code_interpreter_tool"},"check_id":"IR-PY-CODE-INTERPRETER-TOOL","path":"positive.py","line":8,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"assigned-code","relation":"uses","target_kind":"tool","target_name":"assigned","source_id":"py:positive.py#agent:assigned_agent","target_id":"py:positive.py#tool:assigned"}
+    },
+    {
+      "id":"python-code-interpreter-inline-edge-local","target":{"kind":"local","path":"cases/python_code_interpreter_tool"},"check_id":"IR-PY-CODE-INTERPRETER-TOOL","path":"positive.py","line":15,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"inline-code","relation":"uses","target_kind":"tool","target_name":"CodeInterpreterTool@18","source_id":"py:positive.py#agent:inline_agent","target_id":"py:positive.py#tool:CodeInterpreterTool@18"}
+    },
+    {
+      "id":"python-code-interpreter-near-component-local-negative","target":{"kind":"local","path":"cases/python_code_interpreter_tool"},"check_id":"IR-PY-CODE-INTERPRETER-TOOL","path":"negative.py","line":6,"expected":false,
+      "component":{"kind":"tool","name":"CodeInterpreterTool@6"}
+    },
+    {
+      "id":"python-code-interpreter-rebound-component-local-negative","target":{"kind":"local","path":"cases/python_code_interpreter_tool"},"check_id":"IR-PY-CODE-INTERPRETER-TOOL","path":"negative.py","line":10,"expected":false,
+      "component":{"kind":"tool","name":"CodeInterpreterTool@10"}
+    },
+    {
+      "id":"python-code-interpreter-near-edge-local-negative","target":{"kind":"local","path":"cases/python_code_interpreter_tool"},"check_id":"IR-PY-CODE-INTERPRETER-TOOL","path":"negative.py","line":7,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"near-code","relation":"uses","target_kind":"tool","target_name":"near","target_id":"py:negative.py#tool:near"}
+    },
+    {
+      "id":"python-code-interpreter-rebound-edge-local-negative","target":{"kind":"local","path":"cases/python_code_interpreter_tool"},"check_id":"IR-PY-CODE-INTERPRETER-TOOL","path":"negative.py","line":11,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"rebound-code","relation":"uses","target_kind":"tool","target_name":"rebound","target_id":"py:negative.py#tool:rebound"}
+    },
+    {
+      "id":"python-code-interpreter-component-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-CODE-INTERPRETER-TOOL","path":"examples/tools/code_interpreter.py","line":25,"expected":true,
+      "component":{"kind":"tool","name":"CodeInterpreterTool@25","symbol_id":"py:examples/tools/code_interpreter.py#tool:CodeInterpreterTool@25","attributes":{"approval_policy":"unavailable","execution_environment":"hosted-sandbox","sandbox_policy":"sdk-hosted","container_policy":"auto","scope":"example"}}
+    },
+    {
+      "id":"python-code-interpreter-capability-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-CODE-INTERPRETER-TOOL","path":"examples/tools/code_interpreter.py","line":25,"expected":true,
+      "component":{"kind":"capability","name":"code-execution","attributes":{"api":"CodeInterpreterTool","builtin_tool":true,"execution_environment":"hosted-sandbox","sandbox_policy":"sdk-hosted","container_policy":"auto","scope":"example"}}
+    },
+    {
+      "id":"python-code-interpreter-edge-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-CODE-INTERPRETER-TOOL","path":"examples/tools/code_interpreter.py","line":15,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Code interpreter","relation":"uses","target_kind":"tool","target_name":"CodeInterpreterTool@25","source_id":"py:examples/tools/code_interpreter.py#agent:agent","target_id":"py:examples/tools/code_interpreter.py#tool:CodeInterpreterTool@25"}
+    },
+    {
+      "id":"python-code-interpreter-component-agentops-real","target":{"kind":"repository","repository":"AgentOps-AI/agentops","commit":"f8e907b92dabe47232978023fdcb01e2a7d4b752"},"check_id":"IR-PY-CODE-INTERPRETER-TOOL","path":"examples/openai_agents/agents_tools.py","line":79,"expected":true,
+      "component":{"kind":"tool","name":"CodeInterpreterTool@79","symbol_id":"py:examples/openai_agents/agents_tools.py#tool:CodeInterpreterTool@79","attributes":{"approval_policy":"unavailable","execution_environment":"hosted-sandbox","sandbox_policy":"sdk-hosted","container_policy":"auto","scope":"example"}}
+    },
+    {
+      "id":"python-code-interpreter-capability-agentops-real","target":{"kind":"repository","repository":"AgentOps-AI/agentops","commit":"f8e907b92dabe47232978023fdcb01e2a7d4b752"},"check_id":"IR-PY-CODE-INTERPRETER-TOOL","path":"examples/openai_agents/agents_tools.py","line":79,"expected":true,
+      "component":{"kind":"capability","name":"code-execution","attributes":{"api":"CodeInterpreterTool","builtin_tool":true,"execution_environment":"hosted-sandbox","sandbox_policy":"sdk-hosted","container_policy":"auto","scope":"example"}}
+    },
+    {
+      "id":"python-code-interpreter-edge-agentops-real","target":{"kind":"repository","repository":"AgentOps-AI/agentops","commit":"f8e907b92dabe47232978023fdcb01e2a7d4b752"},"check_id":"IR-PY-CODE-INTERPRETER-TOOL","path":"examples/openai_agents/agents_tools.py","line":75,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Code interpreter","relation":"uses","target_kind":"tool","target_name":"CodeInterpreterTool@79","source_id":"py:examples/openai_agents/agents_tools.py#agent:agent@75","target_id":"py:examples/openai_agents/agents_tools.py#tool:CodeInterpreterTool@79"}
     }
   ]
 }

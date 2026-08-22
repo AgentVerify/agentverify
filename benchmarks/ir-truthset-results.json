@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T11:07:57.914986+00:00",
-  "labels": 787,
-  "passed": 787,
+  "generated_at": "2026-08-22T11:17:57.570969+00:00",
+  "labels": 802,
+  "passed": 802,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -160,6 +160,14 @@
       "tp": 3,
       "fp": 0,
       "tn": 5,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-CODE-INTERPRETER-TOOL": {
+      "tp": 11,
+      "fp": 0,
+      "tn": 4,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -7595,6 +7603,141 @@
     {
       "id": "python-local-shell-metadata-component-openai-real",
       "check_id": "IR-PY-LOCAL-SHELL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-code-interpreter-component-local",
+      "check_id": "IR-PY-CODE-INTERPRETER-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-code-interpreter-alias-component-local",
+      "check_id": "IR-PY-CODE-INTERPRETER-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-code-interpreter-capability-local",
+      "check_id": "IR-PY-CODE-INTERPRETER-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-code-interpreter-assigned-edge-local",
+      "check_id": "IR-PY-CODE-INTERPRETER-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-code-interpreter-inline-edge-local",
+      "check_id": "IR-PY-CODE-INTERPRETER-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-code-interpreter-near-component-local-negative",
+      "check_id": "IR-PY-CODE-INTERPRETER-TOOL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-code-interpreter-rebound-component-local-negative",
+      "check_id": "IR-PY-CODE-INTERPRETER-TOOL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-code-interpreter-near-edge-local-negative",
+      "check_id": "IR-PY-CODE-INTERPRETER-TOOL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-code-interpreter-rebound-edge-local-negative",
+      "check_id": "IR-PY-CODE-INTERPRETER-TOOL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-code-interpreter-component-openai-real",
+      "check_id": "IR-PY-CODE-INTERPRETER-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-code-interpreter-capability-openai-real",
+      "check_id": "IR-PY-CODE-INTERPRETER-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-code-interpreter-edge-openai-real",
+      "check_id": "IR-PY-CODE-INTERPRETER-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-code-interpreter-component-agentops-real",
+      "check_id": "IR-PY-CODE-INTERPRETER-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-code-interpreter-capability-agentops-real",
+      "check_id": "IR-PY-CODE-INTERPRETER-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-code-interpreter-edge-agentops-real",
+      "check_id": "IR-PY-CODE-INTERPRETER-TOOL",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

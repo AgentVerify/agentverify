@@ -342,6 +342,36 @@ def main() -> int:
             raise RuntimeError(
                 f"{repository}: Python LocalShellTool lacks an exact shell edge"
             )
+        python_code_interpreter_tools = [
+            item
+            for item in ir.components
+            if item.kind == "tool"
+            and item.name.startswith("CodeInterpreterTool@")
+            and item.attributes.get("sandbox_policy") == "sdk-hosted"
+            and item.attributes.get("execution_environment") == "hosted-sandbox"
+        ]
+        python_code_interpreter_tool_ids = {
+            item.symbol_id for item in python_code_interpreter_tools if item.symbol_id
+        }
+        if len(python_code_interpreter_tool_ids) != len(
+            python_code_interpreter_tools
+        ):
+            raise RuntimeError(
+                f"{repository}: Python CodeInterpreterTool lacks a unique symbol ID"
+            )
+        python_code_interpreter_capability_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_id in python_code_interpreter_tool_ids
+            and edge.target_kind == "capability"
+            and edge.target_name == "code-execution"
+        ]
+        if len(python_code_interpreter_capability_edges) != len(
+            python_code_interpreter_tools
+        ):
+            raise RuntimeError(
+                f"{repository}: Python CodeInterpreterTool lacks an exact code edge"
+            )
         python_sandbox_agents = [
             item
             for item in ir.components
@@ -1106,6 +1136,28 @@ def main() -> int:
                     if edge.source_kind == "agent" and edge.target_kind == "tool"
                 ),
                 "repositories": bool(python_local_shell_tools),
+            },
+            "python_code_interpreter_tools": {
+                "instances": len(python_code_interpreter_tools),
+                "non_test_instances": sum(
+                    not is_test_path(item.evidence.path)
+                    for item in python_code_interpreter_tools
+                ),
+                "approval_unavailable": sum(
+                    item.attributes.get("approval_policy") == "unavailable"
+                    for item in python_code_interpreter_tools
+                ),
+                "auto_containers": sum(
+                    item.attributes.get("container_policy") == "auto"
+                    for item in python_code_interpreter_tools
+                ),
+                "capability_edges": len(python_code_interpreter_capability_edges),
+                "resolved_agent_edges": sum(
+                    edge.target_id in python_code_interpreter_tool_ids
+                    for edge in ir.relationships
+                    if edge.source_kind == "agent" and edge.target_kind == "tool"
+                ),
+                "repositories": bool(python_code_interpreter_tools),
             },
             "python_sandbox_agents": {
                 "total": len(python_sandbox_agents),
@@ -2397,7 +2449,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 83,
+        "schema_version": 84,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2585,6 +2637,21 @@ def main() -> int:
                     "instances",
                     "non_test_instances",
                     "approval_unavailable",
+                    "capability_edges",
+                    "resolved_agent_edges",
+                    "repositories",
+                )
+            },
+            "python_code_interpreter_tools": {
+                name: sum(
+                    result["python_code_interpreter_tools"][name]
+                    for result in successful
+                )
+                for name in (
+                    "instances",
+                    "non_test_instances",
+                    "approval_unavailable",
+                    "auto_containers",
                     "capability_edges",
                     "resolved_agent_edges",
                     "repositories",

@@ -211,10 +211,13 @@ TYPESCRIPT_AI_SDK_PROVIDER_EXPORTS = {
 BUILTIN_TOOL_CAPABILITIES = {
     "ShellTool": ("shell-execution",),
     "LocalShellTool": ("shell-execution",),
+    "CodeInterpreterTool": ("code-execution",),
     "ApplyPatchTool": ("filesystem",),
     "ComputerTool": ("computer-control",),
     "CustomTool": ("external-action",),
 }
+EXACT_IMPORT_OPENAI_BUILTINS = frozenset({"CodeInterpreterTool", "LocalShellTool"})
+OPENAI_BUILTINS_WITHOUT_APPROVAL = EXACT_IMPORT_OPENAI_BUILTINS
 EXACT_TOOL_CONSTRUCTOR_IMPORTS = {
     ("agents", "HostedMCPTool"),
     ("google.adk.integrations.langchain", "LangchainTool"),
@@ -2683,7 +2686,7 @@ class PythonVisitor(ast.NodeVisitor):
         mcp_server_binding_resolutions: dict[int, str],
         mcp_in_process_server_bindings: dict[str, tuple[str, str]],
         agent_constructor_bindings: set[str],
-        local_shell_tool_call_ids: set[int],
+        exact_openai_builtin_call_names: dict[int, str],
         observed_mcp_server_ids: set[str],
         definition_symbol_ids: dict[int, str],
         referenced_tool_functions: dict[int, PythonToolRoleReference],
@@ -2772,7 +2775,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.mcp_server_binding_resolutions = mcp_server_binding_resolutions
         self.mcp_in_process_server_bindings = mcp_in_process_server_bindings
         self.agent_constructor_bindings = agent_constructor_bindings
-        self.local_shell_tool_call_ids = local_shell_tool_call_ids
+        self.exact_openai_builtin_call_names = exact_openai_builtin_call_names
         self.definition_symbol_ids = definition_symbol_ids
         self.referenced_tool_functions = referenced_tool_functions
         self.wrapped_tool_functions = wrapped_tool_functions
@@ -4685,16 +4688,12 @@ class PythonVisitor(ast.NodeVisitor):
                         constructor=constructor,
                         analysis="python-import-bound-mcp-constructor",
                     )
-        builtin_name = (
-            "LocalShellTool"
-            if id(node) in self.local_shell_tool_call_ids
-            else short_name
-        )
+        builtin_name = self.exact_openai_builtin_call_names.get(id(node), short_name)
         exact_builtin_call = (
             builtin_name in BUILTIN_TOOL_CAPABILITIES
             and (
-                builtin_name != "LocalShellTool"
-                or id(node) in self.local_shell_tool_call_ids
+                builtin_name not in EXACT_IMPORT_OPENAI_BUILTINS
+                or id(node) in self.exact_openai_builtin_call_names
             )
         )
         if self.has_openai_agents_import and exact_builtin_call:
@@ -4706,29 +4705,32 @@ class PythonVisitor(ast.NodeVisitor):
                 "not-applicable"
                 if builtin_name == "ComputerTool"
                 else "unavailable"
-                if builtin_name == "LocalShellTool"
+                if builtin_name in OPENAI_BUILTINS_WITHOUT_APPROVAL
                 else "disabled-default"
             )
             approval_source = (
                 "sdk-computer-safety-check"
                 if builtin_name == "ComputerTool"
                 else "sdk-no-approval-parameter"
-                if builtin_name == "LocalShellTool"
+                if builtin_name in OPENAI_BUILTINS_WITHOUT_APPROVAL
                 else "sdk-default"
             )
             approval_handler = "none"
             approval_bypass_environment_names: tuple[str, ...] = ()
             safety_check_handler = "none"
             execution_environment = (
-                "local"
+                "hosted-sandbox"
+                if builtin_name == "CodeInterpreterTool"
+                else "local"
                 if builtin_name in {"ComputerTool", "LocalShellTool"}
                 or (builtin_name == "ShellTool" and node.args)
                 else "unresolved"
             )
+            container_policy = "unresolved"
             approval_evidence = self.ev(node)
             for keyword in node.keywords:
                 if (
-                    builtin_name != "LocalShellTool"
+                    builtin_name not in OPENAI_BUILTINS_WITHOUT_APPROVAL
                     and keyword.arg in {"needs_approval", "require_approval"}
                 ):
                     approval_evidence = self.ev(keyword.value)
@@ -4741,8 +4743,13 @@ class PythonVisitor(ast.NodeVisitor):
                     else:
                         approval_state = "unresolved"
                         approval_source = "callback-or-expression"
-                elif builtin_name != "LocalShellTool" and keyword.arg == "on_approval" and not (
-                    isinstance(keyword.value, ast.Constant) and keyword.value.value is None
+                elif (
+                    builtin_name not in OPENAI_BUILTINS_WITHOUT_APPROVAL
+                    and keyword.arg == "on_approval"
+                    and not (
+                        isinstance(keyword.value, ast.Constant)
+                        and keyword.value.value is None
+                    )
                 ):
                     approval_handler = "configured"
                     handler_name = dotted_name(keyword.value).rsplit(".", 1)[-1]
@@ -4772,6 +4779,47 @@ class PythonVisitor(ast.NodeVisitor):
                             and isinstance(value.value, str)
                         ):
                             execution_environment = "local" if value.value == "local" else "hosted"
+                elif (
+                    builtin_name == "CodeInterpreterTool"
+                    and keyword.arg == "tool_config"
+                    and isinstance(keyword.value, ast.Dict)
+                ):
+                    container = next(
+                        (
+                            value
+                            for key, value in zip(
+                                keyword.value.keys, keyword.value.values, strict=True
+                            )
+                            if isinstance(key, ast.Constant) and key.value == "container"
+                        ),
+                        None,
+                    )
+                    if isinstance(container, ast.Constant) and isinstance(
+                        container.value, str
+                    ):
+                        container_policy = (
+                            "auto" if container.value == "auto" else "existing-reference"
+                        )
+                    elif isinstance(container, ast.Dict):
+                        container_type = next(
+                            (
+                                value.value
+                                for key, value in zip(
+                                    container.keys, container.values, strict=True
+                                )
+                                if isinstance(key, ast.Constant)
+                                and key.value == "type"
+                                and isinstance(value, ast.Constant)
+                                and isinstance(value.value, str)
+                            ),
+                            None,
+                        )
+                        if container_type is not None:
+                            container_policy = (
+                                "auto"
+                                if container_type == "auto"
+                                else "existing-reference"
+                            )
             if approval_state == "enabled" and approval_handler == "configured":
                 approval_state = "unresolved-handler"
             self.ir.add_component(
@@ -4786,6 +4834,14 @@ class PythonVisitor(ast.NodeVisitor):
                         "approval_source": approval_source,
                         "execution_environment": execution_environment,
                         "scope": source_scope(self.path),
+                        **(
+                            {
+                                "container_policy": container_policy,
+                                "sandbox_policy": "sdk-hosted",
+                            }
+                            if builtin_name == "CodeInterpreterTool"
+                            else {}
+                        ),
                         **(
                             {
                                 "approval_bypass_environment_names": list(
@@ -4809,7 +4865,7 @@ class PythonVisitor(ast.NodeVisitor):
                 attributes = {
                     "api": (
                         builtin_name
-                        if builtin_name == "LocalShellTool"
+                        if builtin_name in EXACT_IMPORT_OPENAI_BUILTINS
                         else call_name
                     ),
                     "builtin_tool": True,
@@ -4825,6 +4881,17 @@ class PythonVisitor(ast.NodeVisitor):
                     )
                 elif capability == "computer-control":
                     attributes["execution_environment"] = execution_environment
+                elif (
+                    builtin_name == "CodeInterpreterTool"
+                    and capability == "code-execution"
+                ):
+                    attributes.update(
+                        {
+                            "container_policy": container_policy,
+                            "execution_environment": execution_environment,
+                            "sandbox_policy": "sdk-hosted",
+                        }
+                    )
                 self.ir.add_component(
                     Component("capability", capability, self.ev(node), attributes)
                 )
@@ -5122,19 +5189,17 @@ class PythonVisitor(ast.NodeVisitor):
                         self.has_openai_agents_import
                         and isinstance(value, ast.Call)
                         and (
-                            id(value) in self.local_shell_tool_call_ids
+                            id(value) in self.exact_openai_builtin_call_names
                             or (
                                 dotted_name(value.func).rsplit(".", 1)[-1]
                                 in BUILTIN_TOOL_CAPABILITIES
                                 and dotted_name(value.func).rsplit(".", 1)[-1]
-                                != "LocalShellTool"
+                                not in EXACT_IMPORT_OPENAI_BUILTINS
                             )
                         )
                     ):
-                        constructor = (
-                            "LocalShellTool"
-                            if id(value) in self.local_shell_tool_call_ids
-                            else dotted_name(value.func).rsplit(".", 1)[-1]
+                        constructor = self.exact_openai_builtin_call_names.get(
+                            id(value), dotted_name(value.func).rsplit(".", 1)[-1]
                         )
                         target_name = f"{constructor}@{value.lineno}"
                         target_id = self.call_symbol_ids.get(id(value)) or source_symbol(
@@ -6433,24 +6498,24 @@ def scan_python(
         and import_binding_counts[alias.asname or alias.name] == 1
         and nonimport_binding_counts[alias.asname or alias.name] == 0
     }
-    local_shell_tool_import_lines = {
-        alias.asname or alias.name: statement.lineno
+    exact_openai_builtin_imports = {
+        alias.asname or alias.name: (alias.name, statement.lineno)
         for statement in tree.body
         if isinstance(statement, ast.ImportFrom)
         and statement.level == 0
         and statement.module in {"agents", "agents.tool"}
         for alias in statement.names
-        if alias.name == "LocalShellTool"
+        if alias.name in EXACT_IMPORT_OPENAI_BUILTINS
         and import_binding_counts[alias.asname or alias.name] == 1
         and nonimport_binding_counts[alias.asname or alias.name] == 0
     }
-    local_shell_tool_call_ids = {
-        id(candidate)
+    exact_openai_builtin_call_names = {
+        id(candidate): exact_openai_builtin_imports[candidate.func.id][0]
         for candidate in nodes
         if isinstance(candidate, ast.Call)
         and isinstance(candidate.func, ast.Name)
-        and candidate.func.id in local_shell_tool_import_lines
-        and local_shell_tool_import_lines[candidate.func.id] < candidate.lineno
+        and candidate.func.id in exact_openai_builtin_imports
+        and exact_openai_builtin_imports[candidate.func.id][1] < candidate.lineno
     }
 
     def is_agent_call(call: ast.Call) -> bool:
@@ -6640,10 +6705,10 @@ def scan_python(
                         and not (
                             openai_agents_context
                             and (
-                                id(value) in local_shell_tool_call_ids
+                                id(value) in exact_openai_builtin_call_names
                                 or (
                                     short_name in BUILTIN_TOOL_CAPABILITIES
-                                    and short_name != "LocalShellTool"
+                                    and short_name not in EXACT_IMPORT_OPENAI_BUILTINS
                                 )
                             )
                         )
@@ -6949,9 +7014,9 @@ def scan_python(
                 else "tool"
                 if (
                     short_name in BUILTIN_TOOL_CAPABILITIES
-                    and short_name != "LocalShellTool"
+                    and short_name not in EXACT_IMPORT_OPENAI_BUILTINS
                 )
-                or id(node.value) in local_shell_tool_call_ids
+                or id(node.value) in exact_openai_builtin_call_names
                 or id(node) in wrapped_tool_assignments
                 or id(node) in usage_tool_assignments
                 or id(node) in agent_as_tool_assignments
@@ -7175,10 +7240,11 @@ def scan_python(
         if (
             openai_agents_context
             and (
-                id(node.value) in local_shell_tool_call_ids
+                id(node.value) in exact_openai_builtin_call_names
                 or (
                     constructor.rsplit(".", 1)[-1] in BUILTIN_TOOL_CAPABILITIES
-                    and constructor.rsplit(".", 1)[-1] != "LocalShellTool"
+                    and constructor.rsplit(".", 1)[-1]
+                    not in EXACT_IMPORT_OPENAI_BUILTINS
                 )
             )
         ):
@@ -8208,7 +8274,7 @@ def scan_python(
         mcp_server_binding_resolutions=mcp_server_binding_resolutions,
         mcp_in_process_server_bindings=mcp_in_process_server_bindings,
         agent_constructor_bindings=agent_constructor_bindings,
-        local_shell_tool_call_ids=local_shell_tool_call_ids,
+        exact_openai_builtin_call_names=exact_openai_builtin_call_names,
         observed_mcp_server_ids=observed_mcp_server_ids,
         definition_symbol_ids=definition_symbol_ids,
         referenced_tool_functions=referenced_tool_functions,
