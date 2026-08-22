@@ -246,9 +246,9 @@ remains reviewable, and a dynamic policy is unresolved rather than assumed safe 
 OpenAI signals appear in 51 repositories, Anthropic in 37, Google in 28, Azure OpenAI in 18, and AWS
 Bedrock in 14. Forty-four repositories contain two or more provider signals. An AI bill of
 materials should report providers and model configuration even when no security issue is present.
-The stricter schema-v65 engine promotes a subset only when selected source proves an exact SDK
+The stricter engine promotes a subset only when selected source proves an exact SDK
 import, literal service selection, or recognized model prefix: OpenAI appears in 41 repositories,
-Google and Anthropic in 17 each, Azure OpenAI in 11, AWS Bedrock in six, Groq in five, Ollama in
+Google and Anthropic in 17 each, Azure OpenAI in 11, AWS Bedrock and Groq in six, Ollama in
 four, and Mistral and Cohere in three each. The four added SDK families enrich provider identity but
 do not increase the 48-repository provider-presence total because each occurs alongside another
 recognized provider. The difference from the research-wide lexical census is retained as
@@ -262,6 +262,13 @@ LaVague adds `cohere.Client`; and Trae Agent invokes the imported Ollama `chat` 
 model arguments inherit the exact call's provider. Mistral-owned model prefixes are also attributed
 when configured directly on an Agent, while generic Mixtral, Llama, and other third-party IDs remain
 unresolved without a provider call.
+
+Schema v74 applies the same distinction to official TypeScript AI SDK providers. It resolves static
+named aliases and destructured dynamic imports for Mistral, Groq, and Cohere, records factory calls,
+and follows a factory into one immutable local provider instance. Mastra contributes the pinned
+production example: a dynamically imported `groq` export is called with the caller-selected model ID.
+The model remains unresolved because the argument is not literal, while the configured provider call
+is exact.
 
 ## 5. Controls are layered
 

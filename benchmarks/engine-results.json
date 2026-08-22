@@ -1,6 +1,6 @@
 {
-  "schema_version": 73,
-  "generated_at": "2026-08-22T07:59:35.354778+00:00",
+  "schema_version": 74,
+  "generated_at": "2026-08-22T08:10:41.720264+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -72,6 +72,20 @@
       "groq": 4,
       "cohere": 15,
       "ollama": 6
+    },
+    "typescript_provider_call_attribution": {
+      "calls": 1,
+      "production_calls": 1,
+      "test_calls": 0,
+      "repositories": 1,
+      "production_repositories": 1,
+      "factory_calls": 0,
+      "model_calls": 1,
+      "configured_instance_calls": 0,
+      "literal_models": 0,
+      "mistral": 0,
+      "groq": 1,
+      "cohere": 0
     },
     "typescript_graph": {
       "agent_edges": 99,
@@ -579,7 +593,7 @@
         "Azure OpenAI": 11,
         "Cohere": 3,
         "Google": 17,
-        "Groq": 5,
+        "Groq": 6,
         "Mistral": 3,
         "Ollama": 4,
         "OpenAI": 41
@@ -706,7 +720,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 281.2585
+    "elapsed_seconds": 286.8562
   },
   "repositories": [
     {
@@ -745,6 +759,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 0,
@@ -1114,7 +1142,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2772
+      "elapsed_seconds": 3.4766
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -1160,6 +1188,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 126,
@@ -1534,7 +1576,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.2647
+      "elapsed_seconds": 7.3955
     },
     {
       "repository": "langchain-ai/langchain",
@@ -1576,6 +1618,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 72,
@@ -1943,7 +1999,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.5884
+      "elapsed_seconds": 2.5937
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -1989,6 +2045,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 847,
@@ -2364,7 +2434,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.2813
+      "elapsed_seconds": 10.2637
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -2415,6 +2485,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 12,
@@ -2786,7 +2870,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4729
+      "elapsed_seconds": 0.4724
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -2842,6 +2926,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 4,
       "symbolized_components": 31,
@@ -3226,7 +3324,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.1642
+      "elapsed_seconds": 11.2311
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -3281,6 +3379,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 162,
       "symbolized_components": 483,
@@ -3677,7 +3789,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.9091
+      "elapsed_seconds": 6.9474
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -3729,6 +3841,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 124,
       "symbolized_components": 174,
@@ -4114,7 +4240,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6942
+      "elapsed_seconds": 0.6994
     },
     {
       "repository": "microsoft/autogen",
@@ -4162,6 +4288,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 42,
       "symbolized_components": 247,
@@ -4540,7 +4680,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8228
+      "elapsed_seconds": 1.8468
     },
     {
       "repository": "microsoft/agent-framework",
@@ -4572,6 +4712,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 1,
@@ -4939,7 +5093,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0563
+      "elapsed_seconds": 0.054
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -4997,6 +5151,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 6,
       "symbolized_components": 3,
@@ -5376,7 +5544,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2781
+      "elapsed_seconds": 0.2703
     },
     {
       "repository": "openai/openai-agents-python",
@@ -5441,6 +5609,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 657,
       "symbolized_components": 1362,
@@ -5836,7 +6018,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 12.3884
+      "elapsed_seconds": 12.4365
     },
     {
       "repository": "openai/openai-agents-js",
@@ -5902,6 +6084,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 153,
       "symbolized_components": 228,
@@ -6280,7 +6476,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.613
+      "elapsed_seconds": 1.7499
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -6343,6 +6539,20 @@
         "groq": 1,
         "cohere": 1,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 83,
       "symbolized_components": 2577,
@@ -6726,7 +6936,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 26.4172
+      "elapsed_seconds": 26.5107
     },
     {
       "repository": "google/adk-python",
@@ -6785,6 +6995,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 201,
       "symbolized_components": 604,
@@ -7173,7 +7397,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.4633
+      "elapsed_seconds": 9.5518
     },
     {
       "repository": "google/adk-js",
@@ -7228,6 +7452,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 5,
       "symbolized_components": 3,
@@ -7602,7 +7840,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.0599
+      "elapsed_seconds": 4.3177
     },
     {
       "repository": "huggingface/smolagents",
@@ -7654,6 +7892,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 10,
       "symbolized_components": 49,
@@ -8037,7 +8289,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8579
+      "elapsed_seconds": 2.8484
     },
     {
       "repository": "agno-agi/agno",
@@ -8092,6 +8344,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 373,
       "symbolized_components": 746,
@@ -8480,7 +8746,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1353
+      "elapsed_seconds": 1.1449
     },
     {
       "repository": "camel-ai/camel",
@@ -8535,6 +8801,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 1,
       "symbolized_components": 1,
@@ -8922,7 +9202,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.7984
+      "elapsed_seconds": 5.7884
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -8974,6 +9254,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 27,
       "symbolized_components": 12,
@@ -9347,7 +9641,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4207
+      "elapsed_seconds": 0.4219
     },
     {
       "repository": "run-llama/llama_index",
@@ -9394,6 +9688,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 9,
@@ -9761,7 +10069,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9219
+      "elapsed_seconds": 1.919
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -9814,6 +10122,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 15,
       "symbolized_components": 21,
@@ -10199,7 +10521,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1998
+      "elapsed_seconds": 3.0454
     },
     {
       "repository": "InternLM/lagent",
@@ -10253,6 +10575,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 1,
       "symbolized_components": 1,
@@ -10633,7 +10969,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4045
+      "elapsed_seconds": 1.3789
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -10680,6 +11016,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 11,
       "symbolized_components": 35,
@@ -11064,7 +11414,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.5454
+      "elapsed_seconds": 2.5036
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -11113,6 +11463,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 1,
       "symbolized_components": 1,
@@ -11497,7 +11861,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3748
+      "elapsed_seconds": 3.3662
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -11543,6 +11907,20 @@
         "groq": 1,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 0,
@@ -11924,7 +12302,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1617
+      "elapsed_seconds": 2.1787
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -11971,6 +12349,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 3,
@@ -12348,7 +12740,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.2534
+      "elapsed_seconds": 8.2933
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -12391,6 +12783,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 8,
@@ -12767,7 +13173,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.5157
+      "elapsed_seconds": 2.5905
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -12812,6 +13218,20 @@
         "cohere": 0,
         "ollama": 0
       },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
+      },
       "relationships": 0,
       "symbolized_components": 0,
       "identified_symbol_endpoints": 0,
@@ -13178,7 +13598,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3754
+      "elapsed_seconds": 1.4265
     },
     {
       "repository": "letta-ai/letta-code",
@@ -13217,6 +13637,20 @@
         "cohere": 0,
         "ollama": 0
       },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
+      },
       "relationships": 0,
       "symbolized_components": 0,
       "identified_symbol_endpoints": 0,
@@ -13583,7 +14017,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.2437
+      "elapsed_seconds": 5.6217
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -13636,6 +14070,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 20,
       "symbolized_components": 126,
@@ -14017,7 +14465,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3688
+      "elapsed_seconds": 2.3746
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -14064,6 +14512,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 2,
       "symbolized_components": 17,
@@ -14446,7 +14908,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.4587
+      "elapsed_seconds": 4.5151
     },
     {
       "repository": "mastra-ai/mastra",
@@ -14461,7 +14923,7 @@
         "framework": 175,
         "model": 7,
         "protocol": 4,
-        "provider": 1,
+        "provider": 2,
         "tool": 26
       },
       "component_names": {
@@ -14480,6 +14942,7 @@
           "MCP"
         ],
         "provider": [
+          "Groq",
           "OpenAI"
         ]
       },
@@ -14496,6 +14959,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 1,
+        "production_calls": 1,
+        "test_calls": 0,
+        "repositories": true,
+        "production_repositories": true,
+        "factory_calls": 0,
+        "model_calls": 1,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 1,
+        "cohere": 0
       },
       "relationships": 4,
       "symbolized_components": 38,
@@ -14869,7 +15346,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0143
+      "elapsed_seconds": 3.2101
     },
     {
       "repository": "vercel/ai",
@@ -14918,6 +15395,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 9,
       "symbolized_components": 56,
@@ -15290,7 +15781,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3101
+      "elapsed_seconds": 3.5191
     },
     {
       "repository": "cline/cline",
@@ -15344,6 +15835,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 2,
       "symbolized_components": 12,
@@ -15717,7 +16222,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.5967
+      "elapsed_seconds": 4.8624
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -15760,6 +16265,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 0,
@@ -16127,7 +16646,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.9316
+      "elapsed_seconds": 5.2428
     },
     {
       "repository": "continuedev/continue",
@@ -16166,6 +16685,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 0,
@@ -16533,7 +17066,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1038
+      "elapsed_seconds": 3.2371
     },
     {
       "repository": "Aider-AI/aider",
@@ -16573,6 +17106,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 0,
@@ -16957,7 +17504,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.7319
+      "elapsed_seconds": 4.9053
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -16992,6 +17539,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 0,
@@ -17369,7 +17930,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 1.7631
+      "elapsed_seconds": 1.7643
     },
     {
       "repository": "plandex-ai/plandex",
@@ -17393,6 +17954,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 0,
@@ -17760,7 +18335,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0635
+      "elapsed_seconds": 0.0613
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -17799,6 +18374,20 @@
         "groq": 1,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 0,
@@ -18172,7 +18761,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.4875
+      "elapsed_seconds": 2.5007
     },
     {
       "repository": "stitionai/devika",
@@ -18217,6 +18806,20 @@
         "groq": 1,
         "cohere": 0,
         "ollama": 1
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 1,
@@ -18590,7 +19193,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5863
+      "elapsed_seconds": 0.5998
     },
     {
       "repository": "block/goose",
@@ -18637,6 +19240,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 2,
       "symbolized_components": 11,
@@ -19014,7 +19631,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 6.3927
+      "elapsed_seconds": 6.765
     },
     {
       "repository": "bytedance/trae-agent",
@@ -19068,6 +19685,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 1
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 1,
       "symbolized_components": 2,
@@ -19452,7 +20083,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3559
+      "elapsed_seconds": 1.3803
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -19498,6 +20129,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 1,
       "symbolized_components": 8,
@@ -19871,7 +20516,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.2302
+      "elapsed_seconds": 7.7137
     },
     {
       "repository": "openai/codex",
@@ -19902,6 +20547,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 0,
@@ -20275,7 +20934,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2826
+      "elapsed_seconds": 1.2588
     },
     {
       "repository": "browser-use/browser-use",
@@ -20329,6 +20988,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 3,
       "symbolized_components": 247,
@@ -20716,7 +21389,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.4253
+      "elapsed_seconds": 7.4475
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -20778,6 +21451,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 27,
       "symbolized_components": 135,
@@ -21166,7 +21853,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 15.2532
+      "elapsed_seconds": 15.449
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -21212,6 +21899,20 @@
         "groq": 0,
         "cohere": 1,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 0,
@@ -21592,7 +22293,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4065
+      "elapsed_seconds": 1.4233
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -21634,6 +22335,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 0,
@@ -22003,7 +22718,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.486
+      "elapsed_seconds": 1.5901
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -22047,6 +22762,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 4,
       "symbolized_components": 42,
@@ -22424,7 +23153,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.585
+      "elapsed_seconds": 1.6853
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -22475,6 +23204,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 2,
       "symbolized_components": 215,
@@ -22851,7 +23594,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.2355
+      "elapsed_seconds": 5.1483
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -22910,6 +23653,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 40,
       "symbolized_components": 231,
@@ -23286,7 +24043,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.4961
+      "elapsed_seconds": 5.7806
     },
     {
       "repository": "github/github-mcp-server",
@@ -23320,6 +24077,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 0,
@@ -23687,7 +24458,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0534
+      "elapsed_seconds": 0.0544
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -23723,6 +24494,20 @@
         "cohere": 0,
         "ollama": 0
       },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
+      },
       "relationships": 0,
       "symbolized_components": 0,
       "identified_symbol_endpoints": 0,
@@ -24089,7 +24874,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.126
+      "elapsed_seconds": 0.1344
     },
     {
       "repository": "awslabs/mcp",
@@ -24135,6 +24920,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 0,
@@ -24510,7 +25309,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.8813
+      "elapsed_seconds": 3.8824
     },
     {
       "repository": "docker/mcp-gateway",
@@ -24545,6 +25344,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 0,
@@ -24914,7 +25727,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0464
+      "elapsed_seconds": 0.0463
     },
     {
       "repository": "jlowin/fastmcp",
@@ -24963,6 +25776,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 7,
       "symbolized_components": 192,
@@ -25345,7 +26172,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.2627
+      "elapsed_seconds": 5.2995
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -25369,6 +26196,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 0,
@@ -25736,7 +26577,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0382
+      "elapsed_seconds": 0.0381
     },
     {
       "repository": "langflow-ai/langflow",
@@ -25789,6 +26630,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 10,
       "symbolized_components": 52,
@@ -26164,7 +27019,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.9131
+      "elapsed_seconds": 5.0358
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -26206,6 +27061,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 4,
       "symbolized_components": 3,
@@ -26581,7 +27450,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.1757
+      "elapsed_seconds": 4.4202
     },
     {
       "repository": "langgenius/dify",
@@ -26608,6 +27477,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 5,
@@ -26975,7 +27858,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3265
+      "elapsed_seconds": 3.2887
     },
     {
       "repository": "n8n-io/n8n",
@@ -27025,6 +27908,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 2,
       "symbolized_components": 27,
@@ -27400,7 +28297,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.072
+      "elapsed_seconds": 3.2421
     },
     {
       "repository": "activepieces/activepieces",
@@ -27458,6 +28355,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 2,
       "symbolized_components": 6,
@@ -27835,7 +28746,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9472
+      "elapsed_seconds": 2.0564
     },
     {
       "repository": "simstudioai/sim",
@@ -27868,6 +28779,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 0,
       "symbolized_components": 0,
@@ -28235,7 +29160,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.7864
+      "elapsed_seconds": 6.1972
     },
     {
       "repository": "composiohq/composio",
@@ -28296,6 +29221,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 14,
       "symbolized_components": 66,
@@ -28672,7 +29611,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.5826
+      "elapsed_seconds": 2.668
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -28727,6 +29666,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 38,
       "symbolized_components": 291,
@@ -29112,7 +30065,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.9239
+      "elapsed_seconds": 4.8853
     },
     {
       "repository": "e2b-dev/E2B",
@@ -29145,6 +30098,20 @@
         "cohere": 0,
         "ollama": 0
       },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
+      },
       "relationships": 0,
       "symbolized_components": 0,
       "identified_symbol_endpoints": 0,
@@ -29511,7 +30478,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4225
+      "elapsed_seconds": 3.5705
     },
     {
       "repository": "daytonaio/daytona",
@@ -29536,6 +30503,20 @@
         "cohere": 0,
         "ollama": 0
       },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
+      },
       "relationships": 0,
       "symbolized_components": 0,
       "identified_symbol_endpoints": 0,
@@ -29902,7 +30883,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.001
+      "elapsed_seconds": 0.0004
     },
     {
       "repository": "AgentOps-AI/agentops",
@@ -29953,6 +30934,20 @@
         "groq": 0,
         "cohere": 0,
         "ollama": 0
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 17,
       "symbolized_components": 56,
@@ -30327,7 +31322,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6464
+      "elapsed_seconds": 2.6892
     },
     {
       "repository": "traceloop/openllmetry",
@@ -30389,6 +31384,20 @@
         "groq": 0,
         "cohere": 13,
         "ollama": 4
+      },
+      "typescript_provider_call_attribution": {
+        "calls": 0,
+        "production_calls": 0,
+        "test_calls": 0,
+        "repositories": false,
+        "production_repositories": false,
+        "factory_calls": 0,
+        "model_calls": 0,
+        "configured_instance_calls": 0,
+        "literal_models": 0,
+        "mistral": 0,
+        "groq": 0,
+        "cohere": 0
       },
       "relationships": 40,
       "symbolized_components": 89,
@@ -30767,7 +31776,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.5231
+      "elapsed_seconds": 4.5633
     }
   ]
 }

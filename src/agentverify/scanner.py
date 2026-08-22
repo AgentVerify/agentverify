@@ -101,6 +101,11 @@ FRONTEND_IMPORT_SIGNATURES = {
         "framework": {
             "Vercel AI SDK": ("ai", "ai/"),
         },
+        "provider": {
+            "Mistral": ("@ai-sdk/mistral",),
+            "Groq": ("@ai-sdk/groq",),
+            "Cohere": ("@ai-sdk/cohere",),
+        },
     },
 }
 
@@ -134,6 +139,23 @@ PYTHON_PROVIDER_MODULES = {
     "langchain_ollama": "Ollama",
 }
 PYTHON_PROVIDER_SDK_FUNCTIONS = {("ollama", "chat"), ("ollama", "generate")}
+TYPESCRIPT_AI_SDK_PROVIDER_EXPORTS = {
+    "@ai-sdk/mistral": {
+        "provider": "Mistral",
+        "instance": "mistral",
+        "factory": "createMistral",
+    },
+    "@ai-sdk/groq": {
+        "provider": "Groq",
+        "instance": "groq",
+        "factory": "createGroq",
+    },
+    "@ai-sdk/cohere": {
+        "provider": "Cohere",
+        "instance": "cohere",
+        "factory": "createCohere",
+    },
+}
 BUILTIN_TOOL_CAPABILITIES = {
     "ShellTool": ("shell-execution",),
     "ApplyPatchTool": ("filesystem",),
@@ -7434,6 +7456,11 @@ def scan_python(
 
 TS_IMPORT = re.compile(r"(?:from\s+|require\s*\(\s*)['\"]([^'\"]+)['\"]")
 TS_NAMED_IMPORT = re.compile(r"\bimport\s*\{([^}]+)\}\s*from\s*['\"]([^'\"]+)['\"]", re.DOTALL)
+TS_DYNAMIC_NAMED_IMPORT = re.compile(
+    r"\bconst\s*\{([^}]+)\}\s*=\s*(?:await\s*)?"
+    r"import\s*\(\s*['\"]([^'\"]+)['\"]\s*\)",
+    re.DOTALL,
+)
 TS_AGENT = re.compile(r"\b(?:new\s+)?(Agent|AssistantAgent|StateGraph|Crew)\s*\(")
 TS_MCP = re.compile(r"\b(McpServer|Client|StdioClientTransport)\s*\(")
 TS_SHELL = re.compile(r"\b(exec|execSync|spawn|spawnSync)\s*\((.+)")
@@ -7537,6 +7564,27 @@ class TypeScriptNetworkCall:
     receiver: str | None = None
     base_url_scope: str | None = None
     absolute_url_override: str | None = None
+
+
+@dataclass(frozen=True)
+class TypeScriptProviderImportBinding:
+    local_name: str
+    imported_symbol: str
+    module: str
+    provider: str
+
+
+@dataclass(frozen=True)
+class TypeScriptProviderCall:
+    offset: int
+    call: str
+    call_kind: str
+    module: str
+    imported_symbol: str
+    provider: str
+    model: str | None = None
+    model_method: str | None = None
+    configured_by: str | None = None
 
 
 @dataclass(frozen=True)
@@ -7975,6 +8023,154 @@ def typescript_import_binding_is_shadowed(text: str, name: str) -> bool:
         or re.search(rf"\bfunction\s+\w*\s*\([^)]*\b{escaped}\b", code)
         or re.search(rf"\([^)]*\b{escaped}\b[^)]*\)\s*=>", code)
     )
+
+
+def typescript_ai_sdk_provider_imports(
+    text: str,
+) -> dict[str, TypeScriptProviderImportBinding]:
+    """Return unambiguous official AI SDK provider imports, including dynamic imports."""
+    candidates: dict[str, list[TypeScriptProviderImportBinding]] = defaultdict(list)
+
+    def add_bindings(imports: str, module: str, *, dynamic: bool) -> None:
+        provider_exports = TYPESCRIPT_AI_SDK_PROVIDER_EXPORTS.get(module)
+        if provider_exports is None:
+            return
+        supported = {provider_exports["instance"], provider_exports["factory"]}
+        for imported in imports.split(","):
+            imported = imported.strip()
+            if not imported or imported.startswith("type "):
+                continue
+            if dynamic:
+                parts = [part.strip() for part in imported.split(":", 1)]
+                original = parts[0]
+                local = parts[1] if len(parts) == 2 else original
+            else:
+                parts = imported.split()
+                original = parts[0]
+                local = parts[2] if len(parts) >= 3 and parts[1] == "as" else original
+            if original not in supported or re.fullmatch(r"[A-Za-z_$][\w$]*", local) is None:
+                continue
+            candidates[local].append(
+                TypeScriptProviderImportBinding(
+                    local,
+                    original,
+                    module,
+                    str(provider_exports["provider"]),
+                )
+            )
+
+    for match in TS_NAMED_IMPORT.finditer(text):
+        add_bindings(match.group(1), match.group(2), dynamic=False)
+    for match in TS_DYNAMIC_NAMED_IMPORT.finditer(text):
+        add_bindings(match.group(1), match.group(2), dynamic=True)
+    return {
+        local: values[0]
+        for local, values in candidates.items()
+        if len(values) == 1 and not typescript_import_binding_is_shadowed(text, local)
+    }
+
+
+def typescript_literal_first_call_argument(text: str, opening: int, end: int) -> str | None:
+    """Return a direct literal first argument from one balanced TypeScript call."""
+    arguments = typescript_call_arguments(text[opening + 1 : end - 1])
+    if not arguments:
+        return None
+    value = arguments[0][0].strip()
+    match = re.fullmatch(r"(['\"`])(.*?)\1", value, re.DOTALL)
+    if match is None or (match.group(1) == "`" and "${" in match.group(2)):
+        return None
+    return match.group(2)
+
+
+def typescript_const_provider_binding_is_stable(
+    text: str,
+    name: str,
+    initializer_end: int,
+) -> bool:
+    """Conservatively accept one immutable provider instance without local shadowing."""
+    code = typescript_code_mask(text)
+    escaped = re.escape(name)
+    declarations = re.findall(rf"\b(?:const|let|var|function|class)\s+{escaped}\b", code)
+    if len(declarations) != 1:
+        return False
+    return not (
+        re.search(rf"(?<![\w$.]){escaped}\s*=(?!=)", code[initializer_end:])
+        or re.search(rf"\bfunction\s+\w*\s*\([^)]*\b{escaped}\b", code)
+        or re.search(rf"\([^)]*\b{escaped}\b[^)]*\)\s*=>", code)
+    )
+
+
+def typescript_ai_sdk_provider_calls(text: str) -> list[TypeScriptProviderCall]:
+    """Resolve exact official AI SDK factories and model calls through stable bindings."""
+    code = typescript_code_mask(text)
+    imports = typescript_ai_sdk_provider_imports(text)
+    observations: list[TypeScriptProviderCall] = []
+    configured_instances: list[tuple[str, TypeScriptProviderImportBinding, int]] = []
+
+    for local_name, binding in imports.items():
+        provider_exports = TYPESCRIPT_AI_SDK_PROVIDER_EXPORTS[binding.module]
+        is_factory = binding.imported_symbol == provider_exports["factory"]
+        methods = "" if is_factory else r"(?:\.(embedding|reranking))?"
+        call_pattern = re.compile(rf"(?<![\w$.]){re.escape(local_name)}{methods}\s*\(")
+        for match in call_pattern.finditer(code):
+            opening = code.find("(", match.start(), match.end())
+            end = typescript_balanced_end(code, opening, "(", ")")
+            if end is None:
+                continue
+            model_method = None if is_factory else (match.group(1) or "language")
+            observations.append(
+                TypeScriptProviderCall(
+                    match.start(),
+                    code[match.start() : opening].strip(),
+                    "ai-sdk-provider-factory" if is_factory else "ai-sdk-provider-model",
+                    binding.module,
+                    binding.imported_symbol,
+                    binding.provider,
+                    None
+                    if is_factory
+                    else typescript_literal_first_call_argument(text, opening, end),
+                    model_method,
+                )
+            )
+            if not is_factory:
+                continue
+            prefix = code[max(0, match.start() - 240) : match.start()]
+            assignment = re.search(
+                r"\bconst\s+([A-Za-z_$][\w$]*)\s*(?:\:\s*[^=;\n]+)?=\s*$",
+                prefix,
+            )
+            if assignment is None:
+                continue
+            instance_name = assignment.group(1)
+            if instance_name in imports or not typescript_const_provider_binding_is_stable(
+                text, instance_name, end
+            ):
+                continue
+            configured_instances.append((instance_name, binding, end))
+
+    for instance_name, binding, initializer_end in configured_instances:
+        call_pattern = re.compile(
+            rf"(?<![\w$.]){re.escape(instance_name)}(?:\.(embedding|reranking))?\s*\("
+        )
+        for match in call_pattern.finditer(code, initializer_end):
+            opening = code.find("(", match.start(), match.end())
+            end = typescript_balanced_end(code, opening, "(", ")")
+            if end is None:
+                continue
+            observations.append(
+                TypeScriptProviderCall(
+                    match.start(),
+                    code[match.start() : opening].strip(),
+                    "ai-sdk-provider-model",
+                    binding.module,
+                    binding.imported_symbol,
+                    binding.provider,
+                    typescript_literal_first_call_argument(text, opening, end),
+                    match.group(1) or "language",
+                    binding.local_name,
+                )
+            )
+    return sorted(observations, key=lambda item: item.offset)
 
 
 def add_typescript_mcp_package_launcher(
@@ -9963,6 +10159,38 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
         for item in ir.components
         if item.kind == "agent" and item.evidence.path == relative
     }
+    for provider_call in typescript_ai_sdk_provider_calls(text):
+        line_number = line_at(text, provider_call.offset)
+        ev = Evidence(relative, line_number, excerpt(lines, line_number))
+        attributes = {
+            "call": provider_call.call,
+            "call_kind": provider_call.call_kind,
+            "module": provider_call.module,
+            "imported_symbol": provider_call.imported_symbol,
+            "resolution": "exact-typescript-provider-import",
+        }
+        if provider_call.model_method is not None:
+            attributes["model_method"] = provider_call.model_method
+        if provider_call.configured_by is not None:
+            attributes["configured_by"] = provider_call.configured_by
+        ir.add_component(
+            Component("provider", provider_call.provider, ev, attributes)
+        )
+        if provider_call.model is not None:
+            ir.add_component(
+                Component(
+                    "model",
+                    provider_call.model,
+                    ev,
+                    {
+                        "provider": provider_call.provider,
+                        "configured_on": provider_call.call,
+                        "model_method": provider_call.model_method,
+                        "module": provider_call.module,
+                        "resolution": "exact-typescript-provider-import",
+                    },
+                )
+            )
     for offset, environment_names in typescript_environment_approval_guards(text):
         line_number = line_at(text, offset)
         ir.add_component(

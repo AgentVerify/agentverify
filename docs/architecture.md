@@ -39,6 +39,11 @@ and Ollama model names remain unresolved without the constructor because they co
 third-party models. Generic Google Cloud/AWS SDKs, near-name packages, and Gemma model names do not
 establish provider identity. Taxonomy components intentionally have no source-symbol ID; exact
 positive and negative component labels are scored separately from relationship and finding labels.
+Schema v74 extends call attribution to official `@ai-sdk/mistral`, `@ai-sdk/groq`, and
+`@ai-sdk/cohere` TypeScript exports. It resolves named aliases and destructured dynamic imports,
+provider factory calls, model calls through an immutable factory-created instance, and direct
+language/embedding/reranking calls. Reassignment, local shadowing, and near-name packages withhold
+attribution.
 
 Names are intentionally not treated as globally unique. Python and TypeScript agent/tool definitions
 carry stable frontend-and-module-qualified `symbol_id` values; relationships carry `source_id` and

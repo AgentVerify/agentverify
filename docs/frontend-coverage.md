@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v73
+framework, wrapper, or configuration path. Counts come from schema-v74
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -33,13 +33,19 @@ Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK
 Microsoft Agent Framework (2), Semantic Kernel (2), smolagents (2), AgentScope (1), AutoGen (1),
 CAMEL (1), Cline SDK (1), Lagent (1), Marvin (1), Mastra (1), MetaGPT (1), and Qwen-Agent (1).
 Provider observations are OpenAI (41), Anthropic (17), Google (17), Azure OpenAI (11), AWS Bedrock
-(6), Groq (5), Ollama (4), Cohere (3), and Mistral (3). These overlapping exact-import, literal
-service, and model-string observations are lower than research-wide lexical signals.
+and Groq (6 each), Ollama (4), Cohere (3), and Mistral (3). These overlapping exact-import/call,
+literal-service, and model-string observations are lower than research-wide lexical signals.
 
 Schema v73 identifies 29 exact Python provider calls across seven repositories: 20 native Mistral,
 Groq, Cohere, or Ollama SDK calls and nine LangChain wrappers. Seven calls across five repositories
 are production-scoped; 22 calls and all 12 literal call-model arguments occur in tests. These call
 facts refine configured use without changing the 48-repository provider-presence total.
+
+Schema v74 adds exact TypeScript call proof for the official Mistral, Groq, and Cohere AI SDK
+providers. Named aliases, destructured dynamic imports, provider factories, and immutable configured
+instances are supported; rebindings and near-name packages are withheld. The pinned corpus contains
+one production dynamic-import Groq model call in Mastra and no test-scoped calls or literal call-model
+arguments.
 
 Across the selected snapshot, 9,584 agent/tool observations have module-qualified symbol IDs. Of
 4,254 relationship endpoint observations, all 3,486 identified endpoints resolve to an observed
@@ -385,7 +391,9 @@ and `network-ssrf-policy` edge.
   AWS Bedrock requires its exact TypeScript runtime SDK, a recognized `langchain_aws` constructor
   import, or a literal `bedrock-runtime` service selection. Mistral, Groq, Cohere, and Ollama support
   exact Python SDK imports plus import/alias-proven native and LangChain wrapper calls. Rebinding
-  withholds call attribution. Literal constructor model arguments inherit the proven provider, and
+  withholds call attribution. The official Mistral, Groq, and Cohere TypeScript AI SDK providers also
+  support exact named/dynamic imports, factories, and immutable configured instances; community
+  Ollama providers are not conflated. Literal call-model arguments inherit the proven provider, and
   selected Mistral-owned prefixes are recognized; third-party model names hosted by Groq or Ollama,
   indirect factories, and reexports remain unresolved.
 - Python registry classes reexported through exact selected `__init__.py` imports are resolved only
@@ -541,7 +549,8 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 511-label rule truth set and 636-label IR component/relationship set are curated regression suites. They
-guard known positives and negatives; they are not an unbiased accuracy estimate. A future holdout
-must be sampled separately across the categories above, externally reviewed, and kept sealed while
-rules change. Until then, precision/recall values apply only to the published seed labels.
+The 511-label rule truth set and 652-label IR component/relationship set are curated regression
+suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
+future holdout must be sampled separately across the categories above, externally reviewed, and kept
+sealed while rules change. Until then, precision/recall values apply only to the published seed
+labels.

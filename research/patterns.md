@@ -157,6 +157,9 @@ proves configured use at a specific source location. Aliases preserve that ident
 generic `Client` names do not. Literal model arguments can inherit the proven call's provider, but
 hosted third-party identifiers must not be treated as provider-owned model families. This distinction
 is especially important for Groq and Ollama, which commonly serve models developed elsewhere.
+In TypeScript, exact dynamic `import()` destructuring can preserve the same proof as a static named
+import, while a provider instance created by an official factory remains attributable only while its
+local binding is immutable and unshadowed.
 
 ## Observability as a cross-cutting control
 

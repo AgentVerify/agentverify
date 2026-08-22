@@ -609,6 +609,18 @@ def main() -> int:
             if item.kind == "model"
             and item.attributes.get("resolution") == "exact-provider-sdk-import"
         ]
+        typescript_provider_call_attributions = [
+            item
+            for item in ir.components
+            if item.kind == "provider"
+            and item.attributes.get("resolution") == "exact-typescript-provider-import"
+        ]
+        typescript_provider_call_models = [
+            item
+            for item in ir.components
+            if item.kind == "model"
+            and item.attributes.get("resolution") == "exact-typescript-provider-import"
+        ]
         python_google_adk_bigquery_audit_controls = [
             item
             for item in ir.components
@@ -777,6 +789,42 @@ def main() -> int:
                         for item in python_provider_call_attributions
                     )
                     for provider in ("Mistral", "Groq", "Cohere", "Ollama")
+                },
+            },
+            "typescript_provider_call_attribution": {
+                "calls": len(typescript_provider_call_attributions),
+                "production_calls": sum(
+                    not is_test_path(item.evidence.path)
+                    for item in typescript_provider_call_attributions
+                ),
+                "test_calls": sum(
+                    is_test_path(item.evidence.path)
+                    for item in typescript_provider_call_attributions
+                ),
+                "repositories": bool(typescript_provider_call_attributions),
+                "production_repositories": any(
+                    not is_test_path(item.evidence.path)
+                    for item in typescript_provider_call_attributions
+                ),
+                "factory_calls": sum(
+                    item.attributes.get("call_kind") == "ai-sdk-provider-factory"
+                    for item in typescript_provider_call_attributions
+                ),
+                "model_calls": sum(
+                    item.attributes.get("call_kind") == "ai-sdk-provider-model"
+                    for item in typescript_provider_call_attributions
+                ),
+                "configured_instance_calls": sum(
+                    bool(item.attributes.get("configured_by"))
+                    for item in typescript_provider_call_attributions
+                ),
+                "literal_models": len(typescript_provider_call_models),
+                **{
+                    provider.lower(): sum(
+                        item.name == provider
+                        for item in typescript_provider_call_attributions
+                    )
+                    for provider in ("Mistral", "Groq", "Cohere")
                 },
             },
             "relationships": len(ir.relationships),
@@ -2057,7 +2105,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 73,
+        "schema_version": 74,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2153,6 +2201,26 @@ def main() -> int:
                     "groq",
                     "cohere",
                     "ollama",
+                )
+            },
+            "typescript_provider_call_attribution": {
+                name: sum(
+                    result["typescript_provider_call_attribution"][name]
+                    for result in successful
+                )
+                for name in (
+                    "calls",
+                    "production_calls",
+                    "test_calls",
+                    "repositories",
+                    "production_repositories",
+                    "factory_calls",
+                    "model_calls",
+                    "configured_instance_calls",
+                    "literal_models",
+                    "mistral",
+                    "groq",
+                    "cohere",
                 )
             },
             "typescript_graph": {

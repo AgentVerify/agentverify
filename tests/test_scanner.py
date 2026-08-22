@@ -87,6 +87,9 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ("positive.py", 27, "provider", "Ollama", "ollama"),
         ("positive.ts", 11, "framework", "Vercel AI SDK", "ai"),
         ("positive.ts", 12, "framework", "Vercel AI SDK", "ai/internal"),
+        ("provider_calls.ts", 1, "provider", "Mistral", "@ai-sdk/mistral"),
+        ("provider_calls.ts", 2, "provider", "Groq", "@ai-sdk/groq"),
+        ("provider_calls.ts", 3, "provider", "Cohere", "@ai-sdk/cohere"),
     }
     service = next(
         item
@@ -162,6 +165,78 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         item.kind == "provider"
         and item.evidence.path == "provider_constructors_rebound.py"
         and item.evidence.line >= 12
+        for item in ir.components
+    )
+    typescript_provider_calls = {
+        (
+            item.evidence.path,
+            item.evidence.line,
+            item.name,
+            item.attributes.get("call"),
+            item.attributes.get("call_kind"),
+            item.attributes.get("configured_by"),
+        )
+        for item in ir.components
+        if item.kind == "provider"
+        and item.attributes.get("resolution") == "exact-typescript-provider-import"
+    }
+    assert typescript_provider_calls == {
+        (
+            "provider_calls.ts",
+            5,
+            "Mistral",
+            "hostedMistral",
+            "ai-sdk-provider-model",
+            None,
+        ),
+        (
+            "provider_calls.ts",
+            6,
+            "Groq",
+            "buildGroq",
+            "ai-sdk-provider-factory",
+            None,
+        ),
+        (
+            "provider_calls.ts",
+            7,
+            "Groq",
+            "configuredGroq",
+            "ai-sdk-provider-model",
+            "buildGroq",
+        ),
+        (
+            "provider_calls.ts",
+            8,
+            "Cohere",
+            "cohere.embedding",
+            "ai-sdk-provider-model",
+            None,
+        ),
+        (
+            "provider_calls.ts",
+            12,
+            "Groq",
+            "dynamicGroq",
+            "ai-sdk-provider-model",
+            None,
+        ),
+    }
+    assert {
+        (item.evidence.line, item.name, item.attributes["provider"])
+        for item in ir.components
+        if item.kind == "model"
+        and item.evidence.path == "provider_calls.ts"
+        and item.attributes.get("resolution") == "exact-typescript-provider-import"
+    } == {
+        (5, "mistral-small-latest", "Mistral"),
+        (7, "llama-3.3-70b-versatile", "Groq"),
+        (8, "embed-english-v3.0", "Cohere"),
+    }
+    assert not any(
+        item.kind == "provider"
+        and item.evidence.path == "provider_calls_rebound.ts"
+        and item.attributes.get("resolution") == "exact-typescript-provider-import"
         for item in ir.components
     )
 
