@@ -850,6 +850,72 @@
       }
     },
     {
+      "id": "python-path-segment-sanitizer-local",
+      "target": {"kind": "local", "path": "cases/python_path_segment_sanitizer"},
+      "check_id": "IR-PY-PATH-SEGMENT-SANITIZER",
+      "path": "agent.py",
+      "line": 13,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-segment-sanitizer",
+        "attributes": {
+          "policy_effect": "removes-path-separator-control",
+          "frontend": "python",
+          "algorithm": "sha256",
+          "output_encoding": "hexadecimal",
+          "sanitizer_path": "helper.py",
+          "sanitizer_line": 4
+        }
+      }
+    },
+    {
+      "id": "python-path-segment-sanitizer-lookalike-local-negative",
+      "target": {"kind": "local", "path": "cases/python_path_segment_sanitizer"},
+      "check_id": "IR-PY-PATH-SEGMENT-SANITIZER",
+      "path": "agent.py",
+      "line": 31,
+      "expected": false,
+      "source_contains": "os.makedirs(target",
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-segment-sanitizer"
+      }
+    },
+    {
+      "id": "python-path-segment-sanitizer-qwen-real",
+      "target": {
+        "kind": "repository",
+        "repository": "QwenLM/Qwen-Agent",
+        "commit": "31a4d36d123688581a9e9744427272b33ce940e0"
+      },
+      "check_id": "IR-PY-PATH-SEGMENT-SANITIZER",
+      "path": "qwen_agent/tools/simple_doc_parser.py",
+      "line": 447,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-segment-sanitizer",
+        "attributes": {
+          "policy_effect": "removes-path-separator-control",
+          "frontend": "python",
+          "algorithm": "sha256",
+          "output_encoding": "hexadecimal",
+          "sanitizer_path": "qwen_agent/utils/utils.py",
+          "sanitizer_line": 80
+        }
+      }
+    },
+    {
       "id": "python-rejecting-path-boundary-local",
       "target": {"kind": "local", "path": "cases/python_path_boundary"},
       "check_id": "IR-PY-PATH-BOUNDARY",

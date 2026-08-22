@@ -643,6 +643,18 @@ boundary remains reportable. Built-in `open(...)` retains its ordinary path sema
 attribute `.open(...)` is classified as filesystem access only for a proven `pathlib.Path` receiver;
 the receiver is the path and the first argument is the mode.
 
+An exact imported cryptographic-digest helper can instead prove that tool input controls only one
+separator-free path segment. The helper must have one input, use an immutable stdlib `hashlib`
+SHA-256/SHA-384/SHA-512/BLAKE2 constructor over `input.encode()`, and return its unchanged
+`hexdigest()`. Its immutable named import must feed a non-root argument of an exact, immutable
+`os.path.join` binding whose prefix and every other dynamic segment are not tool controlled. The IR
+emits `path-segment-sanitizer` with `policy_effect: removes-path-separator-control`; AV-FS001 does not
+report that sink because hexadecimal output cannot express separators, dot segments, drive prefixes,
+or UNC prefixes. Helper names alone, non-hex encodings, a repository-local `hashlib` shadow module,
+mutable imports or stdlib attributes,
+digest-derived roots, extra unsanitized segments, and a proof escaping a conditional/loop/try remain
+unresolved.
+
 A fail-closed `candidate.relative_to(root)` exception check can establish the same Python boundary
 fact. The try body must contain only that check, the first handler capable of catching `ValueError`
 must always terminate, and the candidate/root bindings must already be resolved and unchanged.

@@ -1085,6 +1085,15 @@ class PythonPathHelperSummary:
 
 
 @dataclass(frozen=True)
+class PythonPathSegmentSanitizerSummary:
+    evidence: Evidence
+    algorithm: str
+    output_encoding: str
+    parameter_index: int
+    parameter_name: str
+
+
+@dataclass(frozen=True)
 class PythonToolRegistration:
     evidence: Evidence
     registrar: str
@@ -1135,6 +1144,30 @@ def python_assigned_names(target: ast.AST) -> set[str]:
     if isinstance(target, (ast.Tuple, ast.List)):
         return {name for element in target.elts for name in python_assigned_names(element)}
     return set()
+
+
+def python_assigned_names_in_statement(statement: ast.stmt) -> set[str]:
+    names: set[str] = set()
+
+    def collect(candidate: ast.AST) -> None:
+        if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            names.add(candidate.name)
+            return
+        if isinstance(candidate, ast.Lambda):
+            return
+        if isinstance(candidate, (ast.Import, ast.ImportFrom)):
+            names.update(
+                alias.asname or alias.name.split(".", 1)[0]
+                for alias in candidate.names
+            )
+            return
+        if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
+            names.add(candidate.id)
+        for child in ast.iter_child_nodes(candidate):
+            collect(child)
+
+    collect(statement)
+    return names
 
 
 def python_function_local_bindings(
@@ -5400,6 +5433,9 @@ class PythonVisitor(ast.NodeVisitor):
         imported_agent_factory_target_paths: dict[str, str],
         registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
         network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
+        path_segment_sanitizer_bindings: dict[
+            str, PythonPathSegmentSanitizerSummary
+        ],
         registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
         registry_function_tools: dict[int, PythonRegistryTool],
         registry_class_tools: dict[int, PythonRegistryTool],
@@ -5408,6 +5444,7 @@ class PythonVisitor(ast.NodeVisitor):
         module_rebound_names: set[str],
         path_constructors: set[str],
         filesystem_api_aliases: dict[str, str],
+        path_join_functions: set[str],
         urllib_openers: set[str],
         urllib_request_constructors: set[str],
         browser_type_names: set[str],
@@ -5431,6 +5468,10 @@ class PythonVisitor(ast.NodeVisitor):
         self.current_tool_id: str | None = None
         self.dynamic_http_origin_names: set[str] = set()
         self.dynamic_tool_input_names: set[str] = set()
+        self.path_segment_sanitizer_bindings = path_segment_sanitizer_bindings
+        self.sanitized_filesystem_paths: dict[
+            str, PythonPathSegmentSanitizerSummary
+        ] = {}
         self.class_stack: list[str] = []
         self.active_audit_controls: list[Evidence] = []
         self.http_client_names: set[str] = set()
@@ -5521,6 +5562,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.module_rebound_names = module_rebound_names
         self.path_constructors = path_constructors
         self.filesystem_api_aliases = filesystem_api_aliases
+        self.path_join_functions = path_join_functions
         self.has_mcp_import = any(
             module == "mcp" or module.startswith("mcp.") or "modelcontextprotocol" in module
             for module in imported_modules
@@ -5659,6 +5701,78 @@ class PythonVisitor(ast.NodeVisitor):
                     "control_line": proof.evidence.line,
                     **attributes,
                 },
+            )
+        )
+
+    def path_segment_sanitizer_for_expression(
+        self, expression: ast.AST | None
+    ) -> PythonPathSegmentSanitizerSummary | None:
+        """Prove that tool input influences only a separator-free joined segment."""
+        if expression is None:
+            return None
+        while isinstance(expression, ast.Attribute) and expression.attr == "parent":
+            expression = expression.value
+        if isinstance(expression, ast.Name):
+            return self.sanitized_filesystem_paths.get(expression.id)
+        if not (
+            isinstance(expression, ast.Call)
+            and dotted_name(expression.func) in self.path_join_functions
+            and len(expression.args) >= 2
+            and not expression.keywords
+        ):
+            return None
+        if python_expression_names(expression.args[0]) & self.dynamic_tool_input_names:
+            return None
+        proof: PythonPathSegmentSanitizerSummary | None = None
+        for segment in expression.args[1:]:
+            dynamic_names = (
+                python_expression_names(segment) & self.dynamic_tool_input_names
+            )
+            if not dynamic_names:
+                continue
+            if not isinstance(segment, ast.Call) or not isinstance(segment.func, ast.Name):
+                return None
+            summary = self.path_segment_sanitizer_bindings.get(segment.func.id)
+            if summary is None or segment.keywords or len(segment.args) != 1:
+                return None
+            argument = python_call_argument(
+                segment,
+                summary.parameter_index,
+                (summary.parameter_name,),
+            )
+            if argument is None or not (
+                python_expression_names(argument) & self.dynamic_tool_input_names
+            ):
+                return None
+            proof = summary
+        return proof
+
+    def add_python_path_segment_sanitizer_control(
+        self,
+        capability_node: ast.AST,
+        summary: PythonPathSegmentSanitizerSummary,
+    ) -> None:
+        attributes = {
+            "scope": source_scope(self.path),
+            "policy_effect": "removes-path-separator-control",
+            "frontend": "python",
+            "algorithm": summary.algorithm,
+            "output_encoding": summary.output_encoding,
+            "sanitizer_path": summary.evidence.path,
+            "sanitizer_line": summary.evidence.line,
+        }
+        self.ir.add_component(
+            Component("control", "path-segment-sanitizer", summary.evidence, attributes)
+        )
+        self.ir.add_relationship(
+            Relationship(
+                "capability",
+                "filesystem",
+                "governed-by",
+                "control",
+                "path-segment-sanitizer",
+                self.ev(capability_node),
+                attributes,
             )
         )
 
@@ -6021,6 +6135,7 @@ class PythonVisitor(ast.NodeVisitor):
                 if isinstance(target, ast.Name):
                     self.network_helper_bindings.pop(target.id, None)
         if self.current_tool:
+            sanitized_path = self.path_segment_sanitizer_for_expression(node.value)
             origin_value = python_urllib_request_url(
                 node.value,
                 self.urllib_request_constructors,
@@ -6050,6 +6165,10 @@ class PythonVisitor(ast.NodeVisitor):
                     self.dynamic_tool_input_names.add(target.id)
                 else:
                     self.dynamic_tool_input_names.discard(target.id)
+                if sanitized_path is not None:
+                    self.sanitized_filesystem_paths[target.id] = sanitized_path
+                else:
+                    self.sanitized_filesystem_paths.pop(target.id, None)
                 if static_http_prefix:
                     self.static_http_prefixes[target.id] = static_http_prefix
                 else:
@@ -6100,6 +6219,7 @@ class PythonVisitor(ast.NodeVisitor):
             not self.class_stack or self.function_depth > 0
         ) and isinstance(node.target, ast.Name):
             self.network_helper_bindings.pop(node.target.id, None)
+            self.sanitized_filesystem_paths.pop(node.target.id, None)
         self.generic_visit(node)
         if (
             not self.class_stack or self.function_depth > 0
@@ -6111,6 +6231,7 @@ class PythonVisitor(ast.NodeVisitor):
             not self.class_stack or self.function_depth > 0
         ) and isinstance(node.target, ast.Name):
             self.network_helper_bindings.pop(node.target.id, None)
+            self.sanitized_filesystem_paths.pop(node.target.id, None)
         self.generic_visit(node)
         if (
             not self.class_stack or self.function_depth > 0
@@ -6123,7 +6244,32 @@ class PythonVisitor(ast.NodeVisitor):
                 if isinstance(target, ast.Name):
                     self.invalidate_imported_symbol(target.id)
                     self.network_helper_bindings.pop(target.id, None)
+                    self.sanitized_filesystem_paths.pop(target.id, None)
         self.generic_visit(node)
+
+    def visit_For(self, node: ast.For | ast.AsyncFor) -> None:
+        self.generic_visit(node)
+        for name in python_assigned_names(node.target):
+            self.sanitized_filesystem_paths.pop(name, None)
+        for statement in (*node.body, *node.orelse):
+            for name in python_assigned_names_in_statement(statement):
+                self.sanitized_filesystem_paths.pop(name, None)
+
+    visit_AsyncFor = visit_For
+
+    def visit_While(self, node: ast.While) -> None:
+        self.generic_visit(node)
+        for statement in (*node.body, *node.orelse):
+            for name in python_assigned_names_in_statement(statement):
+                self.sanitized_filesystem_paths.pop(name, None)
+
+    def visit_Try(self, node: ast.Try) -> None:
+        self.generic_visit(node)
+        statements = [*node.body, *node.orelse, *node.finalbody]
+        statements.extend(statement for handler in node.handlers for statement in handler.body)
+        for statement in statements:
+            for name in python_assigned_names_in_statement(statement):
+                self.sanitized_filesystem_paths.pop(name, None)
 
     def visit_If(self, node: ast.If) -> None:
         environment_names = python_approval_environment_names(node.test)
@@ -6191,6 +6337,9 @@ class PythonVisitor(ast.NodeVisitor):
                 )
             )
         self.generic_visit(node)
+        for statement in (*node.body, *node.orelse):
+            for name in python_assigned_names_in_statement(statement):
+                self.sanitized_filesystem_paths.pop(name, None)
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         if not self.class_stack or self.function_depth > 0:
@@ -6205,6 +6354,23 @@ class PythonVisitor(ast.NodeVisitor):
         previous_static_http_prefix_proofs = self.static_http_prefix_proofs
         previous_network_helper_bindings = self.network_helper_bindings
         self.network_helper_bindings = dict(self.network_helper_bindings)
+        previous_path_segment_sanitizer_bindings = (
+            self.path_segment_sanitizer_bindings
+        )
+        previous_sanitized_filesystem_paths = self.sanitized_filesystem_paths
+        previous_path_join_functions = self.path_join_functions
+        local_bindings = python_function_local_bindings(node)
+        self.path_segment_sanitizer_bindings = {
+            name: summary
+            for name, summary in self.path_segment_sanitizer_bindings.items()
+            if name not in local_bindings
+        }
+        self.path_join_functions = {
+            name
+            for name in self.path_join_functions
+            if name.split(".", 1)[0] not in local_bindings
+        }
+        self.sanitized_filesystem_paths = {}
         self.allowlisted_names = set()
         self.allowlist_evidence = {}
         self.allowlist_control_names = {}
@@ -6650,6 +6816,11 @@ class PythonVisitor(ast.NodeVisitor):
         self.static_http_prefixes = previous_static_http_prefixes
         self.static_http_prefix_proofs = previous_static_http_prefix_proofs
         self.network_helper_bindings = previous_network_helper_bindings
+        self.path_segment_sanitizer_bindings = (
+            previous_path_segment_sanitizer_bindings
+        )
+        self.sanitized_filesystem_paths = previous_sanitized_filesystem_paths
+        self.path_join_functions = previous_path_join_functions
         self.imported_symbol_paths = previous_imported_symbol_paths
         self.imported_symbol_names = previous_imported_symbol_names
         self.imported_symbol_resolutions = previous_imported_symbol_resolutions
@@ -8569,6 +8740,9 @@ class PythonVisitor(ast.NodeVisitor):
                 if path_control is not None and path_control.strength == "weak-prefix"
                 else None
             )
+            path_segment_sanitizer = self.path_segment_sanitizer_for_expression(
+                path_expression
+            )
             self.add_capability(
                 "filesystem",
                 node,
@@ -8584,6 +8758,11 @@ class PythonVisitor(ast.NodeVisitor):
                         python_expression_names(path_expression)
                         & self.dynamic_tool_input_names
                     ),
+                    **(
+                        {"tool_input_path_sanitized": True}
+                        if path_segment_sanitizer is not None
+                        else {}
+                    ),
                     "operation": filesystem_spec.operation,
                     "path_role": filesystem_spec.path_role,
                     "path_boundary_guard": boundary is not None,
@@ -8597,6 +8776,10 @@ class PythonVisitor(ast.NodeVisitor):
                 self.add_python_path_boundary_control(node, boundary)
             if prefix_check is not None:
                 self.add_python_path_prefix_control(node, prefix_check)
+            if path_segment_sanitizer is not None:
+                self.add_python_path_segment_sanitizer_control(
+                    node, path_segment_sanitizer
+                )
         proven_path_open = (
             short_name == "open"
             and isinstance(node.func, ast.Attribute)
@@ -8643,6 +8826,9 @@ class PythonVisitor(ast.NodeVisitor):
             tool_input_path = bool(
                 python_expression_names(path_expression) & self.dynamic_tool_input_names
             )
+            path_segment_sanitizer = self.path_segment_sanitizer_for_expression(
+                path_expression
+            )
             path_control = (
                 self.function_path_boundary_calls[-1].get(id(node))
                 if self.function_path_boundary_calls and write_access
@@ -8666,6 +8852,11 @@ class PythonVisitor(ast.NodeVisitor):
                     "write_access": write_access,
                     "dynamic_path": dynamic_path,
                     "tool_input_path": tool_input_path,
+                    **(
+                        {"tool_input_path_sanitized": True}
+                        if path_segment_sanitizer is not None
+                        else {}
+                    ),
                     "path_boundary_guard": boundary is not None,
                     "path_boundary_scope": (
                         boundary.boundary_scope if boundary is not None else "unresolved"
@@ -8677,6 +8868,10 @@ class PythonVisitor(ast.NodeVisitor):
                 self.add_python_path_boundary_control(node, boundary)
             if prefix_check is not None:
                 self.add_python_path_prefix_control(node, prefix_check)
+            if path_segment_sanitizer is not None:
+                self.add_python_path_segment_sanitizer_control(
+                    node, path_segment_sanitizer
+                )
         root_name = call_name.split(".", 1)[0]
         http_method = short_name.lower() in {"get", "post", "put", "patch", "delete", "request"}
         if http_method and (
@@ -8885,6 +9080,9 @@ def scan_python(
     ],
     registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
     network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
+    path_segment_sanitizer_summaries: dict[
+        tuple[str, str], PythonPathSegmentSanitizerSummary
+    ],
     registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
     browser_class_exports: dict[tuple[str, str], frozenset[str]],
     literal_http_exports: dict[tuple[str, str], PythonStaticHttpPrefixProof],
@@ -8995,6 +9193,32 @@ def scan_python(
         for name, proof in imported_static_http_prefix_proofs.items()
     }
     module_static_http_prefix_proofs = dict(imported_static_http_prefix_proofs)
+    path_segment_sanitizer_bindings = {
+        name: summary
+        for (summary_path, name), summary in path_segment_sanitizer_summaries.items()
+        if summary_path == relative and module_mutation_counts[name] == 1
+    }
+    for statement in tree.body:
+        if not isinstance(statement, ast.ImportFrom):
+            continue
+        for alias in statement.names:
+            if alias.name == "*":
+                continue
+            local_name = alias.asname or alias.name
+            if (
+                module_import_binding_counts[local_name] != 1
+                or local_name in module_rebound_names
+            ):
+                continue
+            resolution = resolve_python_import(
+                root, relative, statement, alias.name, module_paths
+            )
+            if resolution is not None and (
+                summary := path_segment_sanitizer_summaries.get(
+                    (resolution.path, alias.name)
+                )
+            ):
+                path_segment_sanitizer_bindings[local_name] = summary
     for statement in tree.body:
         if not isinstance(statement, (ast.Assign, ast.AnnAssign)):
             continue
@@ -9067,6 +9291,39 @@ def scan_python(
         constructor
         for constructor in path_constructors
         if constructor.split(".", 1)[0] not in module_rebound_names
+    }
+    path_join_functions = {
+        f"{alias.asname or alias.name}.path.join"
+        for statement in tree.body
+        if isinstance(statement, ast.Import)
+        for alias in statement.names
+        if alias.name == "os"
+        and module_import_binding_counts[alias.asname or alias.name] == 1
+        and (alias.asname or alias.name) not in module_rebound_names
+    } | {
+        alias.asname or alias.name
+        for statement in tree.body
+        if isinstance(statement, ast.ImportFrom)
+        and statement.level == 0
+        and statement.module in {"os.path", "posixpath", "ntpath"}
+        for alias in statement.names
+        if alias.name == "join"
+        and module_import_binding_counts[alias.asname or alias.name] == 1
+        and (alias.asname or alias.name) not in module_rebound_names
+    }
+    mutated_path_attributes = {
+        dotted_name(candidate)
+        for candidate in nodes
+        if isinstance(candidate, ast.Attribute)
+        and isinstance(candidate.ctx, (ast.Store, ast.Del))
+    }
+    path_join_functions = {
+        name
+        for name in path_join_functions
+        if not any(
+            name == mutated or name.startswith(f"{mutated}.")
+            for mutated in mutated_path_attributes
+        )
     }
     browser_receiver_type_exports = {
         "ElementHandle",
@@ -11494,6 +11751,7 @@ def scan_python(
         imported_agent_factory_target_paths=imported_agent_factory_target_paths,
         registry_class_exports=registry_class_exports,
         network_helper_summaries=network_helper_summaries,
+        path_segment_sanitizer_bindings=path_segment_sanitizer_bindings,
         registered_tool_functions=registered_tool_functions,
         registry_function_tools=registry_function_tools,
         registry_class_tools=registry_class_tools,
@@ -11502,6 +11760,7 @@ def scan_python(
         module_rebound_names=module_rebound_names,
         path_constructors=path_constructors,
         filesystem_api_aliases=filesystem_api_aliases,
+        path_join_functions=path_join_functions,
         urllib_openers=urllib_openers,
         urllib_request_constructors=urllib_request_constructors,
         browser_type_names=browser_type_names,
@@ -18273,6 +18532,241 @@ def build_python_literal_http_exports(
                 statement.lineno,
             )
     return exports
+
+
+def build_python_path_segment_sanitizer_summaries(
+    root: Path,
+    paths: list[Path],
+) -> dict[tuple[str, str], PythonPathSegmentSanitizerSummary]:
+    """Index exact local helpers returning a hexadecimal cryptographic digest."""
+    summaries: dict[tuple[str, str], PythonPathSegmentSanitizerSummary] = {}
+    algorithms = {"sha256", "sha384", "sha512", "blake2b", "blake2s"}
+    if any(
+        (relative := path.relative_to(root)).name == "hashlib.py"
+        or relative.parts[-2:] == ("hashlib", "__init__.py")
+        for path in paths
+    ):
+        return summaries
+    for path in paths:
+        if (
+            path.is_symlink()
+            or not path.is_file()
+            or path.suffix.lower() != ".py"
+            or set(path.relative_to(root).parts) & SKIP_DIRECTORIES
+        ):
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            relative = path.relative_to(root).as_posix()
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+            if "hexdigest" not in text or not any(name in text for name in algorithms):
+                continue
+            tree = ast.parse(text, filename=relative)
+        except (OSError, SyntaxError):
+            continue
+
+        module_counts: Counter[str] = Counter()
+        for statement in tree.body:
+            if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                module_counts[statement.name] += 1
+            elif isinstance(statement, (ast.Import, ast.ImportFrom)):
+                module_counts.update(
+                    alias.asname or alias.name.split(".", 1)[0]
+                    for alias in statement.names
+                    if alias.name != "*"
+                )
+            else:
+                module_counts.update(
+                    candidate.id
+                    for candidate in ast.walk(statement)
+                    if isinstance(candidate, ast.Name)
+                    and isinstance(candidate.ctx, (ast.Store, ast.Del))
+                )
+        hashlib_modules = {
+            alias.asname or alias.name
+            for statement in tree.body
+            if isinstance(statement, ast.Import)
+            for alias in statement.names
+            if alias.name == "hashlib"
+            and module_counts[alias.asname or alias.name] == 1
+        }
+        hashlib_functions = {
+            alias.asname or alias.name: alias.name
+            for statement in tree.body
+            if isinstance(statement, ast.ImportFrom)
+            and statement.level == 0
+            and statement.module == "hashlib"
+            for alias in statement.names
+            if alias.name in algorithms
+            and module_counts[alias.asname or alias.name] == 1
+        }
+        global_bindings = {
+            name
+            for candidate in ast.walk(tree)
+            if isinstance(candidate, ast.Global)
+            for name in candidate.names
+        }
+        mutated_hashlib_modules = {
+            module
+            for candidate in ast.walk(tree)
+            if isinstance(candidate, ast.Attribute)
+            and isinstance(candidate.ctx, (ast.Store, ast.Del))
+            for module in hashlib_modules
+            if dotted_name(candidate).startswith(f"{module}.")
+        }
+        hashlib_modules -= global_bindings | mutated_hashlib_modules
+        hashlib_functions = {
+            local: imported
+            for local, imported in hashlib_functions.items()
+            if local not in global_bindings
+        }
+        if not hashlib_modules and not hashlib_functions:
+            continue
+
+        for function in (
+            statement for statement in tree.body if isinstance(statement, ast.FunctionDef)
+        ):
+            parameters = [*function.args.posonlyargs, *function.args.args]
+            if (
+                module_counts[function.name] != 1
+                or function.decorator_list
+                or len(parameters) != 1
+                or function.args.vararg is not None
+                or function.args.kwarg is not None
+                or function.args.kwonlyargs
+                or function.args.defaults
+                or any(isinstance(node, (ast.Yield, ast.YieldFrom)) for node in ast.walk(function))
+            ):
+                continue
+            parameter = parameters[0].arg
+            function_bindings = python_function_local_bindings(function)
+            function_hashlib_modules = hashlib_modules - function_bindings
+            function_hashlib_functions = {
+                local: imported
+                for local, imported in hashlib_functions.items()
+                if local not in function_bindings
+            }
+            if not function_hashlib_modules and not function_hashlib_functions:
+                continue
+            local_counts = Counter(
+                candidate.id
+                for statement in function.body
+                for candidate in ast.walk(statement)
+                if isinstance(candidate, ast.Name)
+                and isinstance(candidate.ctx, (ast.Store, ast.Del))
+            )
+            digest_bindings: dict[str, str] = {}
+            hex_bindings: dict[str, str] = {}
+
+            def digest_algorithm(
+                expression: ast.AST,
+                modules: frozenset[str] = frozenset(function_hashlib_modules),
+                functions: tuple[tuple[str, str], ...] = tuple(
+                    function_hashlib_functions.items()
+                ),
+                input_name: str = parameter,
+            ) -> str | None:
+                if not isinstance(expression, ast.Call) or expression.keywords:
+                    return None
+                call_name = dotted_name(expression.func)
+                algorithm = next(
+                    (
+                        name
+                        for name in algorithms
+                        if call_name
+                        in ({f"{module}.{name}" for module in modules}
+                            | {
+                                local
+                                for local, imported in functions
+                                if imported == name
+                            })
+                    ),
+                    None,
+                )
+                if algorithm is None or len(expression.args) != 1:
+                    return None
+                value = expression.args[0]
+                if not (
+                    isinstance(value, ast.Call)
+                    and isinstance(value.func, ast.Attribute)
+                    and value.func.attr == "encode"
+                    and not value.args
+                    and not value.keywords
+                    and isinstance(value.func.value, ast.Name)
+                    and value.func.value.id == input_name
+                ):
+                    return None
+                return algorithm
+
+            def hex_algorithm(
+                expression: ast.AST | None,
+                digest_map: dict[str, str] = digest_bindings,
+            ) -> str | None:
+                if not (
+                    isinstance(expression, ast.Call)
+                    and not expression.args
+                    and not expression.keywords
+                    and isinstance(expression.func, ast.Attribute)
+                    and expression.func.attr == "hexdigest"
+                ):
+                    return None
+                receiver = expression.func.value
+                return (
+                    digest_map.get(receiver.id)
+                    if isinstance(receiver, ast.Name)
+                    else digest_algorithm(receiver)
+                )
+
+            returned_algorithm: str | None = None
+            valid = True
+            for statement in function.body:
+                if (
+                    isinstance(statement, ast.Assign)
+                    and len(statement.targets) == 1
+                    and isinstance(statement.targets[0], ast.Name)
+                    and local_counts[statement.targets[0].id] == 1
+                ):
+                    target = statement.targets[0].id
+                    if algorithm := digest_algorithm(statement.value):
+                        digest_bindings[target] = algorithm
+                    elif algorithm := hex_algorithm(statement.value):
+                        hex_bindings[target] = algorithm
+                    else:
+                        valid = False
+                        break
+                elif isinstance(statement, ast.Return):
+                    if returned_algorithm is not None:
+                        valid = False
+                        break
+                    returned_algorithm = (
+                        hex_bindings.get(statement.value.id)
+                        if isinstance(statement.value, ast.Name)
+                        else hex_algorithm(statement.value)
+                    )
+                    if returned_algorithm is None:
+                        valid = False
+                        break
+                elif isinstance(statement, ast.Expr) and isinstance(statement.value, ast.Constant):
+                    continue
+                else:
+                    valid = False
+                    break
+            if (
+                not valid
+                or returned_algorithm is None
+                or not function.body
+                or not isinstance(function.body[-1], ast.Return)
+            ):
+                continue
+            summaries[(relative, function.name)] = PythonPathSegmentSanitizerSummary(
+                Evidence(relative, function.lineno, excerpt(text.splitlines(), function.lineno)),
+                returned_algorithm,
+                "hexadecimal",
+                0,
+                parameter,
+            )
+    return summaries
 
 
 def build_python_network_helper_summaries(
@@ -26224,6 +26718,10 @@ def scan_repository(
         root,
         registry_paths,
     )
+    path_segment_sanitizer_summaries = build_python_path_segment_sanitizer_summaries(
+        root,
+        registry_paths,
+    )
     network_helper_summaries.update(
         build_python_secure_network_helper_summaries(
             root,
@@ -26307,6 +26805,7 @@ def scan_repository(
                 mcp_server_subclass_exports,
                 registry_class_exports,
                 network_helper_summaries,
+                path_segment_sanitizer_summaries,
                 registered_tool_functions,
                 browser_class_exports,
                 literal_http_exports,

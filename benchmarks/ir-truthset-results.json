@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T22:47:03.784162+00:00",
-  "labels": 1224,
-  "passed": 1224,
+  "generated_at": "2026-08-22T23:57:33.900816+00:00",
+  "labels": 1227,
+  "passed": 1227,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -336,6 +336,14 @@
       "tp": 6,
       "fp": 0,
       "tn": 2,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-PATH-SEGMENT-SANITIZER": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 1,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -977,6 +985,33 @@
     {
       "id": "typescript-path-boundary-mcp-servers-real",
       "check_id": "IR-TS-PATH-BOUNDARY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-path-segment-sanitizer-local",
+      "check_id": "IR-PY-PATH-SEGMENT-SANITIZER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-path-segment-sanitizer-lookalike-local-negative",
+      "check_id": "IR-PY-PATH-SEGMENT-SANITIZER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-path-segment-sanitizer-qwen-real",
+      "check_id": "IR-PY-PATH-SEGMENT-SANITIZER",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

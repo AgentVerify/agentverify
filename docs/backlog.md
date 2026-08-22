@@ -82,6 +82,12 @@ now have source-path/line provenance, removing five AV-NET001 false positives, w
 PyPI requests gain inventory provenance. Environment/composed values, duplicate or globally mutated
 exports, consumer rebinding, local shadowing, module-qualified access, and ambiguous imports stay
 unresolved. Ten focused IR labels pin three positives and seven negatives.
+Schema v113 resolves exact imported hexadecimal cryptographic-digest helpers when tool input occupies
+only a non-root `os.path.join` segment beneath a non-tool-controlled prefix. Qwen-Agent contributes
+the pinned SHA-256 case, one `path-segment-sanitizer` control edge, and the removal of its sole
+AV-FS001 review. Lookalike helpers, mutable `hashlib` or join bindings, digest-derived roots, extra
+unsanitized segments, and branch escape remain unresolved. Three focused IR labels pin two positives
+and one negative.
 Next generalize selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
@@ -422,8 +428,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 655 pinned positive/negative locations, with 1,224 separately
-scored IR component/relationship labels. Schema-v112 engine results and
+The curated regression set has reached 659 pinned positive/negative locations, with 1,227 separately
+scored IR component/relationship labels. Schema-v113 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

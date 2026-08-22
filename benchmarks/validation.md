@@ -136,7 +136,7 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-22 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,771 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,311 relationships, and completed in 293.5388 seconds on the development machine. Three parse
+resolved 2,312 relationships, and completed in 358.2081 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -828,7 +828,7 @@ Two default-scope clients qualify: the Microsoft tutorial and FastMCP CLI both a
 do not show the target URL. The TypeScript SDK host is the negative control: it displays the full URL,
 rejects unsafe non-HTTPS/non-loopback destinations, and asks before proceeding. The rule matrix is 4
 TP, 3 TN, 0 FP, and 0 FN; seven additional positive IR labels pin full versus missing disclosure.
-All 655 cross-rule labels pass (294 positives and 361 negatives).
+All 659 cross-rule labels pass (296 positives and 363 negatives).
 
 During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
 to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
@@ -966,7 +966,7 @@ through a controlled dependency-review process.
 ## AV-FS001 — dynamic writable tool path
 
 The rule requires a writable tool-input-derived path inside a resolved tool; ordinary application
-writes and fixed/configured tool paths do not trigger it. The full benchmark reports 32 default-scope sites across nine
+writes and fixed/configured tool paths do not trigger it. The full benchmark reports 31 default-scope sites across eight
 repositories. Four newly reachable sites come from immutable module-level callables passed literally
 to Marvin Agents: writes in `examples/deepseek_chat.py:74`, `examples/hello_agent.py:7`, and
 `examples/provider_specific/aimlapi/run_agent.py:30`, plus the delete in
@@ -993,9 +993,15 @@ to exact tool reachability. Its line-89 parent-directory creation remains a revi
 the candidate's parent remains within the boundary.
 
 Registry-decorator recovery adds four MetaGPT sites: the Editor's parent creation and file write plus
-GPT-v Generator's output-directory creation and write. Its exact Qwen class entrypoints add one
-`simple_doc_parser` directory creation; the path includes a hash of the tool input, so this remains a
-conservative review rather than a demonstrated traversal. A fixed literal `Path.write_text` fixture
+GPT-v Generator's output-directory creation and write. Schema v113 removes Qwen-Agent's former
+`simple_doc_parser.py:447` review. The tool-controlled URL is transformed by an exact imported helper
+whose body returns hexadecimal `hashlib.sha256(input.encode()).hexdigest()`, and the result occupies
+only a non-root `os.path.join(self.data_root, ...)` segment. AgentVerify records a
+`path-segment-sanitizer` edge with `policy_effect: removes-path-separator-control`; hexadecimal output
+cannot inject a separator, dot segment, drive prefix, or UNC prefix. The proof requires the stdlib
+constructor, helper body, import, call binding, and join position. A generic/lookalike helper, local
+`hashlib` shadow module, mutable `hashlib` or `os.path.join`, digest-derived root, extra unsanitized segment, rebound call, or branch
+escape remains AV-FS001. A fixed literal `Path.write_text` fixture
 retains its capability edge without a finding. Attribute `.open(...)` calls now require a proven
 `pathlib.Path` receiver, preventing MetaGPT's in-memory filesystem API from being misclassified as a
 host filesystem sink.
@@ -1309,14 +1315,14 @@ and surfacing failed writes through metrics or alerts.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 655 exact labels across all 19 enabled rules: 294 positives and 361
+`benchmarks/truthset.json` contains 659 exact labels across all 19 enabled rules: 296 positives and 363
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
 Compose/Kubernetes/Docker SDK settings, host credential bind near misses, and exact/prompt-only MCP
-package launchers. All 655 currently pass;
+package launchers. All 659 currently pass;
 each rule's seed precision and recall are 1.0. Negative labels must retain either an observed Agent IR
 component anchor or verified source text at the exact pinned line, preventing a missing or drifting
 location from passing silently.
@@ -1441,12 +1447,13 @@ Agent-as-tool delegation, eight conservative local negatives, two AutoGen factor
 ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent edge plus delegation.
 The 420 component-taxonomy labels add 301 exact local/pinned framework, provider, call,
 and model positives plus 119 near-name, rebound, custom-endpoint, scoped-binding, nonliteral-request,
-and unrelated-service negatives.
+and unrelated-service negatives. Three path-segment-sanitizer labels pin the exact local and Qwen
+SHA-256 edges plus a lookalike negative.
 Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,224 IR labels pass (861 positives and 363 negatives):
+negatives. All 1,227 IR labels pass (863 positives and 364 negatives):
 278 component-taxonomy positives/103 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three

@@ -545,6 +545,7 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                     )
                 elif (
                     component.attributes.get("tool_input_path", True)
+                    and not component.attributes.get("tool_input_path_sanitized")
                     and component.attributes.get("path_boundary_scope") != "constrained"
                 ):
                     ir.findings.append(

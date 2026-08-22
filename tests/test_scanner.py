@@ -4983,6 +4983,64 @@ def test_python_path_boundary_is_ordered_branch_local_and_scope_aware() -> None:
     ]
 
 
+def test_python_hex_digest_sanitizes_only_joined_path_segments() -> None:
+    ir = scan_repository(ROOT / "cases/python_path_segment_sanitizer")
+
+    filesystem = {
+        item.evidence.line: item.attributes
+        for item in ir.components
+        if item.kind == "capability"
+        and item.name == "filesystem"
+        and item.evidence.path == "agent.py"
+    }
+    assert filesystem[13]["tool_input_path_sanitized"] is True
+    assert all(
+        "tool_input_path_sanitized" not in filesystem[line]
+        for line in (19, 25, 31, 38, 45)
+    )
+    assert [
+        (
+            edge.evidence.line,
+            edge.attributes["algorithm"],
+            edge.attributes["output_encoding"],
+            edge.attributes["sanitizer_path"],
+            edge.attributes["policy_effect"],
+        )
+        for edge in ir.relationships
+        if edge.target_name == "path-segment-sanitizer"
+    ] == [
+        (
+            13,
+            "sha256",
+            "hexadecimal",
+            "helper.py",
+            "removes-path-separator-control",
+        )
+    ]
+    assert [
+        (finding.rule_id, finding.evidence.line, finding.analysis["tool"])
+        for finding in ir.findings
+    ] == [
+        ("AV-FS001", 19, "unsafe_extra_segment"),
+        ("AV-FS001", 25, "unsafe_digest_root"),
+        ("AV-FS001", 31, "unsafe_lookalike"),
+        ("AV-FS001", 38, "unsafe_rebound"),
+        ("AV-FS001", 45, "unsafe_branch_escape"),
+        ("AV-FS001", 20, "mutated_join"),
+        ("AV-FS001", 26, "mutated_hashlib"),
+    ]
+
+    shadowed = scan_repository(ROOT / "cases/python_path_segment_shadowed_hashlib")
+    assert not any(
+        edge.target_name == "path-segment-sanitizer"
+        for edge in shadowed.relationships
+    )
+    assert [
+        (finding.rule_id, finding.analysis["tool"])
+        for finding in shadowed.findings
+    ] == [("AV-FS001", "shadowed_hashlib")]
+
+
 def test_python_path_helper_summary_is_return_exact_and_class_local() -> None:
     ir = scan_repository(ROOT / "cases/python_path_helper")
 
