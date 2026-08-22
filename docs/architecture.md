@@ -58,13 +58,20 @@ require one immutable import from a module whose path establishes a tool namespa
 eligible only with an exact imported tool base. Inline constructors receive occurrence-qualified tool
 IDs. A direct `with`/`async with` binding is accepted only when the Agent statement is directly in
 that body and no preceding mutation intervenes. AgentVerify does not infer capabilities from the
-constructor spelling. A wrapper assignment can additionally preserve a callable body when
+constructor spelling. An exact imported class may also create a tool through the known
+`from_settings` factory method, provided the class import is immutable and already establishes tool
+role. `agents.HostedMCPTool` and `google.adk.integrations.langchain.LangchainTool` are explicit
+integration adapters; the hosted MCP adapter records MCP access but does not invent approval state.
+An assigned `agent.as_tool()` adapter requires one sole same-block adapter mutation and one earlier,
+unreassigned direct Agent-constructor receiver. It receives its own tool identity and an exact
+tool-to-Agent delegation edge; parameters, forward receivers, arbitrary objects, and receiver or
+adapter reassignment remain unresolved. A wrapper assignment can additionally preserve a callable body when
 the factory is an unshadowed `function_tool` import from `agents` or `agents.tool`, the wrapper and
 function are each sole earlier same-block mutations, and the function is passed as the wrapper's sole
 positional argument. Literal approval on the wrapper is retained. This block-local proof takes
 precedence over a broader lexical candidate, while any local binding prevents fallback to a
 same-named module definition. Cross-branch definitions, reassignments, forward definitions,
-unproven parameters, arbitrary factories/builtins, ambiguous or rebound constructor imports, nested
+unproven parameters, arbitrary factories/builtins or factory methods, ambiguous or rebound constructor imports, nested
 or reassigned context bindings, tool-helper returns, lambdas, multiply wrapped functions, wrapper
 tuple unpacking, and shadowed factories remain unresolved.
 Package re-exports, wildcard imports, dynamic lookups, conditional tool expressions, and other

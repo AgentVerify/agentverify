@@ -4190,6 +4190,72 @@ def test_imported_literal_tools_require_immutable_binding_or_exact_export() -> N
     )
 
 
+def test_tool_factory_and_agent_adapters_require_exact_local_proof() -> None:
+    ir = scan_repository(ROOT / "cases/python_tool_factory_adapters")
+    edges = {
+        (edge.source_kind, edge.source_name, edge.target_kind, edge.target_name): edge
+        for edge in ir.relationships
+    }
+
+    for tool_name in ("graph_tool", "mcp_tool", "langchain_tool", "worker_tool"):
+        assert edges[("agent", "root", "tool", tool_name)].target_id == (
+            f"py:positive.py#tool:{tool_name}"
+        )
+    assert edges[("agent", "root", "tool", "worker_tool")].attributes == {
+        "target_identity": "agent-as-tool-adapter"
+    }
+    delegation = edges[("tool", "worker_tool", "agent", "worker")]
+    assert delegation.source_id == "py:positive.py#tool:worker_tool"
+    assert delegation.target_id == "py:positive.py#agent:worker"
+    assert delegation.attributes == {
+        "adapter": "as_tool",
+        "target_identity": "same-block-agent-as-tool",
+    }
+    assert edges[("tool", "mcp_tool", "capability", "mcp-access")].source_id == (
+        "py:positive.py#tool:mcp_tool"
+    )
+
+    unresolved = {
+        "unknown-factory": "unknown_factory",
+        "arbitrary-adapter": "arbitrary_adapter",
+        "ambiguous-adapter": "ambiguous_adapter",
+        "parameter-receiver": "worker_tool",
+        "nonagent-receiver": "worker_tool",
+        "reassigned-receiver": "worker_tool",
+        "reassigned-adapter": "worker_tool",
+        "forward-receiver": "worker_tool",
+    }
+    assert all(
+        edges[("agent", agent_name, "tool", tool_name)].target_id is None
+        for agent_name, tool_name in unresolved.items()
+    )
+
+    components = {
+        component.symbol_id: component
+        for component in ir.components
+        if component.kind == "tool"
+    }
+    assert components["py:positive.py#tool:graph_tool"].attributes["constructor"] == (
+        "GlobalSearchTool.from_settings"
+    )
+    assert components["py:positive.py#tool:mcp_tool"].attributes["constructor"] == (
+        "HostedMCPTool"
+    )
+    assert components["py:positive.py#tool:langchain_tool"].attributes[
+        "constructor"
+    ] == "LangchainTool"
+    assert components["py:positive.py#tool:worker_tool"].attributes == {
+        "binding": "agent-as-tool-adapter",
+        "adapter": "worker.as_tool",
+        "registration": "agent-tool-reference",
+        "registration_line": 13,
+        "target_agent": "worker",
+        "target_agent_id": "py:positive.py#agent:worker",
+        "resolution": "same-block-agent-as-tool",
+        "scope": "production",
+    }
+
+
 def test_python_agent_helper_returns_require_exact_same_class_flow() -> None:
     ir = scan_repository(ROOT / "cases/python_agent_helper_return")
     edges = {

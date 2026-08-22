@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T00:25:27.121598+00:00",
-  "labels": 387,
-  "passed": 387,
+  "generated_at": "2026-08-22T00:54:28.723415+00:00",
+  "labels": 410,
+  "passed": 410,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -288,6 +288,14 @@
       "tp": 4,
       "fp": 0,
       "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-TOOL-FACTORY-ADAPTER": {
+      "tp": 23,
+      "fp": 0,
+      "tn": 0,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -3880,6 +3888,213 @@
     {
       "id": "python-imported-literal-google-request-input-real",
       "check_id": "IR-PY-IMPORTED-LITERAL-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-tool-factory-method-local",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-tool-factory-hosted-mcp-local",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-tool-factory-langchain-adapter-local",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-as-tool-use-local",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-tool-factory-hosted-mcp-capability-local",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-as-tool-delegation-local",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-tool-factory-unknown-method-unresolved",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-tool-factory-arbitrary-adapter-unresolved",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-tool-factory-ambiguous-import-unresolved",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-as-tool-parameter-unresolved",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-as-tool-nonagent-unresolved",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-as-tool-reassigned-receiver-unresolved",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-as-tool-reassigned-adapter-unresolved",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-as-tool-forward-receiver-unresolved",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-tool-factory-autogen-global-real",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-tool-factory-autogen-local-real",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-tool-factory-google-adk-langchain-real",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-tool-factory-composio-module-real",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-tool-factory-composio-local-real",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-tool-factory-composio-module-capability-real",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-tool-factory-composio-local-capability-real",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-as-tool-openai-use-real",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-as-tool-openai-delegation-real",
+      "check_id": "IR-PY-TOOL-FACTORY-ADAPTER",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

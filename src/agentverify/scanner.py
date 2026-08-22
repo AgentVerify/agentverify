@@ -64,6 +64,11 @@ BUILTIN_TOOL_CAPABILITIES = {
     "ComputerTool": ("computer-control",),
     "CustomTool": ("external-action",),
 }
+EXACT_TOOL_CONSTRUCTOR_IMPORTS = {
+    ("agents", "HostedMCPTool"),
+    ("google.adk.integrations.langchain", "LangchainTool"),
+}
+IMPORTED_TOOL_FACTORY_METHODS = {"from_settings"}
 APPROVAL_BYPASS_NAME = re.compile(
     r"(?:^|[._])(?:\w+_)*auto_?approve$|"
     r"(?:^|[._])(?:skip_?confirmation|dangerously_?skip_?(?:permissions?|confirmation|approval))$",
@@ -2554,6 +2559,8 @@ class PythonVisitor(ast.NodeVisitor):
             if definition_line < getattr(node, "lineno", 1):
                 if dominating and dominating[0] != symbol_id:
                     return dominating if repeated else (dominating[0], None)
+                if dominating and dominating[1] == "agent-as-tool-adapter":
+                    return dominating
                 return symbol_id, "lexical-single-definition" if repeated else None
         if dominating:
             return (
@@ -2567,6 +2574,7 @@ class PythonVisitor(ast.NodeVisitor):
                     "contextual-imported-class-factory-return",
                     "literal-tools-list-context-manager",
                     "literal-tools-list-import-binding",
+                    "agent-as-tool-adapter",
                 }
                 else (dominating[0], None)
             )
@@ -5313,7 +5321,10 @@ def scan_python(
         for alias in statement.names:
             local_name = alias.asname or alias.name
             import_binding_counts[local_name] += 1
-            if any("tool" in part.lower() for part in module_parts):
+            if any("tool" in part.lower() for part in module_parts) or (
+                statement.module or "",
+                alias.name,
+            ) in EXACT_TOOL_CONSTRUCTOR_IMPORTS:
                 tool_constructor_import_candidates[local_name].append(statement)
     for statement in (candidate for candidate in nodes if isinstance(candidate, ast.Import)):
         import_binding_counts.update(
@@ -5349,11 +5360,18 @@ def scan_python(
     }
 
     def usage_proven_tool_constructor(call: ast.Call) -> bool:
-        if not isinstance(call.func, ast.Name):
+        if isinstance(call.func, ast.Name):
+            constructor = call.func.id
+        elif (
+            isinstance(call.func, ast.Attribute)
+            and call.func.attr in IMPORTED_TOOL_FACTORY_METHODS
+            and isinstance(call.func.value, ast.Name)
+        ):
+            constructor = call.func.value.id
+        else:
             return False
-        constructor = call.func.id
         if constructor in local_tool_constructor_classes:
-            return True
+            return isinstance(call.func, ast.Name)
         imported_at = imported_tool_constructors.get(constructor)
         return imported_at is not None and imported_at.lineno < call.lineno
 
@@ -5438,6 +5456,9 @@ def scan_python(
     inline_usage_tool_candidates: dict[int, tuple[ast.Call, ast.Call]] = {}
     context_usage_tool_bindings: dict[
         tuple[int, str], tuple[ast.With | ast.AsyncWith, ast.Call, list[ast.Call]]
+    ] = {}
+    agent_as_tool_assignments: dict[
+        int, tuple[ast.Assign, ast.Call, ast.Assign]
     ] = {}
     wrapper_candidates: dict[int, PythonFunctionToolWrapper] = {}
     openai_agents_context = any(
@@ -5533,6 +5554,41 @@ def scan_python(
                     usage_tool_assignments.setdefault(
                         id(definition), (definition, call, resolution)
                     )
+                if (
+                    isinstance(definition, ast.Assign)
+                    and len(definition.targets) == 1
+                    and isinstance(definition.targets[0], ast.Name)
+                    and definition.targets[0].id == value.id
+                    and isinstance(definition.value, ast.Call)
+                    and isinstance(definition.value.func, ast.Attribute)
+                    and definition.value.func.attr == "as_tool"
+                    and isinstance(definition.value.func.value, ast.Name)
+                ):
+                    adapter_block = enclosing_statement_block(definition)
+                    if adapter_block is not None:
+                        adapter_statements, adapter_index = adapter_block
+                        receiver = definition.value.func.value.id
+                        receiver_mutations = [
+                            statement
+                            for statement in adapter_statements[:adapter_index]
+                            if receiver in statement_mutations(statement)
+                        ]
+                        if (
+                            len(receiver_mutations) == 1
+                            and isinstance(receiver_mutations[0], ast.Assign)
+                            and len(receiver_mutations[0].targets) == 1
+                            and isinstance(receiver_mutations[0].targets[0], ast.Name)
+                            and receiver_mutations[0].targets[0].id == receiver
+                            and isinstance(receiver_mutations[0].value, ast.Call)
+                            and dotted_name(receiver_mutations[0].value.func).rsplit(
+                                ".", 1
+                            )[-1]
+                            in AGENT_CALLS
+                        ):
+                            agent_as_tool_assignments.setdefault(
+                                id(definition),
+                                (definition, call, receiver_mutations[0]),
+                            )
                 if not (
                     isinstance(definition, ast.Assign)
                     and len(definition.targets) == 1
@@ -5725,6 +5781,7 @@ def scan_python(
                 if short_name in BUILTIN_TOOL_CAPABILITIES
                 or id(node) in wrapped_tool_assignments
                 or id(node) in usage_tool_assignments
+                or id(node) in agent_as_tool_assignments
                 else None
             )
             if kind:
@@ -5763,6 +5820,95 @@ def scan_python(
                     "scope": source_scope(relative),
                 },
                 symbol_id,
+            )
+        )
+        constructor_root = constructor.split(".", 1)[0]
+        constructor_import = imported_tool_constructors.get(constructor_root)
+        is_hosted_mcp_tool = constructor_import is not None and any(
+            alias.name == "HostedMCPTool"
+            and (alias.asname or alias.name) == constructor_root
+            for alias in constructor_import.names
+        )
+        if (
+            constructor_import is not None
+            and constructor_import.module == "agents"
+            and is_hosted_mcp_tool
+        ):
+            evidence = Evidence(
+                relative,
+                node.value.lineno,
+                excerpt(text.splitlines(), node.value.lineno),
+            )
+            ir.add_component(
+                Component(
+                    "capability",
+                    "mcp-access",
+                    evidence,
+                    {
+                        "api": constructor,
+                        "hosted": True,
+                        "scope": source_scope(relative),
+                    },
+                )
+            )
+            ir.add_relationship(
+                Relationship(
+                    "tool",
+                    binding,
+                    "uses",
+                    "capability",
+                    "mcp-access",
+                    evidence,
+                    source_id=symbol_id,
+                )
+            )
+
+    for (
+        assignment,
+        agent_call,
+        receiver_assignment,
+    ) in agent_as_tool_assignments.values():
+        binding = assignment.targets[0].id
+        receiver = receiver_assignment.targets[0].id
+        tool_id = call_symbol_ids[id(assignment.value)]
+        agent_id = call_symbol_ids[id(receiver_assignment.value)]
+        evidence = Evidence(
+            relative,
+            assignment.lineno,
+            excerpt(text.splitlines(), assignment.lineno),
+        )
+        ir.add_component(
+            Component(
+                "tool",
+                binding,
+                evidence,
+                {
+                    "binding": "agent-as-tool-adapter",
+                    "adapter": dotted_name(assignment.value.func),
+                    "registration": "agent-tool-reference",
+                    "registration_line": agent_call.lineno,
+                    "target_agent": receiver,
+                    "target_agent_id": agent_id,
+                    "resolution": "same-block-agent-as-tool",
+                    "scope": source_scope(relative),
+                },
+                tool_id,
+            )
+        )
+        ir.add_relationship(
+            Relationship(
+                "tool",
+                binding,
+                "delegates-to",
+                "agent",
+                receiver,
+                evidence,
+                {
+                    "adapter": "as_tool",
+                    "target_identity": "same-block-agent-as-tool",
+                },
+                source_id=tool_id,
+                target_id=agent_id,
             )
         )
 
@@ -6495,7 +6641,9 @@ def scan_python(
         definition_by_statement = {
             (id(node), kind, binding): (
                 call_symbol_ids[id(node.value)],
-                "block-dominating-definition",
+                "agent-as-tool-adapter"
+                if id(node) in agent_as_tool_assignments
+                else "block-dominating-definition",
             )
             for node, kind, binding in assigned_constructors
         }

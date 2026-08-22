@@ -24,6 +24,17 @@ PUBLISHED_NAME_KINDS = {
 }
 
 
+def is_test_path(path: str) -> bool:
+    lowered = path.lower()
+    parts = set(Path(lowered).parts)
+    filename = Path(lowered).name
+    return bool(
+        parts & {"test", "tests", "__tests__", "fixtures"}
+        or any(marker in filename for marker in (".test.", ".spec."))
+        or filename.startswith("test_")
+    )
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--corpus", type=Path, default=Path("research/corpus.csv"))
@@ -98,6 +109,7 @@ def main() -> int:
                 "literal-tools-list-inline-constructor",
                 "imported-callable-single-export",
                 "contextual-imported-callable-single-export",
+                "agent-as-tool-adapter",
                 "typed-parameter-callsite-consensus",
                 "contextual-absolute-import-single-export",
             }
@@ -293,6 +305,18 @@ def main() -> int:
             if item.kind == "tool"
             and item.attributes.get("registration") == "agent-tool-reference"
         ]
+        python_agent_tool_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "agent"
+            and edge.target_kind == "tool"
+            and edge.evidence.path.endswith(".py")
+        ]
+        python_non_test_agent_tool_edges = [
+            edge
+            for edge in python_agent_tool_edges
+            if not is_test_path(edge.evidence.path)
+        ]
         python_agent_referenced_tool_ids = {
             item.symbol_id for item in python_agent_referenced_tools if item.symbol_id
         }
@@ -318,6 +342,27 @@ def main() -> int:
         if referenced_tool_agent_targets != python_agent_referenced_tool_ids:
             raise RuntimeError(
                 f"{repository}: Agent-referenced Python callable lacks an exact Agent edge"
+            )
+        python_agent_as_tool_adapter_ids = {
+            item.symbol_id
+            for item in python_agent_referenced_tools
+            if item.symbol_id
+            and item.attributes.get("binding") == "agent-as-tool-adapter"
+        }
+        python_agent_as_tool_delegations = [
+            edge
+            for edge in ir.relationships
+            if edge.source_id in python_agent_as_tool_adapter_ids
+            and edge.source_kind == "tool"
+            and edge.target_kind == "agent"
+            and edge.relation == "delegates-to"
+            and edge.target_id is not None
+        ]
+        if {
+            edge.source_id for edge in python_agent_as_tool_delegations
+        } != python_agent_as_tool_adapter_ids:
+            raise RuntimeError(
+                f"{repository}: Agent.as_tool adapter lacks an exact delegation edge"
             )
         python_function_tool_wrappers = [
             item
@@ -717,8 +762,7 @@ def main() -> int:
             "python_computer_tools": {
                 "instances": len(python_computer_tools),
                 "non_test_instances": sum(
-                    not item.evidence.path.startswith("tests/")
-                    and "/tests/" not in item.evidence.path
+                    not is_test_path(item.evidence.path)
                     for item in python_computer_tools
                 ),
                 "local_execution": sum(
@@ -753,6 +797,10 @@ def main() -> int:
                     == "literal-tools-list-context-manager"
                     for item in python_agent_referenced_tools
                 ),
+                "agent_as_tool_adapters": len(python_agent_as_tool_adapter_ids),
+                "agent_as_tool_delegations": len(
+                    python_agent_as_tool_delegations
+                ),
                 "import_bindings": sum(
                     item.attributes.get("binding") == "literal-tools-list-import"
                     for item in python_agent_referenced_tools
@@ -770,18 +818,30 @@ def main() -> int:
                     for item in python_agent_referenced_tools
                 ),
                 "non_test_instances": sum(
-                    not item.evidence.path.startswith("tests/")
-                    and "/tests/" not in item.evidence.path
+                    not is_test_path(item.evidence.path)
                     for item in python_agent_referenced_tools
                 ),
                 "capability_edges": len(python_agent_referenced_capability_edges),
                 "resolved_agent_edges": len(python_agent_referenced_agent_edges),
             },
+            "python_agent_tool_edges": {
+                "total": len(python_agent_tool_edges),
+                "resolved": sum(
+                    edge.target_id is not None for edge in python_agent_tool_edges
+                ),
+                "unresolved": sum(
+                    edge.target_id is None for edge in python_agent_tool_edges
+                ),
+                "non_test": len(python_non_test_agent_tool_edges),
+                "unresolved_non_test": sum(
+                    edge.target_id is None
+                    for edge in python_non_test_agent_tool_edges
+                ),
+            },
             "python_function_tool_wrappers": {
                 "instances": len(python_function_tool_wrappers),
                 "non_test_instances": sum(
-                    not item.evidence.path.startswith("tests/")
-                    and "/tests/" not in item.evidence.path
+                    not is_test_path(item.evidence.path)
                     for item in python_function_tool_wrappers
                 ),
                 "approval_enabled": sum(
@@ -797,8 +857,7 @@ def main() -> int:
                     {edge.target_id for edge in python_agent_helper_return_edges}
                 ),
                 "non_test_edges": sum(
-                    not edge.evidence.path.startswith("tests/")
-                    and "/tests/" not in edge.evidence.path
+                    not is_test_path(edge.evidence.path)
                     for edge in python_agent_helper_return_edges
                 ),
             },
@@ -819,8 +878,7 @@ def main() -> int:
                     }
                 ),
                 "non_test_edges": sum(
-                    not edge.evidence.path.startswith("tests/")
-                    and "/tests/" not in edge.evidence.path
+                    not is_test_path(edge.evidence.path)
                     for edge in python_typed_tool_parameter_edges
                 ),
             },
@@ -836,8 +894,7 @@ def main() -> int:
                     }
                 ),
                 "non_test_tool_edges": sum(
-                    not edge.evidence.path.startswith("tests/")
-                    and "/tests/" not in edge.evidence.path
+                    not is_test_path(edge.evidence.path)
                     for edge in python_contextual_tool_import_edges
                 ),
                 "network_helper_capabilities": len(
@@ -1487,7 +1544,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 58,
+        "schema_version": 59,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -1631,12 +1688,27 @@ def main() -> int:
                     "constructor_bindings",
                     "inline_constructors",
                     "context_manager_bindings",
+                    "agent_as_tool_adapters",
+                    "agent_as_tool_delegations",
                     "import_bindings",
                     "imported_callable_exports",
                     "module_single_definitions",
                     "non_test_instances",
                     "capability_edges",
                     "resolved_agent_edges",
+                )
+            },
+            "python_agent_tool_edges": {
+                name: sum(
+                    result["python_agent_tool_edges"][name]
+                    for result in successful
+                )
+                for name in (
+                    "total",
+                    "resolved",
+                    "unresolved",
+                    "non_test",
+                    "unresolved_non_test",
                 )
             },
             "python_function_tool_wrappers": {
