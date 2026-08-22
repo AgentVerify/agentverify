@@ -109,7 +109,14 @@ FRONTEND_IMPORT_SIGNATURES = {
     },
 }
 
-AGENT_CALLS = {"Agent", "AssistantAgent", "ConversableAgent", "LlmAgent", "StateGraph", "Crew"}
+AGENT_CALLS = {
+    "Agent",
+    "AssistantAgent",
+    "ConversableAgent",
+    "LlmAgent",
+    "StateGraph",
+    "Crew",
+}
 TOOL_DECORATORS = {"tool", "function_tool", "mcp.tool", "server.tool"}
 MODEL_CONSTRUCTORS = {
     "OpenAI": {"OpenAI", "AsyncOpenAI", "ChatOpenAI", "OpenAIChatCompletionClient"},
@@ -2663,7 +2670,9 @@ class PythonVisitor(ast.NodeVisitor):
         node_scopes: dict[int, tuple[str, ...]],
         call_symbol_ids: dict[int, str],
         mcp_server_symbol_names: dict[str, str],
+        mcp_server_binding_resolutions: dict[int, str],
         mcp_in_process_server_bindings: dict[str, tuple[str, str]],
+        agent_constructor_bindings: set[str],
         definition_symbol_ids: dict[int, str],
         referenced_tool_functions: dict[int, PythonToolRoleReference],
         wrapped_tool_functions: dict[int, PythonFunctionToolWrapper],
@@ -2748,7 +2757,9 @@ class PythonVisitor(ast.NodeVisitor):
         self.node_scopes = node_scopes
         self.call_symbol_ids = call_symbol_ids
         self.mcp_server_symbol_names = mcp_server_symbol_names
+        self.mcp_server_binding_resolutions = mcp_server_binding_resolutions
         self.mcp_in_process_server_bindings = mcp_in_process_server_bindings
+        self.agent_constructor_bindings = agent_constructor_bindings
         self.definition_symbol_ids = definition_symbol_ids
         self.referenced_tool_functions = referenced_tool_functions
         self.wrapped_tool_functions = wrapped_tool_functions
@@ -2996,22 +3007,27 @@ class PythonVisitor(ast.NodeVisitor):
         node: ast.AST,
         *,
         name: str,
-        command: str,
+        command: str | None,
         arguments: list[str | None],
         constructor: str,
         analysis: str,
     ) -> None:
-        """Record an import-proven literal stdio server and optional package proof."""
-        package = mcp_package_reference(command, arguments)
+        """Record an import-proven stdio server and optional literal package proof."""
+        package = mcp_package_reference(command, arguments) if command is not None else None
         symbol_id = self.call_symbol_ids.get(id(node))
         attributes: dict[str, object] = {
             "transport": "stdio",
-            "command": command,
             "constructor": constructor,
             "analysis": analysis,
             "frontend": "python",
             "scope": source_scope(self.path),
         }
+        if command is not None:
+            attributes["command"] = command
+        else:
+            attributes["command_resolution"] = "unresolved"
+        if resolution := self.mcp_server_binding_resolutions.get(id(node)):
+            attributes["binding_resolution"] = resolution
         if package is not None:
             attributes.update({"package_manager": command, **package})
         self.ir.add_component(
@@ -3046,6 +3062,15 @@ class PythonVisitor(ast.NodeVisitor):
                     "analysis": "python-import-bound-mcp-server-constructor",
                     "frontend": "python",
                     "scope": source_scope(self.path),
+                    **(
+                        {"binding_resolution": resolution}
+                        if (
+                            resolution := self.mcp_server_binding_resolutions.get(
+                                id(node)
+                            )
+                        )
+                        else {}
+                    ),
                 },
                 symbol_id,
             )
@@ -4562,10 +4587,14 @@ class PythonVisitor(ast.NodeVisitor):
         )
         if imported_mcp_constructor is not None:
             _, constructor = imported_mcp_constructor
+            server_name = self.mcp_server_symbol_names.get(
+                self.call_symbol_ids.get(id(node), ""),
+                f"{constructor}@{node.lineno}",
+            )
             if constructor in MCP_IN_PROCESS_SERVER_CONSTRUCTORS:
                 self.add_mcp_in_process_server(
                     node,
-                    name=f"{constructor}@{node.lineno}",
+                    name=server_name,
                     constructor=constructor,
                 )
             keywords = {
@@ -4599,17 +4628,43 @@ class PythonVisitor(ast.NodeVisitor):
                 arguments_node = keywords.get("args")
                 if arguments_node is None and len(node.args) > 1:
                     arguments_node = node.args[1]
+                params_node = keywords.get("params")
+                if isinstance(params_node, ast.Dict):
+                    params = {
+                        key.value: value
+                        for key, value in zip(
+                            params_node.keys, params_node.values, strict=True
+                        )
+                        if isinstance(key, ast.Constant)
+                        and isinstance(key.value, str)
+                    }
+                    command_node = params.get("command", command_node)
+                    arguments_node = params.get("args", arguments_node)
                 arguments = literal_string_arguments(arguments_node)
-                if (
-                    isinstance(command_node, ast.Constant)
+                command = (
+                    command_node.value
+                    if isinstance(command_node, ast.Constant)
                     and isinstance(command_node.value, str)
-                    and arguments is not None
+                    else None
+                )
+                if command is not None and arguments is not None:
+                    self.add_mcp_stdio_server(
+                        node,
+                        name=server_name,
+                        command=command,
+                        arguments=arguments,
+                        constructor=constructor,
+                        analysis="python-import-bound-mcp-constructor",
+                    )
+                elif (
+                    constructor == "MCPServerStdio"
+                    and self.call_symbol_ids.get(id(node)) is not None
                 ):
                     self.add_mcp_stdio_server(
                         node,
-                        name=f"{constructor}@{node.lineno}",
-                        command=command_node.value,
-                        arguments=arguments,
+                        name=server_name,
+                        command=command,
+                        arguments=arguments or [],
                         constructor=constructor,
                         analysis="python-import-bound-mcp-constructor",
                     )
@@ -4933,7 +4988,7 @@ class PythonVisitor(ast.NodeVisitor):
                     {"enabled": True, "scope": source_scope(self.path)},
                 )
             )
-        if short_name in AGENT_CALLS:
+        if short_name in AGENT_CALLS or call_name in self.agent_constructor_bindings:
             name = short_name
             for keyword in node.keywords:
                 if keyword.arg == "name" and isinstance(keyword.value, ast.Constant):
@@ -4971,10 +5026,16 @@ class PythonVisitor(ast.NodeVisitor):
                     target_name = self.mcp_server_symbol_names.get(target_id)
                     if target_name is None or target_id not in self.observed_mcp_server_ids:
                         continue
-                    target_identity = (
-                        "literal-mcp-servers-list-module-binding"
-                        if resolution_basis == "immutable-module-binding"
-                        else "literal-mcp-servers-list-binding"
+                    target_identity = {
+                        "immutable-module-binding": (
+                            "literal-mcp-servers-list-module-binding"
+                        ),
+                        "context-manager-binding": (
+                            "literal-mcp-servers-list-context-manager"
+                        ),
+                    }.get(
+                        resolution_basis,
+                        "literal-mcp-servers-list-binding",
                     )
                     self.ir.add_relationship(
                         Relationship(
@@ -6267,6 +6328,24 @@ def scan_python(
         )
         for name, statement in imported_mcp_constructors.items()
     }
+    agent_constructor_bindings = {
+        alias.asname or alias.name
+        for statement in tree.body
+        if isinstance(statement, ast.ImportFrom)
+        and statement.module == "agents.sandbox"
+        for alias in statement.names
+        if alias.name == "SandboxAgent"
+        and import_binding_counts[alias.asname or alias.name] == 1
+        and nonimport_binding_counts[alias.asname or alias.name] == 0
+    }
+
+    def is_agent_call(call: ast.Call) -> bool:
+        call_name = dotted_name(call.func)
+        return (
+            call_name.rsplit(".", 1)[-1] in AGENT_CALLS
+            or call_name in agent_constructor_bindings
+        )
+
     local_tool_constructor_classes = {
         statement.name
         for statement in tree.body
@@ -6388,8 +6467,7 @@ def scan_python(
     for call in (
         candidate
         for candidate in nodes
-        if isinstance(candidate, ast.Call)
-        and dotted_name(candidate.func).rsplit(".", 1)[-1] in AGENT_CALLS
+        if isinstance(candidate, ast.Call) and is_agent_call(candidate)
     ):
         block = enclosing_statement_block(call)
         if block is None:
@@ -6500,10 +6578,7 @@ def scan_python(
                             and isinstance(receiver_mutations[0].targets[0], ast.Name)
                             and receiver_mutations[0].targets[0].id == receiver
                             and isinstance(receiver_mutations[0].value, ast.Call)
-                            and dotted_name(receiver_mutations[0].value.func).rsplit(
-                                ".", 1
-                            )[-1]
-                            in AGENT_CALLS
+                            and is_agent_call(receiver_mutations[0].value)
                         ):
                             agent_as_tool_assignments.setdefault(
                                 id(definition),
@@ -6696,7 +6771,7 @@ def scan_python(
             short_name = dotted_name(node.value.func).rsplit(".", 1)[-1]
             kind = (
                 "agent"
-                if short_name in AGENT_CALLS
+                if is_agent_call(node.value)
                 else "tool"
                 if short_name in BUILTIN_TOOL_CAPABILITIES
                 or id(node) in wrapped_tool_assignments
@@ -6709,31 +6784,148 @@ def scan_python(
             )
             if kind:
                 assigned_constructors.append((node, kind, binding))
-    assignment_counts = Counter((kind, binding) for _, kind, binding in assigned_constructors)
+    context_mcp_servers: list[
+        tuple[ast.With | ast.AsyncWith, ast.Call, str, str]
+    ] = []
+    for node in nodes:
+        if not isinstance(node, (ast.With, ast.AsyncWith)):
+            continue
+        for item in node.items:
+            if (
+                not isinstance(item.context_expr, ast.Call)
+                or not isinstance(item.context_expr.func, ast.Name)
+                or item.context_expr.func.id not in imported_mcp_constructors
+                or not isinstance(item.optional_vars, ast.Name)
+            ):
+                continue
+            constructor = imported_mcp_constructor_names[item.context_expr.func.id]
+            context_mcp_servers.append(
+                (node, item.context_expr, item.optional_vars.id, constructor)
+            )
+    definition_counts = Counter(
+        (kind, binding) for _, kind, binding in assigned_constructors
+    )
+    definition_counts.update(
+        ("mcp-server", binding)
+        for _with_node, _call, binding, _constructor in context_mcp_servers
+    )
     for node, kind, binding in assigned_constructors:
-        identity = f"{binding}@{node.lineno}" if assignment_counts[(kind, binding)] > 1 else binding
+        identity = f"{binding}@{node.lineno}" if definition_counts[(kind, binding)] > 1 else binding
         symbol_id = source_symbol("py", relative, kind, identity)
         symbol_candidates.setdefault((kind, binding), set()).add(symbol_id)
         call_symbol_ids[id(node.value)] = symbol_id
         if wrapper := wrapped_tool_assignments.get(id(node)):
             definition_symbol_ids[id(wrapper.function)] = symbol_id
-    def assigned_mcp_server_constructor(node: ast.Assign) -> str:
-        if not isinstance(node.value, ast.Call):
-            raise TypeError("assigned MCP server must originate from a call")
-        constructor_binding = dotted_name(node.value.func)
+    for _with_node, call, binding, _constructor in context_mcp_servers:
+        identity = (
+            f"{binding}@{call.lineno}"
+            if definition_counts[("mcp-server", binding)] > 1
+            else binding
+        )
+        symbol_id = source_symbol("py", relative, "mcp-server", identity)
+        symbol_candidates.setdefault(("mcp-server", binding), set()).add(symbol_id)
+        call_symbol_ids[id(call)] = symbol_id
+
+    def mcp_server_constructor(call: ast.Call) -> str:
+        constructor_binding = dotted_name(call.func)
         return imported_mcp_constructor_names.get(
             constructor_binding, constructor_binding.rsplit(".", 1)[-1]
         )
 
     def assigned_mcp_server_name(node: ast.Assign) -> str:
-        constructor = assigned_mcp_server_constructor(node)
+        if not isinstance(node.value, ast.Call):
+            raise TypeError("assigned MCP server must originate from a call")
+        constructor = mcp_server_constructor(node.value)
         return f"{constructor}@{node.value.lineno}"
+
+    def context_mcp_server_name(call: ast.Call, constructor: str) -> str:
+        configured_name = next(
+            (
+                keyword.value.value
+                for keyword in call.keywords
+                if keyword.arg == "name"
+                and isinstance(keyword.value, ast.Constant)
+                and isinstance(keyword.value.value, str)
+            ),
+            None,
+        )
+        return configured_name or f"{constructor}@{call.lineno}"
 
     mcp_server_symbol_names = {
         call_symbol_ids[id(node.value)]: assigned_mcp_server_name(node)
         for node, kind, _binding in assigned_constructors
         if kind == "mcp-server"
     }
+    mcp_server_symbol_names.update(
+        {
+            call_symbol_ids[id(call)]: context_mcp_server_name(call, constructor)
+            for _with_node, call, _binding, constructor in context_mcp_servers
+        }
+    )
+    mcp_server_binding_resolutions = {
+        id(node.value): "assignment"
+        for node, kind, _binding in assigned_constructors
+        if kind == "mcp-server"
+    }
+    mcp_server_binding_resolutions.update(
+        {
+            id(call): "context-manager-binding"
+            for _with_node, call, _binding, _constructor in context_mcp_servers
+        }
+    )
+    context_mcp_server_scope_candidates: dict[
+        tuple[int, str], list[tuple[ast.Call, str]]
+    ] = defaultdict(list)
+    for with_node, call, binding, _constructor in context_mcp_servers:
+        context_mcp_server_scope_candidates[(id(with_node), binding)].append(
+            (call, call_symbol_ids[id(call)])
+        )
+    context_mcp_servers_by_scope = {
+        key: candidates[0]
+        for key, candidates in context_mcp_server_scope_candidates.items()
+        if len(candidates) == 1
+    }
+
+    def direct_context_mcp_server(
+        agent_call: ast.Call,
+        binding: str,
+    ) -> tuple[ast.Call, str] | None:
+        current: ast.AST = agent_call
+        while parent := parent_by_id.get(id(current)):
+            if isinstance(parent, (ast.With, ast.AsyncWith)) and current in parent.body:
+                if not isinstance(current, (ast.Assign, ast.AnnAssign, ast.Expr, ast.Return)):
+                    return None
+                use_index = parent.body.index(current)
+                if any(
+                    binding in statement_mutations(statement)
+                    for statement in parent.body[:use_index]
+                ):
+                    return None
+                return context_mcp_servers_by_scope.get((id(parent), binding))
+            if isinstance(parent, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                return None
+            current = parent
+        return None
+
+    context_usage_mcp_resolutions: list[tuple[ast.Call, str, str]] = []
+    for agent_call in (
+        candidate
+        for candidate in nodes
+        if isinstance(candidate, ast.Call) and is_agent_call(candidate)
+    ):
+        for keyword in agent_call.keywords:
+            if keyword.arg != "mcp_servers" or not isinstance(
+                keyword.value, (ast.List, ast.Tuple)
+            ):
+                continue
+            for value in keyword.value.elts:
+                if not isinstance(value, ast.Name):
+                    continue
+                if resolved := direct_context_mcp_server(agent_call, value.id):
+                    _context_call, symbol_id = resolved
+                    context_usage_mcp_resolutions.append(
+                        (agent_call, value.id, symbol_id)
+                    )
     mcp_in_process_server_bindings = {
         binding: (
             mcp_server_symbol_names[call_symbol_ids[id(node.value)]],
@@ -6741,7 +6933,7 @@ def scan_python(
         )
         for node, kind, binding in assigned_constructors
         if kind == "mcp-server"
-        and assigned_mcp_server_constructor(node)
+        and mcp_server_constructor(node.value)
         in MCP_IN_PROCESS_SERVER_CONSTRUCTORS
         and isinstance(parent_by_id.get(id(node)), ast.Module)
         and module_mutation_counts[binding] == 1
@@ -7109,7 +7301,7 @@ def scan_python(
         if isinstance(candidate.func, ast.Name):
             direct_name_calls[candidate.func.id].append(candidate)
         if (
-            dotted_name(candidate.func).rsplit(".", 1)[-1] in AGENT_CALLS
+            is_agent_call(candidate)
             and (owner := enclosing_function(candidate))
         ):
             agent_calls_by_function[id(owner)].append(candidate)
@@ -7267,8 +7459,7 @@ def scan_python(
         return_statement: ast.Return,
     ) -> str | None:
         if (
-            isinstance(returned, ast.Call)
-            and dotted_name(returned.func).rsplit(".", 1)[-1] in AGENT_CALLS
+            isinstance(returned, ast.Call) and is_agent_call(returned)
         ):
             return agent_call_symbol_id(returned)
         if not isinstance(returned, ast.Name):
@@ -7291,7 +7482,7 @@ def scan_python(
             and isinstance(assignment.targets[0], ast.Name)
             and assignment.targets[0].id == returned.id
             and isinstance(assignment.value, ast.Call)
-            and dotted_name(assignment.value.func).rsplit(".", 1)[-1] in AGENT_CALLS
+            and is_agent_call(assignment.value)
         ):
             return None
         return agent_call_symbol_id(assignment.value)
@@ -7503,8 +7694,7 @@ def scan_python(
     agent_calls_by_location = {
         (call.lineno, call.col_offset): call
         for call in nodes
-        if isinstance(call, ast.Call)
-        and dotted_name(call.func).rsplit(".", 1)[-1] in AGENT_CALLS
+        if isinstance(call, ast.Call) and is_agent_call(call)
     }
     dominating_symbol_ids.update(
         {
@@ -7525,6 +7715,15 @@ def scan_python(
                 "literal-tools-list-context-manager",
             )
             for call, binding, symbol_id in context_usage_tool_resolutions
+        }
+    )
+    dominating_symbol_ids.update(
+        {
+            (id(call), "mcp-server", binding): (
+                symbol_id,
+                "context-manager-binding",
+            )
+            for call, binding, symbol_id in context_usage_mcp_resolutions
         }
     )
     scope_bound_names: set[tuple[tuple[str, ...], str]] = set()
@@ -7551,8 +7750,7 @@ def scan_python(
             for node in nodes
             if isinstance(node, (ast.Assign, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))
             or (
-                isinstance(node, ast.Call)
-                and dotted_name(node.func).rsplit(".", 1)[-1] in AGENT_CALLS
+                isinstance(node, ast.Call) and is_agent_call(node)
             )
         ]
         node_scopes = {id(node): lexical_scope(node) for node in scope_nodes}
@@ -7627,8 +7825,7 @@ def scan_python(
         for call in (
             candidate
             for candidate in nodes
-            if isinstance(candidate, ast.Call)
-            and dotted_name(candidate.func).rsplit(".", 1)[-1] in AGENT_CALLS
+            if isinstance(candidate, ast.Call) and is_agent_call(candidate)
         ):
             block = enclosing_statement_block(call)
             if block is None:
@@ -7706,7 +7903,9 @@ def scan_python(
         node_scopes=node_scopes,
         call_symbol_ids=call_symbol_ids,
         mcp_server_symbol_names=mcp_server_symbol_names,
+        mcp_server_binding_resolutions=mcp_server_binding_resolutions,
         mcp_in_process_server_bindings=mcp_in_process_server_bindings,
+        agent_constructor_bindings=agent_constructor_bindings,
         definition_symbol_ids=definition_symbol_ids,
         referenced_tool_functions=referenced_tool_functions,
         wrapped_tool_functions=wrapped_tool_functions,
@@ -16498,7 +16697,9 @@ def add_python_openai_agents_mcp_approval_default_flow(
     ):
         return
 
-    candidates: list[tuple[str, str, ast.AsyncWith, ast.Call, str, ast.Call, str]] = []
+    candidates: list[
+        tuple[str, str, ast.AsyncWith, ast.Call, str, str, ast.Call, str, str]
+    ] = []
     for app_path, app_text, tree in sources:
         imported_stdio = False
         imported_agent = False
@@ -16563,7 +16764,8 @@ def add_python_openai_agents_mcp_approval_default_flow(
                 )
                 if mcp_keyword is None:
                     continue
-                agent_name = child.targets[0].id
+                agent_binding = child.targets[0].id
+                agent_name = agent_binding
                 for keyword in agent_call.keywords:
                     if (
                         keyword.arg == "name"
@@ -16578,15 +16780,25 @@ def add_python_openai_agents_mcp_approval_default_flow(
                         node,
                         server_call,
                         server_name,
+                        server_binding,
                         agent_call,
                         agent_name,
+                        agent_binding,
                     )
                 )
     if len(candidates) != 1:
         return
-    app_path, app_text, _with_node, server_call, server_name, agent_call, agent_name = (
-        candidates[0]
-    )
+    (
+        app_path,
+        app_text,
+        _with_node,
+        server_call,
+        server_name,
+        server_binding,
+        agent_call,
+        agent_name,
+        agent_binding,
+    ) = candidates[0]
     server_line = server_call.lineno
     agent_line = agent_call.lineno
     server_evidence = Evidence(
@@ -16600,18 +16812,32 @@ def add_python_openai_agents_mcp_approval_default_flow(
         excerpt(app_text.splitlines(), agent_line),
     )
     analysis = "python-openai-agents-mcp-approval-default"
-    agent_id = source_symbol("py", app_path, "agent", "mcp_sandbox_agent")
+    agent_id = source_symbol("py", app_path, "agent", agent_binding)
+    server_id = source_symbol("py", app_path, "mcp-server", server_binding)
+    agent_attributes = {
+        "framework": "OpenAI Agents SDK",
+        "constructor": "SandboxAgent",
+        "scope": source_scope(app_path),
+        "analysis": analysis,
+    }
+    server_attributes = {
+        "transport": "stdio",
+        "approval_policy": "disabled-default",
+        "approval_source": "sdk-default",
+        "scope": source_scope(app_path),
+        "analysis": analysis,
+    }
+    for component in ir.components:
+        if component.symbol_id == agent_id:
+            component.attributes.update(agent_attributes)
+        elif component.symbol_id == server_id:
+            component.attributes.update(server_attributes)
     ir.add_component(
         Component(
             "agent",
             agent_name,
             agent_evidence,
-            {
-                "framework": "OpenAI Agents SDK",
-                "constructor": "SandboxAgent",
-                "scope": source_scope(app_path),
-                "analysis": analysis,
-            },
+            agent_attributes,
             agent_id,
         )
     )
@@ -16620,13 +16846,8 @@ def add_python_openai_agents_mcp_approval_default_flow(
             "mcp-server",
             server_name,
             server_evidence,
-            {
-                "transport": "stdio",
-                "approval_policy": "disabled-default",
-                "approval_source": "sdk-default",
-                "scope": source_scope(app_path),
-                "analysis": analysis,
-            },
+            server_attributes,
+            server_id,
         )
     )
     setting_attributes = {
@@ -16653,8 +16874,19 @@ def add_python_openai_agents_mcp_approval_default_flow(
             agent_evidence,
             {"analysis": analysis, "approval_policy": "disabled-default"},
             agent_id,
+            server_id,
         )
     )
+    for relationship in ir.relationships:
+        if (
+            relationship.source_id == agent_id
+            and relationship.target_id == server_id
+            and relationship.source_kind == "agent"
+            and relationship.target_kind == "mcp-server"
+        ):
+            relationship.attributes.update(
+                {"analysis": analysis, "approval_policy": "disabled-default"}
+            )
     ir.add_relationship(
         Relationship(
             "mcp-server",

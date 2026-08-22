@@ -47,8 +47,8 @@ known method on a role-proven class; `HostedMCPTool`, `LangchainTool`, and `Agen
 separate exact adapter proofs. Four of the callable
 tools resolve through one exact selected local export; three unavailable SDK definitions remain
 explicit import-boundary identities with no inferred capabilities. These proofs resolve the final
-six former default-scope misses. The benchmark now reports zero unresolved among 600 non-test Python
-Agent→tool edges; all 72 unresolved edges occur in tests or conservative fixtures. Import-proven OpenAI
+six former default-scope misses. The benchmark now reports zero unresolved among 601 non-test Python
+Agent→tool edges; all 74 unresolved edges occur in tests or conservative fixtures. Import-proven OpenAI
 `function_tool(function)` assignments now recover 12 exact wrapper tools and Agent edges, including
 the two repeated SDK targets; three enable approval and all occur under tests. Exact same-class
 direct/tuple Agent-return summaries resolve three CrewAI composition edges to two source Agent
@@ -73,6 +73,10 @@ frameworks remain future work. Schema v79 narrowly resolves a top-level fail-clo
 links immutable FastMCP registrars to exact registered tools, enabling
 Agent→server→tool→capability context. Optional imports, general control-flow imports, rebound
 registrars, and cross-file server/tool registration remain unresolved.
+Schema v80 resolves exact MCP constructors bound by `with`/`async with` only for a direct in-body
+Agent use before rebinding, and gives exact-import OpenAI `SandboxAgent` calls stable identities.
+Duplicate or escaped context bindings, prior reassignment, near-module Agent imports, nested Agent
+statements, and indirect server containers remain unresolved.
 Contextual absolute-import proof additionally resolves 25 project-local CrewAI Agent-to-class-tool
 edges across eight exact decorated method targets, the 14 Agent-factory delegations, and nine Google
 ADK imported-helper network call sites. Multiple ancestor candidates, missing exports, reimports,
@@ -279,8 +283,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 511 pinned positive/negative locations, with 740 separately
-scored IR component/relationship labels. Schema-v79 engine results and
+The curated regression set has reached 511 pinned positive/negative locations, with 748 separately
+scored IR component/relationship labels. Schema-v80 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

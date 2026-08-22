@@ -167,6 +167,17 @@ Across eight repositories, 121 exact FastMCP registrar edges resolve both server
 occur outside tests. Three registered Marvin tools are Agent-reachable, and the goose write tool
 provides the single production Agent→server→tool→filesystem capability path in the selected corpus.
 
+Schema v80 resolves a different lifecycle boundary: exact MCP constructors bound by
+`with`/`async with`. A server ID can reach only a direct Agent statement in that context before any
+reassignment; duplicate, escaped, and rebound bindings are explicit negatives. OpenAI Agents Python's sandbox
+example now has one exact `SandboxAgent`→`MCPServerStdio` edge whose server ID also carries the
+SDK's disabled-default approval policy. Across the corpus, 41 exact stdio constructors span eight
+repositories; 34 assignment-bound and three context-managed calls give 37 assets stable IDs, 11
+calls are outside tests, and seven are package-backed. The full exact Agent→MCP inventory reaches
+six edges across Marvin and OpenAI, five outside tests. Exact `agents.sandbox` import proof also
+recovers 156 OpenAI `SandboxAgent` assets, including 15 outside tests, while a same-named local
+constructor remains absent.
+
 Schema v68 models MCP sampling as a separate server-to-client authority. Semantic Kernel registers a
 sampling callback on each MCP client session; a server request can supply the system prompt,
 messages, model hint, temperature, and token limit, invoke the client's chat model, and receive the
@@ -402,22 +413,22 @@ become reachable. Each Agent-as-tool adapter delegates to one exact same-block A
 Four imported callable definitions resolve through exact local exports; three unavailable production
 SDK sources remain import-boundary identities without inferred capabilities. Exact imported
 `from_settings` factories, `HostedMCPTool` and `LangchainTool` constructors, and same-block
-`Agent.as_tool()` adapters resolve those final six former production misses. All 600 non-test Python
-Agent→tool edges now resolve; 72 unresolved edges remain only in tests and conservative fixtures.
+`Agent.as_tool()` adapters resolve those final six former production misses. All 601 non-test Python
+Agent→tool edges now resolve; 74 unresolved edges remain only in tests and conservative fixtures.
 Import-proven OpenAI `function_tool(function)` assignments
 recover 12 wrapper tools and 12 exact Agent edges; three enable approval, all occur under tests, and
 their selected bodies add no capability edges. Twenty-five project-local CrewAI class-tool imports
 resolve through one importer-ancestor path and one exact decorated export. The 14 factory edges span
 four production example projects and require one exact imported class, immutable local construction,
-and a direct Agent return. The final export resolves 3,730 endpoints by symbol ID, 645 by exact
-evidence location, and 23 by unique display name; 40 remain ambiguous agent/protocol/control/tool
-endpoints, and 68
+and a direct Agent return. The final export resolves 3,779 endpoints by symbol ID, 645 by exact
+evidence location, and 22 by unique display name; 42 remain ambiguous agent/protocol/control/tool
+endpoints, and 64
 unresolved. No `ambiguous-repeated-binding` target remains in the pinned corpus;
 cross-branch, forward, inconsistent/untyped parameters, conditional/transformed returns,
 external receivers, shadowed factories, lambdas, and reassigned fixture cases stay unresolved. Two apparent CrewAI
 re-export misses were false identities:
 a function parameter and a local assignment shadowed the imported `tool` binding. Scope-isolating
-module and function imports now withhold those IDs, so all 3,738 identified endpoints resolve.
+module and function imports now withhold those IDs, so all 3,787 identified endpoints resolve.
 A governance export that collapses those references
 by name would silently attach controls or risks to the wrong asset.
 

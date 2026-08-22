@@ -2813,6 +2813,23 @@ def test_openai_agents_python_mcp_tools_inherit_disabled_approval_default(
         ("agent", "uses", "mcp-server", "Reference Policy Server"),
         ("mcp-server", "configured-by", "control-setting", "mcp-tool-approval"),
     }
+    agent_server_edge = next(
+        edge
+        for edge in edges
+        if edge.source_kind == "agent" and edge.target_kind == "mcp-server"
+    )
+    assert agent_server_edge.source_id == "py:app.py#agent:agent"
+    assert agent_server_edge.target_id == "py:app.py#mcp-server:server"
+    assert agent_server_edge.attributes["target_identity"] == (
+        "literal-mcp-servers-list-context-manager"
+    )
+    server = next(
+        item
+        for item in ir.components
+        if item.kind == "mcp-server" and item.evidence.path == "app.py"
+    )
+    assert server.symbol_id == "py:app.py#mcp-server:server"
+    assert server.attributes["binding_resolution"] == "context-manager-binding"
     setting = next(
         item
         for item in ir.components
@@ -5749,7 +5766,51 @@ def test_python_agent_mcp_servers_require_exact_direct_literal_bindings() -> Non
     assert not any(
         edge.source_kind == "agent"
         and edge.target_kind == "mcp-server"
-        and edge.evidence.path in {"negative.py", "module_negative.py"}
+        and edge.evidence.path
+        in {"negative.py", "module_negative.py", "context_negative.py"}
+        for edge in ir.relationships
+    )
+
+    managed_server = next(
+        component
+        for component in ir.components
+        if component.kind == "mcp-server"
+        and component.evidence.path == "context_positive.py"
+    )
+    assert managed_server.evidence.line == 6
+    assert managed_server.name == "MCPServerStdio@6"
+    assert managed_server.symbol_id == (
+        "py:context_positive.py#mcp-server:managed_server"
+    )
+    assert managed_server.attributes["binding_resolution"] == (
+        "context-manager-binding"
+    )
+    managed_edge = next(
+        edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent"
+        and edge.target_kind == "mcp-server"
+        and edge.evidence.path == "context_positive.py"
+    )
+    assert managed_edge.evidence.line == 10
+    assert managed_edge.source_id == "py:context_positive.py#agent:managed_agent"
+    assert managed_edge.target_id == (
+        "py:context_positive.py#mcp-server:managed_server"
+    )
+    assert managed_edge.attributes == {
+        "binding": "managed_server",
+        "target_identity": "literal-mcp-servers-list-context-manager",
+    }
+    assert not any(
+        component.kind == "agent"
+        and component.evidence.path == "context_negative.py"
+        and component.evidence.line == 24
+        for component in ir.components
+    )
+    assert not any(
+        edge.source_kind == "agent"
+        and edge.source_name == "duplicate-context"
+        and edge.target_kind == "mcp-server"
         for edge in ir.relationships
     )
 

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T09:17:37.769114+00:00",
-  "labels": 740,
-  "passed": 740,
+  "generated_at": "2026-08-22T09:59:24.126004+00:00",
+  "labels": 748,
+  "passed": 748,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -125,9 +125,9 @@
       "recall": 1.0
     },
     "IR-PY-AGENT-MCP-BINDING": {
-      "tp": 23,
+      "tp": 27,
       "fp": 0,
-      "tn": 9,
+      "tn": 13,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -7163,6 +7163,78 @@
     },
     {
       "id": "python-fastmcp-goose-inspect-tool-edge-marvin-real",
+      "check_id": "IR-PY-AGENT-MCP-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-mcp-context-component-local",
+      "check_id": "IR-PY-AGENT-MCP-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-mcp-context-edge-local",
+      "check_id": "IR-PY-AGENT-MCP-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-mcp-context-rebound-local-negative",
+      "check_id": "IR-PY-AGENT-MCP-BINDING",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-mcp-context-escaped-local-negative",
+      "check_id": "IR-PY-AGENT-MCP-BINDING",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-mcp-near-sandbox-agent-local-negative",
+      "check_id": "IR-PY-AGENT-MCP-BINDING",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-mcp-duplicate-context-local-negative",
+      "check_id": "IR-PY-AGENT-MCP-BINDING",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-mcp-context-component-openai-real",
+      "check_id": "IR-PY-AGENT-MCP-BINDING",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-agent-mcp-context-edge-openai-real",
       "check_id": "IR-PY-AGENT-MCP-BINDING",
       "expected": true,
       "observed": true,

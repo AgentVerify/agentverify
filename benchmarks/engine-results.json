@@ -1,6 +1,6 @@
 {
-  "schema_version": 79,
-  "generated_at": "2026-08-22T09:19:13.795608+00:00",
+  "schema_version": 80,
+  "generated_at": "2026-08-22T09:46:14.242915+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -20,32 +20,32 @@
     "dependency_files_materialized": 176,
     "repositories_with_dependency_expansion": 21,
     "config_files_scanned": 155,
-    "relationships": 2253,
-    "symbolized_components": 9835,
-    "identified_symbol_endpoints": 3738,
-    "resolved_symbol_endpoints": 3738,
+    "relationships": 2276,
+    "symbolized_components": 10004,
+    "identified_symbol_endpoints": 3787,
+    "resolved_symbol_endpoints": 3787,
     "unmatched_identified_symbol_endpoints": 0,
-    "ambiguous_repeated_binding_targets": 0,
+    "ambiguous_repeated_binding_targets": 2,
     "resolved_binding_targets_by_basis": {
       "agent-as-tool-adapter": 22,
       "block-dominating-definition": 20,
       "contextual-absolute-import-single-export": 25,
       "contextual-imported-callable-single-export": 4,
       "contextual-imported-class-factory-return": 14,
-      "lexical-single-definition": 359,
+      "lexical-single-definition": 376,
       "literal-tools-list-context-manager": 4,
       "literal-tools-list-import-binding": 6,
       "literal-tools-list-inline-constructor": 444,
       "same-class-helper-return": 3,
       "typed-parameter-callsite-consensus": 1
     },
-    "relationship_endpoints": 4506,
+    "relationship_endpoints": 4552,
     "bom_endpoint_resolutions": {
-      "ambiguous": 40,
+      "ambiguous": 42,
       "evidence-location": 645,
-      "symbol-id": 3730,
-      "unique-display-name": 23,
-      "unresolved": 68
+      "symbol-id": 3779,
+      "unique-display-name": 22,
+      "unresolved": 64
     },
     "bom_ambiguous_endpoints_by_side_kind": {
       "source:agent": 6,
@@ -53,10 +53,10 @@
       "source:protocol": 1,
       "target:control": 6,
       "target:control-setting": 3,
-      "target:tool": 23
+      "target:tool": 25
     },
     "resolved_symbol_endpoints_by_frontend": {
-      "py": 3425,
+      "py": 3474,
       "ts": 313
     },
     "python_provider_call_attribution": {
@@ -133,6 +133,12 @@
       "capability_edges": 15,
       "resolved_agent_edges": 10
     },
+    "python_sandbox_agents": {
+      "total": 156,
+      "non_test": 15,
+      "mcp_server_edges": 1,
+      "repositories": 1
+    },
     "python_agent_referenced_tools": {
       "instances": 755,
       "callables": 181,
@@ -149,19 +155,20 @@
       "resolved_agent_edges": 812
     },
     "python_agent_tool_edges": {
-      "total": 1184,
-      "resolved": 1112,
-      "unresolved": 72,
-      "non_test": 600,
+      "total": 1199,
+      "resolved": 1125,
+      "unresolved": 74,
+      "non_test": 601,
       "unresolved_non_test": 0
     },
     "python_agent_mcp_server_edges": {
-      "total": 5,
-      "resolved": 5,
-      "non_test": 4,
+      "total": 6,
+      "resolved": 6,
+      "non_test": 5,
       "same_block": 2,
       "immutable_module": 3,
-      "repositories": 1
+      "context_managed": 1,
+      "repositories": 2
     },
     "python_fastmcp_server_tool_edges": {
       "total": 121,
@@ -363,17 +370,21 @@
       "findings": 34
     },
     "python_import_bound_mcp_stdio_servers": {
-      "total": 27,
-      "non_test": 10,
-      "symbolized_assigned": 23,
+      "total": 41,
+      "non_test": 11,
+      "symbolized_assigned": 34,
+      "symbolized_context_managed": 3,
+      "symbolized_bound": 37,
       "package_backed": 7,
-      "non_package": 20,
-      "repositories": 7
+      "non_package": 34,
+      "repositories": 8
     },
     "python_import_bound_mcp_in_process_servers": {
       "total": 240,
       "non_test": 22,
       "symbolized_assigned": 228,
+      "symbolized_context_managed": 0,
+      "symbolized_bound": 228,
       "repositories": 13
     },
     "python_google_adk_bigquery_audit": {
@@ -757,7 +768,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 286.4955
+    "elapsed_seconds": 272.7475
   },
   "repositories": [
     {
@@ -868,6 +879,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -896,6 +913,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -1097,6 +1115,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -1105,6 +1125,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -1216,7 +1238,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.477
+      "elapsed_seconds": 3.2729
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -1334,6 +1356,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -1362,6 +1390,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -1563,6 +1592,8 @@
         "total": 2,
         "non_test": 2,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 2,
         "non_package": 0,
         "repositories": true
@@ -1571,6 +1602,8 @@
         "total": 1,
         "non_test": 0,
         "symbolized_assigned": 1,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 1,
         "repositories": true
       },
       "python_google_adk_bigquery_audit": {
@@ -1687,7 +1720,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.2657
+      "elapsed_seconds": 6.7671
     },
     {
       "repository": "langchain-ai/langchain",
@@ -1801,6 +1834,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -1829,6 +1868,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -2030,6 +2070,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -2038,6 +2080,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -2147,7 +2191,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6082
+      "elapsed_seconds": 2.4354
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -2265,6 +2309,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -2293,6 +2343,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -2494,6 +2545,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -2502,6 +2555,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -2619,7 +2674,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.5784
+      "elapsed_seconds": 9.6116
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -2742,6 +2797,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -2770,6 +2831,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -2971,6 +3033,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -2979,6 +3043,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -3092,7 +3158,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4827
+      "elapsed_seconds": 0.4818
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -3220,6 +3286,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -3248,6 +3320,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -3449,6 +3522,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -3457,6 +3532,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -3583,7 +3660,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.513
+      "elapsed_seconds": 10.5489
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -3716,6 +3793,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 27,
         "callables": 0,
@@ -3744,6 +3827,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -3945,6 +4029,8 @@
         "total": 10,
         "non_test": 0,
         "symbolized_assigned": 10,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 10,
         "package_backed": 0,
         "non_package": 10,
         "repositories": true
@@ -3953,6 +4039,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -4086,7 +4174,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.861
+      "elapsed_seconds": 6.5142
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -4214,6 +4302,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 55,
         "callables": 0,
@@ -4242,6 +4336,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -4443,6 +4538,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -4451,6 +4548,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -4574,7 +4673,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6847
+      "elapsed_seconds": 0.6539
     },
     {
       "repository": "microsoft/autogen",
@@ -4697,6 +4796,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 19,
         "callables": 14,
@@ -4725,6 +4830,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -4926,6 +5032,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -4934,6 +5042,8 @@
         "total": 1,
         "non_test": 1,
         "symbolized_assigned": 1,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 1,
         "repositories": true
       },
       "python_google_adk_bigquery_audit": {
@@ -5052,7 +5162,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8073
+      "elapsed_seconds": 1.7099
     },
     {
       "repository": "microsoft/agent-framework",
@@ -5157,6 +5267,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -5185,6 +5301,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -5386,6 +5503,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -5394,6 +5513,8 @@
         "total": 1,
         "non_test": 1,
         "symbolized_assigned": 1,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 1,
         "repositories": true
       },
       "python_google_adk_bigquery_audit": {
@@ -5503,7 +5624,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0568
+      "elapsed_seconds": 0.0482
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -5633,6 +5754,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -5661,6 +5788,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -5862,6 +5990,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -5870,6 +6000,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -5991,7 +6123,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2784
+      "elapsed_seconds": 0.2598
     },
     {
       "repository": "openai/openai-agents-python",
@@ -6001,13 +6133,13 @@
       "dependency_files_materialized": 20,
       "config_files_scanned": 0,
       "components": {
-        "agent": 942,
+        "agent": 1097,
         "capability": 446,
         "control": 80,
         "control-setting": 3,
         "framework": 763,
         "mcp": 1,
-        "mcp-server": 1,
+        "mcp-server": 14,
         "model": 14,
         "protocol": 41,
         "provider": 118,
@@ -6077,20 +6209,20 @@
         "groq": 0,
         "cohere": 0
       },
-      "relationships": 657,
-      "symbolized_components": 1362,
-      "identified_symbol_endpoints": 1057,
-      "resolved_symbol_endpoints": 1057,
+      "relationships": 680,
+      "symbolized_components": 1531,
+      "identified_symbol_endpoints": 1106,
+      "resolved_symbol_endpoints": 1106,
       "unmatched_identified_symbol_endpoints": 0,
-      "ambiguous_repeated_binding_targets": 0,
+      "ambiguous_repeated_binding_targets": 2,
       "resolved_binding_targets_by_basis": {
         "agent-as-tool-adapter": 20,
-        "lexical-single-definition": 229,
+        "lexical-single-definition": 246,
         "literal-tools-list-inline-constructor": 10,
         "typed-parameter-callsite-consensus": 1
       },
       "resolved_symbol_endpoints_by_frontend": {
-        "py": 1057,
+        "py": 1106,
         "ts": 0
       },
       "typescript_graph": {
@@ -6133,6 +6265,12 @@
         "capability_edges": 15,
         "resolved_agent_edges": 10
       },
+      "python_sandbox_agents": {
+        "total": 156,
+        "non_test": 15,
+        "mcp_server_edges": 1,
+        "repositories": true
+      },
       "python_agent_referenced_tools": {
         "instances": 64,
         "callables": 0,
@@ -6149,19 +6287,20 @@
         "resolved_agent_edges": 65
       },
       "python_agent_tool_edges": {
-        "total": 350,
-        "resolved": 314,
-        "unresolved": 36,
-        "non_test": 38,
+        "total": 365,
+        "resolved": 327,
+        "unresolved": 38,
+        "non_test": 39,
         "unresolved_non_test": 0
       },
       "python_agent_mcp_server_edges": {
-        "total": 0,
-        "resolved": 0,
-        "non_test": 0,
+        "total": 1,
+        "resolved": 1,
+        "non_test": 1,
         "same_block": 0,
         "immutable_module": 0,
-        "repositories": false
+        "context_managed": 1,
+        "repositories": true
       },
       "python_fastmcp_server_tool_edges": {
         "total": 0,
@@ -6361,17 +6500,21 @@
         "findings": 0
       },
       "python_import_bound_mcp_stdio_servers": {
-        "total": 0,
-        "non_test": 0,
-        "symbolized_assigned": 0,
+        "total": 14,
+        "non_test": 1,
+        "symbolized_assigned": 13,
+        "symbolized_context_managed": 1,
+        "symbolized_bound": 14,
         "package_backed": 0,
-        "non_package": 0,
-        "repositories": false
+        "non_package": 14,
+        "repositories": true
       },
       "python_import_bound_mcp_in_process_servers": {
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -6483,15 +6626,15 @@
         "typescript": 0
       },
       "bom_endpoint_resolutions": {
-        "ambiguous": 14,
+        "ambiguous": 16,
         "evidence-location": 198,
-        "symbol-id": 1057,
-        "unique-display-name": 6,
-        "unresolved": 39
+        "symbol-id": 1106,
+        "unique-display-name": 5,
+        "unresolved": 35
       },
       "bom_ambiguous_endpoints_by_side_kind": {
         "target:control-setting": 1,
-        "target:tool": 13
+        "target:tool": 15
       },
       "findings": {
         "AV-APPROVAL001": 2,
@@ -6502,7 +6645,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 12.4655
+      "elapsed_seconds": 11.5177
     },
     {
       "repository": "openai/openai-agents-js",
@@ -6640,6 +6783,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -6668,6 +6817,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -6869,6 +7019,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -6877,6 +7029,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -6997,7 +7151,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7735
+      "elapsed_seconds": 1.6227
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -7136,6 +7290,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 43,
         "callables": 42,
@@ -7164,6 +7324,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -7365,6 +7526,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -7373,6 +7536,8 @@
         "total": 5,
         "non_test": 0,
         "symbolized_assigned": 2,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 2,
         "repositories": true
       },
       "python_google_adk_bigquery_audit": {
@@ -7495,7 +7660,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 26.4005
+      "elapsed_seconds": 24.1236
     },
     {
       "repository": "google/adk-python",
@@ -7631,6 +7796,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 163,
         "callables": 85,
@@ -7659,6 +7830,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -7860,6 +8032,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -7868,6 +8042,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -7993,7 +8169,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.4988
+      "elapsed_seconds": 8.7343
     },
     {
       "repository": "google/adk-js",
@@ -8120,6 +8296,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -8148,6 +8330,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -8349,6 +8532,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -8357,6 +8542,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -8473,7 +8660,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.3171
+      "elapsed_seconds": 4.0977
     },
     {
       "repository": "huggingface/smolagents",
@@ -8598,6 +8785,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -8626,6 +8819,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -8827,6 +9021,8 @@
         "total": 7,
         "non_test": 1,
         "symbolized_assigned": 5,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 5,
         "package_backed": 0,
         "non_package": 7,
         "repositories": true
@@ -8835,6 +9031,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -8960,7 +9158,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8936
+      "elapsed_seconds": 2.7035
     },
     {
       "repository": "agno-agi/agno",
@@ -9092,6 +9290,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 356,
         "callables": 24,
@@ -9120,6 +9324,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -9320,7 +9525,9 @@
       "python_import_bound_mcp_stdio_servers": {
         "total": 3,
         "non_test": 3,
-        "symbolized_assigned": 3,
+        "symbolized_assigned": 1,
+        "symbolized_context_managed": 2,
+        "symbolized_bound": 3,
         "package_backed": 3,
         "non_package": 0,
         "repositories": true
@@ -9329,6 +9536,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -9455,7 +9664,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.171
+      "elapsed_seconds": 1.077
     },
     {
       "repository": "camel-ai/camel",
@@ -9582,6 +9791,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -9610,6 +9825,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -9813,6 +10029,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -9821,6 +10039,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -9948,7 +10168,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.911
+      "elapsed_seconds": 5.5326
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -10072,6 +10292,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -10100,6 +10326,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -10301,6 +10528,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -10309,6 +10538,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -10424,7 +10655,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4338
+      "elapsed_seconds": 0.4188
     },
     {
       "repository": "run-llama/llama_index",
@@ -10543,6 +10774,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -10571,6 +10808,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -10772,6 +11010,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -10780,6 +11020,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -10889,7 +11131,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8991
+      "elapsed_seconds": 1.8376
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -11014,6 +11256,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -11042,6 +11290,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -11243,6 +11492,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -11251,6 +11502,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -11378,7 +11631,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0507
+      "elapsed_seconds": 2.9274
     },
     {
       "repository": "InternLM/lagent",
@@ -11504,6 +11757,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -11532,6 +11791,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -11733,6 +11993,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -11741,6 +12003,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -11863,7 +12127,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4066
+      "elapsed_seconds": 1.3329
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -11982,6 +12246,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -12010,6 +12280,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -12213,6 +12484,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -12221,6 +12494,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -12345,7 +12620,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6005
+      "elapsed_seconds": 2.4404
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -12467,6 +12742,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -12495,6 +12776,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -12696,6 +12978,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -12704,6 +12988,8 @@
         "total": 1,
         "non_test": 1,
         "symbolized_assigned": 1,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 1,
         "repositories": true
       },
       "python_google_adk_bigquery_audit": {
@@ -12831,7 +13117,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4383
+      "elapsed_seconds": 3.2136
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -12949,6 +13235,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -12977,6 +13269,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -13178,6 +13471,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -13186,6 +13481,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -13309,7 +13606,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2219
+      "elapsed_seconds": 2.116
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -13428,6 +13725,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -13456,6 +13759,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -13657,6 +13961,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -13665,6 +13971,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -13784,7 +14092,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.1981
+      "elapsed_seconds": 7.5876
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -13899,6 +14207,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -13927,6 +14241,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -14128,6 +14443,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -14136,6 +14453,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -14254,7 +14573,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6182
+      "elapsed_seconds": 2.4174
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -14370,6 +14689,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -14398,6 +14723,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -14599,6 +14925,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -14607,6 +14935,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -14716,7 +15046,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4452
+      "elapsed_seconds": 1.3566
     },
     {
       "repository": "letta-ai/letta-code",
@@ -14826,6 +15156,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -14854,6 +15190,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -15055,6 +15392,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -15063,6 +15402,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -15172,7 +15513,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.5838
+      "elapsed_seconds": 5.3623
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -15297,6 +15638,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 12,
         "callables": 12,
@@ -15325,6 +15672,7 @@
         "non_test": 4,
         "same_block": 2,
         "immutable_module": 3,
+        "context_managed": 0,
         "repositories": true
       },
       "python_fastmcp_server_tool_edges": {
@@ -15526,6 +15874,8 @@
         "total": 3,
         "non_test": 2,
         "symbolized_assigned": 3,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 3,
         "package_backed": 2,
         "non_package": 1,
         "repositories": true
@@ -15534,6 +15884,8 @@
         "total": 3,
         "non_test": 3,
         "symbolized_assigned": 3,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 3,
         "repositories": true
       },
       "python_google_adk_bigquery_audit": {
@@ -15657,7 +16009,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3906
+      "elapsed_seconds": 2.1814
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -15785,6 +16137,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -15813,6 +16171,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -16014,6 +16373,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -16022,6 +16383,8 @@
         "total": 3,
         "non_test": 0,
         "symbolized_assigned": 3,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 3,
         "repositories": true
       },
       "python_google_adk_bigquery_audit": {
@@ -16146,7 +16509,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.581
+      "elapsed_seconds": 4.2001
     },
     {
       "repository": "mastra-ai/mastra",
@@ -16269,6 +16632,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -16297,6 +16666,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -16498,6 +16868,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -16506,6 +16878,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -16621,7 +16995,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1969
+      "elapsed_seconds": 3.0506
     },
     {
       "repository": "vercel/ai",
@@ -16742,6 +17116,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -16770,6 +17150,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -16971,6 +17352,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -16979,6 +17362,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -17093,7 +17478,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4971
+      "elapsed_seconds": 3.3422
     },
     {
       "repository": "cline/cline",
@@ -17219,6 +17604,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -17247,6 +17638,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -17448,6 +17840,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -17456,6 +17850,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -17571,7 +17967,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.9094
+      "elapsed_seconds": 4.6162
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -17686,6 +18082,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -17714,6 +18116,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -17915,6 +18318,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -17923,6 +18328,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -18032,7 +18439,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.2159
+      "elapsed_seconds": 4.9489
     },
     {
       "repository": "continuedev/continue",
@@ -18143,6 +18550,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -18171,6 +18584,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -18372,6 +18786,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -18380,6 +18796,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -18489,7 +18907,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2089
+      "elapsed_seconds": 3.055
     },
     {
       "repository": "Aider-AI/aider",
@@ -18601,6 +19019,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -18629,6 +19053,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -18832,6 +19257,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -18840,6 +19267,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -18964,7 +19393,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.7692
+      "elapsed_seconds": 4.4789
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -19071,6 +19500,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -19099,6 +19534,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -19302,6 +19738,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -19310,6 +19748,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -19427,7 +19867,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 1.7058
+      "elapsed_seconds": 1.6291
     },
     {
       "repository": "plandex-ai/plandex",
@@ -19523,6 +19963,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -19551,6 +19997,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -19752,6 +20199,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -19760,6 +20209,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -19869,7 +20320,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.061
+      "elapsed_seconds": 0.0629
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -19980,6 +20431,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -20008,6 +20465,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -20209,6 +20667,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -20217,6 +20677,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -20332,7 +20794,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.4579
+      "elapsed_seconds": 2.3668
     },
     {
       "repository": "stitionai/devika",
@@ -20449,6 +20911,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -20477,6 +20945,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -20680,6 +21149,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -20688,6 +21159,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -20801,7 +21274,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.582
+      "elapsed_seconds": 0.5615
     },
     {
       "repository": "block/goose",
@@ -20921,6 +21394,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -20949,6 +21428,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -21150,6 +21630,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -21158,6 +21640,8 @@
         "total": 3,
         "non_test": 2,
         "symbolized_assigned": 3,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 3,
         "repositories": true
       },
       "python_google_adk_bigquery_audit": {
@@ -21277,7 +21761,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 6.6934
+      "elapsed_seconds": 6.3938
     },
     {
       "repository": "bytedance/trae-agent",
@@ -21403,6 +21887,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -21431,6 +21921,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -21632,6 +22123,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -21640,6 +22133,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -21766,7 +22261,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3792
+      "elapsed_seconds": 1.3069
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -21884,6 +22379,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -21912,6 +22413,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -22113,6 +22615,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -22121,6 +22625,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -22236,7 +22742,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.5417
+      "elapsed_seconds": 7.3215
     },
     {
       "repository": "openai/codex",
@@ -22339,6 +22845,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -22367,6 +22879,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -22568,6 +23081,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -22576,6 +23091,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -22691,7 +23208,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2199
+      "elapsed_seconds": 1.2086
     },
     {
       "repository": "browser-use/browser-use",
@@ -22817,6 +23334,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -22845,6 +23368,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -23048,6 +23572,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -23056,6 +23582,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -23183,7 +23711,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.2847
+      "elapsed_seconds": 7.1503
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -23318,6 +23846,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -23346,6 +23880,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -23550,6 +24085,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -23558,6 +24095,8 @@
         "total": 4,
         "non_test": 0,
         "symbolized_assigned": 4,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 4,
         "repositories": true
       },
       "python_google_adk_bigquery_audit": {
@@ -23685,7 +24224,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 15.3412
+      "elapsed_seconds": 14.8383
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -23803,6 +24342,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -23831,6 +24376,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -24034,6 +24580,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -24042,6 +24590,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -24162,7 +24712,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4475
+      "elapsed_seconds": 1.4109
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -24276,6 +24826,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -24304,6 +24860,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -24505,6 +25062,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -24513,6 +25072,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -24624,7 +25185,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5821
+      "elapsed_seconds": 1.5721
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -24740,6 +25301,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -24768,6 +25335,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -24969,6 +25537,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -24977,6 +25547,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -25096,7 +25668,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6734
+      "elapsed_seconds": 1.6245
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -25220,6 +25792,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -25248,6 +25826,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -25449,6 +26028,8 @@
         "total": 1,
         "non_test": 1,
         "symbolized_assigned": 1,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 1,
         "package_backed": 0,
         "non_package": 1,
         "repositories": true
@@ -25457,6 +26038,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -25575,7 +26158,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.1554
+      "elapsed_seconds": 4.9159
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -25706,6 +26289,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -25734,6 +26323,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -25935,6 +26525,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -25943,6 +26535,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -26061,7 +26655,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.7027
+      "elapsed_seconds": 5.6909
     },
     {
       "repository": "github/github-mcp-server",
@@ -26167,6 +26761,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -26195,6 +26795,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -26396,6 +26997,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -26404,6 +27007,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -26513,7 +27118,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.055
+      "elapsed_seconds": 0.0549
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -26620,6 +27225,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -26648,6 +27259,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -26849,6 +27461,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -26857,6 +27471,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -26966,7 +27582,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1337
+      "elapsed_seconds": 0.1354
     },
     {
       "repository": "awslabs/mcp",
@@ -27085,6 +27701,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -27113,6 +27735,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -27314,6 +27937,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -27322,6 +27947,8 @@
         "total": 1,
         "non_test": 1,
         "symbolized_assigned": 1,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 1,
         "repositories": true
       },
       "python_google_adk_bigquery_audit": {
@@ -27439,7 +28066,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.9197
+      "elapsed_seconds": 3.8968
     },
     {
       "repository": "docker/mcp-gateway",
@@ -27546,6 +28173,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -27574,6 +28207,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -27775,6 +28409,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -27783,6 +28419,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -27894,7 +28532,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0471
+      "elapsed_seconds": 0.0475
     },
     {
       "repository": "jlowin/fastmcp",
@@ -28016,6 +28654,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -28044,6 +28688,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -28245,6 +28890,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -28253,6 +28900,8 @@
         "total": 213,
         "non_test": 10,
         "symbolized_assigned": 205,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 205,
         "repositories": true
       },
       "python_google_adk_bigquery_audit": {
@@ -28377,7 +29026,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.2746
+      "elapsed_seconds": 5.2296
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -28473,6 +29122,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -28501,6 +29156,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -28702,6 +29358,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -28710,6 +29368,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -28944,6 +29604,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -28972,6 +29638,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -29173,6 +29840,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -29181,6 +29850,8 @@
         "total": 3,
         "non_test": 2,
         "symbolized_assigned": 2,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 2,
         "repositories": true
       },
       "python_google_adk_bigquery_audit": {
@@ -29299,7 +29970,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.0248
+      "elapsed_seconds": 5.1625
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -29413,6 +30084,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -29441,6 +30118,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -29642,6 +30320,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -29650,6 +30330,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -29767,7 +30449,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.4158
+      "elapsed_seconds": 4.444
     },
     {
       "repository": "langgenius/dify",
@@ -29866,6 +30548,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -29894,6 +30582,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -30095,6 +30784,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -30103,6 +30794,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -30212,7 +30905,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2741
+      "elapsed_seconds": 3.3203
     },
     {
       "repository": "n8n-io/n8n",
@@ -30334,6 +31027,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -30362,6 +31061,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -30563,6 +31263,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -30571,6 +31273,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -30688,7 +31392,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2306
+      "elapsed_seconds": 3.2037
     },
     {
       "repository": "activepieces/activepieces",
@@ -30818,6 +31522,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -30846,6 +31556,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -31047,6 +31758,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -31055,6 +31768,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -31174,7 +31889,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0503
+      "elapsed_seconds": 2.0431
     },
     {
       "repository": "simstudioai/sim",
@@ -31279,6 +31994,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -31307,6 +32028,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -31508,6 +32230,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -31516,6 +32240,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -31625,7 +32351,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.1572
+      "elapsed_seconds": 6.1401
     },
     {
       "repository": "composiohq/composio",
@@ -31758,6 +32484,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 2,
         "callables": 0,
@@ -31786,6 +32518,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -31987,6 +32720,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -31995,6 +32730,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -32113,7 +32850,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6727
+      "elapsed_seconds": 2.6843
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -32240,6 +32977,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -32268,6 +33011,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -32469,6 +33213,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -32477,6 +33223,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -32604,7 +33352,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.9789
+      "elapsed_seconds": 4.9482
     },
     {
       "repository": "e2b-dev/E2B",
@@ -32708,6 +33456,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -32736,6 +33490,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -32937,6 +33692,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -32945,6 +33702,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -33054,7 +33813,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.5491
+      "elapsed_seconds": 3.5398
     },
     {
       "repository": "daytonaio/daytona",
@@ -33150,6 +33909,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 0,
         "callables": 0,
@@ -33178,6 +33943,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -33379,6 +34145,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -33387,6 +34155,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -33496,7 +34266,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0003
+      "elapsed_seconds": 0.0011
     },
     {
       "repository": "AgentOps-AI/agentops",
@@ -33621,6 +34391,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 9,
         "callables": 1,
@@ -33649,6 +34425,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -33850,6 +34627,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "package_backed": 0,
         "non_package": 0,
         "repositories": false
@@ -33858,6 +34637,8 @@
         "total": 0,
         "non_test": 0,
         "symbolized_assigned": 0,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 0,
         "repositories": false
       },
       "python_google_adk_bigquery_audit": {
@@ -33972,7 +34753,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6591
+      "elapsed_seconds": 2.6615
     },
     {
       "repository": "traceloop/openllmetry",
@@ -34110,6 +34891,12 @@
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
+      "python_sandbox_agents": {
+        "total": 0,
+        "non_test": 0,
+        "mcp_server_edges": 0,
+        "repositories": false
+      },
       "python_agent_referenced_tools": {
         "instances": 5,
         "callables": 3,
@@ -34138,6 +34925,7 @@
         "non_test": 0,
         "same_block": 0,
         "immutable_module": 0,
+        "context_managed": 0,
         "repositories": false
       },
       "python_fastmcp_server_tool_edges": {
@@ -34339,6 +35127,8 @@
         "total": 1,
         "non_test": 1,
         "symbolized_assigned": 1,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 1,
         "package_backed": 0,
         "non_package": 1,
         "repositories": true
@@ -34347,6 +35137,8 @@
         "total": 1,
         "non_test": 1,
         "symbolized_assigned": 1,
+        "symbolized_context_managed": 0,
+        "symbolized_bound": 1,
         "repositories": true
       },
       "python_google_adk_bigquery_audit": {
@@ -34464,7 +35256,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.4705
+      "elapsed_seconds": 4.5391
     }
   ]
 }

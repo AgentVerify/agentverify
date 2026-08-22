@@ -70,6 +70,13 @@ FastMCP assignment, `@server.tool()` and equivalent exact post-registration call
 server→tool edges with both symbol endpoints. Capability context can then follow
 Agent→server→tool→capability. Optional/fall-through imports, rebound registrars, ambiguous tool
 targets, and name-only server matches remain disconnected.
+Schema v80 gives an exact imported MCP constructor bound by `with` or `async with` an
+occurrence-qualified server identity. A direct Agent statement inside that context can resolve the
+binding only before any reassignment; duplicate `as` names, post-context, and nested/indirect uses
+remain disconnected.
+OpenAI's `MCPServerStdio(params={...})` shape retains identity even when its executable or arguments
+are dynamic, while package provenance still requires a literal `npx` or `uvx` selection. The
+OpenAI `SandboxAgent` constructor is recognized only through an exact `agents.sandbox` import.
 
 Names are intentionally not treated as globally unique. Python and TypeScript agent/tool definitions
 carry stable frontend-and-module-qualified `symbol_id` values; relationships carry `source_id` and

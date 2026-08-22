@@ -103,6 +103,14 @@ terminates; an optional import that falls through remains inventory without grap
 Capability paths may therefore contain `agent → mcp-server → tool → capability` without resolving
 any endpoint by a coincidental display name.
 
+An exact imported MCP constructor bound by `with` or `async with` can likewise receive a server
+symbol. Its Agent edge requires a direct statement inside the context and no preceding mutation of
+the bound name; an escaped or rebound reference remains disconnected. Dynamic stdio launch fields
+may be retained as unresolved configuration without weakening the asset identity or inventing
+package provenance. Exact `agents.sandbox` import proof separately identifies OpenAI
+`SandboxAgent` assets, including the context-managed edge whose server also carries the SDK's
+disabled-default approval setting.
+
 An Agent endpoint can additionally resolve as `same-class-helper-return` when a unique same-class
 method has one direct top-level return of an exact Agent constructor or immutable Agent local, the
 caller binds the direct/tuple result, and that binding solely dominates composition. The endpoint

@@ -5995,6 +5995,38 @@
     {
       "id":"python-fastmcp-goose-inspect-tool-edge-marvin-real","target":{"kind":"repository","repository":"PrefectHQ/marvin","commit":"eaf1040642b205973318769cab65f0c62b4b6ca4"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"examples/you_have_been_goosed/goose_em.py","line":75,"expected":true,
       "relationship":{"source_kind":"mcp-server","source_name":"FastMCP@14","relation":"uses","target_kind":"tool","target_name":"inspect_this_server","source_id":"py:examples/you_have_been_goosed/goose_em.py#mcp-server:goose_server","target_id":"py:examples/you_have_been_goosed/goose_em.py#tool:inspect_this_server","attributes":{"registrar":"goose_server.tool","target_identity":"exact-fastmcp-registrar"}}
+    },
+    {
+      "id":"python-agent-mcp-context-component-local","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"context_positive.py","line":6,"expected":true,
+      "component":{"kind":"mcp-server","name":"MCPServerStdio@6","symbol_id":"py:context_positive.py#mcp-server:managed_server","attributes":{"transport":"stdio","binding_resolution":"context-manager-binding"}}
+    },
+    {
+      "id":"python-agent-mcp-context-edge-local","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"context_positive.py","line":10,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"managed","relation":"uses","target_kind":"mcp-server","target_name":"MCPServerStdio@6","source_id":"py:context_positive.py#agent:managed_agent","target_id":"py:context_positive.py#mcp-server:managed_server","attributes":{"binding":"managed_server","target_identity":"literal-mcp-servers-list-context-manager"}}
+    },
+    {
+      "id":"python-agent-mcp-context-rebound-local-negative","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"context_negative.py","line":12,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"rebound-context","relation":"uses","target_kind":"mcp-server"}
+    },
+    {
+      "id":"python-agent-mcp-context-escaped-local-negative","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"context_negative.py","line":21,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"escaped-context","relation":"uses","target_kind":"mcp-server"}
+    },
+    {
+      "id":"python-agent-mcp-near-sandbox-agent-local-negative","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"context_negative.py","line":24,"expected":false,"source_contains":"SandboxAgent",
+      "component":{"kind":"agent","name":"near-sandbox"}
+    },
+    {
+      "id":"python-agent-mcp-duplicate-context-local-negative","target":{"kind":"local","path":"cases/python_agent_mcp_binding"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"context_negative.py","line":32,"expected":false,
+      "relationship":{"source_kind":"agent","source_name":"duplicate-context","relation":"uses","target_kind":"mcp-server"}
+    },
+    {
+      "id":"python-agent-mcp-context-component-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"examples/sandbox/sandbox_agent_with_tools.py","line":68,"expected":true,
+      "component":{"kind":"mcp-server","name":"Reference Policy Server","symbol_id":"py:examples/sandbox/sandbox_agent_with_tools.py#mcp-server:server","attributes":{"transport":"stdio","binding_resolution":"context-manager-binding","approval_policy":"disabled-default"}}
+    },
+    {
+      "id":"python-agent-mcp-context-edge-openai-real","target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},"check_id":"IR-PY-AGENT-MCP-BINDING","path":"examples/sandbox/sandbox_agent_with_tools.py","line":77,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"Renewal Review Assistant","relation":"uses","target_kind":"mcp-server","target_name":"Reference Policy Server","source_id":"py:examples/sandbox/sandbox_agent_with_tools.py#agent:agent","target_id":"py:examples/sandbox/sandbox_agent_with_tools.py#mcp-server:server","attributes":{"binding":"server","target_identity":"literal-mcp-servers-list-context-manager","approval_policy":"disabled-default"}}
     }
   ]
 }

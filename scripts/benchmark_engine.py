@@ -299,6 +299,16 @@ def main() -> int:
             for edge in ir.relationships
             if edge.source_kind == "agent" and edge.target_id in python_computer_tool_ids
         ]
+        python_sandbox_agents = [
+            item
+            for item in ir.components
+            if item.kind == "agent"
+            and item.evidence.path.endswith(".py")
+            and item.attributes.get("constructor") == "SandboxAgent"
+        ]
+        python_sandbox_agent_ids = {
+            item.symbol_id for item in python_sandbox_agents if item.symbol_id
+        }
         python_agent_referenced_tools = [
             item
             for item in ir.components
@@ -326,6 +336,7 @@ def main() -> int:
             in {
                 "literal-mcp-servers-list-binding",
                 "literal-mcp-servers-list-module-binding",
+                "literal-mcp-servers-list-context-manager",
             }
             and edge.evidence.path.endswith(".py")
         ]
@@ -638,8 +649,10 @@ def main() -> int:
             item
             for item in ir.components
             if item.kind == "mcp-server"
-            and item.attributes.get("analysis")
-            == "python-import-bound-mcp-constructor"
+            and item.attributes.get("frontend") == "python"
+            and item.attributes.get("transport") == "stdio"
+            and item.attributes.get("constructor")
+            in {"MCPServer", "MCPServerStdio", "MCPTools", "StdioServerParameters"}
         ]
         python_import_bound_mcp_in_process_servers = [
             item
@@ -1021,6 +1034,18 @@ def main() -> int:
                 "capability_edges": len(python_computer_capability_edges),
                 "resolved_agent_edges": len(python_computer_agent_edges),
             },
+            "python_sandbox_agents": {
+                "total": len(python_sandbox_agents),
+                "non_test": sum(
+                    not is_test_path(item.evidence.path)
+                    for item in python_sandbox_agents
+                ),
+                "mcp_server_edges": sum(
+                    edge.source_id in python_sandbox_agent_ids
+                    for edge in python_agent_mcp_server_edges
+                ),
+                "repositories": bool(python_sandbox_agents),
+            },
             "python_agent_referenced_tools": {
                 "instances": len(python_agent_referenced_tools),
                 "callables": sum(
@@ -1100,6 +1125,11 @@ def main() -> int:
                 "immutable_module": sum(
                     edge.attributes.get("target_identity")
                     == "literal-mcp-servers-list-module-binding"
+                    for edge in python_agent_mcp_server_edges
+                ),
+                "context_managed": sum(
+                    edge.attributes.get("target_identity")
+                    == "literal-mcp-servers-list-context-manager"
                     for edge in python_agent_mcp_server_edges
                 ),
                 "repositories": bool(python_agent_mcp_server_edges),
@@ -1839,6 +1869,15 @@ def main() -> int:
                     for item in python_import_bound_mcp_stdio_servers
                 ),
                 "symbolized_assigned": sum(
+                    item.attributes.get("binding_resolution") == "assignment"
+                    for item in python_import_bound_mcp_stdio_servers
+                ),
+                "symbolized_context_managed": sum(
+                    item.attributes.get("binding_resolution")
+                    == "context-manager-binding"
+                    for item in python_import_bound_mcp_stdio_servers
+                ),
+                "symbolized_bound": sum(
                     item.symbol_id is not None
                     for item in python_import_bound_mcp_stdio_servers
                 ),
@@ -1859,6 +1898,15 @@ def main() -> int:
                     for item in python_import_bound_mcp_in_process_servers
                 ),
                 "symbolized_assigned": sum(
+                    item.attributes.get("binding_resolution") == "assignment"
+                    for item in python_import_bound_mcp_in_process_servers
+                ),
+                "symbolized_context_managed": sum(
+                    item.attributes.get("binding_resolution")
+                    == "context-manager-binding"
+                    for item in python_import_bound_mcp_in_process_servers
+                ),
+                "symbolized_bound": sum(
                     item.symbol_id is not None
                     for item in python_import_bound_mcp_in_process_servers
                 ),
@@ -2250,7 +2298,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 79,
+        "schema_version": 80,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2429,6 +2477,18 @@ def main() -> int:
                     "resolved_agent_edges",
                 )
             },
+            "python_sandbox_agents": {
+                name: sum(
+                    result["python_sandbox_agents"][name]
+                    for result in successful
+                )
+                for name in (
+                    "total",
+                    "non_test",
+                    "mcp_server_edges",
+                    "repositories",
+                )
+            },
             "python_agent_referenced_tools": {
                 name: sum(
                     result["python_agent_referenced_tools"][name]
@@ -2474,6 +2534,7 @@ def main() -> int:
                     "non_test",
                     "same_block",
                     "immutable_module",
+                    "context_managed",
                     "repositories",
                 )
             },
@@ -2790,6 +2851,8 @@ def main() -> int:
                     "total",
                     "non_test",
                     "symbolized_assigned",
+                    "symbolized_context_managed",
+                    "symbolized_bound",
                     "package_backed",
                     "non_package",
                     "repositories",
@@ -2804,6 +2867,8 @@ def main() -> int:
                     "total",
                     "non_test",
                     "symbolized_assigned",
+                    "symbolized_context_managed",
+                    "symbolized_bound",
                     "repositories",
                 )
             },
