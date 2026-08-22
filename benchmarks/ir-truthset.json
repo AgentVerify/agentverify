@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "description": "Exact positive and negative labels for Agent IR control, import, tool-registration, and capability relationships; evaluated separately from finding-rule quality.",
+  "description": "Exact positive and negative labels for Agent IR components and control, import, tool-registration, and capability relationships; evaluated separately from finding-rule quality.",
   "labels": [
     {
       "id": "audit-local-traced-action",
@@ -4279,6 +4279,258 @@
       "check_id":"IR-PY-CONTEXTUAL-IMPORT","path":"contributing/samples/adk_team/adk_pr_triaging_agent/agent.py","line":148,"expected":true,
       "anchor":{"kind":"capability","name":"network","attributes":{"summary":"imported-function","dynamic_origin":true,"import_resolution":"contextual-absolute-import-single-path","helper_path":"contributing/samples/adk_team/adk_pr_triaging_agent/utils.py"}},
       "relationship":{"source_kind":"tool","source_name":"get_pull_request_details","relation":"uses","target_kind":"capability","target_name":"network"}
+    },
+    {
+      "id":"taxonomy-local-agno-python",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.py","line":1,"expected":true,
+      "component":{"kind":"framework","name":"Agno","attributes":{"module":"agno.agent"}}
+    },
+    {
+      "id":"taxonomy-local-google-adk-python",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.py","line":2,"expected":true,
+      "component":{"kind":"framework","name":"Google ADK","attributes":{"module":"google.adk"}}
+    },
+    {
+      "id":"taxonomy-local-llamaindex-python",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.py","line":3,"expected":true,
+      "component":{"kind":"framework","name":"LlamaIndex","attributes":{"module":"llama_index.core"}}
+    },
+    {
+      "id":"taxonomy-local-semantic-kernel-python",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.py","line":4,"expected":true,
+      "component":{"kind":"framework","name":"Semantic Kernel","attributes":{"module":"semantic_kernel"}}
+    },
+    {
+      "id":"taxonomy-local-smolagents-python",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.py","line":5,"expected":true,
+      "component":{"kind":"framework","name":"smolagents","attributes":{"module":"smolagents"}}
+    },
+    {
+      "id":"taxonomy-local-google-python-from-import",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.py","line":6,"expected":true,
+      "component":{"kind":"provider","name":"Google","attributes":{"module":"google.genai"}}
+    },
+    {
+      "id":"taxonomy-local-google-python-module",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.py","line":7,"expected":true,
+      "component":{"kind":"provider","name":"Google","attributes":{"module":"google.genai"}}
+    },
+    {
+      "id":"taxonomy-local-bedrock-python-import",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.py","line":8,"expected":true,
+      "component":{"kind":"provider","name":"AWS Bedrock","attributes":{"module":"langchain_aws"}}
+    },
+    {
+      "id":"taxonomy-local-bedrock-python-service",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.py","line":13,"expected":true,
+      "component":{"kind":"provider","name":"AWS Bedrock","attributes":{"constructor":"boto3.client","service":"bedrock-runtime"}}
+    },
+    {
+      "id":"taxonomy-local-gemini-python-model",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.py","line":14,"expected":true,
+      "component":{"kind":"model","name":"gemini-2.5-pro","attributes":{"provider":"Google"}}
+    },
+    {
+      "id":"taxonomy-local-google-adk-typescript",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.ts","line":1,"expected":true,
+      "component":{"kind":"framework","name":"Google ADK","attributes":{"module":"@google/adk"}}
+    },
+    {
+      "id":"taxonomy-local-semantic-kernel-typescript",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.ts","line":2,"expected":true,
+      "component":{"kind":"framework","name":"Semantic Kernel","attributes":{"module":"@microsoft/semantic-kernel"}}
+    },
+    {
+      "id":"taxonomy-local-llamaindex-typescript",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.ts","line":3,"expected":true,
+      "component":{"kind":"framework","name":"LlamaIndex","attributes":{"module":"@llamaindex/core"}}
+    },
+    {
+      "id":"taxonomy-local-mastra-typescript",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.ts","line":4,"expected":true,
+      "component":{"kind":"framework","name":"Mastra","attributes":{"module":"@mastra/core/agent"}}
+    },
+    {
+      "id":"taxonomy-local-google-typescript-sdk",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.ts","line":5,"expected":true,
+      "component":{"kind":"provider","name":"Google","attributes":{"module":"@google/genai"}}
+    },
+    {
+      "id":"taxonomy-local-google-typescript-ai-sdk",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.ts","line":6,"expected":true,
+      "component":{"kind":"provider","name":"Google","attributes":{"module":"@ai-sdk/google"}}
+    },
+    {
+      "id":"taxonomy-local-bedrock-typescript",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.ts","line":7,"expected":true,
+      "component":{"kind":"provider","name":"AWS Bedrock","attributes":{"module":"@aws-sdk/client-bedrock-runtime"}}
+    },
+    {
+      "id":"taxonomy-local-gemini-typescript-model",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.ts","line":9,"expected":true,
+      "component":{"kind":"model","name":"gemini-2.5-flash","attributes":{"provider":"Google"}}
+    },
+    {
+      "id":"taxonomy-negative-agno-near-name",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"negative.py","line":1,"expected":false,
+      "component":{"kind":"framework","name":"Agno"}
+    },
+    {
+      "id":"taxonomy-negative-google-cloud-not-adk",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"negative.py","line":2,"expected":false,
+      "component":{"kind":"framework","name":"Google ADK"}
+    },
+    {
+      "id":"taxonomy-negative-google-cloud-not-genai",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"negative.py","line":2,"expected":false,
+      "component":{"kind":"provider","name":"Google"}
+    },
+    {
+      "id":"taxonomy-negative-llamaindex-near-name",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"negative.py","line":3,"expected":false,
+      "component":{"kind":"framework","name":"LlamaIndex"}
+    },
+    {
+      "id":"taxonomy-negative-semantic-kernel-near-name",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"negative.py","line":4,"expected":false,
+      "component":{"kind":"framework","name":"Semantic Kernel"}
+    },
+    {
+      "id":"taxonomy-negative-smolagents-near-name",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"negative.py","line":5,"expected":false,
+      "component":{"kind":"framework","name":"smolagents"}
+    },
+    {
+      "id":"taxonomy-negative-s3-not-bedrock",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"negative.py","line":10,"expected":false,
+      "component":{"kind":"provider","name":"AWS Bedrock"}
+    },
+    {
+      "id":"taxonomy-negative-gemma-not-google-provider",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"negative.py","line":11,"expected":false,
+      "component":{"kind":"model","name":"gemma-3","attributes":{"provider":"Google"}}
+    },
+    {
+      "id":"taxonomy-negative-bedrock-string-not-client",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"negative.py","line":12,"expected":false,
+      "component":{"kind":"provider","name":"AWS Bedrock"}
+    },
+    {
+      "id":"taxonomy-negative-bedrock-keyword-not-client",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"negative.py","line":13,"expected":false,
+      "component":{"kind":"provider","name":"AWS Bedrock"}
+    },
+    {
+      "id":"taxonomy-negative-google-adk-typescript-near-name",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"negative.ts","line":1,"expected":false,
+      "component":{"kind":"framework","name":"Google ADK"}
+    },
+    {
+      "id":"taxonomy-negative-semantic-kernel-typescript-near-name",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"negative.ts","line":2,"expected":false,
+      "component":{"kind":"framework","name":"Semantic Kernel"}
+    },
+    {
+      "id":"taxonomy-negative-llamaindex-typescript-near-name",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"negative.ts","line":3,"expected":false,
+      "component":{"kind":"framework","name":"LlamaIndex"}
+    },
+    {
+      "id":"taxonomy-negative-mastra-typescript-near-name",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"negative.ts","line":4,"expected":false,
+      "component":{"kind":"framework","name":"Mastra"}
+    },
+    {
+      "id":"taxonomy-negative-google-typescript-near-name",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"negative.ts","line":5,"expected":false,
+      "component":{"kind":"provider","name":"Google"}
+    },
+    {
+      "id":"taxonomy-negative-bedrock-agent-not-runtime",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"negative.ts","line":6,"expected":false,
+      "component":{"kind":"provider","name":"AWS Bedrock"}
+    },
+    {
+      "id":"taxonomy-google-adk-python-real",
+      "target":{"kind":"repository","repository":"google/adk-python","commit":"775c1bd36e205eec65e207ad29fdc4cf2184e47e"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"contributing/samples/hitl/request_input_tool/agent.py","line":15,"expected":true,
+      "component":{"kind":"framework","name":"Google ADK","attributes":{"module":"google.adk"}}
+    },
+    {
+      "id":"taxonomy-semantic-kernel-real",
+      "target":{"kind":"repository","repository":"microsoft/semantic-kernel","commit":"b39d95a34435f4c1d55dd00c86120ce118d847e1"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"python/semantic_kernel/agents/agent.py","line":15,"expected":true,
+      "component":{"kind":"framework","name":"Semantic Kernel","attributes":{"module":"semantic_kernel.agents.channels.agent_channel"}}
+    },
+    {
+      "id":"taxonomy-llamaindex-real",
+      "target":{"kind":"repository","repository":"lavague-ai/LaVague","commit":"9024bb832c40291cd012916757f27ef60469b22d"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"lavague-core/lavague/core/action_template.py","line":1,"expected":true,
+      "component":{"kind":"framework","name":"LlamaIndex","attributes":{"module":"llama_index.core"}}
+    },
+    {
+      "id":"taxonomy-agno-real",
+      "target":{"kind":"repository","repository":"agno-agi/agno","commit":"955931ab6e2c5e19cca29ddd45f27a1c8b74be1c"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"cookbook/91_tools/custom_tool_events.py","line":7,"expected":true,
+      "component":{"kind":"framework","name":"Agno","attributes":{"module":"agno.agent"}}
+    },
+    {
+      "id":"taxonomy-mastra-real",
+      "target":{"kind":"repository","repository":"mastra-ai/mastra","commit":"1da5fb00e141b78c2148b21ee085ec24112cf2a5"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"agent-sdks/openai/src/index.ts","line":4,"expected":true,
+      "component":{"kind":"framework","name":"Mastra","attributes":{"module":"@mastra/core/agent"}}
+    },
+    {
+      "id":"taxonomy-smolagents-real",
+      "target":{"kind":"repository","repository":"AgentOps-AI/agentops","commit":"f8e907b92dabe47232978023fdcb01e2a7d4b752"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"examples/smolagents/multi_smolagents_system.py","line":38,"expected":true,
+      "component":{"kind":"framework","name":"smolagents","attributes":{"module":"smolagents"}}
+    },
+    {
+      "id":"taxonomy-google-provider-real",
+      "target":{"kind":"repository","repository":"composiohq/composio","commit":"38899bdfa02fe10d9df65d230a67f9f5df987420"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"ts/examples/google/src/experimental.mcp.ts","line":2,"expected":true,
+      "component":{"kind":"provider","name":"Google","attributes":{"module":"@google/genai"}}
+    },
+    {
+      "id":"taxonomy-bedrock-provider-real",
+      "target":{"kind":"repository","repository":"browser-use/browser-use","commit":"85ddbfedf609166b2d2c76c3d80506649fee82a9"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"browser_use/llm/aws/chat_bedrock.py","line":74,"expected":true,
+      "component":{"kind":"provider","name":"AWS Bedrock","attributes":{"constructor":"self.session.client","service":"bedrock-runtime"}}
     }
   ]
 }

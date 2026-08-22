@@ -25,6 +25,15 @@ Components represent frameworks, providers, agents, tools, MCP servers, capabili
 control settings. Relationships currently represent `uses`, `delegates-to`, `contains-control`, and
 `governed-by` edges. Every object carries source path, line, and excerpt evidence.
 
+Framework and provider taxonomy is evidence-backed rather than inferred from repository names.
+Python module boundaries and TypeScript package/subpath boundaries identify the supported framework
+families. Google provider evidence requires an exact GenAI, Vertex, or AI SDK import, or a configured
+Gemini model prefix. AWS Bedrock requires the exact runtime SDK, a recognized `langchain_aws`
+constructor import, or a literal `bedrock-runtime` service selection. Generic Google Cloud/AWS SDKs,
+near-name packages, and Gemma model names do not establish these provider identities. Taxonomy
+components intentionally have no source-symbol ID; exact positive and negative component labels are
+scored separately from relationship and finding labels.
+
 Names are intentionally not treated as globally unique. Python and TypeScript agent/tool definitions
 carry stable frontend-and-module-qualified `symbol_id` values; relationships carry `source_id` and
 `target_id` when resolution succeeds. Context analysis prefers those IDs and falls back to the older

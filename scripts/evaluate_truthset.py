@@ -71,6 +71,23 @@ def main() -> int:
                 )
                 for edge in ir.relationships
             )
+        elif component := label.get("component"):
+            observed = any(
+                item.evidence.path == label["path"]
+                and item.evidence.line == label["line"]
+                and all(
+                    (
+                        all(
+                            item.attributes.get(name) == expected
+                            for name, expected in value.items()
+                        )
+                        if key == "attributes"
+                        else getattr(item, key) == value
+                    )
+                    for key, value in component.items()
+                )
+                for item in ir.components
+            )
         else:
             observed = any(
                 finding.rule_id == label["rule_id"]

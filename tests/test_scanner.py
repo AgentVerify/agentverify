@@ -26,6 +26,74 @@ def test_python_module_index_includes_every_nested_source_root(tmp_path: Path) -
     )
 
 
+def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof() -> None:
+    ir = scan_repository(ROOT / "cases/framework_provider_taxonomy")
+    inventory = {
+        (
+            item.evidence.path,
+            item.evidence.line,
+            item.kind,
+            item.name,
+            item.attributes.get("module"),
+        )
+        for item in ir.components
+        if item.kind in {"framework", "provider"}
+    }
+
+    assert inventory >= {
+        ("positive.py", 1, "framework", "Agno", "agno.agent"),
+        ("positive.py", 2, "framework", "Google ADK", "google.adk"),
+        ("positive.py", 3, "framework", "LlamaIndex", "llama_index.core"),
+        ("positive.py", 4, "framework", "Semantic Kernel", "semantic_kernel"),
+        ("positive.py", 5, "framework", "smolagents", "smolagents"),
+        ("positive.py", 6, "provider", "Google", "google.genai"),
+        ("positive.py", 7, "provider", "Google", "google.genai"),
+        ("positive.py", 8, "provider", "AWS Bedrock", "langchain_aws"),
+        ("positive.ts", 1, "framework", "Google ADK", "@google/adk"),
+        (
+            "positive.ts",
+            2,
+            "framework",
+            "Semantic Kernel",
+            "@microsoft/semantic-kernel",
+        ),
+        ("positive.ts", 3, "framework", "LlamaIndex", "@llamaindex/core"),
+        ("positive.ts", 4, "framework", "Mastra", "@mastra/core/agent"),
+        ("positive.ts", 5, "provider", "Google", "@google/genai"),
+        ("positive.ts", 6, "provider", "Google", "@ai-sdk/google"),
+        (
+            "positive.ts",
+            7,
+            "provider",
+            "AWS Bedrock",
+            "@aws-sdk/client-bedrock-runtime",
+        ),
+    }
+    service = next(
+        item
+        for item in ir.components
+        if item.kind == "provider"
+        and item.name == "AWS Bedrock"
+        and item.evidence.path == "positive.py"
+        and item.evidence.line == 13
+    )
+    assert service.attributes == {
+        "constructor": "boto3.client",
+        "service": "bedrock-runtime",
+    }
+    assert any(
+        item.kind == "model"
+        and item.name == "gemini-2.5-pro"
+        and item.attributes["provider"] == "Google"
+        for item in ir.components
+    )
+    assert not any(
+        item.kind in {"framework", "provider"}
+        and item.evidence.path.startswith("negative.")
+        for item in ir.components
+    )
+
+
 def test_python_agent_inventory_and_dynamic_shell_finding() -> None:
     ir = scan_repository(ROOT / "cases/python_dangerous")
 

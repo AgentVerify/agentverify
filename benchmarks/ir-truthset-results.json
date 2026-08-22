@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T00:54:28.723415+00:00",
-  "labels": 410,
-  "passed": 410,
+  "generated_at": "2026-08-22T01:24:21.359082+00:00",
+  "labels": 452,
+  "passed": 452,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -24,6 +24,14 @@
       "tp": 2,
       "fp": 0,
       "tn": 2,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-COMPONENT-TAXONOMY": {
+      "tp": 26,
+      "fp": 0,
+      "tn": 16,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -4122,6 +4130,384 @@
     {
       "id": "python-contextual-network-google-adk-pr-real",
       "check_id": "IR-PY-CONTEXTUAL-IMPORT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-agno-python",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-google-adk-python",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-llamaindex-python",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-semantic-kernel-python",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-smolagents-python",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-google-python-from-import",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-google-python-module",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-bedrock-python-import",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-bedrock-python-service",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-gemini-python-model",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-google-adk-typescript",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-semantic-kernel-typescript",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-llamaindex-typescript",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-mastra-typescript",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-google-typescript-sdk",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-google-typescript-ai-sdk",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-bedrock-typescript",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-gemini-typescript-model",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-agno-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-google-cloud-not-adk",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-google-cloud-not-genai",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-llamaindex-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-semantic-kernel-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-smolagents-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-s3-not-bedrock",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-gemma-not-google-provider",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-bedrock-string-not-client",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-bedrock-keyword-not-client",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-google-adk-typescript-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-semantic-kernel-typescript-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-llamaindex-typescript-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-mastra-typescript-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-google-typescript-near-name",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-negative-bedrock-agent-not-runtime",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-google-adk-python-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-semantic-kernel-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-llamaindex-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-agno-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-mastra-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-smolagents-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-google-provider-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-bedrock-provider-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

@@ -5,7 +5,7 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
 
 | Priority | Capability | Impact | Frequency | Feasibility | Score | Evidence |
 |---:|---|---:|---:|---:|---:|---|
-| 1 | Agent bill of materials: models, providers, frameworks, tools, MCP | 4 | 5 | 5 | 100 | 44 multi-provider repos; 50 with MCP; 69 with privileged capabilities |
+| 1 | Agent bill of materials: models, providers, frameworks, tools, MCP | 4 | 5 | 5 | 100 | 44 multi-provider research signals; schema v60 proves exact selected-path framework/provider evidence in 34/48 repos; 50 have MCP signals and 69 have privileged-capability signals |
 | 2 | Dangerous shell and code execution | 5 | 4 | 4 | 80 | 42 shell-capable repos; 8 `shell=True` candidates |
 | 3 | MCP server/tool trust-boundary analysis | 5 | 4 | 4 | 80 | 50 MCP repos; 17 generic forwarding shapes |
 | 4 | Approval coverage and bypass paths | 5 | 4 | 3 | 60 | 52 approval-positive; 18 auto-approval candidates; one exact OpenAI Agents Python agent→MCP binding inherits the SDK's disabled approval default without being mislabeled as a destructive-capability finding |
@@ -21,7 +21,9 @@ is based on the initial 71-repository corpus; scores will be recalibrated as the
 - Emit Agent IR nodes for models, agents, tools, MCP servers, capabilities, controls, and evidence.
 - Produce deterministic text and JSON reports.
 - Support OpenAI, Anthropic, and Azure OpenAI providers; LangChain/LangGraph, CrewAI, AutoGen,
-  OpenAI Agents SDK, and common MCP configuration shapes.
+  OpenAI Agents SDK, Google ADK, Semantic Kernel, LlamaIndex, Agno, Mastra, smolagents, and common
+  MCP configuration shapes. Google and AWS Bedrock provider taxonomy requires exact SDK/service
+  evidence rather than generic cloud-package names.
 
 ## Milestone 2 — high-confidence local rules
 

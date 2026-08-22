@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v59
+framework, wrapper, or configuration path. Counts come from schema-v60
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -14,31 +14,32 @@ kind. Categories and signature kinds can overlap.
 |---|---:|---:|---:|---:|---:|---:|
 | autonomous-agent | 3 | 3 | 2 | 3 | 1 | 3 |
 | browser-agent | 3 | 3 | 2 | 3 | 2 | 3 |
-| coding-agent | 15 | 15 | 1 | 5 | 8 | 14 |
+| coding-agent | 15 | 15 | 2 | 7 | 8 | 14 |
 | computer-agent | 1 | 1 | 0 | 1 | 0 | 1 |
 | examples | 2 | 2 | 2 | 2 | 1 | 2 |
-| framework | 22 | 22 | 13 | 17 | 19 | 21 |
-| mcp | 9 | 9 | 2 | 2 | 8 | 8 |
+| framework | 22 | 22 | 16 | 19 | 19 | 21 |
+| mcp | 9 | 9 | 2 | 3 | 8 | 8 |
 | observability | 2 | 2 | 2 | 2 | 1 | 2 |
 | research-agent | 1 | 1 | 1 | 1 | 1 | 1 |
 | sandbox | 2 | 1 | 0 | 0 | 0 | 1 |
 | tool-platform | 2 | 2 | 2 | 2 | 2 | 2 |
 | visual-platform | 4 | 4 | 1 | 1 | 1 | 3 |
-| workflow-agent | 3 | 3 | 1 | 3 | 1 | 3 |
+| workflow-agent | 3 | 3 | 2 | 3 | 1 | 3 |
 | workflow-platform | 2 | 2 | 0 | 1 | 2 | 2 |
-| **Total with observation** | **71** | **70** | **29** | **43** | **47** | **67** |
+| **Total with observation** | **71** | **70** | **34** | **48** | **47** | **66** |
 
 Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK (10), LangGraph
-(8), CrewAI (4), PydanticAI (3), AutoGen (1), and Cline SDK (1). Provider observations are OpenAI
-(41), Anthropic (17), and Azure OpenAI (11). These counts overlap and are lower than research-wide lexical signals
-because the engine requires supported selected files and more specific syntax.
+(8), LlamaIndex (6), CrewAI (4), Agno (3), Google ADK (3), PydanticAI (3), Semantic Kernel (2),
+smolagents (2), AutoGen (1), Cline SDK (1), and Mastra (1). Provider observations are OpenAI (41),
+Anthropic (17), Google (17), Azure OpenAI (11), and AWS Bedrock (6). These overlapping exact-import,
+literal service, and model-string observations are lower than research-wide lexical signals.
 
 Across the selected snapshot, 9,531 agent/tool observations have module-qualified symbol IDs. Of
 4,030 relationship endpoint observations, all 3,371 identified endpoints resolve to an observed
 component (3,112 Python and 259 TypeScript). Two former false IDs on CrewAI test edges are now
 withheld because a function parameter and assignment shadow the same-named package import.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
-edges resolve exactly. Schema v59 records 359 Python lexical-single-definition, 20 same-block
+edges resolve exactly. Schema v60 records 359 Python lexical-single-definition, 20 same-block
 dominating-definition, 25 contextual-absolute-import resolutions, three same-class helper-return
 resolutions, 14 contextual imported-class Agent-factory resolutions, 444 inline constructor
 resolutions, two context-manager resolutions, four contextual imported-callable exports, six
@@ -143,7 +144,7 @@ fields as an inventory-only edge.
 
 Exact same-function Python scheme and hostname rejection can govern a direct network capability as
 `network-origin-allowlist`. The proof is statement-ordered and import-proven, and records explicit
-redirect disabling separately from unresolved DNS and redirect scope. The full schema-v59 corpus run
+redirect disabling separately from unresolved DNS and redirect scope. The full schema-v60 corpus run
 finds zero qualifying controls on the Python AV-NET001 review paths; imported validators and runtime
 egress policy remain outside this bounded observation.
 
@@ -227,7 +228,7 @@ and uses an Undici dispatcher that reconnects only to validated addresses. Calle
 non-stock global dispatchers, and `NODE_USE_ENV_PROXY` routes intentionally retain preflight-only
 behavior because the proxy resolves the destination. The edge implementation fails closed for the
 caller-selected upload URL, but three `ssrfSafeFetchWhereSupported` API-response transfers fall back
-to unguarded edge-runtime fetch. Schema v59 therefore reports nine TypeScript secure-network
+to unguarded edge-runtime fetch. Schema v60 therefore reports nine TypeScript secure-network
 controls: the prior five plus one Composio all-runtime/fail-closed edge and three runtime-conditional
 edges.
 
@@ -254,7 +255,7 @@ select the later RPC origin without a proven source-origin binding, so `AV-A2A00
 reviews. Gemini additionally records unpinned dispatcher DNS, configuration-dependent proxying, and
 the card-selected gRPC scheme. Google ADK Python provides two guarded paths: before either cached or
 per-invocation client construction, it checks every advertised RPC URL, requires HTTPS except an
-explicit loopback policy, and binds the endpoint to the network card source origin. Schema v59 thus
+explicit loopback policy, and binds the endpoint to the network card source origin. Schema v60 thus
 separates two unconstrained TypeScript paths from two same-origin-constrained Python paths; configured
 card selection is not mislabeled as model-controlled `AV-NET001` input.
 
@@ -264,7 +265,7 @@ Two checks govern both a parent-directory creation and its write/copy action. Th
 `AV-FS002` result explains the sibling-prefix weakness without duplicating `AV-FS001` at the same
 sink.
 
-Schema v59 records 14 exact MCP-forwarding control edges: one explicit allowlist, three discovery
+Schema v60 records 14 exact MCP-forwarding control edges: one explicit allowlist, three discovery
 registries, and ten fixed bindings. The fixed-binding edges split evenly between constructor-bound
 instance sources and escaping returned/registered closures. Same-operation retry closures do not
 qualify. The ten bindings and discovery registries retain their reviews; only the explicit allowlist
@@ -314,11 +315,14 @@ and `network-ssrf-policy` edge.
 
 - Go, Rust, Java, C#, Ruby, shell, and other language source frontends are not implemented. Their
   repositories may still contribute supported JSON/YAML or embedded Python/TypeScript files.
-- Framework signatures do not yet cover Google ADK, Semantic Kernel, LlamaIndex, Agno, Mastra,
-  smolagents, Pydantic wrappers beyond direct imports, or custom agent bases. Generic `Agent` syntax
-  may inventory an agent without identifying its framework.
-- Google, Bedrock, and other model providers are not yet promoted from research signals into the
-  engine's provider taxonomy.
+- Framework taxonomy recognizes exact Python/TypeScript imports for Google ADK, Semantic Kernel,
+  LlamaIndex, Agno, Mastra, and smolagents alongside the original signatures. Package reexports,
+  Pydantic wrappers beyond direct imports, and custom agent bases may still leave a generic `Agent`
+  without framework attribution.
+- Google provider taxonomy requires an exact GenAI/Vertex/AI SDK import or a Gemini model prefix.
+  AWS Bedrock requires its exact TypeScript runtime SDK, a recognized `langchain_aws` constructor
+  import, or a literal `bedrock-runtime` service selection. Indirect factories, reexports, and other
+  model providers remain unresolved rather than inferred from nearby names.
 - Python registry classes reexported through exact selected `__init__.py` imports are resolved only
   for immutable constructor-bound attributes. General package reexports, wildcard imports,
   module-qualified or dynamically selected constructors, imported policy objects, callback approval
@@ -384,7 +388,7 @@ and `network-ssrf-policy` edge.
   plus hostname rejection before the direct request. Late, partial, continuing, rebound, shadowed,
   normalized-expression, positive-branch, and imported-validator forms remain unresolved. The
   control covers the initial origin only; redirect disabling and unresolved redirect/DNS scope are
-  preserved separately. Schema v59 observes zero such controls on the Python corpus reviews.
+  preserved separately. Schema v60 observes zero such controls on the Python corpus reviews.
 - Python secure-network helper proof requires selected local source for the validator, transport,
   adapter/backend, caller, and any defaults that affect enforcement. One structural family proves
   every redirect, disables proxies, and pins all connections; another distinguishes redirect-disabled
@@ -442,7 +446,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 350-label rule truth set and 410-label IR relationship set are curated regression suites. They
+The 350-label rule truth set and 452-label IR component/relationship set are curated regression suites. They
 guard known positives and negatives; they are not an unbiased accuracy estimate. A future holdout
 must be sampled separately across the categories above, externally reviewed, and kept sealed while
 rules change. Until then, precision/recall values apply only to the published seed labels.

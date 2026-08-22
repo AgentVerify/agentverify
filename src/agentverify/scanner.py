@@ -40,11 +40,36 @@ IMPORT_SIGNATURES = {
         "OpenAI Agents SDK": ("agents", "@openai/agents"),
         "PydanticAI": ("pydantic_ai",),
         "Cline SDK": ("@cline/sdk",),
+        "Google ADK": ("google.adk", "@google/adk", "@google/adk/"),
+        "Semantic Kernel": (
+            "semantic_kernel",
+            "@microsoft/semantic-kernel",
+            "@microsoft/semantic-kernel/",
+        ),
+        "LlamaIndex": ("llama_index", "@llamaindex/"),
+        "Agno": ("agno",),
+        "Mastra": ("@mastra/",),
+        "smolagents": ("smolagents",),
     },
     "provider": {
         "OpenAI": ("openai", "@ai-sdk/openai"),
         "Anthropic": ("anthropic", "@ai-sdk/anthropic"),
         "Azure OpenAI": ("azure.ai.openai",),
+        "Google": (
+            "google.genai",
+            "google.generativeai",
+            "@google/genai",
+            "@google/genai/",
+            "@google/generative-ai",
+            "@ai-sdk/google",
+            "@ai-sdk/google/",
+            "@google-cloud/vertexai",
+            "@google-cloud/vertexai/",
+        ),
+        "AWS Bedrock": (
+            "@aws-sdk/client-bedrock-runtime",
+            "@aws-sdk/client-bedrock-runtime/",
+        ),
     },
     "protocol": {
         "MCP": ("mcp", "modelcontextprotocol", "@modelcontextprotocol/"),
@@ -222,6 +247,8 @@ def provider_for_model(model: str) -> str:
         return "OpenAI"
     if lowered.startswith("claude"):
         return "Anthropic"
+    if lowered.startswith(("gemini-", "models/gemini-", "google/gemini-")):
+        return "Google"
     return "unresolved"
 
 
@@ -2642,6 +2669,25 @@ class PythonVisitor(ast.NodeVisitor):
                 )
         else:
             component_from_import(self.ir, node.module or "", self.ev(node))
+            if node.module == "google":
+                for alias in node.names:
+                    if alias.name in {"genai", "generativeai"}:
+                        component_from_import(
+                            self.ir,
+                            f"google.{alias.name}",
+                            self.ev(node),
+                        )
+            if node.module == "langchain_aws" and {
+                alias.name for alias in node.names
+            } & {"ChatBedrock", "ChatBedrockConverse", "BedrockEmbeddings"}:
+                self.ir.add_component(
+                    Component(
+                        "provider",
+                        "AWS Bedrock",
+                        self.ev(node),
+                        {"module": "langchain_aws"},
+                    )
+                )
 
     def visit_Assign(self, node: ast.Assign) -> None:
         if not self.class_stack or self.function_depth > 0:
@@ -4042,6 +4088,27 @@ class PythonVisitor(ast.NodeVisitor):
                             {"scope": source_scope(self.path), "api": call_name},
                         )
                     )
+        service_name = None
+        if node.args and isinstance(node.args[0], ast.Constant):
+            service_name = node.args[0].value
+        for keyword in node.keywords:
+            if keyword.arg == "service_name" and isinstance(
+                keyword.value, ast.Constant
+            ):
+                service_name = keyword.value.value
+        bedrock_client_call = call_name.endswith(".client") or short_name in {
+            "AwsClient",
+            "BedrockRuntimeClient",
+        }
+        if bedrock_client_call and service_name == "bedrock-runtime":
+            self.ir.add_component(
+                Component(
+                    "provider",
+                    "AWS Bedrock",
+                    self.ev(node),
+                    {"constructor": call_name, "service": "bedrock-runtime"},
+                )
+            )
         constructor_provider = next(
             (
                 provider
