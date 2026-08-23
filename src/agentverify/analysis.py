@@ -22,6 +22,54 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
     component's source location. Tool and agent references prefer module-qualified symbol IDs and
     retain a conservative location-aware fallback for older or partially resolved IR.
     """
+    if component.kind == "control":
+        control_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.relation == "governed-by"
+            and edge.target_kind == "control"
+            and edge.target_name == component.name
+            and edge.evidence.path == component.evidence.path
+            and edge.evidence.line == component.evidence.line
+            and (
+                component.symbol_id is None
+                or edge.target_id == component.symbol_id
+            )
+        ]
+        if not control_edges:
+            return (), {}
+        control_edge = min(
+            control_edges,
+            key=lambda edge: (edge.source_id or "", edge.source_name),
+        )
+        tool_name = control_edge.source_name
+        tool_id = control_edge.source_id
+        direct_agent_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "agent"
+            and edge.relation == "uses"
+            and edge.target_kind == control_edge.source_kind
+            and (
+                (tool_id is not None and edge.target_id == tool_id)
+                or (
+                    tool_id is None
+                    and edge.target_id is None
+                    and edge.target_name == tool_name
+                )
+            )
+        ]
+        direct_agents = sorted({edge.source_name for edge in direct_agent_edges})
+        selected_agent = direct_agents[0] if direct_agents else None
+        return (
+            *((f"agent:{selected_agent}",) if selected_agent else ()),
+            f"{control_edge.source_kind}:{tool_name}",
+            f"control:{component.name}",
+        ), {
+            "direct_agents": direct_agents,
+            control_edge.source_kind.replace("-", "_"): tool_name,
+            "governing_control": component.name,
+        }
     if component.kind != "capability":
         return (), {}
     capability_control_edges = [

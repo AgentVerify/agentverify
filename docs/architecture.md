@@ -764,6 +764,17 @@ required absolute `path` reaches `Path.write_text` after validation that proves 
 workspace-root containment. The IR records two exact Agent→tool→capability paths plus
 disabled-default isolation and unavailable-confirmation settings. Any missing source, changed
 default tool, near package, decision hook, or path-boundary API withholds the entire composition.
+Schema v118 adds an eight-source TypeScript composition for Roo Code's native command path. An exact
+`execute_command` model schema must enter `getNativeTools`, flow through the Task tool builder, and
+dispatch to the singleton `ExecuteCommandTool`. Its canonical model string must cross
+`askApproval("command", ...)` before reaching `terminal.runCommand`. Separately, the Task's exact
+`checkAutoApproval` call must reach the command branch that requires both global auto-approval and
+`alwaysAllowExecute`, then maps `getCommandDecision(...)=auto_approve` to an approval decision. The
+decision helper must parse command chains, retain deny and dangerous-substitution branches, and use
+the exact raw `trimmedCommand.startsWith(lowerPrefix)` allowlist match. The resulting graph records
+the default-prompt setting, command-allowlist control, agent/tool/capability path, and the missing
+token boundary without flattening the surrounding safeguards. A bounded matcher or any incomplete,
+duplicate, or near-package source role withholds the composition.
 Import-proven `CodeInterpreterTool` instances similarly expose that their SDK constructor has no
 approval hook, but they carry `execution_environment: hosted-sandbox` and
 `sandbox_policy: sdk-hosted`. Literal auto-container selection is preserved as configuration

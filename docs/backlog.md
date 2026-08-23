@@ -107,6 +107,11 @@ Schema v117 adds the exact `trae_agent` framework boundary and raises selected f
 capabilities, two exact Agent edges, two disabled/unavailable control settings, and four setting
 edges. Component taxonomy reaches 446 labels (319 positive, 127 negative); 24 dedicated Trae
 composition labels add 22 positives and two near-package negatives.
+Schema v118 adds the exact TypeScript `@roo-code/*` boundary and raises selected framework presence
+to 46 repositories. Its eight-source native-command composition contributes one Agent, one local
+command tool/capability, one default-prompt setting, one weak-prefix allowlist control, and four
+exact relationships. Component taxonomy reaches 449 labels (321 positive, 128 negative); 20 focused
+Roo composition labels add 18 positives plus near-package and token-boundary negatives.
 Next generalize additional selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
@@ -334,6 +339,16 @@ forward setters, and partial chains stay unresolved. Four taxonomy labels bring 
 (317 positive, 126 negative), and 15 dedicated composition labels cover the exact IR boundary. Next validate additional OpenHands SDK versions and function-
 scoped construction before broadening the composition.
 
+`AV-APPROVAL007` covers a distinct allowlist-quality failure rather than generic missing approval.
+Schema v118 proves Roo Code's model-exposed `execute_command` path through its runtime dispatcher,
+Task approval callback, configurable auto-approval branch, and local terminal sink. Auto-approval is
+default-off and requires `alwaysAllowExecute`; command chains, denylist precedence, and dangerous
+substitutions are retained as controls. The review is raised because an allowed string is compared
+with raw case-insensitive `startsWith`, so a longer executable or subcommand token can inherit an
+unintended approval. A token-boundary fixture and incomplete/near-package compositions stay negative.
+Next test the same semantic gap in other command-policy implementations without treating every
+documented prefix policy as an exact-command allowlist.
+
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
 server-controlled prompt/model hint/sampling parameters, model invocation, and response returned to
@@ -458,8 +473,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 676 pinned positive/negative locations, with 1,296 separately
-scored IR component/relationship labels. Schema-v117 engine results and
+The curated regression set has reached 684 pinned positive/negative locations, with 1,319 separately
+scored IR component/relationship labels. Schema-v118 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.
@@ -478,7 +493,7 @@ evidence in every report. Local organization policy composition resolves relativ
 rejects cycles and duplicate gate IDs, and preserves file and gate SHA-256 provenance without
 weakening strict unknown-field validation. Next add signed policy provenance with explicit trust-root
 configuration; a content hash alone must not be presented as author authenticity.
-The CLI now exposes an authoritative 20-rule runtime catalog in text or schema-versioned JSON, with
+The CLI now exposes an authoritative 21-rule runtime catalog in text or schema-versioned JSON, with
 focused lookup by rule ID. Every emission site is checked against the catalog's result kind,
 severity, and confidence, preventing policy-facing metadata drift while keeping context-specific
 finding messages and remediation details in reports.

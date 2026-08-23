@@ -77,6 +77,9 @@ never imported or executed.
   writable tools, while a static read-only include list, complete mutation confirmation, dynamic
   policy, disconnected session, unbound toolkit, and wrong imports remain conservative
   counterexamples.
+- `typescript_roo_command_approval`: Roo Code's exact native `execute_command` schema, model-tool
+  builder, runtime dispatch, approval callback, Task decision, command policy, and terminal sink;
+  near-package and token-boundary implementations withhold the graph and weak-prefix review.
 - `python_semantic_kernel_mcp_sampling`: Semantic Kernel MCP plugins expose server-originated model
   sampling through an exact Agent binding. Explicit auto-approval is reviewable; default/explicit
   denial, callback-controlled and dynamic policies, disconnected plugins, wrong imports, and changed

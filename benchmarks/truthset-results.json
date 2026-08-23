@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-23T01:47:01.944041+00:00",
-  "labels": 676,
-  "passed": 676,
+  "generated_at": "2026-08-23T02:30:05.598326+00:00",
+  "labels": 684,
+  "passed": 684,
   "metrics": {
     "AV-A2A001": {
       "tp": 4,
@@ -60,6 +60,14 @@
       "precision": 1.0,
       "recall": 1.0
     },
+    "AV-APPROVAL007": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 2,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
     "AV-AUDIT001": {
       "tp": 2,
       "fp": 0,
@@ -69,9 +77,9 @@
       "recall": 1.0
     },
     "AV-EXEC001": {
-      "tp": 13,
+      "tp": 15,
       "fp": 0,
-      "tn": 17,
+      "tn": 19,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -6246,6 +6254,78 @@
       "rule_id": "AV-FS001",
       "expected": true,
       "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-roo-native-local",
+      "rule_id": "AV-EXEC001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-roo-native-real",
+      "rule_id": "AV-EXEC001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-roo-near-local-negative",
+      "rule_id": "AV-EXEC001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-shell-roo-token-boundary-local-negative",
+      "rule_id": "AV-EXEC001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-roo-raw-prefix-local",
+      "rule_id": "AV-APPROVAL007",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-roo-raw-prefix-real",
+      "rule_id": "AV-APPROVAL007",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-roo-near-local-negative",
+      "rule_id": "AV-APPROVAL007",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-roo-token-boundary-local-negative",
+      "rule_id": "AV-APPROVAL007",
+      "expected": false,
+      "observed": false,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

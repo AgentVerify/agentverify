@@ -162,6 +162,13 @@ on that path. A scanner should record Docker isolation as available while attach
 default to the exact Bash/editor capabilities; the mere presence of a sandbox implementation must
 not govern an execution path that does not select it.
 
+Allowlist presence is also weaker than allowlist semantics. Roo Code parses command chains and
+checks deny rules and dangerous substitutions, but its positive command match uses raw
+case-insensitive `startsWith`. Without an executable or argument token boundary, a longer token can
+inherit a shorter allowed prefix. Agent IR should preserve the surrounding safeguards while marking
+the match as `raw-string-prefix`; a review should recommend parsed-token comparison rather than
+misstate the entire approval system as absent.
+
 ## Provider presence versus configured provider calls
 
 An SDK import proves a repository dependency, while an import-proven constructor or inference call

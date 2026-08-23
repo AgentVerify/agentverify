@@ -12,6 +12,7 @@ Validation date: 2026-08-23. Repositories are partial checkouts pinned by
 | FoundationAgents/MetaGPT | `11cdf466` | 214 | 1 | `metagpt/repo_parser.py:731` |
 | SWE-agent/SWE-agent | `3ea751c0` | 102 | 1 | `tools/windowed/lib/flake8_utils.py:143` |
 | cline/cline | `80b3b034` | 187 | 1 | `apps/examples/cli-agent/src/index.ts:19` |
+| RooCodeInc/Roo-Code | `b867ec91` | 209 | 1 | `src/core/tools/ExecuteCommandTool.ts:372` |
 
 These are pattern detections, not claims that each application is exploitable. Caller provenance,
 input constraints, containment, and approval policy determine exploitability. The rule reports the
@@ -20,6 +21,9 @@ Schema v117 adds the first exact default-tool reachability path for this rule: T
 default registry binds `bash` to `BashTool`, its required model `command` reaches persistent
 `/bin/bash` stdin, and default-`None` Docker configuration selects the local executor. The optional
 Docker executor is retained as available isolation but does not govern the default path.
+Schema v118 adds Roo Code's exact native-model composition: the registered `execute_command` schema
+reaches `ExecuteCommandTool`, its canonical model command crosses the Task approval callback, and the
+approved path reaches `terminal.runCommand`. The approval state is modeled separately below.
 
 ## Regression cases
 
@@ -41,6 +45,9 @@ Docker executor is retained as available isolation but does not govern the defau
   omitted, partial, complete, dynamic, and read-only-filtered confirmation states.
 - `cases/python_trae_agent_default_tools`: an exact seven-source Trae Agent composition resolves its
   default Bash/editor paths; a near package and a changed default tool list withhold the graph.
+- `cases/typescript_roo_command_approval`: an exact eight-source Roo Code composition resolves the
+  native command tool, approval state, allowlist policy, and terminal sink; near packages, incomplete
+  chains, and token-boundary matching withhold the graph or specialized review.
 - `cases/python_semantic_kernel_mcp_sampling`: exact Agent/plugin binding distinguishes explicit
   sampling auto-approval from default/explicit denial, callback, dynamic, and disconnected states.
 - `cases/mcp_sampling_consent`: exact Python and TypeScript MCP sampling handlers distinguish
@@ -141,8 +148,8 @@ Docker executor is retained as available isolation but does not govern the defau
 ## Full-corpus engine benchmark
 
 The 2026-08-23 default scan covered 70 source-bearing repositories plus one docs-only upstream
-snapshot. It parsed 10,771 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,316 relationships, and completed in 360.5757 seconds on the development machine. Three parse
+snapshot. It parsed 10,773 selected Python/TypeScript/JavaScript files plus 155 configuration files,
+resolved 2,356 relationships, and completed in 365.7958 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -150,11 +157,11 @@ so the benchmark records zero suppressed findings.
 The locked collector prioritizes manifests, production SSRF/URL-safety sources, and then general
 security/agent/tool/MCP sources within the 220-file cap. It adds at most 20 local source files:
 versioned audited evidence hints plus Python imports reached from MCP forwarding or source-proven
-URL-security call sites, all charged against the same cap. This refresh materialized 176 dependency files across 21
+URL-security call sites, all charged against the same cap. This refresh materialized 178 dependency files across 22
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v96 carries both the 176-file total and the
-21-repository coverage.
+dependency count per repository; engine schema v118 carries both the 178-file total and the
+22-repository coverage.
 
 Engine benchmark schema v96 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
@@ -462,9 +469,9 @@ one address-filtering control with configured allowlist and environment-proxy re
 Composio edges separately count configured-route pinning residuals, one edge-runtime fail-closed path,
 and three edge-runtime unguarded fallbacks.
 
-The benchmark now also measures identity coverage: 10,046 component observations carry
-module-qualified IDs. Of 4,704 relationship endpoints, all 3,900 identified symbol endpoints resolve
-to an observed component (3,587 Python and 313 TypeScript). The current schema records 379
+The benchmark now also measures identity coverage: 10,050 component observations carry
+module-qualified IDs. Of 4,712 relationship endpoints, all 3,907 identified symbol endpoints resolve
+to an observed component (3,587 Python and 320 TypeScript). The current schema records 379
 `lexical-single-definition` targets, 20 exact same-block dominating definitions, 25 contextual
 absolute-import targets, and three exact same-class helper-return edges to two Agent source
 definitions. Fourteen production CrewAI delegations resolve through an exact contextual import,
@@ -516,7 +523,7 @@ shadowing remain unresolved. Sixteen IR labels cover the local export/import bou
 forms, and all seven pinned Google ADK edges; one rule label proves cross-file AV-FS001 reachability.
 
 Schema-v86 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
-resolves 3,892 endpoints by symbol ID, 695 by exact evidence location, and 21 by a unique display
+resolves 3,899 endpoints by symbol ID, 696 by exact evidence location, and 21 by a unique display
 name; 38 remain ambiguous and 58 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
@@ -638,8 +645,8 @@ tools plus MCP `registerTool` names and callback spans. Schema v38 records 27 Ma
 exact registration-to-capability edges. Four of those edges come from bounded same-file network
 helper summaries: three Mastra static methods and one MCP Servers free function. Schema v38 also
 records one imported TypeScript path-boundary control edge. The full sample
-contains 95 structure-backed agent edges: 14 delegations and 81 tool edges, all with targets that
-resolve to observed components. The prior token heuristic could
+contains 100 structure-backed agent edges: 14 delegations, 82 tool edges, and four other
+agent-composition edges. All tool targets resolve to observed components. The prior token heuristic could
 turn words inside callbacks, string literals, and nested options into spurious tool edges. Relative
 named imports still apply the conservative `.js`-specifier-to-source rule; this snapshot has no
 qualifying cross-file Agent tool edge, so that part remains regression-validated only.
@@ -795,6 +802,23 @@ factories, near-package imports, forward setters, and one Agent shared by multip
 2 TP, 4 TN, 0 FP, and 0 FN. Remediation is to install a static confirmation policy such as
 `ConfirmRisky` on the same conversation; risk classification alone is not an approval gate.
 
+## AV-APPROVAL007 — raw command prefix crosses an auto-approval token boundary
+
+Schema v118 requires an exact eight-source Roo Code composition: native `execute_command` schema,
+registry and model-tool builder, Task approval routing, assistant-message dispatch, command executor,
+auto-approval router, and command-decision helper. The graph proves Agent→tool→shell execution plus
+the governing prompt-default setting and command allowlist. Auto-approval still requires both the
+global option and `alwaysAllowExecute`; denylist precedence, chain parsing, and dangerous-substitution
+rejection remain explicit controls.
+
+The specialized review isolates the helper's raw
+[`trimmedCommand.startsWith(lowerPrefix)`](https://github.com/RooCodeInc/Roo-Code/blob/b867ec9145750d0ae1ff7f02d35406e9bf2a0b16/src/core/auto-approval/commands.ts#L106)
+semantics, which do not require the following character to be an executable or argument token
+boundary. The local safe case accepts only equality or prefix followed by a space; near-package and
+incomplete compositions remain absent. The rule matrix is 2 TP, 2 TN, 0 FP, and 0 FN; the exact
+composition has 18 positive and two negative IR labels. Remediation is to parse the command and
+compare executable/argument tokens, or at minimum require equality or a deliberate token boundary.
+
 ## AV-MCP004 — MCP server model sampling is auto-approved
 
 Schema v68 verifies Semantic Kernel's bidirectional MCP composition. The pinned SDK registers its
@@ -877,7 +901,7 @@ Two default-scope clients qualify: the Microsoft tutorial and FastMCP CLI both a
 do not show the target URL. The TypeScript SDK host is the negative control: it displays the full URL,
 rejects unsafe non-HTTPS/non-loopback destinations, and asks before proceeding. The rule matrix is 4
 TP, 3 TN, 0 FP, and 0 FN; seven additional positive IR labels pin full versus missing disclosure.
-All 676 cross-rule labels pass (306 positives and 370 negatives).
+All 684 cross-rule labels pass (310 positives and 374 negatives).
 
 During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
 to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
@@ -890,8 +914,9 @@ Expanding the truth set exposed two additional false-positive families. Literal 
 were incorrectly classified as dynamic; resolving complete string literals removed five corpus
 findings while preserving interpolated templates. Broad approval-name matching confused warning-state
 and version-check flags with human approval; requiring approval-specific names removed six review
-candidates. Corpus totals are now 21 `AV-EXEC001` findings, 14 `AV-APPROVAL001` reviews, one
-specialized `AV-MCP004` review, three generic `AV-MCP005` sampling-consent reviews, and three
+candidates. Corpus totals are now 23 `AV-EXEC001` findings, 14 `AV-APPROVAL001` reviews, one
+`AV-APPROVAL007` raw-prefix review, one specialized `AV-MCP004` review, three generic `AV-MCP005`
+sampling-consent reviews, and three
 `AV-MCP006` elicitation-consent reviews, plus two `AV-MCP007` full-URL-disclosure reviews.
 The dependency closure also exposes CAMEL's production `func_string_to_callable(code)` helper, whose
 parameter reaches `exec`. Browser-aware evaluation adds one more exact path: Skyvern's registered
@@ -1368,14 +1393,14 @@ and surfacing failed writes through metrics or alerts.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 676 exact labels across all 20 enabled rules: 306 positives and 370
+`benchmarks/truthset.json` contains 684 exact labels across all 21 enabled rules: 310 positives and 374
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
 Compose/Kubernetes/Docker SDK settings, host credential bind near misses, and exact/prompt-only MCP
-package launchers. All 676 currently pass;
+package launchers. All 684 currently pass;
 each rule's seed precision and recall are 1.0. Negative labels must retain either an observed Agent IR
 component anchor or verified source text at the exact pinned line, preventing a missing or drifting
 location from passing silently.
@@ -1498,19 +1523,21 @@ six unresolved ambiguity/shadowing/order forms, and all seven pinned Google ADK 
 tool-factory/adapter labels cover four local Agent edges, one hosted-MCP capability, one local
 Agent-as-tool delegation, eight conservative local negatives, two AutoGen factory edges, one Google
 ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent edge plus delegation.
-The 446 component-taxonomy labels add 319 exact local/pinned framework, provider, call,
-and model positives plus 127 near-name, rebound, custom-endpoint, scoped-binding, nonliteral-request,
+The 449 component-taxonomy labels add 321 exact local/pinned framework, provider, call,
+and model positives plus 128 near-name, rebound, custom-endpoint, scoped-binding, nonliteral-request,
 and unrelated-service negatives. Nineteen OpenHands labels—four taxonomy and 15 composition—pin
 built-in tools, analyzer and confirmation controls, exact Agent reachability, shared-conversation
 ambiguity, and rebound or near-package negatives. Twenty-four Trae default-tool labels add 22 exact
-Agent/tool/capability/setting-edge positives plus two near-package negatives. Three path-segment-sanitizer labels pin the exact local and Qwen
+Agent/tool/capability/setting-edge positives plus two near-package negatives. Twenty Roo command-
+approval labels add 18 exact composition positives plus two near-package or token-boundary negatives.
+Three path-segment-sanitizer labels pin the exact local and Qwen
 SHA-256 edges plus a lookalike negative.
 Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,296 IR labels pass (917 positives and 379 negatives):
-319 component-taxonomy positives/127 negatives, three approval positives/four negatives,
+negatives. All 1,319 IR labels pass (937 positives and 382 negatives):
+321 component-taxonomy positives/128 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
 contextual network-import positives, three imported-literal-origin positives/seven negatives,
@@ -1526,7 +1553,8 @@ direct-callable positives/two negatives, 12
 function-tool-wrapper positives/one negative, three
 TypeScript graph
 positives/one negative, eight registration positives/one negative, five helper-summary positives/one
-negative, 11 path-boundary positives/nine negatives, four path-helper positives/seven negatives,
+negative, 18 Roo command-approval positives/two negatives, 11 path-boundary positives/nine negatives,
+four path-helper positives/seven negatives,
 six path-prefix positives/two negatives,
 12 filesystem-mutation positives/seven
 negatives, two MCP-registry positives/one negative, three

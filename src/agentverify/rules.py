@@ -86,6 +86,14 @@ RULE_DEFINITIONS = tuple(
                 "Install ConfirmRisky (or a stricter confirmation policy) on the same conversation and handle rejected pending actions fail closed.",
             ),
             RuleMetadata(
+                "AV-APPROVAL007",
+                "review",
+                "high",
+                "high",
+                "A command auto-approval allowlist uses a raw string-prefix match without a token boundary",
+                "Match the parsed executable and arguments on token boundaries; do not approve a command merely because its raw text starts with an allowed string.",
+            ),
+            RuleMetadata(
                 "AV-AUDIT001",
                 "review",
                 "medium",
@@ -697,6 +705,26 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                         "review",
                     )
                 )
+        if (
+            component.kind == "control"
+            and component.name == "command-allowlist"
+            and component.attributes.get("agent_reachable") is True
+            and component.attributes.get("auto_approval_decision") == "approve"
+            and component.attributes.get("match_semantics") == "raw-string-prefix"
+            and component.attributes.get("token_boundary") is False
+        ):
+            ir.findings.append(
+                make_finding(
+                    ir,
+                    component,
+                    "AV-APPROVAL007",
+                    "high",
+                    "high",
+                    "A reachable command auto-approval allowlist accepts raw string prefixes without a token boundary",
+                    "Parse the command first and compare the executable and argument prefixes on token boundaries; retain explicit user approval for unmatched or ambiguous commands.",
+                    "review",
+                )
+            )
         if (
             component.kind == "capability"
             and component.name == "a2a-rpc"

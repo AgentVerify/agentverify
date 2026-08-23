@@ -95,6 +95,10 @@
       "packages/agents-core/src/mcp.ts",
       "packages/agents-core/src/tool.ts"
     ],
+    "RooCodeInc/Roo-Code": [
+      "src/core/assistant-message/presentAssistantMessage.ts",
+      "src/core/task/Task.ts"
+    ],
     "composiohq/composio": [
       "ts/packages/cli/src/services/tool-file-uploads.ts",
       "ts/packages/cli/src/services/tools-executor.ts",

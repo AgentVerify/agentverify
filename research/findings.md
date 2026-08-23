@@ -377,6 +377,18 @@ but its validator establishes no allowed root before `Path.write_text`. The exac
 one AV-EXEC001 finding and one each of AV-APPROVAL002 and AV-FS001. Optional Docker routing remains
 recorded as available, not credited to the default local path.
 
+Schema v118 resolves the analogous TypeScript path in pinned Roo Code. The native registry places
+[`execute_command` in the model tool array](https://github.com/RooCodeInc/Roo-Code/blob/b867ec9145750d0ae1ff7f02d35406e9bf2a0b16/src/core/task/build-tools.ts#L112),
+the runtime dispatcher reaches `ExecuteCommandTool`, and the model's canonical command crosses an
+approval callback before [`terminal.runCommand`](https://github.com/RooCodeInc/Roo-Code/blob/b867ec9145750d0ae1ff7f02d35406e9bf2a0b16/src/core/tools/ExecuteCommandTool.ts#L372).
+Task maps `checkAutoApproval(...).decision === "approve"` into the pending ask, while the command
+branch requires both auto-approval and `alwaysAllowExecute`. The remaining seam is the allowlist's
+[`trimmedCommand.startsWith(lowerPrefix)`](https://github.com/RooCodeInc/Roo-Code/blob/b867ec9145750d0ae1ff7f02d35406e9bf2a0b16/src/core/auto-approval/commands.ts#L106):
+it does not require the next character to be a token boundary. Thus an allowed prefix such as
+`git diff` also matches a longer executable/subcommand token beginning with those bytes. Chain
+parsing, denylist precedence, dangerous-substitution rejection, and the default prompt state remain
+real controls; AV-APPROVAL007 isolates only the weak match semantics.
+
 ## 4. Provider identity is a governance dependency
 
 OpenAI signals appear in 51 repositories, Anthropic in 37, Google in 28, Azure OpenAI in 18, and AWS
@@ -570,9 +582,10 @@ or the attributable ADK control; two positive and two negative labels pin that n
 
 Real TypeScript Agent configurations place tool arrays beside nested instructions, callbacks,
 schemas, and runtime options. A token-level audit of the pinned sample produced hundreds of apparent
-tool names such as `async`, `return`, and words from descriptions. Balanced top-level parsing reduces
-the observed graph to 95 evidence-backed agent edges: 14 agent-as-tool delegations and 81 tool edges,
-all 81 resolving to an observed component.
+tool names such as `async`, `return`, and words from descriptions. Balanced top-level parsing plus
+exact framework compositions reduce the observed graph to 100 evidence-backed agent edges: 14
+agent-as-tool delegations, 82 tool edges, and four other composition edges. All 82 tool targets
+resolve to observed components.
 
 Framework-specific wrappers also carry security meaning. The Cline SDK example wraps
 [`Bun.spawn(["sh", "-c", input.command])`](https://github.com/cline/cline/blob/80b3b0348e694bafc48e3dcd70154de3cf4289d9/apps/examples/cli-agent/src/index.ts#L19)
@@ -622,15 +635,15 @@ created. Exact `WebSearchTool`, `FileSearchTool`, and `ImageGenerationTool` impo
 provider-hosted assets and capability edges across OpenAI, AgentOps, and Traceloop. Seven occur in
 production and eight resolve directly from Agents. Hosted web search retains SDK-default external
 access without becoming AV-NET001; vector-store scope and image-generation hosting remain explicit
-inventory. The final export resolves 3,836 endpoints by symbol ID, 668
-by exact evidence location, and 20 by unique display name; 38 remain ambiguous
+inventory. The final export resolves 3,899 endpoints by symbol ID, 696
+by exact evidence location, and 21 by unique display name; 38 remain ambiguous
 agent/protocol/control/tool endpoints, and 58 unresolved. Two resumed-state LocalShellTool references
 remain `ambiguous-repeated-binding` targets rather than selecting an occurrence;
 cross-branch, forward, inconsistent/untyped parameters, conditional/transformed returns,
 external receivers, shadowed factories, lambdas, and reassigned fixture cases stay unresolved. Two apparent CrewAI
 re-export misses were false identities:
 a function parameter and a local assignment shadowed the imported `tool` binding. Scope-isolating
-module and function imports now withhold those IDs, so all 3,844 identified endpoints resolve.
+module and function imports now withhold those IDs, so all 3,907 identified endpoints resolve.
 A governance export that collapses those references
 by name would silently attach controls or risks to the wrong asset.
 

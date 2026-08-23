@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-23T01:46:45.479566+00:00",
-  "labels": 1296,
-  "passed": 1296,
+  "generated_at": "2026-08-23T02:29:49.805083+00:00",
+  "labels": 1319,
+  "passed": 1319,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -37,9 +37,9 @@
       "recall": 1.0
     },
     "IR-COMPONENT-TAXONOMY": {
-      "tp": 319,
+      "tp": 321,
       "fp": 0,
-      "tn": 127,
+      "tn": 128,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -542,6 +542,14 @@
     },
     "IR-TS-PATH-BOUNDARY": {
       "tp": 2,
+      "fp": 0,
+      "tn": 2,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-ROO-COMMAND-APPROVAL": {
+      "tp": 18,
       "fp": 0,
       "tn": 2,
       "fn": 0,
@@ -12232,6 +12240,213 @@
     {
       "id": "python-trae-filesystem-near-package-local-negative",
       "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "framework-typescript-roo-code-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "framework-typescript-roo-code-near-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "framework-typescript-roo-code-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-agent-local",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-tool-local",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-shell-local",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-setting-local",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-control-local",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-agent-tool-edge-local",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-tool-shell-edge-local",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-tool-setting-edge-local",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-tool-control-edge-local",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-agent-real",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-tool-real",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-shell-real",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-setting-real",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-control-real",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-agent-tool-edge-real",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-tool-shell-edge-real",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-tool-setting-edge-real",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-tool-control-edge-real",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-near-control-local-negative",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-roo-token-boundary-local-negative",
+      "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
       "expected": false,
       "observed": false,
       "anchor_ok": true,

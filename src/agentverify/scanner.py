@@ -102,6 +102,7 @@ FRONTEND_IMPORT_SIGNATURES = {
     },
     "typescript": {
         "framework": {
+            "Roo Code": ("@roo-code/",),
             "Vercel AI SDK": ("ai", "ai/"),
         },
         "provider": {
@@ -27602,6 +27603,322 @@ def add_python_trae_agent_default_tool_flow(
         )
 
 
+def add_typescript_roo_command_approval_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve Roo Code's native command tool and raw-prefix auto-approval path."""
+    sources: dict[str, str] = {}
+    for path in paths:
+        if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            sources[relative] = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+
+    def unique_source(markers: tuple[str, ...]) -> tuple[str, str] | None:
+        matches = [
+            (relative, text)
+            for relative, text in sources.items()
+            if all(marker in text for marker in markers)
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    schema_source = unique_source(
+        (
+            'import type OpenAI from "openai"',
+            "const EXECUTE_COMMAND_DESCRIPTION = `Request to execute a CLI command on the system.",
+            'name: "execute_command",',
+            "command: {",
+            'required: ["command", "cwd", "timeout"],',
+            "satisfies OpenAI.Chat.ChatCompletionTool",
+        )
+    )
+    registry_source = unique_source(
+        (
+            'import executeCommand from "./execute_command"',
+            "export function getNativeTools(options: NativeToolsOptions = {})",
+            "executeCommand,",
+            "export const nativeTools = getNativeTools()",
+        )
+    )
+    builder_source = unique_source(
+        (
+            'import { getNativeTools, getMcpServerTools } from "../prompts/tools/native-tools"',
+            "export async function buildNativeToolsArrayWithRestrictions(",
+            "const nativeTools = getNativeTools({",
+            "const filteredNativeTools = filterNativeToolsForMode(",
+            "tools: filteredTools,",
+        )
+    )
+    task_source = unique_source(
+        (
+            'import { AutoApprovalHandler, checkAutoApproval } from "../auto-approval"',
+            'import { buildNativeToolsArrayWithRestrictions } from "./build-tools"',
+            "export class Task extends EventEmitter<TaskEvents> implements TaskLike",
+            "const toolsResult = await buildNativeToolsArrayWithRestrictions({",
+            "const approval = await checkAutoApproval({ state, ask: type, text, isProtected })",
+            'if (approval.decision === "approve") {',
+            "this.approveAsk()",
+        )
+    )
+    dispatcher_source = unique_source(
+        (
+            'import { executeCommandTool } from "../tools/ExecuteCommandTool"',
+            "const askApproval = async (",
+            "const { response, text, images } = await cline.ask(",
+            'case "execute_command":',
+            'await executeCommandTool.handle(cline, block as ToolUse<"execute_command">, {',
+            "askApproval,",
+        )
+    )
+    executor_source = unique_source(
+        (
+            'export class ExecuteCommandTool extends BaseTool<"execute_command">',
+            'readonly name = "execute_command" as const',
+            "const { command, cwd: customCwd, timeout: timeoutSeconds } = params",
+            'const didApprove = await askApproval("command", canonicalCommand)',
+            "if (!didApprove) {",
+            "export async function executeCommandInTerminal(",
+            "const process = terminal.runCommand(command, callbacks)",
+        )
+    )
+    approval_source = unique_source(
+        (
+            'import { getCommandDecision } from "./commands"',
+            "export async function checkAutoApproval({",
+            "if (!state || !state.autoApprovalEnabled) {",
+            'if (ask === "command") {',
+            "if (state.alwaysAllowExecute === true) {",
+            "const decision = getCommandDecision(text, state.allowedCommands || [], state.deniedCommands || [])",
+            'if (decision === "auto_approve") {',
+            'return { decision: "approve" }',
+        )
+    )
+    decision_source = unique_source(
+        (
+            'import { parseCommand } from "../../shared/parse-command"',
+            "export function findLongestPrefixMatch(command: string, prefixes: string[]): string | null",
+            'if (lowerPrefix === "*" || trimmedCommand.startsWith(lowerPrefix)) {',
+            "export function getCommandDecision(",
+            "const subCommands = parseCommand(command)",
+            'if (decisions.includes("auto_deny")) {',
+            "if (containsDangerousSubstitution(command)) {",
+            'if (decisions.every((decision) => decision === "auto_approve")) {',
+        )
+    )
+    selected = (
+        schema_source,
+        registry_source,
+        builder_source,
+        task_source,
+        dispatcher_source,
+        executor_source,
+        approval_source,
+        decision_source,
+    )
+    if any(source is None for source in selected):
+        return
+    (
+        (schema_path, schema_text),
+        (_registry_path, _registry_text),
+        (builder_path, builder_text),
+        (task_path, task_text),
+        (dispatcher_path, dispatcher_text),
+        (executor_path, executor_text),
+        (approval_path, approval_text),
+        (decision_path, decision_text),
+    ) = selected  # type: ignore[misc]
+
+    offsets = {
+        "schema": schema_text.find('name: "execute_command",'),
+        "builder": builder_text.find("const nativeTools = getNativeTools({"),
+        "task": task_text.find("export class Task extends EventEmitter<TaskEvents> implements TaskLike"),
+        "dispatch": dispatcher_text.find('await executeCommandTool.handle(cline, block as ToolUse<"execute_command">, {'),
+        "approval_call": executor_text.find('const didApprove = await askApproval("command", canonicalCommand)'),
+        "sink": executor_text.find("const process = terminal.runCommand(command, callbacks)"),
+        "setting": approval_text.find("if (!state || !state.autoApprovalEnabled) {"),
+        "control": decision_text.find('if (lowerPrefix === "*" || trimmedCommand.startsWith(lowerPrefix)) {'),
+    }
+    if min(offsets.values()) < 0:
+        return
+
+    def evidence(path: str, text: str, offset: int) -> Evidence:
+        line = line_at(text, offset)
+        return Evidence(path, line, excerpt(text.splitlines(), line))
+
+    schema_evidence = evidence(schema_path, schema_text, offsets["schema"])
+    builder_evidence = evidence(builder_path, builder_text, offsets["builder"])
+    agent_evidence = evidence(task_path, task_text, offsets["task"])
+    dispatch_evidence = evidence(dispatcher_path, dispatcher_text, offsets["dispatch"])
+    approval_evidence = evidence(executor_path, executor_text, offsets["approval_call"])
+    sink_evidence = evidence(executor_path, executor_text, offsets["sink"])
+    setting_evidence = evidence(approval_path, approval_text, offsets["setting"])
+    control_evidence = evidence(decision_path, decision_text, offsets["control"])
+
+    analysis = "typescript-roo-command-auto-approval"
+    agent_name = "Roo Code native tool runtime"
+    tool_name = "Roo ExecuteCommandTool"
+    agent_id = source_symbol("ts", task_path, "agent", "Task")
+    tool_id = source_symbol("ts", executor_path, "tool", "ExecuteCommandTool")
+    control_id = source_symbol("ts", decision_path, "control", "command-allowlist")
+    setting_id = source_symbol(
+        "ts", approval_path, "control-setting", "command-auto-approval"
+    )
+    shared = {
+        "analysis": analysis,
+        "framework": "Roo Code",
+        "scope": "production",
+    }
+    ir.add_component(
+        Component(
+            "agent",
+            agent_name,
+            agent_evidence,
+            {
+                **shared,
+                "model_tool_builder_path": builder_path,
+                "model_tool_builder_line": builder_evidence.line,
+            },
+            agent_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "tool",
+            tool_name,
+            sink_evidence,
+            {
+                **shared,
+                "approval_policy": "configurable-default-prompt",
+                "approval_source": "check-auto-approval-command-decision",
+                "builtin_tool": True,
+                "builtin_tool_name": "execute_command",
+                "constructor": "RooCode.ExecuteCommandTool",
+                "execution_environment": "local",
+                "model_schema_line": schema_evidence.line,
+                "model_schema_path": schema_path,
+                "runtime_dispatch_line": dispatch_evidence.line,
+                "runtime_dispatch_path": dispatcher_path,
+            },
+            tool_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "capability",
+            "shell-execution",
+            sink_evidence,
+            {
+                **shared,
+                "agent_controlled_command": True,
+                "api": "terminal.runCommand",
+                "approval_policy": "configurable-default-prompt",
+                "builtin_tool": True,
+                "dynamic_command": True,
+                "execution_environment": "local",
+                "shell": True,
+            },
+        )
+    )
+    ir.add_component(
+        Component(
+            "control-setting",
+            "command-auto-approval",
+            setting_evidence,
+            {
+                **shared,
+                "allowlist_required": True,
+                "always_allow_execute_required": True,
+                "enabled": False,
+                "policy": "default-prompt-configurable-auto-approval",
+            },
+            setting_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "control",
+            "command-allowlist",
+            control_evidence,
+            {
+                **shared,
+                "agent_reachable": True,
+                "auto_approval_decision": "approve",
+                "command_chain_parser": "parseCommand",
+                "dangerous_substitution_guard": True,
+                "denylist_conflict_policy": "longest-prefix-wins",
+                "match_semantics": "raw-string-prefix",
+                "token_boundary": False,
+                "wildcard_supported": True,
+            },
+            control_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "agent",
+            agent_name,
+            "uses",
+            "tool",
+            tool_name,
+            builder_evidence,
+            {
+                "analysis": analysis,
+                "target_identity": "roo-native-tool-registry",
+            },
+            source_id=agent_id,
+            target_id=tool_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            tool_name,
+            "uses",
+            "capability",
+            "shell-execution",
+            sink_evidence,
+            {"analysis": analysis},
+            source_id=tool_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            tool_name,
+            "configured-by",
+            "control-setting",
+            "command-auto-approval",
+            approval_evidence,
+            {"analysis": analysis},
+            source_id=tool_id,
+            target_id=setting_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            tool_name,
+            "governed-by",
+            "control",
+            "command-allowlist",
+            control_evidence,
+            {
+                "analysis": analysis,
+                "policy_effect": "configurable-auto-approve",
+            },
+            source_id=tool_id,
+            target_id=control_id,
+        )
+    )
+
+
 def add_typescript_a2a_card_endpoint_composition(
     ir: RepositoryIR,
     root: Path,
@@ -28159,6 +28476,7 @@ def scan_repository(
     add_typescript_composio_ssrf_safe_fetch_composition(ir, root, registry_paths)
     add_typescript_composio_cli_file_upload_flow(ir, root, registry_paths)
     add_typescript_google_adk_openapi_rest_tool_flow(ir, root, registry_paths)
+    add_typescript_roo_command_approval_flow(ir, root, registry_paths)
     add_typescript_a2a_card_endpoint_composition(ir, root, registry_paths)
     add_typescript_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)
     add_typescript_mcp_sampling_handler_consent_flow(ir, root, registry_paths)

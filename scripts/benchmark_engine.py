@@ -722,6 +722,12 @@ def main() -> int:
         python_trae_agent_capabilities = [
             item for item in python_trae_agent_components if item.kind == "capability"
         ]
+        typescript_roo_command_components = [
+            item
+            for item in ir.components
+            if item.attributes.get("analysis")
+            == "typescript-roo-command-auto-approval"
+        ]
         typescript_openai_mcp_approval_servers = [
             item
             for item in ir.components
@@ -1945,6 +1951,67 @@ def main() -> int:
                     for finding in ir.findings
                 ),
             },
+            "typescript_roo_command_auto_approval": {
+                "agents": sum(
+                    item.kind == "agent" for item in typescript_roo_command_components
+                ),
+                "tools": sum(
+                    item.kind == "tool" for item in typescript_roo_command_components
+                ),
+                "capabilities": sum(
+                    item.kind == "capability"
+                    for item in typescript_roo_command_components
+                ),
+                "controls": sum(
+                    item.kind == "control" for item in typescript_roo_command_components
+                ),
+                "settings": sum(
+                    item.kind == "control-setting"
+                    for item in typescript_roo_command_components
+                ),
+                "agent_tool_edges": sum(
+                    edge.source_kind == "agent"
+                    and edge.relation == "uses"
+                    and edge.target_kind == "tool"
+                    and edge.attributes.get("analysis")
+                    == "typescript-roo-command-auto-approval"
+                    for edge in ir.relationships
+                ),
+                "capability_edges": sum(
+                    edge.source_kind == "tool"
+                    and edge.relation == "uses"
+                    and edge.target_kind == "capability"
+                    and edge.attributes.get("analysis")
+                    == "typescript-roo-command-auto-approval"
+                    for edge in ir.relationships
+                ),
+                "setting_edges": sum(
+                    edge.source_kind == "tool"
+                    and edge.relation == "configured-by"
+                    and edge.target_kind == "control-setting"
+                    and edge.attributes.get("analysis")
+                    == "typescript-roo-command-auto-approval"
+                    for edge in ir.relationships
+                ),
+                "control_edges": sum(
+                    edge.source_kind == "tool"
+                    and edge.relation == "governed-by"
+                    and edge.target_kind == "control"
+                    and edge.attributes.get("analysis")
+                    == "typescript-roo-command-auto-approval"
+                    for edge in ir.relationships
+                ),
+                "execution_findings": sum(
+                    finding.rule_id == "AV-EXEC001"
+                    and finding.analysis.get("tool") == "Roo ExecuteCommandTool"
+                    for finding in ir.findings
+                ),
+                "approval_findings": sum(
+                    finding.rule_id == "AV-APPROVAL007"
+                    and finding.analysis.get("tool") == "Roo ExecuteCommandTool"
+                    for finding in ir.findings
+                ),
+            },
             "typescript_openai_mcp_approval_default": {
                 "servers": len(typescript_openai_mcp_approval_servers),
                 "writable_servers": sum(
@@ -2801,7 +2868,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 117,
+        "schema_version": 118,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -3353,6 +3420,31 @@ def main() -> int:
             | {
                 "repositories": sum(
                     result["python_trae_agent_default_tools"]["tools"] > 0
+                    for result in successful
+                )
+            },
+            "typescript_roo_command_auto_approval": {
+                name: sum(
+                    result["typescript_roo_command_auto_approval"][name]
+                    for result in successful
+                )
+                for name in (
+                    "agents",
+                    "tools",
+                    "capabilities",
+                    "controls",
+                    "settings",
+                    "agent_tool_edges",
+                    "capability_edges",
+                    "setting_edges",
+                    "control_edges",
+                    "execution_findings",
+                    "approval_findings",
+                )
+            }
+            | {
+                "repositories": sum(
+                    result["typescript_roo_command_auto_approval"]["tools"] > 0
                     for result in successful
                 )
             },

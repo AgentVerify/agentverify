@@ -4418,6 +4418,99 @@ def test_trae_agent_default_tools_require_the_exact_cross_file_composition(
     )
 
 
+def test_roo_command_auto_approval_requires_the_exact_cross_file_composition(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/typescript_roo_command_approval"
+    ir = scan_repository(root / "positive")
+
+    findings = [
+        (finding.rule_id, finding.evidence.path, finding.evidence.line, finding.ir_path)
+        for finding in ir.findings
+        if finding.rule_id in {"AV-APPROVAL007", "AV-EXEC001"}
+    ]
+    assert findings == [
+        (
+            "AV-APPROVAL007",
+            "src/core/auto-approval/commands.ts",
+            8,
+            (
+                "agent:Roo Code native tool runtime",
+                "tool:Roo ExecuteCommandTool",
+                "control:command-allowlist",
+            ),
+        ),
+        (
+            "AV-EXEC001",
+            "src/core/tools/ExecuteCommandTool.ts",
+            18,
+            (
+                "agent:Roo Code native tool runtime",
+                "tool:Roo ExecuteCommandTool",
+                "capability:shell-execution",
+            ),
+        ),
+    ]
+    specialized = [
+        component
+        for component in ir.components
+        if component.attributes.get("analysis")
+        == "typescript-roo-command-auto-approval"
+    ]
+    assert {(component.kind, component.name) for component in specialized} == {
+        ("agent", "Roo Code native tool runtime"),
+        ("tool", "Roo ExecuteCommandTool"),
+        ("capability", "shell-execution"),
+        ("control", "command-allowlist"),
+        ("control-setting", "command-auto-approval"),
+    }
+    control = next(component for component in specialized if component.kind == "control")
+    setting = next(
+        component for component in specialized if component.kind == "control-setting"
+    )
+    assert control.attributes["match_semantics"] == "raw-string-prefix"
+    assert control.attributes["token_boundary"] is False
+    assert control.attributes["dangerous_substitution_guard"] is True
+    assert setting.attributes["enabled"] is False
+    assert sum(
+        edge.attributes.get("analysis")
+        == "typescript-roo-command-auto-approval"
+        for edge in ir.relationships
+    ) == 4
+    assert any(
+        component.kind == "framework" and component.name == "Roo Code"
+        for component in ir.components
+    )
+
+    near = scan_repository(root / "near")
+    assert not any(
+        component.name == "Roo Code"
+        or component.attributes.get("analysis")
+        == "typescript-roo-command-auto-approval"
+        for component in near.components
+    )
+
+    bounded = tmp_path / "bounded"
+    shutil.copytree(root / "positive", bounded)
+    commands_path = bounded / "src/core/auto-approval/commands.ts"
+    commands_path.write_text(
+        commands_path.read_text(encoding="utf-8").replace(
+            'trimmedCommand.startsWith(lowerPrefix)',
+            'trimmedCommand === lowerPrefix || trimmedCommand.startsWith(`${lowerPrefix} `)',
+        ),
+        encoding="utf-8",
+    )
+    bounded_ir = scan_repository(bounded)
+    assert not any(
+        component.attributes.get("analysis")
+        == "typescript-roo-command-auto-approval"
+        for component in bounded_ir.components
+    )
+    assert not any(
+        finding.rule_id == "AV-APPROVAL007" for finding in bounded_ir.findings
+    )
+
+
 def test_semantic_kernel_mcp_sampling_auto_approval_resolves_server_model_authority(
     tmp_path: Path,
 ) -> None:
