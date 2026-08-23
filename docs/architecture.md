@@ -775,6 +775,18 @@ the exact raw `trimmedCommand.startsWith(lowerPrefix)` allowlist match. The resu
 the default-prompt setting, command-allowlist control, agent/tool/capability path, and the missing
 token boundary without flattening the surrounding safeguards. A bounded matcher or any incomplete,
 duplicate, or near-package source role withholds the composition.
+Schema v119 adds a separate 15-source TypeScript composition for Letta Code's default client tools.
+It requires `Bash` and `Write` in the Anthropic default list, exact definition-to-implementation
+bindings, declared approval requirements, the default `unrestricted` permission mode, settings/CLI
+deny and always-ask checks before the mode override, classification through the WebSocket suggestion wrapper,
+auto-allowed mapping to approved decisions, and approved execution through the tool manager. Bash
+must reach an explicit `zsh`/`bash -c` launcher and then `child_process.spawn(..., shell: false)`;
+Write must carry required `file_path` input through expansion to `writeUtf8Text`. The graph models
+the permission default and the opt-in `LETTA_FS_SANDBOX` shell boundary separately, retaining
+workspace and cross-agent guards as available controls. This is not a claim that controls are
+absent: it proves that ordinary default actions do not prompt, the shell isolation gate is off by
+default, and no general default workspace-root boundary dominates Write. Any missing or duplicate
+role, a standard default, or a lookalike client package withholds the composition.
 Import-proven `CodeInterpreterTool` instances similarly expose that their SDK constructor has no
 approval hook, but they carry `execution_environment: hosted-sandbox` and
 `sandbox_policy: sdk-hosted`. Literal auto-container selection is preserved as configuration

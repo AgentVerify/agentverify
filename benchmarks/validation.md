@@ -13,6 +13,7 @@ Validation date: 2026-08-23. Repositories are partial checkouts pinned by
 | SWE-agent/SWE-agent | `3ea751c0` | 102 | 1 | `tools/windowed/lib/flake8_utils.py:143` |
 | cline/cline | `80b3b034` | 187 | 1 | `apps/examples/cli-agent/src/index.ts:19` |
 | RooCodeInc/Roo-Code | `b867ec91` | 209 | 1 | `src/core/tools/ExecuteCommandTool.ts:372` |
+| letta-ai/letta-code | `db60f05f` | 231 | 1 | `src/tools/impl/bash.ts:507` |
 
 These are pattern detections, not claims that each application is exploitable. Caller provenance,
 input constraints, containment, and approval policy determine exploitability. The rule reports the
@@ -24,6 +25,11 @@ Docker executor is retained as available isolation but does not govern the defau
 Schema v118 adds Roo Code's exact native-model composition: the registered `execute_command` schema
 reaches `ExecuteCommandTool`, its canonical model command crosses the Task approval callback, and the
 approved path reaches `terminal.runCommand`. The approval state is modeled separately below.
+Schema v119 adds Letta Code's exact default-tool composition: `Bash` is selected by the Anthropic
+default list, bound to its implementation, classified under the default `unrestricted` mode, mapped
+to an approved WebSocket decision, and executed through an explicit `zsh`/`bash -c` launcher before
+`child_process.spawn(..., shell: false)`. Optional workspace/kernel isolation remains a separate
+control setting rather than being credited to the default path.
 
 ## Regression cases
 
@@ -48,6 +54,9 @@ approved path reaches `terminal.runCommand`. The approval state is modeled separ
 - `cases/typescript_roo_command_approval`: an exact eight-source Roo Code composition resolves the
   native command tool, approval state, allowlist policy, and terminal sink; near packages, incomplete
   chains, and token-boundary matching withhold the graph or specialized review.
+- `cases/typescript_letta_default_tools`: an exact 15-source Letta Code composition resolves default
+  Bash and Write tools, permission-mode and isolation settings, settings/CLI deny and always-ask precedence,
+  and concrete execution sinks; a lookalike client and standard permission default stay negative.
 - `cases/python_semantic_kernel_mcp_sampling`: exact Agent/plugin binding distinguishes explicit
   sampling auto-approval from default/explicit denial, callback, dynamic, and disconnected states.
 - `cases/mcp_sampling_consent`: exact Python and TypeScript MCP sampling handlers distinguish
@@ -148,8 +157,8 @@ approved path reaches `terminal.runCommand`. The approval state is modeled separ
 ## Full-corpus engine benchmark
 
 The 2026-08-23 default scan covered 70 source-bearing repositories plus one docs-only upstream
-snapshot. It parsed 10,773 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,356 relationships, and completed in 365.7958 seconds on the development machine. Three parse
+snapshot. It parsed 10,785 selected Python/TypeScript/JavaScript files plus 155 configuration files,
+resolved 2,364 relationships, and completed in 366.6501 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -157,11 +166,11 @@ so the benchmark records zero suppressed findings.
 The locked collector prioritizes manifests, production SSRF/URL-safety sources, and then general
 security/agent/tool/MCP sources within the 220-file cap. It adds at most 20 local source files:
 versioned audited evidence hints plus Python imports reached from MCP forwarding or source-proven
-URL-security call sites, all charged against the same cap. This refresh materialized 178 dependency files across 22
+URL-security call sites, all charged against the dependency cap. This refresh materialized 190 dependency files across 23
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v118 carries both the 178-file total and the
-22-repository coverage.
+dependency count per repository; engine schema v119 carries both the 190-file total and the
+23-repository coverage.
 
 Engine benchmark schema v96 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
@@ -469,9 +478,9 @@ one address-filtering control with configured allowlist and environment-proxy re
 Composio edges separately count configured-route pinning residuals, one edge-runtime fail-closed path,
 and three edge-runtime unguarded fallbacks.
 
-The benchmark now also measures identity coverage: 10,050 component observations carry
-module-qualified IDs. Of 4,712 relationship endpoints, all 3,907 identified symbol endpoints resolve
-to an observed component (3,587 Python and 320 TypeScript). The current schema records 379
+The benchmark now also measures identity coverage: 10,055 component observations carry
+module-qualified IDs. Of 4,728 relationship endpoints, all 3,921 identified symbol endpoints resolve
+to an observed component (3,587 Python and 334 TypeScript). The current schema records 379
 `lexical-single-definition` targets, 20 exact same-block dominating definitions, 25 contextual
 absolute-import targets, and three exact same-class helper-return edges to two Agent source
 definitions. Fourteen production CrewAI delegations resolve through an exact contextual import,
@@ -523,7 +532,7 @@ shadowing remain unresolved. Sixteen IR labels cover the local export/import bou
 forms, and all seven pinned Google ADK edges; one rule label proves cross-file AV-FS001 reachability.
 
 Schema-v86 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
-resolves 3,899 endpoints by symbol ID, 696 by exact evidence location, and 21 by a unique display
+resolves 3,913 endpoints by symbol ID, 698 by exact evidence location, and 21 by a unique display
 name; 38 remain ambiguous and 58 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
@@ -721,7 +730,7 @@ not change the two-site corpus finding count. Three local positives and two exac
 negatives extend the rule matrix; 11 positive and four negative IR labels independently pin the
 asset, capability, and relationship behavior.
 
-The full benchmark reports two sites, both in the pinned SDK's
+The two original sites remain in the pinned SDK's
 [local shell skill example](https://github.com/openai/openai-agents-python/blob/17ba331bb0ad1622a4ff4ecdc914c77118075dad/examples/tools/local_shell_skill.py#L29).
 The paired real negative is the
 [HITL shell example](https://github.com/openai/openai-agents-python/blob/17ba331bb0ad1622a4ff4ecdc914c77118075dad/examples/tools/shell_human_in_the_loop.py#L117),
@@ -732,6 +741,13 @@ Schema v117 adds one Trae Agent site. The proof requires the literal `TraeAgentC
 registry binding, `TraeAgent → BaseAgent` construction, direct `ToolExecutor` dispatch, and
 default-local executor selection. The executor class is rejected if an approval, confirmation, or
 HITL branch appears. The rule now has eight positive and nine negative exact labels.
+
+Schema v119 adds one Letta Code site. The 15-source proof requires the default Bash registration,
+declared approval requirement, `unrestricted` default, settings/CLI deny and always-ask precedence before the mode
+override, classifier and WebSocket approved-decision mapping, approved batch execution, and the
+explicit local shell sink. Ordinary calls are therefore allowed without a prompt, but explicit deny,
+always-ask, and `AskUserQuestion` interactivity remain real controls. The full benchmark now reports
+four sites across three repositories, and the rule matrix reaches 10 TP, 11 TN, 0 FP, and 0 FN.
 
 ## AV-APPROVAL003 — environment-backed approval callback reaches a privileged tool
 
@@ -901,7 +917,7 @@ Two default-scope clients qualify: the Microsoft tutorial and FastMCP CLI both a
 do not show the target URL. The TypeScript SDK host is the negative control: it displays the full URL,
 rejects unsafe non-HTTPS/non-loopback destinations, and asks before proceeding. The rule matrix is 4
 TP, 3 TN, 0 FP, and 0 FN; seven additional positive IR labels pin full versus missing disclosure.
-All 684 cross-rule labels pass (310 positives and 374 negatives).
+All 696 cross-rule labels pass (316 positives and 380 negatives).
 
 During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
 to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
@@ -914,7 +930,7 @@ Expanding the truth set exposed two additional false-positive families. Literal 
 were incorrectly classified as dynamic; resolving complete string literals removed five corpus
 findings while preserving interpolated templates. Broad approval-name matching confused warning-state
 and version-check flags with human approval; requiring approval-specific names removed six review
-candidates. Corpus totals are now 23 `AV-EXEC001` findings, 14 `AV-APPROVAL001` reviews, one
+candidates. Corpus totals are now 24 `AV-EXEC001` findings, 14 `AV-APPROVAL001` reviews, one
 `AV-APPROVAL007` raw-prefix review, one specialized `AV-MCP004` review, three generic `AV-MCP005`
 sampling-consent reviews, and three
 `AV-MCP006` elicitation-consent reviews, plus two `AV-MCP007` full-URL-disclosure reviews.
@@ -1040,7 +1056,7 @@ through a controlled dependency-review process.
 ## AV-FS001 — dynamic writable tool path
 
 The rule requires a writable tool-input-derived path inside a resolved tool; ordinary application
-writes and fixed/configured tool paths do not trigger it. The full benchmark reports 38 default-scope sites across ten
+writes and fixed/configured tool paths do not trigger it. The full benchmark reports 39 default-scope sites across 11
 repositories. Four newly reachable sites come from immutable module-level callables passed literally
 to Marvin Agents: writes in `examples/deepseek_chat.py:74`, `examples/hello_agent.py:7`, and
 `examples/provider_specific/aimlapi/run_agent.py:30`, plus the delete in
@@ -1052,6 +1068,10 @@ Trae Agent contributes one exact default-tool review: `TextEditorTool` requires 
 but its validator checks only absoluteness, existence, and file/directory state before mutation. It
 does not resolve or compare the path with the configured working directory, so absolute paths outside
 the workspace remain reachable on the default local executor.
+Letta Code contributes one exact default Write-tool review. Its required `file_path` is expanded and
+passed to `writeUtf8Text`; the pinned implementation retains cross-agent and requested-workspace
+guards, but the default graph proves no general workspace-root boundary. Those compensating controls
+remain explicit and the review does not claim arbitrary writes bypass every configured sandbox.
 New TypeScript registration edges expose Mastra's
 [`writeFile` tool adapter](https://github.com/mastra-ai/mastra/blob/1da5fb00e141b78c2148b21ee085ec24112cf2a5/packages/agent-builder/src/defaults.ts#L457-L475)
 and the MCP filesystem server's
@@ -1393,14 +1413,14 @@ and surfacing failed writes through metrics or alerts.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 684 exact labels across all 21 enabled rules: 310 positives and 374
+`benchmarks/truthset.json` contains 696 exact labels across all 21 enabled rules: 316 positives and 380
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
 Compose/Kubernetes/Docker SDK settings, host credential bind near misses, and exact/prompt-only MCP
-package launchers. All 684 currently pass;
+package launchers. All 696 currently pass;
 each rule's seed precision and recall are 1.0. Negative labels must retain either an observed Agent IR
 component anchor or verified source text at the exact pinned line, preventing a missing or drifting
 location from passing silently.
@@ -1530,13 +1550,15 @@ built-in tools, analyzer and confirmation controls, exact Agent reachability, sh
 ambiguity, and rebound or near-package negatives. Twenty-four Trae default-tool labels add 22 exact
 Agent/tool/capability/setting-edge positives plus two near-package negatives. Twenty Roo command-
 approval labels add 18 exact composition positives plus two near-package or token-boundary negatives.
+Thirty-two Letta default-tool labels add 30 exact Agent/tool/capability/setting-edge positives plus
+near-package and standard-default negatives.
 Three path-segment-sanitizer labels pin the exact local and Qwen
 SHA-256 edges plus a lookalike negative.
 Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,319 IR labels pass (937 positives and 382 negatives):
+negatives. All 1,351 IR labels pass (967 positives and 384 negatives):
 321 component-taxonomy positives/128 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
@@ -1553,7 +1575,8 @@ direct-callable positives/two negatives, 12
 function-tool-wrapper positives/one negative, three
 TypeScript graph
 positives/one negative, eight registration positives/one negative, five helper-summary positives/one
-negative, 18 Roo command-approval positives/two negatives, 11 path-boundary positives/nine negatives,
+negative, 18 Roo command-approval positives/two negatives, 30 Letta default-tool positives/two
+negatives, 11 path-boundary positives/nine negatives,
 four path-helper positives/seven negatives,
 six path-prefix positives/two negatives,
 12 filesystem-mutation positives/seven

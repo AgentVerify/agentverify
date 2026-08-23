@@ -32,8 +32,8 @@ filesystem mutations in selected files: 179 creates, 191 deletes, 46 copies, and
 inventory includes 20 `Path.rename`/`Path.replace` calls proven through explicit constructors or
 immutable Path-derived bindings, including ChatDev's
 [`source_path.rename(target_path)`](https://github.com/OpenBMB/ChatDev/blob/4fb2db0ea90375ce1059f44fe03ffbd191a7a169/server/services/workflow_storage.py#L137).
-Exact tool reachability narrows this inventory to 36 filesystem reviews across ten repositories:
-32 generic AV-FS001 sites across nine repositories and four specialized AV-FS002 sites in CrewAI
+Exact tool reachability narrows this inventory to 43 filesystem reviews across 12 repositories:
+39 generic AV-FS001 sites across 11 repositories and four specialized AV-FS002 sites in CrewAI
 Examples. Literal role proof newly exposes four Marvin dynamic write/delete sinks whose callable
 definitions are immutable module globals referenced from a nested Agent configuration. Other newly exposed cases include ArcadeAI's
 [`os.replace`/`shutil.move` destination branches](https://github.com/ArcadeAI/arcade-ai/blob/597debaa1593b54172061ce36a414cc29aa8fc6a/examples/mcp_servers/local_filesystem/src/local_filesystem/tools.py#L287-L301)
@@ -389,14 +389,25 @@ it does not require the next character to be a token boundary. Thus an allowed p
 parsing, denylist precedence, dangerous-substitution rejection, and the default prompt state remain
 real controls; AV-APPROVAL007 isolates only the weak match semantics.
 
+Schema v119 resolves Letta Code's default TypeScript Bash and Write path. The Anthropic default tool
+list binds both implementations, and the default `unrestricted` permission mode maps ordinary
+approval requests to allow decisions before the WebSocket listener executes an approved batch.
+Settings/CLI deny and always-ask rules still precede that override, and `AskUserQuestion` remains
+interactive. Bash reaches an explicit `zsh`/`bash -c` launcher and then `child_process.spawn`;
+Write expands the required model `file_path` before `writeUtf8Text`. The shell sandbox remains
+opt-in through `LETTA_FS_SANDBOX`. Cross-agent and requested-workspace guards are recorded, but the
+default graph proves neither general shell isolation nor a general workspace-root boundary for
+Write. The exact chain adds one each of AV-EXEC001, AV-APPROVAL002, and AV-FS001 without claiming
+that Letta lacks compensating controls.
+
 ## 4. Provider identity is a governance dependency
 
 OpenAI signals appear in 51 repositories, Anthropic in 37, Google in 28, Azure OpenAI in 18, and AWS
 Bedrock in 14. Forty-four repositories contain two or more provider signals. An AI bill of
 materials should report providers and model configuration even when no security issue is present.
 The stricter engine promotes a subset only when selected source proves an exact SDK
-import, literal service selection, or recognized model prefix: OpenAI appears in 42 repositories,
-Google and Anthropic in 18 each, Azure OpenAI in 11, AWS Bedrock and Groq in six, Ollama in five,
+import, literal service selection, or recognized model prefix: OpenAI appears in 43 repositories,
+Anthropic in 25, Google in 20, Azure OpenAI in 12, Groq in seven, AWS Bedrock in six, Ollama in five,
 and Mistral and Cohere in three each. Direct SDK evidence alone kept provider presence at 48 because
 each added SDK family occurred alongside another recognized provider; schema v75's AgentScope public
 Ollama wrapper raises the total to 49. The difference from the research-wide lexical census is
@@ -635,7 +646,7 @@ created. Exact `WebSearchTool`, `FileSearchTool`, and `ImageGenerationTool` impo
 provider-hosted assets and capability edges across OpenAI, AgentOps, and Traceloop. Seven occur in
 production and eight resolve directly from Agents. Hosted web search retains SDK-default external
 access without becoming AV-NET001; vector-store scope and image-generation hosting remain explicit
-inventory. The final export resolves 3,899 endpoints by symbol ID, 696
+inventory. The final export resolves 3,913 endpoints by symbol ID, 698
 by exact evidence location, and 21 by unique display name; 38 remain ambiguous
 agent/protocol/control/tool endpoints, and 58 unresolved. Two resumed-state LocalShellTool references
 remain `ambiguous-repeated-binding` targets rather than selecting an occurrence;
@@ -643,7 +654,7 @@ cross-branch, forward, inconsistent/untyped parameters, conditional/transformed 
 external receivers, shadowed factories, lambdas, and reassigned fixture cases stay unresolved. Two apparent CrewAI
 re-export misses were false identities:
 a function parameter and a local assignment shadowed the imported `tool` binding. Scope-isolating
-module and function imports now withhold those IDs, so all 3,907 identified endpoints resolve.
+module and function imports now withhold those IDs, so all 3,921 identified endpoints resolve.
 A governance export that collapses those references
 by name would silently attach controls or risks to the wrong asset.
 

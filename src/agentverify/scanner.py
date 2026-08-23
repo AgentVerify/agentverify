@@ -102,6 +102,7 @@ FRONTEND_IMPORT_SIGNATURES = {
     },
     "typescript": {
         "framework": {
+            "Letta Code": ("@letta-ai/letta-client", "@letta-ai/letta-client/"),
             "Roo Code": ("@roo-code/",),
             "Vercel AI SDK": ("ai", "ai/"),
         },
@@ -27919,6 +27920,451 @@ def add_typescript_roo_command_approval_flow(
     )
 
 
+def add_typescript_letta_default_tool_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve Letta Code's default Bash/Write tools and unrestricted mode."""
+    sources: dict[str, str] = {}
+    for path in paths:
+        if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            sources[relative] = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+
+    def unique_source(markers: tuple[str, ...]) -> tuple[str, str] | None:
+        matches = [
+            (relative, text)
+            for relative, text in sources.items()
+            if all(marker in text for marker in markers)
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    manager_source = unique_source(
+        (
+            "export const ANTHROPIC_DEFAULT_TOOLS",
+            '"Bash",',
+            '"Write",',
+            "baseToolNames = ANTHROPIC_DEFAULT_TOOLS",
+            "const definition = TOOL_DEFINITIONS[name]",
+            "fn: definition.impl,",
+            "const result = await tool.fn(enhancedArgs)",
+        )
+    )
+    definition_source = unique_source(
+        (
+            "Bash: defineTool({",
+            "impl: bash,",
+            "Write: defineTool({",
+            "impl: write,",
+        )
+    )
+    permissions_source = unique_source(
+        (
+            "Bash: { requiresApproval: true }",
+            "Write: { requiresApproval: true }",
+        )
+    )
+    mode_source = unique_source(
+        (
+            "export const DEFAULT_PERMISSION_MODE",
+            '= "unrestricted"',
+            'case "unrestricted":',
+            'return { decision: "allow" }',
+        )
+    )
+    state_source = unique_source(("globalPermissionMode.getMode()",))
+    checker_source = unique_source(
+        (
+            "const workspaceGuardResult = evaluateWorkspaceSandboxGuard(",
+            "const guardResult = evaluateCrossAgentGuard(",
+            "if (permissions.deny) {",
+            "const disallowedTools = cliPermissions.getDisallowedTools()",
+            "if (permissions.alwaysAsk) {",
+            "const effectiveMode = modeState?.mode ?? permissionMode.getMode()",
+            "const modeOverride = permissionMode.checkModeOverride(",
+            "decision: modeOverride.decision,",
+        )
+    )
+    classification_source = unique_source(
+        (
+            'from "@/tools/manager"',
+            "export async function classifyApprovals",
+            "const permission = await checkToolPermission(",
+            'const needsHumanApproval = decision === "ask" || decision === "alwaysAsk"',
+            "autoAllowed.push(entry)",
+        )
+    )
+    suggestion_source = unique_source(
+        (
+            'from "@/cli/helpers/approval-classification"',
+            "export async function classifyApprovalsWithSuggestions(",
+            "return classifyApprovals(approvals, {",
+        )
+    )
+    interactive_source = unique_source(
+        (
+            'const INTERACTIVE_APPROVAL_TOOLS = new Set(["AskUserQuestion"])',
+            "export function isInteractiveApprovalTool",
+        )
+    )
+    turn_source = unique_source(
+        (
+            'from "@/agent/approval-execution"',
+            "classifyApprovalsWithSuggestions",
+            "alwaysRequiresUserInput: isInteractiveApprovalTool",
+            "...autoAllowed.map(",
+            'type: "approve"',
+            "executeApproval",
+        )
+    )
+    execution_source = unique_source(
+        (
+            "@letta-ai/letta-client/resources/agents/messages",
+            'if (decision.type === "approve")',
+            "const toolResult = await executeTool(",
+            "export async function executeApprovalBatch(",
+        )
+    )
+    bash_source = unique_source(
+        (
+            "export async function spawnCommand(",
+            'const innerLauncher = [executable, "-c", commandToRun]',
+            "const sandboxed = applyShellSandbox(",
+            "return spawnWithLauncher(",
+            "export async function bash(",
+            "spawnCommand(command, {",
+        )
+    )
+    runner_source = unique_source(
+        (
+            'from "node:child_process"',
+            "spawn(executable, args, {",
+            "shell: false",
+            "export async function spawnWithLauncher(",
+        )
+    )
+    sandbox_source = unique_source(
+        (
+            "OFF by default; set `LETTA_FS_SANDBOX=1` to opt in",
+            "export function applyShellSandbox(",
+            "const ctx = resolveShellSandboxContext(",
+            "if (!ctx) return unchanged",
+        )
+    )
+    write_source = unique_source(
+        (
+            "export async function write(",
+            '["file_path", "content"]',
+            "const { file_path, content } = args",
+            "const resolvedPath = expandFilePath(",
+            "await fs.mkdir(dir, { recursive: true })",
+            "await writeUtf8Text(resolvedPath, content)",
+        )
+    )
+    selected = (
+        manager_source,
+        definition_source,
+        permissions_source,
+        mode_source,
+        state_source,
+        checker_source,
+        classification_source,
+        suggestion_source,
+        interactive_source,
+        turn_source,
+        execution_source,
+        bash_source,
+        runner_source,
+        sandbox_source,
+        write_source,
+    )
+    if any(source is None for source in selected):
+        return
+    (
+        (manager_path, manager_text),
+        (_definition_path, _definition_text),
+        (_permissions_path, _permissions_text),
+        (mode_path, mode_text),
+        (_state_path, _state_text),
+        (_checker_path, checker_text),
+        (_classification_path, _classification_text),
+        (_suggestion_path, _suggestion_text),
+        (_interactive_path, _interactive_text),
+        (turn_path, turn_text),
+        (execution_path, execution_text),
+        (bash_path, bash_text),
+        (_runner_path, _runner_text),
+        (sandbox_path, sandbox_text),
+        (write_path, write_text),
+    ) = selected  # type: ignore[misc]
+
+    deny_offset = checker_text.find("if (permissions.deny) {")
+    cli_deny_offset = checker_text.find(
+        "const disallowedTools = cliPermissions.getDisallowedTools()"
+    )
+    always_ask_offset = checker_text.find("if (permissions.alwaysAsk) {")
+    workspace_guard_offset = checker_text.find(
+        "const workspaceGuardResult = evaluateWorkspaceSandboxGuard("
+    )
+    cross_agent_guard_offset = checker_text.find(
+        "const guardResult = evaluateCrossAgentGuard("
+    )
+    override_offset = checker_text.find(
+        "const modeOverride = permissionMode.checkModeOverride("
+    )
+    if not all(
+        0 <= offset < override_offset
+        for offset in (
+            workspace_guard_offset,
+            cross_agent_guard_offset,
+            deny_offset,
+            cli_deny_offset,
+            always_ask_offset,
+        )
+    ):
+        return
+
+    offsets = {
+        "agent": manager_text.find("baseToolNames = ANTHROPIC_DEFAULT_TOOLS"),
+        "approval": mode_text.find("export const DEFAULT_PERMISSION_MODE"),
+        "turn": turn_text.find("...autoAllowed.map("),
+        "execution": execution_text.find('if (decision.type === "approve")'),
+        "bash": bash_text.find("spawnCommand(command, {"),
+        "isolation": sandbox_text.find(
+            "OFF by default; set `LETTA_FS_SANDBOX=1` to opt in"
+        ),
+        "write": write_text.find("await writeUtf8Text(resolvedPath, content)"),
+    }
+    if min(offsets.values()) < 0:
+        return
+
+    def evidence(path: str, text: str, offset: int) -> Evidence:
+        line = line_at(text, offset)
+        return Evidence(path, line, excerpt(text.splitlines(), line))
+
+    agent_evidence = evidence(manager_path, manager_text, offsets["agent"])
+    approval_evidence = evidence(mode_path, mode_text, offsets["approval"])
+    turn_evidence = evidence(turn_path, turn_text, offsets["turn"])
+    execution_evidence = evidence(
+        execution_path, execution_text, offsets["execution"]
+    )
+    isolation_evidence = evidence(
+        sandbox_path, sandbox_text, offsets["isolation"]
+    )
+
+    analysis = "typescript-letta-default-tools"
+    agent_name = "Letta Code default client toolchain"
+    agent_id = source_symbol("ts", manager_path, "agent", "LettaCodeDefaultTools")
+    approval_setting_id = source_symbol(
+        "ts", mode_path, "control-setting", "agent-action-confirmation"
+    )
+    isolation_setting_id = source_symbol(
+        "ts", sandbox_path, "control-setting", "tool-execution-isolation"
+    )
+    shared = {
+        "analysis": analysis,
+        "approval_policy": "disabled-default",
+        "approval_source": "default-unrestricted-permission-mode",
+        "builtin_tool": True,
+        "execution_environment": "local",
+        "framework": "Letta Code",
+        "scope": "production",
+    }
+    ir.add_component(
+        Component(
+            "agent",
+            agent_name,
+            agent_evidence,
+            {
+                "analysis": analysis,
+                "default_tools_source_line": agent_evidence.line,
+                "default_tools_source_path": manager_path,
+                "framework": "Letta Code",
+                "scope": "production",
+            },
+            agent_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "control-setting",
+            "agent-action-confirmation",
+            approval_evidence,
+            {
+                "analysis": analysis,
+                "declared_requires_approval": True,
+                "enabled": False,
+                "explicit_deny_precedence": True,
+                "cli_deny_precedence": True,
+                "always_ask_precedence": True,
+                "workspace_guard_precedence": True,
+                "cross_agent_guard_precedence": True,
+                "framework": "Letta Code",
+                "policy": "default-unrestricted",
+                "policy_source": "default-unrestricted-permission-mode",
+                "scope": "production",
+            },
+            approval_setting_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "control-setting",
+            "tool-execution-isolation",
+            isolation_evidence,
+            {
+                "analysis": analysis,
+                "available_controls": [
+                    "workspace-sandbox",
+                    "kernel-shell-sandbox",
+                    "cross-agent-memory-guard",
+                ],
+                "enabled": False,
+                "environment_variable": "LETTA_FS_SANDBOX",
+                "framework": "Letta Code",
+                "policy": "opt-in-environment-or-request",
+                "scope": "production",
+            },
+            isolation_setting_id,
+        )
+    )
+
+    tool_specs = (
+        (
+            "Letta Bash tool",
+            "bash",
+            "LettaCode.Bash",
+            bash_path,
+            bash_text,
+            offsets["bash"],
+            "shell-execution",
+            {
+                "agent_controlled_command": True,
+                "api": "node:child_process.spawn-via-explicit-shell-launcher",
+                "dynamic_command": True,
+                "sandbox_boundary_scope": "disabled-default-opt-in",
+                "shell": True,
+            },
+        ),
+        (
+            "Letta Write tool",
+            "write",
+            "LettaCode.Write",
+            write_path,
+            write_text,
+            offsets["write"],
+            "filesystem",
+            {
+                "api": "writeUtf8Text",
+                "dynamic_path": True,
+                "path_boundary_guard": True,
+                "path_boundary_scope": "cross-agent-only-default",
+                "tool_input_path": True,
+                "write_access": True,
+            },
+        ),
+    )
+    for (
+        tool_name,
+        builtin_name,
+        constructor,
+        tool_path,
+        tool_text,
+        tool_offset,
+        capability,
+        capability_specific,
+    ) in tool_specs:
+        tool_evidence = evidence(tool_path, tool_text, tool_offset)
+        tool_id = source_symbol("ts", tool_path, "tool", builtin_name)
+        ir.add_component(
+            Component(
+                "tool",
+                tool_name,
+                tool_evidence,
+                {
+                    **shared,
+                    "builtin_tool_name": builtin_name,
+                    "constructor": constructor,
+                    "default_registration": True,
+                },
+                tool_id,
+            )
+        )
+        ir.add_component(
+            Component(
+                "capability",
+                capability,
+                tool_evidence,
+                {**shared, **capability_specific},
+            )
+        )
+        ir.add_relationship(
+            Relationship(
+                "agent",
+                agent_name,
+                "uses",
+                "tool",
+                tool_name,
+                agent_evidence,
+                {
+                    "analysis": analysis,
+                    "target_identity": "letta-anthropic-default-tool-registry",
+                },
+                source_id=agent_id,
+                target_id=tool_id,
+            )
+        )
+        ir.add_relationship(
+            Relationship(
+                "tool",
+                tool_name,
+                "uses",
+                "capability",
+                capability,
+                tool_evidence,
+                {"analysis": analysis},
+                source_id=tool_id,
+            )
+        )
+        ir.add_relationship(
+            Relationship(
+                "tool",
+                tool_name,
+                "configured-by",
+                "control-setting",
+                "agent-action-confirmation",
+                turn_evidence,
+                {
+                    "analysis": analysis,
+                    "approved_execution_line": execution_evidence.line,
+                    "approved_execution_path": execution_path,
+                },
+                source_id=tool_id,
+                target_id=approval_setting_id,
+            )
+        )
+        ir.add_relationship(
+            Relationship(
+                "tool",
+                tool_name,
+                "configured-by",
+                "control-setting",
+                "tool-execution-isolation",
+                isolation_evidence,
+                {"analysis": analysis},
+                source_id=tool_id,
+                target_id=isolation_setting_id,
+            )
+        )
+
+
 def add_typescript_a2a_card_endpoint_composition(
     ir: RepositoryIR,
     root: Path,
@@ -28477,6 +28923,7 @@ def scan_repository(
     add_typescript_composio_cli_file_upload_flow(ir, root, registry_paths)
     add_typescript_google_adk_openapi_rest_tool_flow(ir, root, registry_paths)
     add_typescript_roo_command_approval_flow(ir, root, registry_paths)
+    add_typescript_letta_default_tool_flow(ir, root, registry_paths)
     add_typescript_a2a_card_endpoint_composition(ir, root, registry_paths)
     add_typescript_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)
     add_typescript_mcp_sampling_handler_consent_flow(ir, root, registry_paths)

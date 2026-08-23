@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-23T02:29:49.805083+00:00",
-  "labels": 1319,
-  "passed": 1319,
+  "generated_at": "2026-08-23T02:54:59.651461+00:00",
+  "labels": 1351,
+  "passed": 1351,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -512,6 +512,14 @@
       "tp": 5,
       "fp": 0,
       "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-LETTA-DEFAULT-TOOLS": {
+      "tp": 30,
+      "fp": 0,
+      "tn": 2,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -12447,6 +12455,294 @@
     {
       "id": "typescript-roo-token-boundary-local-negative",
       "check_id": "IR-TS-ROO-COMMAND-APPROVAL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-agent-local",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-bash-tool-local",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-write-tool-local",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-shell-local",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-filesystem-local",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-approval-setting-local",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-isolation-setting-local",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-agent-bash-edge-local",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-agent-write-edge-local",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-bash-capability-edge-local",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-write-capability-edge-local",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-bash-approval-edge-local",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-write-approval-edge-local",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-bash-isolation-edge-local",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-write-isolation-edge-local",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-agent-real",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-bash-tool-real",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-write-tool-real",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-shell-real",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-filesystem-real",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-approval-setting-real",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-isolation-setting-real",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-agent-bash-edge-real",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-agent-write-edge-real",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-bash-capability-edge-real",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-write-capability-edge-real",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-bash-approval-edge-real",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-write-approval-edge-real",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-bash-isolation-edge-real",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-write-isolation-edge-real",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-near-local-negative",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-letta-standard-default-local-negative",
+      "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
       "expected": false,
       "observed": false,
       "anchor_ok": true,

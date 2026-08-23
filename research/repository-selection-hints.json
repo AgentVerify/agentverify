@@ -99,6 +99,20 @@
       "src/core/assistant-message/presentAssistantMessage.ts",
       "src/core/task/Task.ts"
     ],
+    "letta-ai/letta-code": [
+      "src/cli/helpers/approval-classification.ts",
+      "src/tools/impl/bash.ts",
+      "src/tools/impl/shell-runner.ts",
+      "src/tools/impl/shell-sandbox.ts",
+      "src/tools/impl/write.ts",
+      "src/tools/interactive-policy.ts",
+      "src/tools/manager.ts",
+      "src/tools/permission-mode-state.ts",
+      "src/tools/tool-definitions.ts",
+      "src/tools/tool-permissions.ts",
+      "src/websocket/listener/approval-suggestions.ts",
+      "src/websocket/listener/turn-approval.ts"
+    ],
     "composiohq/composio": [
       "ts/packages/cli/src/services/tool-file-uploads.ts",
       "ts/packages/cli/src/services/tools-executor.ts",

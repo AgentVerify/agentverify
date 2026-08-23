@@ -4511,6 +4511,127 @@ def test_roo_command_auto_approval_requires_the_exact_cross_file_composition(
     )
 
 
+def test_letta_default_tools_require_the_exact_cross_file_composition(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/typescript_letta_default_tools"
+    ir = scan_repository(root / "positive")
+
+    findings = [
+        (finding.rule_id, finding.evidence.path, finding.evidence.line, finding.ir_path)
+        for finding in ir.findings
+        if finding.rule_id in {"AV-APPROVAL002", "AV-EXEC001", "AV-FS001"}
+    ]
+    assert findings == [
+        (
+            "AV-APPROVAL002",
+            "src/tools/impl/bash.ts",
+            19,
+            (
+                "agent:Letta Code default client toolchain",
+                "tool:Letta Bash tool",
+                "capability:shell-execution",
+            ),
+        ),
+        (
+            "AV-EXEC001",
+            "src/tools/impl/bash.ts",
+            19,
+            (
+                "agent:Letta Code default client toolchain",
+                "tool:Letta Bash tool",
+                "capability:shell-execution",
+            ),
+        ),
+        (
+            "AV-FS001",
+            "src/tools/impl/write.ts",
+            11,
+            (
+                "agent:Letta Code default client toolchain",
+                "tool:Letta Write tool",
+                "capability:filesystem",
+            ),
+        ),
+    ]
+    specialized = [
+        component
+        for component in ir.components
+        if component.attributes.get("analysis") == "typescript-letta-default-tools"
+    ]
+    assert {(component.kind, component.name) for component in specialized} == {
+        ("agent", "Letta Code default client toolchain"),
+        ("tool", "Letta Bash tool"),
+        ("tool", "Letta Write tool"),
+        ("capability", "shell-execution"),
+        ("capability", "filesystem"),
+        ("control-setting", "agent-action-confirmation"),
+        ("control-setting", "tool-execution-isolation"),
+    }
+    approval = next(
+        component
+        for component in specialized
+        if component.kind == "control-setting"
+        and component.name == "agent-action-confirmation"
+    )
+    isolation = next(
+        component
+        for component in specialized
+        if component.kind == "control-setting"
+        and component.name == "tool-execution-isolation"
+    )
+    filesystem = next(
+        component
+        for component in specialized
+        if component.kind == "capability" and component.name == "filesystem"
+    )
+    assert approval.attributes["enabled"] is False
+    assert approval.attributes["explicit_deny_precedence"] is True
+    assert approval.attributes["cli_deny_precedence"] is True
+    assert approval.attributes["always_ask_precedence"] is True
+    assert approval.attributes["workspace_guard_precedence"] is True
+    assert approval.attributes["cross_agent_guard_precedence"] is True
+    assert isolation.attributes["environment_variable"] == "LETTA_FS_SANDBOX"
+    assert isolation.attributes["available_controls"] == [
+        "workspace-sandbox",
+        "kernel-shell-sandbox",
+        "cross-agent-memory-guard",
+    ]
+    assert filesystem.attributes["path_boundary_scope"] == "cross-agent-only-default"
+    assert sum(
+        edge.attributes.get("analysis") == "typescript-letta-default-tools"
+        for edge in ir.relationships
+    ) == 8
+    assert any(
+        component.kind == "framework" and component.name == "Letta Code"
+        for component in ir.components
+    )
+
+    near = scan_repository(root / "near")
+    assert not any(
+        component.name == "Letta Code"
+        or component.attributes.get("analysis") == "typescript-letta-default-tools"
+        for component in near.components
+    )
+
+    standard_default = tmp_path / "standard-default"
+    shutil.copytree(root / "positive", standard_default)
+    mode_path = standard_default / "src/permissions/mode.ts"
+    mode_path.write_text(
+        (root / "safe/src/permissions/mode.ts").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    standard_ir = scan_repository(standard_default)
+    assert not any(
+        component.attributes.get("analysis") == "typescript-letta-default-tools"
+        for component in standard_ir.components
+    )
+    assert not any(
+        finding.rule_id in {"AV-APPROVAL002", "AV-EXEC001", "AV-FS001"}
+        for finding in standard_ir.findings
+    )
+
+
 def test_semantic_kernel_mcp_sampling_auto_approval_resolves_server_model_authority(
     tmp_path: Path,
 ) -> None:

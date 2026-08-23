@@ -112,6 +112,12 @@ to 46 repositories. Its eight-source native-command composition contributes one 
 command tool/capability, one default-prompt setting, one weak-prefix allowlist control, and four
 exact relationships. Component taxonomy reaches 449 labels (321 positive, 128 negative); 20 focused
 Roo composition labels add 18 positives plus near-package and token-boundary negatives.
+Schema v119 adds the exact TypeScript `@letta-ai/letta-client` boundary and raises selected
+framework presence to 47 repositories. Its 15-source default-tool proof contributes one Agent, two
+built-in tools, two capabilities, two disabled-default control settings, and eight relationships.
+Thirty-two focused labels add 30 exact component/edge positives plus near-package and
+standard-default negatives. Explicit deny/always-ask precedence and optional workspace,
+cross-agent, and kernel sandbox controls remain recorded rather than treated as absent.
 Next generalize additional selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
@@ -119,7 +125,7 @@ framework-adjacent packages.
 
 Python and TypeScript agent/tool components now carry module-qualified IDs, including Python class
 methods, built-in tools, tool namespaces, and Cline/OpenAI inline factories. The structure-aware
-TypeScript tools-array reader resolves all 81 observed agent-to-tool edges and 14 agent-as-tool
+TypeScript graph resolves all 84 observed agent-to-tool edges and 14 agent-as-tool
 delegations in the pinned sample without treating nested tokens as tools. Repeated constructor and
 decorated-tool bindings now receive occurrence-qualified IDs for exact source edges. Python target
 references are scope-aware for unique and repeated names; repeated targets resolve for a single
@@ -349,6 +355,15 @@ unintended approval. A token-boundary fixture and incomplete/near-package compos
 Next test the same semantic gap in other command-policy implementations without treating every
 documented prefix policy as an exact-command allowlist.
 
+Schema v119 separately resolves Letta Code's default approval and isolation state. The exact default
+list binds model-visible Bash and Write schemas to their implementations; ordinary approvals flow
+through the classifier's `allow` result and WebSocket approved-decision batch into execution because
+the permission default is `unrestricted`. Explicit deny and always-ask rules precede that override,
+and `AskUserQuestion` remains interactive. The shell sandbox is opt-in and the Write sink proves no
+general default workspace-root boundary, though cross-agent and requested-workspace guards remain
+available. Near packages, incomplete chains, and a standard default stay negative. Next cover other
+mode-configurable coding agents without equating a permissive default with an absence of policy.
+
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
 server-controlled prompt/model hint/sampling parameters, model invocation, and response returned to
@@ -473,8 +488,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 684 pinned positive/negative locations, with 1,319 separately
-scored IR component/relationship labels. Schema-v118 engine results and
+The curated regression set has reached 696 pinned positive/negative locations, with 1,351 separately
+scored IR component/relationship labels. Schema-v119 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.
