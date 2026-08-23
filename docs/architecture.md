@@ -795,6 +795,13 @@ critical/high-risk/safe/unknown branches. The command must flow through `-c` int
 therefore distinguishes a selected, non-default plan mode from normal mode and distinguishes the
 preserved critical hard block from discarded high-risk/unknown approval escalation. A fixed
 dynamic-precedence branch or a non-shell argv runner withholds the composition.
+Schema v121 adds a separate six-source Continue MCP composition. It requires the plan wildcard
+allow and normal wildcard ask, absolute mode installation, first-match permission resolution, the
+allow-without-prompt runtime branch, conversion of discovered MCP schemas into model tools with
+`readonly: undefined`, and the `listTools`→`runTool`→`client.callTool` path. The graph models the
+configured server boundary, adapter, invocation capability, selected-mode setting, and missing local
+effect classification with five exact relationships. An ask wildcard, retained read-only
+classification, mediated dispatch, incomplete role, or duplicate role withholds the composition.
 Import-proven `CodeInterpreterTool` instances similarly expose that their SDK constructor has no
 approval hook, but they carry `execution_environment: hosted-sandbox` and
 `sandbox_policy: sdk-hosted`. Literal auto-container selection is preserved as configuration

@@ -1,6 +1,6 @@
 {
-  "schema_version": 120,
-  "generated_at": "2026-08-23T14:25:09.222734+00:00",
+  "schema_version": 121,
+  "generated_at": "2026-08-23T15:06:15.423923+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -16,14 +16,14 @@
     "zero_source_repositories": [
       "daytonaio/daytona"
     ],
-    "files_scanned": 10787,
-    "dependency_files_materialized": 192,
+    "files_scanned": 10788,
+    "dependency_files_materialized": 193,
     "repositories_with_dependency_expansion": 24,
     "config_files_scanned": 155,
-    "relationships": 2368,
-    "symbolized_components": 10059,
-    "identified_symbol_endpoints": 3928,
-    "resolved_symbol_endpoints": 3928,
+    "relationships": 2373,
+    "symbolized_components": 10064,
+    "identified_symbol_endpoints": 3937,
+    "resolved_symbol_endpoints": 3937,
     "unmatched_identified_symbol_endpoints": 0,
     "ambiguous_repeated_binding_targets": 2,
     "resolved_binding_targets_by_basis": {
@@ -40,11 +40,11 @@
       "same-class-helper-return": 3,
       "typed-parameter-callsite-consensus": 1
     },
-    "relationship_endpoints": 4736,
+    "relationship_endpoints": 4746,
     "bom_endpoint_resolutions": {
       "ambiguous": 38,
-      "evidence-location": 699,
-      "symbol-id": 3920,
+      "evidence-location": 700,
+      "symbol-id": 3929,
       "unique-display-name": 21,
       "unresolved": 58
     },
@@ -58,7 +58,7 @@
     },
     "resolved_symbol_endpoints_by_frontend": {
       "py": 3587,
-      "ts": 341
+      "ts": 350
     },
     "python_provider_call_attribution": {
       "calls": 583,
@@ -112,10 +112,10 @@
       "cohere": 0
     },
     "typescript_graph": {
-      "agent_edges": 103,
+      "agent_edges": 104,
       "agent_delegations": 14,
-      "agent_tool_edges": 85,
-      "resolved_agent_tool_edges": 85
+      "agent_tool_edges": 86,
+      "resolved_agent_tool_edges": 86
     },
     "typescript_tool_registrations": {
       "mastra_create_tool": 27,
@@ -420,6 +420,21 @@
       "approval_findings": 1,
       "repositories": 1
     },
+    "typescript_continue_plan_mode_mcp_approval": {
+      "agents": 1,
+      "tools": 1,
+      "capabilities": 1,
+      "servers": 1,
+      "controls": 1,
+      "settings": 1,
+      "agent_tool_edges": 1,
+      "capability_edges": 1,
+      "server_edges": 1,
+      "setting_edges": 1,
+      "control_edges": 1,
+      "approval_findings": 1,
+      "repositories": 1
+    },
     "typescript_letta_default_tools": {
       "agents": 1,
       "tools": 2,
@@ -705,6 +720,7 @@
       "AV-APPROVAL006": 1,
       "AV-APPROVAL007": 1,
       "AV-APPROVAL008": 1,
+      "AV-APPROVAL009": 1,
       "AV-AUDIT001": 1,
       "AV-EXEC001": 25,
       "AV-EXEC002": 51,
@@ -729,6 +745,7 @@
       "AV-APPROVAL006": 1,
       "AV-APPROVAL007": 1,
       "AV-APPROVAL008": 1,
+      "AV-APPROVAL009": 1,
       "AV-AUDIT001": 1,
       "AV-EXEC001": 14,
       "AV-EXEC002": 15,
@@ -757,6 +774,7 @@
         "filesystem": 63,
         "mcp-access": 3,
         "mcp-tool-forwarding": 24,
+        "mcp-tool-invocation": 1,
         "media-generation": 2,
         "model-sampling": 4,
         "network": 58,
@@ -775,6 +793,7 @@
         "mcp-elicitation-consent": 3,
         "mcp-sampling-consent": 2,
         "mcp-sampling-token-budget": 1,
+        "mcp-tool-classification": 1,
         "mcp-tool-filter": 2,
         "network-origin-policy": 2,
         "network-ssrf-policy": 7,
@@ -796,6 +815,7 @@
         "mcp-tool-approval": 2,
         "mcp-tool-confirmation": 1,
         "plan-mode-command-approval": 1,
+        "plan-mode-mcp-approval": 1,
         "tool-execution-isolation": 2
       },
       "framework": {
@@ -968,7 +988,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 383.4148
+    "elapsed_seconds": 367.4741
   },
   "repositories": [
     {
@@ -1342,6 +1362,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -1588,7 +1622,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.281
+      "elapsed_seconds": 5.119
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -1978,6 +2012,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -2235,7 +2283,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.4769
+      "elapsed_seconds": 8.9543
     },
     {
       "repository": "langchain-ai/langchain",
@@ -2608,6 +2656,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -2852,7 +2914,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.7159
+      "elapsed_seconds": 3.5451
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -3229,6 +3291,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -3481,7 +3557,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 13.0837
+      "elapsed_seconds": 12.3362
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -3863,6 +3939,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -4111,7 +4201,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6281
+      "elapsed_seconds": 0.5985
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -4498,6 +4588,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -4759,7 +4863,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 14.6385
+      "elapsed_seconds": 13.8352
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -5151,6 +5255,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -5419,7 +5537,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.8534
+      "elapsed_seconds": 8.4489
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -5806,6 +5924,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -6064,7 +6196,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.989
+      "elapsed_seconds": 0.9395
     },
     {
       "repository": "microsoft/autogen",
@@ -6452,6 +6584,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -6705,7 +6851,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.4258
+      "elapsed_seconds": 2.3245
     },
     {
       "repository": "microsoft/agent-framework",
@@ -7069,6 +7215,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -7313,7 +7473,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0613
+      "elapsed_seconds": 0.0596
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -7702,6 +7862,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -7958,7 +8132,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3788
+      "elapsed_seconds": 0.3594
     },
     {
       "repository": "openai/openai-agents-python",
@@ -8366,6 +8540,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -8631,7 +8819,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 15.4021
+      "elapsed_seconds": 14.3718
     },
     {
       "repository": "openai/openai-agents-js",
@@ -9028,6 +9216,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -9283,7 +9485,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.4298
+      "elapsed_seconds": 2.359
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -9682,6 +9884,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -9939,7 +10155,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 31.3923
+      "elapsed_seconds": 29.4658
     },
     {
       "repository": "google/adk-python",
@@ -10334,6 +10550,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -10592,7 +10822,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.8521
+      "elapsed_seconds": 11.2947
     },
     {
       "repository": "google/adk-js",
@@ -10978,6 +11208,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -11229,7 +11473,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.0668
+      "elapsed_seconds": 5.9372
     },
     {
       "repository": "huggingface/smolagents",
@@ -11613,6 +11857,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -11873,7 +12131,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.591
+      "elapsed_seconds": 3.4196
     },
     {
       "repository": "agno-agi/agno",
@@ -12269,6 +12527,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -12530,7 +12802,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6334
+      "elapsed_seconds": 1.5542
     },
     {
       "repository": "camel-ai/camel",
@@ -12921,6 +13193,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -13183,7 +13469,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.5843
+      "elapsed_seconds": 7.1847
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -13566,6 +13852,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -13816,7 +14116,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6555
+      "elapsed_seconds": 0.5885
     },
     {
       "repository": "run-llama/llama_index",
@@ -14194,6 +14494,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -14438,7 +14752,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.5583
+      "elapsed_seconds": 2.4549
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -14826,6 +15140,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -15088,7 +15416,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.0811
+      "elapsed_seconds": 3.9318
     },
     {
       "repository": "InternLM/lagent",
@@ -15473,6 +15801,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -15730,7 +16072,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9149
+      "elapsed_seconds": 1.8021
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -16113,6 +16455,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -16372,7 +16728,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2963
+      "elapsed_seconds": 3.1344
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -16753,6 +17109,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -17015,7 +17385,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.3599
+      "elapsed_seconds": 4.1482
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -17392,6 +17762,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -17650,7 +18034,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9112
+      "elapsed_seconds": 2.7511
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -18028,6 +18412,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -18282,7 +18680,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.5274
+      "elapsed_seconds": 10.0799
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -18656,6 +19054,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -18909,7 +19321,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4429
+      "elapsed_seconds": 3.3483
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -19284,6 +19696,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -19528,7 +19954,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0707
+      "elapsed_seconds": 1.9963
     },
     {
       "repository": "letta-ai/letta-code",
@@ -19908,6 +20334,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 1,
         "tools": 2,
@@ -20159,7 +20599,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.124
+      "elapsed_seconds": 8.8506
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -20545,6 +20985,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -20803,7 +21257,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0602
+      "elapsed_seconds": 2.9882
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -21194,6 +21648,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -21453,7 +21921,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.8304
+      "elapsed_seconds": 5.5869
     },
     {
       "repository": "mastra-ai/mastra",
@@ -21838,6 +22306,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -22088,7 +22570,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.6645
+      "elapsed_seconds": 4.5257
     },
     {
       "repository": "vercel/ai",
@@ -22468,6 +22950,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -22717,7 +23213,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.9846
+      "elapsed_seconds": 4.8067
     },
     {
       "repository": "cline/cline",
@@ -23102,6 +23598,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -23352,7 +23862,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.9924
+      "elapsed_seconds": 6.8333
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -23741,6 +24251,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -23991,38 +24515,42 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.377
+      "elapsed_seconds": 8.2228
     },
     {
       "repository": "continuedev/continue",
       "category": "coding-agent",
       "status": "ok",
-      "files_scanned": 188,
-      "dependency_files_materialized": 2,
+      "files_scanned": 189,
+      "dependency_files_materialized": 3,
       "config_files_scanned": 0,
       "components": {
-        "agent": 1,
-        "capability": 22,
-        "control": 1,
-        "control-setting": 1,
+        "agent": 2,
+        "capability": 23,
+        "control": 2,
+        "control-setting": 2,
         "framework": 1,
         "mcp": 4,
+        "mcp-server": 1,
         "model": 4,
         "protocol": 18,
-        "tool": 1
+        "tool": 2
       },
       "component_names": {
         "capability": [
           "external-action",
           "filesystem",
+          "mcp-tool-invocation",
           "network",
           "shell-execution"
         ],
         "control": [
+          "mcp-tool-classification",
           "terminal-command-risk-policy"
         ],
         "control-setting": [
-          "plan-mode-command-approval"
+          "plan-mode-command-approval",
+          "plan-mode-mcp-approval"
         ],
         "framework": [
           "Continue CLI"
@@ -24082,22 +24610,22 @@
         "groq": 0,
         "cohere": 0
       },
-      "relationships": 4,
-      "symbolized_components": 4,
-      "identified_symbol_endpoints": 7,
-      "resolved_symbol_endpoints": 7,
+      "relationships": 9,
+      "symbolized_components": 9,
+      "identified_symbol_endpoints": 16,
+      "resolved_symbol_endpoints": 16,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
         "py": 0,
-        "ts": 7
+        "ts": 16
       },
       "typescript_graph": {
-        "agent_edges": 1,
+        "agent_edges": 2,
         "agent_delegations": 0,
-        "agent_tool_edges": 1,
-        "resolved_agent_tool_edges": 1
+        "agent_tool_edges": 2,
+        "resolved_agent_tool_edges": 2
       },
       "typescript_tool_registrations": {
         "mastra_create_tool": 0,
@@ -24375,6 +24903,20 @@
         "execution_findings": 1,
         "approval_findings": 1
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 1,
+        "tools": 1,
+        "capabilities": 1,
+        "servers": 1,
+        "controls": 1,
+        "settings": 1,
+        "agent_tool_edges": 1,
+        "capability_edges": 1,
+        "server_edges": 1,
+        "setting_edges": 1,
+        "control_edges": 1,
+        "approval_findings": 1
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -24614,18 +25156,19 @@
         "typescript": 0
       },
       "bom_endpoint_resolutions": {
-        "evidence-location": 1,
-        "symbol-id": 7
+        "evidence-location": 2,
+        "symbol-id": 16
       },
       "bom_ambiguous_endpoints_by_side_kind": {},
       "findings": {
         "AV-APPROVAL008": 1,
+        "AV-APPROVAL009": 1,
         "AV-EXEC001": 1
       },
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.5944
+      "elapsed_seconds": 4.5071
     },
     {
       "repository": "Aider-AI/aider",
@@ -25000,6 +25543,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -25259,7 +25816,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.9992
+      "elapsed_seconds": 5.7523
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -25629,6 +26186,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -25881,7 +26452,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 2.2184
+      "elapsed_seconds": 2.1061
     },
     {
       "repository": "plandex-ai/plandex",
@@ -26236,6 +26807,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -26480,7 +27065,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0755
+      "elapsed_seconds": 0.0759
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -26850,6 +27435,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -27100,7 +27699,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2605
+      "elapsed_seconds": 3.1
     },
     {
       "repository": "stitionai/devika",
@@ -27482,6 +28081,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -27730,7 +28343,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.806
+      "elapsed_seconds": 0.7887
     },
     {
       "repository": "block/goose",
@@ -28109,6 +28722,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -28363,7 +28990,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 7.7935
+      "elapsed_seconds": 7.6938
     },
     {
       "repository": "bytedance/trae-agent",
@@ -28758,6 +29385,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -29022,7 +29663,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8234
+      "elapsed_seconds": 1.7336
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -29399,6 +30040,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -29649,7 +30304,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.7538
+      "elapsed_seconds": 10.4583
     },
     {
       "repository": "openai/codex",
@@ -30011,6 +30666,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -30261,7 +30930,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6146
+      "elapsed_seconds": 1.5136
     },
     {
       "repository": "browser-use/browser-use",
@@ -30650,6 +31319,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -30912,7 +31595,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.5836
+      "elapsed_seconds": 8.8439
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -31320,6 +32003,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -31582,7 +32279,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 20.5452
+      "elapsed_seconds": 19.5325
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -31963,6 +32660,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -32218,7 +32929,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1254
+      "elapsed_seconds": 2.0525
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -32592,6 +33303,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -32838,7 +33563,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2809
+      "elapsed_seconds": 2.2294
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -33213,6 +33938,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -33467,7 +34206,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3461
+      "elapsed_seconds": 2.3016
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -33850,6 +34589,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -34103,7 +34856,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.8543
+      "elapsed_seconds": 6.6529
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -34494,6 +35247,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -34747,7 +35514,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.4974
+      "elapsed_seconds": 8.3098
     },
     {
       "repository": "github/github-mcp-server",
@@ -35112,6 +35879,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -35356,7 +36137,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0685
+      "elapsed_seconds": 0.0673
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -35720,6 +36501,20 @@
         "setting_edges": 0,
         "control_edges": 0,
         "execution_findings": 0,
+        "approval_findings": 0
+      },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
         "approval_findings": 0
       },
       "typescript_letta_default_tools": {
@@ -36344,6 +37139,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -36596,7 +37405,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.9773
+      "elapsed_seconds": 4.8297
     },
     {
       "repository": "docker/mcp-gateway",
@@ -36962,6 +37771,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -37208,7 +38031,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0581
+      "elapsed_seconds": 0.056
     },
     {
       "repository": "jlowin/fastmcp",
@@ -37589,6 +38412,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -37848,7 +38685,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.5058
+      "elapsed_seconds": 7.1018
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -38203,6 +39040,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -38447,7 +39298,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0457
+      "elapsed_seconds": 0.0454
     },
     {
       "repository": "langflow-ai/langflow",
@@ -38831,6 +39682,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -39084,7 +39949,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.9825
+      "elapsed_seconds": 6.7977
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -39457,6 +40322,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -39709,7 +40588,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.4623
+      "elapsed_seconds": 6.3234
     },
     {
       "repository": "langgenius/dify",
@@ -40081,6 +40960,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -40328,7 +41221,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.6114
+      "elapsed_seconds": 4.4533
     },
     {
       "repository": "n8n-io/n8n",
@@ -40709,6 +41602,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -40961,7 +41868,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.8982
+      "elapsed_seconds": 4.8117
     },
     {
       "repository": "activepieces/activepieces",
@@ -41351,6 +42258,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -41605,7 +42526,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0424
+      "elapsed_seconds": 2.9558
     },
     {
       "repository": "simstudioai/sim",
@@ -41969,6 +42890,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -42213,7 +43148,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.3789
+      "elapsed_seconds": 9.2082
     },
     {
       "repository": "composiohq/composio",
@@ -42606,6 +43541,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -42859,7 +43808,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.7914
+      "elapsed_seconds": 3.7318
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -43245,6 +44194,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -43507,7 +44470,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.6412
+      "elapsed_seconds": 6.4818
     },
     {
       "repository": "e2b-dev/E2B",
@@ -43870,6 +44833,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -44114,7 +45091,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.248
+      "elapsed_seconds": 5.1432
     },
     {
       "repository": "daytonaio/daytona",
@@ -44467,6 +45444,20 @@
         "setting_edges": 0,
         "control_edges": 0,
         "execution_findings": 0,
+        "approval_findings": 0
+      },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
         "approval_findings": 0
       },
       "typescript_letta_default_tools": {
@@ -45100,6 +46091,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -45349,7 +46354,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.8195
+      "elapsed_seconds": 3.6946
     },
     {
       "repository": "traceloop/openllmetry",
@@ -45746,6 +46751,20 @@
         "execution_findings": 0,
         "approval_findings": 0
       },
+      "typescript_continue_plan_mode_mcp_approval": {
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "servers": 0,
+        "controls": 0,
+        "settings": 0,
+        "agent_tool_edges": 0,
+        "capability_edges": 0,
+        "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -45998,7 +47017,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.1733
+      "elapsed_seconds": 5.7599
     }
   ]
 }

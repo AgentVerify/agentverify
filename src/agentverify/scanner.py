@@ -28297,6 +28297,357 @@ def add_typescript_continue_plan_mode_approval_flow(
     )
 
 
+def add_typescript_continue_plan_mode_mcp_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve Continue plan mode's wildcard approval of discovered MCP tools."""
+    sources: dict[str, str] = {}
+    for path in paths:
+        if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            sources[relative] = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+
+    def unique_source(markers: tuple[str, ...]) -> tuple[str, str] | None:
+        matches = [
+            (relative, text)
+            for relative, text in sources.items()
+            if all(marker in text for marker in markers)
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    policy_source = unique_source(
+        (
+            "export const PLAN_MODE_POLICIES",
+            '{ tool: "Edit", permission: "exclude" }',
+            '{ tool: "MultiEdit", permission: "exclude" }',
+            '{ tool: "Write", permission: "exclude" }',
+            '{ tool: "*", permission: "allow" }',
+            '{ tool: "*", permission: "ask" }',
+        )
+    )
+    service_source = unique_source(
+        (
+            "export class ToolPermissionService",
+            'currentMode: "normal"',
+            'case "plan":',
+            "return [...PLAN_MODE_POLICIES]",
+            'this.currentState.currentMode === "plan"',
+            "allPolicies = [...modePolicies]",
+            "switchMode(newMode: PermissionMode)",
+            'if (newMode === "plan" || newMode === "auto")',
+        )
+    )
+    checker_source = unique_source(
+        (
+            "export function checkToolPermission(",
+            "let basePermission",
+            "for (const policy of",
+            "basePermission = policy.permission",
+            "ALL_BUILT_IN_TOOLS.find",
+            "permission: basePermission",
+        )
+    )
+    runtime_source = unique_source(
+        (
+            "export async function checkToolPermissionApproval(",
+            "const permissionCheck = checkToolPermission(toolCall, permissions)",
+            'if (permissionCheck.permission === "allow")',
+            "return { approved: true }",
+            "requestUserPermission(toolCall, callbacks)",
+            "executeToolCall(call,",
+        )
+    )
+    adapter_source = unique_source(
+        (
+            "export async function getAllAvailableTools(",
+            "SERVICE_NAMES.MCP",
+            "mcpState.tools",
+            "convertMcpToolToContinueTool",
+            "readonly: undefined",
+            "isBuiltIn: false",
+            "services.mcp?.runTool(mcpTool.name, args)",
+            "toolCall.tool.run(",
+        )
+    )
+    mcp_source = unique_source(
+        (
+            "export class MCPService",
+            ".listTools()).tools",
+            "public async runTool(",
+            ".tools.find(",
+            ".client.callTool({",
+            "arguments: args",
+        )
+    )
+    selected = (
+        policy_source,
+        service_source,
+        checker_source,
+        runtime_source,
+        adapter_source,
+        mcp_source,
+    )
+    if any(source is None for source in selected):
+        return
+    (
+        (policy_path, policy_text),
+        (service_path, service_text),
+        (_checker_path, checker_text),
+        (runtime_path, runtime_text),
+        (adapter_path, adapter_text),
+        (mcp_path, mcp_text),
+    ) = selected  # type: ignore[misc]
+
+    plan_start = policy_text.find("export const PLAN_MODE_POLICIES")
+    plan_end = policy_text.find("];", plan_start)
+    if plan_start < 0 or plan_end <= plan_start:
+        return
+    plan_block = policy_text[plan_start:plan_end]
+    wildcard_offset = plan_block.find('{ tool: "*", permission: "allow" }')
+    if wildcard_offset < 0:
+        return
+    wildcard_offset += plan_start
+    if re.search(
+        r'getDefaultToolPolicies[\s\S]{0,1800}?tool\s*:\s*["\']\*["\']\s*,'
+        r'\s*permission\s*:\s*["\']ask["\']',
+        policy_text,
+    ) is None:
+        return
+    if re.search(
+        r"for\s*\(\s*const\s+policy\s+of[\s\S]{0,500}?"
+        r"basePermission\s*=\s*policy\.permission\s*;?[\s\S]{0,80}?break\s*;",
+        checker_text,
+    ) is None:
+        return
+    if re.search(
+        r'if\s*\(\s*permissionCheck\.permission\s*===\s*["\']allow["\']\s*\)'
+        r"\s*\{[\s\S]{0,100}?return\s*\{\s*approved\s*:\s*true\s*\}",
+        runtime_text,
+    ) is None:
+        return
+    discovery_offset = mcp_text.find(".listTools()).tools")
+    call_offset = mcp_text.find(".client.callTool({")
+    adapter_offset = adapter_text.find("export function convertMcpToolToContinueTool")
+    readonly_offset = adapter_text.find("readonly: undefined", adapter_offset)
+    run_offset = adapter_text.find("services.mcp?.runTool(mcpTool.name, args)", readonly_offset)
+    execute_offset = adapter_text.find("toolCall.tool.run(", run_offset)
+    if not (
+        0 <= adapter_offset < readonly_offset < run_offset < execute_offset
+        and discovery_offset >= 0
+        and call_offset >= 0
+    ):
+        return
+
+    def evidence(path: str, text: str, offset: int) -> Evidence:
+        line = line_at(text, offset)
+        return Evidence(path, line, excerpt(text.splitlines(), line))
+
+    analysis = "typescript-continue-plan-mode-mcp-approval"
+    framework_evidence = evidence(
+        service_path,
+        service_text,
+        service_text.find("export class ToolPermissionService"),
+    )
+    setting_evidence = evidence(policy_path, policy_text, wildcard_offset)
+    control_evidence = evidence(adapter_path, adapter_text, readonly_offset)
+    tool_evidence = evidence(adapter_path, adapter_text, adapter_offset)
+    capability_evidence = evidence(mcp_path, mcp_text, call_offset)
+    server_evidence = evidence(mcp_path, mcp_text, discovery_offset)
+    agent_evidence = evidence(
+        runtime_path,
+        runtime_text,
+        runtime_text.find("executeToolCall(call,"),
+    )
+    shared = {
+        "analysis": analysis,
+        "framework": "Continue CLI",
+        "scope": "production",
+    }
+    agent_name = "Continue CLI plan-mode MCP runtime"
+    tool_name = "Continue MCP tool adapter"
+    server_name = "Continue configured MCP servers"
+    agent_id = source_symbol("ts", runtime_path, "agent", "ContinueCLIPlanModeMCP")
+    tool_id = source_symbol("ts", adapter_path, "tool", "MCPToolAdapter")
+    server_id = source_symbol("ts", mcp_path, "mcp-server", "ConfiguredMCPServers")
+    setting_id = source_symbol(
+        "ts", policy_path, "control-setting", "plan-mode-mcp-approval"
+    )
+    control_id = source_symbol(
+        "ts", adapter_path, "control", "mcp-tool-classification"
+    )
+    ir.add_component(
+        Component("framework", "Continue CLI", framework_evidence, shared)
+    )
+    ir.add_component(
+        Component(
+            "agent",
+            agent_name,
+            agent_evidence,
+            {
+                **shared,
+                "mode": "plan",
+                "mode_default": False,
+                "mode_selection": "runtime-or-command-line",
+            },
+            agent_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "tool",
+            tool_name,
+            tool_evidence,
+            {
+                **shared,
+                "approval_policy": "selected-mode-wildcard-auto-allow",
+                "builtin_tool": False,
+                "readonly_classification": "unresolved",
+                "tool_schema_source": "mcp-server-discovery",
+            },
+            tool_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "capability",
+            "mcp-tool-invocation",
+            capability_evidence,
+            {
+                **shared,
+                "agent_controlled_arguments": True,
+                "api": "mcp-client.callTool",
+                "execution_environment": "configured-mcp-server",
+                "tool_identity_source": "mcp-server-discovery",
+            },
+        )
+    )
+    ir.add_component(
+        Component(
+            "mcp-server",
+            server_name,
+            server_evidence,
+            {
+                **shared,
+                "configured_by_user_or_assistant": True,
+                "discovery_api": "mcp-client.listTools",
+                "invocation_api": "mcp-client.callTool",
+                "tool_effect_scope": "unclassified",
+            },
+            server_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "control-setting",
+            "plan-mode-mcp-approval",
+            setting_evidence,
+            {
+                **shared,
+                "enabled": True,
+                "mode": "plan",
+                "mode_default": False,
+                "normal_mode_external_tool_permission": "ask",
+                "plan_mode_external_tool_permission": "allow",
+                "policy": "absolute-mode-override",
+                "write_tools_excluded": ["Edit", "MultiEdit", "Write"],
+            },
+            setting_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "control",
+            "mcp-tool-classification",
+            control_evidence,
+            {
+                **shared,
+                "agent_reachable": True,
+                "approval_prompt_on_allow": False,
+                "mode": "plan",
+                "mode_default": False,
+                "normal_mode_external_tool_permission": "ask",
+                "plan_mode_external_tool_permission": "allow",
+                "readonly_metadata": "discarded",
+                "risk_classification": "absent-on-proven-path",
+                "tool_schema_source": "mcp-server-discovery",
+            },
+            control_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "agent",
+            agent_name,
+            "uses",
+            "tool",
+            tool_name,
+            agent_evidence,
+            {"analysis": analysis},
+            source_id=agent_id,
+            target_id=tool_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            tool_name,
+            "uses",
+            "capability",
+            "mcp-tool-invocation",
+            capability_evidence,
+            {"analysis": analysis},
+            source_id=tool_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            tool_name,
+            "invokes",
+            "mcp-server",
+            server_name,
+            capability_evidence,
+            {"analysis": analysis, "policy_effect": "routing-only"},
+            source_id=tool_id,
+            target_id=server_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            tool_name,
+            "configured-by",
+            "control-setting",
+            "plan-mode-mcp-approval",
+            setting_evidence,
+            {"analysis": analysis, "mode_policy_source": service_path},
+            source_id=tool_id,
+            target_id=setting_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            tool_name,
+            "governed-by",
+            "control",
+            "mcp-tool-classification",
+            control_evidence,
+            {"analysis": analysis, "policy_effect": "wildcard-auto-allow"},
+            source_id=tool_id,
+            target_id=control_id,
+        )
+    )
+
+
 def add_typescript_letta_default_tool_flow(
     ir: RepositoryIR,
     root: Path,
@@ -29301,6 +29652,7 @@ def scan_repository(
     add_typescript_google_adk_openapi_rest_tool_flow(ir, root, registry_paths)
     add_typescript_roo_command_approval_flow(ir, root, registry_paths)
     add_typescript_continue_plan_mode_approval_flow(ir, root, registry_paths)
+    add_typescript_continue_plan_mode_mcp_flow(ir, root, registry_paths)
     add_typescript_letta_default_tool_flow(ir, root, registry_paths)
     add_typescript_a2a_card_endpoint_composition(ir, root, registry_paths)
     add_typescript_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)

@@ -125,8 +125,10 @@
     "continuedev/continue": [
       "extensions/cli/src/permissions/defaultPolicies.ts",
       "extensions/cli/src/permissions/permissionChecker.ts",
+      "extensions/cli/src/services/MCPService.ts",
       "extensions/cli/src/services/ToolPermissionService.ts",
       "extensions/cli/src/stream/streamChatResponse.helpers.ts",
+      "extensions/cli/src/tools/index.tsx",
       "extensions/cli/src/tools/runTerminalCommand.ts",
       "packages/terminal-security/src/evaluateTerminalCommandSecurity.ts"
     ],

@@ -194,7 +194,7 @@ def test_cli_lists_enabled_reporting_rules_as_json(capsys) -> None:
     assert [rule["rule_id"] for rule in payload["rules"]] == sorted(
         rule["rule_id"] for rule in payload["rules"]
     )
-    assert len(payload["rules"]) == 22
+    assert len(payload["rules"]) == 23
     assert next(
         rule for rule in payload["rules"] if rule["rule_id"] == "AV-EXEC001"
     ) == {

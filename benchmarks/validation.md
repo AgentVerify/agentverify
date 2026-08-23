@@ -12,7 +12,7 @@ Validation date: 2026-08-23. Repositories are partial checkouts pinned by
 | FoundationAgents/MetaGPT | `11cdf466` | 214 | 1 | `metagpt/repo_parser.py:731` |
 | SWE-agent/SWE-agent | `3ea751c0` | 102 | 1 | `tools/windowed/lib/flake8_utils.py:143` |
 | cline/cline | `80b3b034` | 187 | 1 | `apps/examples/cli-agent/src/index.ts:19` |
-| continuedev/continue | `5522c6f4` | 188 | 1 | `extensions/cli/src/tools/runTerminalCommand.ts:192` |
+| continuedev/continue | `5522c6f4` | 189 | 1 | `extensions/cli/src/tools/runTerminalCommand.ts:192` |
 | RooCodeInc/Roo-Code | `b867ec91` | 209 | 1 | `src/core/tools/ExecuteCommandTool.ts:372` |
 | letta-ai/letta-code | `db60f05f` | 231 | 1 | `src/tools/impl/bash.ts:507` |
 
@@ -162,8 +162,8 @@ tool. The same model command passes through `shell-quote` classification and rea
 ## Full-corpus engine benchmark
 
 The 2026-08-23 default scan covered 70 source-bearing repositories plus one docs-only upstream
-snapshot. It parsed 10,787 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,368 relationships, and completed in 383.4148 seconds on the development machine. Three parse
+snapshot. It parsed 10,788 selected Python/TypeScript/JavaScript files plus 155 configuration files,
+resolved 2,373 relationships, and completed in 367.4741 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -171,10 +171,10 @@ so the benchmark records zero suppressed findings.
 The locked collector prioritizes manifests, production SSRF/URL-safety sources, and then general
 security/agent/tool/MCP sources within the 220-file cap. It adds at most 20 local source files:
 versioned audited evidence hints plus Python imports reached from MCP forwarding or source-proven
-URL-security call sites, all charged against the dependency cap. This refresh materialized 192 dependency files across 24
+URL-security call sites, all charged against the dependency cap. This refresh materialized 193 dependency files across 24
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v120 carries both the 192-file total and the
+dependency count per repository; engine schema v121 carries both the 193-file total and the
 24-repository coverage.
 
 Engine benchmark schema v96 retains stable component-name taxonomies, category presence counts,
@@ -483,9 +483,9 @@ one address-filtering control with configured allowlist and environment-proxy re
 Composio edges separately count configured-route pinning residuals, one edge-runtime fail-closed path,
 and three edge-runtime unguarded fallbacks.
 
-The benchmark now also measures identity coverage: 10,055 component observations carry
-module-qualified IDs. Of 4,728 relationship endpoints, all 3,921 identified symbol endpoints resolve
-to an observed component (3,587 Python and 334 TypeScript). The current schema records 379
+The benchmark now also measures identity coverage: 10,064 component observations carry
+module-qualified IDs. Of 4,746 relationship endpoints, all 3,937 identified symbol endpoints resolve
+to an observed component (3,587 Python and 350 TypeScript). The current schema records 379
 `lexical-single-definition` targets, 20 exact same-block dominating definitions, 25 contextual
 absolute-import targets, and three exact same-class helper-return edges to two Agent source
 definitions. Fourteen production CrewAI delegations resolve through an exact contextual import,
@@ -537,7 +537,7 @@ shadowing remain unresolved. Sixteen IR labels cover the local export/import bou
 forms, and all seven pinned Google ADK edges; one rule label proves cross-file AV-FS001 reachability.
 
 Schema-v86 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
-resolves 3,913 endpoints by symbol ID, 698 by exact evidence location, and 21 by a unique display
+resolves 3,929 endpoints by symbol ID, 700 by exact evidence location, and 21 by a unique display
 name; 38 remain ambiguous and 58 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
@@ -857,6 +857,23 @@ is recorded as a compensating control. The rule matrix is 2 TP, 2 TN, 0 FP, and 
 composition has 20 positive and two negative IR labels. Remediation is to retain a more restrictive
 dynamic result, or replace plan-mode Bash with a parsed read-only command allowlist.
 
+## AV-APPROVAL009 — plan mode wildcard-allows unclassified MCP tools
+
+Schema v121 requires a separate exact Continue CLI composition across six production sources:
+plan/normal wildcard policy, absolute plan-mode installation, first-match permission resolution,
+runtime allow/ask dispatch, discovered-tool adaptation, and MCP discovery/invocation. Normal mode
+remains the default and asks for unknown tools. Selected plan mode excludes the three built-in write
+tools but ends with a wildcard allow for MCP tools.
+
+Every server-discovered schema is made model-visible while the adapter records `readonly: undefined`.
+The allow branch returns approved without invoking the user-permission path, then the adapter reaches
+[`client.callTool`](https://github.com/continuedev/continue/blob/5522c6f44ca0ac3528b37244818fbfa39b5af470/extensions/cli/src/services/MCPService.ts#L184-L198).
+The review does not infer that every MCP tool mutates state; it reports that the host has no locally
+enforced effect classification before auto-execution in the selected read-oriented mode. The rule
+matrix is 2 TP, 2 TN, 0 FP, and 0 FN; the exact composition has 22 positive and two negative IR
+labels. Remediation is to ask for unclassified MCP calls and auto-allow only a locally reviewed
+read-only allowlist.
+
 ## AV-MCP004 — MCP server model sampling is auto-approved
 
 Schema v68 verifies Semantic Kernel's bidirectional MCP composition. The pinned SDK registers its
@@ -939,7 +956,7 @@ Two default-scope clients qualify: the Microsoft tutorial and FastMCP CLI both a
 do not show the target URL. The TypeScript SDK host is the negative control: it displays the full URL,
 rejects unsafe non-HTTPS/non-loopback destinations, and asks before proceeding. The rule matrix is 4
 TP, 3 TN, 0 FP, and 0 FN; seven additional positive IR labels pin full versus missing disclosure.
-All 702 cross-rule labels pass (320 positives and 382 negatives).
+All 706 cross-rule labels pass (322 positives and 384 negatives).
 
 During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
 to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
@@ -953,7 +970,8 @@ were incorrectly classified as dynamic; resolving complete string literals remov
 findings while preserving interpolated templates. Broad approval-name matching confused warning-state
 and version-check flags with human approval; requiring approval-specific names removed six review
 candidates. Corpus totals are now 25 `AV-EXEC001` findings, 14 `AV-APPROVAL001` reviews, one
-`AV-APPROVAL007` raw-prefix review, one `AV-APPROVAL008` plan-mode precedence review, one specialized `AV-MCP004` review, three generic `AV-MCP005`
+`AV-APPROVAL007` raw-prefix review, one `AV-APPROVAL008` plan-mode precedence review, one
+`AV-APPROVAL009` plan-mode MCP-classification review, one specialized `AV-MCP004` review, three generic `AV-MCP005`
 sampling-consent reviews, and three
 `AV-MCP006` elicitation-consent reviews, plus two `AV-MCP007` full-URL-disclosure reviews.
 The dependency closure also exposes CAMEL's production `func_string_to_callable(code)` helper, whose
@@ -1435,14 +1453,14 @@ and surfacing failed writes through metrics or alerts.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 702 exact labels across all 22 enabled rules: 320 positives and 382
+`benchmarks/truthset.json` contains 706 exact labels across all 23 enabled rules: 322 positives and 384
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
 Compose/Kubernetes/Docker SDK settings, host credential bind near misses, and exact/prompt-only MCP
-package launchers. All 702 currently pass;
+package launchers. All 706 currently pass;
 each rule's seed precision and recall are 1.0. Negative labels must retain either an observed Agent IR
 component anchor or verified source text at the exact pinned line, preventing a missing or drifting
 location from passing silently.
@@ -1576,13 +1594,15 @@ Thirty-two Letta default-tool labels add 30 exact Agent/tool/capability/setting-
 near-package and standard-default negatives.
 Twenty-two Continue plan-mode labels add 20 exact framework/Agent/tool/capability/control/edge
 positives plus incomplete-composition and dynamic-ask negatives.
+Twenty-four Continue MCP labels add 22 exact Agent/tool/server/capability/control/edge positives plus
+incomplete-composition negatives.
 Three path-segment-sanitizer labels pin the exact local and Qwen
 SHA-256 edges plus a lookalike negative.
 Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,373 IR labels pass (987 positives and 386 negatives):
+negatives. All 1,397 IR labels pass (1,009 positives and 388 negatives):
 321 component-taxonomy positives/128 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
@@ -1601,6 +1621,7 @@ TypeScript graph
 positives/one negative, eight registration positives/one negative, five helper-summary positives/one
 negative, 18 Roo command-approval positives/two negatives, 30 Letta default-tool positives/two
 negatives, 11 path-boundary positives/nine negatives,
+20 Continue shell-policy positives/two negatives, 22 Continue MCP-policy positives/two negatives,
 four path-helper positives/seven negatives,
 six path-prefix positives/two negatives,
 12 filesystem-mutation positives/seven

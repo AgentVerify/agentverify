@@ -413,6 +413,16 @@ approves high-risk/unknown plan-mode Bash calls before the model command reaches
 with `-c`. AV-APPROVAL008 isolates that risk-escalation collapse: it does not claim plan mode is the
 default or that critical-command blocking is absent.
 
+Schema v121 resolves Continue CLI's MCP path as a distinct trust boundary. The same selected plan
+mode ends with a wildcard allow while normal mode's wildcard is `ask`. The host maps every tool
+returned by [`listTools`](https://github.com/continuedev/continue/blob/5522c6f44ca0ac3528b37244818fbfa39b5af470/extensions/cli/src/services/MCPService.ts#L300-L310)
+into a model-visible adapter whose `readonly` field is explicitly undefined. An allow result bypasses
+the user-permission request; the adapter then dispatches the model's arguments through
+[`client.callTool`](https://github.com/continuedev/continue/blob/5522c6f44ca0ac3528b37244818fbfa39b5af470/extensions/cli/src/services/MCPService.ts#L184-L198).
+AV-APPROVAL009 reports only that selected-mode wildcard path. It does not claim plan mode is the
+default, that unconfigured servers are reachable, or that every MCP tool mutates state; the gap is
+the absence of a locally enforced effect classification before automatic execution.
+
 ## 4. Provider identity is a governance dependency
 
 OpenAI signals appear in 51 repositories, Anthropic in 37, Google in 28, Azure OpenAI in 18, and AWS
@@ -659,7 +669,7 @@ created. Exact `WebSearchTool`, `FileSearchTool`, and `ImageGenerationTool` impo
 provider-hosted assets and capability edges across OpenAI, AgentOps, and Traceloop. Seven occur in
 production and eight resolve directly from Agents. Hosted web search retains SDK-default external
 access without becoming AV-NET001; vector-store scope and image-generation hosting remain explicit
-inventory. The final export resolves 3,913 endpoints by symbol ID, 698
+inventory. The final export resolves 3,929 endpoints by symbol ID, 700
 by exact evidence location, and 21 by unique display name; 38 remain ambiguous
 agent/protocol/control/tool endpoints, and 58 unresolved. Two resumed-state LocalShellTool references
 remain `ambiguous-repeated-binding` targets rather than selecting an occurrence;
@@ -667,7 +677,7 @@ cross-branch, forward, inconsistent/untyped parameters, conditional/transformed 
 external receivers, shadowed factories, lambdas, and reassigned fixture cases stay unresolved. Two apparent CrewAI
 re-export misses were false identities:
 a function parameter and a local assignment shadowed the imported `tool` binding. Scope-isolating
-module and function imports now withhold those IDs, so all 3,921 identified endpoints resolve.
+module and function imports now withhold those IDs, so all 3,937 identified endpoints resolve.
 A governance export that collapses those references
 by name would silently attach controls or risks to the wrong asset.
 

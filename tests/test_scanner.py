@@ -4647,6 +4647,135 @@ def test_continue_plan_mode_approval_requires_the_exact_cross_file_composition(
         )
 
 
+def test_continue_plan_mode_mcp_approval_requires_the_exact_cross_file_composition(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/typescript_continue_plan_mode_approval"
+    ir = scan_repository(root / "positive")
+
+    findings = [
+        (finding.rule_id, finding.evidence.path, finding.evidence.line, finding.ir_path)
+        for finding in ir.findings
+        if finding.rule_id == "AV-APPROVAL009"
+    ]
+    assert findings == [
+        (
+            "AV-APPROVAL009",
+            "extensions/cli/src/tools/index.tsx",
+            11,
+            (
+                "agent:Continue CLI plan-mode MCP runtime",
+                "tool:Continue MCP tool adapter",
+                "control:mcp-tool-classification",
+            ),
+        )
+    ]
+    specialized = [
+        component
+        for component in ir.components
+        if component.attributes.get("analysis")
+        == "typescript-continue-plan-mode-mcp-approval"
+    ]
+    assert {(component.kind, component.name) for component in specialized} == {
+        ("agent", "Continue CLI plan-mode MCP runtime"),
+        ("tool", "Continue MCP tool adapter"),
+        ("capability", "mcp-tool-invocation"),
+        ("mcp-server", "Continue configured MCP servers"),
+        ("control-setting", "plan-mode-mcp-approval"),
+        ("control", "mcp-tool-classification"),
+    }
+    control = next(component for component in specialized if component.kind == "control")
+    setting = next(
+        component for component in specialized if component.kind == "control-setting"
+    )
+    assert control.attributes["readonly_metadata"] == "discarded"
+    assert control.attributes["risk_classification"] == "absent-on-proven-path"
+    assert control.attributes["approval_prompt_on_allow"] is False
+    assert setting.attributes["mode_default"] is False
+    assert setting.attributes["normal_mode_external_tool_permission"] == "ask"
+    assert setting.attributes["plan_mode_external_tool_permission"] == "allow"
+    assert sum(
+        edge.attributes.get("analysis")
+        == "typescript-continue-plan-mode-mcp-approval"
+        for edge in ir.relationships
+    ) == 5
+
+    for directory in ("near", "safe"):
+        negative = scan_repository(root / directory)
+        assert not any(
+            component.attributes.get("analysis")
+            == "typescript-continue-plan-mode-mcp-approval"
+            for component in negative.components
+        )
+        assert not any(
+            finding.rule_id == "AV-APPROVAL009" for finding in negative.findings
+        )
+
+    mutations = {
+        "plan-wildcard-asks": (
+            "extensions/cli/src/permissions/defaultPolicies.ts",
+            '{ tool: "*", permission: "allow" }',
+            '{ tool: "*", permission: "ask" }',
+        ),
+        "normal-wildcard-allows": (
+            "extensions/cli/src/permissions/defaultPolicies.ts",
+            '{ tool: "*", permission: "ask" }',
+            '{ tool: "*", permission: "allow" }',
+        ),
+        "plan-policy-not-installed": (
+            "extensions/cli/src/services/ToolPermissionService.ts",
+            "return [...PLAN_MODE_POLICIES]",
+            "return []",
+        ),
+        "checker-does-not-first-match": (
+            "extensions/cli/src/permissions/permissionChecker.ts",
+            "      break;",
+            "      continue;",
+        ),
+        "allow-still-prompts": (
+            "extensions/cli/src/stream/streamChatResponse.helpers.ts",
+            "    return { approved: true };",
+            "    return { approved: await requestUserPermission(toolCall, callbacks) };",
+        ),
+        "adapter-retains-readonly": (
+            "extensions/cli/src/tools/index.tsx",
+            "    readonly: undefined,",
+            "    readonly: mcpTool.annotations?.readOnlyHint === true,",
+        ),
+        "adapter-does-not-dispatch": (
+            "extensions/cli/src/tools/index.tsx",
+            "services.mcp?.runTool(mcpTool.name, args)",
+            "reviewedMcpTools.run(mcpTool.name, args)",
+        ),
+        "server-does-not-discover": (
+            "extensions/cli/src/services/MCPService.ts",
+            "(await connection.client.listTools()).tools",
+            "reviewedTools",
+        ),
+        "server-does-not-invoke": (
+            "extensions/cli/src/services/MCPService.ts",
+            "connection.client.callTool({",
+            "reviewedClient.callTool({",
+        ),
+    }
+    for name, (relative, before, after) in mutations.items():
+        changed = tmp_path / name
+        shutil.copytree(root / "positive", changed)
+        path = changed / relative
+        original = path.read_text(encoding="utf-8")
+        assert before in original
+        path.write_text(original.replace(before, after, 1), encoding="utf-8")
+        changed_ir = scan_repository(changed)
+        assert not any(
+            component.attributes.get("analysis")
+            == "typescript-continue-plan-mode-mcp-approval"
+            for component in changed_ir.components
+        )
+        assert not any(
+            finding.rule_id == "AV-APPROVAL009" for finding in changed_ir.findings
+        )
+
+
 def test_letta_default_tools_require_the_exact_cross_file_composition(
     tmp_path: Path,
 ) -> None:

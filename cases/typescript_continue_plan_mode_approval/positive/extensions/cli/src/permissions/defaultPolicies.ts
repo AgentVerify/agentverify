@@ -7,5 +7,8 @@ export const PLAN_MODE_POLICIES = [
 ];
 
 export function getDefaultToolPolicies() {
-  return [{ tool: "Bash", permission: "ask" }];
+  return [
+    { tool: "Bash", permission: "ask" },
+    { tool: "*", permission: "ask" },
+  ];
 }

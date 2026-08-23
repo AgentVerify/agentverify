@@ -1,6 +1,6 @@
 {
   "schema_version": 4,
-  "generated_at": "2026-08-23T14:04:36.703807+00:00",
+  "generated_at": "2026-08-23T14:40:59.017672+00:00",
   "method": {
     "collector": "scripts/collect_repositories.py",
     "max_files_per_repository": 220,
@@ -4258,9 +4258,9 @@
       "status": "ok",
       "commit": "5522c6f44ca0ac3528b37244818fbfa39b5af470",
       "files_in_tree": 3058,
-      "files_scanned": 222,
-      "dependency_files_materialized": 2,
-      "bytes_scanned": 1118036,
+      "files_scanned": 223,
+      "dependency_files_materialized": 3,
+      "bytes_scanned": 1126321,
       "languages": [
         "TypeScript",
         "TypeScript",

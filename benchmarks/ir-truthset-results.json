@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-23T14:32:28.670559+00:00",
-  "labels": 1373,
-  "passed": 1373,
+  "generated_at": "2026-08-23T14:53:11.350142+00:00",
+  "labels": 1397,
+  "passed": 1397,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -478,6 +478,14 @@
     },
     "IR-TS-CONTINUE-PLAN-APPROVAL": {
       "tp": 20,
+      "fp": 0,
+      "tn": 2,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-CONTINUE-PLAN-MCP-APPROVAL": {
+      "tp": 22,
       "fp": 0,
       "tn": 2,
       "fn": 0,
@@ -12949,6 +12957,222 @@
     {
       "id": "typescript-continue-dynamic-ask-local-negative",
       "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-agent-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-tool-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-capability-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-server-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-setting-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-control-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-agent-tool-edge-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-tool-capability-edge-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-tool-server-edge-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-tool-setting-edge-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-tool-control-edge-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-agent-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-tool-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-capability-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-server-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-setting-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-control-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-agent-tool-edge-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-tool-capability-edge-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-tool-server-edge-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-tool-setting-edge-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-tool-control-edge-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-near-local-negative",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-mcp-safe-local-negative",
+      "check_id": "IR-TS-CONTINUE-PLAN-MCP-APPROVAL",
       "expected": false,
       "observed": false,
       "anchor_ok": true,

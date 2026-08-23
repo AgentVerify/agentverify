@@ -102,6 +102,14 @@ RULE_DEFINITIONS = tuple(
                 "Keep high-risk and unknown shell commands approval-gated in plan mode, or expose only a parsed read-only command allowlist.",
             ),
             RuleMetadata(
+                "AV-APPROVAL009",
+                "review",
+                "high",
+                "high",
+                "A selected read-oriented mode wildcard-allows unclassified MCP tools",
+                "Ask before unclassified MCP calls and auto-allow only a locally reviewed read-only tool allowlist.",
+            ),
+            RuleMetadata(
                 "AV-AUDIT001",
                 "review",
                 "medium",
@@ -758,6 +766,35 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                     "high",
                     "Continue CLI plan mode auto-allows high-risk and unknown shell commands after its risk evaluator requests approval",
                     "Return the dynamically evaluated policy whenever it is more restrictive than the static mode policy; for a read-oriented plan mode, keep Bash at ask or use a parsed read-only command allowlist.",
+                    "review",
+                )
+            )
+        if (
+            component.kind == "control"
+            and component.name == "mcp-tool-classification"
+            and component.attributes.get("agent_reachable") is True
+            and component.attributes.get("mode") == "plan"
+            and component.attributes.get("mode_default") is False
+            and component.attributes.get("normal_mode_external_tool_permission")
+            == "ask"
+            and component.attributes.get("plan_mode_external_tool_permission")
+            == "allow"
+            and component.attributes.get("approval_prompt_on_allow") is False
+            and component.attributes.get("readonly_metadata") == "discarded"
+            and component.attributes.get("risk_classification")
+            == "absent-on-proven-path"
+            and component.attributes.get("tool_schema_source")
+            == "mcp-server-discovery"
+        ):
+            ir.findings.append(
+                make_finding(
+                    ir,
+                    component,
+                    "AV-APPROVAL009",
+                    "high",
+                    "high",
+                    "Continue CLI plan mode auto-allows every discovered MCP tool without a read-only or risk classification",
+                    "Replace the plan-mode wildcard allow with ask; auto-allow only locally reviewed read-only MCP tools, independent of server-supplied names or descriptions.",
                     "review",
                 )
             )

@@ -122,6 +122,10 @@ Schema v120 adds Continue CLI as the 48th selected-path framework repository. It
 plan-mode composition contributes one Agent, one Bash tool/capability, one setting, one risk-policy
 control, and four relationships. Twenty-two focused IR labels add 20 component/edge positives plus
 incomplete-composition and dynamic-ask negatives.
+Schema v121 resolves a separate six-source MCP path in the same host without changing framework
+coverage. It contributes one Agent, MCP adapter, invocation capability, configured-server boundary,
+setting, classification control, and five relationships. Twenty-four focused labels add 22 exact
+component/edge positives plus incomplete-composition negatives.
 Next generalize additional selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
@@ -376,6 +380,13 @@ discarded because static user preference wins unless the result is `disabled`; t
 executes the command through a login shell. `AV-APPROVAL008` reports only that narrow collapse and
 retains the critical block, parser, normal-mode prompt, and non-default mode as explicit context.
 
+Schema v121 resolves the adjacent external-tool boundary separately. Continue plan mode's wildcard
+allow applies to every MCP tool returned by `listTools`; the adapter sets `readonly: undefined`, the
+allow branch skips the user prompt, and execution reaches `client.callTool`. `AV-APPROVAL009` reports
+only this selected-mode, unclassified-tool path. Normal mode's wildcard remains `ask`, plan mode is
+non-default, and MCP servers must already be configured. Next model locally reviewed MCP effect
+manifests without trusting server-supplied names, descriptions, or advisory annotations alone.
+
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
 server-controlled prompt/model hint/sampling parameters, model invocation, and response returned to
@@ -500,8 +511,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 702 pinned positive/negative locations, with 1,373 separately
-scored IR component/relationship labels. Schema-v120 engine results and
+The curated regression set has reached 706 pinned positive/negative locations, with 1,397 separately
+scored IR component/relationship labels. Schema-v121 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.
