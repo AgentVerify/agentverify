@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v121
+framework, wrapper, or configuration path. Counts come from schema-v122
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -117,6 +117,14 @@ allow-without-prompt branch, the dynamic MCP adapter, server discovery, and the 
 wildcard. Normal mode still asks, plan mode remains non-default, and only configured MCP servers are
 reachable. Missing roles, an ask wildcard, retained read-only classification, or a mediated sink
 withholds the composition and `AV-APPROVAL009` review.
+
+Schema v122 adds a nine-source Cline VS Code composition for approval propagation across delegation.
+The root session installs explicit approval policies and a live approval callback, while the SDK
+defaults unlisted tools to auto-approved. `spawn_agent` is enabled by the Act preset and omitted from
+the explicit list. Its local session wrapper builds child `run_commands` and `editor` tools but does
+not pass `toolPolicies` or `requestToolApproval` into a factory that supports and forwards both.
+Missing roles, a gated spawn tool, disabled spawning, default-ask semantics, or either forwarded
+approval input withholds the composition and `AV-APPROVAL010` review.
 
 Schema v73 identifies 29 exact Python provider calls across seven repositories: 20 native Mistral,
 Groq, Cohere, or Ollama SDK calls and nine LangChain wrappers. Seven calls across five repositories
@@ -324,9 +332,9 @@ provider-hosted media boundary. All 13 expose no constructor approval parameter.
 rebound constructors stay unclassified. Provider-hosted web search is inventory, not AV-NET001,
 because it does not expose a source-proven parameter-controlled origin.
 
-Across the selected snapshot, 10,064 observations have module-qualified symbol IDs. Of
-4,746 relationship endpoint observations, all 3,937 identified endpoints resolve to an observed
-component (3,587 Python and 350 TypeScript). Two former false IDs on CrewAI test edges are now
+Across the selected snapshot, 10,069 observations have module-qualified symbol IDs. Of
+4,756 relationship endpoint observations, all 3,946 identified endpoints resolve to an observed
+component (3,587 Python and 359 TypeScript). Two former false IDs on CrewAI test edges are now
 withheld because a function parameter and assignment shadow the same-named package import.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
 edges resolve exactly. The current schema records 379 Python lexical-single-definition, 20 same-block
@@ -368,15 +376,15 @@ Capability/control taxonomy endpoints intentionally lack
 source-symbol IDs, so the endpoint fraction is inventory coverage rather than an accuracy or recall
 metric.
 
-The native AI BOM 1.2 resolver independently classifies all 4,746 endpoints: 3,929 by symbol ID, 700
+The native AI BOM 1.2 resolver independently classifies all 4,756 endpoints: 3,938 by symbol ID, 701
 by exact relationship evidence, 21 by a unique display name, 38 as ambiguous, and 58 as unresolved.
 Evidence-local resolution removes capability/control ambiguities; occurrence-qualified bindings
 resolve repeated source agent/tool observations, and conservative lexical resolution removes further
 target ambiguities. The remaining 38 ambiguous endpoints are agent, protocol, control, or tool targets without a unique
 local symbol or target location.
 
-The TypeScript graph contains 104 structure-backed agent edges: 14 agent-as-tool delegations, 86
-agent-to-tool edges, and four other agent-composition edges. All 86 tool endpoints resolve to an
+The TypeScript graph contains 107 structure-backed agent edges: 14 agent-as-tool delegations, 87
+agent-to-tool edges, and six other agent-composition edges. All 87 tool endpoints resolve to an
 observed component. This replaces a prior
 token-level array heuristic that could turn words inside callbacks, strings, or nested options into
 spurious tool edges.
@@ -920,12 +928,12 @@ and `network-ssrf-policy` edge.
   `created_by` is nullable and unset, so actor attribution remains unresolved.
 - Selected-path scans parse only selected files. The research corpus adds at most 20 local source
   dependencies to each 220-file root sample: versioned audited evidence hints plus bounded Python
-  import closure, all charged against the same cap. This refresh added 193 files across 24 repositories. Unselected definitions
+  import closure, all charged against the same cap. This refresh added 200 files across 25 repositories. Unselected definitions
   and controls are not evidence of repository-wide coverage or absence.
 
 ## Quality interpretation
 
-The 706-label rule truth set and 1,397-label IR component/relationship set are curated regression
+The 710-label rule truth set and 1,423-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

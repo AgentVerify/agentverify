@@ -740,6 +740,12 @@ def main() -> int:
             if item.attributes.get("analysis")
             == "typescript-continue-plan-mode-mcp-approval"
         ]
+        typescript_cline_subagent_components = [
+            item
+            for item in ir.components
+            if item.attributes.get("analysis")
+            == "typescript-cline-subagent-approval-propagation"
+        ]
         typescript_letta_default_components = [
             item
             for item in ir.components
@@ -2168,6 +2174,77 @@ def main() -> int:
                     for finding in ir.findings
                 ),
             },
+            "typescript_cline_subagent_approval": {
+                "frameworks": sum(
+                    item.kind == "framework"
+                    for item in typescript_cline_subagent_components
+                ),
+                "agents": sum(
+                    item.kind == "agent"
+                    for item in typescript_cline_subagent_components
+                ),
+                "tools": sum(
+                    item.kind == "tool"
+                    for item in typescript_cline_subagent_components
+                ),
+                "capabilities": sum(
+                    item.kind == "capability"
+                    for item in typescript_cline_subagent_components
+                ),
+                "controls": sum(
+                    item.kind == "control"
+                    for item in typescript_cline_subagent_components
+                ),
+                "settings": sum(
+                    item.kind == "control-setting"
+                    for item in typescript_cline_subagent_components
+                ),
+                "parent_tool_edges": sum(
+                    edge.source_kind == "agent"
+                    and edge.relation == "uses"
+                    and edge.target_kind == "tool"
+                    and edge.attributes.get("analysis")
+                    == "typescript-cline-subagent-approval-propagation"
+                    for edge in ir.relationships
+                ),
+                "delegation_edges": sum(
+                    edge.source_kind == "tool"
+                    and edge.relation == "delegates-to"
+                    and edge.target_kind == "agent"
+                    and edge.attributes.get("analysis")
+                    == "typescript-cline-subagent-approval-propagation"
+                    for edge in ir.relationships
+                ),
+                "child_capability_edges": sum(
+                    edge.source_kind == "agent"
+                    and edge.relation == "uses"
+                    and edge.target_kind == "capability"
+                    and edge.attributes.get("analysis")
+                    == "typescript-cline-subagent-approval-propagation"
+                    for edge in ir.relationships
+                ),
+                "setting_edges": sum(
+                    edge.source_kind == "agent"
+                    and edge.relation == "configured-by"
+                    and edge.target_kind == "control-setting"
+                    and edge.attributes.get("analysis")
+                    == "typescript-cline-subagent-approval-propagation"
+                    for edge in ir.relationships
+                ),
+                "control_edges": sum(
+                    edge.source_kind == "tool"
+                    and edge.relation == "governed-by"
+                    and edge.target_kind == "control"
+                    and edge.attributes.get("analysis")
+                    == "typescript-cline-subagent-approval-propagation"
+                    for edge in ir.relationships
+                ),
+                "approval_findings": sum(
+                    finding.rule_id == "AV-APPROVAL010"
+                    and finding.analysis.get("tool") == "Cline spawn_agent tool"
+                    for finding in ir.findings
+                ),
+            },
             "typescript_letta_default_tools": {
                 "agents": sum(
                     item.kind == "agent" for item in typescript_letta_default_components
@@ -3097,7 +3174,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 121,
+        "schema_version": 122,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -3727,6 +3804,32 @@ def main() -> int:
                 "repositories": sum(
                     result["typescript_continue_plan_mode_mcp_approval"]["tools"]
                     > 0
+                    for result in successful
+                )
+            },
+            "typescript_cline_subagent_approval": {
+                name: sum(
+                    result["typescript_cline_subagent_approval"][name]
+                    for result in successful
+                )
+                for name in (
+                    "frameworks",
+                    "agents",
+                    "tools",
+                    "capabilities",
+                    "controls",
+                    "settings",
+                    "parent_tool_edges",
+                    "delegation_edges",
+                    "child_capability_edges",
+                    "setting_edges",
+                    "control_edges",
+                    "approval_findings",
+                )
+            }
+            | {
+                "repositories": sum(
+                    result["typescript_cline_subagent_approval"]["tools"] > 0
                     for result in successful
                 )
             },

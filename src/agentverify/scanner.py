@@ -28648,6 +28648,398 @@ def add_typescript_continue_plan_mode_mcp_flow(
     )
 
 
+def add_typescript_cline_subagent_approval_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve Cline VS Code's dropped approval state across sub-agent spawning."""
+    sources: dict[str, str] = {}
+    for path in paths:
+        if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            sources[relative] = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+
+    def unique_source(markers: tuple[str, ...]) -> tuple[str, str] | None:
+        matches = [
+            (relative, text)
+            for relative, text in sources.items()
+            if all(marker in text for marker in markers)
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    policy_source = unique_source(
+        (
+            "export function buildToolPolicies(",
+            "The SDK defaults unlisted tools to auto-approved",
+            "policies[tool] = { autoApprove: false }",
+            'set(["editor", "replace_in_file", "write_to_file", "apply_patch", "delete_file"])',
+            'set(["run_commands", "execute_command"])',
+            "return policies",
+        )
+    )
+    lifecycle_source = unique_source(
+        (
+            "class SdkSessionLifecycle",
+            'getGlobalSettingsKey("autoApprovalSettings")',
+            "buildToolPolicies(autoApprovalSettings, this.options.mcpHub)",
+            "sdkHost.start({",
+            "...(toolPolicies ? { toolPolicies } : {}),",
+            "requestToolApproval: this.options.requestToolApproval",
+        )
+    )
+    vscode_host_source = unique_source(
+        (
+            "export class VscodeSessionHost",
+            "const inner = await ClineCore.create({",
+            "requestToolApproval: options.requestToolApproval",
+            "toolPolicies: options.toolPolicies",
+        )
+    )
+    runtime_source = unique_source(
+        (
+            "resolveToolPolicy(toolCall.toolName, this.config.toolPolicies)",
+            "policy.enabled === false",
+            "policy.autoApprove === false",
+            "await this.requestToolApproval(",
+        )
+    )
+    preset_source = unique_source(
+        (
+            "export const ToolPresets",
+            "act: {",
+            "enableBash: true",
+            "enableEditor: true",
+            "enableSpawnAgent: true",
+        )
+    )
+    builder_source = unique_source(
+        (
+            "function normalizeConfig(",
+            "config.enableSpawnAgent ?? preset.enableSpawnAgent ?? true",
+            "if (normalized.enableSpawnAgent && createSpawnTool)",
+            "const spawnTool = createSpawnTool()",
+            "tools.push({",
+        )
+    )
+    local_host_source = unique_source(
+        (
+            "export class LocalRuntimeHost",
+            "createSpawnTool: () =>",
+            "createSessionSpawnTool(",
+            "bootstrap.config,",
+            "toolPolicies: bootstrap.toolPolicies",
+            "requestToolApproval: bootstrap.requestToolApproval",
+        )
+    )
+    spawn_wrapper_source = unique_source(
+        (
+            "export function createSessionSpawnTool(",
+            "const createSubAgentTools = () =>",
+            "createBuiltinTools({",
+            "...ToolPresets[resolveToolPresetName({ mode: config.mode })]",
+            "return createSpawnAgentTool({",
+            "createSubAgentTools,",
+        )
+    )
+    spawn_factory_source = unique_source(
+        (
+            "export function createSpawnAgentTool(",
+            'name: "spawn_agent"',
+            "const subAgent = createDelegatedAgent({",
+            "toolPolicies: config.toolPolicies",
+            "requestToolApproval: config.requestToolApproval",
+        )
+    )
+    selected = (
+        policy_source,
+        lifecycle_source,
+        vscode_host_source,
+        runtime_source,
+        preset_source,
+        builder_source,
+        local_host_source,
+        spawn_wrapper_source,
+        spawn_factory_source,
+    )
+    if any(source is None for source in selected):
+        return
+    (
+        (policy_path, policy_text),
+        (lifecycle_path, lifecycle_text),
+        (_vscode_host_path, vscode_host_text),
+        (_runtime_path, runtime_text),
+        (_preset_path, preset_text),
+        (_builder_path, builder_text),
+        (_local_host_path, local_host_text),
+        (spawn_wrapper_path, spawn_wrapper_text),
+        (spawn_factory_path, spawn_factory_text),
+    ) = selected  # type: ignore[misc]
+
+    policy_start = policy_text.find("export function buildToolPolicies(")
+    policy_end = policy_text.find("return policies", policy_start)
+    if policy_start < 0 or policy_end <= policy_start:
+        return
+    policy_block = policy_text[policy_start:policy_end]
+    if "spawn_agent" in policy_block or re.search(
+        r'["\']\*["\']\s*:\s*\{[^}]{0,120}?autoApprove\s*:\s*false',
+        policy_block,
+    ):
+        return
+    if re.search(
+        r"if\s*\(\s*policy\.enabled\s*===\s*false\s*\)"
+        r"[\s\S]{0,220}?else\s+if\s*\(\s*policy\.autoApprove\s*===\s*false\s*\)"
+        r"[\s\S]{0,220}?requestToolApproval",
+        runtime_text,
+    ) is None:
+        return
+    if re.search(
+        r"act\s*:\s*\{[\s\S]{0,500}?enableBash\s*:\s*true"
+        r"[\s\S]{0,500}?enableEditor\s*:\s*true"
+        r"[\s\S]{0,500}?enableSpawnAgent\s*:\s*true",
+        preset_text,
+    ) is None:
+        return
+    if re.search(
+        r"enableSpawnAgent\s*:\s*config\.enableSpawnAgent\s*\?\?\s*"
+        r"preset\.enableSpawnAgent\s*\?\?\s*true",
+        builder_text,
+    ) is None:
+        return
+    host_spawn_start = local_host_text.find("createSpawnTool: () =>")
+    host_spawn_end = local_host_text.find(
+        "createSubAgentLifecycleCallbacks", host_spawn_start
+    )
+    if host_spawn_start < 0 or host_spawn_end <= host_spawn_start:
+        return
+    wrapper_call_start = spawn_wrapper_text.find("return createSpawnAgentTool({")
+    if wrapper_call_start < 0:
+        return
+    wrapper_call_block = spawn_wrapper_text[wrapper_call_start:]
+    if (
+        "toolPolicies:" in wrapper_call_block
+        or "requestToolApproval:" in wrapper_call_block
+    ):
+        return
+    if not (
+        lifecycle_text.find("buildToolPolicies(autoApprovalSettings")
+        < lifecycle_text.find("sdkHost.start({")
+        and vscode_host_text.find("requestToolApproval: options.requestToolApproval")
+        < vscode_host_text.find("toolPolicies: options.toolPolicies")
+        and spawn_factory_text.find("toolPolicies: config.toolPolicies")
+        < spawn_factory_text.find("requestToolApproval: config.requestToolApproval")
+    ):
+        return
+
+    def evidence(path: str, text: str, offset: int) -> Evidence:
+        line = line_at(text, offset)
+        return Evidence(path, line, excerpt(text.splitlines(), line))
+
+    analysis = "typescript-cline-subagent-approval-propagation"
+    shared = {
+        "analysis": analysis,
+        "framework": "Cline SDK",
+        "scope": "production",
+    }
+    framework_evidence = evidence(policy_path, policy_text, policy_start)
+    parent_evidence = evidence(
+        lifecycle_path, lifecycle_text, lifecycle_text.find("sdkHost.start({")
+    )
+    tool_evidence = evidence(
+        spawn_factory_path,
+        spawn_factory_text,
+        spawn_factory_text.find('name: "spawn_agent"'),
+    )
+    child_evidence = evidence(
+        spawn_factory_path,
+        spawn_factory_text,
+        spawn_factory_text.find("const subAgent = createDelegatedAgent({"),
+    )
+    capability_evidence = evidence(
+        spawn_wrapper_path,
+        spawn_wrapper_text,
+        spawn_wrapper_text.find("createBuiltinTools({"),
+    )
+    setting_evidence = evidence(
+        policy_path,
+        policy_text,
+        policy_text.find("The SDK defaults unlisted tools to auto-approved"),
+    )
+    control_evidence = evidence(
+        spawn_wrapper_path, spawn_wrapper_text, wrapper_call_start
+    )
+    parent_name = "Cline VS Code SDK root agent"
+    child_name = "Cline SDK spawned sub-agent"
+    tool_name = "Cline spawn_agent tool"
+    parent_id = source_symbol("ts", lifecycle_path, "agent", "ClineVSCodeSDKRoot")
+    child_id = source_symbol("ts", spawn_factory_path, "agent", "SpawnedSubAgent")
+    tool_id = source_symbol("ts", spawn_factory_path, "tool", "spawn_agent")
+    setting_id = source_symbol(
+        "ts", policy_path, "control-setting", "sdk-tool-approval-policy"
+    )
+    control_id = source_symbol(
+        "ts", spawn_wrapper_path, "control", "subagent-tool-approval-propagation"
+    )
+    ir.add_component(Component("framework", "Cline SDK", framework_evidence, shared))
+    ir.add_component(
+        Component(
+            "agent",
+            parent_name,
+            parent_evidence,
+            {
+                **shared,
+                "approval_callback": "configured",
+                "tool_policy": "explicit-list-fail-open",
+            },
+            parent_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "agent",
+            child_name,
+            child_evidence,
+            {
+                **shared,
+                "approval_callback": "not-forwarded",
+                "tool_policy": "not-forwarded",
+            },
+            child_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "tool",
+            tool_name,
+            tool_evidence,
+            {
+                **shared,
+                "approval_policy": "unlisted-auto-approved",
+                "builtin_tool": True,
+                "builtin_tool_name": "spawn_agent",
+            },
+            tool_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "capability",
+            "subagent-privileged-tool-execution",
+            capability_evidence,
+            {
+                **shared,
+                "default_mode": "act",
+                "execution_environment": "local",
+                "filesystem_tool": "editor",
+                "shell_tool": "run_commands",
+            },
+        )
+    )
+    ir.add_component(
+        Component(
+            "control-setting",
+            "Cline SDK tool approval policy",
+            setting_evidence,
+            {
+                **shared,
+                "default_for_unlisted_tools": "auto-approved",
+                "privileged_root_tools_listed": ["editor", "run_commands"],
+                "spawn_agent_listed": False,
+            },
+            setting_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "control",
+            "subagent-tool-approval-propagation",
+            control_evidence,
+            {
+                **shared,
+                "agent_reachable": True,
+                "child_approval_callback": "not-forwarded",
+                "child_tool_policies": "not-forwarded",
+                "factory_supports_propagation": True,
+                "parent_approval_callback": "configured",
+                "parent_privileged_tools_gated": True,
+                "spawn_agent_default_enabled": True,
+                "spawn_agent_policy": "unlisted-auto-approved",
+            },
+            control_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "agent",
+            parent_name,
+            "uses",
+            "tool",
+            tool_name,
+            parent_evidence,
+            {"analysis": analysis},
+            source_id=parent_id,
+            target_id=tool_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            tool_name,
+            "delegates-to",
+            "agent",
+            child_name,
+            child_evidence,
+            {"analysis": analysis},
+            source_id=tool_id,
+            target_id=child_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "agent",
+            child_name,
+            "uses",
+            "capability",
+            "subagent-privileged-tool-execution",
+            capability_evidence,
+            {"analysis": analysis},
+            source_id=child_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "agent",
+            parent_name,
+            "configured-by",
+            "control-setting",
+            "Cline SDK tool approval policy",
+            setting_evidence,
+            {"analysis": analysis},
+            source_id=parent_id,
+            target_id=setting_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            tool_name,
+            "governed-by",
+            "control",
+            "subagent-tool-approval-propagation",
+            control_evidence,
+            {"analysis": analysis, "policy_effect": "approval-state-dropped"},
+            source_id=tool_id,
+            target_id=control_id,
+        )
+    )
+
+
 def add_typescript_letta_default_tool_flow(
     ir: RepositoryIR,
     root: Path,
@@ -29653,6 +30045,7 @@ def scan_repository(
     add_typescript_roo_command_approval_flow(ir, root, registry_paths)
     add_typescript_continue_plan_mode_approval_flow(ir, root, registry_paths)
     add_typescript_continue_plan_mode_mcp_flow(ir, root, registry_paths)
+    add_typescript_cline_subagent_approval_flow(ir, root, registry_paths)
     add_typescript_letta_default_tool_flow(ir, root, registry_paths)
     add_typescript_a2a_card_endpoint_composition(ir, root, registry_paths)
     add_typescript_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)

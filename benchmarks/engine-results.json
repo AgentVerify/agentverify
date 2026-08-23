@@ -1,6 +1,6 @@
 {
-  "schema_version": 121,
-  "generated_at": "2026-08-23T15:06:15.423923+00:00",
+  "schema_version": 122,
+  "generated_at": "2026-08-23T15:49:30.593407+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -16,14 +16,14 @@
     "zero_source_repositories": [
       "daytonaio/daytona"
     ],
-    "files_scanned": 10788,
-    "dependency_files_materialized": 193,
-    "repositories_with_dependency_expansion": 24,
+    "files_scanned": 10795,
+    "dependency_files_materialized": 200,
+    "repositories_with_dependency_expansion": 25,
     "config_files_scanned": 155,
-    "relationships": 2373,
-    "symbolized_components": 10064,
-    "identified_symbol_endpoints": 3937,
-    "resolved_symbol_endpoints": 3937,
+    "relationships": 2378,
+    "symbolized_components": 10069,
+    "identified_symbol_endpoints": 3946,
+    "resolved_symbol_endpoints": 3946,
     "unmatched_identified_symbol_endpoints": 0,
     "ambiguous_repeated_binding_targets": 2,
     "resolved_binding_targets_by_basis": {
@@ -40,11 +40,11 @@
       "same-class-helper-return": 3,
       "typed-parameter-callsite-consensus": 1
     },
-    "relationship_endpoints": 4746,
+    "relationship_endpoints": 4756,
     "bom_endpoint_resolutions": {
       "ambiguous": 38,
-      "evidence-location": 700,
-      "symbol-id": 3929,
+      "evidence-location": 701,
+      "symbol-id": 3938,
       "unique-display-name": 21,
       "unresolved": 58
     },
@@ -58,7 +58,7 @@
     },
     "resolved_symbol_endpoints_by_frontend": {
       "py": 3587,
-      "ts": 350
+      "ts": 359
     },
     "python_provider_call_attribution": {
       "calls": 583,
@@ -112,10 +112,10 @@
       "cohere": 0
     },
     "typescript_graph": {
-      "agent_edges": 104,
+      "agent_edges": 107,
       "agent_delegations": 14,
-      "agent_tool_edges": 86,
-      "resolved_agent_tool_edges": 86
+      "agent_tool_edges": 87,
+      "resolved_agent_tool_edges": 87
     },
     "typescript_tool_registrations": {
       "mastra_create_tool": 27,
@@ -435,6 +435,21 @@
       "approval_findings": 1,
       "repositories": 1
     },
+    "typescript_cline_subagent_approval": {
+      "frameworks": 1,
+      "agents": 2,
+      "tools": 1,
+      "capabilities": 1,
+      "controls": 1,
+      "settings": 1,
+      "parent_tool_edges": 1,
+      "delegation_edges": 1,
+      "child_capability_edges": 1,
+      "setting_edges": 1,
+      "control_edges": 1,
+      "approval_findings": 1,
+      "repositories": 1
+    },
     "typescript_letta_default_tools": {
       "agents": 1,
       "tools": 2,
@@ -712,7 +727,7 @@
     "suppressed_findings": 0,
     "findings": {
       "AV-A2A001": 2,
-      "AV-APPROVAL001": 14,
+      "AV-APPROVAL001": 15,
       "AV-APPROVAL002": 4,
       "AV-APPROVAL003": 3,
       "AV-APPROVAL004": 3,
@@ -721,6 +736,7 @@
       "AV-APPROVAL007": 1,
       "AV-APPROVAL008": 1,
       "AV-APPROVAL009": 1,
+      "AV-APPROVAL010": 1,
       "AV-AUDIT001": 1,
       "AV-EXEC001": 25,
       "AV-EXEC002": 51,
@@ -746,6 +762,7 @@
       "AV-APPROVAL007": 1,
       "AV-APPROVAL008": 1,
       "AV-APPROVAL009": 1,
+      "AV-APPROVAL010": 1,
       "AV-AUDIT001": 1,
       "AV-EXEC001": 14,
       "AV-EXEC002": 15,
@@ -779,6 +796,7 @@
         "model-sampling": 4,
         "network": 58,
         "shell-execution": 48,
+        "subagent-privileged-tool-execution": 1,
         "user-elicitation": 3
       },
       "control": {
@@ -801,11 +819,13 @@
         "path-prefix-check": 1,
         "path-segment-sanitizer": 1,
         "sandbox-runtime": 1,
+        "subagent-tool-approval-propagation": 1,
         "terminal-command-risk-policy": 1,
         "tool-allowlist": 1,
         "tool-registry": 2
       },
       "control-setting": {
+        "Cline SDK tool approval policy": 1,
         "agent-action-confirmation": 3,
         "auto-approval": 4,
         "command-auto-approval": 1,
@@ -988,7 +1008,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 367.4741
+    "elapsed_seconds": 381.7229
   },
   "repositories": [
     {
@@ -1376,6 +1396,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -1622,7 +1656,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.119
+      "elapsed_seconds": 5.246
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -2026,6 +2060,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -2283,7 +2331,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.9543
+      "elapsed_seconds": 9.4252
     },
     {
       "repository": "langchain-ai/langchain",
@@ -2670,6 +2718,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -2914,7 +2976,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.5451
+      "elapsed_seconds": 3.6546
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -3305,6 +3367,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -3557,7 +3633,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 12.3362
+      "elapsed_seconds": 13.057
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -3953,6 +4029,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -4201,7 +4291,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5985
+      "elapsed_seconds": 0.6083
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -4602,6 +4692,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -4863,7 +4967,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 13.8352
+      "elapsed_seconds": 14.4983
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -5269,6 +5373,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -5537,7 +5655,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.4489
+      "elapsed_seconds": 8.751
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -5938,6 +6056,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -6196,7 +6328,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9395
+      "elapsed_seconds": 0.9718
     },
     {
       "repository": "microsoft/autogen",
@@ -6598,6 +6730,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -6851,7 +6997,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3245
+      "elapsed_seconds": 2.4459
     },
     {
       "repository": "microsoft/agent-framework",
@@ -7229,6 +7375,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -7473,7 +7633,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0596
+      "elapsed_seconds": 0.0634
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -7876,6 +8036,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -8132,7 +8306,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3594
+      "elapsed_seconds": 0.3794
     },
     {
       "repository": "openai/openai-agents-python",
@@ -8554,6 +8728,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -8819,7 +9007,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 14.3718
+      "elapsed_seconds": 15.1963
     },
     {
       "repository": "openai/openai-agents-js",
@@ -9230,6 +9418,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -9485,7 +9687,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.359
+      "elapsed_seconds": 2.4614
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -9898,6 +10100,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -10155,7 +10371,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 29.4658
+      "elapsed_seconds": 31.641
     },
     {
       "repository": "google/adk-python",
@@ -10564,6 +10780,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -10822,7 +11052,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.2947
+      "elapsed_seconds": 11.9559
     },
     {
       "repository": "google/adk-js",
@@ -11222,6 +11452,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -11473,7 +11717,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.9372
+      "elapsed_seconds": 6.0473
     },
     {
       "repository": "huggingface/smolagents",
@@ -11871,6 +12115,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -12131,7 +12389,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4196
+      "elapsed_seconds": 3.6176
     },
     {
       "repository": "agno-agi/agno",
@@ -12541,6 +12799,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -12802,7 +13074,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5542
+      "elapsed_seconds": 1.6434
     },
     {
       "repository": "camel-ai/camel",
@@ -13207,6 +13479,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -13469,7 +13755,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.1847
+      "elapsed_seconds": 7.5244
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -13866,6 +14152,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -14116,7 +14416,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5885
+      "elapsed_seconds": 0.5906
     },
     {
       "repository": "run-llama/llama_index",
@@ -14508,6 +14808,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -14752,7 +15066,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.4549
+      "elapsed_seconds": 2.6008
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -15154,6 +15468,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -15416,7 +15744,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.9318
+      "elapsed_seconds": 4.0604
     },
     {
       "repository": "InternLM/lagent",
@@ -15815,6 +16143,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -16072,7 +16414,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8021
+      "elapsed_seconds": 1.8845
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -16469,6 +16811,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -16728,7 +17084,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1344
+      "elapsed_seconds": 3.2514
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -17123,6 +17479,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -17385,7 +17755,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.1482
+      "elapsed_seconds": 4.2933
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -17776,6 +18146,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -18034,7 +18418,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7511
+      "elapsed_seconds": 2.8739
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -18426,6 +18810,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -18680,7 +19078,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.0799
+      "elapsed_seconds": 10.5766
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -19068,6 +19466,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -19321,7 +19733,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3483
+      "elapsed_seconds": 3.4249
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -19710,6 +20122,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -19954,7 +20380,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9963
+      "elapsed_seconds": 2.0368
     },
     {
       "repository": "letta-ai/letta-code",
@@ -20348,6 +20774,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 1,
         "tools": 2,
@@ -20599,7 +21039,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.8506
+      "elapsed_seconds": 9.084
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -20999,6 +21439,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -21257,7 +21711,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9882
+      "elapsed_seconds": 3.0249
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -21662,6 +22116,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -21921,7 +22389,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.5869
+      "elapsed_seconds": 5.9562
     },
     {
       "repository": "mastra-ai/mastra",
@@ -22320,6 +22788,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -22570,7 +23052,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.5257
+      "elapsed_seconds": 4.6534
     },
     {
       "repository": "vercel/ai",
@@ -22964,6 +23446,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -23213,34 +23709,40 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.8067
+      "elapsed_seconds": 4.9512
     },
     {
       "repository": "cline/cline",
       "category": "coding-agent",
       "status": "ok",
-      "files_scanned": 187,
-      "dependency_files_materialized": 0,
+      "files_scanned": 194,
+      "dependency_files_materialized": 7,
       "config_files_scanned": 0,
       "components": {
-        "agent": 11,
-        "capability": 106,
-        "control-setting": 41,
-        "framework": 4,
+        "agent": 13,
+        "capability": 107,
+        "control": 1,
+        "control-setting": 43,
+        "framework": 5,
         "mcp": 4,
         "mcp-server": 3,
         "model": 6,
         "protocol": 29,
         "provider": 1,
-        "tool": 1
+        "tool": 2
       },
       "component_names": {
         "capability": [
           "filesystem",
           "network",
-          "shell-execution"
+          "shell-execution",
+          "subagent-privileged-tool-execution"
+        ],
+        "control": [
+          "subagent-tool-approval-propagation"
         ],
         "control-setting": [
+          "Cline SDK tool approval policy",
           "auto-approval"
         ],
         "framework": [
@@ -23305,22 +23807,22 @@
         "groq": 0,
         "cohere": 0
       },
-      "relationships": 2,
-      "symbolized_components": 12,
-      "identified_symbol_endpoints": 3,
-      "resolved_symbol_endpoints": 3,
+      "relationships": 7,
+      "symbolized_components": 17,
+      "identified_symbol_endpoints": 12,
+      "resolved_symbol_endpoints": 12,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
         "py": 0,
-        "ts": 3
+        "ts": 12
       },
       "typescript_graph": {
-        "agent_edges": 1,
+        "agent_edges": 4,
         "agent_delegations": 0,
-        "agent_tool_edges": 1,
-        "resolved_agent_tool_edges": 1
+        "agent_tool_edges": 2,
+        "resolved_agent_tool_edges": 2
       },
       "typescript_tool_registrations": {
         "mastra_create_tool": 1,
@@ -23612,6 +24114,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 1,
+        "agents": 2,
+        "tools": 1,
+        "capabilities": 1,
+        "controls": 1,
+        "settings": 1,
+        "parent_tool_edges": 1,
+        "delegation_edges": 1,
+        "child_capability_edges": 1,
+        "setting_edges": 1,
+        "control_edges": 1,
+        "approval_findings": 1
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -23851,18 +24367,19 @@
         "typescript": 0
       },
       "bom_endpoint_resolutions": {
-        "evidence-location": 1,
-        "symbol-id": 3
+        "evidence-location": 2,
+        "symbol-id": 12
       },
       "bom_ambiguous_endpoints_by_side_kind": {},
       "findings": {
-        "AV-APPROVAL001": 5,
+        "AV-APPROVAL001": 6,
+        "AV-APPROVAL010": 1,
         "AV-EXEC001": 1
       },
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.8333
+      "elapsed_seconds": 7.6975
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -24265,6 +24782,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -24515,7 +25046,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.2228
+      "elapsed_seconds": 8.4863
     },
     {
       "repository": "continuedev/continue",
@@ -24917,6 +25448,20 @@
         "control_edges": 1,
         "approval_findings": 1
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -25168,7 +25713,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.5071
+      "elapsed_seconds": 4.6329
     },
     {
       "repository": "Aider-AI/aider",
@@ -25557,6 +26102,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -25816,7 +26375,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.7523
+      "elapsed_seconds": 6.1234
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -26200,6 +26759,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -26452,7 +27025,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 2.1061
+      "elapsed_seconds": 2.2217
     },
     {
       "repository": "plandex-ai/plandex",
@@ -26821,6 +27394,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -27065,7 +27652,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0759
+      "elapsed_seconds": 0.0777
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -27449,6 +28036,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -27699,7 +28300,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1
+      "elapsed_seconds": 3.2864
     },
     {
       "repository": "stitionai/devika",
@@ -28095,6 +28696,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -28343,7 +28958,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7887
+      "elapsed_seconds": 0.824
     },
     {
       "repository": "block/goose",
@@ -28736,6 +29351,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -28990,7 +29619,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 7.6938
+      "elapsed_seconds": 7.8115
     },
     {
       "repository": "bytedance/trae-agent",
@@ -29399,6 +30028,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -29663,7 +30306,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7336
+      "elapsed_seconds": 1.7796
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -30054,6 +30697,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -30304,7 +30961,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.4583
+      "elapsed_seconds": 10.6041
     },
     {
       "repository": "openai/codex",
@@ -30680,6 +31337,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -30930,7 +31601,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5136
+      "elapsed_seconds": 1.5961
     },
     {
       "repository": "browser-use/browser-use",
@@ -31333,6 +32004,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -31595,7 +32280,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.8439
+      "elapsed_seconds": 9.4683
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -32017,6 +32702,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -32279,7 +32978,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 19.5325
+      "elapsed_seconds": 20.832
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -32674,6 +33373,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -32929,7 +33642,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0525
+      "elapsed_seconds": 2.0959
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -33317,6 +34030,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -33563,7 +34290,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2294
+      "elapsed_seconds": 2.2512
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -33952,6 +34679,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -34206,7 +34947,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3016
+      "elapsed_seconds": 2.3596
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -34603,6 +35344,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -34856,7 +35611,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.6529
+      "elapsed_seconds": 6.9045
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -35261,6 +36016,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -35514,7 +36283,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.3098
+      "elapsed_seconds": 8.5112
     },
     {
       "repository": "github/github-mcp-server",
@@ -35893,6 +36662,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -36137,7 +36920,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0673
+      "elapsed_seconds": 0.0685
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -36517,6 +37300,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -36761,7 +37558,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1969
+      "elapsed_seconds": 0.1961
     },
     {
       "repository": "awslabs/mcp",
@@ -37153,6 +37950,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -37405,7 +38216,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.8297
+      "elapsed_seconds": 4.9277
     },
     {
       "repository": "docker/mcp-gateway",
@@ -37781,6 +38592,20 @@
         "agent_tool_edges": 0,
         "capability_edges": 0,
         "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
         "setting_edges": 0,
         "control_edges": 0,
         "approval_findings": 0
@@ -38426,6 +39251,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -38685,7 +39524,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.1018
+      "elapsed_seconds": 7.1275
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -39054,6 +39893,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -39298,7 +40151,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0454
+      "elapsed_seconds": 0.0463
     },
     {
       "repository": "langflow-ai/langflow",
@@ -39696,6 +40549,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -39949,7 +40816,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.7977
+      "elapsed_seconds": 6.9258
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -40336,6 +41203,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -40588,7 +41469,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.3234
+      "elapsed_seconds": 6.3077
     },
     {
       "repository": "langgenius/dify",
@@ -40974,6 +41855,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -41221,7 +42116,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.4533
+      "elapsed_seconds": 4.427
     },
     {
       "repository": "n8n-io/n8n",
@@ -41616,6 +42511,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -41868,7 +42777,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.8117
+      "elapsed_seconds": 4.8648
     },
     {
       "repository": "activepieces/activepieces",
@@ -42272,6 +43181,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -42526,7 +43449,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.9558
+      "elapsed_seconds": 2.9555
     },
     {
       "repository": "simstudioai/sim",
@@ -42904,6 +43827,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -43148,7 +44085,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.2082
+      "elapsed_seconds": 9.179
     },
     {
       "repository": "composiohq/composio",
@@ -43555,6 +44492,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -43808,7 +44759,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.7318
+      "elapsed_seconds": 3.6832
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -44208,6 +45159,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -44470,7 +45435,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.4818
+      "elapsed_seconds": 6.2888
     },
     {
       "repository": "e2b-dev/E2B",
@@ -44847,6 +45812,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -45091,7 +46070,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.1432
+      "elapsed_seconds": 5.0957
     },
     {
       "repository": "daytonaio/daytona",
@@ -45456,6 +46435,20 @@
         "agent_tool_edges": 0,
         "capability_edges": 0,
         "server_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
         "setting_edges": 0,
         "control_edges": 0,
         "approval_findings": 0
@@ -46105,6 +47098,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -46354,7 +47361,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.6946
+      "elapsed_seconds": 3.7191
     },
     {
       "repository": "traceloop/openllmetry",
@@ -46765,6 +47772,20 @@
         "control_edges": 0,
         "approval_findings": 0
       },
+      "typescript_cline_subagent_approval": {
+        "frameworks": 0,
+        "agents": 0,
+        "tools": 0,
+        "capabilities": 0,
+        "controls": 0,
+        "settings": 0,
+        "parent_tool_edges": 0,
+        "delegation_edges": 0,
+        "child_capability_edges": 0,
+        "setting_edges": 0,
+        "control_edges": 0,
+        "approval_findings": 0
+      },
       "typescript_letta_default_tools": {
         "agents": 0,
         "tools": 0,
@@ -47017,7 +48038,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.7599
+      "elapsed_seconds": 5.8331
     }
   ]
 }

@@ -8,6 +8,15 @@
       "cookbook/91_tools/mcp_tools.py",
       "libs/agno/agno/tools/mcp/mcp.py"
     ],
+    "cline/cline": [
+      "apps/vscode/src/sdk/sdk-session-lifecycle.ts",
+      "apps/vscode/src/sdk/vscode-session-host.ts",
+      "sdk/packages/core/src/extensions/tools/presets.ts",
+      "sdk/packages/core/src/extensions/tools/team/spawn-agent-tool.ts",
+      "sdk/packages/core/src/runtime/host/local-runtime-host.ts",
+      "sdk/packages/core/src/runtime/host/local/spawn-tool.ts",
+      "sdk/packages/core/src/runtime/orchestration/runtime-builder.ts"
+    ],
     "langflow-ai/langflow": [
       "src/bundles/lfx-bundles/src/lfx_bundles/deepseek/deepseek.py",
       "src/bundles/lfx-bundles/src/lfx_bundles/glean/glean_search_api.py",

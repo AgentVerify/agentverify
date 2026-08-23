@@ -110,6 +110,14 @@ RULE_DEFINITIONS = tuple(
                 "Ask before unclassified MCP calls and auto-allow only a locally reviewed read-only tool allowlist.",
             ),
             RuleMetadata(
+                "AV-APPROVAL010",
+                "review",
+                "high",
+                "high",
+                "A spawned sub-agent loses the parent tool policy and approval callback",
+                "Forward the effective tool policies and approval callback into every spawned agent, and fail closed when either is unavailable.",
+            ),
+            RuleMetadata(
                 "AV-AUDIT001",
                 "review",
                 "medium",
@@ -795,6 +803,31 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                     "high",
                     "Continue CLI plan mode auto-allows every discovered MCP tool without a read-only or risk classification",
                     "Replace the plan-mode wildcard allow with ask; auto-allow only locally reviewed read-only MCP tools, independent of server-supplied names or descriptions.",
+                    "review",
+                )
+            )
+        if (
+            component.kind == "control"
+            and component.name == "subagent-tool-approval-propagation"
+            and component.attributes.get("agent_reachable") is True
+            and component.attributes.get("parent_approval_callback") == "configured"
+            and component.attributes.get("parent_privileged_tools_gated") is True
+            and component.attributes.get("spawn_agent_default_enabled") is True
+            and component.attributes.get("spawn_agent_policy")
+            == "unlisted-auto-approved"
+            and component.attributes.get("child_tool_policies") == "not-forwarded"
+            and component.attributes.get("child_approval_callback") == "not-forwarded"
+            and component.attributes.get("factory_supports_propagation") is True
+        ):
+            ir.findings.append(
+                make_finding(
+                    ir,
+                    component,
+                    "AV-APPROVAL010",
+                    "high",
+                    "high",
+                    "Cline VS Code auto-approves spawn_agent, then drops its tool policy and approval callback before the child receives local shell and editing tools",
+                    "Add spawn_agent to the parent approval policy and forward the effective toolPolicies plus requestToolApproval callback through createSessionSpawnTool into createSpawnAgentTool; fail closed if propagation is unavailable.",
                     "review",
                 )
             )

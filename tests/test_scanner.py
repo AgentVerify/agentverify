@@ -4776,6 +4776,155 @@ def test_continue_plan_mode_mcp_approval_requires_the_exact_cross_file_compositi
         )
 
 
+def test_cline_subagent_approval_requires_the_exact_cross_file_composition(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/typescript_cline_subagent_approval"
+    ir = scan_repository(root / "positive")
+
+    findings = [
+        (finding.rule_id, finding.evidence.path, finding.evidence.line, finding.ir_path)
+        for finding in ir.findings
+        if finding.rule_id == "AV-APPROVAL010"
+    ]
+    assert findings == [
+        (
+            "AV-APPROVAL010",
+            "sdk/packages/core/src/runtime/host/local/spawn-tool.ts",
+            10,
+            (
+                "agent:Cline VS Code SDK root agent",
+                "tool:Cline spawn_agent tool",
+                "control:subagent-tool-approval-propagation",
+            ),
+        )
+    ]
+    specialized = [
+        component
+        for component in ir.components
+        if component.attributes.get("analysis")
+        == "typescript-cline-subagent-approval-propagation"
+    ]
+    assert {(component.kind, component.name) for component in specialized} == {
+        ("framework", "Cline SDK"),
+        ("agent", "Cline VS Code SDK root agent"),
+        ("agent", "Cline SDK spawned sub-agent"),
+        ("tool", "Cline spawn_agent tool"),
+        ("capability", "subagent-privileged-tool-execution"),
+        ("control-setting", "Cline SDK tool approval policy"),
+        ("control", "subagent-tool-approval-propagation"),
+    }
+    control = next(component for component in specialized if component.kind == "control")
+    setting = next(
+        component for component in specialized if component.kind == "control-setting"
+    )
+    assert control.attributes["parent_approval_callback"] == "configured"
+    assert control.attributes["child_approval_callback"] == "not-forwarded"
+    assert control.attributes["child_tool_policies"] == "not-forwarded"
+    assert control.attributes["factory_supports_propagation"] is True
+    assert setting.attributes["default_for_unlisted_tools"] == "auto-approved"
+    assert setting.attributes["spawn_agent_listed"] is False
+    assert sum(
+        edge.attributes.get("analysis")
+        == "typescript-cline-subagent-approval-propagation"
+        for edge in ir.relationships
+    ) == 5
+
+    near = scan_repository(root / "near")
+    assert not any(
+        component.attributes.get("analysis")
+        == "typescript-cline-subagent-approval-propagation"
+        for component in near.components
+    )
+    assert not any(
+        finding.rule_id == "AV-APPROVAL010" for finding in near.findings
+    )
+
+    mutations = {
+        "spawn-policy-gated": (
+            "apps/vscode/src/sdk/sdk-tool-policies.ts",
+            '  set(["run_commands", "execute_command"])\n',
+            '  set(["run_commands", "execute_command"])\n  set(["spawn_agent"])\n',
+        ),
+        "policy-default-asks": (
+            "sdk/packages/agents/src/agent-runtime.ts",
+            "policy.autoApprove === false",
+            "policy.autoApprove !== true",
+        ),
+        "root-policy-not-installed": (
+            "apps/vscode/src/sdk/sdk-session-lifecycle.ts",
+            "...(toolPolicies ? { toolPolicies } : {}),",
+            "toolPolicies: undefined,",
+        ),
+        "root-callback-not-wired": (
+            "apps/vscode/src/sdk/vscode-session-host.ts",
+            "requestToolApproval: options.requestToolApproval,",
+            "requestToolApproval: undefined,",
+        ),
+        "spawn-disabled-by-default": (
+            "sdk/packages/core/src/runtime/orchestration/runtime-builder.ts",
+            "config.enableSpawnAgent ?? preset.enableSpawnAgent ?? true",
+            "config.enableSpawnAgent ?? false",
+        ),
+        "act-preset-does-not-spawn": (
+            "sdk/packages/core/src/extensions/tools/presets.ts",
+            "enableSpawnAgent: true,",
+            "enableSpawnAgent: false,",
+        ),
+        "wrapper-forwards-approval-state": (
+            "sdk/packages/core/src/runtime/host/local/spawn-tool.ts",
+            "    createSubAgentTools,\n",
+            "    createSubAgentTools,\n    toolPolicies: config.toolPolicies,\n    requestToolApproval: config.requestToolApproval,\n",
+        ),
+        "factory-does-not-propagate-policy": (
+            "sdk/packages/core/src/extensions/tools/team/spawn-agent-tool.ts",
+            "toolPolicies: config.toolPolicies,",
+            "toolPolicies: undefined,",
+        ),
+    }
+    for name, (relative, before, after) in mutations.items():
+        changed = tmp_path / name
+        shutil.copytree(root / "positive", changed)
+        path = changed / relative
+        original = path.read_text(encoding="utf-8")
+        assert before in original
+        path.write_text(original.replace(before, after, 1), encoding="utf-8")
+        changed_ir = scan_repository(changed)
+        assert not any(
+            component.attributes.get("analysis")
+            == "typescript-cline-subagent-approval-propagation"
+            for component in changed_ir.components
+        )
+        assert not any(
+            finding.rule_id == "AV-APPROVAL010"
+            for finding in changed_ir.findings
+        )
+
+    ignored_host_arguments = tmp_path / "ignored-host-arguments"
+    shutil.copytree(root / "positive", ignored_host_arguments)
+    host_path = (
+        ignored_host_arguments
+        / "sdk/packages/core/src/runtime/host/local-runtime-host.ts"
+    )
+    host_text = host_path.read_text(encoding="utf-8")
+    before = "          sessionToolExecutors,\n"
+    assert before in host_text
+    host_path.write_text(
+        host_text.replace(
+            before,
+            before
+            + "          bootstrap.toolPolicies,\n"
+            + "          bootstrap.requestToolApproval,\n",
+            1,
+        ),
+        encoding="utf-8",
+    )
+    ignored_ir = scan_repository(ignored_host_arguments)
+    assert any(
+        finding.rule_id == "AV-APPROVAL010" for finding in ignored_ir.findings
+    )
+
+
 def test_letta_default_tools_require_the_exact_cross_file_composition(
     tmp_path: Path,
 ) -> None:

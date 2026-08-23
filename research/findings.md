@@ -423,6 +423,18 @@ AV-APPROVAL009 reports only that selected-mode wildcard path. It does not claim 
 default, that unconfigured servers are reachable, or that every MCP tool mutates state; the gap is
 the absence of a locally enforced effect classification before automatic execution.
 
+Schema v122 resolves Cline VS Code's delegation boundary. Its SDK policy builder explicitly states
+that unlisted tools default to auto-approved and gates root `editor`/`run_commands`, but not
+`spawn_agent`. The core runtime default-enables spawning, and the local
+[`createSessionSpawnTool`](https://github.com/cline/cline/blob/80b3b0348e694bafc48e3dcd70154de3cf4289d9/sdk/packages/core/src/runtime/host/local/spawn-tool.ts#L121-L149)
+builds child tools from the Act preset before calling `createSpawnAgentTool` without a tool policy or
+approval callback. The shared factory already supports and forwards both fields to the delegated
+agent. AV-APPROVAL010 reports the resulting exact path: the parent can auto-execute `spawn_agent`,
+and the child receives local shell/edit tools under the SDK's unlisted-tool default. It does not
+claim all sub-agent designs require separate prompts; it identifies a concrete mismatch with this
+host's own per-tool approval policy and documents forwarding the effective policy/callback as the
+fix.
+
 ## 4. Provider identity is a governance dependency
 
 OpenAI signals appear in 51 repositories, Anthropic in 37, Google in 28, Azure OpenAI in 18, and AWS
@@ -677,7 +689,7 @@ cross-branch, forward, inconsistent/untyped parameters, conditional/transformed 
 external receivers, shadowed factories, lambdas, and reassigned fixture cases stay unresolved. Two apparent CrewAI
 re-export misses were false identities:
 a function parameter and a local assignment shadowed the imported `tool` binding. Scope-isolating
-module and function imports now withhold those IDs, so all 3,937 identified endpoints resolve.
+module and function imports now withhold those IDs, so all 3,946 identified endpoints resolve.
 A governance export that collapses those references
 by name would silently attach controls or risks to the wrong asset.
 

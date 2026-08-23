@@ -802,6 +802,14 @@ allow-without-prompt runtime branch, conversion of discovered MCP schemas into m
 configured server boundary, adapter, invocation capability, selected-mode setting, and missing local
 effect classification with five exact relationships. An ask wildcard, retained read-only
 classification, mediated dispatch, incomplete role, or duplicate role withholds the composition.
+Schema v122 adds a nine-source Cline VS Code approval-propagation composition. The root host installs
+explicit tool policies and a request callback, but unlisted SDK tools execute by default;
+`spawn_agent` is both default-enabled and absent from the root list. The local session spawn wrapper
+then constructs the Act preset's local shell/edit tools and calls the shared spawn factory without
+the policy or callback fields that the factory supports and forwards to delegated agents. The graph
+therefore models the root and child agents separately, the delegation edge, the child privileged-tool
+capability, and an approval-state-dropped control. A spawn policy entry, default-ask semantics,
+disabled spawning, or forwarding either approval input withholds the composition.
 Import-proven `CodeInterpreterTool` instances similarly expose that their SDK constructor has no
 approval hook, but they carry `execution_environment: hosted-sandbox` and
 `sandbox_policy: sdk-hosted`. Literal auto-container selection is preserved as configuration

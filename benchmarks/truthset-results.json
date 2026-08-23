@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-23T14:48:08.600432+00:00",
-  "labels": 706,
-  "passed": 706,
+  "generated_at": "2026-08-23T15:48:36.612176+00:00",
+  "labels": 710,
+  "passed": 710,
   "metrics": {
     "AV-A2A001": {
       "tp": 4,
@@ -77,6 +77,14 @@
       "recall": 1.0
     },
     "AV-APPROVAL009": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 2,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "AV-APPROVAL010": {
       "tp": 2,
       "fp": 0,
       "tn": 2,
@@ -6538,6 +6546,42 @@
     {
       "id": "approval-continue-plan-mcp-safe-local-negative",
       "rule_id": "AV-APPROVAL009",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-cline-subagent-propagation-local",
+      "rule_id": "AV-APPROVAL010",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-cline-subagent-propagation-real",
+      "rule_id": "AV-APPROVAL010",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-cline-subagent-near-local-negative",
+      "rule_id": "AV-APPROVAL010",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-cline-subagent-forwarded-local-negative",
+      "rule_id": "AV-APPROVAL010",
       "expected": false,
       "observed": false,
       "anchor_ok": true,
