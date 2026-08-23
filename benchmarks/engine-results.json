@@ -1,6 +1,6 @@
 {
-  "schema_version": 113,
-  "generated_at": "2026-08-22T23:48:10.633420+00:00",
+  "schema_version": 114,
+  "generated_at": "2026-08-23T00:24:06.743558+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -20,10 +20,10 @@
     "dependency_files_materialized": 176,
     "repositories_with_dependency_expansion": 21,
     "config_files_scanned": 155,
-    "relationships": 2312,
-    "symbolized_components": 10028,
-    "identified_symbol_endpoints": 3845,
-    "resolved_symbol_endpoints": 3845,
+    "relationships": 2316,
+    "symbolized_components": 10030,
+    "identified_symbol_endpoints": 3847,
+    "resolved_symbol_endpoints": 3847,
     "unmatched_identified_symbol_endpoints": 0,
     "ambiguous_repeated_binding_targets": 2,
     "resolved_binding_targets_by_basis": {
@@ -40,11 +40,11 @@
       "same-class-helper-return": 3,
       "typed-parameter-callsite-consensus": 1
     },
-    "relationship_endpoints": 4624,
+    "relationship_endpoints": 4632,
     "bom_endpoint_resolutions": {
       "ambiguous": 38,
-      "evidence-location": 670,
-      "symbol-id": 3837,
+      "evidence-location": 676,
+      "symbol-id": 3839,
       "unique-display-name": 21,
       "unresolved": 58
     },
@@ -57,7 +57,7 @@
       "target:tool": 21
     },
     "resolved_symbol_endpoints_by_frontend": {
-      "py": 3532,
+      "py": 3534,
       "ts": 313
     },
     "python_provider_call_attribution": {
@@ -563,6 +563,12 @@
       "capability_edges": 1,
       "repositories": 1
     },
+    "python_dify_agent_shell_layers": {
+      "total": 2,
+      "runtime_edges": 2,
+      "default_disabled": 2,
+      "repositories": 1
+    },
     "python_filesystem_mutations": {
       "total": 449,
       "callable_aliases": 1,
@@ -673,7 +679,7 @@
         "media-generation": 2,
         "model-sampling": 4,
         "network": 58,
-        "shell-execution": 46,
+        "shell-execution": 47,
         "user-elicitation": 3
       },
       "control": {
@@ -692,6 +698,7 @@
         "path-boundary": 4,
         "path-prefix-check": 1,
         "path-segment-sanitizer": 1,
+        "sandbox-runtime": 1,
         "tool-allowlist": 1,
         "tool-registry": 2
       },
@@ -710,6 +717,7 @@
         "CAMEL": 1,
         "Cline SDK": 1,
         "CrewAI": 4,
+        "Dify Agent": 1,
         "Google ADK": 3,
         "Lagent": 1,
         "LangChain": 18,
@@ -845,10 +853,10 @@
       "visual-platform": {
         "repositories": 4,
         "source_bearing": 4,
-        "with_framework": 1,
+        "with_framework": 2,
         "with_provider": 1,
         "with_protocol": 1,
-        "with_capability": 3
+        "with_capability": 4
       },
       "workflow-agent": {
         "repositories": 3,
@@ -867,7 +875,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 358.2081
+    "elapsed_seconds": 373.3888
   },
   "repositories": [
     {
@@ -1383,6 +1391,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -1408,7 +1421,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.1115
+      "elapsed_seconds": 5.2471
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -1931,6 +1944,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 4,
         "callable_aliases": 0,
@@ -1961,7 +1979,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.6378
+      "elapsed_seconds": 8.985
     },
     {
       "repository": "langchain-ai/langchain",
@@ -2480,6 +2498,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -2503,7 +2526,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4158
+      "elapsed_seconds": 3.5625
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -3026,6 +3049,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 8,
         "callable_aliases": 0,
@@ -3057,7 +3085,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 12.2087
+      "elapsed_seconds": 12.7589
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -3585,6 +3613,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 1,
         "callable_aliases": 0,
@@ -3612,7 +3645,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5775
+      "elapsed_seconds": 0.5913
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -4145,6 +4178,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 31,
         "callable_aliases": 0,
@@ -4185,7 +4223,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 13.6142
+      "elapsed_seconds": 14.2792
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -4723,6 +4761,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 37,
         "callable_aliases": 0,
@@ -4770,7 +4813,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.2564
+      "elapsed_seconds": 8.7145
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -5303,6 +5346,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 3,
         "callable_aliases": 0,
@@ -5340,7 +5388,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9244
+      "elapsed_seconds": 0.9502
     },
     {
       "repository": "microsoft/autogen",
@@ -5868,6 +5916,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 1,
         "callable_aliases": 0,
@@ -5900,7 +5953,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2632
+      "elapsed_seconds": 2.3792
     },
     {
       "repository": "microsoft/agent-framework",
@@ -6410,6 +6463,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -6433,7 +6491,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0554
+      "elapsed_seconds": 0.0618
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -6968,6 +7026,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 1,
         "callable_aliases": 0,
@@ -7003,7 +7066,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3513
+      "elapsed_seconds": 0.3606
     },
     {
       "repository": "openai/openai-agents-python",
@@ -7557,6 +7620,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 17,
         "callable_aliases": 0,
@@ -7601,7 +7669,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 13.9382
+      "elapsed_seconds": 14.7607
     },
     {
       "repository": "openai/openai-agents-js",
@@ -8144,6 +8212,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -8178,7 +8251,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3058
+      "elapsed_seconds": 2.4191
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -8723,6 +8796,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 1,
         "callable_aliases": 0,
@@ -8759,7 +8837,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 28.9905
+      "elapsed_seconds": 31.0803
     },
     {
       "repository": "google/adk-python",
@@ -9300,6 +9378,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 4,
         "callable_aliases": 0,
@@ -9337,7 +9420,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.9606
+      "elapsed_seconds": 11.5912
     },
     {
       "repository": "google/adk-js",
@@ -9869,6 +9952,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -9899,7 +9987,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.8017
+      "elapsed_seconds": 6.0235
     },
     {
       "repository": "huggingface/smolagents",
@@ -10429,6 +10517,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 15,
         "callable_aliases": 0,
@@ -10468,7 +10561,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3311
+      "elapsed_seconds": 3.5616
     },
     {
       "repository": "agno-agi/agno",
@@ -11010,6 +11103,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 4,
         "callable_aliases": 0,
@@ -11050,7 +11148,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.5188
+      "elapsed_seconds": 1.5825
     },
     {
       "repository": "camel-ai/camel",
@@ -11587,6 +11685,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 76,
         "callable_aliases": 0,
@@ -11628,7 +11731,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.0303
+      "elapsed_seconds": 7.3898
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -12157,6 +12260,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -12186,7 +12294,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.5568
+      "elapsed_seconds": 0.5891
     },
     {
       "repository": "run-llama/llama_index",
@@ -12710,6 +12818,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -12733,7 +12846,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.413
+      "elapsed_seconds": 2.553
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -13267,6 +13380,11 @@
         "hexadecimal": 1,
         "capability_edges": 1
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 30,
         "callable_aliases": 0,
@@ -13308,7 +13426,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.8155
+      "elapsed_seconds": 4.0036
     },
     {
       "repository": "InternLM/lagent",
@@ -13839,6 +13957,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 2,
         "callable_aliases": 0,
@@ -13875,7 +13998,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7634
+      "elapsed_seconds": 1.8356
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -14404,6 +14527,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 9,
         "callable_aliases": 0,
@@ -14442,7 +14570,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.052
+      "elapsed_seconds": 3.1994
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -14969,6 +15097,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 16,
         "callable_aliases": 0,
@@ -15010,7 +15143,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.088
+      "elapsed_seconds": 4.3134
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -15533,6 +15666,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 26,
         "callable_aliases": 0,
@@ -15570,7 +15708,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6827
+      "elapsed_seconds": 2.7673
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -16094,6 +16232,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 13,
         "callable_aliases": 0,
@@ -16127,7 +16270,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.8384
+      "elapsed_seconds": 10.2186
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -16647,6 +16790,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 16,
         "callable_aliases": 0,
@@ -16679,7 +16827,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2075
+      "elapsed_seconds": 3.376
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -17200,6 +17348,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -17223,7 +17376,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9358
+      "elapsed_seconds": 2.0252
     },
     {
       "repository": "letta-ai/letta-code",
@@ -17738,6 +17891,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -17761,7 +17919,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.0126
+      "elapsed_seconds": 8.3187
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -18293,6 +18451,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 4,
         "callable_aliases": 0,
@@ -18330,7 +18493,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7784
+      "elapsed_seconds": 2.9328
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -18867,6 +19030,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 16,
         "callable_aliases": 0,
@@ -18905,7 +19073,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.382
+      "elapsed_seconds": 5.7126
     },
     {
       "repository": "mastra-ai/mastra",
@@ -19436,6 +19604,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -19465,7 +19638,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.4499
+      "elapsed_seconds": 4.6356
     },
     {
       "repository": "vercel/ai",
@@ -19991,6 +20164,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -20019,7 +20197,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.7605
+      "elapsed_seconds": 4.9515
     },
     {
       "repository": "cline/cline",
@@ -20550,6 +20728,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -20579,7 +20762,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.7919
+      "elapsed_seconds": 7.0756
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -21099,6 +21282,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -21122,7 +21310,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.2171
+      "elapsed_seconds": 7.4993
     },
     {
       "repository": "continuedev/continue",
@@ -21638,6 +21826,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -21661,7 +21854,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.2414
+      "elapsed_seconds": 4.4351
     },
     {
       "repository": "Aider-AI/aider",
@@ -22182,6 +22375,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 48,
         "callable_aliases": 0,
@@ -22220,7 +22418,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.5956
+      "elapsed_seconds": 6.0235
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -22736,6 +22934,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 2,
         "callable_aliases": 0,
@@ -22767,7 +22970,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 2.0605
+      "elapsed_seconds": 2.1732
     },
     {
       "repository": "plandex-ai/plandex",
@@ -23268,6 +23471,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -23291,7 +23499,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0696
+      "elapsed_seconds": 0.0783
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -23807,6 +24015,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 8,
         "callable_aliases": 0,
@@ -23836,7 +24049,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.004
+      "elapsed_seconds": 3.192
     },
     {
       "repository": "stitionai/devika",
@@ -24364,6 +24577,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 8,
         "callable_aliases": 0,
@@ -24391,7 +24609,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7554
+      "elapsed_seconds": 0.7846
     },
     {
       "repository": "block/goose",
@@ -24916,6 +25134,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -24949,7 +25172,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 7.621
+      "elapsed_seconds": 7.9268
     },
     {
       "repository": "bytedance/trae-agent",
@@ -25480,6 +25703,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 8,
         "callable_aliases": 0,
@@ -25520,7 +25748,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.6713
+      "elapsed_seconds": 1.8005
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -26043,6 +26271,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -26072,7 +26305,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.2986
+      "elapsed_seconds": 10.6822
     },
     {
       "repository": "openai/codex",
@@ -26580,6 +26813,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 5,
         "callable_aliases": 0,
@@ -26609,7 +26847,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.4787
+      "elapsed_seconds": 1.5901
     },
     {
       "repository": "browser-use/browser-use",
@@ -27144,6 +27382,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 9,
         "callable_aliases": 0,
@@ -27185,7 +27428,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.8169
+      "elapsed_seconds": 9.35
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -27739,6 +27982,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 4,
         "callable_aliases": 0,
@@ -27780,7 +28028,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 19.337
+      "elapsed_seconds": 20.4414
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -28307,6 +28555,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 8,
         "callable_aliases": 0,
@@ -28341,7 +28594,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0066
+      "elapsed_seconds": 2.0558
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -28861,6 +29114,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -28886,7 +29144,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1658
+      "elapsed_seconds": 2.2462
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -29407,6 +29665,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 1,
         "callable_aliases": 0,
@@ -29440,7 +29703,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2725
+      "elapsed_seconds": 2.3518
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -29969,6 +30232,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -30001,7 +30269,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.4009
+      "elapsed_seconds": 6.7263
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -30538,6 +30806,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -30570,7 +30843,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.2062
+      "elapsed_seconds": 8.423
     },
     {
       "repository": "github/github-mcp-server",
@@ -31081,6 +31354,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -31104,7 +31382,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0619
+      "elapsed_seconds": 0.0703
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -31616,6 +31894,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -31639,7 +31922,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1879
+      "elapsed_seconds": 0.1878
     },
     {
       "repository": "awslabs/mcp",
@@ -32163,6 +32446,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 5,
         "callable_aliases": 0,
@@ -32194,7 +32482,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.7615
+      "elapsed_seconds": 4.7729
     },
     {
       "repository": "docker/mcp-gateway",
@@ -32706,6 +32994,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -32731,7 +33024,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0503
+      "elapsed_seconds": 0.0578
     },
     {
       "repository": "jlowin/fastmcp",
@@ -33258,6 +33551,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 1,
         "callable_aliases": 0,
@@ -33296,7 +33594,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.9264
+      "elapsed_seconds": 6.965
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -33797,6 +34095,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -33820,7 +34123,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0416
+      "elapsed_seconds": 0.0477
     },
     {
       "repository": "langflow-ai/langflow",
@@ -34350,6 +34653,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 1,
         "callable_aliases": 0,
@@ -34382,7 +34690,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.6821
+      "elapsed_seconds": 6.7065
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -34901,6 +35209,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -34932,7 +35245,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.2174
+      "elapsed_seconds": 6.2838
     },
     {
       "repository": "langgenius/dify",
@@ -34943,9 +35256,23 @@
       "config_files_scanned": 0,
       "components": {
         "agent": 5,
-        "mcp": 1
+        "capability": 2,
+        "control": 2,
+        "framework": 23,
+        "mcp": 1,
+        "tool": 2
       },
-      "component_names": {},
+      "component_names": {
+        "capability": [
+          "shell-execution"
+        ],
+        "control": [
+          "sandbox-runtime"
+        ],
+        "framework": [
+          "Dify Agent"
+        ]
+      },
       "python_provider_call_attribution": {
         "calls": 0,
         "production_calls": 0,
@@ -34996,15 +35323,15 @@
         "groq": 0,
         "cohere": 0
       },
-      "relationships": 0,
-      "symbolized_components": 5,
-      "identified_symbol_endpoints": 0,
-      "resolved_symbol_endpoints": 0,
+      "relationships": 4,
+      "symbolized_components": 7,
+      "identified_symbol_endpoints": 2,
+      "resolved_symbol_endpoints": 2,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
-        "py": 0,
+        "py": 2,
         "ts": 0
       },
       "typescript_graph": {
@@ -35436,6 +35763,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 2,
+        "runtime_edges": 2,
+        "default_disabled": 2
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -35453,13 +35785,16 @@
         "python": 0,
         "typescript": 0
       },
-      "bom_endpoint_resolutions": {},
+      "bom_endpoint_resolutions": {
+        "evidence-location": 6,
+        "symbol-id": 2
+      },
       "bom_ambiguous_endpoints_by_side_kind": {},
       "findings": {},
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.3944
+      "elapsed_seconds": 4.3923
     },
     {
       "repository": "n8n-io/n8n",
@@ -35986,6 +36321,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -36017,7 +36357,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.7854
+      "elapsed_seconds": 4.8425
     },
     {
       "repository": "activepieces/activepieces",
@@ -36553,6 +36893,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -36586,7 +36931,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8845
+      "elapsed_seconds": 2.9293
     },
     {
       "repository": "simstudioai/sim",
@@ -37096,6 +37441,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -37119,7 +37469,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.1455
+      "elapsed_seconds": 9.2777
     },
     {
       "repository": "composiohq/composio",
@@ -37658,6 +38008,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -37690,7 +38045,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.5949
+      "elapsed_seconds": 3.714
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -38222,6 +38577,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 6,
         "callable_aliases": 1,
@@ -38263,7 +38623,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.2596
+      "elapsed_seconds": 6.2694
     },
     {
       "repository": "e2b-dev/E2B",
@@ -38772,6 +39132,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -38795,7 +39160,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.0143
+      "elapsed_seconds": 5.0564
     },
     {
       "repository": "daytonaio/daytona",
@@ -39296,6 +39661,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -39319,7 +39689,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0003
+      "elapsed_seconds": 0.001
     },
     {
       "repository": "AgentOps-AI/agentops",
@@ -39852,6 +40222,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -39880,7 +40255,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.6048
+      "elapsed_seconds": 3.6129
     },
     {
       "repository": "traceloop/openllmetry",
@@ -40423,6 +40798,11 @@
         "hexadecimal": 0,
         "capability_edges": 0
       },
+      "python_dify_agent_shell_layers": {
+        "total": 0,
+        "runtime_edges": 0,
+        "default_disabled": 0
+      },
       "python_filesystem_mutations": {
         "total": 0,
         "callable_aliases": 0,
@@ -40454,7 +40834,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.5479
+      "elapsed_seconds": 5.609
     }
   ]
 }

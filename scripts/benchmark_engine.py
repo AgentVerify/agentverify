@@ -944,6 +944,26 @@ def main() -> int:
             and edge.target_name == "path-segment-sanitizer"
             and edge.evidence.path.endswith(".py")
         ]
+        python_dify_agent_shell_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "tool"
+            and edge.source_name == "dify.shell"
+            and edge.relation == "uses"
+            and edge.target_kind == "capability"
+            and edge.target_name == "shell-execution"
+            and edge.attributes.get("analysis") == "python-dify-agent-shell-layer"
+        ]
+        python_dify_agent_runtime_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "capability"
+            and edge.source_name == "shell-execution"
+            and edge.relation == "governed-by"
+            and edge.target_kind == "control"
+            and edge.target_name == "sandbox-runtime"
+            and edge.attributes.get("analysis") == "python-dify-agent-shell-layer"
+        ]
         python_filesystem_mutations = [
             item
             for item in ir.components
@@ -2556,6 +2576,14 @@ def main() -> int:
                 ),
                 "capability_edges": len(python_path_segment_sanitizer_edges),
             },
+            "python_dify_agent_shell_layers": {
+                "total": len(python_dify_agent_shell_edges),
+                "runtime_edges": len(python_dify_agent_runtime_edges),
+                "default_disabled": sum(
+                    edge.attributes.get("enabled_default") is False
+                    for edge in python_dify_agent_runtime_edges
+                ),
+            },
             "python_filesystem_mutations": {
                 "total": len(python_filesystem_mutations),
                 "callable_aliases": sum(
@@ -2631,7 +2659,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 113,
+        "schema_version": 114,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -3423,6 +3451,19 @@ def main() -> int:
             | {
                 "repositories": sum(
                     result["python_path_segment_sanitizers"]["total"] > 0
+                    for result in successful
+                )
+            },
+            "python_dify_agent_shell_layers": {
+                name: sum(
+                    result["python_dify_agent_shell_layers"][name]
+                    for result in successful
+                )
+                for name in ("total", "runtime_edges", "default_disabled")
+            }
+            | {
+                "repositories": sum(
+                    result["python_dify_agent_shell_layers"]["total"] > 0
                     for result in successful
                 )
             },

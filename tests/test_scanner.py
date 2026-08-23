@@ -1024,6 +1024,76 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
     )
 
 
+def test_python_dify_shell_layer_requires_default_off_runtime_composition() -> None:
+    ir = scan_repository(ROOT / "cases/python_dify_agent_shell_layer")
+
+    assert any(
+        item.kind == "framework"
+        and item.name == "Dify Agent"
+        and item.evidence.path == "app.py"
+        and item.attributes["module"] == "dify_agent.layers.runtime"
+        for item in ir.components
+    )
+    assert not any(
+        item.kind == "framework"
+        and item.name == "Dify Agent"
+        and item.evidence.path == "near_name.py"
+        for item in ir.components
+    )
+    composition = [
+        item
+        for item in ir.components
+        if item.attributes.get("analysis") == "python-dify-agent-shell-layer"
+    ]
+    assert [
+        (item.kind, item.name, item.evidence.path, item.evidence.line)
+        for item in composition
+    ] == [
+        ("control", "sandbox-runtime", "app.py", 25),
+        ("capability", "shell-execution", "app.py", 33),
+        ("tool", "dify.shell", "app.py", 33),
+    ]
+    shell = next(item for item in composition if item.kind == "tool")
+    assert shell.attributes == {
+        "scope": "production",
+        "frontend": "python",
+        "framework": "Dify Agent",
+        "analysis": "python-dify-agent-shell-layer",
+        "composition_method": "build",
+        "conditional": True,
+        "enabled_default": False,
+        "enable_sources": [
+            "run_input.include_shell",
+            "run_input.config_layer_config",
+        ],
+        "constructor": "DifyShellLayerConfig",
+        "registration": "conditional-run-layer",
+    }
+    assert [
+        (
+            edge.source_kind,
+            edge.source_name,
+            edge.relation,
+            edge.target_kind,
+            edge.target_name,
+            edge.evidence.line,
+        )
+        for edge in ir.relationships
+        if edge.attributes.get("analysis") == "python-dify-agent-shell-layer"
+    ] == [
+        (
+            "capability",
+            "shell-execution",
+            "governed-by",
+            "control",
+            "sandbox-runtime",
+            33,
+        ),
+        ("tool", "dify.shell", "uses", "capability", "shell-execution", 33),
+    ]
+    assert not ir.findings
+
+
 def test_agno_provider_wrappers_require_exact_unrebound_imports() -> None:
     ir = scan_repository(ROOT / "cases/framework_provider_taxonomy")
 

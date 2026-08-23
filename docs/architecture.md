@@ -171,6 +171,17 @@ scope, and image generation records a provider-hosted media boundary. These fact
 caller-selected network origin, local data access, or provider retention guarantee. Same-named
 constructors from other frameworks, near packages, duplicate imports, and rebound names are withheld.
 
+Schema v114 recognizes `dify_agent` as a Python framework boundary and resolves its conditional
+shell run-layer composition without treating a request builder as a direct subprocess sink. The
+input model must default both `include_shell` and the config layer to disabled, the immutable guard
+must immediately dominate exact `RunLayerSpec` calls for `DifyRuntimeLayerConfig` and
+`DifyShellLayerConfig`, and the shell dependency helper must return the one immutable runtime ID.
+The same immutable layer list must reach the returned `RunComposition`.
+The IR emits `dify.shell → shell-execution → sandbox-runtime`; the control records that execution is
+routed through a deployment-selected runtime binding while leaving the external runtime's actual
+containment `external-unresolved`. Missing runtime layers, enabled defaults, reordered/reassigned
+guards, near packages, and rebound imported constructors withhold the composition.
+
 Names are intentionally not treated as globally unique. Python and TypeScript agent/tool definitions
 carry stable frontend-and-module-qualified `symbol_id` values; relationships carry `source_id` and
 `target_id` when resolution succeeds. Context analysis prefers those IDs and falls back to the older

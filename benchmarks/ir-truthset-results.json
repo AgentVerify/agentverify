@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-22T23:57:33.900816+00:00",
-  "labels": 1227,
-  "passed": 1227,
+  "generated_at": "2026-08-23T00:22:28.148608+00:00",
+  "labels": 1234,
+  "passed": 1234,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -37,9 +37,9 @@
       "recall": 1.0
     },
     "IR-COMPONENT-TAXONOMY": {
-      "tp": 301,
+      "tp": 303,
       "fp": 0,
-      "tn": 119,
+      "tn": 120,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -192,6 +192,14 @@
       "tp": 3,
       "fp": 0,
       "tn": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-DIFY-SHELL-LAYER": {
+      "tp": 3,
+      "fp": 0,
+      "tn": 1,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -11587,6 +11595,69 @@
     {
       "id": "provider-typescript-ai-sdk-model-binding-activepieces-real",
       "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "framework-python-dify-agent-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "framework-python-dify-agent-near-name-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "framework-python-dify-agent-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-dify-shell-layer-local",
+      "check_id": "IR-PY-DIFY-SHELL-LAYER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-dify-shell-runtime-local",
+      "check_id": "IR-PY-DIFY-SHELL-LAYER",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-dify-shell-missing-runtime-local-negative",
+      "check_id": "IR-PY-DIFY-SHELL-LAYER",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-dify-shell-runtime-real",
+      "check_id": "IR-PY-DIFY-SHELL-LAYER",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

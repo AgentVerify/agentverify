@@ -84,6 +84,7 @@ FRONTEND_IMPORT_SIGNATURES = {
         "framework": {
             "Microsoft Agent Framework": ("agent_framework",),
             "CAMEL": ("camel.agents",),
+            "Dify Agent": ("dify_agent",),
             "Qwen-Agent": ("qwen_agent",),
             "Lagent": ("lagent",),
             "MetaGPT": ("metagpt",),
@@ -108,6 +109,418 @@ FRONTEND_IMPORT_SIGNATURES = {
         },
     },
 }
+
+
+def add_python_dify_agent_shell_layers(
+    ir: RepositoryIR,
+    relative: str,
+    text: str,
+    tree: ast.Module,
+    module_import_binding_counts: Counter[str],
+    module_mutation_counts: Counter[str],
+    module_rebound_names: set[str],
+) -> None:
+    """Resolve conditional Dify shell layers paired with their runtime binding."""
+
+    def imported_bindings(module: str, symbol: str) -> set[str]:
+        return {
+            local_name
+            for statement in tree.body
+            if isinstance(statement, ast.ImportFrom)
+            and statement.level == 0
+            and statement.module == module
+            for alias in statement.names
+            if alias.name == symbol
+            and (local_name := alias.asname or alias.name)
+            and module_import_binding_counts[local_name] == 1
+            and local_name not in module_rebound_names
+        }
+
+    run_layer_constructors = imported_bindings("dify_agent.protocol", "RunLayerSpec")
+    create_request_types = imported_bindings("dify_agent.protocol", "CreateRunRequest")
+    run_composition_constructors = imported_bindings(
+        "dify_agent.protocol", "RunComposition"
+    )
+    runtime_layer_types = imported_bindings(
+        "dify_agent.layers.runtime", "DIFY_RUNTIME_LAYER_TYPE_ID"
+    )
+    runtime_config_constructors = imported_bindings(
+        "dify_agent.layers.runtime", "DifyRuntimeLayerConfig"
+    )
+    shell_layer_types = imported_bindings(
+        "dify_agent.layers.shell", "DIFY_SHELL_LAYER_TYPE_ID"
+    )
+    shell_config_constructors = imported_bindings(
+        "dify_agent.layers.shell", "DifyShellLayerConfig"
+    )
+    if not all(
+        (
+            run_layer_constructors,
+            create_request_types,
+            run_composition_constructors,
+            runtime_layer_types,
+            runtime_config_constructors,
+            shell_layer_types,
+            shell_config_constructors,
+        )
+    ):
+        return
+
+    default_disabled_inputs: set[str] = set()
+    for candidate in tree.body:
+        if not isinstance(candidate, ast.ClassDef):
+            continue
+        defaults = {
+            statement.target.id: statement.value.value
+            for statement in candidate.body
+            if isinstance(statement, ast.AnnAssign)
+            and isinstance(statement.target, ast.Name)
+            and isinstance(statement.value, ast.Constant)
+        }
+        if defaults.get("include_shell") is False and defaults.get(
+            "config_layer_config", object()
+        ) is None:
+            default_disabled_inputs.add(candidate.name)
+    if not default_disabled_inputs:
+        return
+
+    runtime_id_names = {
+        statement.targets[0].id
+        for statement in tree.body
+        if isinstance(statement, ast.Assign)
+        and len(statement.targets) == 1
+        and isinstance(statement.targets[0], ast.Name)
+        and module_mutation_counts[statement.targets[0].id] == 1
+        and isinstance(statement.value, ast.Constant)
+        and statement.value.value == "runtime"
+    }
+    runtime_dependency_helpers: set[str] = set()
+    for candidate in tree.body:
+        if not (
+            isinstance(candidate, ast.FunctionDef)
+            and not candidate.decorator_list
+            and not candidate.args.posonlyargs
+            and not candidate.args.args
+            and not candidate.args.kwonlyargs
+            and candidate.args.vararg is None
+            and candidate.args.kwarg is None
+            and len(candidate.body) == 1
+            and isinstance(candidate.body[0], ast.Return)
+            and isinstance(candidate.body[0].value, ast.Dict)
+        ):
+            continue
+        returned = candidate.body[0].value
+        if module_mutation_counts[candidate.name] == 1 and any(
+            isinstance(key, ast.Constant)
+            and key.value == "runtime"
+            and isinstance(value, ast.Name)
+            and value.id in runtime_id_names
+            for key, value in zip(returned.keys, returned.values)
+        ):
+            runtime_dependency_helpers.add(candidate.name)
+    if not runtime_dependency_helpers:
+        return
+
+    def keyword_value(call: ast.Call, name: str) -> ast.AST | None:
+        return next(
+            (keyword.value for keyword in call.keywords if keyword.arg == name),
+            None,
+        )
+
+    def exact_attribute(expression: ast.AST, owner: str, attribute: str) -> bool:
+        return (
+            isinstance(expression, ast.Attribute)
+            and expression.attr == attribute
+            and isinstance(expression.value, ast.Name)
+            and expression.value.id == owner
+        )
+
+    def appended_layer_call(statement: ast.stmt, layers_name: str) -> ast.Call | None:
+        if not (
+            isinstance(statement, ast.Expr)
+            and isinstance(statement.value, ast.Call)
+            and isinstance(statement.value.func, ast.Attribute)
+            and statement.value.func.attr == "append"
+            and isinstance(statement.value.func.value, ast.Name)
+            and statement.value.func.value.id == layers_name
+            and len(statement.value.args) == 1
+            and not statement.value.keywords
+            and isinstance(statement.value.args[0], ast.Call)
+            and isinstance(statement.value.args[0].func, ast.Name)
+            and statement.value.args[0].func.id in run_layer_constructors
+        ):
+            return None
+        return statement.value.args[0]
+
+    def runtime_call_is_exact(call: ast.Call, input_name: str) -> bool:
+        layer_type = keyword_value(call, "type")
+        config = keyword_value(call, "config")
+        if not (
+            isinstance(layer_type, ast.Name)
+            and layer_type.id in runtime_layer_types
+            and isinstance(config, ast.Call)
+            and isinstance(config.func, ast.Name)
+            and config.func.id in runtime_config_constructors
+            and not config.args
+        ):
+            return False
+        binding = keyword_value(config, "backend_binding_ref")
+        return binding is not None and exact_attribute(
+            binding, input_name, "backend_binding_ref"
+        )
+
+    def shell_call_is_exact(call: ast.Call, input_name: str) -> bool:
+        layer_type = keyword_value(call, "type")
+        config = keyword_value(call, "config")
+        if not (
+            isinstance(layer_type, ast.Name)
+            and layer_type.id in shell_layer_types
+            and isinstance(config, ast.BoolOp)
+            and isinstance(config.op, ast.Or)
+            and len(config.values) == 2
+            and exact_attribute(config.values[0], input_name, "shell_config")
+            and isinstance(config.values[1], ast.Call)
+            and isinstance(config.values[1].func, ast.Name)
+            and config.values[1].func.id in shell_config_constructors
+            and not config.values[1].args
+            and not config.values[1].keywords
+        ):
+            return False
+        deps = keyword_value(call, "deps")
+        return (
+            isinstance(deps, ast.Call)
+            and isinstance(deps.func, ast.Name)
+            and deps.func.id in runtime_dependency_helpers
+            and not deps.args
+            and not deps.keywords
+        )
+
+    def returns_layers_composition(function: ast.FunctionDef | ast.AsyncFunctionDef, layers_name: str) -> bool:
+        matching_returns = 0
+        for statement in function.body:
+            if not (
+                isinstance(statement, ast.Return)
+                and isinstance(statement.value, ast.Call)
+                and isinstance(statement.value.func, ast.Name)
+                and statement.value.func.id in create_request_types
+                and not statement.value.args
+            ):
+                continue
+            composition = keyword_value(statement.value, "composition")
+            if not (
+                isinstance(composition, ast.Call)
+                and isinstance(composition.func, ast.Name)
+                and composition.func.id in run_composition_constructors
+                and not composition.args
+                and isinstance((layers := keyword_value(composition, "layers")), ast.Name)
+                and layers.id == layers_name
+            ):
+                continue
+            matching_returns += 1
+        return matching_returns == 1
+
+    functions = [
+        child
+        for candidate in tree.body
+        if isinstance(candidate, ast.ClassDef)
+        for child in candidate.body
+        if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef))
+    ]
+    lines = text.splitlines()
+    analysis = "python-dify-agent-shell-layer"
+    for function in functions:
+        parameters = [*function.args.posonlyargs, *function.args.args]
+        if len(parameters) < 2 or function.decorator_list:
+            continue
+        input_parameter = parameters[1]
+        if not (
+            isinstance(input_parameter.annotation, ast.Name)
+            and input_parameter.annotation.id in default_disabled_inputs
+            and isinstance(function.returns, ast.Name)
+            and function.returns.id in create_request_types
+        ):
+            continue
+        if python_function_local_bindings(function) & (
+            run_layer_constructors
+            | runtime_layer_types
+            | runtime_config_constructors
+            | shell_layer_types
+            | shell_config_constructors
+            | runtime_dependency_helpers
+            | run_composition_constructors
+        ):
+            continue
+        input_name = input_parameter.arg
+        local_counts = Counter(
+            candidate.id
+            for candidate in ast.walk(function)
+            if isinstance(candidate, ast.Name)
+            and isinstance(candidate.ctx, (ast.Store, ast.Del))
+        )
+        include_name: str | None = None
+        layers_name: str | None = None
+        for index, statement in enumerate(function.body):
+            if (
+                isinstance(statement, ast.AnnAssign)
+                and isinstance(statement.target, ast.Name)
+                and isinstance(statement.value, ast.List)
+                and not statement.value.elts
+            ):
+                layers_name = statement.target.id
+                continue
+            if not (
+                isinstance(statement, ast.Assign)
+                and len(statement.targets) == 1
+                and isinstance(statement.targets[0], ast.Name)
+                and isinstance(statement.value, ast.BoolOp)
+                and isinstance(statement.value.op, ast.Or)
+                and len(statement.value.values) == 2
+                and exact_attribute(
+                    statement.value.values[0], input_name, "include_shell"
+                )
+                and isinstance(statement.value.values[1], ast.Compare)
+                and len(statement.value.values[1].ops) == 1
+                and isinstance(statement.value.values[1].ops[0], ast.IsNot)
+                and len(statement.value.values[1].comparators) == 1
+                and isinstance(
+                    statement.value.values[1].comparators[0], ast.Constant
+                )
+                and statement.value.values[1].comparators[0].value is None
+                and exact_attribute(
+                    statement.value.values[1].left,
+                    input_name,
+                    "config_layer_config",
+                )
+            ):
+                continue
+            include_name = statement.targets[0].id
+            guarded_if = (
+                function.body[index + 1]
+                if index + 1 < len(function.body)
+                and isinstance(function.body[index + 1], ast.If)
+                and isinstance(function.body[index + 1].test, ast.Name)
+                and function.body[index + 1].test.id == include_name
+                else None
+            )
+            if (
+                guarded_if is None
+                or layers_name is None
+                or local_counts[include_name] != 1
+                or local_counts[layers_name] != 1
+                or not returns_layers_composition(function, layers_name)
+            ):
+                break
+            layer_calls = [
+                call
+                for child in guarded_if.body
+                if (call := appended_layer_call(child, layers_name)) is not None
+            ]
+            runtime_calls = [
+                call
+                for call in layer_calls
+                if runtime_call_is_exact(call, input_name)
+            ]
+            shell_calls = [
+                call for call in layer_calls if shell_call_is_exact(call, input_name)
+            ]
+            if len(runtime_calls) != 1 or len(shell_calls) != 1:
+                break
+            runtime_call = runtime_calls[0]
+            shell_call = shell_calls[0]
+            shell_evidence = Evidence(
+                relative,
+                shell_call.lineno,
+                excerpt(lines, shell_call.lineno),
+            )
+            runtime_evidence = Evidence(
+                relative,
+                runtime_call.lineno,
+                excerpt(lines, runtime_call.lineno),
+            )
+            tool_id = source_symbol(
+                "py", relative, "tool", f"dify.shell@{shell_call.lineno}"
+            )
+            shared = {
+                "scope": source_scope(relative),
+                "frontend": "python",
+                "framework": "Dify Agent",
+                "analysis": analysis,
+                "composition_method": function.name,
+                "conditional": True,
+                "enabled_default": False,
+                "enable_sources": [
+                    f"{input_name}.include_shell",
+                    f"{input_name}.config_layer_config",
+                ],
+            }
+            ir.add_component(
+                Component(
+                    "tool",
+                    "dify.shell",
+                    shell_evidence,
+                    {
+                        **shared,
+                        "constructor": "DifyShellLayerConfig",
+                        "registration": "conditional-run-layer",
+                    },
+                    tool_id,
+                )
+            )
+            ir.add_component(
+                Component(
+                    "capability",
+                    "shell-execution",
+                    shell_evidence,
+                    {
+                        **shared,
+                        "execution_environment": "deployment-runtime-binding",
+                        "sandbox_boundary_scope": "external-unresolved",
+                    },
+                )
+            )
+            control_attributes = {
+                **shared,
+                "policy_effect": "routes-shell-through-runtime-binding",
+                "boundary_scope": "external-unresolved",
+                "runtime_config": "DifyRuntimeLayerConfig",
+                "runtime_binding_parameter": f"{input_name}.backend_binding_ref",
+            }
+            ir.add_component(
+                Component(
+                    "control",
+                    "sandbox-runtime",
+                    runtime_evidence,
+                    control_attributes,
+                )
+            )
+            ir.add_relationship(
+                Relationship(
+                    "tool",
+                    "dify.shell",
+                    "uses",
+                    "capability",
+                    "shell-execution",
+                    shell_evidence,
+                    {"analysis": analysis},
+                    source_id=tool_id,
+                )
+            )
+            ir.add_relationship(
+                Relationship(
+                    "capability",
+                    "shell-execution",
+                    "governed-by",
+                    "control",
+                    "sandbox-runtime",
+                    shell_evidence,
+                    {
+                        "control_path": relative,
+                        "control_line": runtime_call.lineno,
+                        **control_attributes,
+                    },
+                )
+            )
+            break
 
 AGENT_CALLS = {
     "Agent",
@@ -9158,6 +9571,15 @@ def scan_python(
     module_mutations.update(module_global_mutations)
     module_mutation_counts.update(module_global_mutations)
     module_rebound_names = imported_bindings & module_mutations
+    add_python_dify_agent_shell_layers(
+        ir,
+        relative,
+        text,
+        tree,
+        module_import_binding_counts,
+        module_mutation_counts,
+        module_rebound_names,
+    )
     module_assignment_counts = Counter(
         target.id
         for statement in tree.body

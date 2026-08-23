@@ -6,7 +6,7 @@ the local repository has an approved remote.
 ## P0 — framework and provider taxonomy
 
 Schema v63 retains fourteen recurring framework families and six provider families beyond the
-original taxonomy. The selected corpus now reports framework evidence in 40 repositories and
+original taxonomy. The selected corpus now reports framework evidence in 41 repositories and
 provider evidence in 49. New exact-import observations include Vercel AI SDK in five repositories,
 Microsoft Agent Framework in two, and CAMEL, Qwen-Agent, Lagent, MetaGPT, Marvin, and AgentScope in
 one each. Groq appears in seven repositories, Ollama in five, and Mistral, Cohere, and xAI in three
@@ -75,7 +75,7 @@ identifiers remain unresolved. The 414 component labels now pin 298 positives an
 Schema v111 extends the same proof to exact official AI SDK first model arguments. It recovers the
 Activepieces `text-embedding-3-small` constant without changing its already exact OpenAI provider
 call; runtime parameters and mutable, composed, shadowed, rebound, or forward identifiers remain
-unresolved. The 420 component labels now pin 301 positives and 119 negatives.
+unresolved. The 420 component labels pin 301 positives and 119 negatives.
 Schema v112 resolves fixed Python HTTP origins through exact named imports of immutable top-level
 string literals. Nine corpus capabilities retain four source bindings; seven Google ADK helper calls
 now have source-path/line provenance, removing five AV-NET001 false positives, while two Deep Agents
@@ -88,6 +88,14 @@ the pinned SHA-256 case, one `path-segment-sanitizer` control edge, and the remo
 AV-FS001 review. Lookalike helpers, mutable `hashlib` or join bindings, digest-derived roots, extra
 unsanitized segments, and branch escape remain unresolved. Three focused IR labels pin two positives
 and one negative.
+Schema v114 adds the exact Python `dify_agent` framework boundary and resolves Dify's two run-request
+shell layers. Each layer must be guarded by a default-disabled input, use the exact shell layer type
+and config, depend on an immutable runtime ID, and be paired with a deployment-selected
+`DifyRuntimeLayerConfig`. The resulting `dify.shell → shell-execution → sandbox-runtime` graph keeps
+the external runtime's containment explicitly unresolved and does not misclassify configuration as
+a direct local subprocess sink. Missing runtime layers, near packages, mutable imports, changed
+defaults, and reordered guards remain negative. The component taxonomy now has 423 labels (303
+positive, 120 negative), and four focused composition labels add three positives and one negative.
 Next generalize selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
@@ -428,8 +436,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 659 pinned positive/negative locations, with 1,227 separately
-scored IR component/relationship labels. Schema-v113 engine results and
+The curated regression set has reached 659 pinned positive/negative locations, with 1,234 separately
+scored IR component/relationship labels. Schema-v114 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

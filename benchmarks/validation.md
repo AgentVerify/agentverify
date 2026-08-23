@@ -134,9 +134,9 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 ## Full-corpus engine benchmark
 
-The 2026-08-22 default scan covered 70 source-bearing repositories plus one docs-only upstream
+The 2026-08-23 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,771 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,312 relationships, and completed in 358.2081 seconds on the development machine. Three parse
+resolved 2,316 relationships, and completed in 373.3888 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -445,9 +445,9 @@ one address-filtering control with configured allowlist and environment-proxy re
 Composio edges separately count configured-route pinning residuals, one edge-runtime fail-closed path,
 and three edge-runtime unguarded fallbacks.
 
-The benchmark now also measures identity coverage: 10,028 component observations carry
-module-qualified IDs. Of 4,620 relationship endpoints, all 3,844 identified symbol endpoints resolve
-to an observed component (3,531 Python and 313 TypeScript). The current schema records 379
+The benchmark now also measures identity coverage: 10,030 component observations carry
+module-qualified IDs. Of 4,632 relationship endpoints, all 3,847 identified symbol endpoints resolve
+to an observed component (3,534 Python and 313 TypeScript). The current schema records 379
 `lexical-single-definition` targets, 20 exact same-block dominating definitions, 25 contextual
 absolute-import targets, and three exact same-class helper-return edges to two Agent source
 definitions. Fourteen production CrewAI delegations resolve through an exact contextual import,
@@ -499,7 +499,7 @@ shadowing remain unresolved. Sixteen IR labels cover the local export/import bou
 forms, and all seven pinned Google ADK edges; one rule label proves cross-file AV-FS001 reachability.
 
 Schema-v86 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
-resolves 3,836 endpoints by symbol ID, 668 by exact evidence location, and 20 by a unique display
+resolves 3,839 endpoints by symbol ID, 676 by exact evidence location, and 21 by a unique display
 name; 38 remain ambiguous and 58 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
@@ -593,6 +593,14 @@ requests. Each records the source path and line. Exact literal exports, alias/lo
 fixed-origin f-string prefixes are accepted; environment/composed values, duplicate or globally
 mutated exports, consumer rebinding, local shadowing, module-qualified access, and ambiguous imports
 remain unresolved. Ten focused IR labels pass at 3 TP / 7 TN.
+
+Schema v114 also resolves Dify Agent's two production shell-layer compositions in
+`api/clients/agent_backend/request_builder.py`. Each shell layer is default-disabled, conditionally
+enabled by the request, paired with a runtime layer carrying the backend binding, and explicitly
+dependent on that runtime layer. The resulting IR records two tool-to-shell-capability edges and two
+shell-capability-to-runtime-control edges. The selected source does not establish the deployment
+runtime's containment properties, so the sandbox boundary remains `external-unresolved`. Four
+focused labels pass at 3 TP / 1 TN, including a missing-runtime negative.
 
 An iterative class pass adds four more capabilities and exact tool edges, all dynamic and all in
 Qwen-Agent. It first summarizes `SimpleDocParser.call` from its proven imported-function network
@@ -1445,16 +1453,16 @@ six unresolved ambiguity/shadowing/order forms, and all seven pinned Google ADK 
 tool-factory/adapter labels cover four local Agent edges, one hosted-MCP capability, one local
 Agent-as-tool delegation, eight conservative local negatives, two AutoGen factory edges, one Google
 ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent edge plus delegation.
-The 420 component-taxonomy labels add 301 exact local/pinned framework, provider, call,
-and model positives plus 119 near-name, rebound, custom-endpoint, scoped-binding, nonliteral-request,
+The 423 component-taxonomy labels add 303 exact local/pinned framework, provider, call,
+and model positives plus 120 near-name, rebound, custom-endpoint, scoped-binding, nonliteral-request,
 and unrelated-service negatives. Three path-segment-sanitizer labels pin the exact local and Qwen
 SHA-256 edges plus a lookalike negative.
 Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,227 IR labels pass (863 positives and 364 negatives):
-278 component-taxonomy positives/103 negatives, three approval positives/four negatives,
+negatives. All 1,234 IR labels pass (868 positives and 366 negatives):
+303 component-taxonomy positives/120 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
 contextual network-import positives, three imported-literal-origin positives/seven negatives,
