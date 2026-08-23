@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v114
+framework, wrapper, or configuration path. Counts come from schema-v115
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -17,7 +17,7 @@ kind. Categories and signature kinds can overlap.
 | coding-agent | 15 | 15 | 3 | 7 | 8 | 14 |
 | computer-agent | 1 | 1 | 0 | 1 | 0 | 1 |
 | examples | 2 | 2 | 2 | 2 | 1 | 2 |
-| framework | 22 | 22 | 20 | 20 | 19 | 21 |
+| framework | 22 | 22 | 21 | 20 | 19 | 21 |
 | mcp | 9 | 9 | 2 | 3 | 8 | 8 |
 | observability | 2 | 2 | 2 | 2 | 1 | 2 |
 | research-agent | 1 | 1 | 1 | 1 | 1 | 1 |
@@ -26,14 +26,14 @@ kind. Categories and signature kinds can overlap.
 | visual-platform | 4 | 4 | 2 | 1 | 1 | 4 |
 | workflow-agent | 3 | 3 | 2 | 3 | 1 | 3 |
 | workflow-platform | 2 | 2 | 1 | 1 | 2 | 2 |
-| **Total with observation** | **71** | **70** | **41** | **49** | **47** | **67** |
+| **Total with observation** | **71** | **70** | **42** | **49** | **47** | **67** |
 
 Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK (10), LangGraph
 (8), LlamaIndex (6), Vercel AI SDK (5), CrewAI (4), Agno (3), Google ADK (3), PydanticAI (3),
-Microsoft Agent Framework (2), Semantic Kernel (2), smolagents (2), AgentScope (1), AutoGen (1),
+AutoGen (2), Microsoft Agent Framework (2), Semantic Kernel (2), smolagents (2), AgentScope (1),
 CAMEL (1), Cline SDK (1), Dify Agent (1), Lagent (1), Marvin (1), Mastra (1), MetaGPT (1), and
 Qwen-Agent (1).
-Provider observations are OpenAI (43), Anthropic (24), Google (20), Azure OpenAI (11), Groq (7),
+Provider observations are OpenAI (43), Anthropic (25), Google (20), Azure OpenAI (12), Groq (7),
 AWS Bedrock (6), Ollama (5), Cohere, Mistral, and xAI (3 each), DeepSeek (2), and Alibaba
 DashScope and Moonshot AI (1 each). These overlapping exact-import/call, literal-service, and
 model-string observations are lower than research-wide lexical signals.
@@ -43,6 +43,14 @@ default-disabled shell run layers. Each `dify.shell` tool reaches a shell-execut
 deployment-selected `sandbox-runtime` control; containment stays `external-unresolved` because the
 selected API composition does not define the runtime backend. A missing runtime layer, near-name
 package, enabled default, reordered guard, or rebound constructor withholds the composition.
+
+Schema v115 adds AutoGen's current official `autogen_agentchat`, `autogen_core`, and `autogen_ext`
+namespaces. Microsoft AutoGen contributes 239 selected import observations and raises framework
+coverage to 42 repositories. Exact OpenAI, Azure OpenAI, and Anthropic model-client imports add 17
+wrapper calls across Microsoft AutoGen and AgentOps: seven production calls, ten test calls, and 13
+literal models. OpenAI-compatible `base_url` calls, near packages, and rebound constructors are
+withheld. Python provider-call attribution therefore reaches 583 calls across 12 repositories: 20
+native SDK calls and 563 wrappers, with 242 production calls, 341 tests, and 458 literal models.
 
 Schema v73 identifies 29 exact Python provider calls across seven repositories: 20 native Mistral,
 Groq, Cohere, or Ollama SDK calls and nine LangChain wrappers. Seven calls across five repositories
@@ -607,14 +615,17 @@ and `network-ssrf-policy` edge.
   repositories may still contribute supported JSON/YAML or embedded Python/TypeScript files.
 - Framework taxonomy recognizes exact Python/TypeScript imports for Google ADK, Semantic Kernel,
   LlamaIndex, Agno, Mastra, smolagents, Microsoft Agent Framework, CAMEL, Qwen-Agent, Lagent,
-  MetaGPT, Marvin, AgentScope, and Vercel AI SDK alongside the original signatures. The `ai` package
+  MetaGPT, Marvin, AgentScope, AutoGen's legacy and current official Python namespaces, and Vercel AI
+  SDK alongside the original signatures. The `ai` package
   is TypeScript-only evidence. Package reexports, Pydantic wrappers beyond direct imports, and custom
   agent bases may still leave a generic `Agent` without framework attribution.
 - Google provider taxonomy requires an exact GenAI/Vertex/AI SDK import or a Gemini model prefix.
   AWS Bedrock requires its exact TypeScript runtime SDK, a recognized `langchain_aws` constructor
   import, or a literal `bedrock-runtime` service selection. Mistral, Groq, Cohere, and Ollama support
   exact Python SDK imports plus import/alias-proven native and LangChain wrapper calls. Rebinding
-  withholds call attribution. The official OpenAI, Anthropic, Google, xAI, Mistral, Groq, and Cohere
+  withholds call attribution. Exact AutoGen model-client imports identify OpenAI, Azure OpenAI, and
+  Anthropic unless the OpenAI-compatible client overrides `base_url`; constructor names alone do
+  not qualify. The official OpenAI, Anthropic, Google, xAI, Mistral, Groq, and Cohere
   TypeScript AI SDK providers also support selected exact named/dynamic imports, factories, and
   immutable or inline configured instances; custom factory endpoints, unknown/spread configs,
   generic compatible packages, and community Ollama providers are not conflated. Native OpenAI,
@@ -847,7 +858,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 659-label rule truth set and 1,234-label IR component/relationship set are curated regression
+The 659-label rule truth set and 1,250-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

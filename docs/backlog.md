@@ -6,7 +6,7 @@ the local repository has an approved remote.
 ## P0 — framework and provider taxonomy
 
 Schema v63 retains fourteen recurring framework families and six provider families beyond the
-original taxonomy. The selected corpus now reports framework evidence in 41 repositories and
+original taxonomy. The selected corpus now reports framework evidence in 42 repositories and
 provider evidence in 49. New exact-import observations include Vercel AI SDK in five repositories,
 Microsoft Agent Framework in two, and CAMEL, Qwen-Agent, Lagent, MetaGPT, Marvin, and AgentScope in
 one each. Groq appears in seven repositories, Ollama in five, and Mistral, Cohere, and xAI in three
@@ -96,7 +96,13 @@ the external runtime's containment explicitly unresolved and does not misclassif
 a direct local subprocess sink. Missing runtime layers, near packages, mutable imports, changed
 defaults, and reordered guards remain negative. The component taxonomy now has 423 labels (303
 positive, 120 negative), and four focused composition labels add three positives and one negative.
-Next generalize selected package reexports without trusting generic `Client` names or
+Schema v115 adds AutoGen's current `autogen_agentchat`, `autogen_core`, and `autogen_ext` package
+boundaries plus exact OpenAI, Azure OpenAI, and Anthropic model-client wrappers. The selected corpus
+now attributes 17 wrapper calls across Microsoft AutoGen and AgentOps, including seven production
+calls and 13 literal models. OpenAI-compatible `base_url` overrides, near packages, and rebound
+constructors remain unresolved. Framework evidence rises to 42 repositories, and the component
+taxonomy reaches 439 labels (314 positive, 125 negative).
+Next generalize additional selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
 ## P0 — module-qualified symbols and graph identities
@@ -436,8 +442,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 659 pinned positive/negative locations, with 1,234 separately
-scored IR component/relationship labels. Schema-v114 engine results and
+The curated regression set has reached 659 pinned positive/negative locations, with 1,250 separately
+scored IR component/relationship labels. Schema-v115 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

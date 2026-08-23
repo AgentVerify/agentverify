@@ -1040,6 +1040,12 @@ def main() -> int:
                     str(item.attributes.get("module", "")).startswith("agno.models.")
                     for item in python_provider_call_attributions
                 ),
+                "autogen_wrapper_calls": sum(
+                    str(item.attributes.get("module", "")).startswith(
+                        "autogen_ext.models."
+                    )
+                    for item in python_provider_call_attributions
+                ),
                 "literal_models": len(python_provider_call_models),
                 **{
                     metric: sum(
@@ -2659,7 +2665,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 114,
+        "schema_version": 115,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -2754,6 +2760,7 @@ def main() -> int:
                     "pydantic_ai_wrapper_calls",
                     "agentscope_wrapper_calls",
                     "agno_wrapper_calls",
+                    "autogen_wrapper_calls",
                     "literal_models",
                     *PYTHON_PROVIDER_METRICS,
                 )

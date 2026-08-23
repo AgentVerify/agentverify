@@ -1094,6 +1094,74 @@ def test_python_dify_shell_layer_requires_default_off_runtime_composition() -> N
     assert not ir.findings
 
 
+def test_python_autogen_provider_wrappers_require_exact_unrebound_imports() -> None:
+    ir = scan_repository(ROOT / "cases/python_autogen_provider_wrappers")
+
+    assert any(
+        item.kind == "framework"
+        and item.name == "AutoGen"
+        and item.evidence.path == "positive.py"
+        and item.attributes["module"] == "autogen_agentchat.agents"
+        for item in ir.components
+    )
+    assert not any(
+        item.kind == "framework"
+        and item.name == "AutoGen"
+        and item.evidence.path == "near_name.py"
+        for item in ir.components
+    )
+    provider_calls = {
+        (
+            item.name,
+            item.evidence.path,
+            item.evidence.line,
+            item.attributes.get("module"),
+            item.attributes.get("call_kind"),
+        )
+        for item in ir.components
+        if item.kind == "provider"
+    }
+    assert provider_calls == {
+        (
+            "OpenAI",
+            "positive.py",
+            8,
+            "autogen_ext.models.openai",
+            "wrapper-constructor",
+        ),
+        (
+            "Azure OpenAI",
+            "positive.py",
+            9,
+            "autogen_ext.models.openai",
+            "wrapper-constructor",
+        ),
+        (
+            "Anthropic",
+            "positive.py",
+            13,
+            "autogen_ext.models.anthropic",
+            "wrapper-constructor",
+        ),
+    }
+    assert {
+        (item.name, item.attributes.get("provider"))
+        for item in ir.components
+        if item.kind == "model"
+    } == {
+        ("gpt-4o-mini", "OpenAI"),
+        ("gpt-4o", "Azure OpenAI"),
+        ("claude-3-5-sonnet-latest", "Anthropic"),
+    }
+    assert any(
+        item.kind == "agent"
+        and item.name == "AssistantAgent"
+        and item.evidence.path == "positive.py"
+        for item in ir.components
+    )
+    assert not ir.findings
+
+
 def test_agno_provider_wrappers_require_exact_unrebound_imports() -> None:
     ir = scan_repository(ROOT / "cases/framework_provider_taxonomy")
 

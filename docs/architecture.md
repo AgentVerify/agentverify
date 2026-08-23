@@ -182,6 +182,14 @@ routed through a deployment-selected runtime binding while leaving the external 
 containment `external-unresolved`. Missing runtime layers, enabled defaults, reordered/reassigned
 guards, near packages, and rebound imported constructors withhold the composition.
 
+Schema v115 recognizes AutoGen's current official Python package family—`autogen_agentchat`,
+`autogen_core`, and `autogen_ext`—alongside the legacy `autogen` namespace. Exact imports from
+`autogen_ext.models.openai` resolve `OpenAIChatCompletionClient` and
+`AzureOpenAIChatCompletionClient`; `autogen_ext.models.anthropic` resolves
+`AnthropicChatCompletionClient`. Literal `model=` values inherit that exact wrapper identity.
+OpenAI-compatible calls with a `base_url`, near packages, and rebound imported constructors remain
+unattributed; constructor names alone no longer establish the AutoGen OpenAI wrapper.
+
 Names are intentionally not treated as globally unique. Python and TypeScript agent/tool definitions
 carry stable frontend-and-module-qualified `symbol_id` values; relationships carry `source_id` and
 `target_id` when resolution succeeds. Context analysis prefers those IDs and falls back to the older

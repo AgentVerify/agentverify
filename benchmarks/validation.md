@@ -136,7 +136,7 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
 
 The 2026-08-23 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,771 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,316 relationships, and completed in 373.3888 seconds on the development machine. Three parse
+resolved 2,316 relationships, and completed in 360.5757 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -220,6 +220,17 @@ reaches 566 exact calls across 11 repositories: 20 native SDK and 546 wrapper ca
 LangChain, 298 PydanticAI, 19 AgentScope, and 220 Agno calls. Two hundred thirty-five are production
 scoped, 331 are tests, and 445 carry literal models. Eight rebinding and two custom-endpoint
 negatives pin the boundary.
+
+Schema v115 recognizes AutoGen's current official `autogen_agentchat`, `autogen_core`, and
+`autogen_ext` namespaces in addition to the legacy `autogen` package. The pinned Microsoft AutoGen
+checkout contributes 239 exact import observations and 15 exact model-client calls; AgentOps adds
+two more production calls. Exact imports identify OpenAI, Azure OpenAI, and Anthropic wrapper
+constructors, while literal `model=` values inherit that identity. Across the corpus, the 17 new
+calls comprise seven production paths, ten tests, and 13 literal models. Python attribution reaches
+583 calls across 12 repositories: 20 native SDK and 563 wrapper calls, with 242 production calls and
+341 tests; 458 calls carry literal models. A custom OpenAI-compatible `base_url`, rebound
+constructors, and near packages remain unattributed. Sixteen focused component labels pass at
+11 TP / 5 TN.
 
 Schema v103 expands official TypeScript AI SDK call attribution to OpenAI, Anthropic, Google, and
 xAI. With the existing Groq call, the selected corpus contains 32 production calls across OpenAI
@@ -1453,16 +1464,16 @@ six unresolved ambiguity/shadowing/order forms, and all seven pinned Google ADK 
 tool-factory/adapter labels cover four local Agent edges, one hosted-MCP capability, one local
 Agent-as-tool delegation, eight conservative local negatives, two AutoGen factory edges, one Google
 ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent edge plus delegation.
-The 423 component-taxonomy labels add 303 exact local/pinned framework, provider, call,
-and model positives plus 120 near-name, rebound, custom-endpoint, scoped-binding, nonliteral-request,
+The 439 component-taxonomy labels add 314 exact local/pinned framework, provider, call,
+and model positives plus 125 near-name, rebound, custom-endpoint, scoped-binding, nonliteral-request,
 and unrelated-service negatives. Three path-segment-sanitizer labels pin the exact local and Qwen
 SHA-256 edges plus a lookalike negative.
 Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,234 IR labels pass (868 positives and 366 negatives):
-303 component-taxonomy positives/120 negatives, three approval positives/four negatives,
+negatives. All 1,250 IR labels pass (879 positives and 371 negatives):
+314 component-taxonomy positives/125 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
 contextual network-import positives, three imported-literal-origin positives/seven negatives,

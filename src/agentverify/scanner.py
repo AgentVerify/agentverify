@@ -37,7 +37,7 @@ IMPORT_SIGNATURES = {
         "LangChain": ("langchain",),
         "LangGraph": ("langgraph",),
         "CrewAI": ("crewai",),
-        "AutoGen": ("autogen",),
+        "AutoGen": ("autogen", "autogen_agentchat", "autogen_core", "autogen_ext"),
         "OpenAI Agents SDK": ("agents", "@openai/agents"),
         "PydanticAI": ("pydantic_ai",),
         "Cline SDK": ("@cline/sdk",),
@@ -532,7 +532,7 @@ AGENT_CALLS = {
 }
 TOOL_DECORATORS = {"tool", "function_tool", "mcp.tool", "server.tool"}
 MODEL_CONSTRUCTORS = {
-    "OpenAI": {"OpenAI", "AsyncOpenAI", "ChatOpenAI", "OpenAIChatCompletionClient"},
+    "OpenAI": {"OpenAI", "AsyncOpenAI", "ChatOpenAI"},
     "Anthropic": {"Anthropic", "AsyncAnthropic", "ChatAnthropic"},
     "Azure OpenAI": {"AzureOpenAI", "AsyncAzureOpenAI", "AzureChatOpenAI"},
 }
@@ -585,6 +585,11 @@ PYTHON_PROVIDER_SDK_CALLS = {
     "agno.models.anthropic": ("Claude",),
     "agno.models.azure": ("AzureOpenAI",),
     "agno.models.groq": ("Groq",),
+    "autogen_ext.models.openai": (
+        "OpenAIChatCompletionClient",
+        "AzureOpenAIChatCompletionClient",
+    ),
+    "autogen_ext.models.anthropic": ("AnthropicChatCompletionClient",),
 }
 PYTHON_PROVIDER_MODULES = {
     "mistralai": "Mistral",
@@ -625,6 +630,8 @@ PYTHON_PROVIDER_MODULES = {
     "agno.models.anthropic": "Anthropic",
     "agno.models.azure": "Azure OpenAI",
     "agno.models.groq": "Groq",
+    "autogen_ext.models.openai": "OpenAI",
+    "autogen_ext.models.anthropic": "Anthropic",
 }
 # Most supported modules have one provider identity. Public wrapper modules that
 # span providers override that default for each exact exported symbol.
@@ -638,6 +645,10 @@ PYTHON_PROVIDER_SYMBOL_PROVIDERS = {
     ("agentscope.model", "OpenAIChatModel"): "OpenAI",
     ("agentscope.model", "OpenAIResponseModel"): "OpenAI",
     ("agentscope.model", "XAIChatModel"): "xAI",
+    (
+        "autogen_ext.models.openai",
+        "AzureOpenAIChatCompletionClient",
+    ): "Azure OpenAI",
 }
 PYTHON_PROVIDER_SDK_FUNCTIONS = {("ollama", "chat"), ("ollama", "generate")}
 PYTHON_PROVIDER_WRAPPER_MODULE_PREFIXES = (
@@ -645,6 +656,7 @@ PYTHON_PROVIDER_WRAPPER_MODULE_PREFIXES = (
     "agno.models.",
     "langchain_",
     "pydantic_ai.",
+    "autogen_ext.models.",
 )
 PYTHON_PROVIDER_ID_MODEL_CALLS = {
     ("agno.models.openai", "OpenAIChat"),
@@ -661,6 +673,7 @@ PYTHON_PROVIDER_CONFIGURABLE_ENDPOINT_CALLS = {
     ("agno.models.openai", "OpenAIResponses"),
     ("agno.models.openai.chat", "OpenAIChat"),
     ("agno.models.groq", "Groq"),
+    ("autogen_ext.models.openai", "OpenAIChatCompletionClient"),
 }
 PYTHON_PROVIDER_POSITIONAL_MODEL_CALLS = {
     ("ollama", "chat"),
