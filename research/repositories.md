@@ -1,10 +1,10 @@
 # Repository corpus
 
-Generated at `2026-08-23T02:56:11.872833+00:00` from `scripts/collect_repositories.py`.
+Generated at `2026-08-23T14:04:36.703807+00:00` from `scripts/collect_repositories.py`.
 
 ## Method
 
-The initial corpus contains **71 repositories** across **14 categories**, all pinned to commits. The collector scanned 12,115 selected source/manifest files (92.9 MB). Selection prioritizes manifests and agent, tool, MCP, permission, approval, sandbox, executor, and security paths, then materializes 190 bounded local source dependencies reached from MCP forwarding/URL-security roots or listed as audited evidence paths in the versioned selection-hint manifest.
+The initial corpus contains **71 repositories** across **14 categories**, all pinned to commits. The collector scanned 12,117 selected source/manifest files (92.9 MB). Selection prioritizes manifests and agent, tool, MCP, permission, approval, sandbox, executor, and security paths, then materializes 192 bounded local source dependencies reached from MCP forwarding/URL-security roots or listed as audited evidence paths in the versioned selection-hint manifest.
 
 Signals mean code evidence was observed. Absence is not proof that a repository lacks a feature or control. Evidence in `repository-data.json` includes immutable commit, path, line, excerpt, and matched pattern.
 

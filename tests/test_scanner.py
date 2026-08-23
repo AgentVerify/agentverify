@@ -4511,6 +4511,142 @@ def test_roo_command_auto_approval_requires_the_exact_cross_file_composition(
     )
 
 
+def test_continue_plan_mode_approval_requires_the_exact_cross_file_composition(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/typescript_continue_plan_mode_approval"
+    ir = scan_repository(root / "positive")
+
+    findings = [
+        (finding.rule_id, finding.evidence.path, finding.evidence.line, finding.ir_path)
+        for finding in ir.findings
+        if finding.rule_id in {"AV-APPROVAL008", "AV-EXEC001"}
+    ]
+    assert findings == [
+        (
+            "AV-APPROVAL008",
+            "extensions/cli/src/permissions/permissionChecker.ts",
+            21,
+            (
+                "agent:Continue CLI plan-mode runtime",
+                "tool:Continue Bash tool",
+                "control:terminal-command-risk-policy",
+            ),
+        ),
+        (
+            "AV-EXEC001",
+            "extensions/cli/src/tools/runTerminalCommand.ts",
+            20,
+            (
+                "agent:Continue CLI plan-mode runtime",
+                "tool:Continue Bash tool",
+                "capability:shell-execution",
+            ),
+        ),
+    ]
+    specialized = [
+        component
+        for component in ir.components
+        if component.attributes.get("analysis")
+        == "typescript-continue-plan-mode-approval"
+    ]
+    assert {(component.kind, component.name) for component in specialized} == {
+        ("framework", "Continue CLI"),
+        ("agent", "Continue CLI plan-mode runtime"),
+        ("tool", "Continue Bash tool"),
+        ("capability", "shell-execution"),
+        ("control-setting", "plan-mode-command-approval"),
+        ("control", "terminal-command-risk-policy"),
+    }
+    control = next(component for component in specialized if component.kind == "control")
+    setting = next(
+        component for component in specialized if component.kind == "control-setting"
+    )
+    assert control.attributes["high_risk_evaluation"] == "allowedWithPermission"
+    assert control.attributes["high_risk_effective_permission"] == "allow"
+    assert control.attributes["critical_evaluation"] == "disabled"
+    assert control.attributes["critical_effective_permission"] == "exclude"
+    assert setting.attributes["mode_default"] is False
+    assert setting.attributes["normal_mode_shell_permission"] == "ask"
+    assert setting.attributes["user_configuration_precedence"] == "ignored-in-plan-mode"
+    assert sum(
+        edge.attributes.get("analysis")
+        == "typescript-continue-plan-mode-approval"
+        for edge in ir.relationships
+    ) == 4
+
+    for directory in ("near", "safe"):
+        negative = scan_repository(root / directory)
+        assert not any(
+            component.attributes.get("analysis")
+            == "typescript-continue-plan-mode-approval"
+            for component in negative.components
+        )
+        assert not any(
+            finding.rule_id == "AV-APPROVAL008" for finding in negative.findings
+        )
+
+    mutations = {
+        "plan-bash-asks": (
+            "extensions/cli/src/permissions/defaultPolicies.ts",
+            '{ tool: "Bash", permission: "allow" }',
+            '{ tool: "Bash", permission: "ask" }',
+        ),
+        "normal-bash-allows": (
+            "extensions/cli/src/permissions/defaultPolicies.ts",
+            '{ tool: "Bash", permission: "ask" }',
+            '{ tool: "Bash", permission: "allow" }',
+        ),
+        "dynamic-ask-wins": (
+            "extensions/cli/src/permissions/permissionChecker.ts",
+            (
+                "// Otherwise, user preference wins - return the original base permission\n"
+                "    return { permission: basePermission };"
+            ),
+            'if (evaluatedPolicy === "allowedWithPermission") return { permission: "ask" };',
+        ),
+        "critical-not-hard-blocked": (
+            "packages/terminal-security/src/evaluateTerminalCommandSecurity.ts",
+            'return "disabled";',
+            'return "allowedWithPermission";',
+        ),
+        "high-risk-auto-allowed": (
+            "packages/terminal-security/src/evaluateTerminalCommandSecurity.ts",
+            (
+                "if (isHighRiskCommand(baseCommand, args, originalCommand)) {\n"
+                '    return "allowedWithPermission";\n'
+                "  }"
+            ),
+            (
+                "if (isHighRiskCommand(baseCommand, args, originalCommand)) {\n"
+                '    return "allowedWithoutPermission";\n'
+                "  }"
+            ),
+        ),
+        "argv-without-shell-command": (
+            "extensions/cli/src/tools/runTerminalCommand.ts",
+            'args: ["-l", "-c", command]',
+            'args: ["--fixed"]',
+        ),
+    }
+    for name, (relative, before, after) in mutations.items():
+        changed = tmp_path / name
+        shutil.copytree(root / "positive", changed)
+        path = changed / relative
+        original = path.read_text(encoding="utf-8")
+        assert before in original
+        path.write_text(original.replace(before, after, 1), encoding="utf-8")
+        changed_ir = scan_repository(changed)
+        assert not any(
+            component.attributes.get("analysis")
+            == "typescript-continue-plan-mode-approval"
+            for component in changed_ir.components
+        )
+        assert not any(
+            finding.rule_id == "AV-APPROVAL008" for finding in changed_ir.findings
+        )
+
+
 def test_letta_default_tools_require_the_exact_cross_file_composition(
     tmp_path: Path,
 ) -> None:

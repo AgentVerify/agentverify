@@ -27920,6 +27920,383 @@ def add_typescript_roo_command_approval_flow(
     )
 
 
+def add_typescript_continue_plan_mode_approval_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve Continue CLI plan mode's shell-policy precedence and local Bash sink."""
+    sources: dict[str, str] = {}
+    for path in paths:
+        if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            sources[relative] = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+
+    def unique_source(markers: tuple[str, ...]) -> tuple[str, str] | None:
+        matches = [
+            (relative, text)
+            for relative, text in sources.items()
+            if all(marker in text for marker in markers)
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    policy_source = unique_source(
+        (
+            "export const PLAN_MODE_POLICIES",
+            '{ tool: "Edit", permission: "exclude" }',
+            '{ tool: "MultiEdit", permission: "exclude" }',
+            '{ tool: "Write", permission: "exclude" }',
+            '{ tool: "Bash", permission: "allow" }',
+            '{ tool: "Bash", permission: "ask" }',
+            '{ tool: "*", permission: "allow" }',
+        )
+    )
+    service_source = unique_source(
+        (
+            "export class ToolPermissionService",
+            'currentMode: "normal"',
+            'case "plan":',
+            "return [...PLAN_MODE_POLICIES]",
+            "initializeSync(",
+            'this.currentState.currentMode === "plan"',
+            "allPolicies = [...modePolicies]",
+            "switchMode(newMode: PermissionMode)",
+            'if (newMode === "plan" || newMode === "auto")',
+        )
+    )
+    checker_source = unique_source(
+        (
+            "export function checkToolPermission(",
+            "const tool = ALL_BUILT_IN_TOOLS.find((t) => t.name === toolCall.name)",
+            "const evaluatedPolicy = tool.evaluateToolCallPolicy(",
+            'if (evaluatedPolicy === "disabled")',
+            'permission: "exclude"',
+            "user preference wins - return the original base permission",
+            "permission: basePermission",
+        )
+    )
+    runtime_source = unique_source(
+        (
+            "export async function checkToolPermissionApproval(",
+            "const permissionCheck = checkToolPermission(toolCall, permissions)",
+            'if (permissionCheck.permission === "allow")',
+            "return { approved: true }",
+            "const userApproved = await requestUserPermission(toolCall, callbacks)",
+            "const toolResult = await executeToolCall(call,",
+        )
+    )
+    tool_source = unique_source(
+        (
+            "export const runTerminalCommandTool: Tool",
+            'name: "Bash"',
+            "readonly: false",
+            "evaluateTerminalCommandSecurity(",
+            "parsedArgs.command as string",
+            "const { shell, args } = getShellCommand(command)",
+            "const child = spawn(shell, args)",
+        )
+    )
+    evaluator_source = unique_source(
+        (
+            'import { parse } from "shell-quote"',
+            "export function evaluateTerminalCommandSecurity(",
+            "const tokens = parse(normalizedCommand)",
+            "if (isCriticalCommand(baseCommand, args))",
+            'return "disabled"',
+            "if (isHighRiskCommand(baseCommand, args, originalCommand))",
+            'return "allowedWithPermission"',
+            "if (isSafeCommand(baseCommand, args))",
+            'return "allowedWithoutPermission"',
+            "Default: unknown commands require permission",
+        )
+    )
+    selected = (
+        policy_source,
+        service_source,
+        checker_source,
+        runtime_source,
+        tool_source,
+        evaluator_source,
+    )
+    if any(source is None for source in selected):
+        return
+    (
+        (policy_path, policy_text),
+        (service_path, service_text),
+        (checker_path, checker_text),
+        (runtime_path, runtime_text),
+        (tool_path, tool_text),
+        (evaluator_path, evaluator_text),
+    ) = selected  # type: ignore[misc]
+
+    disabled_offset = checker_text.find('if (evaluatedPolicy === "disabled")')
+    base_return_offset = checker_text.find(
+        "permission: basePermission", disabled_offset
+    )
+    if disabled_offset < 0 or base_return_offset <= disabled_offset:
+        return
+    checker_precedence = re.search(
+        r'if\s*\(\s*evaluatedPolicy\s*===\s*["\']disabled["\']\s*\)\s*\{'
+        r'[\s\S]{0,240}?permission\s*:\s*["\']exclude["\']'
+        r'[\s\S]{0,320}?permission\s*:\s*basePermission',
+        checker_text,
+    )
+    if checker_precedence is None:
+        return
+    critical_offset = evaluator_text.find("if (isCriticalCommand(baseCommand, args))")
+    high_risk_offset = evaluator_text.find(
+        "if (isHighRiskCommand(baseCommand, args, originalCommand))"
+    )
+    safe_offset = evaluator_text.find("if (isSafeCommand(baseCommand, args))")
+    unknown_offset = evaluator_text.find("Default: unknown commands require permission")
+    if not (0 <= critical_offset < high_risk_offset < safe_offset < unknown_offset):
+        return
+    evaluator_branches = (
+        re.search(
+            r"if\s*\(\s*isCriticalCommand\s*\(\s*baseCommand\s*,\s*args\s*\)\s*\)"
+            r'\s*\{[\s\S]{0,120}?return\s+["\']disabled["\']',
+            evaluator_text,
+        ),
+        re.search(
+            r"if\s*\(\s*isHighRiskCommand\s*\(\s*baseCommand\s*,\s*args\s*,\s*originalCommand\s*\)\s*\)"
+            r'\s*\{[\s\S]{0,120}?return\s+["\']allowedWithPermission["\']',
+            evaluator_text,
+        ),
+        re.search(
+            r"if\s*\(\s*isSafeCommand\s*\(\s*baseCommand\s*,\s*args\s*\)\s*\)"
+            r'\s*\{[\s\S]{0,120}?return\s+["\']allowedWithoutPermission["\']',
+            evaluator_text,
+        ),
+        re.search(
+            r"Default:\s*unknown commands require permission"
+            r'[\s\S]{0,120}?return\s+["\']allowedWithPermission["\']',
+            evaluator_text,
+        ),
+    )
+    if any(branch is None for branch in evaluator_branches):
+        return
+    if re.search(
+        r'''args\s*:\s*\[[^\]]*["']-c["']\s*,\s*command\s*\]''',
+        tool_text,
+    ) is None:
+        return
+    initialization_override = service_text.find(
+        'this.currentState.currentMode === "plan"'
+    )
+    mode_switch = service_text.find('if (newMode === "plan" || newMode === "auto")')
+    if initialization_override < 0 or mode_switch <= initialization_override:
+        return
+
+    offsets = {
+        "agent": runtime_text.find("const toolResult = await executeToolCall(call,"),
+        "setting": policy_text.find('{ tool: "Bash", permission: "allow" }'),
+        "tool": tool_text.find("export const runTerminalCommandTool: Tool"),
+        "sink": tool_text.find("const child = spawn(shell, args)"),
+        "control": base_return_offset,
+        "framework": service_text.find("export class ToolPermissionService"),
+    }
+    if min(offsets.values()) < 0:
+        return
+
+    def evidence(path: str, text: str, offset: int) -> Evidence:
+        line = line_at(text, offset)
+        return Evidence(path, line, excerpt(text.splitlines(), line))
+
+    analysis = "typescript-continue-plan-mode-approval"
+    framework_evidence = evidence(
+        service_path, service_text, offsets["framework"]
+    )
+    agent_evidence = evidence(runtime_path, runtime_text, offsets["agent"])
+    setting_evidence = evidence(policy_path, policy_text, offsets["setting"])
+    tool_evidence = evidence(tool_path, tool_text, offsets["tool"])
+    sink_evidence = evidence(tool_path, tool_text, offsets["sink"])
+    control_evidence = evidence(checker_path, checker_text, offsets["control"])
+    agent_name = "Continue CLI plan-mode runtime"
+    tool_name = "Continue Bash tool"
+    agent_id = source_symbol("ts", runtime_path, "agent", "ContinueCLIPlanMode")
+    tool_id = source_symbol("ts", tool_path, "tool", "Bash")
+    setting_id = source_symbol(
+        "ts", policy_path, "control-setting", "plan-mode-command-approval"
+    )
+    control_id = source_symbol(
+        "ts", checker_path, "control", "terminal-command-risk-policy"
+    )
+    shared = {
+        "analysis": analysis,
+        "framework": "Continue CLI",
+        "scope": "production",
+    }
+    ir.add_component(
+        Component("framework", "Continue CLI", framework_evidence, shared)
+    )
+    ir.add_component(
+        Component(
+            "agent",
+            agent_name,
+            agent_evidence,
+            {
+                **shared,
+                "mode": "plan",
+                "mode_default": False,
+                "mode_selection": "runtime-or-command-line",
+            },
+            agent_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "tool",
+            tool_name,
+            tool_evidence,
+            {
+                **shared,
+                "approval_policy": "configurable-plan-mode-risk-escalation-gap",
+                "builtin_tool": True,
+                "builtin_tool_name": "Bash",
+                "execution_environment": "local",
+                "readonly": False,
+            },
+            tool_id,
+        )
+    )
+    capability_attributes = {
+        **shared,
+        "agent_controlled_command": True,
+        "api": "node:child_process.spawn-via-login-shell",
+        "approval_policy": "configurable-plan-mode-risk-escalation-gap",
+        "builtin_tool": True,
+        "dynamic_command": True,
+        "execution_environment": "local",
+        "shell": True,
+    }
+    existing_capability = next(
+        (
+            component
+            for component in ir.components
+            if component.kind == "capability"
+            and component.name == "shell-execution"
+            and component.evidence.path == sink_evidence.path
+            and component.evidence.line == sink_evidence.line
+        ),
+        None,
+    )
+    if existing_capability is not None:
+        existing_capability.attributes.update(capability_attributes)
+    else:
+        ir.add_component(
+            Component(
+                "capability",
+                "shell-execution",
+                sink_evidence,
+                capability_attributes,
+            )
+        )
+    ir.add_component(
+        Component(
+            "control-setting",
+            "plan-mode-command-approval",
+            setting_evidence,
+            {
+                **shared,
+                "enabled": True,
+                "mode": "plan",
+                "mode_default": False,
+                "normal_mode_shell_permission": "ask",
+                "policy": "absolute-mode-override",
+                "static_shell_permission": "allow",
+                "user_configuration_precedence": "ignored-in-plan-mode",
+                "write_tools_excluded": ["Edit", "MultiEdit", "Write"],
+            },
+            setting_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "control",
+            "terminal-command-risk-policy",
+            control_evidence,
+            {
+                **shared,
+                "agent_reachable": True,
+                "critical_effective_permission": "exclude",
+                "critical_evaluation": "disabled",
+                "evaluator_line": line_at(evaluator_text, critical_offset),
+                "evaluator_path": evaluator_path,
+                "high_risk_effective_permission": "allow",
+                "high_risk_evaluation": "allowedWithPermission",
+                "mode": "plan",
+                "mode_default": False,
+                "policy_precedence": "static-user-preference-unless-disabled",
+                "safe_evaluation": "allowedWithoutPermission",
+                "static_shell_permission": "allow",
+                "unknown_effective_permission": "allow",
+                "unknown_evaluation": "allowedWithPermission",
+            },
+            control_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "agent",
+            agent_name,
+            "uses",
+            "tool",
+            tool_name,
+            agent_evidence,
+            {"analysis": analysis, "target_identity": "continue-cli-bash-tool"},
+            source_id=agent_id,
+            target_id=tool_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            tool_name,
+            "uses",
+            "capability",
+            "shell-execution",
+            sink_evidence,
+            {"analysis": analysis},
+            source_id=tool_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            tool_name,
+            "configured-by",
+            "control-setting",
+            "plan-mode-command-approval",
+            setting_evidence,
+            {"analysis": analysis, "mode_policy_source": service_path},
+            source_id=tool_id,
+            target_id=setting_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            tool_name,
+            "governed-by",
+            "control",
+            "terminal-command-risk-policy",
+            control_evidence,
+            {
+                "analysis": analysis,
+                "policy_effect": "critical-block-only-under-static-allow",
+            },
+            source_id=tool_id,
+            target_id=control_id,
+        )
+    )
+
+
 def add_typescript_letta_default_tool_flow(
     ir: RepositoryIR,
     root: Path,
@@ -28923,6 +29300,7 @@ def scan_repository(
     add_typescript_composio_cli_file_upload_flow(ir, root, registry_paths)
     add_typescript_google_adk_openapi_rest_tool_flow(ir, root, registry_paths)
     add_typescript_roo_command_approval_flow(ir, root, registry_paths)
+    add_typescript_continue_plan_mode_approval_flow(ir, root, registry_paths)
     add_typescript_letta_default_tool_flow(ir, root, registry_paths)
     add_typescript_a2a_card_endpoint_composition(ir, root, registry_paths)
     add_typescript_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)

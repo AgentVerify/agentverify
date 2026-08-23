@@ -122,6 +122,14 @@
       "ts/packages/core/src/utils/ssrfGuard.node.ts",
       "ts/packages/core/src/utils/ssrfGuard.workerd.ts"
     ],
+    "continuedev/continue": [
+      "extensions/cli/src/permissions/defaultPolicies.ts",
+      "extensions/cli/src/permissions/permissionChecker.ts",
+      "extensions/cli/src/services/ToolPermissionService.ts",
+      "extensions/cli/src/stream/streamChatResponse.helpers.ts",
+      "extensions/cli/src/tools/runTerminalCommand.ts",
+      "packages/terminal-security/src/evaluateTerminalCommandSecurity.ts"
+    ],
     "activepieces/activepieces": [
       "packages/server/api/src/app/agents/mcp-tool-validator.ts",
       "packages/server/utils/src/mcp-transport.ts",

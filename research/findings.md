@@ -400,6 +400,19 @@ default graph proves neither general shell isolation nor a general workspace-roo
 Write. The exact chain adds one each of AV-EXEC001, AV-APPROVAL002, and AV-FS001 without claiming
 that Letta lacks compensating controls.
 
+Schema v120 resolves Continue CLI's selected plan-mode Bash path. Normal mode configures Bash as
+`ask`, but the exact
+[`PLAN_MODE_POLICIES`](https://github.com/continuedev/continue/blob/5522c6f44ca0ac3528b37244818fbfa39b5af470/extensions/cli/src/permissions/defaultPolicies.ts#L27-L65)
+exclude Edit/MultiEdit/Write and allow Bash, and `ToolPermissionService` installs those policies as
+an absolute override. The terminal evaluator returns `disabled` for critical commands and
+`allowedWithPermission` for high-risk and unknown commands. The
+[`permissionChecker`](https://github.com/continuedev/continue/blob/5522c6f44ca0ac3528b37244818fbfa39b5af470/extensions/cli/src/permissions/permissionChecker.ts#L153-L174)
+honors only `disabled`; otherwise it returns the static base permission. The runtime consequently
+approves high-risk/unknown plan-mode Bash calls before the model command reaches
+[`spawn(shell, args)`](https://github.com/continuedev/continue/blob/5522c6f44ca0ac3528b37244818fbfa39b5af470/extensions/cli/src/tools/runTerminalCommand.ts#L170-L192)
+with `-c`. AV-APPROVAL008 isolates that risk-escalation collapse: it does not claim plan mode is the
+default or that critical-command blocking is absent.
+
 ## 4. Provider identity is a governance dependency
 
 OpenAI signals appear in 51 repositories, Anthropic in 37, Google in 28, Azure OpenAI in 18, and AWS

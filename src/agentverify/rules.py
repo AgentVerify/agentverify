@@ -94,6 +94,14 @@ RULE_DEFINITIONS = tuple(
                 "Match the parsed executable and arguments on token boundaries; do not approve a command merely because its raw text starts with an allowed string.",
             ),
             RuleMetadata(
+                "AV-APPROVAL008",
+                "review",
+                "high",
+                "high",
+                "A selected plan mode discards shell risk escalation short of a hard block",
+                "Keep high-risk and unknown shell commands approval-gated in plan mode, or expose only a parsed read-only command allowlist.",
+            ),
+            RuleMetadata(
                 "AV-AUDIT001",
                 "review",
                 "medium",
@@ -722,6 +730,34 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                     "high",
                     "A reachable command auto-approval allowlist accepts raw string prefixes without a token boundary",
                     "Parse the command first and compare the executable and argument prefixes on token boundaries; retain explicit user approval for unmatched or ambiguous commands.",
+                    "review",
+                )
+            )
+        if (
+            component.kind == "control"
+            and component.name == "terminal-command-risk-policy"
+            and component.attributes.get("agent_reachable") is True
+            and component.attributes.get("mode") == "plan"
+            and component.attributes.get("mode_default") is False
+            and component.attributes.get("static_shell_permission") == "allow"
+            and component.attributes.get("high_risk_evaluation")
+            == "allowedWithPermission"
+            and component.attributes.get("high_risk_effective_permission") == "allow"
+            and component.attributes.get("unknown_evaluation")
+            == "allowedWithPermission"
+            and component.attributes.get("unknown_effective_permission") == "allow"
+            and component.attributes.get("critical_evaluation") == "disabled"
+            and component.attributes.get("critical_effective_permission") == "exclude"
+        ):
+            ir.findings.append(
+                make_finding(
+                    ir,
+                    component,
+                    "AV-APPROVAL008",
+                    "high",
+                    "high",
+                    "Continue CLI plan mode auto-allows high-risk and unknown shell commands after its risk evaluator requests approval",
+                    "Return the dynamically evaluated policy whenever it is more restrictive than the static mode policy; for a read-oriented plan mode, keep Bash at ask or use a parsed read-only command allowlist.",
                     "review",
                 )
             )

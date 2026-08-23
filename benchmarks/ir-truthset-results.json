@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-23T02:54:59.651461+00:00",
-  "labels": 1351,
-  "passed": 1351,
+  "generated_at": "2026-08-23T14:32:28.670559+00:00",
+  "labels": 1373,
+  "passed": 1373,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -472,6 +472,14 @@
       "tp": 2,
       "fp": 0,
       "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-CONTINUE-PLAN-APPROVAL": {
+      "tp": 20,
+      "fp": 0,
+      "tn": 2,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -12743,6 +12751,204 @@
     {
       "id": "typescript-letta-standard-default-local-negative",
       "check_id": "IR-TS-LETTA-DEFAULT-TOOLS",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-framework-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-agent-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-tool-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-shell-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-setting-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-control-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-agent-tool-edge-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-tool-shell-edge-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-tool-setting-edge-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-tool-control-edge-local",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-framework-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-agent-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-tool-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-shell-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-setting-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-control-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-agent-tool-edge-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-tool-shell-edge-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-tool-setting-edge-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-tool-control-edge-real",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-plan-near-local-negative",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-continue-dynamic-ask-local-negative",
+      "check_id": "IR-TS-CONTINUE-PLAN-APPROVAL",
       "expected": false,
       "observed": false,
       "anchor_ok": true,

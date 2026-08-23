@@ -116,6 +116,12 @@ be proven before reporting the effective default; absence alone is not a destruc
 When a local MCP package has a known write surface, the effective default becomes actionable only
 after proving Agent reachability and excluding a literal read-only tool allowlist. Dynamic filters
 remain unresolved rather than being credited as mutation controls.
+Mode policy and risk policy must also be composed by precedence, not inventoried independently. A
+static allow can coexist with a dynamic evaluator that returns `allowedWithPermission`; if the
+dispatcher honors only a hard `disabled` result and otherwise restores the static allow, the
+evaluator is a critical-command block rather than an approval gate. Record the default versus
+selected mode, the effective result for each risk class, and surviving hard blocks before reporting
+the gap.
 Frameworks can express the same decision as a positive confirmation list instead of an approval
 boolean. A sound analysis compares a literal list against the known mutating server surface:
 omission and incomplete static coverage are actionable, complete coverage is a proven control, and

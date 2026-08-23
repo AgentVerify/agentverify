@@ -12,6 +12,7 @@ Validation date: 2026-08-23. Repositories are partial checkouts pinned by
 | FoundationAgents/MetaGPT | `11cdf466` | 214 | 1 | `metagpt/repo_parser.py:731` |
 | SWE-agent/SWE-agent | `3ea751c0` | 102 | 1 | `tools/windowed/lib/flake8_utils.py:143` |
 | cline/cline | `80b3b034` | 187 | 1 | `apps/examples/cli-agent/src/index.ts:19` |
+| continuedev/continue | `5522c6f4` | 188 | 1 | `extensions/cli/src/tools/runTerminalCommand.ts:192` |
 | RooCodeInc/Roo-Code | `b867ec91` | 209 | 1 | `src/core/tools/ExecuteCommandTool.ts:372` |
 | letta-ai/letta-code | `db60f05f` | 231 | 1 | `src/tools/impl/bash.ts:507` |
 
@@ -30,6 +31,10 @@ default list, bound to its implementation, classified under the default `unrestr
 to an approved WebSocket decision, and executed through an explicit `zsh`/`bash -c` launcher before
 `child_process.spawn(..., shell: false)`. Optional workspace/kernel isolation remains a separate
 control setting rather than being credited to the default path.
+Schema v120 adds Continue CLI's selected plan-mode path. Normal mode remains the default and asks
+for Bash, while plan mode installs an absolute policy override that allows the non-readonly Bash
+tool. The same model command passes through `shell-quote` classification and reaches a login-shell
+`spawn`; the distinct policy-precedence review is documented under AV-APPROVAL008.
 
 ## Regression cases
 
@@ -157,8 +162,8 @@ control setting rather than being credited to the default path.
 ## Full-corpus engine benchmark
 
 The 2026-08-23 default scan covered 70 source-bearing repositories plus one docs-only upstream
-snapshot. It parsed 10,785 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,364 relationships, and completed in 366.6501 seconds on the development machine. Three parse
+snapshot. It parsed 10,787 selected Python/TypeScript/JavaScript files plus 155 configuration files,
+resolved 2,368 relationships, and completed in 383.4148 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -166,11 +171,11 @@ so the benchmark records zero suppressed findings.
 The locked collector prioritizes manifests, production SSRF/URL-safety sources, and then general
 security/agent/tool/MCP sources within the 220-file cap. It adds at most 20 local source files:
 versioned audited evidence hints plus Python imports reached from MCP forwarding or source-proven
-URL-security call sites, all charged against the dependency cap. This refresh materialized 190 dependency files across 23
+URL-security call sites, all charged against the dependency cap. This refresh materialized 192 dependency files across 24
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v119 carries both the 190-file total and the
-23-repository coverage.
+dependency count per repository; engine schema v120 carries both the 192-file total and the
+24-repository coverage.
 
 Engine benchmark schema v96 retains stable component-name taxonomies, category presence counts,
 matched-versus-identified endpoint counts, TypeScript graph precision measures, and exact MCP
@@ -835,6 +840,23 @@ incomplete compositions remain absent. The rule matrix is 2 TP, 2 TN, 0 FP, and 
 composition has 18 positive and two negative IR labels. Remediation is to parse the command and
 compare executable/argument tokens, or at minimum require equality or a deliberate token boundary.
 
+## AV-APPROVAL008 — plan mode discards shell approval escalation
+
+Schema v120 requires the exact Continue CLI composition across six production sources: plan-mode
+defaults, absolute mode installation, static/dynamic precedence, runtime approval dispatch, Bash
+tool and login-shell sink, and the ordered terminal evaluator. Normal mode remains the default and
+configures Bash as `ask`. Selected plan mode excludes Edit/MultiEdit/Write but sets Bash to `allow`.
+The evaluator still returns `disabled` for critical commands, `allowedWithPermission` for high-risk
+and unknown commands, and `allowedWithoutPermission` for safe commands.
+
+The review is anchored at the
+[`permission: basePermission`](https://github.com/continuedev/continue/blob/5522c6f44ca0ac3528b37244818fbfa39b5af470/extensions/cli/src/permissions/permissionChecker.ts#L171)
+return: only `disabled` overrides the static allow, so the runtime approves high-risk and unknown
+commands without invoking the user-permission path. Critical-command blocking remains effective and
+is recorded as a compensating control. The rule matrix is 2 TP, 2 TN, 0 FP, and 0 FN; the exact
+composition has 20 positive and two negative IR labels. Remediation is to retain a more restrictive
+dynamic result, or replace plan-mode Bash with a parsed read-only command allowlist.
+
 ## AV-MCP004 — MCP server model sampling is auto-approved
 
 Schema v68 verifies Semantic Kernel's bidirectional MCP composition. The pinned SDK registers its
@@ -917,7 +939,7 @@ Two default-scope clients qualify: the Microsoft tutorial and FastMCP CLI both a
 do not show the target URL. The TypeScript SDK host is the negative control: it displays the full URL,
 rejects unsafe non-HTTPS/non-loopback destinations, and asks before proceeding. The rule matrix is 4
 TP, 3 TN, 0 FP, and 0 FN; seven additional positive IR labels pin full versus missing disclosure.
-All 696 cross-rule labels pass (316 positives and 380 negatives).
+All 702 cross-rule labels pass (320 positives and 382 negatives).
 
 During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
 to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
@@ -930,8 +952,8 @@ Expanding the truth set exposed two additional false-positive families. Literal 
 were incorrectly classified as dynamic; resolving complete string literals removed five corpus
 findings while preserving interpolated templates. Broad approval-name matching confused warning-state
 and version-check flags with human approval; requiring approval-specific names removed six review
-candidates. Corpus totals are now 24 `AV-EXEC001` findings, 14 `AV-APPROVAL001` reviews, one
-`AV-APPROVAL007` raw-prefix review, one specialized `AV-MCP004` review, three generic `AV-MCP005`
+candidates. Corpus totals are now 25 `AV-EXEC001` findings, 14 `AV-APPROVAL001` reviews, one
+`AV-APPROVAL007` raw-prefix review, one `AV-APPROVAL008` plan-mode precedence review, one specialized `AV-MCP004` review, three generic `AV-MCP005`
 sampling-consent reviews, and three
 `AV-MCP006` elicitation-consent reviews, plus two `AV-MCP007` full-URL-disclosure reviews.
 The dependency closure also exposes CAMEL's production `func_string_to_callable(code)` helper, whose
@@ -1413,14 +1435,14 @@ and surfacing failed writes through metrics or alerts.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 696 exact labels across all 21 enabled rules: 316 positives and 380
+`benchmarks/truthset.json` contains 702 exact labels across all 22 enabled rules: 320 positives and 382
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
 Compose/Kubernetes/Docker SDK settings, host credential bind near misses, and exact/prompt-only MCP
-package launchers. All 696 currently pass;
+package launchers. All 702 currently pass;
 each rule's seed precision and recall are 1.0. Negative labels must retain either an observed Agent IR
 component anchor or verified source text at the exact pinned line, preventing a missing or drifting
 location from passing silently.
@@ -1552,13 +1574,15 @@ Agent/tool/capability/setting-edge positives plus two near-package negatives. Tw
 approval labels add 18 exact composition positives plus two near-package or token-boundary negatives.
 Thirty-two Letta default-tool labels add 30 exact Agent/tool/capability/setting-edge positives plus
 near-package and standard-default negatives.
+Twenty-two Continue plan-mode labels add 20 exact framework/Agent/tool/capability/control/edge
+positives plus incomplete-composition and dynamic-ask negatives.
 Three path-segment-sanitizer labels pin the exact local and Qwen
 SHA-256 edges plus a lookalike negative.
 Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,351 IR labels pass (967 positives and 384 negatives):
+negatives. All 1,373 IR labels pass (987 positives and 386 negatives):
 321 component-taxonomy positives/128 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three

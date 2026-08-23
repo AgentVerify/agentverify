@@ -787,6 +787,14 @@ workspace and cross-agent guards as available controls. This is not a claim that
 absent: it proves that ordinary default actions do not prompt, the shell isolation gate is off by
 default, and no general default workspace-root boundary dominates Write. Any missing or duplicate
 role, a standard default, or a lookalike client package withholds the composition.
+Schema v120 adds a six-source Continue CLI policy composition. It requires the plan policy's exact
+Edit/MultiEdit/Write exclusions plus Bash allow, `ToolPermissionService`'s initialization and mode-
+switch absolute overrides, `permissionChecker`'s disabled-only dynamic precedence, the runtime's
+allow/ask dispatch, the exact non-readonly Bash tool, and the `shell-quote` evaluator's ordered
+critical/high-risk/safe/unknown branches. The command must flow through `-c` into `spawn`. The graph
+therefore distinguishes a selected, non-default plan mode from normal mode and distinguishes the
+preserved critical hard block from discarded high-risk/unknown approval escalation. A fixed
+dynamic-precedence branch or a non-shell argv runner withholds the composition.
 Import-proven `CodeInterpreterTool` instances similarly expose that their SDK constructor has no
 approval hook, but they carry `execution_environment: hosted-sandbox` and
 `sandbox_policy: sdk-hosted`. Literal auto-container selection is preserved as configuration

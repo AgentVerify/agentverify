@@ -118,6 +118,10 @@ built-in tools, two capabilities, two disabled-default control settings, and eig
 Thirty-two focused labels add 30 exact component/edge positives plus near-package and
 standard-default negatives. Explicit deny/always-ask precedence and optional workspace,
 cross-agent, and kernel sandbox controls remain recorded rather than treated as absent.
+Schema v120 adds Continue CLI as the 48th selected-path framework repository. Its exact six-source
+plan-mode composition contributes one Agent, one Bash tool/capability, one setting, one risk-policy
+control, and four relationships. Twenty-two focused IR labels add 20 component/edge positives plus
+incomplete-composition and dynamic-ask negatives.
 Next generalize additional selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
@@ -364,6 +368,14 @@ general default workspace-root boundary, though cross-agent and requested-worksp
 available. Near packages, incomplete chains, and a standard default stay negative. Next cover other
 mode-configurable coding agents without equating a permissive default with an absence of policy.
 
+Schema v120 resolves the first such selected-mode precedence gap without calling it a permissive
+default. Continue CLI normal mode asks for Bash, while selected plan mode uses an absolute policy
+override that excludes Edit/MultiEdit/Write and allows Bash. Its dynamic evaluator still hard-blocks
+critical commands, but `allowedWithPermission` results for high-risk and unknown commands are
+discarded because static user preference wins unless the result is `disabled`; the runtime then
+executes the command through a login shell. `AV-APPROVAL008` reports only that narrow collapse and
+retains the critical block, parser, normal-mode prompt, and non-default mode as explicit context.
+
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
 server-controlled prompt/model hint/sampling parameters, model invocation, and response returned to
@@ -488,8 +500,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 696 pinned positive/negative locations, with 1,351 separately
-scored IR component/relationship labels. Schema-v119 engine results and
+The curated regression set has reached 702 pinned positive/negative locations, with 1,373 separately
+scored IR component/relationship labels. Schema-v120 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.
@@ -508,7 +520,7 @@ evidence in every report. Local organization policy composition resolves relativ
 rejects cycles and duplicate gate IDs, and preserves file and gate SHA-256 provenance without
 weakening strict unknown-field validation. Next add signed policy provenance with explicit trust-root
 configuration; a content hash alone must not be presented as author authenticity.
-The CLI now exposes an authoritative 21-rule runtime catalog in text or schema-versioned JSON, with
+The CLI now exposes an authoritative 22-rule runtime catalog in text or schema-versioned JSON, with
 focused lookup by rule ID. Every emission site is checked against the catalog's result kind,
 severity, and confidence, preventing policy-facing metadata drift while keeping context-specific
 finding messages and remediation details in reports.

@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v119
+framework, wrapper, or configuration path. Counts come from schema-v120
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -14,7 +14,7 @@ kind. Categories and signature kinds can overlap.
 |---|---:|---:|---:|---:|---:|---:|
 | autonomous-agent | 3 | 3 | 2 | 3 | 1 | 3 |
 | browser-agent | 3 | 3 | 2 | 3 | 2 | 3 |
-| coding-agent | 15 | 15 | 8 | 7 | 8 | 14 |
+| coding-agent | 15 | 15 | 9 | 7 | 8 | 14 |
 | computer-agent | 1 | 1 | 0 | 1 | 0 | 1 |
 | examples | 2 | 2 | 2 | 2 | 1 | 2 |
 | framework | 22 | 22 | 21 | 20 | 19 | 21 |
@@ -26,12 +26,12 @@ kind. Categories and signature kinds can overlap.
 | visual-platform | 4 | 4 | 2 | 1 | 1 | 4 |
 | workflow-agent | 3 | 3 | 2 | 3 | 1 | 3 |
 | workflow-platform | 2 | 2 | 1 | 1 | 2 | 2 |
-| **Total with observation** | **71** | **70** | **47** | **49** | **47** | **67** |
+| **Total with observation** | **71** | **70** | **48** | **49** | **47** | **67** |
 
 Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK (10), LangGraph
 (8), LlamaIndex (6), Vercel AI SDK (5), CrewAI (4), Agno (3), Google ADK (3), PydanticAI (3),
 AutoGen (2), Microsoft Agent Framework (2), Semantic Kernel (2), smolagents (2), AgentScope (1),
-CAMEL (1), Cline SDK (1), Dify Agent (1), Lagent (1), Marvin (1), Mastra (1), MetaGPT (1),
+CAMEL (1), Cline SDK (1), Continue CLI (1), Dify Agent (1), Lagent (1), Marvin (1), Mastra (1), MetaGPT (1),
 Letta Code (1), OpenHands SDK (2), Qwen-Agent (1), Roo Code (1), and Trae Agent (1).
 Provider observations are OpenAI (43), Anthropic (25), Google (20), Azure OpenAI (12), Groq (7),
 AWS Bedrock (6), Ollama (5), Cohere, Mistral, and xAI (3 each), DeepSeek (2), and Alibaba
@@ -99,6 +99,15 @@ is opt-in through `LETTA_FS_SANDBOX`; the Write implementation proves no general
 workspace-root containment. The graph adds two Agent→tool, two capability, and four control-setting
 edges and one finding each for AV-EXEC001, AV-APPROVAL002, and AV-FS001. A standard default,
 near-package import, missing role, or duplicate role withholds the entire graph.
+
+Schema v120 adds a six-source Continue CLI composition joining plan-mode policy selection, absolute
+mode override, dynamic permission precedence, runtime approval dispatch, the model-visible `Bash`
+tool, and the `shell-quote` risk evaluator. Normal mode remains the default and asks for Bash;
+selected plan mode excludes Edit/MultiEdit/Write but statically allows Bash. The evaluator's
+`disabled` result still blocks critical commands, while `allowedWithPermission` for high-risk and
+unknown commands is replaced by the static allow before the login-shell spawn. The graph records
+that compensating hard block and emits one `AV-APPROVAL008` review plus the exact `AV-EXEC001` sink.
+Missing roles, a retained dynamic ask, or a non-shell argv path withholds the composition.
 
 Schema v73 identifies 29 exact Python provider calls across seven repositories: 20 native Mistral,
 Groq, Cohere, or Ollama SDK calls and nine LangChain wrappers. Seven calls across five repositories
@@ -902,12 +911,12 @@ and `network-ssrf-policy` edge.
   `created_by` is nullable and unset, so actor attribution remains unresolved.
 - Selected-path scans parse only selected files. The research corpus adds at most 20 local source
   dependencies to each 220-file root sample: versioned audited evidence hints plus bounded Python
-  import closure, all charged against the same cap. This refresh added 190 files across 23 repositories. Unselected definitions
+  import closure, all charged against the same cap. This refresh added 192 files across 24 repositories. Unselected definitions
   and controls are not evidence of repository-wide coverage or absence.
 
 ## Quality interpretation
 
-The 696-label rule truth set and 1,351-label IR component/relationship set are curated regression
+The 702-label rule truth set and 1,373-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed
