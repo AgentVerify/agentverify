@@ -102,6 +102,11 @@ now attributes 17 wrapper calls across Microsoft AutoGen and AgentOps, including
 calls and 13 literal models. OpenAI-compatible `base_url` overrides, near packages, and rebound
 constructors remain unresolved. Framework evidence rises to 42 repositories, and the component
 taxonomy reaches 439 labels (314 positive, 125 negative).
+Schema v117 adds the exact `trae_agent` framework boundary and raises selected framework presence to
+45 repositories. Its repository-level default-tool proof contributes two built-in tools, two
+capabilities, two exact Agent edges, two disabled/unavailable control settings, and four setting
+edges. Component taxonomy reaches 446 labels (319 positive, 127 negative); 24 dedicated Trae
+composition labels add 22 positives and two near-package negatives.
 Next generalize additional selected package reexports without trusting generic `Client` names or
 framework-adjacent packages.
 
@@ -127,7 +132,7 @@ known method on a role-proven class; `HostedMCPTool`, `LangchainTool`, and `Agen
 separate exact adapter proofs. Four of the callable
 tools resolve through one exact selected local export; three unavailable SDK definitions remain
 explicit import-boundary identities with no inferred capabilities. These proofs resolve the final
-six former default-scope misses. The benchmark now reports zero unresolved among 621 non-test Python
+six former default-scope misses. The benchmark now reports zero unresolved among 623 non-test Python
 Agent→tool edges; all 70 unresolved edges occur in tests or conservative fixtures. Import-proven OpenAI
 `function_tool(function)` assignments now recover 12 exact wrapper tools and Agent edges, including
 the two repeated SDK targets; three enable approval and all occur under tests. Exact same-class
@@ -299,13 +304,15 @@ Keep unresolved distinct from absent.
 ## P0 — approval coverage rule
 
 `AV-APPROVAL002` now reports the narrow provable subset where an Agent directly reaches a local
-OpenAI Agents Python or TypeScript shell tool and its SDK approval is explicitly or default-disabled.
+shell tool and its framework policy is explicitly/default-disabled or its exact executor exposes no
+per-action decision hook. OpenAI Agents covers the SDK-policy cases; schema v117 adds Trae Agent's
+literal default Bash registration and direct executor path.
 It remains a review: an executor may enforce an equivalent internal control. Promote absence to a
 finding only when the complete destructive path and executor policy are resolved. `AV-APPROVAL003`
 now resolves the complementary positive policy flow: a reachable local shell or apply-patch tool's
 same-file approval callback transitively reaches an environment-backed branch that returns true.
-Three pinned Python/TypeScript SDK examples qualify; safe callbacks, unbound helpers, and hosted
-shells remain negative. Next extend coverage to delegated agents and other frameworks without
+Three pinned Python/TypeScript SDK examples qualify; safe callbacks, unbound helpers, hosted
+shells, near packages, and incomplete Trae source chains remain negative. Next extend coverage to delegated agents and other frameworks without
 treating callbacks or automatic handlers as absent controls. The exact OpenAI Agents Python MCP
 composition inventories the opposite policy state:
 an omitted `MCPServerStdio.require_approval` becomes `False` and is copied to every discovered
@@ -451,8 +458,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 667 pinned positive/negative locations, with 1,269 separately
-scored IR component/relationship labels. Schema-v116 engine results and
+The curated regression set has reached 676 pinned positive/negative locations, with 1,296 separately
+scored IR component/relationship labels. Schema-v117 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

@@ -156,6 +156,12 @@ confirmation mode requires both an analyzer and a non-default confirmation polic
 should therefore model analyzer and gate as separate controls and credit human approval only when
 the same reachable conversation composes both.
 
+Optional containment is also separate from effective containment. Trae Agent includes a Docker tool
+executor, but its public constructors default `docker_config` to `None` and select the local executor
+on that path. A scanner should record Docker isolation as available while attaching the disabled
+default to the exact Bash/editor capabilities; the mere presence of a sandbox implementation must
+not govern an execution path that does not select it.
+
 ## Provider presence versus configured provider calls
 
 An SDK import proves a repository dependency, while an import-proven constructor or inference call

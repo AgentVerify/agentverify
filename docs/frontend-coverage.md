@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v116
+framework, wrapper, or configuration path. Counts come from schema-v117
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -14,7 +14,7 @@ kind. Categories and signature kinds can overlap.
 |---|---:|---:|---:|---:|---:|---:|
 | autonomous-agent | 3 | 3 | 2 | 3 | 1 | 3 |
 | browser-agent | 3 | 3 | 2 | 3 | 2 | 3 |
-| coding-agent | 15 | 15 | 5 | 7 | 8 | 14 |
+| coding-agent | 15 | 15 | 6 | 7 | 8 | 14 |
 | computer-agent | 1 | 1 | 0 | 1 | 0 | 1 |
 | examples | 2 | 2 | 2 | 2 | 1 | 2 |
 | framework | 22 | 22 | 21 | 20 | 19 | 21 |
@@ -26,13 +26,13 @@ kind. Categories and signature kinds can overlap.
 | visual-platform | 4 | 4 | 2 | 1 | 1 | 4 |
 | workflow-agent | 3 | 3 | 2 | 3 | 1 | 3 |
 | workflow-platform | 2 | 2 | 1 | 1 | 2 | 2 |
-| **Total with observation** | **71** | **70** | **44** | **49** | **47** | **67** |
+| **Total with observation** | **71** | **70** | **45** | **49** | **47** | **67** |
 
 Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK (10), LangGraph
 (8), LlamaIndex (6), Vercel AI SDK (5), CrewAI (4), Agno (3), Google ADK (3), PydanticAI (3),
 AutoGen (2), Microsoft Agent Framework (2), Semantic Kernel (2), smolagents (2), AgentScope (1),
 CAMEL (1), Cline SDK (1), Dify Agent (1), Lagent (1), Marvin (1), Mastra (1), MetaGPT (1),
-OpenHands SDK (2), and Qwen-Agent (1).
+OpenHands SDK (2), Qwen-Agent (1), and Trae Agent (1).
 Provider observations are OpenAI (43), Anthropic (25), Google (20), Azure OpenAI (12), Groq (7),
 AWS Bedrock (6), Ollama (5), Cohere, Mistral, and xAI (3 each), DeepSeek (2), and Alibaba
 DashScope and Moonshot AI (1 each). These overlapping exact-import/call, literal-service, and
@@ -64,6 +64,17 @@ its default `HIGH` threshold and `confirm_unknown=True` as a human-approval cont
 as a working directory hint but accepts agent-supplied absolute paths without a containment check.
 Near packages, rebound factories, non-`.name` tool references, dynamic policies, and incomplete or
 multiply assigned chains remain unresolved.
+
+Schema v117 recognizes exact Python `trae_agent` imports and resolves Trae Agent's default tool
+composition only when seven source roles agree: the four-name default tool list, registry mappings,
+`TraeAgent`/`BaseAgent` inheritance and routing, the direct `ToolExecutor`, persistent `/bin/bash`
+stdin sink, and absolute-path editor sink. The pinned repository contributes two production
+Agent→tool edges, two capability edges, and four exact control-setting edges. Its default
+`docker_config=None` selects the local executor, whose direct dispatch exposes no per-action
+decision hook; the editor requires an absolute path but proves no workspace-root containment. The
+composition therefore adds one finding each to AV-EXEC001, AV-APPROVAL002, and AV-FS001. A changed
+default list, missing source role, added executor decision hook, editor boundary check, duplicate
+composition, or near package withholds the entire graph.
 
 Schema v73 identifies 29 exact Python provider calls across seven repositories: 20 native Mistral,
 Groq, Cohere, or Ollama SDK calls and nine LangChain wrappers. Seven calls across five repositories
@@ -271,9 +282,9 @@ provider-hosted media boundary. All 13 expose no constructor approval parameter.
 rebound constructors stay unclassified. Provider-hosted web search is inventory, not AV-NET001,
 because it does not expose a source-proven parameter-controlled origin.
 
-Across the selected snapshot, 10,041 observations have module-qualified symbol IDs. Of
-4,688 relationship endpoint observations, all 3,886 identified endpoints resolve to an observed
-component (3,534 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
+Across the selected snapshot, 10,046 observations have module-qualified symbol IDs. Of
+4,704 relationship endpoint observations, all 3,900 identified endpoints resolve to an observed
+component (3,587 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
 withheld because a function parameter and assignment shadow the same-named package import.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
 edges resolve exactly. The current schema records 379 Python lexical-single-definition, 20 same-block
@@ -299,7 +310,7 @@ exact delegation edge to its same-block Agent receiver. Thirty use immutable mod
 resolve to exact selected local definitions; unavailable absolute-import sources retain a boundary
 identity without inferred capabilities. Imported `from_settings` tool factories, exact
 `HostedMCPTool` and `LangchainTool` constructors, and exact same-block `Agent.as_tool()` adapters
-resolve the final six former production misses. Across all 1,220 Python Agent→tool edges, all 621
+resolve the final six former production misses. Across all 1,222 Python Agent→tool edges, all 623
 outside tests resolve; the 70 unresolved edges are confined to tests and conservative fixtures.
 Import-proven OpenAI `function_tool(function)`
 assignments recover 12 wrappers and 12 Agent edges; all are tests, three enable approval, and their
@@ -315,7 +326,7 @@ Capability/control taxonomy endpoints intentionally lack
 source-symbol IDs, so the endpoint fraction is inventory coverage rather than an accuracy or recall
 metric.
 
-The native AI BOM 1.2 resolver independently classifies all 4,688 endpoints: 3,878 by symbol ID, 693
+The native AI BOM 1.2 resolver independently classifies all 4,704 endpoints: 3,892 by symbol ID, 695
 by exact relationship evidence, 21 by a unique display name, 38 as ambiguous, and 58 as unresolved.
 Evidence-local resolution removes capability/control ambiguities; occurrence-qualified bindings
 resolve repeated source agent/tool observations, and conservative lexical resolution removes further
@@ -872,7 +883,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 667-label rule truth set and 1,269-label IR component/relationship set are curated regression
+The 676-label rule truth set and 1,296-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

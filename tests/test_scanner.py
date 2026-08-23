@@ -1459,7 +1459,7 @@ def test_local_shell_tool_requires_exact_import_and_reports_missing_sdk_approval
         if finding.rule_id == "AV-APPROVAL002"
     } == {9, 12, 17}
     assert all(
-        "exposes no SDK approval hook" in finding.message
+        "exposes no per-action decision hook" in finding.message
         for finding in ir.findings
         if finding.rule_id == "AV-APPROVAL002"
     )
@@ -4315,6 +4315,106 @@ def test_openhands_builtin_tools_require_analyzer_and_confirmation_policy() -> N
         and component.name == "OpenHands SDK"
         and component.evidence.path == "lookalike.py"
         for component in ir.components
+    )
+
+
+def test_trae_agent_default_tools_require_the_exact_cross_file_composition(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/python_trae_agent_default_tools"
+    ir = scan_repository(root / "positive")
+
+    findings = [
+        (finding.rule_id, finding.evidence.path, finding.evidence.line, finding.ir_path)
+        for finding in ir.findings
+        if finding.rule_id in {"AV-APPROVAL002", "AV-EXEC001", "AV-FS001"}
+    ]
+    assert findings == [
+        (
+            "AV-APPROVAL002",
+            "trae_agent/tools/bash_tool.py",
+            35,
+            (
+                "agent:TraeAgent default toolchain",
+                "tool:Trae BashTool",
+                "capability:shell-execution",
+            ),
+        ),
+        (
+            "AV-EXEC001",
+            "trae_agent/tools/bash_tool.py",
+            35,
+            (
+                "agent:TraeAgent default toolchain",
+                "tool:Trae BashTool",
+                "capability:shell-execution",
+            ),
+        ),
+        (
+            "AV-FS001",
+            "trae_agent/tools/edit_tool.py",
+            19,
+            (
+                "agent:TraeAgent default toolchain",
+                "tool:Trae TextEditorTool",
+                "capability:filesystem",
+            ),
+        ),
+    ]
+    specialized = [
+        component
+        for component in ir.components
+        if component.attributes.get("analysis") == "python-trae-agent-default-tools"
+    ]
+    assert {(component.kind, component.name) for component in specialized} == {
+        ("agent", "TraeAgent default toolchain"),
+        ("tool", "Trae BashTool"),
+        ("tool", "Trae TextEditorTool"),
+        ("capability", "shell-execution"),
+        ("capability", "filesystem"),
+        ("control-setting", "agent-action-confirmation"),
+        ("control-setting", "tool-execution-isolation"),
+    }
+    shell = next(
+        component
+        for component in specialized
+        if component.kind == "capability" and component.name == "shell-execution"
+    )
+    filesystem = next(
+        component
+        for component in specialized
+        if component.kind == "capability" and component.name == "filesystem"
+    )
+    assert shell.attributes["command_sink"] == "shell-process-stdin"
+    assert shell.attributes["sandbox_boundary_scope"] == "disabled-default"
+    assert filesystem.attributes["path_requirement"] == "absolute-only"
+    assert filesystem.attributes["path_boundary_scope"] == "unconstrained"
+    assert sum(
+        edge.attributes.get("analysis") == "python-trae-agent-default-tools"
+        and edge.source_kind == "agent"
+        and edge.relation == "uses"
+        and edge.target_kind == "tool"
+        for edge in ir.relationships
+    ) == 2
+
+    near = scan_repository(root / "near")
+    assert not any(
+        component.name == "Trae Agent" or component.attributes.get("analysis")
+        == "python-trae-agent-default-tools"
+        for component in near.components
+    )
+
+    changed_default = tmp_path / "changed-default"
+    shutil.copytree(root / "positive", changed_default)
+    config_path = changed_default / "trae_agent/utils/config.py"
+    config_path.write_text(
+        config_path.read_text(encoding="utf-8").replace('"bash",', '"safe_read",'),
+        encoding="utf-8",
+    )
+    changed_ir = scan_repository(changed_default)
+    assert not any(
+        component.attributes.get("analysis") == "python-trae-agent-default-tools"
+        for component in changed_ir.components
     )
 
 

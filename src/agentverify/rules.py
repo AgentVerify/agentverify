@@ -50,7 +50,7 @@ RULE_DEFINITIONS = tuple(
                 "review",
                 "high",
                 "high",
-                "A reachable local shell tool has approval disabled or exposes no SDK approval hook",
+                "A reachable local shell tool has approval disabled or exposes no per-action decision hook",
                 "Enable the SDK approval mechanism or enforce an equivalent authenticated per-action decision inside the executor.",
             ),
             RuleMetadata(
@@ -741,7 +741,7 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
             ):
                 policy = tool.attributes["approval_policy"]
                 title = (
-                    "A reachable local shell tool exposes no SDK approval hook"
+                    "A reachable local shell tool exposes no per-action decision hook"
                     if policy == "unavailable"
                     else "A reachable local shell tool has SDK approval disabled "
                     + ("by default" if policy == "disabled-default" else "explicitly")

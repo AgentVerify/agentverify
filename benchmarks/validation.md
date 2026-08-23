@@ -1,6 +1,6 @@
 # Detection validation log
 
-Validation date: 2026-08-22. Repositories are partial checkouts pinned by
+Validation date: 2026-08-23. Repositories are partial checkouts pinned by
 `research/repository-data.json`; paths and results can be reproduced from the corpus scripts.
 
 ## AV-EXEC001 — dynamic command through system shell
@@ -8,7 +8,7 @@ Validation date: 2026-08-22. Repositories are partial checkouts pinned by
 | Repository | Commit | Selected files scanned | Findings | Representative path |
 |---|---|---:|---:|---|
 | Aider-AI/aider | `5dc9490b` | 152 | 4 | `aider/editor.py:134` |
-| bytedance/trae-agent | `e839e559` | 75 | 2 | `trae_agent/agent/docker_manager.py:175` |
+| bytedance/trae-agent | `e839e559` | 75 | 3 | `trae_agent/tools/bash_tool.py:229` |
 | FoundationAgents/MetaGPT | `11cdf466` | 214 | 1 | `metagpt/repo_parser.py:731` |
 | SWE-agent/SWE-agent | `3ea751c0` | 102 | 1 | `tools/windowed/lib/flake8_utils.py:143` |
 | cline/cline | `80b3b034` | 187 | 1 | `apps/examples/cli-agent/src/index.ts:19` |
@@ -16,6 +16,10 @@ Validation date: 2026-08-22. Repositories are partial checkouts pinned by
 These are pattern detections, not claims that each application is exploitable. Caller provenance,
 input constraints, containment, and approval policy determine exploitability. The rule reports the
 dangerous execution primitive with high pattern confidence and leaves reachability for graph analysis.
+Schema v117 adds the first exact default-tool reachability path for this rule: Trae Agent's literal
+default registry binds `bash` to `BashTool`, its required model `command` reaches persistent
+`/bin/bash` stdin, and default-`None` Docker configuration selects the local executor. The optional
+Docker executor is retained as available isolation but does not govern the default path.
 
 ## Regression cases
 
@@ -35,6 +39,8 @@ dangerous execution primitive with high pattern confidence and leaves reachabili
   Agents Python disabled approval default; explicit approval and broken SDK propagation stay negative.
 - `cases/python_agno_mcp_confirmation`: direct and session-composed Agno filesystem MCP tools retain
   omitted, partial, complete, dynamic, and read-only-filtered confirmation states.
+- `cases/python_trae_agent_default_tools`: an exact seven-source Trae Agent composition resolves its
+  default Bash/editor paths; a near package and a changed default tool list withhold the graph.
 - `cases/python_semantic_kernel_mcp_sampling`: exact Agent/plugin binding distinguishes explicit
   sampling auto-approval from default/explicit denial, callback, dynamic, and disconnected states.
 - `cases/mcp_sampling_consent`: exact Python and TypeScript MCP sampling handlers distinguish
@@ -456,9 +462,9 @@ one address-filtering control with configured allowlist and environment-proxy re
 Composio edges separately count configured-route pinning residuals, one edge-runtime fail-closed path,
 and three edge-runtime unguarded fallbacks.
 
-The benchmark now also measures identity coverage: 10,041 component observations carry
-module-qualified IDs. Of 4,688 relationship endpoints, all 3,886 identified symbol endpoints resolve
-to an observed component (3,573 Python and 313 TypeScript). The current schema records 379
+The benchmark now also measures identity coverage: 10,046 component observations carry
+module-qualified IDs. Of 4,704 relationship endpoints, all 3,900 identified symbol endpoints resolve
+to an observed component (3,587 Python and 313 TypeScript). The current schema records 379
 `lexical-single-definition` targets, 20 exact same-block dominating definitions, 25 contextual
 absolute-import targets, and three exact same-class helper-return edges to two Agent source
 definitions. Fourteen production CrewAI delegations resolve through an exact contextual import,
@@ -475,7 +481,7 @@ Agent-as-tool adapters, and five absolute-import boundary tools. Of these, 526 a
 they add 30 capability edges and 812 exact Agent edges. Every adapter has an exact delegation edge
 to its proven Agent receiver. Imported `from_settings` tool factories plus exact
 `HostedMCPTool`, `LangchainTool`, and `Agent.as_tool()` adapters resolve the last six production
-misses. The schema publishes 1,220 Python Agent→tool edges in total: all 621 non-test edges resolve,
+misses. The schema publishes 1,222 Python Agent→tool edges in total: all 623 non-test edges resolve,
 while the 70 unresolved edges are confined to tests and conservative fixtures. Import-proven OpenAI
 `function_tool(function)` assignments add 12 wrapper tools and 12 exact Agent edges; three explicitly
 enable approval, all occur under tests, and none of their selected bodies contains a recognized
@@ -510,7 +516,7 @@ shadowing remain unresolved. Sixteen IR labels cover the local export/import bou
 forms, and all seven pinned Google ADK edges; one rule label proves cross-file AV-FS001 reachability.
 
 Schema-v86 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
-resolves 3,878 endpoints by symbol ID, 693 by exact evidence location, and 21 by a unique display
+resolves 3,892 endpoints by symbol ID, 695 by exact evidence location, and 21 by a unique display
 name; 38 remain ambiguous and 58 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
@@ -687,10 +693,9 @@ return; inheritance, helper-object propagation, and callback results remain unre
 ## AV-APPROVAL002 — reachable local shell with approval disabled or unavailable
 
 The enabled rule is intentionally narrower than a general “missing approval” claim. It requires a
-local OpenAI Agents Python `ShellTool`/`LocalShellTool` or TypeScript `shellTool`, a direct resolved
-Agent-to-tool edge, and either an explicit false, the SDK's documented false default, or an exact
-constructor whose SDK exposes no approval parameter. It reports a high-confidence `review`, not a
-finding, because a custom executor may still implement an equivalent internal approval control.
+directly reachable local shell tool and either an explicit false, a documented disabled default, an
+exact constructor with no approval parameter, or a complete executor proof with no per-action
+decision branch. It reports a high-confidence `review`, not a generic lexical absence finding.
 
 Schema v63 separately inventories OpenAI Agents Python's MCP approval default without widening the
 rule. In the pinned sandbox-agent example, omitted `MCPServerStdio.require_approval` flows through the
@@ -714,7 +719,12 @@ The full benchmark reports two sites, both in the pinned SDK's
 The paired real negative is the
 [HITL shell example](https://github.com/openai/openai-agents-python/blob/17ba331bb0ad1622a4ff4ecdc914c77118075dad/examples/tools/shell_human_in_the_loop.py#L117),
 which creates a resolved human-approval edge. OpenAI Agents JS contributes real approved-local and
-hosted-shell negatives. The rule has six positive and eight negative exact labels.
+hosted-shell negatives.
+
+Schema v117 adds one Trae Agent site. The proof requires the literal `TraeAgentConfig` Bash default,
+registry binding, `TraeAgent → BaseAgent` construction, direct `ToolExecutor` dispatch, and
+default-local executor selection. The executor class is rejected if an approval, confirmation, or
+HITL branch appears. The rule now has eight positive and nine negative exact labels.
 
 ## AV-APPROVAL003 — environment-backed approval callback reaches a privileged tool
 
@@ -867,7 +877,7 @@ Two default-scope clients qualify: the Microsoft tutorial and FastMCP CLI both a
 do not show the target URL. The TypeScript SDK host is the negative control: it displays the full URL,
 rejects unsafe non-HTTPS/non-loopback destinations, and asks before proceeding. The rule matrix is 4
 TP, 3 TN, 0 FP, and 0 FN; seven additional positive IR labels pin full versus missing disclosure.
-All 667 cross-rule labels pass (300 positives and 367 negatives).
+All 676 cross-rule labels pass (306 positives and 370 negatives).
 
 During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
 to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
@@ -1005,7 +1015,7 @@ through a controlled dependency-review process.
 ## AV-FS001 — dynamic writable tool path
 
 The rule requires a writable tool-input-derived path inside a resolved tool; ordinary application
-writes and fixed/configured tool paths do not trigger it. The full benchmark reports 37 default-scope sites across nine
+writes and fixed/configured tool paths do not trigger it. The full benchmark reports 38 default-scope sites across ten
 repositories. Four newly reachable sites come from immutable module-level callables passed literally
 to Marvin Agents: writes in `examples/deepseek_chat.py:74`, `examples/hello_agent.py:7`, and
 `examples/provider_specific/aimlapi/run_agent.py:30`, plus the delete in
@@ -1013,6 +1023,10 @@ to Marvin Agents: writes in `examples/deepseek_chat.py:74`, `examples/hello_agen
 [local-filesystem MCP `write_file`](https://github.com/ArcadeAI/arcade-ai/blob/597debaa1593b54172061ce36a414cc29aa8fc6a/examples/mcp_servers/local_filesystem/src/local_filesystem/tools.py#L154),
 which resolves a caller-provided path before writing. No workspace-root constraint is visible in the
 tool function, but the result remains `review` because enclosing server policy is unresolved.
+Trae Agent contributes one exact default-tool review: `TextEditorTool` requires an absolute `path`,
+but its validator checks only absoluteness, existence, and file/directory state before mutation. It
+does not resolve or compare the path with the configured working directory, so absolute paths outside
+the workspace remain reachable on the default local executor.
 New TypeScript registration edges expose Mastra's
 [`writeFile` tool adapter](https://github.com/mastra-ai/mastra/blob/1da5fb00e141b78c2148b21ee085ec24112cf2a5/packages/agent-builder/src/defaults.ts#L457-L475)
 and the MCP filesystem server's
@@ -1354,14 +1368,14 @@ and surfacing failed writes through metrics or alerts.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 667 exact labels across all 20 enabled rules: 300 positives and 367
+`benchmarks/truthset.json` contains 676 exact labels across all 20 enabled rules: 306 positives and 370
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
 Compose/Kubernetes/Docker SDK settings, host credential bind near misses, and exact/prompt-only MCP
-package launchers. All 667 currently pass;
+package launchers. All 676 currently pass;
 each rule's seed precision and recall are 1.0. Negative labels must retain either an observed Agent IR
 component anchor or verified source text at the exact pinned line, preventing a missing or drifting
 location from passing silently.
@@ -1484,18 +1498,19 @@ six unresolved ambiguity/shadowing/order forms, and all seven pinned Google ADK 
 tool-factory/adapter labels cover four local Agent edges, one hosted-MCP capability, one local
 Agent-as-tool delegation, eight conservative local negatives, two AutoGen factory edges, one Google
 ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent edge plus delegation.
-The 443 component-taxonomy labels add 317 exact local/pinned framework, provider, call,
-and model positives plus 126 near-name, rebound, custom-endpoint, scoped-binding, nonliteral-request,
+The 446 component-taxonomy labels add 319 exact local/pinned framework, provider, call,
+and model positives plus 127 near-name, rebound, custom-endpoint, scoped-binding, nonliteral-request,
 and unrelated-service negatives. Nineteen OpenHands labels—four taxonomy and 15 composition—pin
 built-in tools, analyzer and confirmation controls, exact Agent reachability, shared-conversation
-ambiguity, and rebound or near-package negatives. Three path-segment-sanitizer labels pin the exact local and Qwen
+ambiguity, and rebound or near-package negatives. Twenty-four Trae default-tool labels add 22 exact
+Agent/tool/capability/setting-edge positives plus two near-package negatives. Three path-segment-sanitizer labels pin the exact local and Qwen
 SHA-256 edges plus a lookalike negative.
 Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,269 IR labels pass (893 positives and 376 negatives):
-317 component-taxonomy positives/126 negatives, three approval positives/four negatives,
+negatives. All 1,296 IR labels pass (917 positives and 379 negatives):
+319 component-taxonomy positives/127 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
 contextual network-import positives, three imported-literal-origin positives/seven negatives,

@@ -91,6 +91,7 @@ FRONTEND_IMPORT_SIGNATURES = {
             "Marvin": ("marvin.agents",),
             "AgentScope": ("agentscope",),
             "OpenHands SDK": ("openhands",),
+            "Trae Agent": ("trae_agent",),
         },
         "provider": {
             "Mistral": ("mistralai",),
@@ -27189,6 +27190,418 @@ def add_python_skyvern_action_history_flow(
     )
 
 
+def add_python_trae_agent_default_tool_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve Trae Agent's exact default host-local Bash and editor toolchain."""
+    sources: dict[str, str] = {}
+    for path in paths:
+        if path.suffix.lower() != ".py" or not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+            ast.parse(text, filename=relative)
+        except (OSError, SyntaxError, ValueError):
+            continue
+        sources[relative] = text
+
+    def unique_source(markers: tuple[str, ...]) -> tuple[str, str] | None:
+        matches = [
+            (relative, text)
+            for relative, text in sources.items()
+            if all(marker in text for marker in markers)
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    config_source = unique_source(
+        (
+            "from dataclasses import dataclass, field",
+            "class TraeAgentConfig(AgentConfig):",
+            "tools: list[str] = field(",
+            "default_factory=lambda: [",
+            '"bash",',
+            '"str_replace_based_edit_tool",',
+            '"sequentialthinking",',
+            '"task_done",',
+        )
+    )
+    registry_source = unique_source(
+        (
+            "from trae_agent.tools.base import Tool, ToolCall, ToolExecutor, ToolResult",
+            "from trae_agent.tools.bash_tool import BashTool",
+            "from trae_agent.tools.edit_tool import TextEditorTool",
+            "tools_registry: dict[str, type[Tool]] = {",
+            '"bash": BashTool,',
+            '"str_replace_based_edit_tool": TextEditorTool,',
+        )
+    )
+    base_agent_source = unique_source(
+        (
+            "from trae_agent.tools import tools_registry",
+            "from trae_agent.tools.base import Tool, ToolCall, ToolExecutor, ToolResult",
+            "from trae_agent.tools.docker_tool_executor import DockerToolExecutor",
+            "class BaseAgent(ABC):",
+            "docker_config: dict | None = None",
+            "tools_registry[tool_name](model_provider=self._model_config.model_provider.provider)",
+            "for tool_name in agent_config.tools",
+            "original_tool_executor = ToolExecutor(self._tools)",
+            "if docker_config:",
+            "self._tool_caller = DockerToolExecutor(",
+            'docker_tools=["bash", "str_replace_based_edit_tool", "json_edit_tool"],',
+            "else:\n            self._tool_caller = original_tool_executor",
+        )
+    )
+    trae_agent_source = unique_source(
+        (
+            "from trae_agent.agent.base_agent import BaseAgent",
+            "from trae_agent.tools import tools_registry",
+            "class TraeAgent(BaseAgent):",
+            "docker_config: dict | None = None",
+            "super().__init__(",
+            "agent_config=trae_agent_config, docker_config=docker_config, docker_keep=docker_keep",
+        )
+    )
+    executor_source = unique_source(
+        (
+            "from typing import TypeAlias, override",
+            "class ToolExecutor:",
+            "async def execute_tool_call(self, tool_call: ToolCall) -> ToolResult:",
+            "tool = self.tools[normalized_name]",
+            "tool_exec_result = await tool.execute(tool_call.arguments)",
+        )
+    )
+    bash_source = unique_source(
+        (
+            "from trae_agent.tools.base import Tool, ToolCallArguments, ToolError, ToolExecResult, ToolParameter",
+            "class _BashSession:",
+            'command: str = "/bin/bash"',
+            "await asyncio.create_subprocess_shell(",
+            "stdin=asyncio.subprocess.PIPE",
+            "self._process.stdin.write(",
+            "+ command.encode()",
+            "class BashTool(Tool):",
+            'name="command",',
+            'command = str(arguments["command"]) if "command" in arguments else None',
+            "return await self._session.run(command)",
+        )
+    )
+    editor_source = unique_source(
+        (
+            "from trae_agent.tools.base import Tool, ToolCallArguments, ToolError, ToolExecResult, ToolParameter",
+            "class TextEditorTool(Tool):",
+            'name="path",',
+            'path = str(arguments["path"]) if "path" in arguments else None',
+            "_path = Path(path)",
+            "self.validate_path(command, _path)",
+            "def validate_path(self, command: str, path: Path):",
+            "if not path.is_absolute():",
+            "def write_file(self, path: Path, file: str):",
+            "_ = path.write_text(file)",
+            "self.write_file(_path, file_text)",
+            "return self.str_replace(_path, old_str, new_str)",
+            "return self._insert(_path, insert_line, new_str_to_insert)",
+        )
+    )
+    selected = (
+        config_source,
+        registry_source,
+        base_agent_source,
+        trae_agent_source,
+        executor_source,
+        bash_source,
+        editor_source,
+    )
+    if any(source is None for source in selected):
+        return
+    (
+        (config_path, config_text),
+        (_registry_path, _registry_text),
+        (base_agent_path, base_agent_text),
+        (trae_agent_path, trae_agent_text),
+        (executor_path, executor_text),
+        (bash_path, bash_text),
+        (editor_path, editor_text),
+    ) = selected  # type: ignore[misc]
+
+    executor_start = executor_text.find("class ToolExecutor:")
+    executor_body = executor_text[executor_start:].lower()
+    if executor_start < 0 or re.search(
+        r"\b(?:approv(?:al|e|ed|ing)|confirm(?:ation|ed|ing)?|human[_ -]?in[_ -]?the[_ -]?loop|hitl)\b",
+        executor_body,
+    ):
+        return
+    validate_start = editor_text.find("def validate_path(self, command: str, path: Path):")
+    validate_end = editor_text.find("\n    def ", validate_start + 1)
+    validate_body = editor_text[
+        validate_start : validate_end if validate_end >= 0 else len(editor_text)
+    ]
+    if validate_start < 0 or any(
+        boundary in validate_body
+        for boundary in (
+            ".is_relative_to(",
+            ".relative_to(",
+            "commonpath(",
+            "commonprefix(",
+            ".resolve(",
+            ".startswith(",
+        )
+    ):
+        return
+
+    config_offset = config_text.find("tools: list[str] = field(")
+    agent_offset = trae_agent_text.find("class TraeAgent(BaseAgent):")
+    local_executor_offset = base_agent_text.find(
+        "self._tool_caller = original_tool_executor"
+    )
+    direct_execution_offset = executor_text.find(
+        "tool_exec_result = await tool.execute(tool_call.arguments)"
+    )
+    bash_offset = bash_text.find(
+        'command = str(arguments["command"]) if "command" in arguments else None'
+    )
+    editor_offset = editor_text.find(
+        'path = str(arguments["path"]) if "path" in arguments else None'
+    )
+    if min(
+        config_offset,
+        agent_offset,
+        local_executor_offset,
+        direct_execution_offset,
+        bash_offset,
+        editor_offset,
+    ) < 0:
+        return
+
+    config_line = line_at(config_text, config_offset)
+    agent_line = line_at(trae_agent_text, agent_offset)
+    local_executor_line = line_at(base_agent_text, local_executor_offset)
+    direct_execution_line = line_at(executor_text, direct_execution_offset)
+    bash_line = line_at(bash_text, bash_offset)
+    editor_line = line_at(editor_text, editor_offset)
+    config_evidence = Evidence(
+        config_path,
+        config_line,
+        excerpt(config_text.splitlines(), config_line),
+    )
+    agent_evidence = Evidence(
+        trae_agent_path,
+        agent_line,
+        excerpt(trae_agent_text.splitlines(), agent_line),
+    )
+    isolation_evidence = Evidence(
+        base_agent_path,
+        local_executor_line,
+        excerpt(base_agent_text.splitlines(), local_executor_line),
+    )
+    approval_evidence = Evidence(
+        executor_path,
+        direct_execution_line,
+        excerpt(executor_text.splitlines(), direct_execution_line),
+    )
+    analysis = "python-trae-agent-default-tools"
+    agent_name = "TraeAgent default toolchain"
+    agent_id = source_symbol("py", trae_agent_path, "agent", "TraeAgent")
+    approval_setting_id = source_symbol(
+        "py", executor_path, "control-setting", "agent-action-confirmation"
+    )
+    isolation_setting_id = source_symbol(
+        "py", base_agent_path, "control-setting", "tool-execution-isolation"
+    )
+    shared = {
+        "analysis": analysis,
+        "approval_policy": "unavailable",
+        "approval_source": "direct-executor-no-decision-hook",
+        "builtin_tool": True,
+        "execution_environment": "local",
+        "execution_environment_source": "sdk-default-docker-config-none",
+        "framework": "Trae Agent",
+        "scope": "production",
+    }
+    ir.add_component(
+        Component(
+            "agent",
+            agent_name,
+            agent_evidence,
+            {
+                "analysis": analysis,
+                "default_tools_source_line": config_line,
+                "default_tools_source_path": config_path,
+                "framework": "Trae Agent",
+                "scope": "production",
+            },
+            agent_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "control-setting",
+            "agent-action-confirmation",
+            approval_evidence,
+            {
+                "analysis": analysis,
+                "enabled": False,
+                "framework": "Trae Agent",
+                "policy": "unavailable",
+                "policy_source": "direct-executor-no-decision-hook",
+                "scope": "production",
+            },
+            approval_setting_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "control-setting",
+            "tool-execution-isolation",
+            isolation_evidence,
+            {
+                "analysis": analysis,
+                "available_control": "docker-tool-executor",
+                "enabled": False,
+                "framework": "Trae Agent",
+                "policy": "host-local",
+                "policy_source": "sdk-default-docker-config-none",
+                "scope": "production",
+            },
+            isolation_setting_id,
+        )
+    )
+
+    tool_specs = (
+        (
+            "Trae BashTool",
+            "BashTool",
+            "trae_agent.tools.bash_tool.BashTool",
+            bash_path,
+            bash_text,
+            bash_line,
+            "shell-execution",
+            {
+                "agent_controlled_command": True,
+                "api": "persistent-/bin/bash-stdin",
+                "command_sink": "shell-process-stdin",
+                "dynamic_command": True,
+                "sandbox_boundary_scope": "disabled-default",
+                "shell": True,
+            },
+        ),
+        (
+            "Trae TextEditorTool",
+            "TextEditorTool",
+            "trae_agent.tools.edit_tool.TextEditorTool",
+            editor_path,
+            editor_text,
+            editor_line,
+            "filesystem",
+            {
+                "api": "pathlib.Path.write_text",
+                "dynamic_path": True,
+                "path_boundary_guard": False,
+                "path_boundary_scope": "unconstrained",
+                "path_requirement": "absolute-only",
+                "tool_input_path": True,
+                "write_access": True,
+            },
+        ),
+    )
+    for (
+        tool_name,
+        builtin_name,
+        constructor,
+        tool_path,
+        tool_text,
+        tool_line,
+        capability,
+        capability_specific,
+    ) in tool_specs:
+        evidence = Evidence(
+            tool_path,
+            tool_line,
+            excerpt(tool_text.splitlines(), tool_line),
+        )
+        tool_id = source_symbol("py", tool_path, "tool", builtin_name)
+        ir.add_component(
+            Component(
+                "tool",
+                tool_name,
+                evidence,
+                {
+                    **shared,
+                    "builtin_tool_name": builtin_name,
+                    "constructor": constructor,
+                    "default_registration": True,
+                },
+                tool_id,
+            )
+        )
+        ir.add_component(
+            Component(
+                "capability",
+                capability,
+                evidence,
+                {**shared, **capability_specific},
+            )
+        )
+        ir.add_relationship(
+            Relationship(
+                "agent",
+                agent_name,
+                "uses",
+                "tool",
+                tool_name,
+                config_evidence,
+                {
+                    "analysis": analysis,
+                    "target_identity": "trae-default-tool-registry",
+                },
+                source_id=agent_id,
+                target_id=tool_id,
+            )
+        )
+        ir.add_relationship(
+            Relationship(
+                "tool",
+                tool_name,
+                "uses",
+                "capability",
+                capability,
+                evidence,
+                {"analysis": analysis},
+                source_id=tool_id,
+            )
+        )
+        ir.add_relationship(
+            Relationship(
+                "tool",
+                tool_name,
+                "configured-by",
+                "control-setting",
+                "agent-action-confirmation",
+                approval_evidence,
+                {"analysis": analysis},
+                source_id=tool_id,
+                target_id=approval_setting_id,
+            )
+        )
+        ir.add_relationship(
+            Relationship(
+                "tool",
+                tool_name,
+                "configured-by",
+                "control-setting",
+                "tool-execution-isolation",
+                isolation_evidence,
+                {"analysis": analysis},
+                source_id=tool_id,
+                target_id=isolation_setting_id,
+            )
+        )
+
+
 def add_typescript_a2a_card_endpoint_composition(
     ir: RepositoryIR,
     root: Path,
@@ -27760,6 +28173,7 @@ def scan_repository(
     add_python_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)
     add_python_google_adk_bigquery_audit_flow(ir, root, registry_paths)
     add_python_skyvern_action_history_flow(ir, root, registry_paths)
+    add_python_trae_agent_default_tool_flow(ir, root, registry_paths)
     propagate_python_class_network_helpers(
         ir,
         root,

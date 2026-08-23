@@ -711,6 +711,17 @@ def main() -> int:
         python_openhands_capabilities = [
             item for item in python_openhands_components if item.kind == "capability"
         ]
+        python_trae_agent_components = [
+            item
+            for item in ir.components
+            if item.attributes.get("analysis") == "python-trae-agent-default-tools"
+        ]
+        python_trae_agent_tools = [
+            item for item in python_trae_agent_components if item.kind == "tool"
+        ]
+        python_trae_agent_capabilities = [
+            item for item in python_trae_agent_components if item.kind == "capability"
+        ]
         typescript_openai_mcp_approval_servers = [
             item
             for item in ir.components
@@ -1879,6 +1890,61 @@ def main() -> int:
                     for finding in ir.findings
                 ),
             },
+            "python_trae_agent_default_tools": {
+                "tools": len(python_trae_agent_tools),
+                "bash_tools": sum(
+                    item.attributes.get("builtin_tool_name") == "BashTool"
+                    for item in python_trae_agent_tools
+                ),
+                "editor_tools": sum(
+                    item.attributes.get("builtin_tool_name") == "TextEditorTool"
+                    for item in python_trae_agent_tools
+                ),
+                "capabilities": len(python_trae_agent_capabilities),
+                "approval_settings": sum(
+                    item.kind == "control-setting"
+                    and item.name == "agent-action-confirmation"
+                    and item.attributes.get("enabled") is False
+                    for item in python_trae_agent_components
+                ),
+                "isolation_settings": sum(
+                    item.kind == "control-setting"
+                    and item.name == "tool-execution-isolation"
+                    and item.attributes.get("enabled") is False
+                    for item in python_trae_agent_components
+                ),
+                "agent_tool_edges": sum(
+                    edge.source_kind == "agent"
+                    and edge.relation == "uses"
+                    and edge.target_kind == "tool"
+                    and edge.attributes.get("analysis")
+                    == "python-trae-agent-default-tools"
+                    for edge in ir.relationships
+                ),
+                "configured_by_edges": sum(
+                    edge.source_kind == "tool"
+                    and edge.relation == "configured-by"
+                    and edge.target_kind == "control-setting"
+                    and edge.attributes.get("analysis")
+                    == "python-trae-agent-default-tools"
+                    for edge in ir.relationships
+                ),
+                "execution_findings": sum(
+                    finding.rule_id == "AV-EXEC001"
+                    and finding.analysis.get("tool") == "Trae BashTool"
+                    for finding in ir.findings
+                ),
+                "approval_findings": sum(
+                    finding.rule_id == "AV-APPROVAL002"
+                    and finding.analysis.get("tool") == "Trae BashTool"
+                    for finding in ir.findings
+                ),
+                "filesystem_findings": sum(
+                    finding.rule_id == "AV-FS001"
+                    and finding.analysis.get("tool") == "Trae TextEditorTool"
+                    for finding in ir.findings
+                ),
+            },
             "typescript_openai_mcp_approval_default": {
                 "servers": len(typescript_openai_mcp_approval_servers),
                 "writable_servers": sum(
@@ -2735,7 +2801,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 116,
+        "schema_version": 117,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -3262,6 +3328,31 @@ def main() -> int:
             | {
                 "repositories": sum(
                     result["python_openhands_conversation_security"]["tools"] > 0
+                    for result in successful
+                )
+            },
+            "python_trae_agent_default_tools": {
+                name: sum(
+                    result["python_trae_agent_default_tools"][name]
+                    for result in successful
+                )
+                for name in (
+                    "tools",
+                    "bash_tools",
+                    "editor_tools",
+                    "capabilities",
+                    "approval_settings",
+                    "isolation_settings",
+                    "agent_tool_edges",
+                    "configured_by_edges",
+                    "execution_findings",
+                    "approval_findings",
+                    "filesystem_findings",
+                )
+            }
+            | {
+                "repositories": sum(
+                    result["python_trae_agent_default_tools"]["tools"] > 0
                     for result in successful
                 )
             },

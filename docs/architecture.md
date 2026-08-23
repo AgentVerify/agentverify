@@ -755,6 +755,15 @@ Import-proven `LocalShellTool` instances emit local shell execution and explicit
 SDK with no approval hook from one whose approval option is merely disabled. A reachable instance
 can therefore trigger AV-APPROVAL002 as a review while preserving the executor as an unresolved
 possible compensating control.
+Schema v117 adds one repository-level proof for Trae Agent's default toolchain. The composition
+requires the exact `TraeAgentConfig` literal default list, `tools_registry` class bindings,
+`TraeAgent → BaseAgent` inheritance, default-`None` Docker configuration with a direct local-executor
+fallback, `ToolExecutor` dispatch without an approval/confirmation branch, and both complete tool
+sinks. The Bash tool's required `command` argument reaches persistent `/bin/bash` stdin; the editor's
+required absolute `path` reaches `Path.write_text` after validation that proves absoluteness but no
+workspace-root containment. The IR records two exact Agent→tool→capability paths plus
+disabled-default isolation and unavailable-confirmation settings. Any missing source, changed
+default tool, near package, decision hook, or path-boundary API withholds the entire composition.
 Import-proven `CodeInterpreterTool` instances similarly expose that their SDK constructor has no
 approval hook, but they carry `execution_environment: hosted-sandbox` and
 `sandbox_policy: sdk-hosted`. Literal auto-container selection is preserved as configuration

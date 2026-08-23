@@ -363,6 +363,20 @@ reachable `FileEditorTool` registrations remain filesystem reviews: their execut
 conversation workspace as an editor working directory, but the action schema accepts absolute paths
 and the implementation does not reject paths outside that workspace.
 
+Schema v117 resolves the corresponding default-tool path in pinned Trae Agent. Its
+[`TraeAgentConfig.tools`](https://github.com/bytedance/trae-agent/blob/e839e559ac61bdd0e057c375dd1dee391fee797d/trae_agent/utils/config.py#L165)
+defaults to Bash and the string-replace editor; `BaseAgent` maps those literal names through the
+registry and, when the default `docker_config=None` is retained, selects the
+[local executor](https://github.com/bytedance/trae-agent/blob/e839e559ac61bdd0e057c375dd1dee391fee797d/trae_agent/agent/base_agent.py#L73).
+That executor [calls the selected tool directly](https://github.com/bytedance/trae-agent/blob/e839e559ac61bdd0e057c375dd1dee391fee797d/trae_agent/tools/base.py#L220)
+without a per-action decision branch. The Bash tool converts the required model argument at
+[line 229](https://github.com/bytedance/trae-agent/blob/e839e559ac61bdd0e057c375dd1dee391fee797d/trae_agent/tools/bash_tool.py#L229)
+and sends it to persistent `/bin/bash` stdin; the editor converts a required absolute path at
+[line 109](https://github.com/bytedance/trae-agent/blob/e839e559ac61bdd0e057c375dd1dee391fee797d/trae_agent/tools/edit_tool.py#L109)
+but its validator establishes no allowed root before `Path.write_text`. The exact default chain adds
+one AV-EXEC001 finding and one each of AV-APPROVAL002 and AV-FS001. Optional Docker routing remains
+recorded as available, not credited to the default local path.
+
 ## 4. Provider identity is a governance dependency
 
 OpenAI signals appear in 51 repositories, Anthropic in 37, Google in 28, Azure OpenAI in 18, and AWS
@@ -592,7 +606,7 @@ become reachable. Each Agent-as-tool adapter delegates to one exact same-block A
 Four imported callable definitions resolve through exact local exports; three unavailable production
 SDK sources remain import-boundary identities without inferred capabilities. Exact imported
 `from_settings` factories, `HostedMCPTool` and `LangchainTool` constructors, and same-block
-`Agent.as_tool()` adapters resolve those final six former production misses. All 621 non-test Python
+`Agent.as_tool()` adapters resolve those final six former production misses. All 623 non-test Python
 Agent→tool edges now resolve; 70 unresolved edges remain only in tests and conservative fixtures.
 Import-proven OpenAI `function_tool(function)` assignments
 recover 12 wrapper tools and 12 exact Agent edges; three enable approval, all occur under tests, and

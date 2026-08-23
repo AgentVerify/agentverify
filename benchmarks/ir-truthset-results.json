@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-23T01:29:19.753903+00:00",
-  "labels": 1269,
-  "passed": 1269,
+  "generated_at": "2026-08-23T01:46:45.479566+00:00",
+  "labels": 1296,
+  "passed": 1296,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -37,9 +37,9 @@
       "recall": 1.0
     },
     "IR-COMPONENT-TAXONOMY": {
-      "tp": 317,
+      "tp": 319,
       "fp": 0,
-      "tn": 126,
+      "tn": 127,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -416,6 +416,14 @@
       "tp": 23,
       "fp": 0,
       "tn": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-TRAE-DEFAULT-TOOLS": {
+      "tp": 22,
+      "fp": 0,
+      "tn": 2,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -11981,6 +11989,249 @@
     {
       "id": "python-openhands-shared-agent-local-negative",
       "check_id": "IR-PY-OPENHANDS-CONVERSATION",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "framework-python-trae-agent-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "framework-python-trae-agent-near-package-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "framework-python-trae-agent-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-agent-component-local",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-bash-tool-local",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-shell-capability-local",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-editor-tool-local",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-filesystem-capability-local",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-approval-setting-local",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-isolation-setting-local",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-agent-bash-edge-local",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-agent-editor-edge-local",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-bash-approval-edge-local",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-bash-isolation-edge-local",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-agent-component-real",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-bash-tool-real",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-shell-capability-real",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-editor-tool-real",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-filesystem-capability-real",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-approval-setting-real",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-isolation-setting-real",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-agent-bash-edge-real",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-agent-editor-edge-real",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-bash-approval-edge-real",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-bash-isolation-edge-real",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-shell-near-package-local-negative",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-trae-filesystem-near-package-local-negative",
+      "check_id": "IR-PY-TRAE-DEFAULT-TOOLS",
       "expected": false,
       "observed": false,
       "anchor_ok": true,
