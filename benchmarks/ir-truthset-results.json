@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-23T00:49:30.421994+00:00",
-  "labels": 1250,
-  "passed": 1250,
+  "generated_at": "2026-08-23T01:29:19.753903+00:00",
+  "labels": 1269,
+  "passed": 1269,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -37,9 +37,9 @@
       "recall": 1.0
     },
     "IR-COMPONENT-TAXONOMY": {
-      "tp": 314,
+      "tp": 317,
       "fp": 0,
-      "tn": 125,
+      "tn": 126,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -320,6 +320,14 @@
       "tp": 2,
       "fp": 0,
       "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-PY-OPENHANDS-CONVERSATION": {
+      "tp": 11,
+      "fp": 0,
+      "tn": 4,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -11804,6 +11812,177 @@
       "check_id": "IR-COMPONENT-TAXONOMY",
       "expected": true,
       "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "framework-python-openhands-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "framework-python-openhands-lookalike-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "framework-python-openhands-app-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "framework-python-openhands-sdk-real",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openhands-terminal-capability-local",
+      "check_id": "IR-PY-OPENHANDS-CONVERSATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openhands-agent-tool-local",
+      "check_id": "IR-PY-OPENHANDS-CONVERSATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openhands-risk-analysis-local",
+      "check_id": "IR-PY-OPENHANDS-CONVERSATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openhands-confirmation-default-local",
+      "check_id": "IR-PY-OPENHANDS-CONVERSATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openhands-confirm-risky-local",
+      "check_id": "IR-PY-OPENHANDS-CONVERSATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openhands-dynamic-policy-local-negative",
+      "check_id": "IR-PY-OPENHANDS-CONVERSATION",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openhands-near-tool-local-negative",
+      "check_id": "IR-PY-OPENHANDS-CONVERSATION",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openhands-rebound-tool-local-negative",
+      "check_id": "IR-PY-OPENHANDS-CONVERSATION",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openhands-terminal-capability-real",
+      "check_id": "IR-PY-OPENHANDS-CONVERSATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openhands-agent-tool-real",
+      "check_id": "IR-PY-OPENHANDS-CONVERSATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openhands-confirmation-default-real",
+      "check_id": "IR-PY-OPENHANDS-CONVERSATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openhands-confirm-risky-real",
+      "check_id": "IR-PY-OPENHANDS-CONVERSATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openhands-file-editor-capability-local",
+      "check_id": "IR-PY-OPENHANDS-CONVERSATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openhands-file-editor-capability-real",
+      "check_id": "IR-PY-OPENHANDS-CONVERSATION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openhands-shared-agent-local-negative",
+      "check_id": "IR-PY-OPENHANDS-CONVERSATION",
+      "expected": false,
+      "observed": false,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

@@ -6,11 +6,11 @@ the local repository has an approved remote.
 ## P0 — framework and provider taxonomy
 
 Schema v63 retains fourteen recurring framework families and six provider families beyond the
-original taxonomy. The selected corpus now reports framework evidence in 42 repositories and
+original taxonomy. The selected corpus now reports framework evidence in 44 repositories and
 provider evidence in 49. New exact-import observations include Vercel AI SDK in five repositories,
-Microsoft Agent Framework in two, and CAMEL, Qwen-Agent, Lagent, MetaGPT, Marvin, and AgentScope in
-one each. Groq appears in seven repositories, Ollama in five, and Mistral, Cohere, and xAI in three
-each.
+Microsoft Agent Framework and OpenHands SDK in two each, and CAMEL, Qwen-Agent, Lagent, MetaGPT,
+Marvin, and AgentScope in one each. Groq appears in seven repositories, Ollama in five, and Mistral,
+Cohere, and xAI in three each.
 Python and TypeScript signatures are separated so the TypeScript-only `ai` package does not classify
 a Python import. Google model attribution additionally accepts Gemini prefixes, while Bedrock
 requires an exact runtime SDK/import or literal `bedrock-runtime` service selection. Schema v73 adds
@@ -127,7 +127,7 @@ known method on a role-proven class; `HostedMCPTool`, `LangchainTool`, and `Agen
 separate exact adapter proofs. Four of the callable
 tools resolve through one exact selected local export; three unavailable SDK definitions remain
 explicit import-boundary identities with no inferred capabilities. These proofs resolve the final
-six former default-scope misses. The benchmark now reports zero unresolved among 610 non-test Python
+six former default-scope misses. The benchmark now reports zero unresolved among 621 non-test Python
 Agent→tool edges; all 70 unresolved edges occur in tests or conservative fixtures. Import-proven OpenAI
 `function_tool(function)` assignments now recover 12 exact wrapper tools and Agent edges, including
 the two repeated SDK targets; three enable approval and all occur under tests. Exact same-class
@@ -318,6 +318,15 @@ covering all known mutations is controlled, and a static read-only `include_tool
 counterexample. Dynamic confirmation lists remain unresolved. Next generalize package capability
 manifests and approval mediation without inferring writes from names.
 
+`AV-APPROVAL006` adds the OpenHands counterpart without making a generic absence claim. The exact
+chain requires official immutable `Tool`, built-in tool, `Agent`, `Conversation`, and analyzer
+imports plus one static module-level binding path. The pinned MCP example configures risk analysis
+but leaves `ConversationState.confirmation_policy = NeverConfirm()` unchanged; the paired security
+example sets `ConfirmRisky` and is the guarded counterexample. Dynamic policies, multiple setters,
+forward setters, and partial chains stay unresolved. Four taxonomy labels bring that category to 443
+(317 positive, 126 negative), and 15 dedicated composition labels cover the exact IR boundary. Next validate additional OpenHands SDK versions and function-
+scoped construction before broadening the composition.
+
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
 server-controlled prompt/model hint/sampling parameters, model invocation, and response returned to
@@ -442,8 +451,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 659 pinned positive/negative locations, with 1,250 separately
-scored IR component/relationship labels. Schema-v115 engine results and
+The curated regression set has reached 667 pinned positive/negative locations, with 1,269 separately
+scored IR component/relationship labels. Schema-v116 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.
@@ -462,7 +471,7 @@ evidence in every report. Local organization policy composition resolves relativ
 rejects cycles and duplicate gate IDs, and preserves file and gate SHA-256 provenance without
 weakening strict unknown-field validation. Next add signed policy provenance with explicit trust-root
 configuration; a content hash alone must not be presented as author authenticity.
-The CLI now exposes an authoritative 19-rule runtime catalog in text or schema-versioned JSON, with
+The CLI now exposes an authoritative 20-rule runtime catalog in text or schema-versioned JSON, with
 focused lookup by rule ID. Every emission site is checked against the catalog's result kind,
 severity, and confidence, preventing policy-facing metadata drift while keeping context-specific
 finding messages and remediation details in reports.

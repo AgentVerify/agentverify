@@ -13,7 +13,7 @@ def test_rule_catalog_covers_every_emission_site_with_matching_metadata() -> Non
     assert tuple(RULE_CATALOG) == tuple(
         definition.rule_id for definition in RULE_DEFINITIONS
     )
-    assert len(RULE_CATALOG) == 19
+    assert len(RULE_CATALOG) == 20
     assert REPORTING_RULE_IDS == frozenset(RULE_CATALOG)
     assert all(
         definition.summary and definition.remediation

@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v115
+framework, wrapper, or configuration path. Counts come from schema-v116
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -14,7 +14,7 @@ kind. Categories and signature kinds can overlap.
 |---|---:|---:|---:|---:|---:|---:|
 | autonomous-agent | 3 | 3 | 2 | 3 | 1 | 3 |
 | browser-agent | 3 | 3 | 2 | 3 | 2 | 3 |
-| coding-agent | 15 | 15 | 3 | 7 | 8 | 14 |
+| coding-agent | 15 | 15 | 5 | 7 | 8 | 14 |
 | computer-agent | 1 | 1 | 0 | 1 | 0 | 1 |
 | examples | 2 | 2 | 2 | 2 | 1 | 2 |
 | framework | 22 | 22 | 21 | 20 | 19 | 21 |
@@ -26,13 +26,13 @@ kind. Categories and signature kinds can overlap.
 | visual-platform | 4 | 4 | 2 | 1 | 1 | 4 |
 | workflow-agent | 3 | 3 | 2 | 3 | 1 | 3 |
 | workflow-platform | 2 | 2 | 1 | 1 | 2 | 2 |
-| **Total with observation** | **71** | **70** | **42** | **49** | **47** | **67** |
+| **Total with observation** | **71** | **70** | **44** | **49** | **47** | **67** |
 
 Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK (10), LangGraph
 (8), LlamaIndex (6), Vercel AI SDK (5), CrewAI (4), Agno (3), Google ADK (3), PydanticAI (3),
 AutoGen (2), Microsoft Agent Framework (2), Semantic Kernel (2), smolagents (2), AgentScope (1),
-CAMEL (1), Cline SDK (1), Dify Agent (1), Lagent (1), Marvin (1), Mastra (1), MetaGPT (1), and
-Qwen-Agent (1).
+CAMEL (1), Cline SDK (1), Dify Agent (1), Lagent (1), Marvin (1), Mastra (1), MetaGPT (1),
+OpenHands SDK (2), and Qwen-Agent (1).
 Provider observations are OpenAI (43), Anthropic (25), Google (20), Azure OpenAI (12), Groq (7),
 AWS Bedrock (6), Ollama (5), Cohere, Mistral, and xAI (3 each), DeepSeek (2), and Alibaba
 DashScope and Moonshot AI (1 each). These overlapping exact-import/call, literal-service, and
@@ -51,6 +51,19 @@ wrapper calls across Microsoft AutoGen and AgentOps: seven production calls, ten
 literal models. OpenAI-compatible `base_url` calls, near packages, and rebound constructors are
 withheld. Python provider-call attribution therefore reaches 583 calls across 12 repositories: 20
 native SDK calls and 563 wrappers, with 242 production calls, 341 tests, and 458 literal models.
+
+Schema v116 recognizes exact Python `openhands` imports in both pinned OpenHands repositories,
+raising selected-path framework coverage to 44 repositories. The SDK checkout contributes 1,173
+import observations across 186 selected files; the application checkout contributes two more. An
+exact module-level composition resolves 11 `TerminalTool`/`FileEditorTool` registrations across six
+SDK examples, their Agent reachability, and conversation-scoped analyzer/confirmation state. The
+MCP example installs `LLMSecurityAnalyzer` but retains the SDK 1.42.1 `NeverConfirm` default, so
+`AV-APPROVAL006` reports one review. The paired security example installs `ConfirmRisky`, preserving
+its default `HIGH` threshold and `confirm_unknown=True` as a human-approval control. Six reachable
+`FileEditorTool` instances remain `AV-FS001` reviews because the implementation uses the workspace
+as a working directory hint but accepts agent-supplied absolute paths without a containment check.
+Near packages, rebound factories, non-`.name` tool references, dynamic policies, and incomplete or
+multiply assigned chains remain unresolved.
 
 Schema v73 identifies 29 exact Python provider calls across seven repositories: 20 native Mistral,
 Groq, Cohere, or Ollama SDK calls and nine LangChain wrappers. Seven calls across five repositories
@@ -258,8 +271,8 @@ provider-hosted media boundary. All 13 expose no constructor approval parameter.
 rebound constructors stay unclassified. Provider-hosted web search is inventory, not AV-NET001,
 because it does not expose a source-proven parameter-controlled origin.
 
-Across the selected snapshot, 10,030 observations have module-qualified symbol IDs. Of
-4,632 relationship endpoint observations, all 3,847 identified endpoints resolve to an observed
+Across the selected snapshot, 10,041 observations have module-qualified symbol IDs. Of
+4,688 relationship endpoint observations, all 3,886 identified endpoints resolve to an observed
 component (3,534 Python and 313 TypeScript). Two former false IDs on CrewAI test edges are now
 withheld because a function parameter and assignment shadow the same-named package import.
 Repeated Python and TypeScript constructor bindings are occurrence-qualified. Their direct source
@@ -286,7 +299,7 @@ exact delegation edge to its same-block Agent receiver. Thirty use immutable mod
 resolve to exact selected local definitions; unavailable absolute-import sources retain a boundary
 identity without inferred capabilities. Imported `from_settings` tool factories, exact
 `HostedMCPTool` and `LangchainTool` constructors, and exact same-block `Agent.as_tool()` adapters
-resolve the final six former production misses. Across all 1,209 Python Agent→tool edges, all 610
+resolve the final six former production misses. Across all 1,220 Python Agent→tool edges, all 621
 outside tests resolve; the 70 unresolved edges are confined to tests and conservative fixtures.
 Import-proven OpenAI `function_tool(function)`
 assignments recover 12 wrappers and 12 Agent edges; all are tests, three enable approval, and their
@@ -302,7 +315,7 @@ Capability/control taxonomy endpoints intentionally lack
 source-symbol IDs, so the endpoint fraction is inventory coverage rather than an accuracy or recall
 metric.
 
-The native AI BOM 1.2 resolver independently classifies all 4,632 endpoints: 3,839 by symbol ID, 676
+The native AI BOM 1.2 resolver independently classifies all 4,688 endpoints: 3,878 by symbol ID, 693
 by exact relationship evidence, 21 by a unique display name, 38 as ambiguous, and 58 as unresolved.
 Evidence-local resolution removes capability/control ambiguities; occurrence-qualified bindings
 resolve repeated source agent/tool observations, and conservative lexical resolution removes further
@@ -578,10 +591,11 @@ The Python frontend inventories 449 canonical/import/callable-aliased and proven
 one is reached through a statement-ordered local callable alias and 20 are `Path.rename`/`replace`
 methods with explicit or immutable receiver proof. That
 inventory count is intentionally broader than AV-FS001, which additionally requires an exact tool
-edge and a path derived from a tool input. Expanded registry and literal tool-role reachability produces
-36 filesystem reviews across ten repositories. Four CrewAI Examples sinks are specialized as
-AV-FS002, leaving 31 AV-FS001 sites across eight repositories. Four newly reachable Marvin sinks
-cover dynamic writes and deletion configured through module-level callable tools. Fixed paths remain inventory-only, and attribute `.open()`
+edge and a path derived from a tool input. Expanded registry, literal tool-role, and OpenHands
+built-in reachability produces 41 filesystem reviews across ten repositories. Four CrewAI Examples
+sinks are specialized as AV-FS002, leaving 37 AV-FS001 sites across nine repositories. Four newly
+reachable Marvin sinks cover dynamic writes and deletion configured through module-level callable
+tools. Fixed paths remain inventory-only, and attribute `.open()`
 is treated as filesystem access only for a proven `pathlib.Path` receiver. The Skyvern review is
 `resolved.parent.mkdir(...)` in its registered state-save tool: the validator admits equality with an
 allowed root, so the parent mutation is not proven to remain inside that root. No pinned mutation
@@ -596,7 +610,7 @@ tool-controlled segment, and control-flow escape.
 
 | Frontend | Implemented observations and resolution |
 |---|---|
-| Python AST | Imports; known agent/model constructors; ordinary tool decorators; import-proven MetaGPT/Qwen registry decorators with literal class entrypoint resolution; literal tool/handoff lists with exact local and immutable module callables, exact selected local or absolute-SDK import bindings, import-proven constructor bindings, occurrence-qualified inline constructors, direct context-manager bindings, and OpenAI `function_tool(function)` wrapper recovery; exact same-class direct/tuple Agent-return propagation into caller composition; import-proven OpenAI built-in typed parameters with unanimous same-module constructor call sites; exact default-disabled Dify Agent shell/runtime run-layer composition; module-, class-, parameter-, and repeated-occurrence-qualified agent/tool IDs; shell, Python eval/exec, Playwright/Selenium/Puppeteer-context `.evaluate(...)`, filesystem, Requests/httpx/aiohttp plus import-proven `urllib.request.urlopen` and `Request(url)`, browser, MCP, and Docker SDK calls; import-bound MCP launcher constructors plus literal nested `mcpServers` dictionaries, including literal argument prefixes and exact npm/Python package pin state; exact Semantic Kernel MCP sampling callback/default/model-authority composition and exact MCP `ClientSession` sampling result/consent callbacks; browser-page execution context with direct tool-parameter/alias flow, literal discrimination, exact Playwright parameter/class-attribute receiver annotations (including immutable `TYPE_CHECKING` imports), exact constructor-bound page fields/local aliases, known Locator derivations, structural chained-evaluator inventory, and a provenance-locked Skyvern page factory; canonical, top-level import-aliased, and statement-ordered local callable-aliased `os`/`shutil` create/copy/move/delete mutations with compatible branch merging, destination roles, and rebinding invalidation; `Path.open`/`rename`/`replace` through proven receivers; tool-input filesystem-path state plus exact imported hexadecimal cryptographic-digest path-segment sanitizers; tool-parameter HTTP origins with direct alias propagation plus fixed-origin constants, instance fields, concatenation, and `.format(...)`; exact fail-closed `urlparse`/`urlsplit` scheme+hostname controls with redirect/DNS scope; source-proven imported secure transports with initial/redirect URL, proxy, DNS, peer, default, and escape-hatch state; unique top-level imported network-function summaries plus iterative single-entrypoint registered-class summaries through direct constructors or immutable fields; repository-unique, filesystem-relative, and importer-ancestor-single-path absolute imports with exact decorated class-tool export validation; literal approval decorators; OpenAI Agents `ShellTool`/`ApplyPatchTool`/`CustomTool` approval constructors plus `ComputerTool` computer-control and safety-check-callback inventory; env-backed auto-approval flags with direct true-return branches and same-class approval short circuits; statement-ordered MCP rejection guards, internal tool-registry routing lookups, same-class rejecting registry-method summaries with literal boolean path selection, immutable constructor-bound imported registry summaries through exact package reexports, constructor-only fixed tool bindings through direct attributes or pure accessors, unchanged captured parameters in returned/registered callbacks, same-function resolved `pathlib.Path.is_relative_to()` or fail-closed `relative_to()` exception boundaries, exact same-class checked-Path return summaries, and non-suppressing string-prefix path checks with dominance and reassignment invalidation; lexically scoped OpenTelemetry spans; exact Google ADK `Runner`/`PluginManager` tool callbacks composed with the BigQuery Agent Analytics Storage Write sink; exact Skyvern Task v3 recordable dispatch/callback composition into its committed SQLAlchemy `actions` table. |
+| Python AST | Imports; known agent/model constructors; ordinary tool decorators; import-proven MetaGPT/Qwen registry decorators with literal class entrypoint resolution; literal tool/handoff lists with exact local and immutable module callables, exact selected local or absolute-SDK import bindings, import-proven constructor bindings, occurrence-qualified inline constructors, direct context-manager bindings, and OpenAI `function_tool(function)` wrapper recovery; exact same-class direct/tuple Agent-return propagation into caller composition; import-proven OpenAI built-in typed parameters with unanimous same-module constructor call sites; exact default-disabled Dify Agent shell/runtime run-layer composition; exact OpenHands built-in terminal/file-editor reachability with conversation analyzer and confirmation-policy state; module-, class-, parameter-, and repeated-occurrence-qualified agent/tool IDs; shell, Python eval/exec, Playwright/Selenium/Puppeteer-context `.evaluate(...)`, filesystem, Requests/httpx/aiohttp plus import-proven `urllib.request.urlopen` and `Request(url)`, browser, MCP, and Docker SDK calls; import-bound MCP launcher constructors plus literal nested `mcpServers` dictionaries, including literal argument prefixes and exact npm/Python package pin state; exact Semantic Kernel MCP sampling callback/default/model-authority composition and exact MCP `ClientSession` sampling result/consent callbacks; browser-page execution context with direct tool-parameter/alias flow, literal discrimination, exact Playwright parameter/class-attribute receiver annotations (including immutable `TYPE_CHECKING` imports), exact constructor-bound page fields/local aliases, known Locator derivations, structural chained-evaluator inventory, and a provenance-locked Skyvern page factory; canonical, top-level import-aliased, and statement-ordered local callable-aliased `os`/`shutil` create/copy/move/delete mutations with compatible branch merging, destination roles, and rebinding invalidation; `Path.open`/`rename`/`replace` through proven receivers; tool-input filesystem-path state plus exact imported hexadecimal cryptographic-digest path-segment sanitizers; tool-parameter HTTP origins with direct alias propagation plus fixed-origin constants, instance fields, concatenation, and `.format(...)`; exact fail-closed `urlparse`/`urlsplit` scheme+hostname controls with redirect/DNS scope; source-proven imported secure transports with initial/redirect URL, proxy, DNS, peer, default, and escape-hatch state; unique top-level imported network-function summaries plus iterative single-entrypoint registered-class summaries through direct constructors or immutable fields; repository-unique, filesystem-relative, and importer-ancestor-single-path absolute imports with exact decorated class-tool export validation; literal approval decorators; OpenAI Agents `ShellTool`/`ApplyPatchTool`/`CustomTool` approval constructors plus `ComputerTool` computer-control and safety-check-callback inventory; env-backed auto-approval flags with direct true-return branches and same-class approval short circuits; statement-ordered MCP rejection guards, internal tool-registry routing lookups, same-class rejecting registry-method summaries with literal boolean path selection, immutable constructor-bound imported registry summaries through exact package reexports, constructor-only fixed tool bindings through direct attributes or pure accessors, unchanged captured parameters in returned/registered callbacks, same-function resolved `pathlib.Path.is_relative_to()` or fail-closed `relative_to()` exception boundaries, exact same-class checked-Path return summaries, and non-suppressing string-prefix path checks with dominance and reassignment invalidation; lexically scoped OpenTelemetry spans; exact Google ADK `Runner`/`PluginManager` tool callbacks composed with the BigQuery Agent Analytics Storage Write sink; exact Skyvern Task v3 recordable dispatch/callback composition into its committed SQLAlchemy `actions` table. |
 | TypeScript/JavaScript structural lexical | Known imports/providers; balanced top-level `new Agent({tools: [...]})` entries; `tool(...)`, `functionTool(...)`, `toolNamespace(...)`, OpenAI built-ins, Cline and import-aliased Mastra `createTool(...)`, MCP `registerTool(...)`, and assigned/inline `asTool(...)`; module- and repeated-occurrence-qualified agent/tool IDs; named relative imports and aliases; import-proven `StdioClientTransport` and literal `mcpServers` package launchers with literal argument prefixes and pin/auto-install state; exact MCP client `sampling/createMessage` result, consent, disclosure, and token-budget handlers; execution-callback parameter origins for global `fetch`, direct Axios aliases, and immutable same-file Axios instances with verb/`.request(...)`, fixed-base, and `allowAbsoluteUrls` discrimination; bounded summaries for uniquely named same-file free/static network helpers, object-parameter mapping, and multiline destructuring aliases; same-file `new URL(...)` validator policies with always-on scheme and configured-optional hostname scope; default-off service-versus-passthrough SSRF composition through a LangChain tool and Axios lookup/redirect hooks; Flowise variable node URLs through either fixed Axios request objects with proxy residuals or an exact Web Scraper class chain into manual `node-fetch` redirects with a post-spread pinned agent; Activepieces imported filtering-Axios composition with manifest-pinned agents and proxy residual; Composio conditional-runtime safe-fetch composition with Undici pinning and edge fallback state plus its separate schema-gated CLI tool-upload flow to raw fetch; Google ADK OpenAPI tool generation with spec-configured origin, encoded model path segments, declared server-variable values, and query-only credential URL mutation; imported filesystem guards whose nested predicate normalizes both paths, uses separator-aware root containment, and rejects before the write, with suppression only for statically narrow literal roots; child-process and Bun `sh -c` calls with literal/dynamic distinction; direct eval; filesystem calls; MCP forwarding object shapes; literal tool approval settings; inline and module-flag env-backed auto-approval branches. Comments, strings, and regex literals are masked before policy matching. |
 | MCP JSON | Common `mcpServers` configuration, transport/command/URL, redacted arguments, environment-variable names, and literal `npx`/`uvx` package/version/auto-install state. Configuration is read as data; servers are never launched. |
 | Container configuration | Compose/devcontainer Docker socket, privileged/host network/root mounts, and exact short-syntax host credential binds; Kubernetes/Helm privileged, host namespace, privilege escalation, service-account token, and `hostPath`; literal privileged Python Docker SDK calls. |
@@ -615,7 +629,7 @@ and `network-ssrf-policy` edge.
   repositories may still contribute supported JSON/YAML or embedded Python/TypeScript files.
 - Framework taxonomy recognizes exact Python/TypeScript imports for Google ADK, Semantic Kernel,
   LlamaIndex, Agno, Mastra, smolagents, Microsoft Agent Framework, CAMEL, Qwen-Agent, Lagent,
-  MetaGPT, Marvin, AgentScope, AutoGen's legacy and current official Python namespaces, and Vercel AI
+  MetaGPT, Marvin, AgentScope, OpenHands SDK, AutoGen's legacy and current official Python namespaces, and Vercel AI
   SDK alongside the original signatures. The `ai` package
   is TypeScript-only evidence. Package reexports, Pydantic wrappers beyond direct imports, and custom
   agent bases may still leave a generic `Agent` without framework attribution.
@@ -776,7 +790,7 @@ and `network-ssrf-policy` edge.
   returned receivers remain unresolved rather than matching string/container methods by name.
   Arbitrary attribute `.open()` calls are deliberately excluded unless the receiver is proven to be
   a `pathlib.Path`; configured or fixed write paths remain inventory but do not raise AV-FS001.
-- Browser-page evaluation inventories 93 import-context calls and proves 70 receivers: two exact
+- Browser-page evaluation inventories 93 import-context calls and proves 71 receivers: two exact
   Playwright-annotated SWE-agent parameters, five Skyvern calls reached from an exact imported page
   factory, 15 exact class-attribute annotations across CAMEL, LaVague, and MetaGPT, and 13 Devika
   calls through an exact constructor-bound page field or immutable local alias. One further Skyvern
@@ -858,7 +872,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 659-label rule truth set and 1,250-label IR component/relationship set are curated regression
+The 667-label rule truth set and 1,269-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

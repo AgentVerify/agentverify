@@ -190,6 +190,18 @@ Schema v115 recognizes AutoGen's current official Python package family—`autog
 OpenAI-compatible calls with a `base_url`, near packages, and rebound imported constructors remain
 unattributed; constructor names alone no longer establish the AutoGen OpenAI wrapper.
 
+Schema v116 adds the Python-only `openhands` framework boundary and an exact module-level
+OpenHands SDK composition. `Tool(name=TerminalTool.name)` and
+`Tool(name=FileEditorTool.name)` must use immutable official imports, flow through one static tools
+list into `Agent`, and then reach the same `Conversation`. A unique
+`set_security_analyzer(...)` call creates action-risk-analysis edges. Confirmation is credited only
+when that conversation also receives an exact `ConfirmRisky(...)`; literal `SecurityRisk`
+thresholds and `confirm_unknown` booleans are retained, while nonliteral or multiple setters are
+unresolved. Analyzer-only chains record the source-validated `NeverConfirm` SDK default instead of
+mistaking risk classification for an execution gate. The file editor records writable,
+agent-selected absolute paths and does not treat `workspace_root` as containment because the pinned
+implementation uses it as the editor working directory rather than rejecting paths outside it.
+
 Names are intentionally not treated as globally unique. Python and TypeScript agent/tool definitions
 carry stable frontend-and-module-qualified `symbol_id` values; relationships carry `source_id` and
 `target_id` when resolution succeeds. Context analysis prefers those IDs and falls back to the older

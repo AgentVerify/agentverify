@@ -350,6 +350,19 @@ capabilities, three Agent bindings, three confirmation settings, one read-only f
 reviews. Complete static mutation coverage is represented as human approval, partial coverage
 remains reviewable, and a dynamic policy is unresolved rather than assumed safe or unsafe.
 
+Schema v116 separates OpenHands risk classification from execution confirmation. In SDK 1.42.1,
+[`ConversationState`](https://github.com/OpenHands/software-agent-sdk/blob/1de2e6d1bfcf70c7c3d4eb13616811943f33dd75/openhands-sdk/openhands/sdk/conversation/state.py#L101)
+defaults to `NeverConfirm`, and confirmation mode is active only when a security analyzer and a
+non-`NeverConfirm` policy are both present. The pinned
+[MCP example](https://github.com/OpenHands/software-agent-sdk/blob/1de2e6d1bfcf70c7c3d4eb13616811943f33dd75/examples/01_standalone_sdk/07_mcp_integration.py#L71)
+installs `LLMSecurityAnalyzer` while its reachable terminal and file-editor tools retain that
+disabled default; `AV-APPROVAL006` reports the exact chain. The paired
+[security example](https://github.com/OpenHands/software-agent-sdk/blob/1de2e6d1bfcf70c7c3d4eb13616811943f33dd75/examples/01_standalone_sdk/16_llm_security_analyzer.py#L126-L127)
+installs both the analyzer and `ConfirmRisky` and is the guarded counterexample. Separately, six
+reachable `FileEditorTool` registrations remain filesystem reviews: their executor supplies the
+conversation workspace as an editor working directory, but the action schema accepts absolute paths
+and the implementation does not reject paths outside that workspace.
+
 ## 4. Provider identity is a governance dependency
 
 OpenAI signals appear in 51 repositories, Anthropic in 37, Google in 28, Azure OpenAI in 18, and AWS
@@ -579,7 +592,7 @@ become reachable. Each Agent-as-tool adapter delegates to one exact same-block A
 Four imported callable definitions resolve through exact local exports; three unavailable production
 SDK sources remain import-boundary identities without inferred capabilities. Exact imported
 `from_settings` factories, `HostedMCPTool` and `LangchainTool` constructors, and same-block
-`Agent.as_tool()` adapters resolve those final six former production misses. All 610 non-test Python
+`Agent.as_tool()` adapters resolve those final six former production misses. All 621 non-test Python
 Agent→tool edges now resolve; 70 unresolved edges remain only in tests and conservative fixtures.
 Import-proven OpenAI `function_tool(function)` assignments
 recover 12 wrapper tools and 12 exact Agent edges; three enable approval, all occur under tests, and

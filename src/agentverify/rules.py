@@ -78,6 +78,14 @@ RULE_DEFINITIONS = tuple(
                 "Require confirmation for every exposed mutation or restrict the toolkit to a reviewed read-only allowlist.",
             ),
             RuleMetadata(
+                "AV-APPROVAL006",
+                "review",
+                "high",
+                "high",
+                "An OpenHands conversation analyzes privileged actions but leaves confirmation disabled by default",
+                "Install ConfirmRisky (or a stricter confirmation policy) on the same conversation and handle rejected pending actions fail closed.",
+            ),
+            RuleMetadata(
                 "AV-AUDIT001",
                 "review",
                 "medium",
@@ -500,6 +508,28 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                         "high",
                         "A reachable Agno filesystem MCP toolkit leaves mutating tools outside its confirmation policy",
                         "Set requires_confirmation_tools for every exposed mutating filesystem tool, or restrict include_tools to a reviewed read-only allowlist.",
+                        "review",
+                    )
+                )
+        if (
+            component.kind == "capability"
+            and component.attributes.get("analysis")
+            == "python-openhands-conversation-security"
+            and component.attributes.get("approval_gap_anchor") is True
+            and component.attributes.get("security_analyzer") != "none"
+            and component.attributes.get("approval_policy") == "disabled-default"
+        ):
+            _, context = component_context(ir, component)
+            if context.get("direct_agents"):
+                ir.findings.append(
+                    make_finding(
+                        ir,
+                        component,
+                        "AV-APPROVAL006",
+                        "high",
+                        "high",
+                        "An OpenHands conversation analyzes privileged actions but leaves confirmation at the NeverConfirm SDK default",
+                        "Call set_confirmation_policy(ConfirmRisky(...)) on the same conversation and handle rejected pending actions fail closed before running privileged tools.",
                         "review",
                     )
                 )

@@ -150,6 +150,12 @@ decision while still hiding a server-controlled phishing destination. Full-URL d
 proven at the user interface before acceptance; URL validation and secure browser opening are further
 independent controls.
 
+Risk analysis is also separate from action gating. A framework may classify a tool call as low,
+medium, high, or unknown without stopping execution. OpenHands makes the dependency explicit:
+confirmation mode requires both an analyzer and a non-default confirmation policy. Static analysis
+should therefore model analyzer and gate as separate controls and credit human approval only when
+the same reachable conversation composes both.
+
 ## Provider presence versus configured provider calls
 
 An SDK import proves a repository dependency, while an import-proven constructor or inference call

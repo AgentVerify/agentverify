@@ -90,6 +90,7 @@ FRONTEND_IMPORT_SIGNATURES = {
             "MetaGPT": ("metagpt",),
             "Marvin": ("marvin.agents",),
             "AgentScope": ("agentscope",),
+            "OpenHands SDK": ("openhands",),
         },
         "provider": {
             "Mistral": ("mistralai",),
@@ -1022,6 +1023,487 @@ def dotted_name(node: ast.AST) -> str:
         parent = dotted_name(node.value)
         return f"{parent}.{node.attr}" if parent else node.attr
     return ""
+
+
+OPENHANDS_BUILTIN_TOOL_CAPABILITIES = {
+    "TerminalTool": "shell-execution",
+    "FileEditorTool": "filesystem",
+}
+OPENHANDS_SECURITY_ANALYZERS = {
+    "EnsembleSecurityAnalyzer",
+    "GraySwanSecurityAnalyzer",
+    "LLMSecurityAnalyzer",
+    "PatternSecurityAnalyzer",
+    "PolicyRailSecurityAnalyzer",
+    "ToolShieldLLMSecurityAnalyzer",
+}
+
+
+def add_python_openhands_sdk_flows(
+    ir: RepositoryIR,
+    relative: str,
+    text: str,
+    tree: ast.Module,
+    module_import_binding_counts: Counter[str],
+    module_mutation_counts: Counter[str],
+    module_rebound_names: set[str],
+) -> None:
+    """Resolve exact OpenHands built-in tools and conversation confirmation state."""
+    if "openhands" not in text:
+        return
+
+    lines = text.splitlines()
+    analysis = "python-openhands-conversation-security"
+
+    def imported_aliases(symbol: str, modules: set[str]) -> set[str]:
+        return {
+            local_name
+            for statement in tree.body
+            if isinstance(statement, ast.ImportFrom)
+            and statement.level == 0
+            and statement.module in modules
+            for alias in statement.names
+            if alias.name == symbol
+            if (local_name := alias.asname or alias.name)
+            if module_import_binding_counts[local_name] == 1
+            and local_name not in module_rebound_names
+        }
+
+    tool_factories = imported_aliases("Tool", {"openhands.sdk.tool"})
+    agent_factories = imported_aliases("Agent", {"openhands.sdk"})
+    conversation_factories = imported_aliases("Conversation", {"openhands.sdk"})
+    builtin_aliases = {
+        alias: symbol
+        for symbol, module in {
+            "TerminalTool": "openhands.tools.terminal",
+            "FileEditorTool": "openhands.tools.file_editor",
+        }.items()
+        for alias in imported_aliases(symbol, {module})
+    }
+    confirm_risky_factories = imported_aliases(
+        "ConfirmRisky",
+        {
+            "openhands.sdk.security",
+            "openhands.sdk.security.confirmation_policy",
+        },
+    )
+    security_risk_aliases = imported_aliases(
+        "SecurityRisk",
+        {"openhands.sdk.security", "openhands.sdk.security.risk"},
+    )
+    analyzer_factories = {
+        alias: symbol
+        for symbol in OPENHANDS_SECURITY_ANALYZERS
+        for alias in imported_aliases(
+            symbol,
+            {
+                "openhands.sdk.security",
+                "openhands.sdk.security.ensemble",
+                "openhands.sdk.security.grayswan",
+                "openhands.sdk.security.llm_analyzer",
+                "openhands.sdk.security.toolshield_llm_analyzer",
+            },
+        )
+    }
+    if not (tool_factories and agent_factories and builtin_aliases):
+        return
+
+    assignments: dict[str, ast.Assign | ast.AnnAssign] = {}
+    for statement in tree.body:
+        if not isinstance(statement, (ast.Assign, ast.AnnAssign)):
+            continue
+        targets = statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+        if len(targets) != 1 or not isinstance(targets[0], ast.Name):
+            continue
+        binding = targets[0].id
+        if module_mutation_counts[binding] == 1:
+            assignments[binding] = statement
+
+    def keyword_value(call: ast.Call, name: str) -> ast.AST | None:
+        values = [keyword.value for keyword in call.keywords if keyword.arg == name]
+        return values[0] if len(values) == 1 else None
+
+    def assignment_value(statement: ast.Assign | ast.AnnAssign) -> ast.AST:
+        return statement.value
+
+    def exact_call(
+        expression: ast.AST | None, factories: set[str], before_line: int
+    ) -> ast.Call | None:
+        if isinstance(expression, ast.Name):
+            assignment = assignments.get(expression.id)
+            expression = (
+                assignment_value(assignment)
+                if assignment is not None and assignment.lineno < before_line
+                else None
+            )
+        if (
+            isinstance(expression, ast.Call)
+            and isinstance(expression.func, ast.Name)
+            and expression.func.id in factories
+        ):
+            return expression
+        return None
+
+    def tool_specs(
+        expression: ast.AST | None, before_line: int
+    ) -> list[tuple[ast.Call, str]]:
+        if isinstance(expression, ast.Name):
+            assignment = assignments.get(expression.id)
+            if assignment is None or assignment.lineno >= before_line:
+                return []
+            expression = assignment_value(assignment)
+        if not isinstance(expression, (ast.List, ast.Tuple)):
+            return []
+        resolved: list[tuple[ast.Call, str]] = []
+        for element in expression.elts:
+            if not (
+                isinstance(element, ast.Call)
+                and isinstance(element.func, ast.Name)
+                and element.func.id in tool_factories
+            ):
+                continue
+            name = keyword_value(element, "name")
+            if not (
+                isinstance(name, ast.Attribute)
+                and name.attr == "name"
+                and isinstance(name.value, ast.Name)
+                and name.value.id in builtin_aliases
+            ):
+                continue
+            resolved.append((element, builtin_aliases[name.value.id]))
+        return resolved
+
+    agents: dict[str, tuple[str, str, ast.Call, list[tuple[ast.Call, str]]]] = {}
+    for binding, statement in assignments.items():
+        value = assignment_value(statement)
+        if not (
+            isinstance(value, ast.Call)
+            and isinstance(value.func, ast.Name)
+            and value.func.id in agent_factories
+        ):
+            continue
+        configured_tools = tool_specs(keyword_value(value, "tools"), value.lineno)
+        if not configured_tools:
+            continue
+        agent_name_node = keyword_value(value, "name")
+        agent_name = (
+            str(agent_name_node.value)
+            if isinstance(agent_name_node, ast.Constant)
+            else "Agent"
+        )
+        agents[binding] = (
+            agent_name,
+            source_symbol("py", relative, "agent", binding),
+            value,
+            configured_tools,
+        )
+
+    conversations: dict[
+        str, tuple[str, str, ast.Call, list[tuple[ast.Call, str]]]
+    ] = {}
+    conversation_lines: dict[str, int] = {}
+    for binding, statement in assignments.items():
+        value = assignment_value(statement)
+        if not (
+            isinstance(value, ast.Call)
+            and isinstance(value.func, ast.Name)
+            and value.func.id in conversation_factories
+        ):
+            continue
+        agent_expression = keyword_value(value, "agent")
+        if (
+            isinstance(agent_expression, ast.Name)
+            and agent_expression.id in agents
+            and agents[agent_expression.id][2].lineno < value.lineno
+        ):
+            conversations[binding] = agents[agent_expression.id]
+            conversation_lines[binding] = value.lineno
+
+    analyzer_setters: dict[str, list[tuple[ast.Call, ast.Call, str]]] = defaultdict(list)
+    policy_setters: dict[str, list[tuple[ast.Call, ast.Call]]] = defaultdict(list)
+    analyzer_setter_counts: Counter[str] = Counter()
+    policy_setter_counts: Counter[str] = Counter()
+    for statement in tree.body:
+        if not isinstance(statement, ast.Expr) or not isinstance(statement.value, ast.Call):
+            continue
+        setter = statement.value
+        if not (
+            isinstance(setter.func, ast.Attribute)
+            and isinstance(setter.func.value, ast.Name)
+            and setter.func.value.id in conversations
+            and conversation_lines[setter.func.value.id] < setter.lineno
+            and len(setter.args) == 1
+            and not setter.keywords
+        ):
+            continue
+        conversation = setter.func.value.id
+        if setter.func.attr == "set_security_analyzer":
+            analyzer_setter_counts[conversation] += 1
+            analyzer = exact_call(
+                setter.args[0], set(analyzer_factories), setter.lineno
+            )
+            if analyzer is not None and isinstance(analyzer.func, ast.Name):
+                analyzer_setters[conversation].append(
+                    (setter, analyzer, analyzer_factories[analyzer.func.id])
+                )
+        elif setter.func.attr == "set_confirmation_policy":
+            policy_setter_counts[conversation] += 1
+            policy = exact_call(
+                setter.args[0], confirm_risky_factories, setter.lineno
+            )
+            if policy is not None:
+                policy_setters[conversation].append((setter, policy))
+
+    emitted_tools: set[int] = set()
+    conversation_agent_counts = Counter(
+        agent_id for _name, agent_id, _call, _tools in conversations.values()
+    )
+    conversation_tool_counts = Counter(
+        id(tool_call)
+        for _name, _agent_id, _call, configured_tools in conversations.values()
+        for tool_call, _builtin_name in configured_tools
+    )
+    for conversation, (agent_name, agent_id, agent_call, configured_tools) in conversations.items():
+        if conversation_agent_counts[agent_id] != 1 or any(
+            conversation_tool_counts[id(tool_call)] != 1
+            for tool_call, _builtin_name in configured_tools
+        ):
+            continue
+        analyzers = analyzer_setters.get(conversation, [])
+        policies = policy_setters.get(conversation, [])
+        analyzer_state = analyzers[0] if len(analyzers) == 1 else None
+        policy_state = policies[0] if len(policies) == 1 else None
+        approval_policy = (
+            "enabled-risk-threshold"
+            if analyzer_state is not None
+            and analyzer_setter_counts[conversation] == 1
+            and policy_state is not None
+            and policy_setter_counts[conversation] == 1
+            else "disabled-default"
+            if analyzer_state is not None
+            and analyzer_setter_counts[conversation] == 1
+            and policy_setter_counts[conversation] == 0
+            else "unresolved"
+        )
+
+        threshold = "unresolved"
+        confirm_unknown: bool | str = "unresolved"
+        policy_evidence: Evidence | None = None
+        if policy_state is not None:
+            policy_setter, policy_call = policy_state
+            threshold_expression = keyword_value(policy_call, "threshold")
+            if threshold_expression is None:
+                threshold = "HIGH"
+            elif (
+                isinstance(threshold_expression, ast.Attribute)
+                and threshold_expression.attr in {"LOW", "MEDIUM", "HIGH"}
+                and isinstance(threshold_expression.value, ast.Name)
+                and threshold_expression.value.id in security_risk_aliases
+            ):
+                threshold = threshold_expression.attr
+            unknown_expression = keyword_value(policy_call, "confirm_unknown")
+            if unknown_expression is None:
+                confirm_unknown = True
+            elif isinstance(unknown_expression, ast.Constant) and isinstance(
+                unknown_expression.value, bool
+            ):
+                confirm_unknown = unknown_expression.value
+            policy_evidence = Evidence(
+                relative,
+                policy_setter.lineno,
+                excerpt(lines, policy_setter.lineno),
+            )
+            if threshold == "unresolved" or confirm_unknown == "unresolved":
+                approval_policy = "unresolved"
+
+        analyzer_evidence: Evidence | None = None
+        analyzer_name = "none"
+        if analyzer_state is not None:
+            analyzer_setter, _analyzer_call, analyzer_name = analyzer_state
+            analyzer_evidence = Evidence(
+                relative,
+                analyzer_setter.lineno,
+                excerpt(lines, analyzer_setter.lineno),
+            )
+            ir.add_component(
+                Component(
+                    "control",
+                    "action-risk-analysis",
+                    analyzer_evidence,
+                    {
+                        "analysis": analysis,
+                        "framework": "OpenHands SDK",
+                        "analyzer": analyzer_name,
+                        "conversation_binding": conversation,
+                        "policy_effect": "classifies-agent-actions-by-security-risk",
+                        "scope": source_scope(relative),
+                    },
+                )
+            )
+        if approval_policy == "enabled-risk-threshold" and policy_evidence is not None:
+            ir.add_component(
+                Component(
+                    "control",
+                    "human-approval",
+                    policy_evidence,
+                    {
+                        "analysis": analysis,
+                        "framework": "OpenHands SDK",
+                        "confirmation_policy": "ConfirmRisky",
+                        "confirm_unknown": confirm_unknown,
+                        "conversation_binding": conversation,
+                        "policy_effect": "requires-confirmation-at-or-above-risk-threshold",
+                        "risk_threshold": threshold,
+                        "scope": source_scope(relative),
+                    },
+                )
+            )
+        elif approval_policy == "disabled-default" and analyzer_evidence is not None:
+            ir.add_component(
+                Component(
+                    "control-setting",
+                    "agent-action-confirmation",
+                    analyzer_evidence,
+                    {
+                        "analysis": analysis,
+                        "enabled": False,
+                        "framework": "OpenHands SDK",
+                        "policy": "NeverConfirm",
+                        "policy_source": "sdk-default",
+                        "scope": source_scope(relative),
+                    },
+                )
+            )
+
+        for index, (tool_call, builtin_name) in enumerate(configured_tools):
+            tool_name = f"{builtin_name}@{tool_call.lineno}"
+            tool_id = source_symbol("py", relative, "tool", tool_name)
+            capability = OPENHANDS_BUILTIN_TOOL_CAPABILITIES[builtin_name]
+            shared = {
+                "analysis": analysis,
+                "approval_policy": approval_policy,
+                "framework": "OpenHands SDK",
+                "scope": source_scope(relative),
+                "security_analyzer": analyzer_name,
+            }
+            if id(tool_call) not in emitted_tools:
+                ir.add_component(
+                    Component(
+                        "tool",
+                        tool_name,
+                        Evidence(relative, tool_call.lineno, excerpt(lines, tool_call.lineno)),
+                        {
+                            **shared,
+                            "builtin_tool": builtin_name,
+                            "constructor": "openhands.sdk.tool.Tool",
+                            "registration": "builtin-tool-name",
+                        },
+                        tool_id,
+                    )
+                )
+                capability_attributes: dict[str, object] = {
+                    **shared,
+                    "builtin_tool": True,
+                    "builtin_tool_name": builtin_name,
+                    "execution_environment": "conversation-workspace",
+                    "approval_gap_anchor": approval_policy == "disabled-default"
+                    and index == 0,
+                }
+                if capability == "shell-execution":
+                    capability_attributes.update(
+                        {
+                            "agent_controlled_command": True,
+                            "dynamic_command": False,
+                            "sandbox_boundary_scope": "external-unresolved",
+                            "shell": False,
+                        }
+                    )
+                else:
+                    capability_attributes.update(
+                        {
+                            "dynamic_path": True,
+                            "path_boundary_guard": False,
+                            "path_boundary_scope": "unconstrained",
+                            "tool_input_path": True,
+                            "write_access": True,
+                        }
+                    )
+                evidence = Evidence(
+                    relative, tool_call.lineno, excerpt(lines, tool_call.lineno)
+                )
+                ir.add_component(
+                    Component("capability", capability, evidence, capability_attributes)
+                )
+                ir.add_relationship(
+                    Relationship(
+                        "tool",
+                        tool_name,
+                        "uses",
+                        "capability",
+                        capability,
+                        evidence,
+                        {"analysis": analysis},
+                        source_id=tool_id,
+                    )
+                )
+                emitted_tools.add(id(tool_call))
+            ir.add_relationship(
+                Relationship(
+                    "agent",
+                    agent_name,
+                    "uses",
+                    "tool",
+                    tool_name,
+                    Evidence(relative, agent_call.lineno, excerpt(lines, agent_call.lineno)),
+                    {
+                        "analysis": analysis,
+                        "target_identity": "literal-openhands-tools-list-binding",
+                    },
+                    source_id=agent_id,
+                    target_id=tool_id,
+                )
+            )
+            tool_evidence = Evidence(
+                relative, tool_call.lineno, excerpt(lines, tool_call.lineno)
+            )
+            if analyzer_evidence is not None:
+                ir.add_relationship(
+                    Relationship(
+                        "tool",
+                        tool_name,
+                        "governed-by",
+                        "control",
+                        "action-risk-analysis",
+                        tool_evidence,
+                        {
+                            "analysis": analysis,
+                            "control_line": analyzer_evidence.line,
+                            "control_path": analyzer_evidence.path,
+                            "policy_effect": "classifies-agent-actions-by-security-risk",
+                        },
+                        source_id=tool_id,
+                    )
+                )
+            if approval_policy == "enabled-risk-threshold" and policy_evidence is not None:
+                ir.add_relationship(
+                    Relationship(
+                        "tool",
+                        tool_name,
+                        "governed-by",
+                        "control",
+                        "human-approval",
+                        tool_evidence,
+                        {
+                            "analysis": analysis,
+                            "confirm_unknown": confirm_unknown,
+                            "control_line": policy_evidence.line,
+                            "control_path": policy_evidence.path,
+                            "policy_effect": "requires-confirmation-at-or-above-risk-threshold",
+                            "risk_threshold": threshold,
+                        },
+                        source_id=tool_id,
+                    )
+                )
 
 
 def python_expression_names(node: ast.AST | None) -> set[str]:
@@ -9585,6 +10067,15 @@ def scan_python(
     module_mutation_counts.update(module_global_mutations)
     module_rebound_names = imported_bindings & module_mutations
     add_python_dify_agent_shell_layers(
+        ir,
+        relative,
+        text,
+        tree,
+        module_import_binding_counts,
+        module_mutation_counts,
+        module_rebound_names,
+    )
+    add_python_openhands_sdk_flows(
         ir,
         relative,
         text,

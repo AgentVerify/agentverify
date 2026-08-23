@@ -333,7 +333,10 @@ def component_context(ir: RepositoryIR, component: Component) -> tuple[tuple[str
         "tool": tool_name,
         "governing_controls": controls,
         "governing_control_effects": control_effects,
-        "approval_coverage": "present" if "human-approval" in controls else "unresolved",
+        "approval_coverage": component.attributes.get(
+            "approval_policy",
+            "present" if "human-approval" in controls else "unresolved",
+        ),
         "audit_coverage": _audit_coverage(controls),
     }
     if selected_mcp_server:

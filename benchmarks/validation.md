@@ -456,9 +456,9 @@ one address-filtering control with configured allowlist and environment-proxy re
 Composio edges separately count configured-route pinning residuals, one edge-runtime fail-closed path,
 and three edge-runtime unguarded fallbacks.
 
-The benchmark now also measures identity coverage: 10,030 component observations carry
-module-qualified IDs. Of 4,632 relationship endpoints, all 3,847 identified symbol endpoints resolve
-to an observed component (3,534 Python and 313 TypeScript). The current schema records 379
+The benchmark now also measures identity coverage: 10,041 component observations carry
+module-qualified IDs. Of 4,688 relationship endpoints, all 3,886 identified symbol endpoints resolve
+to an observed component (3,573 Python and 313 TypeScript). The current schema records 379
 `lexical-single-definition` targets, 20 exact same-block dominating definitions, 25 contextual
 absolute-import targets, and three exact same-class helper-return edges to two Agent source
 definitions. Fourteen production CrewAI delegations resolve through an exact contextual import,
@@ -475,7 +475,7 @@ Agent-as-tool adapters, and five absolute-import boundary tools. Of these, 526 a
 they add 30 capability edges and 812 exact Agent edges. Every adapter has an exact delegation edge
 to its proven Agent receiver. Imported `from_settings` tool factories plus exact
 `HostedMCPTool`, `LangchainTool`, and `Agent.as_tool()` adapters resolve the last six production
-misses. The schema publishes 1,209 Python Agent→tool edges in total: all 610 non-test edges resolve,
+misses. The schema publishes 1,220 Python Agent→tool edges in total: all 621 non-test edges resolve,
 while the 70 unresolved edges are confined to tests and conservative fixtures. Import-proven OpenAI
 `function_tool(function)` assignments add 12 wrapper tools and 12 exact Agent edges; three explicitly
 enable approval, all occur under tests, and none of their selected bodies contains a recognized
@@ -510,7 +510,7 @@ shadowing remain unresolved. Sixteen IR labels cover the local export/import bou
 forms, and all seven pinned Google ADK edges; one rule label proves cross-file AV-FS001 reachability.
 
 Schema-v86 benchmark output measures native AI BOM endpoint resolution separately. AI BOM 1.2
-resolves 3,839 endpoints by symbol ID, 676 by exact evidence location, and 21 by a unique display
+resolves 3,878 endpoints by symbol ID, 693 by exact evidence location, and 21 by a unique display
 name; 38 remain ambiguous and 58 unresolved. Before evidence-local and occurrence-qualified
 resolution, raw name matching left many endpoints ambiguous. Exact locations resolve additional
 capability/control endpoints. Unique occurrence IDs resolve repeated source agent/tool observations
@@ -765,6 +765,26 @@ complete mutation coverage, dynamic policy, read-only filtering, unbound tools, 
 Complete static coverage adds a human-approval control; dynamic policy remains unresolved. The rule
 matrix is 5 TP, 4 TN, 0 FP, and 0 FN. The corresponding IR matrix is 9 TP, 1 TN, 0 FP, and 0 FN.
 
+## AV-APPROVAL006 — OpenHands risk analysis leaves confirmation disabled
+
+Schema v116 verifies exact OpenHands SDK composition from built-in `TerminalTool` and
+`FileEditorTool` instances through a static `Agent.tools` list to the same `Conversation`. Installing
+an `LLMSecurityAnalyzer` establishes action-risk analysis, but the SDK's `NeverConfirm` default still
+leaves confirmation mode inactive. The pinned
+[MCP integration example](https://github.com/OpenHands/software-agent-sdk/blob/1de2e6d1bfcf70c7c3d4eb13616811943f33dd75/examples/01_standalone_sdk/07_mcp_integration.py#L36)
+is the real positive: its analyzer governs reachable terminal and file-editor actions while no
+confirmation policy is installed. The review is anchored once per conversation, and the reachable
+file editor independently raises AV-FS001 because its absolute path argument is not constrained by
+`workspace_root`.
+
+The paired
+[security-analyzer example](https://github.com/OpenHands/software-agent-sdk/blob/1de2e6d1bfcf70c7c3d4eb13616811943f33dd75/examples/01_standalone_sdk/16_llm_security_analyzer.py#L113)
+is the real negative: it installs both the analyzer and `ConfirmRisky`, producing exact
+action-risk-analysis and human-approval controls. Local negatives reject dynamic policies, rebound
+factories, near-package imports, forward setters, and one Agent shared by multiple conversations. The rule matrix is
+2 TP, 4 TN, 0 FP, and 0 FN. Remediation is to install a static confirmation policy such as
+`ConfirmRisky` on the same conversation; risk classification alone is not an approval gate.
+
 ## AV-MCP004 — MCP server model sampling is auto-approved
 
 Schema v68 verifies Semantic Kernel's bidirectional MCP composition. The pinned SDK registers its
@@ -847,7 +867,7 @@ Two default-scope clients qualify: the Microsoft tutorial and FastMCP CLI both a
 do not show the target URL. The TypeScript SDK host is the negative control: it displays the full URL,
 rejects unsafe non-HTTPS/non-loopback destinations, and asks before proceeding. The rule matrix is 4
 TP, 3 TN, 0 FP, and 0 FN; seven additional positive IR labels pin full versus missing disclosure.
-All 659 cross-rule labels pass (296 positives and 363 negatives).
+All 667 cross-rule labels pass (300 positives and 367 negatives).
 
 During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
 to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
@@ -985,7 +1005,7 @@ through a controlled dependency-review process.
 ## AV-FS001 — dynamic writable tool path
 
 The rule requires a writable tool-input-derived path inside a resolved tool; ordinary application
-writes and fixed/configured tool paths do not trigger it. The full benchmark reports 31 default-scope sites across eight
+writes and fixed/configured tool paths do not trigger it. The full benchmark reports 37 default-scope sites across nine
 repositories. Four newly reachable sites come from immutable module-level callables passed literally
 to Marvin Agents: writes in `examples/deepseek_chat.py:74`, `examples/hello_agent.py:7`, and
 `examples/provider_specific/aimlapi/run_agent.py:30`, plus the delete in
@@ -1334,14 +1354,14 @@ and surfacing failed writes through metrics or alerts.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 659 exact labels across all 19 enabled rules: 296 positives and 363
+`benchmarks/truthset.json` contains 667 exact labels across all 20 enabled rules: 300 positives and 367
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
 Compose/Kubernetes/Docker SDK settings, host credential bind near misses, and exact/prompt-only MCP
-package launchers. All 659 currently pass;
+package launchers. All 667 currently pass;
 each rule's seed precision and recall are 1.0. Negative labels must retain either an observed Agent IR
 component anchor or verified source text at the exact pinned line, preventing a missing or drifting
 location from passing silently.
@@ -1464,16 +1484,18 @@ six unresolved ambiguity/shadowing/order forms, and all seven pinned Google ADK 
 tool-factory/adapter labels cover four local Agent edges, one hosted-MCP capability, one local
 Agent-as-tool delegation, eight conservative local negatives, two AutoGen factory edges, one Google
 ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent edge plus delegation.
-The 439 component-taxonomy labels add 314 exact local/pinned framework, provider, call,
-and model positives plus 125 near-name, rebound, custom-endpoint, scoped-binding, nonliteral-request,
-and unrelated-service negatives. Three path-segment-sanitizer labels pin the exact local and Qwen
+The 443 component-taxonomy labels add 317 exact local/pinned framework, provider, call,
+and model positives plus 126 near-name, rebound, custom-endpoint, scoped-binding, nonliteral-request,
+and unrelated-service negatives. Nineteen OpenHands labels—four taxonomy and 15 composition—pin
+built-in tools, analyzer and confirmation controls, exact Agent reachability, shared-conversation
+ambiguity, and rebound or near-package negatives. Three path-segment-sanitizer labels pin the exact local and Qwen
 SHA-256 edges plus a lookalike negative.
 Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,250 IR labels pass (879 positives and 371 negatives):
-314 component-taxonomy positives/125 negatives, three approval positives/four negatives,
+negatives. All 1,269 IR labels pass (893 positives and 376 negatives):
+317 component-taxonomy positives/126 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
 contextual network-import positives, three imported-literal-origin positives/seven negatives,

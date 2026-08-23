@@ -4208,6 +4208,116 @@ def test_agno_filesystem_mcp_confirmation_policy_is_resolved_per_mutating_tool(
     )
 
 
+def test_openhands_builtin_tools_require_analyzer_and_confirmation_policy() -> None:
+    ir = scan_repository(ROOT / "cases/python_openhands_confirmation")
+
+    findings = [finding for finding in ir.findings if finding.rule_id == "AV-APPROVAL006"]
+    assert [
+        (finding.evidence.path, finding.evidence.line, finding.ir_path)
+        for finding in findings
+    ] == [
+        (
+            "positive.py",
+            8,
+            (
+                "agent:Agent",
+                "tool:TerminalTool@8",
+                "capability:shell-execution",
+            ),
+        )
+    ]
+    assert findings[0].result_kind == "review"
+    assert findings[0].analysis["approval_coverage"] == "disabled-default"
+    assert findings[0].analysis["governing_controls"] == ["action-risk-analysis"]
+
+    positive_tools = {
+        component.name: component
+        for component in ir.components
+        if component.kind == "tool" and component.evidence.path == "positive.py"
+    }
+    assert set(positive_tools) == {"TerminalTool@8", "FileEditorTool@9"}
+    assert positive_tools["TerminalTool@8"].attributes["approval_policy"] == (
+        "disabled-default"
+    )
+    assert {
+        (edge.source_name, edge.target_name, edge.target_id)
+        for edge in ir.relationships
+        if edge.source_kind == "agent"
+        and edge.relation == "uses"
+        and edge.evidence.path == "positive.py"
+    } == {
+        (
+            "Agent",
+            "TerminalTool@8",
+            "py:positive.py#tool:TerminalTool@8",
+        ),
+        (
+            "Agent",
+            "FileEditorTool@9",
+            "py:positive.py#tool:FileEditorTool@9",
+        ),
+    }
+
+    approval_edges = [
+        edge
+        for edge in ir.relationships
+        if edge.evidence.path == "guarded.py"
+        and edge.relation == "governed-by"
+        and edge.target_name == "human-approval"
+    ]
+    assert {(edge.source_name, edge.evidence.line) for edge in approval_edges} == {
+        ("TerminalTool@9", 9),
+        ("FileEditorTool@10", 10),
+    }
+    assert all(
+        edge.attributes["risk_threshold"] == "MEDIUM"
+        and edge.attributes["confirm_unknown"] is False
+        and edge.attributes["control_line"] == 15
+        for edge in approval_edges
+    )
+    assert not any(
+        finding.evidence.path in {"dynamic_policy.py", "guarded.py"}
+        for finding in findings
+    )
+    assert not any(
+        component.attributes.get("analysis")
+        == "python-openhands-conversation-security"
+        and component.evidence.path
+        in {
+            "lookalike.py",
+            "near_miss.py",
+            "rebound.py",
+            "shared_agent.py",
+        }
+        for component in ir.components
+    )
+    forward_tools = [
+        component
+        for component in ir.components
+        if component.kind == "tool" and component.evidence.path == "forward_setter.py"
+    ]
+    assert len(forward_tools) == 1
+    assert forward_tools[0].attributes["approval_policy"] == "unresolved"
+    assert not any(
+        component.kind == "control"
+        and component.name == "action-risk-analysis"
+        and component.evidence.path == "forward_setter.py"
+        for component in ir.components
+    )
+    assert any(
+        component.kind == "framework"
+        and component.name == "OpenHands SDK"
+        and component.evidence.path == "positive.py"
+        for component in ir.components
+    )
+    assert not any(
+        component.kind == "framework"
+        and component.name == "OpenHands SDK"
+        and component.evidence.path == "lookalike.py"
+        for component in ir.components
+    )
+
+
 def test_semantic_kernel_mcp_sampling_auto_approval_resolves_server_model_authority(
     tmp_path: Path,
 ) -> None:

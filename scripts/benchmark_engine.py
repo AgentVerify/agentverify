@@ -699,6 +699,18 @@ def main() -> int:
             and item.attributes.get("analysis")
             == "python-openai-agents-mcp-approval-default"
         ]
+        python_openhands_components = [
+            item
+            for item in ir.components
+            if item.attributes.get("analysis")
+            == "python-openhands-conversation-security"
+        ]
+        python_openhands_tools = [
+            item for item in python_openhands_components if item.kind == "tool"
+        ]
+        python_openhands_capabilities = [
+            item for item in python_openhands_components if item.kind == "capability"
+        ]
         typescript_openai_mcp_approval_servers = [
             item
             for item in ir.components
@@ -1809,6 +1821,64 @@ def main() -> int:
                     for edge in ir.relationships
                 ),
             },
+            "python_openhands_conversation_security": {
+                "tools": len(python_openhands_tools),
+                "terminal_tools": sum(
+                    item.attributes.get("builtin_tool") == "TerminalTool"
+                    for item in python_openhands_tools
+                ),
+                "file_editor_tools": sum(
+                    item.attributes.get("builtin_tool") == "FileEditorTool"
+                    for item in python_openhands_tools
+                ),
+                "capabilities": len(python_openhands_capabilities),
+                "analyzer_controls": sum(
+                    item.kind == "control" and item.name == "action-risk-analysis"
+                    for item in python_openhands_components
+                ),
+                "confirmation_controls": sum(
+                    item.kind == "control" and item.name == "human-approval"
+                    for item in python_openhands_components
+                ),
+                "disabled_default_settings": sum(
+                    item.kind == "control-setting"
+                    and item.name == "agent-action-confirmation"
+                    and item.attributes.get("enabled") is False
+                    for item in python_openhands_components
+                ),
+                "agent_tool_edges": sum(
+                    edge.source_kind == "agent"
+                    and edge.relation == "uses"
+                    and edge.target_kind == "tool"
+                    and edge.attributes.get("analysis")
+                    == "python-openhands-conversation-security"
+                    for edge in ir.relationships
+                ),
+                "risk_analysis_edges": sum(
+                    edge.source_kind == "tool"
+                    and edge.relation == "governed-by"
+                    and edge.target_name == "action-risk-analysis"
+                    and edge.attributes.get("analysis")
+                    == "python-openhands-conversation-security"
+                    for edge in ir.relationships
+                ),
+                "human_approval_edges": sum(
+                    edge.source_kind == "tool"
+                    and edge.relation == "governed-by"
+                    and edge.target_name == "human-approval"
+                    and edge.attributes.get("analysis")
+                    == "python-openhands-conversation-security"
+                    for edge in ir.relationships
+                ),
+                "approval_findings": sum(
+                    finding.rule_id == "AV-APPROVAL006" for finding in ir.findings
+                ),
+                "filesystem_findings": sum(
+                    finding.rule_id == "AV-FS001"
+                    and finding.analysis.get("tool", "").startswith("FileEditorTool@")
+                    for finding in ir.findings
+                ),
+            },
             "typescript_openai_mcp_approval_default": {
                 "servers": len(typescript_openai_mcp_approval_servers),
                 "writable_servers": sum(
@@ -2665,7 +2735,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 115,
+        "schema_version": 116,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -3167,6 +3237,32 @@ def main() -> int:
                     "disabled_default",
                     "agent_server_edges",
                     "configured_by_edges",
+                )
+            },
+            "python_openhands_conversation_security": {
+                name: sum(
+                    result["python_openhands_conversation_security"][name]
+                    for result in successful
+                )
+                for name in (
+                    "tools",
+                    "terminal_tools",
+                    "file_editor_tools",
+                    "capabilities",
+                    "analyzer_controls",
+                    "confirmation_controls",
+                    "disabled_default_settings",
+                    "agent_tool_edges",
+                    "risk_analysis_edges",
+                    "human_approval_edges",
+                    "approval_findings",
+                    "filesystem_findings",
+                )
+            }
+            | {
+                "repositories": sum(
+                    result["python_openhands_conversation_security"]["tools"] > 0
+                    for result in successful
                 )
             },
             "typescript_openai_mcp_approval_default": {
