@@ -26,6 +26,8 @@
   `signature_verified: false`, preserving the distinction between content integrity and author trust.
 - Policy summary JSON is now schema-backed and included in distribution verification, matching the
   existing report/BOM/policy/rules machine-contract pattern.
+- Policy digest trust roots can now make local composition approval fail closed without pretending to
+  verify signatures; this is a useful precursor, not a replacement, for cryptographic provenance.
 
 ## Hypotheses
 

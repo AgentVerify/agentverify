@@ -401,6 +401,15 @@ def test_cli_prints_bundled_policy_summary_schema(capsys) -> None:
     assert schema["$defs"]["trust"]["properties"]["signature_verified"]["const"] is False
 
 
+def test_cli_prints_bundled_policy_trust_root_schema(capsys) -> None:
+    assert cli.main(["schema", "policy-trust-root"]) == 0
+
+    schema = __import__("json").loads(capsys.readouterr().out)
+    Draft202012Validator.check_schema(schema)
+    assert schema["title"] == "AgentVerify Policy Trust Root 1"
+    assert schema["properties"]["trust_model"]["const"] == "local-content-digest-allowlist"
+
+
 def test_example_policies_gate_every_high_approval_review() -> None:
     expected = sorted(
         rule_id
@@ -668,6 +677,124 @@ def test_cli_policy_rejects_invalid_policy_without_scanning(
     assert captured.out == ""
     assert "agentverify: invalid policy:" in captured.err
     assert "unknown policy fields: disable_rules" in captured.err
+
+
+def test_cli_policy_accepts_local_digest_trust_root(tmp_path: Path, capsys) -> None:
+    org = tmp_path / "org.json"
+    org.write_text(
+        '{"schema_version":1,"name":"org","gates":['
+        '{"id":"org-high","result_kinds":["finding"],"max_count":0}]}',
+        encoding="utf-8",
+    )
+    repository = tmp_path / "repository.json"
+    repository.write_text(
+        '{"schema_version":1,"name":"repository","extends":["org.json"],"gates":['
+        '{"id":"repository-reviews","result_kinds":["review"],"max_count":5}]}',
+        encoding="utf-8",
+    )
+    policy, _ = load_policy(repository)
+    trust_root = tmp_path / "policy-trust-root.json"
+    trust_root.write_text(
+        __import__("json").dumps(
+            {
+                "schema_version": 1,
+                "trust_model": "local-content-digest-allowlist",
+                "policies": policy["_sources"],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "policy",
+                str(repository),
+                "--trust-root",
+                str(trust_root),
+                "--require-trusted",
+                "--format",
+                "json",
+            ]
+        )
+        == 0
+    )
+    payload = __import__("json").loads(capsys.readouterr().out)
+    trust = payload["trust"]
+    assert trust["signature_verified"] is False
+    assert trust["trust_root"]["trusted"] is True
+    assert trust["trust_root"]["matched_sources"] == ["org.json", "repository.json"]
+    assert trust["trust_root"]["missing_sources"] == []
+    schema = __import__("json").loads(
+        (ROOT / "src/agentverify/schemas/agentverify-policy-summary-v1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    Draft202012Validator(schema).validate(payload)
+
+
+def test_cli_policy_trust_root_can_fail_required_trust(tmp_path: Path, capsys) -> None:
+    policy = tmp_path / "policy.json"
+    policy.write_text(
+        '{"schema_version":1,"name":"release","gates":[{"id":"no-high","max_count":0}]}',
+        encoding="utf-8",
+    )
+    trust_root = tmp_path / "policy-trust-root.json"
+    trust_root.write_text(
+        '{"schema_version":1,"trust_model":"local-content-digest-allowlist",'
+        '"policies":[{"source":"policy.json","sha256":"0000000000000000000000000000000000000000000000000000000000000000"}]}',
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "policy",
+                str(policy),
+                "--trust-root",
+                str(trust_root),
+                "--require-trusted",
+                "--format",
+                "json",
+            ]
+        )
+        == 1
+    )
+    payload = __import__("json").loads(capsys.readouterr().out)
+    assert payload["trust"]["trust_root"]["trusted"] is False
+    assert payload["trust"]["trust_root"]["digest_mismatches"][0]["source"] == "policy.json"
+
+
+def test_cli_policy_rejects_invalid_trust_root(tmp_path: Path, capsys) -> None:
+    policy = tmp_path / "policy.json"
+    policy.write_text(
+        '{"schema_version":1,"name":"release","gates":[{"id":"no-high","max_count":0}]}',
+        encoding="utf-8",
+    )
+    trust_root = tmp_path / "policy-trust-root.json"
+    trust_root.write_text(
+        '{"schema_version":1,"trust_model":"signed-policy","policies":[]}',
+        encoding="utf-8",
+    )
+
+    assert cli.main(["policy", str(policy), "--trust-root", str(trust_root)]) == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "invalid policy trust root" in captured.err
+    assert "trust_model must be local-content-digest-allowlist" in captured.err
+
+
+def test_cli_policy_requires_trust_root_for_required_trust(tmp_path: Path, capsys) -> None:
+    policy = tmp_path / "policy.json"
+    policy.write_text(
+        '{"schema_version":1,"name":"release","gates":[{"id":"no-high","max_count":0}]}',
+        encoding="utf-8",
+    )
+
+    assert cli.main(["policy", str(policy), "--require-trusted"]) == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "--require-trusted requires --trust-root" in captured.err
 
 
 def test_invalid_policy_is_rejected_before_scanning(

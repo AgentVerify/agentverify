@@ -19,3 +19,15 @@
 - Alternative: Ignore malformed entries. Rejected because CI would appear green while evaluating a
   different debt set than intended.
 - Revisit when: a migration tool exists that can explicitly normalize older report artifacts.
+
+## Policy trust roots start as local digest allowlists, not signatures
+
+- Decision: Add `local-content-digest-allowlist` policy trust roots as a fail-closed local content
+  approval mechanism while keeping `signature_verified: false`.
+- Evidence: `agentverify policy` already exposes composed policy sources and SHA-256 digests.
+  Teams can use those digests in CI before full author/signature infrastructure exists, but a digest
+  alone only proves byte identity, not who approved or produced the file.
+- Alternative: Call digest matches "signed" or "verified" provenance. Rejected because it would
+  overclaim authenticity and weaken future cryptographic trust semantics.
+- Revisit when: cryptographic signed policy provenance has a concrete key/trust-root design and
+  migration path from digest allowlists.

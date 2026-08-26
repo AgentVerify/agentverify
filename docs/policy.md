@@ -13,9 +13,11 @@ results and allowing a gate to pass silently.
 agentverify schema report --output agentverify-report.schema.json
 agentverify schema policy --output agentverify-policy.schema.json
 agentverify schema policy-summary --output agentverify-policy-summary.schema.json
+agentverify schema policy-trust-root --output agentverify-policy-trust-root.schema.json
 agentverify schema rules --output agentverify-rules.schema.json
 agentverify policy repository-policy.json
 agentverify policy repository-policy.json --format json
+agentverify policy repository-policy.json --trust-root policy-trust-root.json --require-trusted
 agentverify scan . --policy agentverify-policy.json
 ```
 
@@ -108,6 +110,26 @@ Use `agentverify policy PATH` to validate and explain this composition without s
 The JSON form includes the same sources, gate provenance, and a trust block that explicitly records
 `signature_verified: false` until explicit trust-root support exists. Use
 `agentverify schema policy-summary` to validate that machine-readable summary.
+
+`agentverify policy PATH --trust-root policy-trust-root.json` compares every composed policy source
+against a local SHA-256 allowlist:
+
+```json
+{
+  "schema_version": 1,
+  "trust_model": "local-content-digest-allowlist",
+  "policies": [
+    {
+      "source": "org-policy.json",
+      "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    }
+  ]
+}
+```
+
+Use `--require-trusted` when a mismatch or missing source should return exit status `1`. This is an
+integrity/approval check for local policy content, not a signature scheme; summaries continue to
+report `signature_verified: false`.
 
 ## Baselines and partial scans
 

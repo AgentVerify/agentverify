@@ -35,6 +35,7 @@ def render_schema(name: str) -> str:
         "bom": "agentverify-ai-bom-v1.schema.json",
         "policy": "agentverify-policy-v1.schema.json",
         "policy-summary": "agentverify-policy-summary-v1.schema.json",
+        "policy-trust-root": "agentverify-policy-trust-root-v1.schema.json",
         "report": "agentverify-report-v1.schema.json",
         "rules": "agentverify-rules-v1.schema.json",
     }

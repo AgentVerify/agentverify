@@ -25,11 +25,13 @@ agentverify schema report --output agentverify-report.schema.json
 agentverify schema bom --output agentverify-ai-bom.schema.json
 agentverify schema policy --output agentverify-policy.schema.json
 agentverify schema policy-summary --output agentverify-policy-summary.schema.json
+agentverify schema policy-trust-root --output agentverify-policy-trust-root.schema.json
 agentverify schema rules --output agentverify-rules.schema.json
 agentverify scan ./project --policy agentverify-policy.json
 agentverify scan ./project --policy repository-policy.json  # may extend local organization policy
 agentverify policy repository-policy.json
 agentverify policy repository-policy.json --format json
+agentverify policy repository-policy.json --trust-root policy-trust-root.json --require-trusted
 agentverify scan ./project --fail-on high
 agentverify scan ./project --fail-on high --fail-on-kind any
 agentverify scan ./project --include-tests
@@ -66,6 +68,7 @@ to write them directly to a file. Output write failures return exit code 2; succ
 still preserve policy and `--fail-on` exit decisions.
 `agentverify schema report` prints the bundled schema for validating normal `--format json` reports;
 `agentverify schema policy-summary` validates `agentverify policy --format json`, and
+`agentverify schema policy-trust-root` validates local digest allowlists for policy summaries.
 `agentverify schema rules` validates the machine-readable rule catalog.
 Use `--format summary` for compact CI logs: it reports scan totals, baseline/policy status, counts by
 severity/result kind/rule, and the top evidence locations without printing the full component graph.
@@ -77,7 +80,9 @@ inventory-only IDs before scanning. They also reject selected rules excluded by 
 kind or severity threshold, so a typo or dead filter cannot silently turn a gate into an empty match.
 `agentverify policy PATH` validates a policy without scanning a repository and explains composed
 gate sources and SHA-256 content digests. These digests make local inputs auditable; they are not
-author signatures.
+author signatures. A policy trust root can require every composed policy source to match an approved
+local SHA-256 digest allowlist, but `signature_verified` remains false until cryptographic signature
+support exists.
 
 Example finding:
 

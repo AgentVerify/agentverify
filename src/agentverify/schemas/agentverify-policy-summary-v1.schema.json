@@ -73,7 +73,49 @@
       "properties": {
         "content_hashes": {"const": true},
         "signature_verified": {"const": false},
-        "note": {"type": "string", "minLength": 1}
+        "note": {"type": "string", "minLength": 1},
+        "trust_root": {"$ref": "#/$defs/trustRootResult"}
+      }
+    },
+    "trustRootResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "sha256",
+        "trust_model",
+        "trusted",
+        "matched_sources",
+        "missing_sources",
+        "digest_mismatches"
+      ],
+      "properties": {
+        "source": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "trust_model": {"const": "local-content-digest-allowlist"},
+        "trusted": {"type": "boolean"},
+        "matched_sources": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "missing_sources": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "digest_mismatches": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/digestMismatch"}
+        }
+      }
+    },
+    "digestMismatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "expected_sha256", "actual_sha256"],
+      "properties": {
+        "source": {"type": "string", "minLength": 1},
+        "expected_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "actual_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
       }
     }
   }

@@ -17,6 +17,7 @@ REQUIRED_SCHEMA_FILES = frozenset(
         "agentverify/schemas/agentverify-ai-bom-v1.schema.json",
         "agentverify/schemas/agentverify-policy-v1.schema.json",
         "agentverify/schemas/agentverify-policy-summary-v1.schema.json",
+        "agentverify/schemas/agentverify-policy-trust-root-v1.schema.json",
         "agentverify/schemas/agentverify-report-v1.schema.json",
         "agentverify/schemas/agentverify-rules-v1.schema.json",
     }
@@ -80,6 +81,9 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         report_schema = json.loads(command([str(agentverify), "schema", "report"]))
         rules_schema = json.loads(command([str(agentverify), "schema", "rules"]))
         policy_summary_schema = json.loads(command([str(agentverify), "schema", "policy-summary"]))
+        policy_trust_root_schema = json.loads(
+            command([str(agentverify), "schema", "policy-trust-root"])
+        )
         policy_summary = json.loads(
             command(
                 [
@@ -105,6 +109,7 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         "report_schema_title": report_schema.get("title"),
         "rules_schema_title": rules_schema.get("title"),
         "policy_summary_schema_title": policy_summary_schema.get("title"),
+        "policy_trust_root_schema_title": policy_trust_root_schema.get("title"),
         "policy_summary_format": policy_summary.get("policy_format"),
         "policy_signature_verified": policy_summary.get("trust", {}).get("signature_verified"),
         "safe_agent_summary": "AgentVerify Summary" in summary and "No findings" in summary,
@@ -118,6 +123,8 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         failed.append("rules_schema_title")
     if policy_summary_schema.get("title") != "AgentVerify Policy Summary 1":
         failed.append("policy_summary_schema_title")
+    if policy_trust_root_schema.get("title") != "AgentVerify Policy Trust Root 1":
+        failed.append("policy_trust_root_schema_title")
     if policy_summary.get("policy_format") != "AgentVerify Policy Summary":
         failed.append("policy_summary_format")
     if policy_summary.get("trust", {}).get("signature_verified") is not False:

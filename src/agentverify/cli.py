@@ -13,6 +13,8 @@ from .policy import (
     PolicyError,
     evaluate_policy,
     load_policy,
+    load_policy_trust_root,
+    policy_summary,
     render_policy_summary,
 )
 from .report import (
@@ -95,7 +97,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="evaluate a schema-v1 JSON policy against post-baseline results",
     )
     schema = subparsers.add_parser("schema", help="print a bundled machine-readable schema")
-    schema.add_argument("name", choices=("bom", "policy", "policy-summary", "report", "rules"))
+    schema.add_argument(
+        "name",
+        choices=("bom", "policy", "policy-summary", "policy-trust-root", "report", "rules"),
+    )
     schema.add_argument(
         "-o",
         "--output",
@@ -116,6 +121,19 @@ def build_parser() -> argparse.ArgumentParser:
     policy = subparsers.add_parser("policy", help="validate and explain a schema-v1 policy")
     policy.add_argument("path", type=Path)
     policy.add_argument("--format", choices=("text", "json"), default="text")
+    policy.add_argument(
+        "--trust-root",
+        type=Path,
+        help=(
+            "validate composed policy content against a schema-v1 local digest allowlist; "
+            "does not verify author signatures"
+        ),
+    )
+    policy.add_argument(
+        "--require-trusted",
+        action="store_true",
+        help="return exit code 1 unless every composed policy source matches --trust-root",
+    )
     policy.add_argument(
         "-o",
         "--output",
@@ -204,23 +222,47 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "rules":
         return emit_output(render_rules(args.rule_id, output_format=args.format), args.output) or 0
     if args.command == "policy":
+        if args.require_trusted and not args.trust_root:
+            print("agentverify: --require-trusted requires --trust-root", file=sys.stderr)
+            return 2
         try:
             loaded_policy, policy_digest = load_policy(args.path)
         except (OSError, PolicyError) as error:
             print(f"agentverify: invalid policy: {error}", file=sys.stderr)
             return 2
-        return (
-            emit_output(
-                render_policy_summary(
-                    loaded_policy,
-                    source=args.path.name,
-                    digest=policy_digest,
-                    output_format=args.format,
-                ),
-                args.output,
-            )
-            or 0
+        trust_root = None
+        trust_root_digest = None
+        if args.trust_root:
+            try:
+                trust_root, trust_root_digest = load_policy_trust_root(args.trust_root)
+            except (OSError, PolicyError) as error:
+                print(f"agentverify: invalid policy trust root: {error}", file=sys.stderr)
+                return 2
+        report = render_policy_summary(
+            loaded_policy,
+            source=args.path.name,
+            digest=policy_digest,
+            output_format=args.format,
+            trust_root=trust_root,
+            trust_root_source=args.trust_root.name if args.trust_root else None,
+            trust_root_digest=trust_root_digest,
         )
+        trusted = True
+        if trust_root is not None:
+            summary = policy_summary(
+                loaded_policy,
+                source=args.path.name,
+                digest=policy_digest,
+                trust_root=trust_root,
+                trust_root_source=args.trust_root.name,
+                trust_root_digest=trust_root_digest,
+            )
+            trusted = bool(summary["trust"]["trust_root"]["trusted"])
+        if (output_exit := emit_output(report, args.output)) is not None:
+            return output_exit
+        if args.require_trusted and not trusted:
+            return 1
+        return 0
     if not args.path.is_dir():
         print(f"agentverify: not a directory: {args.path}", file=sys.stderr)
         return 2

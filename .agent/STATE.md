@@ -29,6 +29,8 @@ catalog workflows.
 - Added `agentverify policy PATH` to validate/explain composed policy provenance without scanning a
   repository and without treating content hashes as signatures.
 - Added a bundled policy-summary schema and included it in wheel/content and installed CLI checks.
+- Added local policy digest trust roots for `agentverify policy`, including `--require-trusted`
+  gating while still reporting `signature_verified: false`.
 
 ## Current findings
 
@@ -45,6 +47,6 @@ catalog workflows.
 
 ## Next action
 
-Continue toward the highest-value local P1/P2 work: explicit signed policy trust-root design,
+Continue toward the highest-value local P1/P2 work: cryptographic signed policy provenance design,
 benchmark-result release documentation, additional installed-artifact checks, or additional
 real-world framework coverage.

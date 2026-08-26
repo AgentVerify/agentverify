@@ -15,6 +15,7 @@ from .rules import REPORTING_RULE_IDS, RULE_CATALOG
 SEVERITY_RANK = {"info": 0, "low": 1, "medium": 2, "high": 3}
 RESULT_KINDS = {"finding", "review"}
 MAX_POLICY_DEPTH = 32
+TRUST_MODEL = "local-content-digest-allowlist"
 
 
 class PolicyError(ValueError):
@@ -216,6 +217,105 @@ def load_policy(path: Path) -> tuple[dict[str, Any], str]:
     }, root_digest
 
 
+def normalize_policy_trust_root(payload: object) -> dict[str, Any]:
+    if not isinstance(payload, dict):
+        raise PolicyError("policy trust root must be a JSON object")
+    unknown = set(payload) - {"schema_version", "trust_model", "policies"}
+    if unknown:
+        raise PolicyError(f"unknown policy trust root fields: {', '.join(sorted(unknown))}")
+    if type(payload.get("schema_version")) is not int or payload["schema_version"] != 1:
+        raise PolicyError("schema_version must be 1")
+    if payload.get("trust_model") != TRUST_MODEL:
+        raise PolicyError(f"trust_model must be {TRUST_MODEL}")
+    policies = payload.get("policies")
+    if not isinstance(policies, list) or not policies:
+        raise PolicyError("policies must be a non-empty array")
+    normalized = []
+    seen = set()
+    for index, item in enumerate(policies):
+        field = f"policies[{index}]"
+        if not isinstance(item, dict):
+            raise PolicyError(f"{field} must be an object")
+        unknown_item = set(item) - {"source", "sha256"}
+        if unknown_item:
+            raise PolicyError(f"{field} has unknown fields: {', '.join(sorted(unknown_item))}")
+        source = item.get("source")
+        digest = item.get("sha256")
+        if not isinstance(source, str) or not source.strip():
+            raise PolicyError(f"{field}.source must be a non-empty string")
+        source = source.strip()
+        if not isinstance(digest, str) or not digest.strip():
+            raise PolicyError(f"{field}.sha256 must be a non-empty string")
+        digest = digest.strip()
+        if len(digest) != 64 or any(character not in "0123456789abcdef" for character in digest):
+            raise PolicyError(f"{field}.sha256 must be a lowercase SHA-256 hex digest")
+        if source in seen:
+            raise PolicyError(f"duplicate trusted policy source: {source}")
+        seen.add(source)
+        normalized.append({"source": source, "sha256": digest})
+    return {"schema_version": 1, "trust_model": TRUST_MODEL, "policies": normalized}
+
+
+def load_policy_trust_root(path: Path) -> tuple[dict[str, Any], str]:
+    try:
+        raw = path.read_bytes()
+    except OSError as error:
+        raise PolicyError(f"cannot read {path.name}: {error}") from error
+    try:
+        payload = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise PolicyError(f"invalid JSON in {path.name}: {error}") from error
+    return normalize_policy_trust_root(payload), hashlib.sha256(raw).hexdigest()
+
+
+def policy_trust_summary(
+    summary: dict[str, Any],
+    trust_root: dict[str, Any] | None = None,
+    *,
+    source: str | None = None,
+    digest: str | None = None,
+) -> dict[str, Any]:
+    base = {
+        "content_hashes": True,
+        "signature_verified": False,
+        "note": "SHA-256 digests identify local policy content; they do not prove author authenticity.",
+    }
+    if trust_root is None:
+        return base
+    if not source or not digest:
+        raise PolicyError("policy trust root source and sha256 are required")
+    trusted = {item["source"]: item["sha256"] for item in trust_root["policies"]}
+    matched_sources = []
+    missing_sources = []
+    digest_mismatches = []
+    for item in summary["sources"]:
+        expected = trusted.get(item["source"])
+        if expected is None:
+            missing_sources.append(item["source"])
+        elif expected != item["sha256"]:
+            digest_mismatches.append(
+                {
+                    "source": item["source"],
+                    "expected_sha256": expected,
+                    "actual_sha256": item["sha256"],
+                }
+            )
+        else:
+            matched_sources.append(item["source"])
+    return {
+        **base,
+        "trust_root": {
+            "source": source,
+            "sha256": digest,
+            "trust_model": trust_root["trust_model"],
+            "trusted": not missing_sources and not digest_mismatches,
+            "matched_sources": matched_sources,
+            "missing_sources": missing_sources,
+            "digest_mismatches": digest_mismatches,
+        },
+    }
+
+
 def evaluate_policy(ir: RepositoryIR, policy: dict[str, Any], *, source: str, digest: str) -> bool:
     gate_results = []
     for gate in policy["gates"]:
@@ -252,7 +352,15 @@ def evaluate_policy(ir: RepositoryIR, policy: dict[str, Any], *, source: str, di
     return passed
 
 
-def policy_summary(policy: dict[str, Any], *, source: str, digest: str) -> dict[str, Any]:
+def policy_summary(
+    policy: dict[str, Any],
+    *,
+    source: str,
+    digest: str,
+    trust_root: dict[str, Any] | None = None,
+    trust_root_source: str | None = None,
+    trust_root_digest: str | None = None,
+) -> dict[str, Any]:
     """Return scan-independent policy composition and provenance metadata."""
     gates = [
         {
@@ -262,7 +370,7 @@ def policy_summary(policy: dict[str, Any], *, source: str, digest: str) -> dict[
         }
         for gate in policy["gates"]
     ]
-    return {
+    summary = {
         "policy_format": "AgentVerify Policy Summary",
         "schema_version": 1,
         "name": policy["name"],
@@ -270,19 +378,35 @@ def policy_summary(policy: dict[str, Any], *, source: str, digest: str) -> dict[
         "sha256": digest,
         "sources": policy.get("_sources", [{"source": source, "sha256": digest}]),
         "gates": gates,
-        "trust": {
-            "content_hashes": True,
-            "signature_verified": False,
-            "note": "SHA-256 digests identify local policy content; they do not prove author authenticity.",
-        },
     }
+    summary["trust"] = policy_trust_summary(
+        summary,
+        trust_root,
+        source=trust_root_source,
+        digest=trust_root_digest,
+    )
+    return summary
 
 
 def render_policy_summary(
-    policy: dict[str, Any], *, source: str, digest: str, output_format: str = "text"
+    policy: dict[str, Any],
+    *,
+    source: str,
+    digest: str,
+    output_format: str = "text",
+    trust_root: dict[str, Any] | None = None,
+    trust_root_source: str | None = None,
+    trust_root_digest: str | None = None,
 ) -> str:
     """Render a scan-independent policy validation/explanation report."""
-    summary = policy_summary(policy, source=source, digest=digest)
+    summary = policy_summary(
+        policy,
+        source=source,
+        digest=digest,
+        trust_root=trust_root,
+        trust_root_source=trust_root_source,
+        trust_root_digest=trust_root_digest,
+    )
     if output_format == "json":
         return json.dumps(summary, indent=2, sort_keys=True) + "\n"
     lines = [
@@ -301,4 +425,15 @@ def render_policy_summary(
             f"min_severity={gate['min_severity']}; max_count={gate['max_count']}"
         )
     lines.append("Trust: content hashes only; no author signature verified")
+    if trust_root_result := summary["trust"].get("trust_root"):
+        trust_status = "trusted" if trust_root_result["trusted"] else "untrusted"
+        lines.append(
+            f"Trust root: {trust_root_result['source']} "
+            f"[{trust_root_result['trust_model']}; {trust_status}]"
+        )
+        if trust_root_result["missing_sources"]:
+            lines.append(f"  Missing sources: {', '.join(trust_root_result['missing_sources'])}")
+        if trust_root_result["digest_mismatches"]:
+            sources = ", ".join(item["source"] for item in trust_root_result["digest_mismatches"])
+            lines.append(f"  Digest mismatches: {sources}")
     return "\n".join(lines) + "\n"

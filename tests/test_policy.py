@@ -5,7 +5,12 @@ from pathlib import Path
 
 import pytest
 
-from agentverify.policy import PolicyError, load_policy, normalize_policy
+from agentverify.policy import (
+    PolicyError,
+    load_policy,
+    normalize_policy,
+    normalize_policy_trust_root,
+)
 
 
 @pytest.mark.parametrize(
@@ -133,6 +138,52 @@ def test_policy_can_contain_only_local_policy_references() -> None:
     }
 
 
+def test_policy_trust_root_normalization_is_strict() -> None:
+    assert normalize_policy_trust_root(
+        {
+            "schema_version": 1,
+            "trust_model": "local-content-digest-allowlist",
+            "policies": [{"source": "policy.json", "sha256": "a" * 64}],
+        }
+    ) == {
+        "schema_version": 1,
+        "trust_model": "local-content-digest-allowlist",
+        "policies": [{"source": "policy.json", "sha256": "a" * 64}],
+    }
+
+    for payload, message in (
+        (
+            {
+                "schema_version": 1,
+                "trust_model": "signed-policy",
+                "policies": [{"source": "policy.json", "sha256": "a" * 64}],
+            },
+            "trust_model must be local-content-digest-allowlist",
+        ),
+        (
+            {
+                "schema_version": 1,
+                "trust_model": "local-content-digest-allowlist",
+                "policies": [{"source": "policy.json", "sha256": "A" * 64}],
+            },
+            "sha256 must be a lowercase SHA-256 hex digest",
+        ),
+        (
+            {
+                "schema_version": 1,
+                "trust_model": "local-content-digest-allowlist",
+                "policies": [
+                    {"source": "policy.json", "sha256": "a" * 64},
+                    {"source": "policy.json", "sha256": "b" * 64},
+                ],
+            },
+            "duplicate trusted policy source",
+        ),
+    ):
+        with pytest.raises(PolicyError, match=message):
+            normalize_policy_trust_root(payload)
+
+
 def test_policy_composition_is_depth_first_and_retains_source_digests(tmp_path: Path) -> None:
     policies = tmp_path / "policies"
     policies.mkdir()
@@ -177,12 +228,8 @@ def test_policy_composition_is_depth_first_and_retains_source_digests(tmp_path: 
 def test_policy_composition_rejects_cycles_and_duplicate_gate_ids(tmp_path: Path) -> None:
     first = tmp_path / "first.json"
     second = tmp_path / "second.json"
-    first.write_text(
-        '{"schema_version":1,"extends":["second.json"]}', encoding="utf-8"
-    )
-    second.write_text(
-        '{"schema_version":1,"extends":["first.json"]}', encoding="utf-8"
-    )
+    first.write_text('{"schema_version":1,"extends":["second.json"]}', encoding="utf-8")
+    second.write_text('{"schema_version":1,"extends":["first.json"]}', encoding="utf-8")
     with pytest.raises(PolicyError, match="composition cycle"):
         load_policy(first)
 
@@ -190,8 +237,7 @@ def test_policy_composition_rejects_cycles_and_duplicate_gate_ids(tmp_path: Path
         '{"schema_version":1,"gates":[{"id":"same","max_count":1}]}', encoding="utf-8"
     )
     first.write_text(
-        '{"schema_version":1,"extends":["second.json"],'
-        '"gates":[{"id":"same","max_count":0}]}',
+        '{"schema_version":1,"extends":["second.json"],"gates":[{"id":"same","max_count":0}]}',
         encoding="utf-8",
     )
     with pytest.raises(PolicyError, match=r"duplicate gate id same: second\.json and first\.json"):
@@ -209,9 +255,7 @@ def test_policy_composition_loads_a_shared_base_once(tmp_path: Path) -> None:
             encoding="utf-8",
         )
     root = tmp_path / "root.json"
-    root.write_text(
-        '{"schema_version":1,"extends":["left.json","right.json"]}', encoding="utf-8"
-    )
+    root.write_text('{"schema_version":1,"extends":["left.json","right.json"]}', encoding="utf-8")
 
     policy, _ = load_policy(root)
 

@@ -558,8 +558,10 @@ rejects cycles and duplicate gate IDs, and preserves file and gate SHA-256 prove
 weakening strict unknown-field validation. `agentverify policy PATH` now validates and explains
 composed policy sources without a repository scan, including a machine-readable trust block that
 keeps SHA-256 content digests separate from author signatures. The policy summary JSON is covered by
-a bundled schema and installed-wheel smoke checks. Next add signed policy provenance with explicit
-trust-root configuration; a content hash alone must not be presented as author authenticity.
+a bundled schema and installed-wheel smoke checks. Local digest trust roots can now require every
+composed policy source to match an approved SHA-256 allowlist while still reporting
+`signature_verified: false`. Next add cryptographic signed policy provenance with explicit trust-root
+configuration; a content hash alone must not be presented as author authenticity.
 The JSON report now carries a deterministic post-suppression/post-baseline `risk_summary`, matching
 the native AI BOM's by-rule, by-result-kind, and by-severity governance counts without requiring
 external CI parsers to reimplement report aggregation.
