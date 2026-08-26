@@ -327,7 +327,12 @@ catalog workflows.
   `run(..., { sandbox: { session } })` edges in OpenAI Agents JS
   `examples/sandbox/shared-session-workdirs.ts` and
   `examples/sandbox/memory-multi-agent-multiturn.ts`, while unknown helper factories remain
-  unresolved. Regenerated public IR truth-set results now cover 1,781 passing labels.
+  unresolved. Regenerated public IR truth-set results then covered 1,781 passing labels.
+- Added exact option-level OpenAI Agents JS `Runner.run(...)` sandbox session attribution for
+  imported Runner instances, plus typed session-variable binding when the initializer is still a
+  proven sandbox-local `client.create(...)` call. Local positives/negative and the real
+  `examples/sandbox/memory-generation.ts` edge raised regenerated public IR truth-set results to
+  1,785 passing labels.
 - Strengthened source-release verification for the packaged GitHub workflow examples:
   `verify_sdist()` now checks benchmark verifier output/schema/upload, policy-gate
   permission/policy/summary/expiry arguments, and code-scanning SARIF permission/upload contracts.

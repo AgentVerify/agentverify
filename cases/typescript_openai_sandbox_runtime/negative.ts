@@ -76,3 +76,13 @@ const unknownHelperRuntimeAgent = buildUnknownHelperAgent();
 await run(unknownHelperRuntimeAgent, 'inspect the helper workspace', {
   sandbox: { session: inlineUnknownSession },
 });
+
+const unknownOptionRunnerAgent = new SandboxAgent({
+  name: 'Unknown Option Runner Sandbox',
+});
+const unknownOptionRunner = new Runner({
+  workflowName: 'unknown option session example',
+});
+await unknownOptionRunner.run(unknownOptionRunnerAgent, 'inspect the option workspace', {
+  sandbox: { session: inlineUnknownSession },
+});

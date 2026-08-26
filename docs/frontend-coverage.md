@@ -288,7 +288,7 @@ remain withheld. Local regressions now pin nine positive object-map model labels
 negatives. Exact `@ai-sdk/azure` factory/configured embedding calls are now covered with a matching
 custom-endpoint spread negative and a real Activepieces Azure embedding provider label. Together with
 the expanded local-reexport, real Activepieces boundary, and TypeScript sandbox-helper labels, the
-public IR truth set now covers 1,781 labels.
+public IR truth set now covers 1,785 labels.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
 Agent→MCP-server identities. Import-proven literal stdio constructor calls are inventoried for any
@@ -354,11 +354,14 @@ Exact `@openai/agents/sandbox/local` `UnixLocalSandboxClient` and `DockerSandbox
 record `sandbox-runtime` controls when they are passed directly as `run(..., { sandbox: { client } })`
 or through one exact `client.create(...)` session binding, including inline
 `await new Client(...).create(...)` session assignments and object-shorthand
-`{ sandbox: { session } }`. Variables initialized by direct calls to already-proven same-file
-`return new SandboxAgent(...)` helpers can also carry those session edges, which covers shared
-session multi-agent examples without treating generic factories as evidence. Rebounded local-client
-imports, unknown session factories, half-known ternary client selection, and aggregate helper
-contents remain unresolved.
+`{ sandbox: { session } }`; typed session variable declarations are accepted when the initializer is
+still a proven client `.create(...)` call. Variables initialized by direct calls to already-proven
+same-file `return new SandboxAgent(...)` helpers can also carry those session edges, which covers
+shared session multi-agent examples without treating generic factories as evidence. Exact imported
+`Runner` instances can additionally carry per-call `runner.run(agent, ..., { sandbox: { session } })`
+session options, distinct from Runner-constructor sandbox config. Rebounded local-client imports,
+unknown session factories, half-known ternary client selection, and aggregate helper contents remain
+unresolved.
 
 Schema v83 recognizes OpenAI Agents Python `LocalShellTool` only through one immutable top-level
 import from `agents` or `agents.tool`. It records the SDK's lack of an approval parameter as
@@ -1004,7 +1007,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 719-label rule truth set and 1,781-label IR component/relationship set are curated regression
+The 719-label rule truth set and 1,785-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

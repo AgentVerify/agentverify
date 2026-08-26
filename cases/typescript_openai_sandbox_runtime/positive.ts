@@ -106,3 +106,27 @@ const helperRuntimeAgent = buildHelperRuntimeAgent();
 await run(helperRuntimeAgent, 'inspect the helper workspace', {
   sandbox: { session },
 });
+
+const optionRunnerAgent = new SandboxAgent({
+  name: 'Runner Option Session Sandbox',
+  capabilities: [shell()],
+});
+const optionRunner = new Runner({
+  workflowName: 'option session example',
+});
+await optionRunner.run(optionRunnerAgent, 'inspect the option workspace', {
+  sandbox: { session },
+});
+
+type SandboxSessionState = unknown;
+const typedSession: SandboxSessionState = await client.create(manifest);
+const typedOptionRunnerAgent = new SandboxAgent({
+  name: 'Typed Runner Option Session Sandbox',
+  capabilities: [shell()],
+});
+const typedOptionRunner = new Runner({
+  workflowName: 'typed option session example',
+});
+await typedOptionRunner.run(typedOptionRunnerAgent, 'inspect the typed option workspace', {
+  sandbox: { session: typedSession },
+});

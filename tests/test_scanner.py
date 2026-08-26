@@ -4107,6 +4107,20 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
             "ts:positive.ts#control:client@39",
             "session-shorthand",
         ),
+        (
+            "Runner Option Session Sandbox",
+            "positive.ts",
+            117,
+            "ts:positive.ts#control:client@39",
+            "session-shorthand",
+        ),
+        (
+            "Typed Runner Option Session Sandbox",
+            "positive.ts",
+            130,
+            "ts:positive.ts#control:client@39",
+            "session",
+        ),
     }
     assert not any(
         component.evidence.path == "negative.ts" and component.kind == "control"

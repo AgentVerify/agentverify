@@ -174,13 +174,15 @@ marked with `execution_environment: sdk-sandbox` and `sandbox_policy: openai-age
 exact `@openai/agents/sandbox/local` `UnixLocalSandboxClient` and `DockerSandboxClient` constructors
 can also configure agents through literal `run(..., { sandbox: { client/session } })` options and
 one direct `client.create(...)` session binding, including inline
-`await new Client(...).create(...)` session assignments when the constructor import is exact. A
-client initializer whose outer expression is a
+`await new Client(...).create(...)` session assignments and typed session variables when the
+initializer is still exact. Exact imported `Runner` instances can also carry per-call
+`runner.run(agent, ..., { sandbox: { session } })` option-level runtime edges, separate from
+Runner-constructor sandbox config. A client initializer whose outer expression is a
 ternary is accepted only when each branch contains exactly one unshadowed sandbox-local client
 constructor, producing a `conditional-local` runtime control with Docker/Unix options. Near-package
 constructors, rebound constructor/capability/client aliases, aggregate capability helpers,
-half-known ternaries, unknown inline session constructors, and nested, indirect, or ambiguous helper
-forms remain unresolved. Variables initialized by direct calls to already-proven same-file
+half-known ternaries, unknown inline or typed session constructors, and nested, indirect, or
+ambiguous helper forms remain unresolved. Variables initialized by direct calls to already-proven same-file
 `return new SandboxAgent(...)` helpers can use the helper's agent identity for sandbox session edges;
 generic helper factories remain unresolved. A local
 `client as ...` alias can carry the same proven runtime into a `.resume(...)` session assignment, but

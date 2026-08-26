@@ -278,8 +278,14 @@
   `return new SandboxAgent(...)` helpers now inherit the helper agent identity for sandbox session
   edge attribution. This recovers shared-session OpenAI Agents JS examples where helper-returned
   agents are stored in local variables before `run(..., { sandbox: { session } })`; generic or
-  unknown helper factories remain unresolved. The public IR truth set now covers 1,781 passing
+  unknown helper factories remain unresolved. The public IR truth set then covered 1,781 passing
   labels.
+- Exact imported OpenAI Agents JS `Runner` instances now support option-level sandbox session
+  attribution: `runner.run(agent, ..., { sandbox: { session } })` links the agent to the proven
+  `sandbox-runtime` control, separate from Runner-constructor sandbox config. The session binding
+  also accepts TypeScript type annotations when the initializer remains an exact proven
+  `client.create(...)` call. Unknown option sessions remain unresolved, and the public IR truth set
+  now covers 1,785 passing labels.
 - Source-release verification now treats packaged GitHub workflow examples as content contracts, not
   only required filenames. The sdist verifier checks that the benchmark workflow emits, validates,
   and uploads verifier JSON while staying read-only; the policy gate keeps its policy/summary/expiry
