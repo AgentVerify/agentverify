@@ -17,6 +17,7 @@ agentverify schema policy-trust-root --output agentverify-policy-trust-root.sche
 agentverify schema rules --output agentverify-rules.schema.json
 agentverify policy repository-policy.json
 agentverify policy repository-policy.json --format json
+agentverify policy repository-policy.json --export-trust-root --output policy-trust-root.json
 agentverify policy repository-policy.json --trust-root policy-trust-root.json --require-trusted
 agentverify policy examples/repository-policy.json --trust-root examples/policy-trust-root.json --require-trusted
 agentverify scan . --policy agentverify-policy.json
@@ -126,6 +127,12 @@ against a local SHA-256 allowlist:
     }
   ]
 }
+```
+
+Generate this file from the exact composed policy inputs with:
+
+```console
+agentverify policy PATH --export-trust-root --output policy-trust-root.json
 ```
 
 Use `--require-trusted` when a mismatch or missing source should return exit status `1`. This is an

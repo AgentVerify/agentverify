@@ -789,6 +789,78 @@ def test_cli_policy_accepts_local_digest_trust_root(tmp_path: Path, capsys) -> N
     Draft202012Validator(schema).validate(payload)
 
 
+def test_cli_policy_can_export_local_digest_trust_root(tmp_path: Path, capsys) -> None:
+    org = tmp_path / "org.json"
+    org.write_text(
+        '{"schema_version":1,"name":"org","gates":['
+        '{"id":"org-high","result_kinds":["finding"],"max_count":0}]}',
+        encoding="utf-8",
+    )
+    repository = tmp_path / "repository.json"
+    repository.write_text(
+        '{"schema_version":1,"name":"repository","extends":["org.json"],"gates":['
+        '{"id":"repository-reviews","result_kinds":["review"],"max_count":5}]}',
+        encoding="utf-8",
+    )
+    trust_root = tmp_path / "generated-trust-root.json"
+
+    assert (
+        cli.main(["policy", str(repository), "--export-trust-root", "--output", str(trust_root)])
+        == 0
+    )
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    payload = __import__("json").loads(trust_root.read_text(encoding="utf-8"))
+    assert payload["trust_model"] == "local-content-digest-allowlist"
+    assert [item["source"] for item in payload["policies"]] == ["org.json", "repository.json"]
+    schema = __import__("json").loads(
+        (ROOT / "src/agentverify/schemas/agentverify-policy-trust-root-v1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    Draft202012Validator(schema).validate(payload)
+
+    assert (
+        cli.main(
+            [
+                "policy",
+                str(repository),
+                "--trust-root",
+                str(trust_root),
+                "--require-trusted",
+                "--format",
+                "json",
+            ]
+        )
+        == 0
+    )
+
+
+def test_cli_policy_export_trust_root_rejects_conflicting_trust_options(
+    tmp_path: Path, capsys
+) -> None:
+    policy = tmp_path / "policy.json"
+    policy.write_text(
+        '{"schema_version":1,"name":"release","gates":[{"id":"no-high","max_count":0}]}',
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "policy",
+                str(policy),
+                "--export-trust-root",
+                "--require-trusted",
+            ]
+        )
+        == 2
+    )
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "--export-trust-root cannot be combined" in captured.err
+
+
 def test_cli_policy_trust_root_can_fail_required_trust(tmp_path: Path, capsys) -> None:
     policy = tmp_path / "policy.json"
     policy.write_text(

@@ -16,6 +16,7 @@ from .policy import (
     load_policy_trust_root,
     policy_summary,
     render_policy_summary,
+    render_policy_trust_root,
 )
 from .report import (
     SCHEMA_FILES,
@@ -126,6 +127,11 @@ def build_parser() -> argparse.ArgumentParser:
     policy.add_argument("path", type=Path)
     policy.add_argument("--format", choices=("text", "json"), default="text")
     policy.add_argument(
+        "--export-trust-root",
+        action="store_true",
+        help="emit a schema-v1 local digest allowlist for this composed policy",
+    )
+    policy.add_argument(
         "--trust-root",
         type=Path,
         help=(
@@ -232,6 +238,13 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "rules":
         return emit_output(render_rules(args.rule_id, output_format=args.format), args.output) or 0
     if args.command == "policy":
+        if args.export_trust_root and (args.trust_root or args.require_trusted):
+            print(
+                "agentverify: --export-trust-root cannot be combined with "
+                "--trust-root or --require-trusted",
+                file=sys.stderr,
+            )
+            return 2
         if args.require_trusted and not args.trust_root:
             print("agentverify: --require-trusted requires --trust-root", file=sys.stderr)
             return 2
@@ -240,6 +253,8 @@ def main(argv: list[str] | None = None) -> int:
         except (OSError, PolicyError) as error:
             print(f"agentverify: invalid policy: {error}", file=sys.stderr)
             return 2
+        if args.export_trust_root:
+            return emit_output(render_policy_trust_root(loaded_policy), args.output) or 0
         trust_root = None
         trust_root_digest = None
         if args.trust_root:

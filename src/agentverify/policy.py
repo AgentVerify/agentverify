@@ -268,6 +268,15 @@ def load_policy_trust_root(path: Path) -> tuple[dict[str, Any], str]:
     return normalize_policy_trust_root(payload), hashlib.sha256(raw).hexdigest()
 
 
+def render_policy_trust_root(policy: dict[str, Any]) -> str:
+    payload = {
+        "schema_version": 1,
+        "trust_model": TRUST_MODEL,
+        "policies": policy["_sources"],
+    }
+    return json.dumps(payload, indent=2, sort_keys=True) + "\n"
+
+
 def policy_trust_summary(
     summary: dict[str, Any],
     trust_root: dict[str, Any] | None = None,

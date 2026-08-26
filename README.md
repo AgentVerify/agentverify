@@ -33,6 +33,7 @@ agentverify scan ./project --policy agentverify-policy.json
 agentverify scan ./project --policy repository-policy.json  # may extend local organization policy
 agentverify policy repository-policy.json
 agentverify policy repository-policy.json --format json
+agentverify policy repository-policy.json --export-trust-root --output policy-trust-root.json
 agentverify policy repository-policy.json --trust-root policy-trust-root.json --require-trusted
 agentverify policy examples/repository-policy.json --trust-root examples/policy-trust-root.json --require-trusted
 agentverify scan ./project --fail-on high
@@ -87,7 +88,8 @@ kind or severity threshold, so a typo or dead filter cannot silently turn a gate
 gate sources and SHA-256 content digests. These digests make local inputs auditable; they are not
 author signatures. A policy trust root can require every composed policy source to match an approved
 local SHA-256 digest allowlist, but `signature_verified` remains false until cryptographic signature
-support exists.
+support exists. Use `agentverify policy PATH --export-trust-root --output policy-trust-root.json` to
+generate a local digest allowlist from the exact composed policy inputs.
 
 Example finding:
 

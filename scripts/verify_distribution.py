@@ -74,6 +74,7 @@ def script_path(venv_dir: Path, name: str) -> Path:
 def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
     with tempfile.TemporaryDirectory(prefix="agentverify-wheel-") as raw_dir:
         venv_dir = Path(raw_dir) / "venv"
+        generated_trust_root = Path(raw_dir) / "generated-policy-trust-root.json"
         venv.EnvBuilder(with_pip=True).create(venv_dir)
         python = script_path(venv_dir, "python")
         command([str(python), "-m", "pip", "install", "--no-deps", str(path)])
@@ -93,6 +94,30 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
                     str(agentverify),
                     "policy",
                     str(source_root / "examples/repository-policy.json"),
+                    "--format",
+                    "json",
+                ]
+            )
+        )
+        command(
+            [
+                str(agentverify),
+                "policy",
+                str(source_root / "examples/repository-policy.json"),
+                "--export-trust-root",
+                "--output",
+                str(generated_trust_root),
+            ]
+        )
+        generated_trusted_policy_summary = json.loads(
+            command(
+                [
+                    str(agentverify),
+                    "policy",
+                    str(source_root / "examples/repository-policy.json"),
+                    "--trust-root",
+                    str(generated_trust_root),
+                    "--require-trusted",
                     "--format",
                     "json",
                 ]
@@ -131,6 +156,9 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         "policy_trust_root_schema_title": policy_trust_root_schema.get("title"),
         "policy_summary_format": policy_summary.get("policy_format"),
         "policy_signature_verified": policy_summary.get("trust", {}).get("signature_verified"),
+        "generated_policy_trust_root_trusted": generated_trusted_policy_summary.get("trust", {})
+        .get("trust_root", {})
+        .get("trusted"),
         "policy_trust_root_trusted": trusted_policy_summary.get("trust", {})
         .get("trust_root", {})
         .get("trusted"),
@@ -164,6 +192,8 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         failed.append("policy_summary_format")
     if policy_summary.get("trust", {}).get("signature_verified") is not False:
         failed.append("policy_signature_verified")
+    if checks["generated_policy_trust_root_trusted"] is not True:
+        failed.append("generated_policy_trust_root_trusted")
     if checks["policy_trust_root_trusted"] is not True:
         failed.append("policy_trust_root_trusted")
     if not checks["safe_agent_summary"]:

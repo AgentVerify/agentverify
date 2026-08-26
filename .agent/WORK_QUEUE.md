@@ -19,7 +19,7 @@
   building on `agentverify policy` provenance summaries and digest allowlists. Do not present content
   hashes as author authenticity.
 - Keep example policy trust roots synchronized with composed example policy source digests whenever
-  example policies change.
+  example policies change; prefer regenerating them with `agentverify policy --export-trust-root`.
 - Explore CycloneDX/SPDX adapters only when a mapping preserves links back to the native AgentVerify
   evidence graph.
 - Improve editor and CI integration examples using discoverable schema-backed report, benchmark,

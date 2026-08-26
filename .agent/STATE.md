@@ -40,6 +40,9 @@ catalog workflows.
   policy pair, and extended installed-wheel smoke tests to require that trust root to pass.
 - Added `agentverify schema` discovery output so installed users can list all bundled machine
   contracts from the same schema registry used by rendering and smoke tests.
+- Added `agentverify policy --export-trust-root` so teams can generate a schema-v1 local digest
+  allowlist directly from composed policy inputs, with installed-wheel smoke coverage that exports
+  and then requires the generated trust root.
 
 ## Current findings
 
