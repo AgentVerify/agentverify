@@ -285,6 +285,22 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "createAzure",
         ),
         (
+            "provider_calls.ts",
+            38,
+            "OpenAI",
+            "commonJSOpenAI",
+            "ai-sdk-provider-model",
+            None,
+        ),
+        (
+            "provider_calls.ts",
+            39,
+            "Azure OpenAI",
+            "commonJSCreateAzure.embeddingModel",
+            "ai-sdk-provider-model",
+            "commonJSCreateAzure",
+        ),
+        (
             "provider_ai_sdk_model_bindings.ts",
             5,
             "OpenAI",
@@ -894,6 +910,8 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         (25, "gemini-embedding-001", "Google"),
         (28, "grok-4", "xAI"),
         (34, "text-embedding-3-small-azure", "Azure OpenAI"),
+        (38, "gpt-5-commonjs", "OpenAI"),
+        (39, "text-embedding-3-small-azure-commonjs", "Azure OpenAI"),
     }
     assert {
         (

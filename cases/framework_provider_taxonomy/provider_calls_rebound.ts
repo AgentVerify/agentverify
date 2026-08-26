@@ -48,3 +48,7 @@ CommonJSOpenAI = fakeProvider;
 CommonJSAnthropic = fakeProvider;
 const notCommonJSOpenAI = new CommonJSOpenAI();
 const notCommonJSAnthropic = new CommonJSAnthropic();
+
+const { openai: reboundCommonJSOpenAI } = require('@ai-sdk/openai');
+reboundCommonJSOpenAI = fakeProvider;
+const notCommonJSAIModel = reboundCommonJSOpenAI('gpt-commonjs-rebound');

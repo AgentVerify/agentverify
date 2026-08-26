@@ -226,7 +226,11 @@
 - Exact TypeScript AI SDK local reexport proof now includes star barrels when the requested provider
   name resolves to a single supported official `@ai-sdk/*` symbol, including one local transitive
   star hop. Duplicate star candidates remain unresolved, preserving the existing ambiguity boundary.
-  The public IR truth set now covers 1,631 passing labels.
+  The public IR truth set then covered 1,631 passing labels.
+- Exact TypeScript AI SDK CommonJS named destructuring now feeds the same provider-import proof as
+  static and dynamic imports when the `require()` is top-level and the destructured symbol is a
+  supported official provider export. Rebound destructured aliases remain unresolved. The public IR
+  truth set now covers 1,637 passing labels.
 
 ## Hypotheses
 

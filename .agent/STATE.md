@@ -261,7 +261,10 @@ catalog workflows.
   reexport. Regenerated public IR truth-set results then covered 1,626 passing labels.
 - Added exact TypeScript AI SDK local star-reexport proof for single-symbol OpenAI/Azure barrels,
   including a local transitive Azure `export *` hop, while duplicate star-barrel provenance remains
-  unresolved. Regenerated public IR truth-set results now cover 1,631 passing labels.
+  unresolved. Regenerated public IR truth-set results then covered 1,631 passing labels.
+- Added exact TypeScript AI SDK CommonJS named-destructuring proof for top-level supported
+  `@ai-sdk/*` provider symbols, including OpenAI and Azure configured embedding positives plus a
+  rebound-alias negative. Regenerated public IR truth-set results now cover 1,637 passing labels.
 
 ## Current findings
 

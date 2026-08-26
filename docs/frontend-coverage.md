@@ -134,10 +134,10 @@ are production-scoped; 22 calls and all 12 literal call-model arguments occur in
 facts refine configured use without changing the 48-repository provider-presence total.
 
 Schema v74 adds exact TypeScript call proof for the official Mistral, Groq, and Cohere AI SDK
-providers. Named aliases, destructured dynamic imports, provider factories, and immutable configured
-instances are supported; rebindings and near-name packages are withheld. The pinned corpus contains
-one production dynamic-import Groq model call in Mastra and no test-scoped calls or literal call-model
-arguments.
+providers. Named aliases, destructured dynamic imports, top-level CommonJS destructuring, provider
+factories, and immutable configured instances are supported; rebindings and near-name packages are
+withheld. The pinned corpus contains one production dynamic-import Groq model call in Mastra and no
+test-scoped calls or literal call-model arguments.
 
 Schema v75 expands the Python call inventory to 63 calls across eight repositories: 20 native SDK
 calls and 43 wrappers, comprising nine LangChain, 32 PydanticAI, and two AgentScope calls. Nine calls
@@ -195,6 +195,8 @@ five repositories: ten OpenAI, four Anthropic, and three Google. Combined with s
 official AI SDK calls, TypeScript has 49 exact production calls across eight repositories. Native
 constructors require no arguments or a literal, spread-free configuration without `baseURL` or
 `baseUrl`; unknown configs, nested custom endpoints, rebindings, and broad CommonJS imports are withheld.
+Official AI SDK CommonJS destructuring is treated separately and only for top-level exact package
+requires of supported provider symbols.
 Anthropic presence rises from 21 to 24 repositories; OpenAI remains 43 and Google remains 20.
 
 Schema v105 adds the exact CommonJS default-export form used by two GPT Pilot templates. Four
@@ -285,7 +287,7 @@ object values, dynamic bracket keys, dynamic bracket member writes, and unknown 
 remain withheld. Local regressions now pin nine positive object-map model labels and eight guarded
 negatives. Exact `@ai-sdk/azure` factory/configured embedding calls are now covered with a matching
 custom-endpoint spread negative and a real Activepieces Azure embedding provider label. Together with
-the expanded local-reexport and real Activepieces boundary labels, the public IR truth set now covers 1,631
+the expanded local-reexport and real Activepieces boundary labels, the public IR truth set now covers 1,637
 labels.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
@@ -738,9 +740,10 @@ and `network-ssrf-policy` edge.
   withholds call attribution. Exact AutoGen model-client imports identify OpenAI, Azure OpenAI, and
   Anthropic unless the OpenAI-compatible client overrides `base_url`; constructor names alone do
   not qualify. The official OpenAI, Anthropic, Google, xAI, Mistral, Groq, and Cohere
-  TypeScript AI SDK providers also support selected exact named/dynamic imports, factories, and
-  immutable or inline configured instances; custom factory endpoints, unknown/spread configs,
-  generic compatible packages, and community Ollama providers are not conflated. Native OpenAI,
+  TypeScript AI SDK providers also support selected exact named/dynamic imports, top-level CommonJS
+  destructuring, factories, and immutable or inline configured instances; custom factory endpoints,
+  unknown/spread configs, rebound destructured aliases, generic compatible packages, and community
+  Ollama providers are not conflated. Native OpenAI,
   Anthropic, and Google GenAI TypeScript SDK constructors are supported through exact
   ESM default/named imports when their endpoint configuration is statically default; unknown/spread
   configs and custom endpoints remain unresolved. General CommonJS remains unresolved; the supported
@@ -985,7 +988,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 719-label rule truth set and 1,631-label IR component/relationship set are curated regression
+The 719-label rule truth set and 1,637-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

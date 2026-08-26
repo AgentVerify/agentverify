@@ -32,3 +32,11 @@ const configuredAzure = createAzure({
   ...spreadIfDefined('apiVersion', process.env.AZURE_API_VERSION),
 });
 const azureEmbedding = configuredAzure.embeddingModel('text-embedding-3-small-azure');
+
+const { openai: commonJSOpenAI } = require('@ai-sdk/openai');
+const { createAzure: commonJSCreateAzure } = require('@ai-sdk/azure');
+const commonJSOpenAIModel = commonJSOpenAI('gpt-5-commonjs');
+const commonJSAzureEmbedding = commonJSCreateAzure({
+  resourceName: 'agentverify-resource',
+  apiKey: process.env.AZURE_API_KEY,
+}).embeddingModel('text-embedding-3-small-azure-commonjs');

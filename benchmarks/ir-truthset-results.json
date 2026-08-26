@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-26T20:45:02.191276+00:00",
+  "generated_at": "2026-08-26T20:54:52.695771+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "b972ed493582b9e79ae82be2f26af1a8cb4453ea75a4ac26699c65823a9b7eed",
+    "labels_sha256": "232a9388b87233e6861979b89ca100db399fcad2897e491b4a40476f5dae3220",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 1631,
-  "passed": 1631,
+  "labels": 1637,
+  "passed": 1637,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -51,9 +51,9 @@
       "recall": 1.0
     },
     "IR-COMPONENT-TAXONOMY": {
-      "tp": 436,
+      "tp": 440,
       "fp": 0,
-      "tn": 181,
+      "tn": 183,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -11231,6 +11231,42 @@
       "passed": true
     },
     {
+      "id": "provider-typescript-ai-sdk-commonjs-openai-call-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-ai-sdk-commonjs-openai-model-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-ai-sdk-commonjs-azure-call-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-ai-sdk-commonjs-azure-model-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
       "id": "provider-typescript-openai-rebound-local-negative",
       "check_id": "IR-COMPONENT-TAXONOMY",
       "expected": false,
@@ -11259,6 +11295,24 @@
     },
     {
       "id": "provider-typescript-xai-rebound-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-ai-sdk-commonjs-rebound-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-ai-sdk-commonjs-rebound-model-local-negative",
       "check_id": "IR-COMPONENT-TAXONOMY",
       "expected": false,
       "observed": false,

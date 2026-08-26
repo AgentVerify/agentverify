@@ -40,10 +40,10 @@ third-party models. Generic Google Cloud/AWS SDKs, near-name packages, and Gemma
 establish provider identity. Taxonomy components intentionally have no source-symbol ID; exact
 positive and negative component labels are scored separately from relationship and finding labels.
 Schema v74 extends call attribution to official `@ai-sdk/mistral`, `@ai-sdk/groq`, and
-`@ai-sdk/cohere` TypeScript exports. It resolves named aliases and destructured dynamic imports,
-provider factory calls, model calls through an immutable factory-created instance, and direct
-language/embedding/reranking calls. Reassignment, local shadowing, and near-name packages withhold
-attribution.
+`@ai-sdk/cohere` TypeScript exports. It resolves named aliases, destructured dynamic imports,
+top-level CommonJS destructuring, provider factory calls, model calls through an immutable
+factory-created instance, and direct language/embedding/reranking calls. Reassignment, local
+shadowing, and near-name packages withhold attribution.
 Schema v75 recognizes exact AgentScope and PydanticAI provider wrapper APIs. AgentScope's public
 `agentscope.model.OllamaChatModel` reexport and PydanticAI's provider, model, and embedding modules
 retain identity through direct imports, module aliases, and function-local imports until rebinding.
@@ -83,8 +83,8 @@ invalidates attribution.
 Schema v104 applies the same default-endpoint boundary to native TypeScript provider constructors.
 Exact ESM default or named imports from `openai`, `@anthropic-ai/sdk`, and `@google/genai` establish
 constructor identity until rebinding. Calls with no arguments or a literal, spread-free config
-without `baseURL`/`baseUrl` are accepted; CommonJS imports, unknown configs, nested custom endpoints,
-and similarly named constructors remain unresolved.
+without `baseURL`/`baseUrl` are accepted; broad CommonJS imports, unknown configs, nested custom
+endpoints, and similarly named constructors remain unresolved.
 Schema v105 adds a separate CommonJS proof for the exact OpenAI and Anthropic default-export shape:
 one direct module-level `const Client = require(exact-package)` declaration and no other declaration, assignment,
 parameter shadow, or custom/unknown endpoint configuration. Exact top-level direct or aliased named

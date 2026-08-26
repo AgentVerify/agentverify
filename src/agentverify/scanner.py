@@ -13172,6 +13172,7 @@ def typescript_ai_sdk_provider_imports(
 ) -> dict[str, TypeScriptProviderImportBinding]:
     """Return unambiguous official AI SDK provider imports, including dynamic imports."""
     candidates: dict[str, list[TypeScriptProviderImportBinding]] = defaultdict(list)
+    code = typescript_code_mask(text)
 
     def add_bindings(imports: str, module: str, *, dynamic: bool) -> None:
         provider_exports = TYPESCRIPT_AI_SDK_PROVIDER_EXPORTS.get(module)
@@ -13208,6 +13209,11 @@ def typescript_ai_sdk_provider_imports(
     for match in TS_NAMED_IMPORT.finditer(text):
         add_bindings(match.group(1), match.group(2), dynamic=False)
     for match in TS_DYNAMIC_NAMED_IMPORT.finditer(text):
+        add_bindings(match.group(1), match.group(2), dynamic=True)
+    for match in TS_COMMONJS_NAMED_IMPORT.finditer(text):
+        prefix = code[: match.start()]
+        if prefix.count("{") != prefix.count("}"):
+            continue
         add_bindings(match.group(1), match.group(2), dynamic=True)
     if root is not None and path is not None:
         local_imports = resolve_typescript_imports(root, path, text)
