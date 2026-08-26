@@ -1712,6 +1712,90 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         and item.attributes.get("constructor_resolution") == "exact-framework-agent-star-import"
         for item in ir.components
     )
+    local_factory_agents = {
+        (
+            item.evidence.line,
+            item.name,
+            item.attributes.get("constructor"),
+            item.attributes.get("constructor_module"),
+            item.attributes.get("imported_symbol"),
+            item.attributes.get("constructor_resolution"),
+        )
+        for item in ir.components
+        if item.kind == "agent" and item.evidence.path == "framework_agent_local_factory_calls.py"
+    }
+    assert local_factory_agents == {
+        (
+            9,
+            "factory-react",
+            "ReActAgent",
+            "agentscope.agent",
+            "ReActAgent",
+            "exact-framework-agent-import",
+        ),
+        (
+            12,
+            "factory-openai",
+            "OpenAIAgent",
+            "agents",
+            "Agent",
+            "exact-framework-agent-import",
+        ),
+        (
+            15,
+            "factory-google-adk",
+            "adk_agents.Agent",
+            "google.adk.agents",
+            "Agent",
+            "exact-framework-agent-module-import",
+        ),
+        (
+            20,
+            "Crew",
+            "Crew",
+            "crewai",
+            "Crew",
+            "exact-framework-agent-import",
+        ),
+    }
+    local_factory_edges = {
+        (edge.target_name, edge.target_id, edge.attributes.get("target_identity"))
+        for edge in ir.relationships
+        if edge.evidence.path == "framework_agent_local_factory_calls.py"
+        and edge.evidence.line == 20
+        and edge.source_kind == "agent"
+        and edge.source_name == "Crew"
+        and edge.target_kind == "agent"
+    }
+    assert local_factory_edges == {
+        (
+            "react",
+            "py:framework_agent_local_factory_calls.py#agent:factory-react@9",
+            "same-block-function-factory-return",
+        ),
+        (
+            "worker",
+            "py:framework_agent_local_factory_calls.py#agent:factory-openai@12",
+            "same-block-function-factory-return",
+        ),
+        (
+            "google",
+            "py:framework_agent_local_factory_calls.py#agent:factory-google-adk@15",
+            "same-block-function-factory-return",
+        ),
+    }
+    assert {
+        (edge.evidence.line, edge.target_id, tuple(sorted(edge.attributes.items())))
+        for edge in ir.relationships
+        if edge.evidence.path == "framework_agent_local_factory_negative.py"
+        and edge.source_kind == "agent"
+        and edge.source_name == "Crew"
+        and edge.target_kind == "agent"
+    } == {
+        (12, None, ()),
+        (21, None, ()),
+        (30, None, ()),
+    }
 
 
 def test_python_dify_shell_layer_requires_default_off_runtime_composition() -> None:

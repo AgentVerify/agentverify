@@ -346,10 +346,11 @@ resolutions, four context-manager resolutions, four contextual imported-callable
 absolute-import binding edges, and one typed-tool-parameter
 resolution. The latter uses an import-proven `ApplyPatchTool` annotation and ten unanimous
 same-module constructor call sites to create an occurrence-qualified parameter component that
-retains every concrete target ID. Eight same-block function-factory resolutions remove the prior two
-`ambiguous-repeated-binding` targets; schema v83 records two new explicit ambiguities for resumed-state
-LocalShellTool references that lack a unique lexical occurrence. Inconsistent, uncalled, rebound,
-shadowed, reassigned, and non-exact typed fixture forms stay unresolved.
+retains every concrete target ID. Same-block function-factory resolutions include exact
+module-qualified framework constructors while withholding conditional, forward, and rebound helper
+flows; schema v83 records two new explicit ambiguities for resumed-state LocalShellTool references
+that lack a unique lexical occurrence. Inconsistent, uncalled, rebound, shadowed, reassigned, and
+non-exact typed fixture forms stay unresolved.
 All seven exact Python Agent→MCP-server edges resolve both endpoints. Marvin contributes five—two
 same-block and three immutable-module bindings—and OpenAI Agents Python contributes the
 context-managed edge. Skyvern contributes one same-block imported-adapter edge. Six edges are outside
@@ -943,7 +944,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 714-label rule truth set and 1,536-label IR component/relationship set are curated regression
+The 714-label rule truth set and 1,545-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

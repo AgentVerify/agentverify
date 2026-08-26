@@ -154,9 +154,9 @@ the existing literal Agent binding. Near bases, incomplete adapters, rebound imp
 forward uses remain disconnected.
 Schema v82 resolves a direct local function factory only when the helper is defined once in the same
 statement block before the call, is undecorated, and has one direct top-level return of an
-import-proven Agent constructor. Each direct assigned result may then point to that observed Agent
-definition. Conditional or indirect returns, forward/rebound helpers, constructor shadowing, and
-result rebinding remain unresolved.
+import-proven Agent constructor, including exact module-qualified framework constructors. Each
+direct assigned result may then point to that observed Agent definition. Conditional or indirect
+returns, forward/rebound helpers, constructor shadowing, and result rebinding remain unresolved.
 
 Schema v83 treats `LocalShellTool` as an OpenAI built-in only when its local name comes from one
 immutable, earlier, top-level `from agents import LocalShellTool` or

@@ -87,10 +87,12 @@
   module-qualified constructor calls when the imported root is unique/unrebound and the constructor
   attribute is not reassigned. A narrow absolute star-import path now proves the same exact
   constructor families only when one supported framework module can export the constructor name and
-  the consumer does not shadow it. Agent components for those proven aliases now include constructor
-  module, imported symbol, and resolution-mode provenance; hidden exports, rebound imports, rebound
-  constructor attributes, ambiguous star imports, and same-named ordinary local constructors remain
-  unresolved.
+  the consumer does not shadow it. Same-block local function factories now preserve those exact
+  framework constructor identities through direct returns, including module-qualified returns such
+  as `adk_agents.Agent(...)`, while conditional, forward, and rebound factories remain unresolved.
+  Agent components for those proven aliases now include constructor module, imported symbol, and
+  resolution-mode provenance; hidden exports, rebound imports, rebound constructor attributes,
+  ambiguous star imports, and same-named ordinary local constructors remain unresolved.
 - Python imported literal tool-list attribution now resolves star imports from selected local
   callable modules when the callable is visible through literal `__all__`/non-underscore exports and
   the Agent use is not locally shadowed.

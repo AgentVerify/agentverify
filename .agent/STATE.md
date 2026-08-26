@@ -81,6 +81,9 @@ catalog workflows.
 - Added a narrow exact absolute star-import path for the same Python framework constructor families,
   with ambiguous-star, shadowed-name, and near-package negatives, bringing the public IR truth set to
   1,536 passing labels.
+- Extended same-block local Agent factory-return resolution to exact module-qualified framework
+  constructors, with AgentScope/OpenAI/Google ADK factory positives and conditional/forward/rebound
+  negatives, bringing the public IR truth set to 1,545 passing labels.
 - Added a concrete signed policy provenance design that keeps digest allowlists separate from author
   authenticity and specifies detached source-digest payloads plus local key trust roots.
 - Added `agentverify policy --export-signing-payload` and a bundled policy-signing-payload schema so

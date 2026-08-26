@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-26T14:24:31.916508+00:00",
+  "generated_at": "2026-08-26T14:42:42.728640+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "2da9e3c39782e8af62e414b145156ee5854d062146d955dc7afd646de5bcf7f7",
+    "labels_sha256": "ab4c5677888c2f6b235a642f9911053cb84610919b4e86e667bb22f98910c463",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 1536,
-  "passed": 1536,
+  "labels": 1545,
+  "passed": 1545,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -45,7 +45,7 @@
       "recall": 1.0
     },
     "IR-COMPONENT-TAXONOMY": {
-      "tp": 385,
+      "tp": 388,
       "fp": 0,
       "tn": 148,
       "fn": 0,
@@ -125,9 +125,9 @@
       "recall": 1.0
     },
     "IR-PY-AGENT-HELPER-RETURN": {
-      "tp": 20,
+      "tp": 23,
       "fp": 0,
-      "tn": 7,
+      "tn": 10,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -5798,6 +5798,33 @@
       "passed": true
     },
     {
+      "id": "taxonomy-local-framework-agent-factory-agentscope",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-framework-agent-factory-openai",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-framework-agent-factory-google-adk-module",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
       "id": "taxonomy-local-framework-agent-module-root-rebound-negative",
       "check_id": "IR-COMPONENT-TAXONOMY",
       "expected": false,
@@ -8376,6 +8403,60 @@
       "check_id": "IR-PY-AGENT-HELPER-RETURN",
       "expected": true,
       "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-framework-agent-local-factory-agentscope-edge",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-framework-agent-local-factory-openai-edge",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-framework-agent-local-factory-google-adk-module-edge",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-framework-agent-local-factory-conditional-negative",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-framework-agent-local-factory-rebound-negative",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-framework-agent-local-factory-forward-negative",
+      "check_id": "IR-PY-AGENT-HELPER-RETURN",
+      "expected": false,
+      "observed": false,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

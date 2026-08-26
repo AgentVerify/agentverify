@@ -1633,7 +1633,7 @@ ambiguity/shadowing/order forms, and all seven pinned Google ADK edges. Twenty-t
 tool-factory/adapter labels cover four local Agent edges, one hosted-MCP capability, one local
 Agent-as-tool delegation, eight conservative local negatives, two AutoGen factory edges, one Google
 ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent edge plus delegation.
-The 449 component-taxonomy labels add 321 exact local/pinned framework, provider, call,
+The 452 component-taxonomy labels add 324 exact local/pinned framework, provider, call,
 and model positives plus 128 near-name, rebound, custom-endpoint, scoped-binding, nonliteral-request,
 and unrelated-service negatives. Nineteen OpenHands labels—four taxonomy and 15 composition—pin
 built-in tools, analyzer and confirmation controls, exact Agent reachability, shared-conversation
@@ -1654,13 +1654,13 @@ Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,536 IR labels pass (1,124 positives and 412 negatives):
-385 component-taxonomy positives/148 negatives, three approval positives/four negatives,
+negatives. All 1,545 IR labels pass (1,130 positives and 415 negatives):
+388 component-taxonomy positives/148 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
 contextual network-import positives, three imported-literal-origin positives/seven negatives,
 four import-shadow positives/one negative, eight block-dominance positives/three negatives, 20
-Agent-helper-return positives/seven negatives, seven imported-Agent-factory proof labels,
+Agent-helper-return positives/ten negatives, seven imported-Agent-factory proof labels,
 23 tool-factory/adapter proof labels,
 19 imported-literal-tool proof labels, 16 literal-tool-binding proof labels,
 16 typed-tool-parameter positives/two negatives, seven

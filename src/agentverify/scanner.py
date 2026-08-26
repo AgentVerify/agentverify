@@ -11899,10 +11899,14 @@ def scan_python(
             len(returns) != 1
             or parent_by_id.get(id(returns[0])) is not function
             or not isinstance(returns[0].value, ast.Call)
-            or not isinstance(returns[0].value.func, ast.Name)
-            or returns[0].value.func.id not in local_agent_factory_constructors
-            or returns[0].value.func.id in python_function_local_bindings(function)
-            or shadowed_in_enclosing_functions(function, returns[0].value.func.id)
+        ):
+            continue
+        returned_call_name = dotted_name(returns[0].value.func)
+        returned_call_root = returned_call_name.split(".", 1)[0]
+        if (
+            returned_call_name not in local_agent_factory_constructors
+            or returned_call_root in python_function_local_bindings(function)
+            or shadowed_in_enclosing_functions(function, returned_call_root)
         ):
             continue
         local_function_agent_returns[id(function)] = agent_call_symbol_id(returns[0].value)
