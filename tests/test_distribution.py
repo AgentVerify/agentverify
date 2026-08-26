@@ -12,6 +12,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 CI_WORKFLOW = ROOT / ".github/workflows/ci.yml"
+GITHUB_CODE_SCANNING = ROOT / "examples/github-code-scanning.yml"
 GITHUB_POLICY_GATE = ROOT / "examples/github-policy-gate.yml"
 SPEC = importlib.util.spec_from_file_location(
     "verify_distribution", ROOT / "scripts/verify_distribution.py"
@@ -142,6 +143,25 @@ def test_github_policy_gate_example_is_read_only_and_fail_closed() -> None:
     assert "[`examples/github-policy-gate.yml`](../examples/github-policy-gate.yml)" in policy_docs
     assert "[`examples/github-policy-gate.yml`](../examples/github-policy-gate.yml)" in code_scanning_docs
     assert "[`examples/github-policy-gate.yml`](examples/github-policy-gate.yml)" in readme
+
+
+def test_github_code_scanning_example_uploads_sarif_without_policy_gate() -> None:
+    workflow = GITHUB_CODE_SCANNING.read_text(encoding="utf-8")
+    code_scanning_docs = (ROOT / "docs/code-scanning.md").read_text(encoding="utf-8")
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+
+    assert "permissions:\n  contents: read" in workflow
+    assert "security-events: write" in workflow
+    assert "agentverify scan . --format sarif --output agentverify.sarif" in workflow
+    assert "github/codeql-action/upload-sarif@v4" in workflow
+    assert "category: agentverify" in workflow
+    assert "--policy" not in workflow
+    assert "--fail-on" not in workflow
+    assert "python -m pip install agentverify==0.1.0" in workflow
+    assert "[`examples/github-code-scanning.yml`](../examples/github-code-scanning.yml)" in (
+        code_scanning_docs
+    )
+    assert "[GitHub code-scanning workflow](examples/github-code-scanning.yml)" in readme
 
 
 def test_signed_policy_example_uses_ephemeral_key(tmp_path: Path) -> None:

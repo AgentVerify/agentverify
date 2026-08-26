@@ -1,16 +1,19 @@
 # GitHub code scanning
 
-AgentVerify emits SARIF 2.1.0 that GitHub can display as code-scanning alerts. The repository's
-[`code-scanning.yml`](../.github/workflows/code-scanning.yml) is a working reference: it scans every
-push to `main`, every pull request, and once a week, then uploads `agentverify.sarif` under the stable
-`agentverify` category. AgentVerify itself scans `src/` so its intentionally vulnerable regression
-fixtures do not become repository alerts; application repositories should normally scan `.`.
+AgentVerify emits SARIF 2.1.0 that GitHub can display as code-scanning alerts. The copyable
+[`examples/github-code-scanning.yml`](../examples/github-code-scanning.yml) workflow scans every push
+to `main`, every pull request, and once a week, then uploads `agentverify.sarif` under the stable
+`agentverify` category. AgentVerify's own
+[`code-scanning.yml`](../.github/workflows/code-scanning.yml) is a repository-specific reference that
+scans `src/` so intentionally vulnerable regression fixtures do not become project alerts;
+application repositories should normally scan `.`.
 
 ## Add it to a repository
 
-Copy the workflow into `.github/workflows/agentverify.yml`. If AgentVerify is not already packaged
-inside the repository, replace the install step with a released, organization-approved version such
-as `python -m pip install agentverify==<version>`.
+Copy [`examples/github-code-scanning.yml`](../examples/github-code-scanning.yml) into
+`.github/workflows/agentverify-code-scanning.yml`. Replace the install step with the released,
+organization-approved AgentVerify version you want to enforce, such as
+`python -m pip install agentverify==<version>`.
 
 The upload job needs these GitHub token permissions:
 

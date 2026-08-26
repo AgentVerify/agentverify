@@ -137,6 +137,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`docs/ai-bom.md`](docs/ai-bom.md) — native machine-readable asset and governance inventory
 - [`docs/policy.md`](docs/policy.md) — schema-backed, non-hiding CI gate policies
 - [`docs/code-scanning.md`](docs/code-scanning.md) — copy-ready GitHub SARIF integration
+- [`examples/github-code-scanning.yml`](examples/github-code-scanning.yml) — copyable SARIF upload workflow
 - [`docs/editor-integration.md`](docs/editor-integration.md) — exportable schemas and rule catalog for editor/CI tooling
 - [`docs/pre-commit.md`](docs/pre-commit.md) — local and tagged-release hook setup
 - [`docs/backlog.md`](docs/backlog.md) — prioritized issue-ready future work
@@ -153,9 +154,10 @@ HIGH AV-EXEC001 [high; finding]
 SARIF output includes stable fingerprints, source locations, severity, remediation, Agent IR paths,
 and resolved/unresolved control context for code-scanning integrations.
 
-The included [GitHub code-scanning workflow](.github/workflows/code-scanning.yml) uploads results on
+The copyable [GitHub code-scanning workflow](examples/github-code-scanning.yml) uploads results on
 pushes, pull requests, and a weekly schedule. It uses a job-scoped token and a stable SARIF category;
-see the integration guide before adding an enforcement threshold.
+see the integration guide before adding an enforcement threshold. This repository also keeps a
+project-specific [self-scan workflow](.github/workflows/code-scanning.yml) that scans only `src/`.
 For policy-only GitHub Actions gates, start from the checked
 [`examples/github-policy-gate.yml`](examples/github-policy-gate.yml) workflow.
 

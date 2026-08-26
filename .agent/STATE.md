@@ -147,6 +147,9 @@ catalog workflows.
   and official AI SDK provider calls; runtime, mutable, forward, shadowed, rebound, and unknown
   template expressions remain unresolved. The public IR truth set still covers 1,552 passing labels,
   now split across 1,135 positives and 417 negatives.
+- Added a checked copyable GitHub SARIF upload workflow in `examples/github-code-scanning.yml`,
+  documented it separately from policy enforcement, and made it a required source-distribution
+  artifact so SARIF adoption guidance survives release packaging.
 
 ## Current findings
 
@@ -166,6 +169,10 @@ catalog workflows.
 - TypeScript model binding now has one bounded composition rule: direct quoted constants and
   module-level backtick templates whose interpolations are all earlier immutable literal constants
   can carry exact model provenance; other expression forms are withheld rather than guessed.
+- Code-scanning adoption artifacts now distinguish two local examples: SARIF upload belongs in the
+  copyable `examples/github-code-scanning.yml` workflow with `security-events: write`, while
+  enforcement-only gates belong in `examples/github-policy-gate.yml` without code-scanning upload
+  permissions.
 
 ## Blockers
 
