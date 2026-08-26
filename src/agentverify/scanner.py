@@ -13192,11 +13192,11 @@ def typescript_immutable_module_literal_string_bindings(
     depths[len(code)] = depth
 
     candidates: dict[str, list[TypeScriptLiteralStringBinding]] = defaultdict(list)
-    pattern = re.compile(
+    direct_pattern = re.compile(
         r"\bconst\s+([A-Za-z_$][\w$]*)\s*(?:\:\s*string\s*)?=\s*"
         r"(?:'([^'\\\r\n]*)'|\"([^\"\\\r\n]*)\")",
     )
-    for match in pattern.finditer(text):
+    for match in direct_pattern.finditer(text):
         if depths[match.start()] != 0 or code[match.start() : match.start(1)].strip() != "const":
             continue
         candidates[match.group(1)].append(
@@ -13205,6 +13205,14 @@ def typescript_immutable_module_literal_string_bindings(
                 match.end(),
             )
         )
+    template_candidates: dict[str, list[tuple[int, str, int]]] = defaultdict(list)
+    template_pattern = re.compile(
+        r"\bconst\s+([A-Za-z_$][\w$]*)\s*(?:\:\s*string\s*)?=\s*`([^`\\\r\n]*)`"
+    )
+    for match in template_pattern.finditer(text):
+        if depths[match.start()] != 0 or code[match.start() : match.start(1)].strip() != "const":
+            continue
+        template_candidates[match.group(1)].append((match.start(), match.group(2), match.end()))
 
     imported_names = set()
     for match in TS_DEFAULT_IMPORT.finditer(text):
@@ -13225,12 +13233,11 @@ def typescript_immutable_module_literal_string_bindings(
                         parts[2] if len(parts) >= 3 and parts[1] == "as" else parts[0]
                     )
 
-    resolved = {}
-    for name, values in candidates.items():
-        if len(values) != 1:
-            continue
+    def is_stable(name: str, values_count: int) -> bool:
+        if values_count != 1:
+            return False
         escaped = re.escape(name)
-        if (
+        return not (
             len(
                 re.findall(
                     rf"\b(?:const|let|var|function|class)\s+{escaped}\b",
@@ -13253,9 +13260,37 @@ def typescript_immutable_module_literal_string_bindings(
             )
             or re.search(rf"\bcatch\s*\(\s*{escaped}\b", code)
             or name in imported_names
-        ):
+        )
+
+    resolved: dict[str, TypeScriptLiteralStringBinding] = {}
+    for name, values in candidates.items():
+        if not is_stable(name, len(values)):
             continue
         resolved[name] = values[0]
+
+    for name, values in template_candidates.items():
+        if not is_stable(name, len(values)):
+            continue
+        template_start, template, template_end = values[0]
+        cursor = 0
+        parts: list[str] = []
+        valid = True
+        for expression in re.finditer(r"\$\{([^{}]+)\}", template):
+            parts.append(template[cursor : expression.start()])
+            identifier = re.fullmatch(r"\s*([A-Za-z_$][\w$]*)\s*", expression.group(1))
+            if identifier is None:
+                valid = False
+                break
+            binding = resolved.get(identifier.group(1))
+            if binding is None or binding.declaration_end > template_start:
+                valid = False
+                break
+            parts.append(binding.value)
+            cursor = expression.end()
+        if not valid:
+            continue
+        parts.append(template[cursor:])
+        resolved[name] = TypeScriptLiteralStringBinding("".join(parts), template_end)
     return resolved
 
 

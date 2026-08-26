@@ -700,9 +700,25 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "immutable-module-literal-binding",
         ),
     }
+    assert {
+        (
+            item.evidence.line,
+            item.name,
+            item.attributes["provider"],
+            item.attributes.get("model_method"),
+            item.attributes.get("model_resolution_basis"),
+        )
+        for item in ir.components
+        if item.kind == "model"
+        and item.evidence.path == "provider_ai_sdk_model_bindings_unresolved.ts"
+        and item.attributes.get("resolution") == "exact-typescript-provider-import"
+    } == {
+        (9, "gpt-composed", "OpenAI", "language", "immutable-module-literal-binding"),
+    }
     assert not any(
         item.kind == "model"
         and item.evidence.path == "provider_ai_sdk_model_bindings_unresolved.ts"
+        and item.evidence.line != 9
         and item.attributes.get("resolution") == "exact-typescript-provider-import"
         for item in ir.components
     )
@@ -748,6 +764,15 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         and item.evidence.path == "provider_native_model_bindings.ts"
         and item.evidence.line == 5
         and item.name == "gpt-5.4"
+        and item.attributes.get("provider") == "OpenAI"
+        and item.attributes.get("model_resolution_basis") == "immutable-module-literal-binding"
+        for item in ir.components
+    )
+    assert any(
+        item.kind == "model"
+        and item.evidence.path == "provider_native_model_bindings_unresolved.ts"
+        and item.evidence.line == 14
+        and item.name == "gpt-composed"
         and item.attributes.get("provider") == "OpenAI"
         and item.attributes.get("model_resolution_basis") == "immutable-module-literal-binding"
         for item in ir.components
@@ -834,6 +859,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
     assert not any(
         item.kind == "model"
         and item.evidence.path == "provider_native_model_bindings_unresolved.ts"
+        and item.evidence.line != 14
         and item.attributes.get("resolution") == "exact-typescript-provider-import"
         for item in ir.components
     )

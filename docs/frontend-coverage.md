@@ -250,7 +250,10 @@ module-level `const NAME[: string] = 'literal'`. The binding must have one decla
 and no parameter, import, catch, or destructuring shadow. The two MCP TypeScript quickstart requests
 therefore gain `claude-sonnet-4-6` model components with an explicit immutable-literal resolution
 basis. TypeScript call counts remain 70, while literal models rise from 26 to 28. Mutable, forward,
-composed, shadowed, rebound, runtime-parameter, and helper-object model expressions remain withheld.
+shadowed, rebound, runtime-parameter, unknown template, and helper-object model expressions remain
+withheld. A local regression now accepts the narrow composed case where a module-level template
+string interpolates only earlier immutable literal bindings, preserving the same
+`immutable-module-literal-binding` basis.
 
 Schema v111 reuses that proof for official AI SDK model arguments. Activepieces' configured OpenAI
 embedding provider now resolves the earlier `OPENAI_3_SMALL_MODEL_ID` constant to
@@ -716,9 +719,10 @@ and `network-ssrf-policy` edge.
   supported form is an immutable direct module-level `const` require of the OpenAI or Anthropic
   package default constructor. Immutable native instances expose exact OpenAI chat/response,
   Anthropic message, and Google content-generation model calls only when the direct request object
-  contains a literal `model`. Exact imported type annotations can carry provider identity through
-  unique non-exported same-file helpers when every direct call site agrees; other require shapes,
-  exported/ambiguous helper graphs, and instance/method flows remain unresolved.
+  contains a literal `model` or a proven immutable module literal/template binding. Exact imported
+  type annotations can carry provider identity through unique non-exported same-file helpers when
+  every direct call site agrees; other require shapes, exported/ambiguous helper graphs, and
+  instance/method flows remain unresolved.
   AgentScope's exact public model reexports and direct PydanticAI provider/model/embedding modules
   are supported. Selected local package reexport chains of these exact provider-wrapper symbols are
   also supported when every hop imports a known symbol/proven alias and does not rebind the exported

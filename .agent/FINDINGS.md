@@ -116,6 +116,11 @@
   function declarations. Exported arrows, mixed constructor/non-provider call sites, escaped
   callbacks, and expression-bodied arrows remain unresolved so the scanner does not infer provider
   identity from type annotations alone.
+- TypeScript model literal binding supports direct immutable module string constants and one bounded
+  template form: a module-level backtick literal may resolve only when every `${...}` expression is a
+  simple identifier bound to an earlier stable immutable literal constant. Runtime expressions,
+  unknown template expressions, forward constants, mutable/rebound constants, imported names, and
+  shadowed constants remain unresolved.
 - Python imported literal tool-list attribution now resolves star imports from selected local
   callable modules when the callable is visible through literal `__all__`/non-underscore exports and
   the Agent use is not locally shadowed.

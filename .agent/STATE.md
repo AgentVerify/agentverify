@@ -142,6 +142,11 @@ catalog workflows.
   public regression results, with a workflow regression test and release-checklist guidance.
 - Bound benchmark result outcomes back to the digested label file's label scope, label ids,
   rule/check ids, and expected values before accepting aggregate metrics.
+- Extended TypeScript model literal binding so module-level template strings composed only from
+  earlier immutable literal constants resolve as exact model ids for native OpenAI/Anthropic calls
+  and official AI SDK provider calls; runtime, mutable, forward, shadowed, rebound, and unknown
+  template expressions remain unresolved. The public IR truth set still covers 1,552 passing labels,
+  now split across 1,135 positives and 417 negatives.
 
 ## Current findings
 
@@ -158,6 +163,9 @@ catalog workflows.
   failures do not prevent diagnostic ingestion.
 - Baseline handling is intentionally conservative: malformed recognized artifacts are usage errors;
   partial selected-path scans do not claim no-longer-reported counts.
+- TypeScript model binding now has one bounded composition rule: direct quoted constants and
+  module-level backtick templates whose interpolations are all earlier immutable literal constants
+  can carry exact model provenance; other expression forms are withheld rather than guessed.
 
 ## Blockers
 
