@@ -44,8 +44,8 @@ catalog workflows.
   allowlist directly from composed policy inputs, with installed-wheel smoke coverage that exports
   and then requires the generated trust root.
 - Added exact local package reexport-chain attribution for AgentScope/PydanticAI provider-wrapper
-  symbols, with direct/transitive provider-model positives, rebound negatives, and regenerated IR
-  truth-set results now covering 1,455 labels.
+  symbols, including direct/transitive/wildcard provider-model positives, rebound and filtered
+  negatives, and regenerated IR truth-set results now covering 1,458 labels.
 - Extended distribution verification so release checks can require a source distribution containing
   README-linked examples, policy docs, benchmark contracts, and public truth sets.
 

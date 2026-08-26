@@ -45,7 +45,8 @@
   used by `agentverify policy`, reducing manual hash-copy errors while preserving the non-signature
   trust model.
 - Python provider-wrapper attribution now follows exact selected local package reexport chains for
-  AgentScope/PydanticAI symbols when every alias hop is unrebound; wildcard, rebound, factory, and
+  AgentScope/PydanticAI symbols when every alias hop is unrebound; star imports from proven local
+  reexport modules respect literal `__all__`/non-underscore visibility, while rebound, factory, and
   generic same-named wrapper forms remain unresolved.
 
 ## Hypotheses

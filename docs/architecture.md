@@ -62,8 +62,9 @@ may contribute a positional literal model ID; provider constructors may not. The
 OpenAI-compatible model/provider modules remain unresolved without endpoint/provider provenance.
 Selected local package reexport chains of exact AgentScope and PydanticAI provider-wrapper symbols
 now preserve attribution when every hop imports a known symbol/proven alias and does not rebind the
-exported alias. Wildcard imports, rebound aliases, wrapper factories, and generic same-named classes
-remain unresolved.
+exported alias. Star imports from proven local reexport modules are supported when the exported name
+is visible through literal `__all__` or the normal non-underscore wildcard rule. Rebound aliases,
+wrapper factories, and generic same-named classes remain unresolved.
 Schema v102 adds Agno's exact public and direct OpenAI, Google, Anthropic, Azure OpenAI, and Groq
 model modules. Literal model identity may come from Agno's `id=` field or first positional argument;
 the proof is invalidated by import rebinding or a custom OpenAI/Groq `base_url` and is not generalized

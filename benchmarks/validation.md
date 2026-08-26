@@ -267,8 +267,9 @@ constructors, and near packages remain unattributed. Sixteen focused component l
 
 Selected local package reexport chains of exact provider-wrapper symbols now preserve attribution
 when each reexport module imports a known AgentScope or PydanticAI symbol/proven alias and does not
-rebind the exported alias. Six local IR labels pin direct and transitive provider/model positives
-plus rebound negatives.
+rebind the exported alias. Star imports from proven local reexport modules are supported for names
+visible through literal `__all__` or non-underscore exports. Nine local IR labels pin direct,
+transitive, and wildcard provider/model positives plus rebound and filtered negatives.
 
 Schema v103 expands official TypeScript AI SDK call attribution to OpenAI, Anthropic, Google, and
 xAI. With the existing Groq call, the selected corpus contains 32 production calls across OpenAI
@@ -1645,8 +1646,8 @@ Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,455 IR labels pass (1,061 positives and 394 negatives):
-325 component-taxonomy positives/130 negatives, three approval positives/four negatives,
+negatives. All 1,458 IR labels pass (1,063 positives and 395 negatives):
+327 component-taxonomy positives/131 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
 contextual network-import positives, three imported-literal-origin positives/seven negatives,

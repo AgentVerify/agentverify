@@ -10,8 +10,9 @@
 
 - Extend release-artifact checks to attach or verify benchmark verification outputs once release
   publishing is explicit.
-- Expand selected real-world framework coverage where current docs record unresolved wildcard
-  imports, wrapper factories, type-driven symbols, or generic same-named provider wrappers.
+- Expand selected real-world framework coverage where current docs record unresolved wrapper
+  factories, type-driven symbols, generic same-named provider wrappers, or non-provider wildcard
+  import forms.
 
 ## P2
 

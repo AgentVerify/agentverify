@@ -6010,6 +6010,7 @@ class PythonVisitor(ast.NodeVisitor):
         imported_agent_factory_target_paths: dict[str, str],
         registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
         provider_reexports: dict[tuple[str, str], tuple[str, str, str]],
+        provider_star_reexports: dict[str, dict[str, tuple[str, str, str]]],
         network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
         path_segment_sanitizer_bindings: dict[str, PythonPathSegmentSanitizerSummary],
         registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
@@ -6118,6 +6119,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.imported_agent_factory_target_paths = imported_agent_factory_target_paths
         self.registry_class_exports = registry_class_exports
         self.provider_reexports = provider_reexports
+        self.provider_star_reexports = provider_star_reexports
         self.network_helper_summaries = network_helper_summaries
         self.registered_tool_functions = registered_tool_functions
         self.registry_function_tools = registry_function_tools
@@ -6613,6 +6615,21 @@ class PythonVisitor(ast.NodeVisitor):
             local_name = alias.asname or alias.name
             self.invalidate_imported_symbol(local_name)
             module = node.module or ""
+            if alias.name == "*":
+                resolution = resolve_python_import(
+                    self.root,
+                    self.path,
+                    node,
+                    alias.name,
+                    self.module_paths,
+                )
+                if resolution:
+                    for exported, reexport in self.provider_star_reexports.get(
+                        resolution.path, {}
+                    ).items():
+                        self.invalidate_imported_symbol(exported)
+                        self.provider_call_bindings[exported] = reexport
+                continue
             if (
                 provider := PYTHON_PROVIDER_SYMBOL_PROVIDERS.get(
                     (module, alias.name), PYTHON_PROVIDER_MODULES.get(module)
@@ -9539,6 +9556,7 @@ def scan_python(
     mcp_server_subclass_exports: dict[tuple[str, str], PythonMCPServerSubclassTarget],
     registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
     provider_reexports: dict[tuple[str, str], tuple[str, str, str]],
+    provider_star_reexports: dict[str, dict[str, tuple[str, str, str]]],
     network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
     path_segment_sanitizer_summaries: dict[tuple[str, str], PythonPathSegmentSanitizerSummary],
     registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
@@ -12057,6 +12075,7 @@ def scan_python(
         imported_agent_factory_target_paths=imported_agent_factory_target_paths,
         registry_class_exports=registry_class_exports,
         provider_reexports=provider_reexports,
+        provider_star_reexports=provider_star_reexports,
         network_helper_summaries=network_helper_summaries,
         path_segment_sanitizer_bindings=path_segment_sanitizer_bindings,
         registered_tool_functions=registered_tool_functions,
@@ -16370,10 +16389,29 @@ def build_python_provider_reexports(
     root: Path,
     paths: list[Path],
     module_paths: dict[str, str],
-) -> dict[tuple[str, str], tuple[str, str, str]]:
+) -> tuple[
+    dict[tuple[str, str], tuple[str, str, str]],
+    dict[str, dict[str, tuple[str, str, str]]],
+]:
     """Index local reexports rooted in exact provider wrapper symbols."""
     exports: dict[tuple[str, str], tuple[str, str, str]] = {}
+    module_all_exports: dict[str, set[str] | None] = {}
     parsed_modules: list[tuple[str, ast.Module, Counter[str], set[str]]] = []
+
+    def star_visible_exports(path: str) -> dict[str, tuple[str, str, str]]:
+        explicit_exports = module_all_exports.get(path)
+        visible: dict[str, tuple[str, str, str]] = {}
+        for (source_path, exported), reexport in exports.items():
+            if source_path != path:
+                continue
+            if explicit_exports is not None:
+                if exported not in explicit_exports:
+                    continue
+            elif exported.startswith("_"):
+                continue
+            visible[exported] = reexport
+        return visible
+
     for path in paths:
         if (
             path.is_symlink()
@@ -16392,6 +16430,17 @@ def build_python_provider_reexports(
         except (OSError, SyntaxError):
             continue
         relative = path.relative_to(root).as_posix()
+        module_all_exports[relative] = None
+        for statement in tree.body:
+            if not isinstance(statement, ast.Assign):
+                continue
+            if len(statement.targets) != 1:
+                continue
+            target = statement.targets[0]
+            if not isinstance(target, ast.Name) or target.id != "__all__":
+                continue
+            values = python_literal_string_list(statement.value)
+            module_all_exports[relative] = set(values) if values is not None else set()
         imported_bindings = {
             alias.asname or alias.name
             for statement in tree.body
@@ -16459,6 +16508,24 @@ def build_python_provider_reexports(
                     continue
                 for alias in statement.names:
                     if alias.name == "*":
+                        resolution = resolve_python_import(
+                            root,
+                            relative,
+                            statement,
+                            alias.name,
+                            module_paths,
+                        )
+                        if not resolution:
+                            continue
+                        for exported, reexport in star_visible_exports(resolution.path).items():
+                            if (
+                                import_binding_counts[exported] != 0
+                                or exported in rebound_names
+                                or (relative, exported) in exports
+                            ):
+                                continue
+                            exports[(relative, exported)] = reexport
+                            changed = True
                         continue
                     exported = alias.asname or alias.name
                     if (
@@ -16477,7 +16544,8 @@ def build_python_provider_reexports(
                     if resolution and (reexport := exports.get((resolution.path, alias.name))):
                         exports[(relative, exported)] = reexport
                         changed = True
-    return exports
+    star_exports = {path: star_visible_exports(path) for path in module_all_exports}
+    return exports, star_exports
 
 
 def build_python_literal_imported_tool_references(
@@ -29495,7 +29563,11 @@ def scan_repository(
         registry_paths,
         module_paths,
     )
-    provider_reexports = build_python_provider_reexports(root, registry_paths, module_paths)
+    provider_reexports, provider_star_reexports = build_python_provider_reexports(
+        root,
+        registry_paths,
+        module_paths,
+    )
     literal_http_exports = build_python_literal_http_exports(root, registry_paths)
     network_helper_summaries = build_python_network_helper_summaries(
         root,
@@ -29588,6 +29660,7 @@ def scan_repository(
                 mcp_server_subclass_exports,
                 registry_class_exports,
                 provider_reexports,
+                provider_star_reexports,
                 network_helper_summaries,
                 path_segment_sanitizer_summaries,
                 registered_tool_functions,
