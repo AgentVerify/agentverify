@@ -124,7 +124,9 @@
   `agentverify contracts` makes the contract available from installed wheels, while the
   source-checkout script remains a wrapper. Tests validate the exported rule catalog and sample
   report against the bundled schemas, and installed-wheel smoke tests require the CLI command to
-  write every expected artifact.
+  write every expected artifact. A checked editor-diagnostics example derived from a real fixture
+  documents how integrations should map evidence lines, severities, fingerprints, result kinds,
+  confidence, and IR paths into LSP-style diagnostics.
 - Alternative: Check in generated copies of the rule catalog and schemas. Rejected because generated
   copies would drift whenever rules or schemas change unless every catalog update also regenerated
   secondary artifacts.

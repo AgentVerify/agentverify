@@ -58,6 +58,10 @@
   --format json` payload, an optional sample report, and a digest manifest. The source script is a
   compatibility wrapper, the guide remains a required source-distribution artifact, and distribution
   smoke tests prove the built wheel exports the bundle.
+- The editor integration guide now includes a checked LSP-style diagnostic mapping example derived
+  from `cases/approval_callback_bypass`. Tests regenerate the example from `agentverify scan
+  --format json`, proving the documented mapping preserves evidence paths, zero-based ranges,
+  severity mapping, fingerprints, result kinds, confidence, and IR paths.
 - Policy composition can now be inspected without scanning. The policy summary intentionally reports
   `signature_verified: false`, preserving the distinction between content integrity and author trust.
 - Policy summary JSON is now schema-backed and included in distribution verification, matching the

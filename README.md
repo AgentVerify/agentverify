@@ -182,7 +182,9 @@ The default CI workflow runs the installed CLI benchmark gate against the checke
 regression results, so benchmark-result drift fails during pull requests before release packaging.
 For editor or custom CI integrations, `agentverify contracts --sample-root examples/safe_agent`
 exports the report schema, rules schema, current rules catalog, and optional sample report into a
-local artifact directory.
+local artifact directory. The editor guide also includes a checked
+[`examples/editor-diagnostics.json`](examples/editor-diagnostics.json) mapping from AgentVerify
+findings to Language Server Protocol-style diagnostics.
 
 The collector reuses commits from `research/repository-data.json` by default and samples up to 220
 source/manifest roots plus at most 20 bounded local source dependencies reached from MCP

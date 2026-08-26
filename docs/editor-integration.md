@@ -35,3 +35,26 @@ Editors should use `rule_id`, `result_kind`, `severity`, `confidence`, and `reme
 rules catalog when rendering diagnostics. Normal JSON reports preserve stable finding fingerprints,
 source evidence, Agent IR paths, suppression status, baseline summaries, policy summaries, and the
 deterministic `risk_summary` counts that CI dashboards can display without walking every finding.
+
+## Mapping findings to editor diagnostics
+
+AgentVerify findings map cleanly to Language Server Protocol-style diagnostics:
+
+- Use `finding.evidence.path` as the file URI/path.
+- Convert the 1-based `finding.evidence.line` to a 0-based diagnostic range.
+- Map `high` to LSP severity `1` (error), `medium` to `2` (warning), and lower severities to `3`
+  (information).
+- Use `finding.rule_id` as the diagnostic code and `agentverify` as the source.
+- Preserve `fingerprint`, `result_kind`, `confidence`, and `ir_path` in diagnostic `data` so editor
+  extensions and review bots can correlate reruns without losing governance context.
+
+[`examples/editor-diagnostics.json`](../examples/editor-diagnostics.json) is a checked example
+derived from:
+
+```console
+agentverify scan cases/approval_callback_bypass --format json
+```
+
+The example intentionally includes both `review` and `finding` result kinds. Editors can choose to
+render `review` diagnostics with a different icon or grouping while still preserving AgentVerify's
+policy semantics.

@@ -1,0 +1,79 @@
+{
+  "diagnostics": [
+    {
+      "code": "AV-APPROVAL001",
+      "data": {
+        "confidence": "medium",
+        "fingerprint": "20307b0f1b5d860a0ad8",
+        "ir_path": [],
+        "result_kind": "review"
+      },
+      "message": "Configuration or code exposes an approval-bypass path Remediation: Disable auto-approval for privileged tools or scope it to an explicit low-risk allowlist.",
+      "range": {
+        "end": {
+          "character": 22,
+          "line": 10
+        },
+        "start": {
+          "character": 0,
+          "line": 10
+        }
+      },
+      "severity": 1,
+      "source": "agentverify",
+      "uri": "approval.py"
+    },
+    {
+      "code": "AV-APPROVAL001",
+      "data": {
+        "confidence": "medium",
+        "fingerprint": "5a9a2d9476d188172939",
+        "ir_path": [],
+        "result_kind": "review"
+      },
+      "message": "Configuration or code exposes an approval-bypass path Remediation: Disable auto-approval for privileged tools or scope it to an explicit low-risk allowlist.",
+      "range": {
+        "end": {
+          "character": 23,
+          "line": 20
+        },
+        "start": {
+          "character": 0,
+          "line": 20
+        }
+      },
+      "severity": 1,
+      "source": "agentverify",
+      "uri": "approval.py"
+    },
+    {
+      "code": "AV-APPROVAL003",
+      "data": {
+        "confidence": "high",
+        "fingerprint": "84dcafbc505e4199b55d",
+        "ir_path": [
+          "agent:operator",
+          "tool:ShellTool@33",
+          "capability:shell-execution"
+        ],
+        "result_kind": "finding"
+      },
+      "message": "An environment variable can auto-approve a reachable local shell tool Remediation: Remove the environment-driven approval shortcut and require an authenticated, per-action decision before executing the tool.",
+      "range": {
+        "end": {
+          "character": 10,
+          "line": 32
+        },
+        "start": {
+          "character": 0,
+          "line": 32
+        }
+      },
+      "severity": 1,
+      "source": "agentverify",
+      "uri": "approval.py"
+    }
+  ],
+  "schema_version": 1,
+  "source_report": "agentverify scan cases/approval_callback_bypass --format json"
+}

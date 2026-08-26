@@ -22,8 +22,8 @@
 - Explore CycloneDX/SPDX adapters only when a mapping preserves links back to the native AgentVerify
   evidence graph.
 - Improve editor and CI integration examples beyond the installed `agentverify contracts` bundle:
-  add concrete diagnostic mappings, SARIF/editor examples, or sample extension fixtures when they
-  can be validated locally.
+  add SARIF/editor examples, policy-aware diagnostic grouping, or sample extension fixtures when
+  they can be validated locally.
 - Improve installed CLI examples for benchmark verification, schema exports, and policy gates in
   CI/editor workflows.
 

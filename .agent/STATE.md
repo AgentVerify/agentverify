@@ -122,6 +122,9 @@ catalog workflows.
 - Promoted editor/CI contract export into the installed CLI as `agentverify contracts`, with the
   source-checkout script reduced to a wrapper and installed-wheel distribution smoke coverage that
   exports the schema/catalog/sample-report bundle.
+- Added a checked Language Server Protocol-style editor diagnostics example derived from the
+  `cases/approval_callback_bypass` report, including tests that regenerate the mapping from a real
+  scan and source-distribution coverage for the linked example artifact.
 - Added explicit all-labels-passed benchmark verification output and a `--require-all-passed` gate,
   so public regression release checks can fail closed on honest failing-label result files while
   still allowing failed sealed-holdout metrics to be validated when intentionally published.
@@ -141,6 +144,9 @@ catalog workflows.
 - Editor/CI contract export is now an installed-package behavior. Integrations can ask any
   AgentVerify installation for a digest-manifested report schema, rules schema, current rules
   catalog, and optional sample report without relying on source-tree scripts.
+- Editor diagnostic integrations should preserve `result_kind`, `confidence`, `fingerprint`, and
+  `ir_path` in diagnostic metadata; otherwise they lose the distinction between review signals,
+  policy-gated findings, and rerun correlation.
 - Baseline handling is intentionally conservative: malformed recognized artifacts are usage errors;
   partial selected-path scans do not claim no-longer-reported counts.
 
@@ -152,5 +158,5 @@ catalog workflows.
 ## Next action
 
 Continue toward the highest-value local P1/P2 work: additional real-world framework coverage
-without broad name matching, editor adoption polish, or release-artifact checks that attach
-benchmark verifier logs once release publishing is explicit.
+without broad name matching, concrete CI/editor integration fixtures, or release-artifact checks
+that attach benchmark verifier logs once release publishing is explicit.

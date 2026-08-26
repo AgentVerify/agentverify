@@ -37,6 +37,7 @@ REQUIRED_SOURCE_FILES = frozenset(
         "docs/policy.md",
         "docs/policy-signatures.md",
         "examples/ci-policy.json",
+        "examples/editor-diagnostics.json",
         "examples/org-policy.json",
         "examples/policy-trust-root.json",
         "examples/pre-commit-config.yaml",
