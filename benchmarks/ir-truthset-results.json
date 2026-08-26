@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-26T19:45:19.743973+00:00",
+  "generated_at": "2026-08-26T19:56:28.883534+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "b1b559d851732a348d53d80ced0a5a88336e4f845554473729d5ee4fa18973e1",
+    "labels_sha256": "e75c74faf2e2704e02305d42547a2d2e25f882ed356a9e13de36000a6f93b0e5",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 1605,
-  "passed": 1605,
+  "labels": 1613,
+  "passed": 1613,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -51,9 +51,9 @@
       "recall": 1.0
     },
     "IR-COMPONENT-TAXONOMY": {
-      "tp": 420,
+      "tp": 426,
       "fp": 0,
-      "tn": 171,
+      "tn": 173,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -12744,6 +12744,78 @@
     },
     {
       "id": "provider-typescript-ai-sdk-model-binding-object-map-dynamic-member-write-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-ai-sdk-local-reexport-openai-call-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-ai-sdk-local-reexport-openai-model-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-ai-sdk-local-reexport-google-call-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-ai-sdk-local-reexport-google-model-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-ai-sdk-local-reexport-transitive-call-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-ai-sdk-local-reexport-transitive-model-local",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-ai-sdk-local-reexport-ambiguous-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-ai-sdk-local-reexport-shadowed-local-negative",
       "check_id": "IR-COMPONENT-TAXONOMY",
       "expected": false,
       "observed": false,

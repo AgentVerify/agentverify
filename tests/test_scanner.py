@@ -332,6 +332,30 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "ai-sdk-provider-model",
             "createOpenAI",
         ),
+        (
+            "provider_ai_sdk_reexport_calls.ts",
+            4,
+            "OpenAI",
+            "projectOpenAI",
+            "ai-sdk-provider-model",
+            None,
+        ),
+        (
+            "provider_ai_sdk_reexport_calls.ts",
+            5,
+            "Google",
+            "projectGoogleFactory.textEmbeddingModel",
+            "ai-sdk-provider-model",
+            "projectGoogleFactory",
+        ),
+        (
+            "provider_ai_sdk_reexport_calls.ts",
+            6,
+            "OpenAI",
+            "transitiveOpenAI",
+            "ai-sdk-provider-model",
+            None,
+        ),
         *(
             (
                 "provider_ai_sdk_model_bindings_unresolved.ts",
@@ -895,6 +919,29 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         item.kind == "model"
         and item.evidence.path == "provider_ai_sdk_model_bindings_unresolved.ts"
         and item.evidence.line != 9
+        and item.attributes.get("resolution") == "exact-typescript-provider-import"
+        for item in ir.components
+    )
+    assert {
+        (
+            item.evidence.line,
+            item.name,
+            item.attributes["provider"],
+            item.attributes.get("model_method"),
+            item.attributes.get("module"),
+        )
+        for item in ir.components
+        if item.kind == "model"
+        and item.evidence.path == "provider_ai_sdk_reexport_calls.ts"
+        and item.attributes.get("resolution") == "exact-typescript-provider-import"
+    } == {
+        (4, "gpt-5-reexport", "OpenAI", "language", "@ai-sdk/openai"),
+        (5, "gemini-embedding-reexport", "Google", "embedding", "@ai-sdk/google"),
+        (6, "gpt-5-transitive-reexport", "OpenAI", "language", "@ai-sdk/openai"),
+    }
+    assert not any(
+        item.kind in {"provider", "model"}
+        and item.evidence.path == "provider_ai_sdk_reexport_calls_unresolved.ts"
         and item.attributes.get("resolution") == "exact-typescript-provider-import"
         for item in ir.components
     )

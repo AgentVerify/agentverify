@@ -284,6 +284,12 @@ observed inline embedding methods are included. Literal `baseURL`, unknown or sp
 generic compatible packages, and rebindings are withheld; local and pinned negatives cover
 Inception, Azure-hosted Anthropic, and mock OpenAI endpoints.
 
+Local TypeScript AI SDK reexport regressions now preserve exact provider and model attribution
+through named local barrels when the export chain reaches one supported official `@ai-sdk/*`
+instance or factory symbol. Six positive labels cover direct OpenAI, Google factory, and transitive
+OpenAI reexports; two negative labels keep ambiguous reexports and function-parameter-shadowed local
+imports unresolved.
+
 Schema v104 adds native TypeScript provider SDK constructors through exact ESM imports. The selected
 corpus contains 17 production calls across five repositories: ten OpenAI, four Anthropic, and three
 Google. Combined with the 32 official AI SDK calls, TypeScript attribution reaches 49 production
@@ -297,7 +303,7 @@ maps for native SDK request objects and official AI SDK first model arguments. N
 cover `MODEL_IDS.chat`, `MODEL_IDS["chat"]`, and `MODEL_IDS["chat-model"]`-style native language,
 AI SDK language, and AI SDK embedding calls; eight negative labels keep mutable object properties,
 nonliteral object values, dynamic bracket keys, and dynamic bracket member writes unresolved. This
-raises the public IR truth set to 1,605 passing labels without broadening provider identity
+raises the public IR truth set to 1,613 passing labels without broadening provider identity
 inference.
 
 Schema v105 adds the immutable direct CommonJS default-export form for the OpenAI and Anthropic

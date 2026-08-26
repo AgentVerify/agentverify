@@ -12397,6 +12397,9 @@ def scan_python(
 
 TS_IMPORT = re.compile(r"(?:from\s+|require\s*\(\s*)['\"]([^'\"]+)['\"]")
 TS_NAMED_IMPORT = re.compile(r"\bimport\s*\{([^}]+)\}\s*from\s*['\"]([^'\"]+)['\"]", re.DOTALL)
+TS_NAMED_EXPORT_FROM = re.compile(
+    r"\bexport\s*\{([^}]+)\}\s*from\s*['\"]([^'\"]+)['\"]", re.DOTALL
+)
 TS_DEFAULT_IMPORT = re.compile(
     r"\bimport\s+(?!type\b)([A-Za-z_$][\w$]*)\s*"
     r"(?:,\s*\{([^}]*)\})?\s*from\s*['\"]([^'\"]+)['\"]",
@@ -13025,8 +13028,107 @@ def typescript_import_binding_is_shadowed(text: str, name: str) -> bool:
     )
 
 
+def typescript_named_specifier_parts(specifier: str) -> tuple[str, str] | None:
+    """Return source and local/exported names from a named import/export specifier."""
+    parts = specifier.strip().removeprefix("type ").split()
+    if not parts:
+        return None
+    original = parts[0]
+    local = parts[2] if len(parts) >= 3 and parts[1] == "as" else original
+    if not (
+        re.fullmatch(r"[A-Za-z_$][\w$]*", original)
+        and re.fullmatch(r"[A-Za-z_$][\w$]*", local)
+    ):
+        return None
+    return original, local
+
+
+def typescript_resolve_local_module(root: Path, path: Path, specifier: str) -> Path | None:
+    """Resolve one relative TypeScript/JavaScript module specifier inside the repository."""
+    if not specifier.startswith(("./", "../")):
+        return None
+    suffixes = (".ts", ".tsx", ".js", ".jsx")
+    unresolved = path.parent / specifier
+    candidates = [unresolved]
+    stem = unresolved.with_suffix("") if unresolved.suffix in suffixes else unresolved
+    candidates.extend(stem.with_suffix(suffix) for suffix in suffixes)
+    candidates.extend(stem / f"index{suffix}" for suffix in suffixes)
+    existing = []
+    for candidate in candidates:
+        try:
+            canonical = candidate.resolve()
+            canonical.relative_to(root)
+        except (OSError, ValueError):
+            continue
+        if canonical.is_file() and not canonical.is_symlink() and canonical not in existing:
+            existing.append(canonical)
+    return existing[0] if len(existing) == 1 else None
+
+
+def typescript_ai_sdk_provider_reexport_bindings(
+    root: Path,
+    path: Path,
+    text: str,
+    exported_name: str,
+    seen: frozenset[Path] = frozenset(),
+) -> list[TypeScriptProviderImportBinding]:
+    """Resolve exact local named reexports rooted in official AI SDK provider symbols."""
+    try:
+        canonical_path = path.resolve()
+    except OSError:
+        return []
+    if canonical_path in seen:
+        return []
+    seen = seen | {canonical_path}
+    candidates: list[TypeScriptProviderImportBinding] = []
+    for match in TS_NAMED_EXPORT_FROM.finditer(text):
+        module = match.group(2)
+        for raw_specifier in match.group(1).split(","):
+            parts = typescript_named_specifier_parts(raw_specifier)
+            if parts is None:
+                continue
+            original, exported = parts
+            if exported != exported_name:
+                continue
+            provider_exports = TYPESCRIPT_AI_SDK_PROVIDER_EXPORTS.get(module)
+            if provider_exports is not None:
+                supported = {
+                    *provider_exports["instances"],
+                    *provider_exports["factories"],
+                }
+                if original in supported:
+                    candidates.append(
+                        TypeScriptProviderImportBinding(
+                            exported_name,
+                            original,
+                            module,
+                            str(provider_exports["provider"]),
+                        )
+                    )
+                continue
+            target = typescript_resolve_local_module(root, path, module)
+            if target is None:
+                continue
+            try:
+                target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+            except OSError:
+                continue
+            candidates.extend(
+                typescript_ai_sdk_provider_reexport_bindings(
+                    root,
+                    target,
+                    target_text,
+                    original,
+                    seen,
+                )
+            )
+    return candidates
+
+
 def typescript_ai_sdk_provider_imports(
     text: str,
+    root: Path | None = None,
+    path: Path | None = None,
 ) -> dict[str, TypeScriptProviderImportBinding]:
     """Return unambiguous official AI SDK provider imports, including dynamic imports."""
     candidates: dict[str, list[TypeScriptProviderImportBinding]] = defaultdict(list)
@@ -13048,9 +13150,10 @@ def typescript_ai_sdk_provider_imports(
                 original = parts[0]
                 local = parts[1] if len(parts) == 2 else original
             else:
-                parts = imported.split()
-                original = parts[0]
-                local = parts[2] if len(parts) >= 3 and parts[1] == "as" else original
+                parts = typescript_named_specifier_parts(imported)
+                if parts is None:
+                    continue
+                original, local = parts
             if original not in supported or re.fullmatch(r"[A-Za-z_$][\w$]*", local) is None:
                 continue
             candidates[local].append(
@@ -13066,6 +13169,28 @@ def typescript_ai_sdk_provider_imports(
         add_bindings(match.group(1), match.group(2), dynamic=False)
     for match in TS_DYNAMIC_NAMED_IMPORT.finditer(text):
         add_bindings(match.group(1), match.group(2), dynamic=True)
+    if root is not None and path is not None:
+        local_imports = resolve_typescript_imports(root, path, text)
+        for local, (target, original) in local_imports.items():
+            target_path = root / target
+            try:
+                target_text = target_path.read_text(encoding="utf-8-sig", errors="ignore")
+            except OSError:
+                continue
+            for binding in typescript_ai_sdk_provider_reexport_bindings(
+                root,
+                target_path,
+                target_text,
+                original,
+            ):
+                candidates[local].append(
+                    TypeScriptProviderImportBinding(
+                        local,
+                        binding.imported_symbol,
+                        binding.module,
+                        binding.provider,
+                    )
+                )
     return {
         local: values[0]
         for local, values in candidates.items()
@@ -13499,10 +13624,14 @@ def typescript_provider_config_uses_default_endpoint(
     return True
 
 
-def typescript_ai_sdk_provider_calls(text: str) -> list[TypeScriptProviderCall]:
+def typescript_ai_sdk_provider_calls(
+    root: Path | None,
+    path: Path | None,
+    text: str,
+) -> list[TypeScriptProviderCall]:
     """Resolve exact official AI SDK factories and model calls through stable bindings."""
     code = typescript_code_mask(text)
-    imports = typescript_ai_sdk_provider_imports(text)
+    imports = typescript_ai_sdk_provider_imports(text, root, path)
     literal_model_bindings = typescript_immutable_module_literal_string_bindings(text)
     observations: list[TypeScriptProviderCall] = []
     configured_instances: list[tuple[str, TypeScriptProviderImportBinding, int]] = []
@@ -15949,34 +16078,17 @@ def typescript_graph(
 def resolve_typescript_imports(root: Path, path: Path, text: str) -> dict[str, tuple[str, str]]:
     """Resolve unambiguous named imports that stay inside the repository."""
     resolved: dict[str, tuple[str, str]] = {}
-    suffixes = (".ts", ".tsx", ".js", ".jsx")
     for match in TS_NAMED_IMPORT.finditer(text):
         specifier = match.group(2)
-        if not specifier.startswith(("./", "../")):
+        target_path = typescript_resolve_local_module(root, path, specifier)
+        if target_path is None:
             continue
-        unresolved = path.parent / specifier
-        candidates = [unresolved]
-        stem = unresolved.with_suffix("") if unresolved.suffix in suffixes else unresolved
-        candidates.extend(stem.with_suffix(suffix) for suffix in suffixes)
-        candidates.extend(stem / f"index{suffix}" for suffix in suffixes)
-        existing = []
-        for candidate in candidates:
-            try:
-                canonical = candidate.resolve()
-                canonical.relative_to(root)
-            except (OSError, ValueError):
-                continue
-            if canonical.is_file() and not canonical.is_symlink() and canonical not in existing:
-                existing.append(canonical)
-        if len(existing) != 1:
-            continue
-        target = existing[0].relative_to(root).as_posix()
+        target = target_path.relative_to(root).as_posix()
         for imported in match.group(1).split(","):
-            parts = imported.strip().removeprefix("type ").split()
-            if not parts:
+            parts = typescript_named_specifier_parts(imported)
+            if parts is None:
                 continue
-            original = parts[0]
-            local = parts[2] if len(parts) >= 3 and parts[1] == "as" else original
+            original, local = parts
             resolved[local] = (target, original)
     return resolved
 
@@ -16198,7 +16310,7 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
     }
     provider_calls = sorted(
         (
-            *typescript_ai_sdk_provider_calls(text),
+            *typescript_ai_sdk_provider_calls(root, path, text),
             *typescript_provider_sdk_calls(text),
         ),
         key=lambda item: item.offset,

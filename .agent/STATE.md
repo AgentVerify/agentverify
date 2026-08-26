@@ -242,7 +242,11 @@ catalog workflows.
   results then covered 1,600 passing labels.
 - Extended exact literal bracket reads to quoted object-map keys such as `MODEL_IDS["chat-model"]`
   and hardened object-map stability so any bracket member write invalidates the map; regenerated
-  public IR truth-set results now cover 1,605 passing labels.
+  public IR truth-set results then covered 1,605 passing labels.
+- Added exact TypeScript AI SDK local named-reexport proof for supported `@ai-sdk/*` provider
+  instance/factory symbols, including a bounded transitive local export hop, while ambiguous
+  reexports and local shadowing remain unresolved; regenerated public IR truth-set results now cover
+  1,613 passing labels.
 
 ## Current findings
 

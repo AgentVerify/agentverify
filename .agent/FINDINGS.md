@@ -202,7 +202,13 @@
   literal string properties, exact dot-member or literal bracket reads, and no object or member
   reassignment; mutable object properties, nonliteral object values, dynamic bracket keys, dynamic
   bracket member writes, and unknown template values remain unresolved. The public IR truth set now
-  covers 1,605 passing labels.
+  then covered 1,605 passing labels.
+- TypeScript AI SDK provider attribution now follows exact local named reexports only when the
+  consumer import resolves to a local module whose named export chain reaches exactly one supported
+  official `@ai-sdk/*` instance or factory symbol. Direct local and bounded transitive reexports
+  preserve the official module/imported-symbol provenance; ambiguous reexports, parameter shadowing,
+  star barrels, and module-object access remain unresolved. The public IR truth set now covers 1,613
+  passing labels.
 
 ## Hypotheses
 
