@@ -103,6 +103,8 @@ with `--require-trusted` as a fail-closed CI gate. Use
 digest allowlist from the exact composed policy inputs, or
 `agentverify policy PATH --export-signing-payload --output policy-signing-payload.json` to emit the
 deterministic source-digest manifest that external signing tools should sign.
+See [`docs/policy-signatures.md`](docs/policy-signatures.md) for a local ephemeral-key dry run and
+production trust-root guidance.
 
 Example finding:
 

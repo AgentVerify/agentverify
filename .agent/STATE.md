@@ -67,6 +67,9 @@ catalog workflows.
 - Implemented fail-closed detached Ed25519 policy signature verification for `agentverify policy`
   with `--signature` plus a local key trust root, including signed-manifest digest coverage,
   machine-readable failure reasons, schema validation, and CLI gating via `--require-trusted`.
+- Added a signed-policy dry-run walkthrough that generates an ephemeral key only in a temporary
+  directory, demonstrates detached signature verification, and warns production users to rely on
+  their own key-management workflow.
 - Extended distribution verification so release checks can require a source distribution containing
   README-linked examples, policy docs, benchmark contracts, and public truth sets.
 - Extended source-distribution verification to require the checked public benchmark result outputs
@@ -88,6 +91,5 @@ catalog workflows.
 ## Next action
 
 Continue toward the highest-value local P1/P2 work: additional real-world framework coverage
-without broad name matching, release-artifact checks that attach benchmark verifier logs once release
-packaging is explicit, or signed-policy usability examples that do not require committing private
-keys.
+without broad name matching or release-artifact checks that attach benchmark verifier logs once
+release packaging is explicit.

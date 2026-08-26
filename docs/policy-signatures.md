@@ -171,6 +171,82 @@ agentverify schema policy-signature --output agentverify-policy-signature.schema
 agentverify schema policy-key-trust-root --output agentverify-policy-key-trust-root.schema.json
 ```
 
+## Local dry run with an ephemeral key
+
+For a local smoke test, you can generate an ephemeral Ed25519 key, sign the exported payload bytes,
+and immediately verify the signature. This demonstrates the file shapes without creating a durable
+organizational trust root. Do not commit the generated private key from a real signing workflow.
+
+```console
+tmpdir="$(mktemp -d)"
+agentverify policy examples/repository-policy.json \
+  --export-signing-payload \
+  --output "$tmpdir/policy-signing-payload.json"
+python - "$tmpdir/policy-signing-payload.json" \
+  "$tmpdir/policy-signature.json" \
+  "$tmpdir/policy-key-trust-root.json" <<'PY'
+import base64
+import json
+import sys
+
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
+payload_path, signature_path, trust_root_path = sys.argv[1:]
+payload_bytes = open(payload_path, "rb").read()
+payload = json.loads(payload_bytes)
+private_key = Ed25519PrivateKey.generate()
+signature = private_key.sign(payload_bytes)
+public_key = private_key.public_key().public_bytes(
+    encoding=serialization.Encoding.Raw,
+    format=serialization.PublicFormat.Raw,
+)
+json.dump(
+    {
+        "schema_version": 1,
+        "signature_format": "agentverify-policy-signature",
+        "signed_at": "2026-08-26T00:00:00Z",
+        "payload": payload,
+        "signatures": [
+            {
+                "key_id": "local-smoke-test",
+                "algorithm": "ed25519",
+                "signature": base64.b64encode(signature).decode("ascii"),
+            }
+        ],
+    },
+    open(signature_path, "w", encoding="utf-8"),
+    indent=2,
+)
+json.dump(
+    {
+        "schema_version": 1,
+        "trust_model": "local-key-signature",
+        "keys": [
+            {
+                "key_id": "local-smoke-test",
+                "algorithm": "ed25519",
+                "public_key": base64.b64encode(public_key).decode("ascii"),
+                "trusted_for": ["policy-signing"],
+                "not_before": "2026-01-01T00:00:00Z",
+                "not_after": "2027-01-01T00:00:00Z",
+            }
+        ],
+    },
+    open(trust_root_path, "w", encoding="utf-8"),
+    indent=2,
+)
+PY
+agentverify policy examples/repository-policy.json \
+  --signature "$tmpdir/policy-signature.json" \
+  --trust-root "$tmpdir/policy-key-trust-root.json" \
+  --require-trusted \
+  --format json
+```
+
+For production, replace the ephemeral key generation with your organization's signing system and
+commit only the public-key trust root plus detached signature bundle that your CI policy expects.
+
 ## Migration from digest allowlists
 
 Existing `local-content-digest-allowlist` files can remain valid. A team can migrate by:

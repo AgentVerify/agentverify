@@ -17,9 +17,8 @@
 
 ## P2
 
-- Add signed-policy usability examples that show how to produce a detached signature with an
-  external key-management workflow without committing private keys or overclaiming legal
-  compliance.
+- Add a signed-policy CI fixture or generated example only if it can avoid committing durable
+  private-key material and avoid implying the checked-in key is an organizational trust anchor.
 - Keep example policy trust roots synchronized with composed example policy source digests whenever
   example policies change; prefer regenerating them with `agentverify policy --export-trust-root`.
 - Explore CycloneDX/SPDX adapters only when a mapping preserves links back to the native AgentVerify
