@@ -18,6 +18,8 @@ catalog workflows.
 - Added and validated a bundled rules-catalog schema so `agentverify rules --format json` has a
   first-class machine contract.
 - Added a reusable distribution verifier that checks built wheels for every runtime schema file.
+- Added a sealed holdout benchmark design to separate public regression metrics from unbiased
+  evaluation claims.
 
 ## Current findings
 
@@ -34,5 +36,5 @@ catalog workflows.
 
 ## Next action
 
-Continue toward the highest-value local P1/P2 work: holdout benchmark design, signed policy
+Continue toward the highest-value local P1/P2 work: holdout manifest/evaluator support, signed policy
 provenance design, installed-artifact CLI smoke tests, or additional real-world framework coverage.

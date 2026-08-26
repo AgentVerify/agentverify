@@ -526,7 +526,9 @@ The curated regression set has reached 714 pinned positive/negative locations, w
 scored IR component/relationship labels. Schema-v123 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
-changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.
+changes are complete. The checked-in holdout design now defines the sampling strata, label protocol,
+leakage controls, and reporting metrics for that process. Keep discovery sampling metrics separate
+from detection-quality metrics.
 
 ## P2 — CI adoption workflow
 

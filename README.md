@@ -102,6 +102,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`benchmarks/truthset.json`](benchmarks/truthset.json) — exact hand-labeled positives and negatives
 - [`benchmarks/truthset-results.json`](benchmarks/truthset-results.json) — per-rule seed precision and recall
 - [`benchmarks/ir-truthset.json`](benchmarks/ir-truthset.json) — 1,449 separately scored component and relationship labels
+- [`benchmarks/holdout-design.md`](benchmarks/holdout-design.md) — sealed benchmark plan for unbiased evaluation
 
 SARIF output includes stable fingerprints, source locations, severity, remediation, Agent IR paths,
 and resolved/unresolved control context for code-scanning integrations.

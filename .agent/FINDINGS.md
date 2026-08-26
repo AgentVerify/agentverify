@@ -9,6 +9,8 @@
   package artifact expectation.
 - Policy evaluation occurs after baseline filtering and preserves matched findings in all report
   formats.
+- Published precision/recall numbers still describe public seed/regression labels only; the holdout
+  design records how to produce an unbiased sealed evaluation later.
 
 ## Hypotheses
 

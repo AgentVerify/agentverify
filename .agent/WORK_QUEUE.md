@@ -8,7 +8,8 @@
 
 ## P1
 
-- Design the sealed holdout benchmark process separately from the public regression corpus.
+- Add holdout manifest/evaluator support that can consume a sealed label path without checking the
+  labels into the public regression corpus.
 - Extend package/distribution checks beyond runtime schemas to examples and CLI entrypoint smoke
   tests in installed artifacts.
 - Expand selected real-world framework coverage where current docs record unresolved package
