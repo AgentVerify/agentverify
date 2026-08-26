@@ -7,7 +7,8 @@ commit and remain available in a direct AgentVerify report.
 ## Use this checkout locally
 
 Until AgentVerify has an approved public remote and release tag, install it as a local hook in the
-repository being scanned:
+repository being scanned. A copyable example is available at
+[`examples/pre-commit-config.yaml`](../examples/pre-commit-config.yaml):
 
 ```yaml
 repos:
@@ -29,7 +30,9 @@ pre-commit run agentverify --all-files
 ```
 
 `language: system` deliberately uses the reviewed version already installed in that environment.
-Pin that package version in the project's development dependencies.
+Pin that package version in the project's development dependencies. Keep `pass_filenames: false`
+unless you also run a full repository scan elsewhere; AgentVerify needs repository context for
+imports, reachability, policy, and control evidence.
 
 ## Use a future tagged release
 

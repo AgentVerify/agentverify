@@ -156,7 +156,8 @@ pushes, pull requests, and a weekly schedule. It uses a job-scoped token and a s
 see the integration guide before adding an enforcement threshold.
 
 The bundled [pre-commit hook manifest](.pre-commit-hooks.yaml) supports repository-wide local scans;
-the setup guide avoids assuming a public URL or release tag that does not yet exist.
+the setup guide and [copyable local config](examples/pre-commit-config.yaml) avoid assuming a public
+URL or release tag that does not yet exist.
 
 Reproduce the corpus analysis:
 

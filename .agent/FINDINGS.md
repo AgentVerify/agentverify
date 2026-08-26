@@ -48,6 +48,10 @@
 - The checked-in GitHub CI workflow now exercises `agentverify benchmark verify
   --require-evaluation-kind public-regression --require-all-passed`, so public regression artifact
   drift is caught during normal pull-request checks rather than only during manual release review.
+- Pre-commit adoption artifacts are now part of the release contract: `.pre-commit-hooks.yaml`,
+  `docs/pre-commit.md`, and `examples/pre-commit-config.yaml` are required source-distribution
+  files, while tests assert that the bundled release hook uses `language: python` and the local
+  copyable config uses `language: system` with repository-wide `pass_filenames: false` scanning.
 - Policy composition can now be inspected without scanning. The policy summary intentionally reports
   `signature_verified: false`, preserving the distinction between content integrity and author trust.
 - Policy summary JSON is now schema-backed and included in distribution verification, matching the

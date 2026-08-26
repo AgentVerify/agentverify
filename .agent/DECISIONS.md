@@ -98,3 +98,17 @@
   durable sample keys invite misuse, while prose-only examples can drift from the CLI behavior.
 - Revisit when: real release automation has an explicit organization trust-root and detached
   signature publishing process.
+
+## Pre-commit integration is a release artifact
+
+- Decision: Treat the pre-commit manifest, setup guide, and copyable local config as source-release
+  contract files rather than README-only convenience text.
+- Evidence: The README advertises the bundled `.pre-commit-hooks.yaml` manifest and local setup path.
+  If a source distribution omits either the manifest or guide, downstream users cannot reproduce the
+  advertised hook workflow. The local config intentionally uses `language: system` for an installed,
+  reviewed AgentVerify build before a public release URL exists, while the bundled hook uses
+  `language: python` for future tagged releases.
+- Alternative: Leave the manifest and guide untested. Rejected because pre-commit installation is an
+  adoption path and can silently drift from the CLI threshold or repository-wide scan requirement.
+- Revisit when: a public remote/tag exists and the docs switch from local-hook-first to
+  tagged-release-first instructions.

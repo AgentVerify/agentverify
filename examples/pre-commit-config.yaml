@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: agentverify
+        name: AgentVerify agent security scan
+        entry: agentverify scan . --fail-on high --fail-on-kind finding
+        language: system
+        pass_filenames: false
+        always_run: true

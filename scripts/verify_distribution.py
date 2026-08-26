@@ -22,6 +22,7 @@ REQUIRED_BENCHMARK_RESULT_FILES = frozenset(
 )
 REQUIRED_SOURCE_FILES = frozenset(
     {
+        ".pre-commit-hooks.yaml",
         "README.md",
         "pyproject.toml",
         "benchmarks/benchmark-results-v1.schema.json",
@@ -31,11 +32,13 @@ REQUIRED_SOURCE_FILES = frozenset(
         "benchmarks/release-checklist.md",
         "benchmarks/truthset.json",
         "docs/code-scanning.md",
+        "docs/pre-commit.md",
         "docs/policy.md",
         "docs/policy-signatures.md",
         "examples/ci-policy.json",
         "examples/org-policy.json",
         "examples/policy-trust-root.json",
+        "examples/pre-commit-config.yaml",
         "examples/repository-policy.json",
         "examples/safe_agent/agent.py",
         "scripts/verify_signed_policy_example.py",
