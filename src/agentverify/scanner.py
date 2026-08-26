@@ -12438,6 +12438,9 @@ TS_AGENT_TOOL_ASSIGNMENT = re.compile(
     r"([A-Za-z_$][\w$]*)\.asTool\s*\("
 )
 TS_AGENT_ASSIGNMENT = re.compile(r"\b(?:const|let)\s+(\w+)\s*=\s*new\s+Agent\s*\(")
+TS_SANDBOX_AGENT_ASSIGNMENT_TEMPLATE = (
+    r"\b(?:const|let)\s+(\w+)\s*=\s*new\s+{constructor}\s*\("
+)
 TS_LITERAL_APPROVAL = re.compile(r"\bneedsApproval\s*:\s*true\b")
 TS_AUTO_APPROVAL_ENABLED = re.compile(
     r"\b(?:autoApprove|auto_approve|skipConfirmation|skip_confirmation|"
@@ -12481,6 +12484,7 @@ TS_OPENAI_BUILTIN_TOOL_CAPABILITIES = {
     "hostedMcpTool": ("mcp-access",),
     "imageGenerationTool": ("external-action",),
     "programmaticToolCallingTool": ("dynamic-tool-orchestration",),
+    "shell": ("shell-execution",),
     "shellTool": ("shell-execution",),
     "toolSearchTool": ("dynamic-tool-discovery",),
     "webSearchTool": ("external-action",),
@@ -12867,11 +12871,13 @@ def typescript_literal_object_items(body: str, body_offset: int = 0) -> list[tup
     return typescript_call_arguments(body[opening + 1 : end - 1], body_offset + opening + 1)
 
 
-def typescript_agent_tool_items(body: str, body_offset: int) -> list[tuple[str, int]]:
-    """Extract only the top-level entries of an Agent's literal tools array."""
+def typescript_agent_tool_items(
+    body: str, body_offset: int, property_name: str = "tools"
+) -> list[tuple[str, int]]:
+    """Extract only the top-level entries of an Agent's literal tools/capabilities array."""
     for property_text, property_offset in typescript_object_items(body, body_offset):
         code = typescript_code_mask(property_text)
-        match = re.match(r"\s*tools\s*:\s*\[", code)
+        match = re.match(rf"\s*{re.escape(property_name)}\s*:\s*\[", code)
         if not match:
             continue
         opening = match.end() - 1
@@ -15593,7 +15599,9 @@ def add_typescript_tool_observation(
     else:
         approval_policy = "unresolved"
     execution_environment = "unresolved"
-    if constructor == "shellTool":
+    if constructor == "shell":
+        execution_environment = "sdk-sandbox"
+    elif constructor == "shellTool":
         environment = typescript_object_property_expression(call_body, "environment")
         environment_type = (
             typescript_object_string_property(environment, "type") if environment else None
@@ -15619,6 +15627,13 @@ def add_typescript_tool_observation(
         "scope": source_scope(relative),
         **(
             {
+                "sandbox_policy": "openai-agents-sdk-sandbox",
+            }
+            if constructor == "shell"
+            else {}
+        ),
+        **(
+            {
                 "approval_bypass_environment_names": approval_bypass_environment_names,
                 "approval_bypass_resolution": "same-file-transitive-callback",
             }
@@ -15632,8 +15647,10 @@ def add_typescript_tool_observation(
         "approval_policy": approval_policy,
         "scope": source_scope(relative),
     }
-    if constructor == "shellTool":
+    if constructor in {"shell", "shellTool"}:
         capability_attributes["execution_environment"] = execution_environment
+    if constructor == "shell":
+        capability_attributes["sandbox_policy"] = "openai-agents-sdk-sandbox"
     if constructor == "applyPatchTool":
         capability_attributes["write_access"] = True
     for capability in TS_OPENAI_BUILTIN_TOOL_CAPABILITIES.get(constructor, ()):
@@ -15793,6 +15810,7 @@ def typescript_graph(
     openai_imports = {
         **typescript_named_import_bindings(text, "@openai/agents"),
         **typescript_named_import_bindings(text, "@openai/agents-extensions"),
+        **typescript_named_import_bindings(text, "@openai/agents/sandbox"),
     }
     cline_imports = typescript_named_import_bindings(text, "@cline/sdk")
     mastra_imports = typescript_named_import_bindings(text, "@mastra/core/tools")
@@ -15962,14 +15980,28 @@ def typescript_graph(
             attributes={"protocol": "MCP", "registry": match.group(1)},
         )
 
-    agent_matches = list(TS_AGENT_ASSIGNMENT.finditer(code))
-    agent_assignment_counts = Counter(match.group(1) for match in agent_matches)
+    sandbox_imports = typescript_named_import_bindings(text, "@openai/agents/sandbox")
+    agent_matches: list[tuple[re.Match[str], str, str | None]] = [
+        (match, "Agent", None) for match in TS_AGENT_ASSIGNMENT.finditer(code)
+    ]
+    for local_name, imported_name in sandbox_imports.items():
+        if imported_name != "SandboxAgent" or typescript_import_binding_is_shadowed(
+            text, local_name
+        ):
+            continue
+        sandbox_pattern = re.compile(
+            TS_SANDBOX_AGENT_ASSIGNMENT_TEMPLATE.format(constructor=re.escape(local_name))
+        )
+        agent_matches.extend(
+            (match, "SandboxAgent", local_name) for match in sandbox_pattern.finditer(code)
+        )
+    agent_assignment_counts = Counter(match.group(1) for match, _, _ in agent_matches)
     agent_tool_bindings = {
         match.group(1): match.group(2) for match in TS_AGENT_TOOL_ASSIGNMENT.finditer(code)
     }
     local_agents: dict[str, tuple[str, str]] = {}
-    agent_bodies: list[tuple[re.Match[str], int, str, str, str]] = []
-    for match in agent_matches:
+    agent_bodies: list[tuple[re.Match[str], int, str, str, str, str]] = []
+    for match, constructor, constructor_local in agent_matches:
         variable_name = match.group(1)
         start_line = line_at(text, match.start())
         opening = code.find("(", match.start(), match.end())
@@ -15983,16 +16015,33 @@ def typescript_graph(
         )
         agent_id = source_symbol("ts", relative, "agent", agent_identity)
         ev = Evidence(relative, start_line, excerpt(lines, start_line))
-        ir.add_component(Component("agent", agent_name, ev, {"constructor": "Agent"}, agent_id))
+        attributes = {"constructor": constructor}
+        if constructor == "SandboxAgent":
+            attributes.update(
+                {
+                    "module": "@openai/agents/sandbox",
+                    "imported_symbol": "SandboxAgent",
+                    "resolution": "exact-openai-sandbox-import",
+                    "execution_environment": "sdk-sandbox",
+                }
+            )
+            if constructor_local and constructor_local != constructor:
+                attributes["local_constructor"] = constructor_local
+        ir.add_component(Component("agent", agent_name, ev, attributes, agent_id))
         if agent_assignment_counts[variable_name] == 1:
             local_agents[variable_name] = (agent_name, agent_id)
-        agent_bodies.append((match, opening + 1, body, agent_name, agent_id))
+        agent_bodies.append((match, opening + 1, body, agent_name, agent_id, constructor))
 
-    for match, body_offset, body, agent_name, agent_id in agent_bodies:
+    for match, body_offset, body, agent_name, agent_id, agent_constructor in agent_bodies:
         ev = Evidence(
             relative, line_at(text, match.start()), excerpt(lines, line_at(text, match.start()))
         )
-        for item, item_offset in typescript_agent_tool_items(body, body_offset):
+        item_properties = ["capabilities"] if agent_constructor == "SandboxAgent" else ["tools"]
+        for item, item_offset in [
+            entry
+            for property_name in item_properties
+            for entry in typescript_agent_tool_items(body, body_offset, property_name)
+        ]:
             spread = item.startswith("...")
             expression = item[3:].lstrip() if spread else item
             if spread:

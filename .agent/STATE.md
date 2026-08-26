@@ -264,7 +264,12 @@ catalog workflows.
   unresolved. Regenerated public IR truth-set results then covered 1,631 passing labels.
 - Added exact TypeScript AI SDK CommonJS named-destructuring proof for top-level supported
   `@ai-sdk/*` provider symbols, including OpenAI and Azure configured embedding positives plus a
-  rebound-alias negative. Regenerated public IR truth-set results now cover 1,637 passing labels.
+  rebound-alias negative. Regenerated public IR truth-set results then covered 1,637 passing labels.
+- Added exact TypeScript OpenAI Agents sandbox inventory for `@openai/agents/sandbox`
+  `SandboxAgent` direct assignments and literal `capabilities: [shell()]` entries. SDK sandbox shell
+  execution is recorded separately from host-local shell execution, with local near/rebound negatives
+  and two real OpenAI Agents JS example positives. Regenerated public IR truth-set results now cover
+  1,659 passing labels.
 
 ## Current findings
 

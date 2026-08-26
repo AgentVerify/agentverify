@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-26T20:54:52.695771+00:00",
+  "generated_at": "2026-08-26T21:12:02.571068+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "232a9388b87233e6861979b89ca100db399fcad2897e491b4a40476f5dae3220",
+    "labels_sha256": "6662140dcca871612bd66628bc14f039eebf080183c84b0572e8081ea738859a",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 1637,
-  "passed": 1637,
+  "labels": 1659,
+  "passed": 1659,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -574,6 +574,14 @@
       "tp": 6,
       "fp": 0,
       "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-OPENAI-SANDBOX": {
+      "tp": 20,
+      "fp": 0,
+      "tn": 2,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -15357,6 +15365,204 @@
       "check_id": "IR-COMPONENT-TAXONOMY",
       "expected": false,
       "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-agent-local",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-shell-tool-local",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-shell-capability-local",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-agent-shell-edge-local",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-shell-capability-edge-local",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-agent-aliased-local",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-shell-tool-aliased-local",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-shell-capability-aliased-local",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-agent-shell-edge-aliased-local",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-shell-capability-edge-aliased-local",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-near-agent-local-negative",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-rebound-agent-local-negative",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-agent-basic-real",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-shell-tool-basic-real",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-shell-capability-basic-real",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-agent-shell-edge-basic-real",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-shell-capability-edge-basic-real",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-agent-docker-real",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-shell-tool-docker-real",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-shell-capability-docker-real",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-agent-shell-edge-docker-real",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-shell-capability-edge-docker-real",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

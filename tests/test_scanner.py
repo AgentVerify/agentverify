@@ -3769,6 +3769,74 @@ const agent = new Agent({ name: "operator", tools: [shellTool(options)] });
     assert not ir.findings
 
 
+def test_typescript_openai_sandbox_agent_capabilities_require_exact_import() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_openai_sandbox_agent")
+
+    agents = {
+        (component.evidence.path, component.evidence.line, component.name): component
+        for component in ir.components
+        if component.kind == "agent"
+    }
+    assert set(agents) == {
+        ("positive.ts", 9, "Local Sandbox Assistant"),
+        ("positive.ts", 15, "Aliased Sandbox Assistant"),
+    }
+    assert all(
+        component.attributes["constructor"] == "SandboxAgent"
+        and component.attributes["module"] == "@openai/agents/sandbox"
+        and component.attributes["resolution"] == "exact-openai-sandbox-import"
+        and component.attributes["execution_environment"] == "sdk-sandbox"
+        for component in agents.values()
+    )
+    assert agents[("positive.ts", 15, "Aliased Sandbox Assistant")].attributes[
+        "local_constructor"
+    ] == "AliasedSandboxAgent"
+
+    tools = {
+        (component.evidence.path, component.evidence.line, component.name): component
+        for component in ir.components
+        if component.kind == "tool"
+    }
+    assert set(tools) == {
+        ("positive.ts", 12, "shell@12"),
+        ("positive.ts", 18, "shell@18"),
+    }
+    assert all(
+        component.attributes["constructor"] == "shell"
+        and component.attributes["execution_environment"] == "sdk-sandbox"
+        and component.attributes["sandbox_policy"] == "openai-agents-sdk-sandbox"
+        and component.attributes["approval_policy"] == "not-applicable"
+        for component in tools.values()
+    )
+
+    assert {
+        (edge.source_name, edge.relation, edge.target_kind, edge.target_name, edge.target_id)
+        for edge in ir.relationships
+        if edge.source_kind == "agent"
+    } == {
+        (
+            "Local Sandbox Assistant",
+            "uses",
+            "tool",
+            "shell@12",
+            "ts:positive.ts#tool:shell@12",
+        ),
+        (
+            "Aliased Sandbox Assistant",
+            "uses",
+            "tool",
+            "shell@18",
+            "ts:positive.ts#tool:shell@18",
+        ),
+    }
+    assert not any(
+        component.evidence.path == "negative.ts"
+        and component.kind in {"agent", "tool", "capability"}
+        for component in ir.components
+    )
+    assert not ir.findings
+
+
 def test_cline_inline_tool_links_only_dynamic_bun_shell_execution() -> None:
     ir = scan_repository(ROOT / "cases/typescript_bun_shell")
 

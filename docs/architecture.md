@@ -167,6 +167,10 @@ remain disconnected.
 OpenAI's `MCPServerStdio(params={...})` shape retains identity even when its executable or arguments
 are dynamic, while package provenance still requires a literal `npx` or `uvx` selection. The
 OpenAI `SandboxAgent` constructor is recognized only through an exact `agents.sandbox` import.
+The TypeScript frontend separately recognizes exact `@openai/agents/sandbox` `SandboxAgent`
+imports and the sandbox `shell()` capability list item. Those shell capabilities are marked with
+`execution_environment: sdk-sandbox` and `sandbox_policy: openai-agents-sdk-sandbox`; near-package
+constructors, rebound constructor aliases, and helper-returned sandbox agents remain unresolved.
 Schema v81 extends that identity proof to a project-local adapter class only when it directly
 subclasses an exact imported `MCPServer`, has one immutable module export, and directly defines both
 `list_tools` and `call_tool`. A unique local import and an earlier same-scope instance can then feed

@@ -230,7 +230,13 @@
 - Exact TypeScript AI SDK CommonJS named destructuring now feeds the same provider-import proof as
   static and dynamic imports when the `require()` is top-level and the destructured symbol is a
   supported official provider export. Rebound destructured aliases remain unresolved. The public IR
-  truth set now covers 1,637 passing labels.
+  truth set then covered 1,637 passing labels.
+- TypeScript OpenAI Agents sandbox inventory now recognizes exact `@openai/agents/sandbox`
+  `SandboxAgent` direct assignments and literal `capabilities: [shell()]` entries. The shell
+  capability is recorded as `execution_environment: sdk-sandbox`, preserving capability visibility
+  without treating it as host-local shell execution. Near imports, rebound constructors, and
+  helper-returned TypeScript sandbox agents remain unresolved. The public IR truth set now covers
+  1,659 passing labels.
 
 ## Hypotheses
 
