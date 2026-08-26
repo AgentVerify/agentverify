@@ -15,6 +15,7 @@ from .report import (
     render_rules,
     render_sarif,
     render_schema,
+    render_summary,
     render_text,
 )
 from .rules import RULE_CATALOG
@@ -29,7 +30,9 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
     scan = subparsers.add_parser("scan", help="scan a repository")
     scan.add_argument("path", type=Path)
-    scan.add_argument("--format", choices=("text", "json", "bom", "sarif"), default="text")
+    scan.add_argument(
+        "--format", choices=("text", "summary", "json", "bom", "sarif"), default="text"
+    )
     scan.add_argument(
         "-o",
         "--output",
@@ -137,12 +140,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "schema":
         return emit_output(render_schema(args.name), args.output) or 0
     if args.command == "rules":
-        return (
-            emit_output(
-                render_rules(args.rule_id, output_format=args.format), args.output
-            )
-            or 0
-        )
+        return emit_output(render_rules(args.rule_id, output_format=args.format), args.output) or 0
     if not args.path.is_dir():
         print(f"agentverify: not a directory: {args.path}", file=sys.stderr)
         return 2
@@ -198,6 +196,7 @@ def main(argv: list[str] | None = None) -> int:
         "bom": render_bom,
         "json": render_json,
         "sarif": render_sarif,
+        "summary": render_summary,
         "text": render_text,
     }[args.format](ir)
     if (output_exit := emit_output(report, args.output)) is not None:

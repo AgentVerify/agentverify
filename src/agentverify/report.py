@@ -27,18 +27,19 @@ def render_schema(name: str) -> str:
 
 def render_rules(rule_id: str | None = None, *, output_format: str = "text") -> str:
     """Render stable metadata for enabled reporting rules."""
-    definitions = (
-        (RULE_CATALOG[rule_id],) if rule_id is not None else RULE_DEFINITIONS
-    )
+    definitions = (RULE_CATALOG[rule_id],) if rule_id is not None else RULE_DEFINITIONS
     if output_format == "json":
-        return json.dumps(
-            {
-                "schema_version": 1,
-                "rules": [definition.to_dict() for definition in definitions],
-            },
-            indent=2,
-            sort_keys=True,
-        ) + "\n"
+        return (
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "rules": [definition.to_dict() for definition in definitions],
+                },
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n"
+        )
     lines: list[str] = []
     for definition in definitions:
         lines.extend(
@@ -373,6 +374,93 @@ def render_sarif(ir: RepositoryIR) -> str:
         ],
     }
     return json.dumps(payload, indent=2, sort_keys=True) + "\n"
+
+
+def render_summary(ir: RepositoryIR) -> str:
+    """Render a compact human-readable summary for CI logs and quick triage."""
+    by_rule = Counter(finding.rule_id for finding in ir.findings)
+    by_kind = Counter(finding.result_kind for finding in ir.findings)
+    by_severity = Counter(finding.severity for finding in ir.findings)
+    lines = [
+        "AgentVerify Summary",
+        f"Root: {ir.root}",
+        f"Scan scope: {ir.scan_scope}",
+        f"Files scanned: {ir.files_scanned}",
+        f"Configuration files scanned: {ir.config_files_scanned}",
+        f"Components: {len(ir.components)}",
+        f"Relationships: {len(ir.relationships)}",
+        f"Findings: {len(ir.findings)}",
+        f"Suppressed findings: {ir.suppressed_findings}",
+    ]
+    if ir.path_filters:
+        lines.append(f"Path filters: {len(ir.path_filters)}")
+    if ir.baseline_summary:
+        no_longer_reported = ir.baseline_summary["no_longer_reported"]
+        lines.append(
+            "Baseline: "
+            f"{ir.baseline_summary['new']} new, "
+            f"{ir.baseline_summary['unchanged']} unchanged, "
+            + (
+                f"{no_longer_reported} no longer reported"
+                if no_longer_reported is not None
+                else "no-longer-reported count unavailable for partial scan"
+            )
+        )
+    if ir.policy_summary:
+        status = "passed" if ir.policy_summary["passed"] else "failed"
+        lines.append(
+            f"Policy: {ir.policy_summary['name']} [{status}; {len(ir.policy_summary['gates'])} gates]"
+        )
+        composed = len(ir.policy_summary["sources"]) > 1
+        if composed:
+            lines.append(f"Policy sources: {len(ir.policy_summary['sources'])}")
+        for gate in ir.policy_summary["gates"]:
+            gate_status = "passed" if gate["passed"] else "failed"
+            provenance = f" ({gate['policy_source']})" if composed else ""
+            lines.append(
+                f"  {gate['id']}{provenance}: {gate['matched_count']} matched / "
+                f"{gate['max_count']} allowed [{gate_status}]"
+            )
+    if ir.findings:
+        lines.append("")
+        lines.append("Finding counts:")
+        for severity, count in sorted(
+            by_severity.items(),
+            key=lambda item: (
+                -{"high": 3, "medium": 2, "low": 1, "info": 0}.get(item[0], -1),
+                item[0],
+            ),
+        ):
+            lines.append(f"  severity {severity}: {count}")
+        for kind, count in sorted(by_kind.items()):
+            lines.append(f"  kind {kind}: {count}")
+        for rule_id, count in sorted(by_rule.items()):
+            definition = RULE_CATALOG[rule_id]
+            lines.append(
+                f"  {rule_id}: {count} [{definition.result_kind}; {definition.severity}; "
+                f"confidence {definition.confidence}]"
+            )
+        lines.append("")
+        lines.append("Top findings:")
+        for finding in sorted(
+            ir.findings,
+            key=lambda item: (
+                -{"high": 3, "medium": 2, "low": 1, "info": 0}.get(item.severity, -1),
+                item.rule_id,
+                item.evidence.path,
+                item.evidence.line,
+                item.fingerprint,
+            ),
+        )[:10]:
+            lines.append(
+                f"  {finding.rule_id} {finding.severity}/{finding.result_kind} "
+                f"at {finding.evidence.path}:{finding.evidence.line}"
+            )
+    else:
+        lines.extend(["", "No findings"])
+    if ir.errors:
+        lines.append(f"Parse warnings: {len(ir.errors)}")
+    return "\n".join(lines) + "\n"
 
 
 def render_text(ir: RepositoryIR) -> str:

@@ -537,6 +537,9 @@ first-class `--output`/`-o` path instead of shell redirection; write failures ar
 errors while policy and severity gate exits remain intact. Inline suppressions now retain optional
 expiry status, and CI can require an active ISO date. A distributable pre-commit manifest and local
 setup are included; publishing its remote form waits for an approved repository URL and release tag.
+The scan command also provides a compact `--format summary` mode for CI logs and quick local triage:
+it keeps threshold and policy exit semantics while showing scan totals, baseline/policy status,
+severity/result-kind/rule counts, and top evidence locations without printing the full Agent IR graph.
 Schema-backed JSON policies now provide per-rule/result-kind/severity count budgets with decision
 evidence in every report. Local organization policy composition resolves relative files depth first,
 rejects cycles and duplicate gate IDs, and preserves file and gate SHA-256 provenance without

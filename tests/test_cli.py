@@ -44,9 +44,7 @@ def test_cli_writes_report_to_output_file(tmp_path: Path, capsys) -> None:
     assert payload["files_scanned"] == 1
 
 
-def test_cli_output_preserves_threshold_exit_and_short_alias(
-    tmp_path: Path, capsys
-) -> None:
+def test_cli_output_preserves_threshold_exit_and_short_alias(tmp_path: Path, capsys) -> None:
     output = tmp_path / "agentverify.sarif"
 
     assert (
@@ -66,9 +64,68 @@ def test_cli_output_preserves_threshold_exit_and_short_alias(
     )
     assert capsys.readouterr().out == ""
     payload = __import__("json").loads(output.read_text(encoding="utf-8"))
-    assert [result["ruleId"] for result in payload["runs"][0]["results"]] == [
-        "AV-EXEC001"
-    ]
+    assert [result["ruleId"] for result in payload["runs"][0]["results"]] == ["AV-EXEC001"]
+
+
+def test_cli_summary_format_is_compact_and_preserves_threshold_exit(capsys) -> None:
+    assert (
+        cli.main(
+            [
+                "scan",
+                str(ROOT / "cases/python_dangerous"),
+                "--format",
+                "summary",
+                "--fail-on",
+                "high",
+            ]
+        )
+        == 1
+    )
+
+    output = capsys.readouterr().out
+    assert output.startswith("AgentVerify Summary\n")
+    assert "Findings: 1\n" in output
+    assert "Components:" in output
+    assert "Relationships:" in output
+    assert "severity high: 1" in output
+    assert "kind finding: 1" in output
+    assert "AV-EXEC001: 1 [finding; high; confidence high]" in output
+    assert "Top findings:\n  AV-EXEC001 high/finding at agent.py:13" in output
+    assert "AI Components:" not in output
+    assert "Risk Findings:" not in output
+
+
+def test_cli_summary_includes_baseline_and_policy_status(tmp_path: Path, capsys) -> None:
+    target = ROOT / "cases/python_dangerous"
+    baseline = tmp_path / "baseline.json"
+    baseline.write_text(render_json(scan_repository(target)), encoding="utf-8")
+    policy = tmp_path / "strict.json"
+    policy.write_text(
+        '{"schema_version":1,"gates":[{"id":"new-high","max_count":0}]}',
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "scan",
+                str(target),
+                "--baseline",
+                str(baseline),
+                "--policy",
+                str(policy),
+                "--format",
+                "summary",
+            ]
+        )
+        == 0
+    )
+
+    output = capsys.readouterr().out
+    assert "Baseline: 0 new, 1 unchanged, 0 no longer reported" in output
+    assert "Policy: unnamed [passed; 1 gates]" in output
+    assert "  new-high: 0 matched / 0 allowed [passed]" in output
+    assert "No findings" in output
 
 
 def test_cli_output_preserves_policy_exit(tmp_path: Path, capsys) -> None:
@@ -195,9 +252,7 @@ def test_cli_lists_enabled_reporting_rules_as_json(capsys) -> None:
         rule["rule_id"] for rule in payload["rules"]
     )
     assert len(payload["rules"]) == 24
-    assert next(
-        rule for rule in payload["rules"] if rule["rule_id"] == "AV-EXEC001"
-    ) == {
+    assert next(rule for rule in payload["rules"] if rule["rule_id"] == "AV-EXEC001") == {
         "confidence": "high",
         "remediation": (
             "Pass a fixed argv list with shell disabled, or strictly validate and "
@@ -255,9 +310,7 @@ def test_cli_prints_bundled_policy_schema(capsys) -> None:
         )
     )
     assert schema["title"] == "AgentVerify Policy 1"
-    assert schema["$defs"]["gate"]["properties"]["rules"]["items"]["enum"] == list(
-        RULE_CATALOG
-    )
+    assert schema["$defs"]["gate"]["properties"]["rules"]["items"]["enum"] == list(RULE_CATALOG)
 
 
 def test_cli_writes_bundled_schema_to_output_file(tmp_path: Path, capsys) -> None:
@@ -393,12 +446,7 @@ def test_composed_policy_retains_each_gate_source_and_digest(tmp_path: Path, cap
     assert summary["gates"][0]["matched_count"] == 1
     assert summary["gates"][0]["passed"] is False
 
-    assert (
-        cli.main(
-            ["scan", str(ROOT / "examples/safe_agent"), "--policy", str(repository)]
-        )
-        == 0
-    )
+    assert cli.main(["scan", str(ROOT / "examples/safe_agent"), "--policy", str(repository)]) == 0
     text = capsys.readouterr().out
     assert "Policy sources: 2" in text
     assert "org-high (org.json): 0 matched / 0 allowed [passed]" in text
@@ -459,7 +507,9 @@ def test_impossible_policy_rule_filter_is_rejected_before_scanning(
 
     monkeypatch.setattr(cli, "scan_repository", unexpected_scan)
 
-    assert cli.main(["scan", str(ROOT / "cases/python_auto_approval"), "--policy", str(policy)]) == 2
+    assert (
+        cli.main(["scan", str(ROOT / "cases/python_auto_approval"), "--policy", str(policy)]) == 2
+    )
     captured = capsys.readouterr()
     assert captured.out == ""
     assert "AV-APPROVAL001 emits review" in captured.err

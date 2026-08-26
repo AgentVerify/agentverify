@@ -16,6 +16,7 @@ negative labels, plus 1,449 separately scored Agent IR component and relationshi
 ```console
 pip install agentverify
 agentverify scan ./project
+agentverify scan ./project --format summary
 agentverify scan ./project --format json
 agentverify scan ./project --format bom
 agentverify scan ./project --format sarif
@@ -53,6 +54,8 @@ longer reported by a full scan. Partial selected-path scans leave that last coun
 Reports and schemas are written to standard output by default. Use `--output PATH` (or `-o PATH`)
 to write them directly to a file. Output write failures return exit code 2; successful scan writes
 still preserve policy and `--fail-on` exit decisions.
+Use `--format summary` for compact CI logs: it reports scan totals, baseline/policy status, counts by
+severity/result kind/rule, and the top evidence locations without printing the full component graph.
 `agentverify rules` lists every enabled reporting rule with its result kind, default severity,
 confidence, summary, and baseline remediation. Pass a rule ID for a focused explanation or
 `--format json` for policy tooling and editor integrations. Policy rule filters reject unknown or
