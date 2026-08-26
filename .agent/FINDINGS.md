@@ -179,8 +179,12 @@
 - Native TypeScript provider lazy getters can safely carry provider and exact model attribution when
   the getter is private, caches through a single `??=` write to a private backing field, constructs a
   default-endpoint SDK client, and the SDK call uses an earlier immutable module-level literal model.
-  The local regression mirrors the MCP TypeScript quickstart shape, and the public IR truth set now
+  The local regression mirrors the MCP TypeScript quickstart shape, and the public IR truth set then
   covers 1,586 passing labels.
+- Native TypeScript provider class fields can prove provider-call provenance without proving the
+  exact model id. Method parameters such as `modelName` remain unresolved model evidence unless they
+  can be tied to a direct literal or earlier immutable module-level literal binding; the public IR
+  truth set now covers 1,587 passing labels.
 
 ## Hypotheses
 
