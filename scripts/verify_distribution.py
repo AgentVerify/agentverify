@@ -354,6 +354,12 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         "benchmark_verification_labels": [
             item.get("labels") for item in benchmark_verification.get("results", [])
         ],
+        "benchmark_verification_failed": [
+            item.get("failed") for item in benchmark_verification.get("results", [])
+        ],
+        "benchmark_verification_failure_summary": [
+            item.get("failure_summary") for item in benchmark_verification.get("results", [])
+        ],
         "holdout_validation_passed": holdout_validation.get("passed"),
         "holdout_validation_files": [
             (item.get("kind"), item.get("schema"), item.get("passed"))
@@ -452,6 +458,18 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         failed.append("benchmark_verification_passed")
     if checks["benchmark_verification_labels"] != [719, 1588]:
         failed.append("benchmark_verification_labels")
+    if checks["benchmark_verification_failed"] != [0, 0]:
+        failed.append("benchmark_verification_failed")
+    expected_failure_summary = {
+        "observation_mismatch": 0,
+        "anchor_mismatch": 0,
+        "source_mismatch": 0,
+    }
+    if checks["benchmark_verification_failure_summary"] != [
+        expected_failure_summary,
+        expected_failure_summary,
+    ]:
+        failed.append("benchmark_verification_failure_summary")
     if checks["holdout_validation_passed"] is not True:
         failed.append("holdout_validation_passed")
     if checks["holdout_validation_files"] != [

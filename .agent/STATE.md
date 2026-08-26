@@ -230,6 +230,9 @@ catalog workflows.
   public truth sets exposed and corrected a stale `AV-NET001` reporting-rule label for exact local
   module-qualified registered-class network propagation; reporting-rule labels now pass 719/719 and
   IR labels pass 1,588/1,588 with zero mismatch summaries.
+- Hardened source/wheel distribution smoke verification to preserve and require the installed CLI's
+  benchmark failure summaries, so packaging checks now prove the `failed` and `failure_summary`
+  contract survives installation rather than only checking label counts.
 
 ## Current findings
 
