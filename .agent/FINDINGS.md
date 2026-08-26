@@ -234,9 +234,13 @@
 - TypeScript OpenAI Agents sandbox inventory now recognizes exact `@openai/agents/sandbox`
   `SandboxAgent` direct assignments and literal `capabilities: [shell()]` entries. The shell
   capability is recorded as `execution_environment: sdk-sandbox`, preserving capability visibility
-  without treating it as host-local shell execution. Near imports, rebound constructors, and
-  helper-returned TypeScript sandbox agents remain unresolved. The public IR truth set now covers
-  1,659 passing labels.
+  without treating it as host-local shell execution. Near imports and rebound constructors remain
+  unresolved. The public IR truth set then covered 1,659 passing labels.
+- The same TypeScript OpenAI Agents sandbox inventory now also recognizes same-file helper returns
+  of exact `@openai/agents/sandbox` `SandboxAgent` constructors, using the helper name when the
+  agent name is dynamic. Local near/rebound/conditional helper negatives and three real OpenAI Agents
+  JS helper-returned sandbox agents are pinned. The public IR truth set now covers 1,686 passing
+  labels.
 
 ## Hypotheses
 

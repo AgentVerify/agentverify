@@ -12441,6 +12441,7 @@ TS_AGENT_ASSIGNMENT = re.compile(r"\b(?:const|let)\s+(\w+)\s*=\s*new\s+Agent\s*\
 TS_SANDBOX_AGENT_ASSIGNMENT_TEMPLATE = (
     r"\b(?:const|let)\s+(\w+)\s*=\s*new\s+{constructor}\s*\("
 )
+TS_SANDBOX_AGENT_RETURN_TEMPLATE = r"\breturn\s+new\s+{constructor}\s*\("
 TS_LITERAL_APPROVAL = re.compile(r"\bneedsApproval\s*:\s*true\b")
 TS_AUTO_APPROVAL_ENABLED = re.compile(
     r"\b(?:autoApprove|auto_approve|skipConfirmation|skip_confirmation|"
@@ -14942,6 +14943,57 @@ def typescript_function_definitions(
     return definitions
 
 
+def typescript_function_body_spans(text: str) -> list[tuple[str, int, int]]:
+    """Return balanced free/static function and block-arrow bodies by local name."""
+    code = typescript_code_mask(text)
+    spans: list[tuple[str, int, int]] = []
+    patterns = (
+        re.compile(r"\b(?:export\s+)?(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\("),
+        re.compile(r"\bstatic\s+(?:async\s+)?([A-Za-z_$][\w$]*)\s*\("),
+        re.compile(
+            r"\bconst\s+([A-Za-z_$][\w$]*)\s*"
+            r"(?::\s*[A-Za-z_$][\w$]*(?:\s*<[^=;\n]+>)?)?\s*=\s*"
+            r"(?:async\s*)?\("
+        ),
+    )
+    matches = sorted(
+        (match for pattern in patterns for match in pattern.finditer(code)),
+        key=lambda match: match.start(),
+    )
+    for match in matches:
+        opening = code.find("(", match.start(), match.end())
+        parameter_end = typescript_balanced_end(code, opening, "(", ")")
+        if parameter_end is None:
+            continue
+        if re.match(r"\bconst\s+", code[match.start() : match.end()]):
+            arrow = re.match(r"\s*(?::\s*[^=;\n]+)?=>\s*\{", code[parameter_end:])
+            if arrow is None:
+                continue
+            body_opening = parameter_end + arrow.end() - 1
+        else:
+            body_opening = code.find("{", parameter_end)
+            if body_opening < 0 or body_opening - parameter_end > 500:
+                continue
+            if code.find(";", parameter_end, body_opening) >= 0:
+                continue
+        body_end = typescript_balanced_end(code, body_opening, "{", "}")
+        if body_end is None:
+            continue
+        spans.append((match.group(1), body_opening + 1, body_end - 1))
+    return spans
+
+
+def typescript_curly_depth_between(code: str, start: int, end: int) -> int:
+    """Return masked-code curly nesting depth between two offsets."""
+    depth = 0
+    for char in code[start:end]:
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth = max(0, depth - 1)
+    return depth
+
+
 def typescript_approval_bypass_function_summaries(
     text: str,
 ) -> dict[str, tuple[str, ...]]:
@@ -15981,9 +16033,11 @@ def typescript_graph(
         )
 
     sandbox_imports = typescript_named_import_bindings(text, "@openai/agents/sandbox")
-    agent_matches: list[tuple[re.Match[str], str, str | None]] = [
-        (match, "Agent", None) for match in TS_AGENT_ASSIGNMENT.finditer(code)
+    agent_matches: list[tuple[re.Match[str], str, str | None, str, str]] = [
+        (match, "Agent", None, match.group(1), "assignment")
+        for match in TS_AGENT_ASSIGNMENT.finditer(code)
     ]
+    function_spans = typescript_function_body_spans(text)
     for local_name, imported_name in sandbox_imports.items():
         if imported_name != "SandboxAgent" or typescript_import_binding_is_shadowed(
             text, local_name
@@ -15993,16 +16047,32 @@ def typescript_graph(
             TS_SANDBOX_AGENT_ASSIGNMENT_TEMPLATE.format(constructor=re.escape(local_name))
         )
         agent_matches.extend(
-            (match, "SandboxAgent", local_name) for match in sandbox_pattern.finditer(code)
+            (match, "SandboxAgent", local_name, match.group(1), "assignment")
+            for match in sandbox_pattern.finditer(code)
         )
-    agent_assignment_counts = Counter(match.group(1) for match, _, _ in agent_matches)
+        sandbox_return_pattern = re.compile(
+            TS_SANDBOX_AGENT_RETURN_TEMPLATE.format(constructor=re.escape(local_name))
+        )
+        for match in sandbox_return_pattern.finditer(code):
+            helpers = [
+                (name, start, end)
+                for name, start, end in function_spans
+                if start <= match.start() < end
+                and typescript_curly_depth_between(code, start, match.start()) == 0
+            ]
+            if not helpers:
+                continue
+            helper_name, _, _ = min(helpers, key=lambda item: item[2] - item[1])
+            agent_matches.append(
+                (match, "SandboxAgent", local_name, helper_name, "return-new")
+            )
+    agent_assignment_counts = Counter(identity for _, _, _, identity, _ in agent_matches)
     agent_tool_bindings = {
         match.group(1): match.group(2) for match in TS_AGENT_TOOL_ASSIGNMENT.finditer(code)
     }
     local_agents: dict[str, tuple[str, str]] = {}
     agent_bodies: list[tuple[re.Match[str], int, str, str, str, str]] = []
-    for match, constructor, constructor_local in agent_matches:
-        variable_name = match.group(1)
+    for match, constructor, constructor_local, variable_name, binding_kind in agent_matches:
         start_line = line_at(text, match.start())
         opening = code.find("(", match.start(), match.end())
         end = typescript_balanced_end(code, opening, "(", ")") or len(text)
@@ -16010,7 +16080,7 @@ def typescript_graph(
         agent_name = typescript_object_string_property(body, "name") or variable_name
         agent_identity = (
             f"{variable_name}@{start_line}"
-            if agent_assignment_counts[variable_name] > 1
+            if binding_kind == "return-new" or agent_assignment_counts[variable_name] > 1
             else variable_name
         )
         agent_id = source_symbol("ts", relative, "agent", agent_identity)
@@ -16027,8 +16097,10 @@ def typescript_graph(
             )
             if constructor_local and constructor_local != constructor:
                 attributes["local_constructor"] = constructor_local
+        if binding_kind == "return-new":
+            attributes.update({"binding": "return-new", "helper": variable_name})
         ir.add_component(Component("agent", agent_name, ev, attributes, agent_id))
-        if agent_assignment_counts[variable_name] == 1:
+        if binding_kind == "assignment" and agent_assignment_counts[variable_name] == 1:
             local_agents[variable_name] = (agent_name, agent_id)
         agent_bodies.append((match, opening + 1, body, agent_name, agent_id, constructor))
 

@@ -268,8 +268,13 @@ catalog workflows.
 - Added exact TypeScript OpenAI Agents sandbox inventory for `@openai/agents/sandbox`
   `SandboxAgent` direct assignments and literal `capabilities: [shell()]` entries. SDK sandbox shell
   execution is recorded separately from host-local shell execution, with local near/rebound negatives
-  and two real OpenAI Agents JS example positives. Regenerated public IR truth-set results now cover
-  1,659 passing labels.
+  and two real OpenAI Agents JS example positives. Regenerated public IR truth-set results then
+  covered 1,659 passing labels.
+- Extended TypeScript OpenAI Agents sandbox inventory to same-file helper returns of exact
+  `@openai/agents/sandbox` `SandboxAgent` constructors, preserving SDK-sandbox shell classification
+  and keeping near/rebound/conditional helper forms unresolved. Local helper fixtures plus
+  shared-session and memory multi-agent OpenAI Agents JS examples are pinned. Regenerated public IR
+  truth-set results now cover 1,686 passing labels.
 
 ## Current findings
 

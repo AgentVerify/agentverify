@@ -3780,6 +3780,8 @@ def test_typescript_openai_sandbox_agent_capabilities_require_exact_import() -> 
     assert set(agents) == {
         ("positive.ts", 9, "Local Sandbox Assistant"),
         ("positive.ts", 15, "Aliased Sandbox Assistant"),
+        ("positive.ts", 23, "buildReturnedSandboxAgent"),
+        ("positive.ts", 30, "Returned Named Sandbox Assistant"),
     }
     assert all(
         component.attributes["constructor"] == "SandboxAgent"
@@ -3791,6 +3793,18 @@ def test_typescript_openai_sandbox_agent_capabilities_require_exact_import() -> 
     assert agents[("positive.ts", 15, "Aliased Sandbox Assistant")].attributes[
         "local_constructor"
     ] == "AliasedSandboxAgent"
+    assert agents[("positive.ts", 23, "buildReturnedSandboxAgent")].attributes[
+        "binding"
+    ] == "return-new"
+    assert agents[("positive.ts", 23, "buildReturnedSandboxAgent")].attributes[
+        "helper"
+    ] == "buildReturnedSandboxAgent"
+    assert agents[
+        ("positive.ts", 30, "Returned Named Sandbox Assistant")
+    ].attributes["local_constructor"] == "AliasedSandboxAgent"
+    assert agents[
+        ("positive.ts", 30, "Returned Named Sandbox Assistant")
+    ].attributes["binding"] == "return-new"
 
     tools = {
         (component.evidence.path, component.evidence.line, component.name): component
@@ -3800,6 +3814,8 @@ def test_typescript_openai_sandbox_agent_capabilities_require_exact_import() -> 
     assert set(tools) == {
         ("positive.ts", 12, "shell@12"),
         ("positive.ts", 18, "shell@18"),
+        ("positive.ts", 25, "shell@25"),
+        ("positive.ts", 32, "shell@32"),
     }
     assert all(
         component.attributes["constructor"] == "shell"
@@ -3827,6 +3843,20 @@ def test_typescript_openai_sandbox_agent_capabilities_require_exact_import() -> 
             "tool",
             "shell@18",
             "ts:positive.ts#tool:shell@18",
+        ),
+        (
+            "buildReturnedSandboxAgent",
+            "uses",
+            "tool",
+            "shell@25",
+            "ts:positive.ts#tool:shell@25",
+        ),
+        (
+            "Returned Named Sandbox Assistant",
+            "uses",
+            "tool",
+            "shell@32",
+            "ts:positive.ts#tool:shell@32",
         ),
     }
     assert not any(

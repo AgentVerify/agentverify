@@ -15,5 +15,21 @@ const reboundSandbox = new ReboundSandboxAgent({
   capabilities: [reboundShell()],
 });
 
+function buildNearSandbox() {
+  return new LocalSandboxAgent({
+    name: 'Near Returned Sandbox',
+    capabilities: [shell()],
+  });
+}
+
+function buildReboundSandbox() {
+  return new ReboundSandboxAgent({
+    name: 'Rebound Returned Sandbox',
+    capabilities: [reboundShell()],
+  });
+}
+
 void nearSandbox;
 void reboundSandbox;
+void buildNearSandbox;
+void buildReboundSandbox;
