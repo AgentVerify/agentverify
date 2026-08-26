@@ -494,6 +494,107 @@ def test_cli_prints_bundled_holdout_template_schemas(capsys) -> None:
     )
 
 
+def test_cli_validates_checked_in_holdout_templates(capsys) -> None:
+    assert (
+        cli.main(
+            [
+                "holdout",
+                "validate",
+                "--manifest",
+                str(ROOT / "benchmarks/holdout-manifest.template.json"),
+                "--labels",
+                str(ROOT / "benchmarks/holdout-labels.template.json"),
+                "--format",
+                "json",
+            ]
+        )
+        == 0
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["holdout_validation_format"] == "AgentVerify Holdout Validation"
+    assert payload["schema_version"] == 1
+    assert payload["passed"] is True
+    assert [(item["kind"], item["schema"], item["passed"]) for item in payload["files"]] == [
+        ("manifest", "holdout-manifest", True),
+        ("labels", "holdout-labels", True),
+    ]
+
+
+def test_cli_holdout_validate_requires_an_input(capsys) -> None:
+    assert cli.main(["holdout", "validate"]) == 2
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "requires --manifest, --labels, or both" in captured.err
+
+
+def test_cli_holdout_validate_reports_schema_errors(tmp_path: Path, capsys) -> None:
+    invalid = tmp_path / "holdout-labels.json"
+    invalid.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "name": "invalid-labels",
+                "status": "draft",
+                "manifest": "benchmarks/holdout-manifest.template.json",
+                "review": {
+                    "reviewers": ["reviewer-a"],
+                    "adjudication_required": True,
+                    "labels_sealed_until_round_closed": True,
+                },
+                "labels": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "holdout",
+                "validate",
+                "--labels",
+                str(invalid),
+                "--format",
+                "json",
+            ]
+        )
+        == 2
+    )
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    assert captured.err == ""
+    assert payload["passed"] is False
+    assert payload["files"][0]["kind"] == "labels"
+    assert payload["files"][0]["passed"] is False
+    assert "schema validation failed at $.labels" in payload["files"][0]["errors"][0]
+
+
+def test_cli_holdout_validate_writes_text_output_file(tmp_path: Path, capsys) -> None:
+    output = tmp_path / "holdout-validation.txt"
+
+    assert (
+        cli.main(
+            [
+                "holdout",
+                "validate",
+                "--manifest",
+                str(ROOT / "benchmarks/holdout-manifest.template.json"),
+                "--output",
+                str(output),
+            ]
+        )
+        == 0
+    )
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == ""
+    assert "Holdout validation passed" in output.read_text(encoding="utf-8")
+
+
 def test_cli_prints_bundled_benchmark_result_schema(capsys) -> None:
     assert cli.main(["schema", "benchmark-result"]) == 0
 

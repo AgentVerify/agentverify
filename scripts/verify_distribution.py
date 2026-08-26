@@ -209,6 +209,21 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
                 ]
             )
         )
+        holdout_validation = json.loads(
+            command(
+                [
+                    str(agentverify),
+                    "holdout",
+                    "validate",
+                    "--manifest",
+                    str(source_root / "benchmarks/holdout-manifest.template.json"),
+                    "--labels",
+                    str(source_root / "benchmarks/holdout-labels.template.json"),
+                    "--format",
+                    "json",
+                ]
+            )
+        )
         editor_contracts = json.loads(
             command(
                 [
@@ -339,6 +354,11 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         "benchmark_verification_labels": [
             item.get("labels") for item in benchmark_verification.get("results", [])
         ],
+        "holdout_validation_passed": holdout_validation.get("passed"),
+        "holdout_validation_files": [
+            (item.get("kind"), item.get("schema"), item.get("passed"))
+            for item in holdout_validation.get("files", [])
+        ],
         "editor_contract_artifacts": [
             item.get("path") for item in editor_contracts.get("artifacts", [])
         ],
@@ -432,6 +452,13 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         failed.append("benchmark_verification_passed")
     if checks["benchmark_verification_labels"] != [719, 1574]:
         failed.append("benchmark_verification_labels")
+    if checks["holdout_validation_passed"] is not True:
+        failed.append("holdout_validation_passed")
+    if checks["holdout_validation_files"] != [
+        ("manifest", "holdout-manifest", True),
+        ("labels", "holdout-labels", True),
+    ]:
+        failed.append("holdout_validation_files")
     expected_editor_contract_files = [
         "agentverify-report-v1.schema.json",
         "agentverify-rules-v1.schema.json",

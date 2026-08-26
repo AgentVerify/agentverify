@@ -46,6 +46,7 @@ agentverify policy repository-policy.json --export-signing-payload --output poli
 agentverify policy repository-policy.json --trust-root policy-trust-root.json --require-trusted
 agentverify policy examples/repository-policy.json --trust-root examples/policy-trust-root.json --require-trusted
 agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed
+agentverify holdout validate --manifest benchmarks/holdout-manifest.template.json --labels benchmarks/holdout-labels.template.json
 agentverify contracts --output-dir agentverify-editor-contracts --sample-root examples/safe_agent
 agentverify contracts --verify-dir agentverify-editor-contracts
 agentverify scan ./project --fail-on high
@@ -91,6 +92,8 @@ still preserve policy and `--fail-on` exit decisions.
 by `agentverify contracts --verify-dir`.
 `agentverify schema holdout-manifest` and `agentverify schema holdout-labels` validate the public
 sealed-holdout sampling and adjudicated-label templates.
+`agentverify holdout validate --manifest PATH --labels PATH` validates those setup files directly
+with the bundled schemas, returning exit code 2 when a template or private setup file is malformed.
 `agentverify schema report` prints the bundled schema for validating normal `--format json` reports;
 `agentverify schema policy-summary` validates `agentverify policy --format json`,
 `agentverify schema policy-signing-payload` validates deterministic source-digest manifests for
@@ -200,6 +203,7 @@ PYTHONPATH=src python3 scripts/evaluate_truthset.py --evaluation-kind sealed-hol
   --output path/to/holdout-results.json
 uv run python scripts/verify_benchmark_results.py --require-evaluation-kind public-regression --require-all-passed
 agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed
+agentverify holdout validate --manifest benchmarks/holdout-manifest.template.json --labels benchmarks/holdout-labels.template.json
 agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
 agentverify schema benchmark-verification --output agentverify-benchmark-verification.schema.json
 agentverify schema holdout-manifest --output agentverify-holdout-manifest.schema.json

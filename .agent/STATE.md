@@ -198,6 +198,10 @@ catalog workflows.
 - Added bundled `holdout-manifest` and `holdout-labels` schemas exposed through
   `agentverify schema`, validating the checked public sealed-holdout setup templates and extending
   installed-wheel schema smoke coverage to 15 schemas.
+- Added `agentverify holdout validate` so installed CLIs can validate public or private holdout
+  manifest/label setup files directly against the bundled schemas, with text/JSON output, fail-closed
+  exit code 2 on malformed inputs, README/checklist guidance, tests, and installed-wheel smoke
+  coverage.
 
 ## Current findings
 
@@ -254,6 +258,9 @@ catalog workflows.
 - Sealed-holdout setup templates are now machine contracts: installed CLIs expose
   `agentverify schema holdout-manifest` and `agentverify schema holdout-labels`, and the checked
   templates validate against those schemas before any private labels are introduced.
+- Holdout setup validation is now an installed CLI behavior: `agentverify holdout validate` validates
+  manifest and/or labels files with the bundled schemas and reports per-file schema/parse/read errors
+  without claiming sealed benchmark success or trust authenticity.
 - Python registered-class network propagation now accepts exact `module_alias.ClassName()` calls only
   when `module_alias` resolves to one local imported module and is unrebound in the method; locally
   shadowed module aliases, mutable fields, duplicate classes, and rebound constructors remain

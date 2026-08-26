@@ -58,6 +58,9 @@
 - The public sealed-holdout scaffold is now schema-backed without exposing private labels:
   `agentverify schema holdout-manifest` validates sample-manifest shape and
   `agentverify schema holdout-labels` validates adjudicated-label shape for the checked templates.
+- Installed CLIs now provide `agentverify holdout validate` as the direct setup-file check for public
+  templates or private holdout manifest/label files; it validates against the bundled holdout schemas
+  and returns per-file errors without treating setup validity as sealed-result validity.
 - The checked-in GitHub CI workflow now exercises `agentverify benchmark verify
   --require-evaluation-kind public-regression --require-all-passed`, so public regression artifact
   drift is caught during normal pull-request checks rather than only during manual release review.

@@ -22,6 +22,7 @@ uv run python scripts/verify_benchmark_results.py \
   --require-evaluation-kind public-regression \
   --require-all-passed
 agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed
+agentverify holdout validate --manifest benchmarks/holdout-manifest.template.json --labels benchmarks/holdout-labels.template.json
 agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
 agentverify schema benchmark-verification --output agentverify-benchmark-verification.schema.json
 agentverify schema holdout-manifest --output agentverify-holdout-manifest.schema.json
@@ -46,13 +47,15 @@ Before publishing public regression numbers:
    to the same verifier.
 3. Confirm CI also ran the installed CLI benchmark gate on the checked-in result files for the
    release commit.
-4. Export `agentverify schema benchmark-result`, `agentverify schema benchmark-verification`,
+4. Validate the checked public holdout templates with `agentverify holdout validate --manifest
+   benchmarks/holdout-manifest.template.json --labels benchmarks/holdout-labels.template.json`.
+5. Export `agentverify schema benchmark-result`, `agentverify schema benchmark-verification`,
    `agentverify schema holdout-manifest`, and `agentverify schema holdout-labels` from the built or
    installed CLI when downstream release tooling needs the exact result, verifier, and holdout setup
    contracts without a source checkout.
-5. State the claim boundary explicitly: curated public regression metrics, not an unbiased ecosystem
+6. State the claim boundary explicitly: curated public regression metrics, not an unbiased ecosystem
    accuracy estimate.
-6. If a result file changes, review the per-label outcomes rather than relying only on aggregate
+7. If a result file changes, review the per-label outcomes rather than relying only on aggregate
    precision and recall.
 
 ## Sealed holdout release
@@ -61,12 +64,14 @@ Sealed holdout results are the only benchmark results that can support an unbias
 and only if labels stayed hidden until the evaluation round closed.
 
 ```console
+agentverify holdout validate --manifest path/to/holdout-manifest.json --labels path/to/sealed-labels.json
 PYTHONPATH=src python3 scripts/evaluate_truthset.py \
   --evaluation-kind sealed-holdout \
   --manifest path/to/holdout-manifest.json \
   --labels path/to/sealed-labels.json \
   --output path/to/holdout-results.json
 
+agentverify holdout validate --manifest path/to/holdout-manifest.json --labels path/to/sealed-labels.json
 agentverify benchmark verify path/to/holdout-results.json \
   --require-evaluation-kind sealed-holdout \
   --require-sealed \
@@ -81,11 +86,13 @@ Before publishing sealed holdout numbers:
 
 1. Freeze and archive the manifest before running the scanner.
 2. Keep labels private or encrypted until the round is closed.
-3. Run the installed CLI verifier with `--require-evaluation-kind sealed-holdout`,
+3. Validate the setup files with `agentverify holdout validate --manifest path/to/holdout-manifest.json
+   --labels path/to/sealed-labels.json` before and after evaluation.
+4. Run the installed CLI verifier with `--require-evaluation-kind sealed-holdout`,
    `--require-sealed`, and `--require-manifest`.
    Add `--require-all-passed` only when making an "all labels passed" claim.
-4. Publish the result file, manifest digest, label digest, label scope, and claim scope together.
-5. If the holdout exposes failures, report pre-fix and post-fix metrics separately. Move any
+5. Publish the result file, manifest digest, label digest, label scope, and claim scope together.
+6. If the holdout exposes failures, report pre-fix and post-fix metrics separately. Move any
    released failures into public regression coverage only after the round is closed.
 
 ## Wording guardrails

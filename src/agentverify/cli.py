@@ -21,6 +21,11 @@ from .contracts import (
     render_editor_contract_verification,
     verify_editor_contracts,
 )
+from .holdout import (
+    HOLDOUT_VALIDATION_ERRORS,
+    render_holdout_validation,
+    validate_holdout_files,
+)
 from .policy import (
     SEVERITY_RANK,
     PolicyError,
@@ -259,6 +264,29 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="PATH",
         help="write verification JSON to PATH instead of standard output",
     )
+    holdout = subparsers.add_parser("holdout", help="validate holdout setup artifacts")
+    holdout_subparsers = holdout.add_subparsers(dest="holdout_command", required=True)
+    holdout_validate = holdout_subparsers.add_parser(
+        "validate", help="validate holdout manifest and label files"
+    )
+    holdout_validate.add_argument(
+        "--manifest",
+        type=Path,
+        help="holdout manifest JSON file to validate against the bundled manifest schema",
+    )
+    holdout_validate.add_argument(
+        "--labels",
+        type=Path,
+        help="holdout labels JSON file to validate against the bundled labels schema",
+    )
+    holdout_validate.add_argument("--format", choices=("text", "json"), default="text")
+    holdout_validate.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        metavar="PATH",
+        help="write validation output to PATH instead of standard output",
+    )
     return parser
 
 
@@ -381,6 +409,24 @@ def main(argv: list[str] | None = None) -> int:
             print(f"agentverify: benchmark verification failed: {error}", file=sys.stderr)
             return 2
         return emit_output(render_benchmark_verification(payload), args.output) or 0
+    if args.command == "holdout":
+        if args.manifest is None and args.labels is None:
+            print(
+                "agentverify: holdout validate requires --manifest, --labels, or both",
+                file=sys.stderr,
+            )
+            return 2
+        try:
+            payload = validate_holdout_files(manifest=args.manifest, labels=args.labels)
+        except HOLDOUT_VALIDATION_ERRORS as error:
+            print(f"agentverify: holdout validation failed: {error}", file=sys.stderr)
+            return 2
+        output_error = emit_output(
+            render_holdout_validation(payload, output_format=args.format), args.output
+        )
+        if output_error:
+            return output_error
+        return 0 if payload["passed"] is True else 2
     if args.command == "policy":
         if args.export_trust_root and args.export_signing_payload:
             print(
