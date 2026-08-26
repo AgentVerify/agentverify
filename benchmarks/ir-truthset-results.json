@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-26T18:48:32.140383+00:00",
+  "generated_at": "2026-08-26T19:10:48.300331+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
@@ -11,6 +11,12 @@
   },
   "labels": 1588,
   "passed": 1588,
+  "failed": 0,
+  "failure_summary": {
+    "observation_mismatch": 0,
+    "anchor_mismatch": 0,
+    "source_mismatch": 0
+  },
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,

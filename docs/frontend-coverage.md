@@ -855,9 +855,10 @@ and `network-ssrf-policy` edge.
   rebound imports remain unresolved; configured opt-outs, exemptions, or proxy residuals never
   become unconditional enforcement.
 - Imported class-network propagation is limited to unique registered classes with one entrypoint,
-  exact named imports, direct constructor calls or immutable constructor-only `self` fields, and four
-  iterations. Reexports, inheritance, local constructor variables, module-qualified calls, multiple
-  entrypoints, mutable/dynamic fields, and arbitrary class methods remain unresolved.
+  exact named imports or one exact local module-qualified constructor, direct constructor calls or
+  immutable constructor-only `self` fields, and four iterations. Reexports, inheritance, local
+  constructor variables, ambiguous module aliases, multiple entrypoints, mutable/dynamic fields, and
+  arbitrary class methods remain unresolved.
 - TypeScript path-boundary proof is deliberately narrower than general validator inference. Local or
   dynamically imported guards, prefix-only containment, custom normalization, multiple reassigned
   guard results, and post-write checks remain unresolved.

@@ -67,6 +67,10 @@
 - The checked-in GitHub CI workflow now exercises `agentverify benchmark verify
   --require-evaluation-kind public-regression --require-all-passed`, so public regression artifact
   drift is caught during normal pull-request checks rather than only during manual release review.
+- Benchmark result and verifier artifacts now include derived `failed` counts plus
+  `failure_summary` buckets for `observation_mismatch`, `anchor_mismatch`, and `source_mismatch`.
+  The verifier recomputes these from outcomes, which catches both detector regressions and stale
+  source-location/source-snippet labels before release metrics are published.
 - Pre-commit adoption artifacts are now part of the release contract: `.pre-commit-hooks.yaml`,
   `docs/pre-commit.md`, and `examples/pre-commit-config.yaml` are required source-distribution
   files, while tests assert that the bundled release hook uses `language: python` and the local
@@ -162,7 +166,10 @@
   calls such as `parsers.UrlParser().call(...)` when the module alias resolves to one local file and
   is not rebound in the method. A local shadowed-module fixture keeps the boundary pinned, and the IR
   truth set later moved to 1,574 passing labels after TypeScript CommonJS Google coverage, while
-  `IR-PY-IMPORTED-CLASS-NETWORK` remains pinned at 11 positives and 4 negatives.
+  `IR-PY-IMPORTED-CLASS-NETWORK` remains pinned at 11 positives and 4 negatives. The reporting-rule
+  truth set now also treats the same exact `parsers.UrlParser()` case as a positive `AV-NET001`
+  label; it had been a stale negative left behind after the scanner gained module-qualified
+  registered-class propagation.
 - Native TypeScript provider SDK CommonJS proof now accepts exact top-level named destructuring for
   Google GenAI, including direct and aliased bindings, under the same immutable default-endpoint
   constraints as other native SDK constructors. Scoped named requires remain unresolved, and the IR

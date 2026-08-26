@@ -47,6 +47,11 @@ def write_result(
     passed: bool = True,
 ) -> None:
     digest = labels_sha256 or verify_benchmark_results.file_sha256(labels)
+    failure_summary = {
+        "observation_mismatch": 0 if passed else 1,
+        "anchor_mismatch": 0,
+        "source_mismatch": 0,
+    }
     benchmark = {
         "evaluation_kind": evaluation_kind,
         "label_scope": "reporting-rules",
@@ -71,6 +76,8 @@ def write_result(
                 "benchmark": benchmark,
                 "labels": 1,
                 "passed": 1 if passed else 0,
+                "failed": 0 if passed else 1,
+                "failure_summary": failure_summary,
                 "metrics": {
                     "AV-EXEC001": {
                         "tp": 1 if passed else 0,
@@ -195,6 +202,12 @@ def test_benchmark_result_verifier_reports_but_allows_failing_labels_by_default(
     assert payload["passed"] is True
     assert payload["all_labels_passed"] is False
     assert payload["results"][0]["passed"] == 0
+    assert payload["results"][0]["failed"] == 1
+    assert payload["results"][0]["failure_summary"] == {
+        "observation_mismatch": 1,
+        "anchor_mismatch": 0,
+        "source_mismatch": 0,
+    }
 
 
 def test_benchmark_result_verifier_can_require_all_labels_passed(
@@ -267,6 +280,50 @@ def test_benchmark_result_verifier_rejects_passed_count_drift(
     )
     captured = capsys.readouterr()
     assert "passed count does not match outcomes" in captured.err
+
+
+def test_benchmark_result_verifier_rejects_failed_count_drift(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    labels = tmp_path / "labels.json"
+    result = tmp_path / "results.json"
+    write_labels(labels)
+    write_result(result, labels, passed=False)
+    schema = ROOT / "benchmarks/benchmark-results-v1.schema.json"
+    payload = json.loads(result.read_text(encoding="utf-8"))
+    payload["failed"] = 0
+    rewrite_result(result, payload)
+
+    assert (
+        verify_benchmark_results.main(
+            [str(result), "--schema", str(schema), "--root", str(tmp_path)]
+        )
+        == 1
+    )
+    captured = capsys.readouterr()
+    assert "failed count does not match outcomes" in captured.err
+
+
+def test_benchmark_result_verifier_rejects_failure_summary_drift(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    labels = tmp_path / "labels.json"
+    result = tmp_path / "results.json"
+    write_labels(labels)
+    write_result(result, labels, passed=False)
+    schema = ROOT / "benchmarks/benchmark-results-v1.schema.json"
+    payload = json.loads(result.read_text(encoding="utf-8"))
+    payload["failure_summary"]["observation_mismatch"] = 0
+    rewrite_result(result, payload)
+
+    assert (
+        verify_benchmark_results.main(
+            [str(result), "--schema", str(schema), "--root", str(tmp_path)]
+        )
+        == 1
+    )
+    captured = capsys.readouterr()
+    assert "failure_summary does not match outcomes" in captured.err
 
 
 def test_benchmark_result_verifier_rejects_metric_drift(

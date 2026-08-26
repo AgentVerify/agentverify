@@ -55,8 +55,10 @@ Before publishing public regression numbers:
    contracts without a source checkout.
 6. State the claim boundary explicitly: curated public regression metrics, not an unbiased ecosystem
    accuracy estimate.
-7. If a result file changes, review the per-label outcomes rather than relying only on aggregate
-   precision and recall.
+7. If a result file changes, review `failed`, `failure_summary`, and the per-label outcomes rather
+   than relying only on aggregate precision and recall. `observation_mismatch` points to scanner
+   false positives/negatives, while `anchor_mismatch` and `source_mismatch` usually point to stale
+   benchmark labels or moved source snippets.
 
 ## Sealed holdout release
 

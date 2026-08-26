@@ -225,6 +225,11 @@ catalog workflows.
 - Wired the default CI workflow and copyable GitHub benchmark verification workflow to run
   `agentverify holdout validate` on the checked public setup templates, with regression tests so the
   benchmark release recipe keeps validating setup files as well as result files.
+- Extended benchmark result and verification contracts with derived `failed` counts and
+  `failure_summary` buckets for observation, anchor, and source-snippet mismatches. Regenerating the
+  public truth sets exposed and corrected a stale `AV-NET001` reporting-rule label for exact local
+  module-qualified registered-class network propagation; reporting-rule labels now pass 719/719 and
+  IR labels pass 1,588/1,588 with zero mismatch summaries.
 
 ## Current findings
 
@@ -287,6 +292,10 @@ catalog workflows.
 - Benchmark release workflows should validate setup artifacts and result artifacts separately:
   `agentverify holdout validate` catches manifest/label shape drift, while `agentverify benchmark
   verify` checks generated result JSON, digests, outcomes, and claim-boundary gates.
+- Benchmark result JSON now distinguishes detection failures from label freshness failures:
+  `failure_summary.observation_mismatch` tracks expected-versus-observed scanner mismatches, while
+  `anchor_mismatch` and `source_mismatch` expose stale anchors or expected source snippets that can
+  otherwise be hidden by unchanged precision/recall metrics.
 - Python registered-class network propagation now accepts exact `module_alias.ClassName()` calls only
   when `module_alias` resolves to one local imported module and is unrebound in the method; locally
   shadowed module aliases, mutable fields, duplicate classes, and rebound constructors remain

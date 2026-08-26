@@ -641,10 +641,37 @@ def test_cli_verifies_checked_in_benchmark_results(capsys) -> None:
     assert payload["passed"] is True
     assert payload["all_labels_passed"] is True
     assert [
-        (item["label_scope"], item["labels"], item["digest_ok"]) for item in payload["results"]
+        (
+            item["label_scope"],
+            item["labels"],
+            item["failed"],
+            item["failure_summary"],
+            item["digest_ok"],
+        )
+        for item in payload["results"]
     ] == [
-        ("reporting-rules", 719, True),
-        ("agent-ir", 1588, True),
+        (
+            "reporting-rules",
+            719,
+            0,
+            {
+                "observation_mismatch": 0,
+                "anchor_mismatch": 0,
+                "source_mismatch": 0,
+            },
+            True,
+        ),
+        (
+            "agent-ir",
+            1588,
+            0,
+            {
+                "observation_mismatch": 0,
+                "anchor_mismatch": 0,
+                "source_mismatch": 0,
+            },
+            True,
+        ),
     ]
     schema = __import__("json").loads(render_schema("benchmark-verification"))
     Draft202012Validator(schema).validate(payload)
@@ -763,6 +790,12 @@ def test_cli_benchmark_verify_can_require_all_labels_passed(tmp_path: Path, caps
                 },
                 "labels": 1,
                 "passed": 0,
+                "failed": 1,
+                "failure_summary": {
+                    "observation_mismatch": 1,
+                    "anchor_mismatch": 0,
+                    "source_mismatch": 0,
+                },
                 "metrics": {
                     "AV-EXEC001": {
                         "tp": 0,

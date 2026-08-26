@@ -87,6 +87,29 @@ def metrics_from_outcomes(outcomes: list[dict]) -> dict[str, dict[str, object]]:
     return metrics
 
 
+def failure_summary_from_outcomes(outcomes: list[dict]) -> dict[str, int]:
+    """Return explicit counts for every reason a benchmark outcome did not pass."""
+    summary = Counter(
+        reason
+        for outcome in outcomes
+        for reason in (
+            (
+                "observation_mismatch"
+                if outcome["observed"] != outcome["expected"]
+                else None
+            ),
+            "anchor_mismatch" if outcome["anchor_ok"] is not True else None,
+            "source_mismatch" if outcome["source_ok"] is not True else None,
+        )
+        if reason is not None
+    )
+    return {
+        "observation_mismatch": summary["observation_mismatch"],
+        "anchor_mismatch": summary["anchor_mismatch"],
+        "source_mismatch": summary["source_mismatch"],
+    }
+
+
 def verify_result_invariants(path: Path, payload: dict, labels: list[dict]) -> None:
     outcomes = payload["outcomes"]
     if len(outcomes) != payload["labels"]:
@@ -118,6 +141,14 @@ def verify_result_invariants(path: Path, payload: dict, labels: list[dict]) -> N
     if passed != payload["passed"]:
         raise RuntimeError(f"{path}: passed count does not match outcomes")
 
+    failed = len(outcomes) - passed
+    if failed != payload["failed"]:
+        raise RuntimeError(f"{path}: failed count does not match outcomes")
+
+    failure_summary = failure_summary_from_outcomes(outcomes)
+    if failure_summary != payload["failure_summary"]:
+        raise RuntimeError(f"{path}: failure_summary does not match outcomes")
+
     metrics = metrics_from_outcomes(outcomes)
     if metrics != payload["metrics"]:
         raise RuntimeError(f"{path}: metrics do not match outcomes")
@@ -147,6 +178,8 @@ def verify_result(path: Path, *, schema: dict, root: Path) -> dict[str, object]:
         "sealed": benchmark["sealed"],
         "labels": payload["labels"],
         "passed": payload["passed"],
+        "failed": payload["failed"],
+        "failure_summary": payload["failure_summary"],
         "labels_source": str(labels_path),
         "claim_scope": benchmark["claim_scope"],
         "digest_ok": True,

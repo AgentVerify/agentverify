@@ -63,8 +63,57 @@ def test_evaluator_marks_public_regression_metrics(tmp_path: Path, capsys) -> No
     assert len(result["benchmark"]["labels_sha256"]) == 64
     assert "not an unbiased ecosystem accuracy estimate" in result["benchmark"]["claim_scope"]
     assert result["passed"] == 1
+    assert result["failed"] == 0
+    assert result["failure_summary"] == {
+        "observation_mismatch": 0,
+        "anchor_mismatch": 0,
+        "source_mismatch": 0,
+    }
     assert result["metrics"]["AV-EXEC001"]["tp"] == 1
     assert "public-regression" in capsys.readouterr().out
+    Draft202012Validator(benchmark_results_schema()).validate(result)
+
+
+def test_evaluator_reports_source_anchor_failures_separately(tmp_path: Path) -> None:
+    target = tmp_path / "repo"
+    target.mkdir()
+    (target / "agent.py").write_text(
+        "import subprocess\n\ndef run(command):\n    subprocess.run(command, shell=True)\n",
+        encoding="utf-8",
+    )
+    labels = tmp_path / "labels.json"
+    labels.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "labels": [
+                    {
+                        "id": "local-shell",
+                        "target": {"kind": "local", "path": str(target)},
+                        "rule_id": "AV-EXEC001",
+                        "path": "agent.py",
+                        "line": 4,
+                        "expected": True,
+                        "source_contains": "subprocess.Popen(",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    output = tmp_path / "results.json"
+
+    assert evaluate_truthset.main(["--labels", str(labels), "--output", str(output)]) == 1
+
+    result = json.loads(output.read_text(encoding="utf-8"))
+    assert result["passed"] == 0
+    assert result["failed"] == 1
+    assert result["failure_summary"] == {
+        "observation_mismatch": 0,
+        "anchor_mismatch": 0,
+        "source_mismatch": 1,
+    }
+    assert result["metrics"]["AV-EXEC001"]["tp"] == 1
     Draft202012Validator(benchmark_results_schema()).validate(result)
 
 

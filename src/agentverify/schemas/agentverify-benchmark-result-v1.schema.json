@@ -9,6 +9,8 @@
     "benchmark",
     "labels",
     "passed",
+    "failed",
+    "failure_summary",
     "metrics",
     "outcomes"
   ],
@@ -18,6 +20,8 @@
     "benchmark": {"$ref": "#/$defs/benchmark"},
     "labels": {"type": "integer", "minimum": 0},
     "passed": {"type": "integer", "minimum": 0},
+    "failed": {"type": "integer", "minimum": 0},
+    "failure_summary": {"$ref": "#/$defs/failure_summary"},
     "metrics": {
       "type": "object",
       "additionalProperties": {"$ref": "#/$defs/metric"}
@@ -72,6 +76,16 @@
         "fn": {"type": "integer", "minimum": 0},
         "precision": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
         "recall": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+      }
+    },
+    "failure_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observation_mismatch", "anchor_mismatch", "source_mismatch"],
+      "properties": {
+        "observation_mismatch": {"type": "integer", "minimum": 0},
+        "anchor_mismatch": {"type": "integer", "minimum": 0},
+        "source_mismatch": {"type": "integer", "minimum": 0}
       }
     },
     "outcome": {

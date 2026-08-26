@@ -566,8 +566,10 @@ discovery sampling metrics separate from detection-quality metrics. Evaluator ou
 public-regression versus sealed-holdout runs, include label/manifest digests for reproducibility, and
 are covered by a benchmark result JSON schema. A benchmark verifier validates checked-in result files
 against that schema, recomputes embedded input digests, and cross-checks outcome-derived label,
-passed, and metric totals. It also binds each outcome row back to the exact label id, metric key,
-expected value, and declared label scope from the digested label file. The same verifier is now
+passed, failed, failure-summary, and metric totals. It also binds each outcome row back to the exact
+label id, metric key, expected value, and declared label scope from the digested label file, while
+separating observation mismatches from stale anchors and missing expected source snippets. The same
+verifier is now
 available from the installed CLI as
 `agentverify benchmark verify`, while the source-checkout script delegates to the packaged
 implementation; installed-wheel smoke tests prove the command validates the checked public benchmark

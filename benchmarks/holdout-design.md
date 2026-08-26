@@ -126,8 +126,9 @@ The evaluator accepts an alternate label file through `--labels` plus
 `--evaluation-kind sealed-holdout` and `--manifest`, so CI or a trusted maintainer can supply a sealed
 label path without checking private labels into the public regression corpus. Result JSON conforms to
 [`benchmark-results-v1.schema.json`](benchmark-results-v1.schema.json) and records the evaluation
-kind, label scope, input hashes, manifest hash, and claim scope. The actual sealed labels should wait
-for approved storage and reviewer workflow. Before publishing benchmark numbers, use
+kind, label scope, input hashes, manifest hash, claim scope, passed/failed totals, and a failure
+summary that separates observation, anchor, and source-snippet mismatches. The actual sealed labels
+should wait for approved storage and reviewer workflow. Before publishing benchmark numbers, use
 [`release-checklist.md`](release-checklist.md); release workflows can require sealed-holdout metadata
 with `agentverify benchmark verify path/to/holdout-results.json --require-evaluation-kind
 sealed-holdout --require-sealed --require-manifest`. Add `--require-all-passed` only when making an

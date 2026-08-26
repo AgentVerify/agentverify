@@ -18,6 +18,8 @@
           "sealed",
           "labels",
           "passed",
+          "failed",
+          "failure_summary",
           "labels_source",
           "claim_scope",
           "digest_ok"
@@ -44,6 +46,29 @@
           "passed": {
             "type": "integer",
             "minimum": 0
+          },
+          "failed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "failure_summary": {
+            "type": "object",
+            "required": ["observation_mismatch", "anchor_mismatch", "source_mismatch"],
+            "additionalProperties": false,
+            "properties": {
+              "observation_mismatch": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "anchor_mismatch": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "source_mismatch": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
           },
           "labels_source": {
             "type": "string",

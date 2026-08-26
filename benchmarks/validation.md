@@ -1508,11 +1508,13 @@ coverage; its labels must not drive rule implementation before evaluation.
 [`holdout-design.md`](holdout-design.md) defines the sampling, labeling, leakage-control, and
 reporting process for that future benchmark. Evaluator outputs now include benchmark metadata that
 distinguishes public regression runs from sealed-holdout runs and records label/manifest hashes; the
-shape is validated by [`benchmark-results-v1.schema.json`](benchmark-results-v1.schema.json). Run
-`agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed` to
-validate the checked-in result files and recompute their embedded label or manifest digests. The
-source-checkout `uv run python scripts/verify_benchmark_results.py` wrapper delegates to the same
-verifier. Use
+shape is validated by [`benchmark-results-v1.schema.json`](benchmark-results-v1.schema.json). Result
+files include both `passed` and `failed` totals plus a failure summary that separates observation,
+anchor, and source-snippet mismatches, so stale labels do not hide inside precision/recall metrics.
+Run `agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed`
+to validate the checked-in result files, recompute their embedded label or manifest digests, and
+cross-check those derived totals. The source-checkout `uv run python scripts/verify_benchmark_results.py`
+wrapper delegates to the same verifier. Use
 [`release-checklist.md`](release-checklist.md) before publishing benchmark numbers; the verifier can
 fail release workflows that require `public-regression`, `sealed-holdout`, manifest, sealed-status,
 or all-labels-passed claims. The same contract is available from installed CLIs through

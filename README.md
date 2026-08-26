@@ -104,7 +104,8 @@ summaries.
 `agentverify schema rules` validates the machine-readable rule catalog.
 `agentverify benchmark verify` validates benchmark result JSON against the bundled schema, recomputes
 label and manifest digests, binds outcomes back to exact label ids/rules/expectations, recomputes
-outcome-derived passed/metrics totals, and can fail closed on release-claim requirements such as
+outcome-derived passed/failed/metrics totals, and reports failure classes separately for observation,
+anchor, and source-snippet mismatches. It can fail closed on release-claim requirements such as
 `--require-evaluation-kind sealed-holdout`, `--require-sealed`, `--require-manifest`, and
 `--require-all-passed`.
 Use `--format summary` for compact CI logs: it reports scan totals, baseline/policy status, counts by
@@ -160,7 +161,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`docs/backlog.md`](docs/backlog.md) — prioritized issue-ready future work
 - [`benchmarks/engine-results.json`](benchmarks/engine-results.json) — full-corpus engine metrics
 - [`benchmarks/truthset.json`](benchmarks/truthset.json) — exact hand-labeled positives and negatives
-- [`benchmarks/truthset-results.json`](benchmarks/truthset-results.json) — per-rule seed precision and recall
+- [`benchmarks/truthset-results.json`](benchmarks/truthset-results.json) — per-rule seed precision/recall and label-failure summary
 - [`benchmarks/ir-truthset.json`](benchmarks/ir-truthset.json) — 1,588 separately scored component and relationship labels
 - [`benchmarks/holdout-design.md`](benchmarks/holdout-design.md) — sealed benchmark plan for unbiased evaluation
 - [`benchmarks/release-checklist.md`](benchmarks/release-checklist.md) — claim boundaries and verifier gates for benchmark releases
@@ -212,7 +213,9 @@ agentverify schema holdout-labels --output agentverify-holdout-labels.schema.jso
 
 The default CI workflow runs the installed CLI benchmark gate against the checked-in public
 regression results and validates the verifier JSON against the bundled benchmark-verification schema,
-so benchmark-result drift fails during pull requests before release packaging.
+so benchmark-result drift fails during pull requests before release packaging. The verifier artifact
+also carries per-result `failed` counts and mismatch summaries so release tooling can distinguish
+scanner false positives/negatives from stale source anchors or expected snippets.
 For editor or custom CI integrations, `agentverify contracts --sample-root examples/safe_agent`
 exports the report schema, rules schema, current rules catalog, and optional sample report into a
 local artifact directory with a schema-backed digest manifest. `agentverify contracts --verify-dir`

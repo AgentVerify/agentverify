@@ -10,6 +10,7 @@ from collections import Counter, defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
 
+from agentverify.benchmark import failure_summary_from_outcomes
 from agentverify.scanner import scan_repository
 
 CLAIM_SCOPE = {
@@ -193,13 +194,25 @@ def main(argv: list[str] | None = None) -> int:
         "benchmark": benchmark_metadata(args, labels),
         "labels": len(labels),
         "passed": sum(item["passed"] for item in outcomes),
+        "failed": sum(not item["passed"] for item in outcomes),
+        "failure_summary": failure_summary_from_outcomes(outcomes),
         "metrics": metrics,
         "outcomes": outcomes,
     }
     args.output.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     print(
         json.dumps(
-            {key: payload[key] for key in ("benchmark", "labels", "passed", "metrics")},
+            {
+                key: payload[key]
+                for key in (
+                    "benchmark",
+                    "labels",
+                    "passed",
+                    "failed",
+                    "failure_summary",
+                    "metrics",
+                )
+            },
             indent=2,
         )
     )

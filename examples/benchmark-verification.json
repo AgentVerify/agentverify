@@ -7,6 +7,12 @@
       "sealed": false,
       "labels": 719,
       "passed": 719,
+      "failed": 0,
+      "failure_summary": {
+        "observation_mismatch": 0,
+        "anchor_mismatch": 0,
+        "source_mismatch": 0
+      },
       "labels_source": "benchmarks/truthset.json",
       "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate",
       "digest_ok": true
@@ -18,6 +24,12 @@
       "sealed": false,
       "labels": 1588,
       "passed": 1588,
+      "failed": 0,
+      "failure_summary": {
+        "observation_mismatch": 0,
+        "anchor_mismatch": 0,
+        "source_mismatch": 0
+      },
       "labels_source": "benchmarks/ir-truthset.json",
       "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate",
       "digest_ok": true
