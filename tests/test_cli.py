@@ -380,6 +380,7 @@ def test_cli_lists_bundled_schemas(capsys) -> None:
         "benchmark-result",
         "bom",
         "policy",
+        "policy-signing-payload",
         "policy-summary",
         "policy-trust-root",
         "report",
@@ -433,6 +434,18 @@ def test_cli_prints_bundled_policy_summary_schema(capsys) -> None:
     assert schema["title"] == "AgentVerify Policy Summary 1"
     assert schema["properties"]["policy_format"]["const"] == "AgentVerify Policy Summary"
     assert schema["$defs"]["trust"]["properties"]["signature_verified"]["const"] is False
+
+
+def test_cli_prints_bundled_policy_signing_payload_schema(capsys) -> None:
+    assert cli.main(["schema", "policy-signing-payload"]) == 0
+
+    schema = __import__("json").loads(capsys.readouterr().out)
+    Draft202012Validator.check_schema(schema)
+    assert schema["title"] == "AgentVerify Policy Signing Payload 1"
+    assert (
+        schema["properties"]["policy_signing_payload_format"]["const"]
+        == "AgentVerify Policy Signing Payload"
+    )
 
 
 def test_cli_prints_bundled_policy_trust_root_schema(capsys) -> None:
@@ -836,6 +849,66 @@ def test_cli_policy_can_export_local_digest_trust_root(tmp_path: Path, capsys) -
     )
 
 
+def test_cli_policy_can_export_deterministic_signing_payload(tmp_path: Path, capsys) -> None:
+    org = tmp_path / "org.json"
+    org.write_text(
+        '{"schema_version":1,"name":"org","gates":['
+        '{"id":"org-high","result_kinds":["finding"],"max_count":0}]}',
+        encoding="utf-8",
+    )
+    repository = tmp_path / "repository.json"
+    repository.write_text(
+        '{"schema_version":1,"name":"repository","extends":["org.json"],"gates":['
+        '{"id":"repository-reviews","result_kinds":["review"],"max_count":5}]}',
+        encoding="utf-8",
+    )
+    payload_path = tmp_path / "policy-signing-payload.json"
+
+    assert (
+        cli.main(
+            [
+                "policy",
+                str(repository),
+                "--export-signing-payload",
+                "--output",
+                str(payload_path),
+            ]
+        )
+        == 0
+    )
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    payload = __import__("json").loads(payload_path.read_text(encoding="utf-8"))
+    assert payload["policy_signing_payload_format"] == "AgentVerify Policy Signing Payload"
+    assert payload["schema_version"] == 1
+    assert payload["root_source"] == "repository.json"
+    assert len(payload["root_sha256"]) == 64
+    assert [item["source"] for item in payload["policy_set"]] == ["org.json", "repository.json"]
+    assert payload["root_sha256"] == payload["policy_set"][-1]["sha256"]
+    assert "signature_verified" not in payload
+    schema = __import__("json").loads(
+        (
+            ROOT / "src/agentverify/schemas/agentverify-policy-signing-payload-v1.schema.json"
+        ).read_text(encoding="utf-8")
+    )
+    Draft202012Validator(schema).validate(payload)
+
+    first = payload_path.read_text(encoding="utf-8")
+    assert (
+        cli.main(
+            [
+                "policy",
+                str(repository),
+                "--export-signing-payload",
+                "--output",
+                str(payload_path),
+            ]
+        )
+        == 0
+    )
+    assert payload_path.read_text(encoding="utf-8") == first
+
+
 def test_cli_policy_export_trust_root_rejects_conflicting_trust_options(
     tmp_path: Path, capsys
 ) -> None:
@@ -858,7 +931,30 @@ def test_cli_policy_export_trust_root_rejects_conflicting_trust_options(
     )
     captured = capsys.readouterr()
     assert captured.out == ""
-    assert "--export-trust-root cannot be combined" in captured.err
+    assert "export options cannot be combined" in captured.err
+
+
+def test_cli_policy_export_options_are_mutually_exclusive(tmp_path: Path, capsys) -> None:
+    policy = tmp_path / "policy.json"
+    policy.write_text(
+        '{"schema_version":1,"name":"release","gates":[{"id":"no-high","max_count":0}]}',
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "policy",
+                str(policy),
+                "--export-trust-root",
+                "--export-signing-payload",
+            ]
+        )
+        == 2
+    )
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "--export-trust-root cannot be combined with --export-signing-payload" in captured.err
 
 
 def test_cli_policy_trust_root_can_fail_required_trust(tmp_path: Path, capsys) -> None:

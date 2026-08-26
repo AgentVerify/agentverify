@@ -26,6 +26,7 @@ agentverify schema benchmark-result --output agentverify-benchmark-result.schema
 agentverify schema report --output agentverify-report.schema.json
 agentverify schema bom --output agentverify-ai-bom.schema.json
 agentverify schema policy --output agentverify-policy.schema.json
+agentverify schema policy-signing-payload --output agentverify-policy-signing-payload.schema.json
 agentverify schema policy-summary --output agentverify-policy-summary.schema.json
 agentverify schema policy-trust-root --output agentverify-policy-trust-root.schema.json
 agentverify schema rules --output agentverify-rules.schema.json
@@ -34,6 +35,7 @@ agentverify scan ./project --policy repository-policy.json  # may extend local o
 agentverify policy repository-policy.json
 agentverify policy repository-policy.json --format json
 agentverify policy repository-policy.json --export-trust-root --output policy-trust-root.json
+agentverify policy repository-policy.json --export-signing-payload --output policy-signing-payload.json
 agentverify policy repository-policy.json --trust-root policy-trust-root.json --require-trusted
 agentverify policy examples/repository-policy.json --trust-root examples/policy-trust-root.json --require-trusted
 agentverify scan ./project --fail-on high
@@ -73,8 +75,10 @@ still preserve policy and `--fail-on` exit decisions.
 `agentverify schema` lists every bundled machine-readable schema.
 `agentverify schema benchmark-result` prints the bundled schema for benchmark result files.
 `agentverify schema report` prints the bundled schema for validating normal `--format json` reports;
-`agentverify schema policy-summary` validates `agentverify policy --format json`, and
-`agentverify schema policy-trust-root` validates local digest allowlists for policy summaries.
+`agentverify schema policy-summary` validates `agentverify policy --format json`,
+`agentverify schema policy-signing-payload` validates deterministic source-digest manifests for
+external policy signing, and `agentverify schema policy-trust-root` validates local digest allowlists
+for policy summaries.
 `agentverify schema rules` validates the machine-readable rule catalog.
 Use `--format summary` for compact CI logs: it reports scan totals, baseline/policy status, counts by
 severity/result kind/rule, and the top evidence locations without printing the full component graph.
@@ -89,7 +93,9 @@ gate sources and SHA-256 content digests. These digests make local inputs audita
 author signatures. A policy trust root can require every composed policy source to match an approved
 local SHA-256 digest allowlist, but `signature_verified` remains false until cryptographic signature
 support exists. Use `agentverify policy PATH --export-trust-root --output policy-trust-root.json` to
-generate a local digest allowlist from the exact composed policy inputs.
+generate a local digest allowlist from the exact composed policy inputs, or
+`agentverify policy PATH --export-signing-payload --output policy-signing-payload.json` to emit the
+deterministic source-digest manifest that external signing tools should sign.
 
 Example finding:
 

@@ -17,9 +17,9 @@
 
 ## P2
 
-- Plan signature-verification implementation from `docs/policy-signatures.md`, including dependency
-  choice, schema contract, fail-closed CLI behavior, and migration from digest allowlists. Do not
-  present content hashes as author authenticity.
+- Implement signature-verification trust-root/schema support from `docs/policy-signatures.md`,
+  including dependency choice, fail-closed CLI behavior, and migration from exported signing payloads
+  and digest allowlists. Do not present content hashes as author authenticity.
 - Keep example policy trust roots synchronized with composed example policy source digests whenever
   example policies change; prefer regenerating them with `agentverify policy --export-trust-root`.
 - Explore CycloneDX/SPDX adapters only when a mapping preserves links back to the native AgentVerify

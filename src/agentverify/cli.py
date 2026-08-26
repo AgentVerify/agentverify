@@ -15,6 +15,7 @@ from .policy import (
     load_policy,
     load_policy_trust_root,
     policy_summary,
+    render_policy_signing_payload,
     render_policy_summary,
     render_policy_trust_root,
 )
@@ -132,6 +133,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="emit a schema-v1 local digest allowlist for this composed policy",
     )
     policy.add_argument(
+        "--export-signing-payload",
+        action="store_true",
+        help="emit a deterministic source-digest payload for external policy signing",
+    )
+    policy.add_argument(
         "--trust-root",
         type=Path,
         help=(
@@ -238,9 +244,17 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "rules":
         return emit_output(render_rules(args.rule_id, output_format=args.format), args.output) or 0
     if args.command == "policy":
-        if args.export_trust_root and (args.trust_root or args.require_trusted):
+        if args.export_trust_root and args.export_signing_payload:
             print(
-                "agentverify: --export-trust-root cannot be combined with "
+                "agentverify: --export-trust-root cannot be combined with --export-signing-payload",
+                file=sys.stderr,
+            )
+            return 2
+        if (args.export_trust_root or args.export_signing_payload) and (
+            args.trust_root or args.require_trusted
+        ):
+            print(
+                "agentverify: export options cannot be combined with "
                 "--trust-root or --require-trusted",
                 file=sys.stderr,
             )
@@ -255,6 +269,18 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         if args.export_trust_root:
             return emit_output(render_policy_trust_root(loaded_policy), args.output) or 0
+        if args.export_signing_payload:
+            return (
+                emit_output(
+                    render_policy_signing_payload(
+                        loaded_policy,
+                        source=args.path.name,
+                        digest=policy_digest,
+                    ),
+                    args.output,
+                )
+                or 0
+            )
         trust_root = None
         trust_root_digest = None
         if args.trust_root:

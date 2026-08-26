@@ -15,6 +15,7 @@ SCHEMA_FILES = {
     "benchmark-result": "agentverify-benchmark-result-v1.schema.json",
     "bom": "agentverify-ai-bom-v1.schema.json",
     "policy": "agentverify-policy-v1.schema.json",
+    "policy-signing-payload": "agentverify-policy-signing-payload-v1.schema.json",
     "policy-summary": "agentverify-policy-summary-v1.schema.json",
     "policy-trust-root": "agentverify-policy-trust-root-v1.schema.json",
     "report": "agentverify-report-v1.schema.json",

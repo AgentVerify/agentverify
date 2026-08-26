@@ -58,6 +58,9 @@ catalog workflows.
   results now covering 1,487 labels.
 - Added a concrete signed policy provenance design that keeps digest allowlists separate from author
   authenticity and specifies detached source-digest payloads plus local key trust roots.
+- Added `agentverify policy --export-signing-payload` and a bundled policy-signing-payload schema so
+  composed policy source digests can be handed to external signing tools without claiming signature
+  verification.
 - Extended distribution verification so release checks can require a source distribution containing
   README-linked examples, policy docs, benchmark contracts, and public truth sets.
 - Extended source-distribution verification to require the checked public benchmark result outputs
@@ -79,5 +82,5 @@ catalog workflows.
 ## Next action
 
 Continue toward the highest-value local P1/P2 work: additional real-world framework coverage
-without broad name matching, signature-verification implementation planning, or release artifact
-checks that attach benchmark verifier logs once release packaging is explicit.
+without broad name matching, signature-verification trust-root/schema implementation, or release
+artifact checks that attach benchmark verifier logs once release packaging is explicit.

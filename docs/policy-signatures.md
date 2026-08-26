@@ -5,9 +5,10 @@ useful for CI reproducibility, but it deliberately does not prove who authored, 
 published a policy. Signed policy provenance should add author authenticity without weakening the
 current fail-closed digest behavior.
 
-This document is a design target, not an implemented feature. Until the CLI reports
-`signature_verified: true`, AgentVerify policy summaries should continue to say that only local
-content hashes were checked.
+This document is a design target for signature verification. AgentVerify can already export the
+deterministic source-digest payload that external signing tools should sign, but until the CLI
+reports `signature_verified: true`, AgentVerify policy summaries should continue to say that only
+local content hashes were checked.
 
 ## Goals
 
@@ -44,14 +45,13 @@ that disables signature verification.
 Sign a detached manifest of policy source digests rather than attempting to canonicalize policy JSON.
 This avoids ambiguity around whitespace, key ordering, comments, or future JSON-compatible formats.
 
-The signed payload should include:
+The exported signing payload includes:
 
 - `schema_version`
-- `signed_at`
+- `policy_signing_payload_format`
 - `policy_set`: an ordered array of `{source, sha256}`
 - `root_source`
 - `root_sha256`
-- optional human-readable `approval_reason`
 
 The verifier recomputes each source digest from local bytes, compares it to the signed manifest, and
 then verifies the detached signature over the canonical signed-manifest bytes. A composed policy is
@@ -72,11 +72,12 @@ Proposed detached bundle:
 {
   "schema_version": 1,
   "signature_format": "agentverify-policy-signature",
+  "signed_at": "2026-08-26T00:00:00Z",
   "payload": {
+    "policy_signing_payload_format": "AgentVerify Policy Signing Payload",
     "schema_version": 1,
     "root_source": "repository-policy.json",
     "root_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
-    "signed_at": "2026-08-26T00:00:00Z",
     "policy_set": [
       {
         "source": "org-policy.json",
@@ -86,8 +87,7 @@ Proposed detached bundle:
         "source": "repository-policy.json",
         "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
       }
-    ],
-    "approval_reason": "approved CI policy gate"
+    ]
   },
   "signatures": [
     {
@@ -141,14 +141,9 @@ The summary should also expose machine-readable failure reasons such as `missing
 
 ## CLI design
 
-Potential commands:
+Implemented signing-payload export:
 
 ```console
-agentverify policy repository-policy.json \
-  --signature policy-signature.json \
-  --trust-root policy-key-trust-root.json \
-  --require-trusted
-
 agentverify policy repository-policy.json \
   --export-signing-payload \
   --output policy-signing-payload.json
@@ -157,6 +152,15 @@ agentverify policy repository-policy.json \
 `--export-signing-payload` should produce the exact payload bytes to sign. AgentVerify should not
 need to hold private keys for the first implementation; signing can be done by external tools or
 organizational key management.
+
+Future verification command shape:
+
+```console
+agentverify policy repository-policy.json \
+  --signature policy-signature.json \
+  --trust-root policy-key-trust-root.json \
+  --require-trusted
+```
 
 ## Migration from digest allowlists
 

@@ -42,6 +42,7 @@ REQUIRED_SCHEMA_FILES = frozenset(
     {
         "agentverify/schemas/agentverify-benchmark-result-v1.schema.json",
         "agentverify/schemas/agentverify-ai-bom-v1.schema.json",
+        "agentverify/schemas/agentverify-policy-signing-payload-v1.schema.json",
         "agentverify/schemas/agentverify-policy-v1.schema.json",
         "agentverify/schemas/agentverify-policy-summary-v1.schema.json",
         "agentverify/schemas/agentverify-policy-trust-root-v1.schema.json",
@@ -131,8 +132,21 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         report_schema = json.loads(command([str(agentverify), "schema", "report"]))
         rules_schema = json.loads(command([str(agentverify), "schema", "rules"]))
         policy_summary_schema = json.loads(command([str(agentverify), "schema", "policy-summary"]))
+        policy_signing_payload_schema = json.loads(
+            command([str(agentverify), "schema", "policy-signing-payload"])
+        )
         policy_trust_root_schema = json.loads(
             command([str(agentverify), "schema", "policy-trust-root"])
+        )
+        policy_signing_payload = json.loads(
+            command(
+                [
+                    str(agentverify),
+                    "policy",
+                    str(source_root / "examples/repository-policy.json"),
+                    "--export-signing-payload",
+                ]
+            )
         )
         policy_summary = json.loads(
             command(
@@ -199,7 +213,14 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         "report_schema_title": report_schema.get("title"),
         "rules_schema_title": rules_schema.get("title"),
         "policy_summary_schema_title": policy_summary_schema.get("title"),
+        "policy_signing_payload_schema_title": policy_signing_payload_schema.get("title"),
         "policy_trust_root_schema_title": policy_trust_root_schema.get("title"),
+        "policy_signing_payload_format": policy_signing_payload.get(
+            "policy_signing_payload_format"
+        ),
+        "policy_signing_payload_sources": [
+            item.get("source") for item in policy_signing_payload.get("policy_set", [])
+        ],
         "policy_summary_format": policy_summary.get("policy_format"),
         "policy_signature_verified": policy_summary.get("trust", {}).get("signature_verified"),
         "generated_policy_trust_root_trusted": generated_trusted_policy_summary.get("trust", {})
@@ -217,6 +238,7 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         "benchmark-result",
         "bom",
         "policy",
+        "policy-signing-payload",
         "policy-summary",
         "policy-trust-root",
         "report",
@@ -232,8 +254,17 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         failed.append("rules_schema_title")
     if policy_summary_schema.get("title") != "AgentVerify Policy Summary 1":
         failed.append("policy_summary_schema_title")
+    if policy_signing_payload_schema.get("title") != "AgentVerify Policy Signing Payload 1":
+        failed.append("policy_signing_payload_schema_title")
     if policy_trust_root_schema.get("title") != "AgentVerify Policy Trust Root 1":
         failed.append("policy_trust_root_schema_title")
+    if (
+        policy_signing_payload.get("policy_signing_payload_format")
+        != "AgentVerify Policy Signing Payload"
+    ):
+        failed.append("policy_signing_payload_format")
+    if checks["policy_signing_payload_sources"] != ["org-policy.json", "repository-policy.json"]:
+        failed.append("policy_signing_payload_sources")
     if policy_summary.get("policy_format") != "AgentVerify Policy Summary":
         failed.append("policy_summary_format")
     if policy_summary.get("trust", {}).get("signature_verified") is not False:

@@ -12,12 +12,14 @@ results and allowing a gate to pass silently.
 ```console
 agentverify schema report --output agentverify-report.schema.json
 agentverify schema policy --output agentverify-policy.schema.json
+agentverify schema policy-signing-payload --output agentverify-policy-signing-payload.schema.json
 agentverify schema policy-summary --output agentverify-policy-summary.schema.json
 agentverify schema policy-trust-root --output agentverify-policy-trust-root.schema.json
 agentverify schema rules --output agentverify-rules.schema.json
 agentverify policy repository-policy.json
 agentverify policy repository-policy.json --format json
 agentverify policy repository-policy.json --export-trust-root --output policy-trust-root.json
+agentverify policy repository-policy.json --export-signing-payload --output policy-signing-payload.json
 agentverify policy repository-policy.json --trust-root policy-trust-root.json --require-trusted
 agentverify policy examples/repository-policy.json --trust-root examples/policy-trust-root.json --require-trusted
 agentverify scan . --policy agentverify-policy.json
@@ -142,6 +144,18 @@ report `signature_verified: false`. The checked-in
 the composed [`examples/repository-policy.json`](../examples/repository-policy.json) and
 [`examples/org-policy.json`](../examples/org-policy.json) pair. The future cryptographic provenance
 design is tracked separately in [`docs/policy-signatures.md`](policy-signatures.md).
+
+To prepare the same composed source-digest list for external signing, export a deterministic signing
+payload:
+
+```console
+agentverify policy PATH --export-signing-payload --output policy-signing-payload.json
+agentverify schema policy-signing-payload --output agentverify-policy-signing-payload.schema.json
+```
+
+The signing payload records the root policy source/digest and every composed policy source/digest.
+It does not contain a signature and does not change `signature_verified`; it is the stable manifest
+that future detached signature bundles should cover.
 
 ## Baselines and partial scans
 

@@ -16,6 +16,7 @@ SEVERITY_RANK = {"info": 0, "low": 1, "medium": 2, "high": 3}
 RESULT_KINDS = {"finding", "review"}
 MAX_POLICY_DEPTH = 32
 TRUST_MODEL = "local-content-digest-allowlist"
+POLICY_SIGNING_PAYLOAD_FORMAT = "AgentVerify Policy Signing Payload"
 
 
 class PolicyError(ValueError):
@@ -275,6 +276,26 @@ def render_policy_trust_root(policy: dict[str, Any]) -> str:
         "policies": policy["_sources"],
     }
     return json.dumps(payload, indent=2, sort_keys=True) + "\n"
+
+
+def policy_signing_payload(
+    policy: dict[str, Any],
+    *,
+    source: str,
+    digest: str,
+) -> dict[str, Any]:
+    """Return the deterministic source-digest manifest that future signatures should cover."""
+    return {
+        "policy_signing_payload_format": POLICY_SIGNING_PAYLOAD_FORMAT,
+        "schema_version": 1,
+        "root_source": source,
+        "root_sha256": digest,
+        "policy_set": policy.get("_sources", [{"source": source, "sha256": digest}]),
+    }
+
+
+def render_policy_signing_payload(policy: dict[str, Any], *, source: str, digest: str) -> str:
+    return json.dumps(policy_signing_payload(policy, source=source, digest=digest), indent=2) + "\n"
 
 
 def policy_trust_summary(
