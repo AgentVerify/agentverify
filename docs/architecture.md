@@ -85,9 +85,10 @@ without `baseURL`/`baseUrl` are accepted; CommonJS imports, unknown configs, nes
 and similarly named constructors remain unresolved.
 Schema v105 adds a separate CommonJS proof for the exact OpenAI and Anthropic default-export shape:
 one direct module-level `const Client = require(exact-package)` declaration and no other declaration, assignment,
-parameter shadow, or custom/unknown endpoint configuration. The exact top-level named destructure
-`const { GoogleGenAI } = require('@google/genai')` is also accepted for Google GenAI. Property-selected,
-mutable, scoped, and other CommonJS forms are not generalized from this evidence.
+parameter shadow, or custom/unknown endpoint configuration. Exact top-level direct or aliased named
+destructures such as `const { GoogleGenAI } = require('@google/genai')` and
+`const { GoogleGenAI: GeminiAliasClient } = require('@google/genai')` are also accepted for Google
+GenAI. Property-selected, mutable, scoped, and other CommonJS forms are not generalized from this evidence.
 Schema v106 retains an immutable constructor result and recognizes only provider-owned downstream
 model methods: OpenAI chat completions/responses, Anthropic messages, and Google GenAI content
 generation. A direct literal `model` property creates provider-call and model components at the

@@ -519,7 +519,7 @@ def test_cli_verifies_checked_in_benchmark_results(capsys) -> None:
         (item["label_scope"], item["labels"], item["digest_ok"]) for item in payload["results"]
     ] == [
         ("reporting-rules", 719, True),
-        ("agent-ir", 1571, True),
+        ("agent-ir", 1574, True),
     ]
     schema = __import__("json").loads(render_schema("benchmark-verification"))
     Draft202012Validator(schema).validate(payload)

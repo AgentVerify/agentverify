@@ -43,7 +43,8 @@ Schema v105 admits the observed CommonJS default-export form only for one immuta
 `const Client = require(exact-package)` binding from the OpenAI or Anthropic SDK. Four GPT Pilot
 template calls expand the native TypeScript total to 21; rebound bindings and custom or unknown
 endpoint configs remain negative. A local regression now separately accepts exact top-level
-`const { GoogleGenAI } = require('@google/genai')` named destructuring while leaving scoped named
+Google GenAI named destructuring, including alias form
+`const { GoogleGenAI: GeminiAliasClient } = require('@google/genai')`, while leaving scoped named
 requires unresolved. At that slice, the 348 component labels pinned 253 positives and 95 negatives.
 Schema v106 follows an immutable native SDK constructor result into exact OpenAI
 `chat.completions.create`/`responses.create`, Anthropic `messages.create`, or Google
@@ -555,7 +556,7 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 719 pinned positive/negative locations, with 1,571 separately
+The curated regression set has reached 719 pinned positive/negative locations, with 1,574 separately
 scored IR component/relationship labels. Schema-v123 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule

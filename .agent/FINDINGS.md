@@ -144,12 +144,12 @@
 - Python registered-class network propagation now follows exact local module-qualified constructor
   calls such as `parsers.UrlParser().call(...)` when the module alias resolves to one local file and
   is not rebound in the method. A local shadowed-module fixture keeps the boundary pinned, and the IR
-  truth set later moved to 1,571 passing labels after TypeScript CommonJS Google coverage, while
+  truth set later moved to 1,574 passing labels after TypeScript CommonJS Google coverage, while
   `IR-PY-IMPORTED-CLASS-NETWORK` remains pinned at 11 positives and 4 negatives.
 - Native TypeScript provider SDK CommonJS proof now accepts exact top-level named destructuring for
-  Google GenAI (`const { GoogleGenAI } = require("@google/genai")`) under the same immutable,
-  default-endpoint constraints as other native SDK constructors. Scoped named requires remain
-  unresolved, and the IR truth set now covers 1,571 passing labels.
+  Google GenAI, including direct and aliased bindings, under the same immutable default-endpoint
+  constraints as other native SDK constructors. Scoped named requires remain unresolved, and the IR
+  truth set now covers 1,574 passing labels.
 
 ## Hypotheses
 

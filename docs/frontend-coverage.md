@@ -201,8 +201,10 @@ additional production constructors—two OpenAI and two Anthropic—raise TypeSc
 calls across nine repositories: 21 native SDK constructors and 32 official AI SDK calls. The proof
 requires one immutable module-level `const Client = require('openai' | '@anthropic-ai/sdk')` binding; reassignment,
 shadowing, unknown/custom configs, non-default require shapes, and scoped requires remain
-unresolved. A local regression now additionally accepts the exact named destructure
-`const { GoogleGenAI } = require('@google/genai')`; broader Google CommonJS forms remain withheld.
+unresolved. Local regressions now additionally accept exact direct or aliased named destructures
+such as `const { GoogleGenAI } = require('@google/genai')` and
+`const { GoogleGenAI: GeminiAliasClient } = require('@google/genai')`; broader Google CommonJS forms
+remain withheld.
 Provider-presence counts do not change because GPT Pilot already had exact import evidence for both
 providers.
 
@@ -721,7 +723,7 @@ and `network-ssrf-policy` edge.
   ESM default/named imports when their endpoint configuration is statically default; unknown/spread
   configs and custom endpoints remain unresolved. General CommonJS remains unresolved; the supported
   forms are an immutable direct module-level `const` require of the OpenAI or Anthropic package
-  default constructor, plus exact top-level named `GoogleGenAI` destructuring. Immutable native
+  default constructor, plus exact top-level direct or aliased `GoogleGenAI` destructuring. Immutable native
   instances expose exact OpenAI chat/response, Anthropic message, and Google content-generation
   model calls only when the direct request object contains a literal `model` or a proven immutable
   module literal/template binding. Exact imported
@@ -959,7 +961,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 719-label rule truth set and 1,571-label IR component/relationship set are curated regression
+The 719-label rule truth set and 1,574-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

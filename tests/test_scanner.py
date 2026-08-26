@@ -360,6 +360,14 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "GoogleGenAI",
         ),
         (
+            "provider_native_calls_commonjs_alias.js",
+            5,
+            "Google",
+            "aliasedGoogleClient.models.generateContent",
+            "provider-sdk-model",
+            "GeminiAliasClient",
+        ),
+        (
             "provider_native_calls_commonjs.js",
             5,
             "OpenAI",
@@ -654,6 +662,14 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             None,
         ),
         (
+            "provider_native_calls_commonjs_alias.js",
+            3,
+            "Google",
+            "GeminiAliasClient",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
             "provider_native_calls.ts",
             6,
             "OpenAI",
@@ -742,7 +758,12 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         (item.evidence.path, item.evidence.line, item.name, item.attributes["provider"])
         for item in ir.components
         if item.kind == "model"
-        and item.evidence.path in {"provider_native_calls.ts", "provider_native_calls_commonjs.js"}
+        and item.evidence.path
+        in {
+            "provider_native_calls.ts",
+            "provider_native_calls_commonjs.js",
+            "provider_native_calls_commonjs_alias.js",
+        }
         and item.attributes.get("resolution") == "exact-typescript-provider-import"
     } == {
         ("provider_native_calls.ts", 10, "gpt-5-mini", "OpenAI"),
@@ -760,6 +781,12 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "provider_native_calls_commonjs.js",
             11,
             "gemini-2.5-flash",
+            "Google",
+        ),
+        (
+            "provider_native_calls_commonjs_alias.js",
+            5,
+            "gemini-2.5-pro",
             "Google",
         ),
     }

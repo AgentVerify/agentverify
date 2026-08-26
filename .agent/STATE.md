@@ -184,11 +184,11 @@ catalog workflows.
   validate its uploaded verifier artifact against that schema.
 - Extended Python registered-class network propagation to exact local module-qualified constructors,
   while preserving local module-alias shadowing as an unresolved counterexample; the current
-  regenerated IR truth-set results now cover 1,571 passing labels after the later TypeScript
+  regenerated IR truth-set results now cover 1,574 passing labels after the later TypeScript
   CommonJS Google coverage.
-- Extended native TypeScript provider SDK CommonJS proof to exact top-level
-  `const { GoogleGenAI } = require("@google/genai")` named destructuring, with a scoped-require
-  negative guard; regenerated IR truth-set results now cover 1,571 passing labels.
+- Extended native TypeScript provider SDK CommonJS proof to exact top-level direct and aliased
+  `GoogleGenAI` named destructuring, with a scoped-require negative guard; regenerated IR truth-set
+  results now cover 1,574 passing labels.
 
 ## Current findings
 
