@@ -31,10 +31,11 @@ gateways. Schema v102 adds exact Agno public/direct model modules for OpenAI Cha
 Gemini, Anthropic Claude, Azure OpenAI, and Groq. Both `id=` and positional literal model IDs are
 accepted only for those model wrappers; rebinding or a custom OpenAI/Groq `base_url` withholds
 attribution. Schema v103 expands official TypeScript AI SDK call proof to OpenAI, Anthropic, Google,
-and xAI, including direct, dynamic, image, factory-created, and inline embedding forms. A factory is
-accepted only with no arguments or a literal, spread-free configuration without `baseURL`; generic
-compatible packages, unknown configs, rebindings, and custom endpoints remain unresolved. The 318
-component labels pin 237 local/real positives and 81 unrelated, rebound, custom-endpoint, or
+Azure OpenAI, and xAI, including direct, dynamic, image, factory-created, and inline embedding forms.
+A factory is accepted only with no arguments or a literal default-endpoint configuration without
+`baseURL`; the only allowed spread form is endpoint-neutral `spreadIfDefined('apiVersion', ...)`.
+Generic compatible packages, unknown configs, rebindings, and custom endpoints remain unresolved.
+The 324 component labels pin 241 local/real positives and 83 unrelated, rebound, custom-endpoint, or
 near-name negatives. Schema v104 adds exact ESM constructors from the native OpenAI, Anthropic, and
 Google GenAI TypeScript SDKs. No-argument or literal spread-free default-endpoint configuration is
 required; CommonJS imports, unknown or custom-endpoint configs, and rebound constructors remain
@@ -556,7 +557,7 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 719 pinned positive/negative locations, with 1,616 separately
+The curated regression set has reached 719 pinned positive/negative locations, with 1,622 separately
 scored IR component/relationship labels. Schema-v123 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule

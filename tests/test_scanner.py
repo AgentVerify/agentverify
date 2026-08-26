@@ -222,7 +222,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "provider_calls.ts",
-            20,
+            21,
             "OpenAI",
             "openai",
             "ai-sdk-provider-model",
@@ -230,7 +230,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "provider_calls.ts",
-            21,
+            22,
             "OpenAI",
             "openai.image",
             "ai-sdk-provider-model",
@@ -238,7 +238,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "provider_calls.ts",
-            22,
+            23,
             "Anthropic",
             "createAnthropic",
             "ai-sdk-provider-factory",
@@ -246,7 +246,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "provider_calls.ts",
-            23,
+            24,
             "Anthropic",
             "configuredAnthropic",
             "ai-sdk-provider-model",
@@ -254,7 +254,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "provider_calls.ts",
-            24,
+            25,
             "Google",
             "createGoogleGenerativeAI.textEmbeddingModel",
             "ai-sdk-provider-model",
@@ -262,11 +262,27 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "provider_calls.ts",
-            27,
+            28,
             "xAI",
             "xai",
             "ai-sdk-provider-model",
             None,
+        ),
+        (
+            "provider_calls.ts",
+            29,
+            "Azure OpenAI",
+            "createAzure",
+            "ai-sdk-provider-factory",
+            None,
+        ),
+        (
+            "provider_calls.ts",
+            34,
+            "Azure OpenAI",
+            "configuredAzure.embeddingModel",
+            "ai-sdk-provider-model",
+            "createAzure",
         ),
         (
             "provider_ai_sdk_model_bindings.ts",
@@ -848,11 +864,12 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         (5, "mistral-small-latest", "Mistral"),
         (7, "llama-3.3-70b-versatile", "Groq"),
         (8, "embed-english-v3.0", "Cohere"),
-        (20, "gpt-5-mini", "OpenAI"),
-        (21, "gpt-image-2", "OpenAI"),
-        (23, "claude-sonnet-4-5", "Anthropic"),
-        (24, "gemini-embedding-001", "Google"),
-        (27, "grok-4", "xAI"),
+        (21, "gpt-5-mini", "OpenAI"),
+        (22, "gpt-image-2", "OpenAI"),
+        (24, "claude-sonnet-4-5", "Anthropic"),
+        (25, "gemini-embedding-001", "Google"),
+        (28, "grok-4", "xAI"),
+        (34, "text-embedding-3-small-azure", "Azure OpenAI"),
     }
     assert {
         (

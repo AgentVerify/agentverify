@@ -16,6 +16,7 @@ import { openai } from '@ai-sdk/openai';
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { xai } from '@ai-sdk/xai';
+import { createAzure } from '@ai-sdk/azure';
 
 const openAIModel = openai('gpt-5-mini');
 const openAIImage = openai.image('gpt-image-2');
@@ -25,3 +26,9 @@ const googleEmbedding = createGoogleGenerativeAI({
   apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
 }).textEmbeddingModel('gemini-embedding-001');
 const xaiModel = xai('grok-4');
+const configuredAzure = createAzure({
+  resourceName: 'agentverify-resource',
+  apiKey: process.env.AZURE_API_KEY,
+  ...spreadIfDefined('apiVersion', process.env.AZURE_API_VERSION),
+});
+const azureEmbedding = configuredAzure.embeddingModel('text-embedding-3-small-azure');

@@ -1,4 +1,5 @@
 import { createAnthropic } from '@ai-sdk/anthropic';
+import { createAzure } from '@ai-sdk/azure';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
@@ -20,6 +21,12 @@ const unknownGoogle = createGoogleGenerativeAI(providerConfig);
 const unknownGoogleModel = unknownGoogle('gemini-custom');
 const spreadOpenAI = createOpenAI({ ...providerConfig });
 const spreadOpenAIModel = spreadOpenAI('spread-custom');
+const unsafeAzure = createAzure({
+  resourceName: 'agentverify-resource',
+  apiKey: process.env.AZURE_API_KEY,
+  ...spreadIfDefined('baseURL', baseURL),
+});
+const unsafeAzureModel = unsafeAzure('azure-custom-endpoint');
 const compatible = createOpenAICompatible({
   name: 'custom',
   baseURL,

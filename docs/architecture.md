@@ -74,10 +74,12 @@ model modules. Literal model identity may come from Agno's `id=` field or first 
 the proof is invalidated by import rebinding or a custom OpenAI/Groq `base_url` and is not generalized
 to similarly named classes.
 Schema v103 expands exact official TypeScript AI SDK call attribution to OpenAI, Anthropic, Google,
-and xAI. Direct singleton and dynamic-import calls, image calls, immutable factory-created instances,
-and observed inline embedding methods retain provider and literal model identity. Factory proof
-requires no config or a literal, spread-free object without `baseURL`; a custom endpoint, unknown or
-spread config, rebinding, near-name module, or generic compatible provider invalidates attribution.
+Azure OpenAI, and xAI. Direct singleton and dynamic-import calls, image calls, immutable
+factory-created instances, and observed inline embedding methods retain provider and literal model
+identity. Factory proof requires no config or a literal default-endpoint object without `baseURL`;
+only endpoint-neutral `spreadIfDefined('apiVersion', ...)` spreads are accepted. A custom endpoint,
+unknown or arbitrary spread config, rebinding, near-name module, or generic compatible provider
+invalidates attribution.
 Schema v104 applies the same default-endpoint boundary to native TypeScript provider constructors.
 Exact ESM default or named imports from `openai`, `@anthropic-ai/sdk`, and `@google/genai` establish
 constructor identity until rebinding. Calls with no arguments or a literal, spread-free config

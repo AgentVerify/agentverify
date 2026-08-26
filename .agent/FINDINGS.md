@@ -212,8 +212,13 @@
 - Activepieces' `createLanguageModel({ provider, modelId })` workspace wrapper remains unresolved
   for exact TypeScript provider/model attribution in the pinned corpus because the
   `@activepieces/ai-providers` implementation is not present and the same helper includes a
-  Cloudflare `@ai-sdk/openai-compatible` custom endpoint branch. The public IR truth set now covers
+  Cloudflare `@ai-sdk/openai-compatible` custom endpoint branch. The public IR truth set then covered
   1,616 passing labels.
+- Official TypeScript AI SDK Azure attribution is source-proven only for `@ai-sdk/azure` imports and
+  `createAzure` factory/model calls that use the default Azure endpoint shape. Endpoint-neutral
+  `spreadIfDefined('apiVersion', ...)` is accepted because the real Activepieces call uses it for
+  API-version selection, while baseURL spreads, arbitrary object spreads, and dynamic model IDs remain
+  unresolved. The public IR truth set now covers 1,622 passing labels.
 
 ## Hypotheses
 

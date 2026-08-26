@@ -178,15 +178,16 @@ Agno calls. Two hundred thirty-five calls across nine repositories are productio
 tests, and 445 carry literal models. No selected Agno call overrides its provider or endpoint;
 custom OpenAI/Groq `base_url` calls are explicitly withheld.
 
-Schema v103 expands official TypeScript AI SDK call attribution to OpenAI, Anthropic, Google, and
-xAI. Together with the existing Groq path, the corpus now contains 32 production calls across five
-repositories: 30 model calls and two provider factories. Three inline or immutable configured
-instance calls are identified, and 22 direct literal model IDs are retained. The provider split is
-14 OpenAI, 13 Anthropic, three Google, one xAI, and one Groq. Exact static/dynamic imports, direct
-language and image calls, and observed embedding factory chains are supported. Factories with a
-literal `baseURL`, object spread, or nonliteral config are withheld, as are generic
-`@ai-sdk/openai-compatible` calls; pinned negatives cover Inception, Azure-hosted Anthropic, and a
-mock OpenAI endpoint.
+Schema v103 expands official TypeScript AI SDK call attribution to OpenAI, Anthropic, Google, Azure
+OpenAI, and xAI. Together with the existing Groq path, the corpus now contains 33 production calls
+across five repositories: 31 model calls and two provider factories. Four inline or immutable
+configured-instance calls are identified, and 22 direct literal model IDs are retained. The provider
+split is 14 OpenAI, 13 Anthropic, three Google, one Azure OpenAI, one xAI, and one Groq. Exact
+static/dynamic imports, direct language and image calls, and observed embedding factory chains are
+supported. Factories with a literal `baseURL`, arbitrary object spread, or nonliteral config are
+withheld; endpoint-neutral `spreadIfDefined('apiVersion', ...)` is accepted for Azure-style default
+configuration. Generic `@ai-sdk/openai-compatible` calls remain withheld, and pinned negatives cover
+Inception, Azure-hosted Anthropic, and a mock OpenAI endpoint.
 
 Schema v104 adds native TypeScript SDK constructor proof for exact ESM imports from `openai`,
 `@anthropic-ai/sdk`, and `@google/genai`. The corpus contributes 17 production constructors across
@@ -281,8 +282,10 @@ and official AI SDK first model arguments. The object must be a single top-level
 literal string properties and no object/member reassignment; mutable object properties, nonliteral
 object values, dynamic bracket keys, dynamic bracket member writes, and unknown template values
 remain withheld. Local regressions now pin nine positive object-map model labels and eight guarded
-negatives. Together with the local-reexport and real Activepieces boundary labels, the public IR
-truth set now covers 1,616 labels.
+negatives. Exact `@ai-sdk/azure` factory/configured embedding calls are now covered with a matching
+custom-endpoint spread negative and a real Activepieces Azure embedding provider label. Together with
+the local-reexport and real Activepieces boundary labels, the public IR truth set now covers 1,622
+labels.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
 Agent→MCP-server identities. Import-proven literal stdio constructor calls are inventoried for any
@@ -981,7 +984,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 719-label rule truth set and 1,616-label IR component/relationship set are curated regression
+The 719-label rule truth set and 1,622-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

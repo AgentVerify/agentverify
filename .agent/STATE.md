@@ -250,7 +250,12 @@ catalog workflows.
 - Added real Activepieces negative labels for its source-visible but implementation-hidden
   `@activepieces/ai-providers` `createLanguageModel({ provider, modelId })` workspace wrapper and
   Cloudflare `@ai-sdk/openai-compatible` custom endpoint branch; regenerated public IR truth-set
-  results now cover 1,616 passing labels.
+  results then covered 1,616 passing labels.
+- Added exact official TypeScript AI SDK Azure OpenAI attribution for `@ai-sdk/azure` imports and
+  `createAzure` factory/configured embedding calls, while allowing only endpoint-neutral
+  `spreadIfDefined('apiVersion', ...)` spreads and keeping baseURL spreads unresolved. A real
+  Activepieces Azure embedding provider is now pinned; regenerated public IR truth-set results now
+  cover 1,622 passing labels.
 
 ## Current findings
 

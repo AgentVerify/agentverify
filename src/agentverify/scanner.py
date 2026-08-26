@@ -55,7 +55,7 @@ IMPORT_SIGNATURES = {
     "provider": {
         "OpenAI": ("openai", "@ai-sdk/openai"),
         "Anthropic": ("anthropic", "@ai-sdk/anthropic"),
-        "Azure OpenAI": ("azure.ai.openai",),
+        "Azure OpenAI": ("azure.ai.openai", "@ai-sdk/azure"),
         "Google": (
             "google.genai",
             "google.generativeai",
@@ -723,6 +723,11 @@ TYPESCRIPT_AI_SDK_PROVIDER_EXPORTS = {
         "provider": "Google",
         "instances": ("google",),
         "factories": ("createGoogle", "createGoogleGenerativeAI"),
+    },
+    "@ai-sdk/azure": {
+        "provider": "Azure OpenAI",
+        "instances": ("azure",),
+        "factories": ("createAzure",),
     },
     "@ai-sdk/xai": {
         "provider": "xAI",
@@ -13611,7 +13616,15 @@ def typescript_provider_config_uses_default_endpoint(
         return False
     for property_text, _ in typescript_literal_object_items(config):
         property_code = typescript_code_mask(property_text).strip().rstrip(",").strip()
-        if property_code.startswith(("...", "[")):
+        if property_code.startswith("["):
+            return False
+        if property_code.startswith("..."):
+            spread = property_text.strip().rstrip(",").strip()
+            if re.fullmatch(
+                r"\.\.\.\s*spreadIfDefined\s*\(\s*(['\"])apiVersion\1\s*,[\s\S]+\)",
+                spread,
+            ):
+                continue
             return False
         named_property = typescript_named_object_property(property_text)
         if named_property is not None and named_property[0] in {"baseURL", "baseUrl"}:
