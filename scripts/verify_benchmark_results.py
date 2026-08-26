@@ -73,6 +73,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="fail unless every result declares a manifest source and matching digest",
     )
+    parser.add_argument(
+        "--require-all-passed",
+        action="store_true",
+        help="fail unless every result has passed equal to labels",
+    )
     return parser.parse_args(argv)
 
 
@@ -87,6 +92,7 @@ def main(argv: list[str] | None = None) -> int:
             label_scope=args.require_label_scope,
             require_sealed=args.require_sealed,
             require_manifest=args.require_manifest,
+            require_all_passed=args.require_all_passed,
         )
     except BENCHMARK_VERIFICATION_ERRORS as error:
         print(f"agentverify benchmark verification failed: {error}", file=sys.stderr)

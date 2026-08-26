@@ -60,8 +60,9 @@
 ## Benchmark release claims must be verifier-gated
 
 - Decision: Treat benchmark result metadata as a release gate, not just explanatory JSON. Release
-  workflows can require public-regression or sealed-holdout results, sealed status, label scope, and
-  manifest provenance with `scripts/verify_benchmark_results.py`.
+  workflows can require public-regression or sealed-holdout results, sealed status, label scope,
+  manifest provenance, and all-labels-passed claims with `agentverify benchmark verify`; the
+  source-checkout `scripts/verify_benchmark_results.py` wrapper delegates to the same verifier.
 - Evidence: Checked-in public truth sets are visible during scanner development and therefore only
   support regression claims. The result schema already records `evaluation_kind`, `sealed`, digests,
   and `claim_scope`; enforcing those fields prevents accidental overclaiming.

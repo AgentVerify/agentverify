@@ -19,8 +19,9 @@ PYTHONPATH=src python3 scripts/evaluate_truthset.py
 PYTHONPATH=src python3 scripts/evaluate_truthset.py --labels benchmarks/ir-truthset.json \
   --output benchmarks/ir-truthset-results.json
 uv run python scripts/verify_benchmark_results.py \
-  --require-evaluation-kind public-regression
-agentverify benchmark verify --require-evaluation-kind public-regression
+  --require-evaluation-kind public-regression \
+  --require-all-passed
+agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed
 agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
 ```
 
@@ -28,9 +29,10 @@ Before publishing public regression numbers:
 
 1. Confirm `benchmarks/truthset-results.json` and `benchmarks/ir-truthset-results.json` were
    regenerated from the same commit being released.
-2. Run `agentverify benchmark verify --require-evaluation-kind public-regression` from the built or
-   installed CLI and keep the JSON output with the release notes. The source-checkout script
-   `uv run python scripts/verify_benchmark_results.py` delegates to the same verifier.
+2. Run `agentverify benchmark verify --require-evaluation-kind public-regression
+   --require-all-passed` from the built or installed CLI and keep the JSON output with the release
+   notes. The source-checkout script `uv run python scripts/verify_benchmark_results.py` delegates
+   to the same verifier.
 3. Export `agentverify schema benchmark-result` from the built or installed CLI when downstream
    release tooling needs the exact result contract without a source checkout.
 4. State the claim boundary explicitly: curated public regression metrics, not an unbiased ecosystem
@@ -63,6 +65,7 @@ Before publishing sealed holdout numbers:
 2. Keep labels private or encrypted until the round is closed.
 3. Run the installed CLI verifier with `--require-evaluation-kind sealed-holdout`,
    `--require-sealed`, and `--require-manifest`.
+   Add `--require-all-passed` only when making an "all labels passed" claim.
 4. Publish the result file, manifest digest, label digest, label scope, and claim scope together.
 5. If the holdout exposes failures, report pre-fix and post-fix metrics separately. Move any
    released failures into public regression coverage only after the round is closed.

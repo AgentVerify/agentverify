@@ -214,6 +214,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="fail unless every result declares a manifest source and matching digest",
     )
     benchmark_verify.add_argument(
+        "--require-all-passed",
+        action="store_true",
+        help="fail unless every result has passed equal to labels",
+    )
+    benchmark_verify.add_argument(
         "-o",
         "--output",
         type=Path,
@@ -316,6 +321,7 @@ def main(argv: list[str] | None = None) -> int:
                 label_scope=args.require_label_scope,
                 require_sealed=args.require_sealed,
                 require_manifest=args.require_manifest,
+                require_all_passed=args.require_all_passed,
             )
         except BENCHMARK_VERIFICATION_ERRORS as error:
             print(f"agentverify: benchmark verification failed: {error}", file=sys.stderr)

@@ -78,6 +78,7 @@ def enforce_release_requirements(
     label_scope: str | None,
     require_sealed: bool,
     require_manifest: bool,
+    require_all_passed: bool,
     payload: dict,
 ) -> None:
     if evaluation_kind is not None and result["evaluation_kind"] != evaluation_kind:
@@ -93,6 +94,11 @@ def enforce_release_requirements(
         raise RuntimeError(f"{result['result']}: expected sealed benchmark result")
     if require_manifest and "manifest_source" not in payload["benchmark"]:
         raise RuntimeError(f"{result['result']}: expected manifest_source")
+    if require_all_passed and result["passed"] != result["labels"]:
+        raise RuntimeError(
+            f"{result['result']}: expected all benchmark labels to pass, "
+            f"found {result['passed']} passed of {result['labels']}"
+        )
 
 
 def verify_result_for_release(
@@ -104,6 +110,7 @@ def verify_result_for_release(
     label_scope: str | None = None,
     require_sealed: bool = False,
     require_manifest: bool = False,
+    require_all_passed: bool = False,
 ) -> dict[str, object]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     result = verify_result(path, schema=schema, root=root)
@@ -113,6 +120,7 @@ def verify_result_for_release(
         label_scope=label_scope,
         require_sealed=require_sealed,
         require_manifest=require_manifest,
+        require_all_passed=require_all_passed,
         payload=payload,
     )
     return result
@@ -127,6 +135,7 @@ def verify_benchmark_results(
     label_scope: str | None = None,
     require_sealed: bool = False,
     require_manifest: bool = False,
+    require_all_passed: bool = False,
 ) -> dict[str, object]:
     schema = load_benchmark_result_schema(schema_path)
     verified = [
@@ -138,10 +147,15 @@ def verify_benchmark_results(
             label_scope=label_scope,
             require_sealed=require_sealed,
             require_manifest=require_manifest,
+            require_all_passed=require_all_passed,
         )
         for path in results
     ]
-    return {"results": verified, "passed": True}
+    return {
+        "results": verified,
+        "passed": True,
+        "all_labels_passed": all(item["passed"] == item["labels"] for item in verified),
+    }
 
 
 def render_benchmark_verification(payload: dict[str, object]) -> str:

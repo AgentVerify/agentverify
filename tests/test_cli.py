@@ -10,6 +10,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from jsonschema import Draft202012Validator
 
 from agentverify import cli
+from agentverify.benchmark import file_sha256
 from agentverify.policy import load_policy, render_policy_signing_payload
 from agentverify.report import render_bom, render_json, render_sarif
 from agentverify.rules import RULE_CATALOG
@@ -471,10 +472,22 @@ def test_cli_prints_bundled_benchmark_result_schema(capsys) -> None:
 
 
 def test_cli_verifies_checked_in_benchmark_results(capsys) -> None:
-    assert cli.main(["benchmark", "verify", "--require-evaluation-kind", "public-regression"]) == 0
+    assert (
+        cli.main(
+            [
+                "benchmark",
+                "verify",
+                "--require-evaluation-kind",
+                "public-regression",
+                "--require-all-passed",
+            ]
+        )
+        == 0
+    )
 
     payload = __import__("json").loads(capsys.readouterr().out)
     assert payload["passed"] is True
+    assert payload["all_labels_passed"] is True
     assert [
         (item["label_scope"], item["labels"], item["digest_ok"]) for item in payload["results"]
     ] == [
@@ -530,6 +543,93 @@ def test_cli_benchmark_verify_rejects_public_results_as_sealed_claim(capsys) -> 
     assert captured.out == ""
     assert "agentverify: benchmark verification failed:" in captured.err
     assert "expected evaluation_kind sealed-holdout" in captured.err
+
+
+def test_cli_benchmark_verify_can_require_all_labels_passed(tmp_path: Path, capsys) -> None:
+    labels = tmp_path / "labels.json"
+    labels.write_text(
+        __import__("json").dumps(
+            {
+                "schema_version": 1,
+                "labels": [
+                    {
+                        "id": "label-1",
+                        "target": {"kind": "local", "path": "case"},
+                        "rule_id": "AV-EXEC001",
+                        "path": "agent.py",
+                        "line": 1,
+                        "expected": True,
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    result = tmp_path / "results.json"
+    result.write_text(
+        __import__("json").dumps(
+            {
+                "schema_version": 1,
+                "generated_at": "2026-08-26T00:00:00+00:00",
+                "benchmark": {
+                    "evaluation_kind": "public-regression",
+                    "label_scope": "reporting-rules",
+                    "labels_source": str(labels),
+                    "labels_sha256": file_sha256(labels),
+                    "sealed": False,
+                    "claim_scope": (
+                        "curated public regression metrics only; "
+                        "not an unbiased ecosystem accuracy estimate"
+                    ),
+                },
+                "labels": 1,
+                "passed": 0,
+                "metrics": {
+                    "AV-EXEC001": {
+                        "tp": 0,
+                        "fp": 0,
+                        "tn": 0,
+                        "fn": 1,
+                        "precision": None,
+                        "recall": 0.0,
+                    }
+                },
+                "outcomes": [
+                    {
+                        "id": "label-1",
+                        "rule_id": "AV-EXEC001",
+                        "expected": True,
+                        "observed": False,
+                        "anchor_ok": True,
+                        "source_ok": True,
+                        "passed": False,
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    assert cli.main(["benchmark", "verify", str(result), "--root", str(tmp_path)]) == 0
+    payload = __import__("json").loads(capsys.readouterr().out)
+    assert payload["passed"] is True
+    assert payload["all_labels_passed"] is False
+
+    assert (
+        cli.main(
+            [
+                "benchmark",
+                "verify",
+                str(result),
+                "--root",
+                str(tmp_path),
+                "--require-all-passed",
+            ]
+        )
+        == 2
+    )
+    captured = capsys.readouterr()
+    assert "expected all benchmark labels to pass" in captured.err
 
 
 def test_cli_prints_bundled_policy_schema(capsys) -> None:

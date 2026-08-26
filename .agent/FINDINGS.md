@@ -36,6 +36,9 @@
 - Benchmark result verification is now an installed CLI behavior (`agentverify benchmark verify`)
   using the bundled benchmark-result schema; the source-checkout script delegates to the same package
   code, and distribution smoke tests prove the command works from a built wheel.
+- Benchmark verification distinguishes artifact validity from benchmark success: verification JSON
+  now reports `all_labels_passed`, and release workflows can require `--require-all-passed` when
+  claiming that public regression labels all pass.
 - Policy composition can now be inspected without scanning. The policy summary intentionally reports
   `signature_verified: false`, preserving the distinction between content integrity and author trust.
 - Policy summary JSON is now schema-backed and included in distribution verification, matching the

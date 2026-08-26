@@ -553,7 +553,9 @@ are covered by a benchmark result JSON schema. A benchmark verifier validates ch
 against that schema and recomputes embedded input digests. The same verifier is now available from
 the installed CLI as `agentverify benchmark verify`, while the source-checkout script delegates to
 the packaged implementation; installed-wheel smoke tests prove the command validates the checked
-public benchmark results.
+public benchmark results. Verifier output separately reports whether all labels passed, and
+`--require-all-passed` lets public-regression release checks fail closed on honest failing-label
+artifacts without making failed sealed-holdout metrics invalid by default.
 
 ## P2 — CI adoption workflow
 

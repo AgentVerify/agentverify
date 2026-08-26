@@ -44,6 +44,7 @@ def write_result(
     labels_sha256: str | None = None,
     evaluation_kind: str = "public-regression",
     manifest: Path | None = None,
+    passed: bool = True,
 ) -> None:
     digest = labels_sha256 or verify_benchmark_results.file_sha256(labels)
     benchmark = {
@@ -69,15 +70,15 @@ def write_result(
                 "generated_at": "2026-08-26T00:00:00+00:00",
                 "benchmark": benchmark,
                 "labels": 1,
-                "passed": 1,
+                "passed": 1 if passed else 0,
                 "metrics": {
                     "AV-EXEC001": {
-                        "tp": 1,
+                        "tp": 1 if passed else 0,
                         "fp": 0,
                         "tn": 0,
-                        "fn": 0,
-                        "precision": 1.0,
-                        "recall": 1.0,
+                        "fn": 0 if passed else 1,
+                        "precision": 1.0 if passed else None,
+                        "recall": 1.0 if passed else 0.0,
                     }
                 },
                 "outcomes": [
@@ -85,10 +86,10 @@ def write_result(
                         "id": "label-1",
                         "rule_id": "AV-EXEC001",
                         "expected": True,
-                        "observed": True,
+                        "observed": passed,
                         "anchor_ok": True,
                         "source_ok": True,
-                        "passed": True,
+                        "passed": passed,
                     }
                 ],
             }
@@ -114,6 +115,53 @@ def test_benchmark_result_verifier_checks_label_digest(tmp_path: Path) -> None:
         )
         == 0
     )
+
+
+def test_benchmark_result_verifier_reports_but_allows_failing_labels_by_default(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    labels = tmp_path / "labels.json"
+    result = tmp_path / "results.json"
+    write_labels(labels)
+    write_result(result, labels, passed=False)
+    schema = ROOT / "benchmarks/benchmark-results-v1.schema.json"
+
+    assert (
+        verify_benchmark_results.main(
+            [str(result), "--schema", str(schema), "--root", str(tmp_path)]
+        )
+        == 0
+    )
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["passed"] is True
+    assert payload["all_labels_passed"] is False
+    assert payload["results"][0]["passed"] == 0
+
+
+def test_benchmark_result_verifier_can_require_all_labels_passed(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    labels = tmp_path / "labels.json"
+    result = tmp_path / "results.json"
+    write_labels(labels)
+    write_result(result, labels, passed=False)
+    schema = ROOT / "benchmarks/benchmark-results-v1.schema.json"
+
+    assert (
+        verify_benchmark_results.main(
+            [
+                str(result),
+                "--schema",
+                str(schema),
+                "--root",
+                str(tmp_path),
+                "--require-all-passed",
+            ]
+        )
+        == 1
+    )
+    captured = capsys.readouterr()
+    assert "expected all benchmark labels to pass" in captured.err
 
 
 def test_benchmark_result_verifier_accepts_sealed_release_requirements(tmp_path: Path) -> None:

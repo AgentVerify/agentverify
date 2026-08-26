@@ -176,6 +176,7 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
                     str(source_root),
                     "--require-evaluation-kind",
                     "public-regression",
+                    "--require-all-passed",
                 ]
             )
         )

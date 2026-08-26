@@ -100,6 +100,9 @@ catalog workflows.
 - Added installed CLI benchmark result verification via `agentverify benchmark verify`, backed by
   the bundled benchmark-result schema, shared with the source-checkout verifier script, and covered
   by installed-wheel smoke tests.
+- Added explicit all-labels-passed benchmark verification output and a `--require-all-passed` gate,
+  so public regression release checks can fail closed on honest failing-label result files while
+  still allowing failed sealed-holdout metrics to be validated when intentionally published.
 
 ## Current findings
 
