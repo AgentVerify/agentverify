@@ -245,8 +245,12 @@ catalog workflows.
   public IR truth-set results then covered 1,605 passing labels.
 - Added exact TypeScript AI SDK local named-reexport proof for supported `@ai-sdk/*` provider
   instance/factory symbols, including a bounded transitive local export hop, while ambiguous
-  reexports and local shadowing remain unresolved; regenerated public IR truth-set results now cover
+  reexports and local shadowing remain unresolved; regenerated public IR truth-set results then covered
   1,613 passing labels.
+- Added real Activepieces negative labels for its source-visible but implementation-hidden
+  `@activepieces/ai-providers` `createLanguageModel({ provider, modelId })` workspace wrapper and
+  Cloudflare `@ai-sdk/openai-compatible` custom endpoint branch; regenerated public IR truth-set
+  results now cover 1,616 passing labels.
 
 ## Current findings
 

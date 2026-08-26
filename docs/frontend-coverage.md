@@ -271,13 +271,18 @@ supported `@ai-sdk/*` instance or factory symbol. Local regressions pin direct O
 Google factory reexport, and transitive OpenAI reexport positives plus ambiguous-reexport and
 function-parameter-shadowing negatives. Star barrels, module-object access, and ambiguous local
 provider barrels remain withheld.
+Activepieces' workspace `createLanguageModel({ provider, modelId })` wrapper remains withheld in the
+pinned corpus because the `@activepieces/ai-providers` implementation is absent from the source
+snapshot and the same helper has a Cloudflare `@ai-sdk/openai-compatible` custom endpoint branch.
+Three real-source negative labels pin that provider/model boundary.
 The same immutable-module-literal basis now also covers exact module-level literal object maps such
 as `MODEL_IDS.chat`, `MODEL_IDS["chat"]`, or `MODEL_IDS["chat-model"]` for native request objects
 and official AI SDK first model arguments. The object must be a single top-level `const` with direct
 literal string properties and no object/member reassignment; mutable object properties, nonliteral
 object values, dynamic bracket keys, dynamic bracket member writes, and unknown template values
 remain withheld. Local regressions now pin nine positive object-map model labels and eight guarded
-negatives. Together with the local-reexport labels, the public IR truth set now covers 1,613 labels.
+negatives. Together with the local-reexport and real Activepieces boundary labels, the public IR
+truth set now covers 1,616 labels.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
 Agent→MCP-server identities. Import-proven literal stdio constructor calls are inventoried for any
@@ -976,7 +981,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 719-label rule truth set and 1,613-label IR component/relationship set are curated regression
+The 719-label rule truth set and 1,616-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

@@ -289,6 +289,10 @@ through named local barrels when the export chain reaches one supported official
 instance or factory symbol. Six positive labels cover direct OpenAI, Google factory, and transitive
 OpenAI reexports; two negative labels keep ambiguous reexports and function-parameter-shadowed local
 imports unresolved.
+Three additional real Activepieces negatives pin the opposite boundary: the workspace
+`createLanguageModel({ provider, modelId })` wrapper and Cloudflare `@ai-sdk/openai-compatible`
+gateway branch remain unresolved because the wrapper implementation is not source-visible in the
+pinned checkout and the compatible endpoint is custom-configured.
 
 Schema v104 adds native TypeScript provider SDK constructors through exact ESM imports. The selected
 corpus contains 17 production calls across five repositories: ten OpenAI, four Anthropic, and three
@@ -303,7 +307,7 @@ maps for native SDK request objects and official AI SDK first model arguments. N
 cover `MODEL_IDS.chat`, `MODEL_IDS["chat"]`, and `MODEL_IDS["chat-model"]`-style native language,
 AI SDK language, and AI SDK embedding calls; eight negative labels keep mutable object properties,
 nonliteral object values, dynamic bracket keys, and dynamic bracket member writes unresolved. This
-raises the public IR truth set to 1,613 passing labels without broadening provider identity
+raises the public IR truth set to 1,616 passing labels without broadening provider identity
 inference.
 
 Schema v105 adds the immutable direct CommonJS default-export form for the OpenAI and Anthropic

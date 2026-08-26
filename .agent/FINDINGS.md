@@ -207,8 +207,13 @@
   consumer import resolves to a local module whose named export chain reaches exactly one supported
   official `@ai-sdk/*` instance or factory symbol. Direct local and bounded transitive reexports
   preserve the official module/imported-symbol provenance; ambiguous reexports, parameter shadowing,
-  star barrels, and module-object access remain unresolved. The public IR truth set now covers 1,613
+  star barrels, and module-object access remain unresolved. The public IR truth set then covered 1,613
   passing labels.
+- Activepieces' `createLanguageModel({ provider, modelId })` workspace wrapper remains unresolved
+  for exact TypeScript provider/model attribution in the pinned corpus because the
+  `@activepieces/ai-providers` implementation is not present and the same helper includes a
+  Cloudflare `@ai-sdk/openai-compatible` custom endpoint branch. The public IR truth set now covers
+  1,616 passing labels.
 
 ## Hypotheses
 
