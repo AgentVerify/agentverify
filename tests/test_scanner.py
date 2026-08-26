@@ -380,6 +380,22 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "ai-sdk-provider-model",
             "projectAzureFactory",
         ),
+        (
+            "provider_ai_sdk_star_reexport_calls.ts",
+            3,
+            "OpenAI",
+            "openai",
+            "ai-sdk-provider-model",
+            None,
+        ),
+        (
+            "provider_ai_sdk_star_reexport_calls.ts",
+            4,
+            "Azure OpenAI",
+            "createAzure.embeddingModel",
+            "ai-sdk-provider-model",
+            "createAzure",
+        ),
         *(
             (
                 "provider_ai_sdk_model_bindings_unresolved.ts",
@@ -971,9 +987,37 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "@ai-sdk/azure",
         ),
     }
+    assert {
+        (
+            item.evidence.line,
+            item.name,
+            item.attributes["provider"],
+            item.attributes.get("model_method"),
+            item.attributes.get("module"),
+        )
+        for item in ir.components
+        if item.kind == "model"
+        and item.evidence.path == "provider_ai_sdk_star_reexport_calls.ts"
+        and item.attributes.get("resolution") == "exact-typescript-provider-import"
+    } == {
+        (3, "gpt-5-star-reexport", "OpenAI", "language", "@ai-sdk/openai"),
+        (
+            4,
+            "text-embedding-3-small-azure-star-reexport",
+            "Azure OpenAI",
+            "embedding",
+            "@ai-sdk/azure",
+        ),
+    }
     assert not any(
         item.kind in {"provider", "model"}
         and item.evidence.path == "provider_ai_sdk_reexport_calls_unresolved.ts"
+        and item.attributes.get("resolution") == "exact-typescript-provider-import"
+        for item in ir.components
+    )
+    assert not any(
+        item.kind in {"provider", "model"}
+        and item.evidence.path == "provider_ai_sdk_star_reexport_calls_unresolved.ts"
         and item.attributes.get("resolution") == "exact-typescript-provider-import"
         for item in ir.components
     )

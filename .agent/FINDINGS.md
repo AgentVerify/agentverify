@@ -222,7 +222,11 @@
 - The same exact local named-reexport machinery now has Azure coverage: reexported `createAzure`
   preserves provider/model attribution only for default-endpoint embedding calls, while a reexported
   factory with a baseURL spread remains unresolved for both provider and model evidence. The public
-  IR truth set now covers 1,626 passing labels.
+  IR truth set then covered 1,626 passing labels.
+- Exact TypeScript AI SDK local reexport proof now includes star barrels when the requested provider
+  name resolves to a single supported official `@ai-sdk/*` symbol, including one local transitive
+  star hop. Duplicate star candidates remain unresolved, preserving the existing ambiguity boundary.
+  The public IR truth set now covers 1,631 passing labels.
 
 ## Hypotheses
 

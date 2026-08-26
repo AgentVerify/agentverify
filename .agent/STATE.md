@@ -258,7 +258,10 @@ catalog workflows.
   covered 1,622 passing labels.
 - Extended exact local TypeScript AI SDK named-reexport regression coverage to the Azure factory
   path, including a provider/model positive and provider/model negatives for a baseURL-spread
-  reexport. Regenerated public IR truth-set results now cover 1,626 passing labels.
+  reexport. Regenerated public IR truth-set results then covered 1,626 passing labels.
+- Added exact TypeScript AI SDK local star-reexport proof for single-symbol OpenAI/Azure barrels,
+  including a local transitive Azure `export *` hop, while duplicate star-barrel provenance remains
+  unresolved. Regenerated public IR truth-set results now cover 1,631 passing labels.
 
 ## Current findings
 

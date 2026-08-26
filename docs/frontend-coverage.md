@@ -266,12 +266,13 @@ embedding provider now resolves the earlier `OPENAI_3_SMALL_MODEL_ID` constant t
 call counts stay at 70 and literal models rise from 28 to 29; three model components now record the
 immutable-module-literal basis. Runtime parameters in Activepieces and Mastra, plus mutable,
 forward, composed, shadowed, and rebound fixture arguments, remain withheld.
-Official TypeScript AI SDK calls now also support exact local named reexports: a local import may
-carry provider/model attribution when its target module's named export chain resolves to one
+Official TypeScript AI SDK calls now also support exact local named and star reexports: a local
+import may carry provider/model attribution when its target module's reexport chain resolves to one
 supported `@ai-sdk/*` instance or factory symbol. Local regressions pin direct OpenAI reexport,
-Google factory reexport, transitive OpenAI reexport, and Azure factory reexport positives plus
-ambiguous-reexport, function-parameter-shadowing, and Azure baseURL-spread negatives. Star barrels,
-module-object access, and ambiguous local provider barrels remain withheld.
+Google factory reexport, transitive OpenAI reexport, Azure factory reexport, and single-symbol
+star-barrel positives plus ambiguous-reexport, duplicate-star-barrel,
+function-parameter-shadowing, and Azure baseURL-spread negatives. Module-object access and
+ambiguous local provider barrels remain withheld.
 Activepieces' workspace `createLanguageModel({ provider, modelId })` wrapper remains withheld in the
 pinned corpus because the `@activepieces/ai-providers` implementation is absent from the source
 snapshot and the same helper has a Cloudflare `@ai-sdk/openai-compatible` custom endpoint branch.
@@ -284,7 +285,7 @@ object values, dynamic bracket keys, dynamic bracket member writes, and unknown 
 remain withheld. Local regressions now pin nine positive object-map model labels and eight guarded
 negatives. Exact `@ai-sdk/azure` factory/configured embedding calls are now covered with a matching
 custom-endpoint spread negative and a real Activepieces Azure embedding provider label. Together with
-the expanded local-reexport and real Activepieces boundary labels, the public IR truth set now covers 1,626
+the expanded local-reexport and real Activepieces boundary labels, the public IR truth set now covers 1,631
 labels.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
@@ -984,7 +985,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 719-label rule truth set and 1,626-label IR component/relationship set are curated regression
+The 719-label rule truth set and 1,631-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

@@ -130,11 +130,12 @@ factory model methods may inherit the earlier string constant only after provide
 provenance are exact. The same bounded template-string proof applies; runtime parameters,
 mutable/rebound names, forward declarations, unknown template expressions, and shadowed constants
 remain unresolved.
-Official TypeScript AI SDK provider calls may also flow through exact local named reexports. A local
+Official TypeScript AI SDK provider calls may also flow through exact local reexports. A local
 import such as `import { projectOpenAI } from "./providers"` is accepted only when the target module's
-named export chain reaches exactly one supported `@ai-sdk/*` provider symbol, including a bounded
-local transitive `export { name } from "./barrel"` hop. Ambiguous reexports, local shadowing, star
-barrels, module-object access, and non-provider-compatible packages remain unresolved.
+named or star export chain reaches exactly one supported `@ai-sdk/*` provider symbol, including a
+bounded local transitive `export { name } from "./barrel"` or `export * from "./barrel"` hop.
+Ambiguous reexports, duplicate star-barrel candidates, local shadowing, module-object access, and
+non-provider-compatible packages remain unresolved.
 The same model-binding table also accepts exact module-level literal object maps: a top-level
 `const MODEL_IDS = { chat: "...", "chat-model": "..." }` may prove `model: MODEL_IDS.chat`,
 `model: MODEL_IDS["chat"]`, `model: MODEL_IDS["chat-model"]`, or `openai(MODEL_IDS.chat)`

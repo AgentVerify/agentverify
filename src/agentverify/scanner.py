@@ -12405,6 +12405,7 @@ TS_NAMED_IMPORT = re.compile(r"\bimport\s*\{([^}]+)\}\s*from\s*['\"]([^'\"]+)['\
 TS_NAMED_EXPORT_FROM = re.compile(
     r"\bexport\s*\{([^}]+)\}\s*from\s*['\"]([^'\"]+)['\"]", re.DOTALL
 )
+TS_STAR_EXPORT_FROM = re.compile(r"\bexport\s*\*\s*from\s*['\"]([^'\"]+)['\"]")
 TS_DEFAULT_IMPORT = re.compile(
     r"\bimport\s+(?!type\b)([A-Za-z_$][\w$]*)\s*"
     r"(?:,\s*\{([^}]*)\})?\s*from\s*['\"]([^'\"]+)['\"]",
@@ -13127,6 +13128,40 @@ def typescript_ai_sdk_provider_reexport_bindings(
                     seen,
                 )
             )
+    for match in TS_STAR_EXPORT_FROM.finditer(text):
+        module = match.group(1)
+        provider_exports = TYPESCRIPT_AI_SDK_PROVIDER_EXPORTS.get(module)
+        if provider_exports is not None:
+            supported = {
+                *provider_exports["instances"],
+                *provider_exports["factories"],
+            }
+            if exported_name in supported:
+                candidates.append(
+                    TypeScriptProviderImportBinding(
+                        exported_name,
+                        exported_name,
+                        module,
+                        str(provider_exports["provider"]),
+                    )
+                )
+            continue
+        target = typescript_resolve_local_module(root, path, module)
+        if target is None:
+            continue
+        try:
+            target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        candidates.extend(
+            typescript_ai_sdk_provider_reexport_bindings(
+                root,
+                target,
+                target_text,
+                exported_name,
+                seen,
+            )
+        )
     return candidates
 
 

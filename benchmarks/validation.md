@@ -309,9 +309,9 @@ maps for native SDK request objects and official AI SDK first model arguments. N
 cover `MODEL_IDS.chat`, `MODEL_IDS["chat"]`, and `MODEL_IDS["chat-model"]`-style native language,
 AI SDK language, and AI SDK embedding calls; eight negative labels keep mutable object properties,
 nonliteral object values, dynamic bracket keys, and dynamic bracket member writes unresolved. Exact
-`@ai-sdk/azure` factory/configured embedding labels plus a real Activepieces Azure embedding provider
-and Azure reexport boundary labels raise the public IR truth set to 1,626 passing labels without broadening provider identity
-inference.
+`@ai-sdk/azure` factory/configured embedding labels plus real Activepieces Azure embedding provider,
+Azure reexport, and exact single-symbol star-barrel boundary labels raise the public IR truth set to
+1,631 passing labels without broadening provider identity inference.
 
 Schema v105 adds the immutable direct CommonJS default-export form for the OpenAI and Anthropic
 packages. Two GPT Pilot templates contribute four production constructors, bringing TypeScript to
