@@ -108,6 +108,8 @@ catalog workflows.
   aggregate result fields without matching per-label evidence.
 - Wired the default CI workflow to run the installed CLI benchmark verification gate on checked-in
   public regression results, with a workflow regression test and release-checklist guidance.
+- Bound benchmark result outcomes back to the digested label file's label scope, label ids,
+  rule/check ids, and expected values before accepting aggregate metrics.
 
 ## Current findings
 

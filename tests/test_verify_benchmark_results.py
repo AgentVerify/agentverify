@@ -121,6 +121,61 @@ def test_benchmark_result_verifier_checks_label_digest(tmp_path: Path) -> None:
     )
 
 
+def test_benchmark_result_verifier_rejects_label_scope_drift(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    labels = tmp_path / "labels.json"
+    result = tmp_path / "results.json"
+    write_labels(labels)
+    write_result(result, labels)
+    schema = ROOT / "benchmarks/benchmark-results-v1.schema.json"
+    payload = json.loads(result.read_text(encoding="utf-8"))
+    payload["benchmark"]["label_scope"] = "agent-ir"
+    rewrite_result(result, payload)
+
+    assert (
+        verify_benchmark_results.main(
+            [str(result), "--schema", str(schema), "--root", str(tmp_path)]
+        )
+        == 1
+    )
+    captured = capsys.readouterr()
+    assert "label_scope agent-ir does not match labels (reporting-rules)" in captured.err
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("id", "other-label"),
+        ("rule_id", "AV-OTHER"),
+        ("expected", False),
+    ],
+)
+def test_benchmark_result_verifier_rejects_outcome_label_drift(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    field: str,
+    value: object,
+) -> None:
+    labels = tmp_path / "labels.json"
+    result = tmp_path / "results.json"
+    write_labels(labels)
+    write_result(result, labels)
+    schema = ROOT / "benchmarks/benchmark-results-v1.schema.json"
+    payload = json.loads(result.read_text(encoding="utf-8"))
+    payload["outcomes"][0][field] = value
+    rewrite_result(result, payload)
+
+    assert (
+        verify_benchmark_results.main(
+            [str(result), "--schema", str(schema), "--root", str(tmp_path)]
+        )
+        == 1
+    )
+    captured = capsys.readouterr()
+    assert "outcome 1 does not match label label-1" in captured.err
+
+
 def test_benchmark_result_verifier_reports_but_allows_failing_labels_by_default(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:

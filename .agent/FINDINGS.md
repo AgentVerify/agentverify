@@ -42,6 +42,9 @@
 - Benchmark verification now treats benchmark result aggregates as derived evidence: it rejects
   mismatches between `labels` and outcome count, `passed` and per-outcome pass status, or `metrics`
   and the expected/observed outcome matrix.
+- Benchmark outcomes are now tied to their declared label file, not just the label count: verifier
+  checks reject changed label scopes, outcome ids, rule/check ids, or expected values that do not
+  match the digested labels.
 - The checked-in GitHub CI workflow now exercises `agentverify benchmark verify
   --require-evaluation-kind public-regression --require-all-passed`, so public regression artifact
   drift is caught during normal pull-request checks rather than only during manual release review.

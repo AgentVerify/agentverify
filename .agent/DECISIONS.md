@@ -67,7 +67,8 @@
   support regression claims. The result schema already records `evaluation_kind`, `sealed`, digests,
   and `claim_scope`; enforcing those fields prevents accidental overclaiming. Recomputing
   outcome-derived counts and metrics prevents aggregate result fields from drifting away from
-  per-label evidence.
+  per-label evidence. Binding outcomes back to the digested label ids, metric keys, and expected
+  values prevents same-sized but unrelated outcome lists from satisfying the gate.
 - Alternative: Keep claim boundaries in prose only. Rejected because release notes and package pages
   are easy to copy from aggregates while overlooking caveats.
 - Revisit when: release automation exists and can attach verifier output artifacts directly to tags.

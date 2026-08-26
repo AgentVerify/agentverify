@@ -47,6 +47,24 @@ def outcome_metric_id(outcome: dict) -> str:
     return outcome.get("rule_id") or outcome["check_id"]
 
 
+def label_metric_id(label: dict) -> str:
+    return label.get("rule_id") or label["check_id"]
+
+
+def label_metric_kind(label: dict) -> str:
+    return "rule_id" if label.get("rule_id") else "check_id"
+
+
+def label_scope(labels: list[dict]) -> str:
+    has_rules = any("rule_id" in label for label in labels)
+    has_ir = any("check_id" in label for label in labels)
+    if has_rules and has_ir:
+        return "mixed"
+    if has_ir:
+        return "agent-ir"
+    return "reporting-rules"
+
+
 def metrics_from_outcomes(outcomes: list[dict]) -> dict[str, dict[str, object]]:
     matrices: dict[str, Counter] = defaultdict(Counter)
     for outcome in outcomes:
@@ -69,10 +87,32 @@ def metrics_from_outcomes(outcomes: list[dict]) -> dict[str, dict[str, object]]:
     return metrics
 
 
-def verify_result_invariants(path: Path, payload: dict) -> None:
+def verify_result_invariants(path: Path, payload: dict, labels: list[dict]) -> None:
     outcomes = payload["outcomes"]
     if len(outcomes) != payload["labels"]:
         raise RuntimeError(f"{path}: outcomes count does not match labels")
+
+    declared_scope = payload["benchmark"]["label_scope"]
+    actual_scope = label_scope(labels)
+    if declared_scope != actual_scope:
+        raise RuntimeError(
+            f"{path}: label_scope {declared_scope} does not match labels ({actual_scope})"
+        )
+
+    for index, (label, outcome) in enumerate(zip(labels, outcomes, strict=True), start=1):
+        metric_kind = label_metric_kind(label)
+        expected = {
+            "id": label["id"],
+            metric_kind: label_metric_id(label),
+            "expected": bool(label["expected"]),
+        }
+        actual = {
+            "id": outcome["id"],
+            metric_kind: outcome.get(metric_kind),
+            "expected": outcome["expected"],
+        }
+        if actual != expected:
+            raise RuntimeError(f"{path}: outcome {index} does not match label {label['id']}")
 
     passed = sum(1 for outcome in outcomes if outcome["passed"])
     if passed != payload["passed"]:
@@ -94,7 +134,7 @@ def verify_result(path: Path, *, schema: dict, root: Path) -> dict[str, object]:
         raise RuntimeError(f"{path}: labels_sha256 does not match {labels_path}")
     if len(labels) != payload["labels"]:
         raise RuntimeError(f"{path}: labels count does not match {labels_path}")
-    verify_result_invariants(path, payload)
+    verify_result_invariants(path, payload, labels)
     manifest_source = benchmark.get("manifest_source")
     if manifest_source:
         manifest_path = resolve_source(root, manifest_source)
