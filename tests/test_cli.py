@@ -373,6 +373,26 @@ def test_cli_prints_bundled_bom_schema(capsys) -> None:
     assert schema["title"] == "AgentVerify AI BOM 1.2"
 
 
+def test_cli_prints_bundled_benchmark_result_schema(capsys) -> None:
+    assert cli.main(["schema", "benchmark-result"]) == 0
+
+    raw = capsys.readouterr().out
+    schema = __import__("json").loads(raw)
+    Draft202012Validator.check_schema(schema)
+    assert schema["title"] == "AgentVerify Benchmark Results 1"
+    assert raw == (ROOT / "benchmarks/benchmark-results-v1.schema.json").read_text(encoding="utf-8")
+    Draft202012Validator(schema).validate(
+        __import__("json").loads(
+            (ROOT / "benchmarks/truthset-results.json").read_text(encoding="utf-8")
+        )
+    )
+    Draft202012Validator(schema).validate(
+        __import__("json").loads(
+            (ROOT / "benchmarks/ir-truthset-results.json").read_text(encoding="utf-8")
+        )
+    )
+
+
 def test_cli_prints_bundled_policy_schema(capsys) -> None:
     assert cli.main(["schema", "policy"]) == 0
 

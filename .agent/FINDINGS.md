@@ -17,6 +17,8 @@
   claim scope, reducing the risk that public regression metrics are reused as holdout claims.
 - Benchmark result JSON has a checked-in schema that validates both public rule/IR result files and
   synthetic sealed-holdout outputs.
+- The benchmark-result schema is now also exposed by the installed CLI, and tests assert it remains
+  byte-identical to the canonical benchmark schema in the repository.
 - Distribution verification now proves the wheel declares `agentverify = agentverify.cli:main`; the
   optional smoke mode installs the wheel and exercises version, bundled schema, policy summary, and
   safe-example scan commands through the installed executable.

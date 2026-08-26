@@ -32,6 +32,7 @@ def render_json(ir: RepositoryIR) -> str:
 
 def render_schema(name: str) -> str:
     filenames = {
+        "benchmark-result": "agentverify-benchmark-result-v1.schema.json",
         "bom": "agentverify-ai-bom-v1.schema.json",
         "policy": "agentverify-policy-v1.schema.json",
         "policy-summary": "agentverify-policy-summary-v1.schema.json",

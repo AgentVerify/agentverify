@@ -99,7 +99,15 @@ def build_parser() -> argparse.ArgumentParser:
     schema = subparsers.add_parser("schema", help="print a bundled machine-readable schema")
     schema.add_argument(
         "name",
-        choices=("bom", "policy", "policy-summary", "policy-trust-root", "report", "rules"),
+        choices=(
+            "benchmark-result",
+            "bom",
+            "policy",
+            "policy-summary",
+            "policy-trust-root",
+            "report",
+            "rules",
+        ),
     )
     schema.add_argument(
         "-o",

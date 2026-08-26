@@ -20,6 +20,7 @@ PYTHONPATH=src python3 scripts/evaluate_truthset.py --labels benchmarks/ir-truth
   --output benchmarks/ir-truthset-results.json
 uv run python scripts/verify_benchmark_results.py \
   --require-evaluation-kind public-regression
+agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
 ```
 
 Before publishing public regression numbers:
@@ -28,9 +29,11 @@ Before publishing public regression numbers:
    regenerated from the same commit being released.
 2. Run `uv run python scripts/verify_benchmark_results.py --require-evaluation-kind
    public-regression` and keep the JSON output with the release notes.
-3. State the claim boundary explicitly: curated public regression metrics, not an unbiased ecosystem
+3. Export `agentverify schema benchmark-result` from the built or installed CLI when downstream
+   release tooling needs the exact result contract without a source checkout.
+4. State the claim boundary explicitly: curated public regression metrics, not an unbiased ecosystem
    accuracy estimate.
-4. If a result file changes, review the per-label outcomes rather than relying only on aggregate
+5. If a result file changes, review the per-label outcomes rather than relying only on aggregate
    precision and recall.
 
 ## Sealed holdout release
@@ -49,6 +52,7 @@ uv run python scripts/verify_benchmark_results.py path/to/holdout-results.json \
   --require-evaluation-kind sealed-holdout \
   --require-sealed \
   --require-manifest
+agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
 ```
 
 Before publishing sealed holdout numbers:

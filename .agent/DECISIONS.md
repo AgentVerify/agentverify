@@ -43,3 +43,15 @@
 - Alternative: Keep claim boundaries in prose only. Rejected because release notes and package pages
   are easy to copy from aggregates while overlooking caveats.
 - Revisit when: release automation exists and can attach verifier output artifacts directly to tags.
+
+## Benchmark result schemas are installed contracts
+
+- Decision: Expose the benchmark-result JSON schema through `agentverify schema benchmark-result` and
+  include it in wheel verification.
+- Evidence: Benchmark results are intended to be attached to release notes and downstream validation
+  flows; installed users should not need a source checkout to get the exact contract. A test asserts
+  the packaged schema stays byte-identical to `benchmarks/benchmark-results-v1.schema.json`.
+- Alternative: Leave the schema only under `benchmarks/`. Rejected because it makes report/policy
+  contracts installable while benchmark-result contracts remain source-tree-only.
+- Revisit when: benchmark schemas move into a versioned package namespace or release automation
+  publishes schema artifacts independently.

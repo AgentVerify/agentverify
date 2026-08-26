@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AgentVerify Benchmark Results 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generated_at",
+    "benchmark",
+    "labels",
+    "passed",
+    "metrics",
+    "outcomes"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "benchmark": {"$ref": "#/$defs/benchmark"},
+    "labels": {"type": "integer", "minimum": 0},
+    "passed": {"type": "integer", "minimum": 0},
+    "metrics": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/metric"}
+    },
+    "outcomes": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/outcome"}
+    }
+  },
+  "$defs": {
+    "benchmark": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evaluation_kind",
+        "label_scope",
+        "labels_source",
+        "labels_sha256",
+        "sealed",
+        "claim_scope"
+      ],
+      "properties": {
+        "evaluation_kind": {"enum": ["public-regression", "sealed-holdout"]},
+        "label_scope": {"enum": ["reporting-rules", "agent-ir", "mixed"]},
+        "labels_source": {"type": "string", "minLength": 1},
+        "labels_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "sealed": {"type": "boolean"},
+        "claim_scope": {"type": "string", "minLength": 1},
+        "manifest_source": {"type": "string", "minLength": 1},
+        "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "dependentRequired": {
+        "manifest_source": ["manifest_sha256"],
+        "manifest_sha256": ["manifest_source"]
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"evaluation_kind": {"const": "sealed-holdout"}}},
+          "then": {"properties": {"sealed": {"const": true}}},
+          "else": {"properties": {"sealed": {"const": false}}}
+        }
+      ]
+    },
+    "metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tp", "fp", "tn", "fn", "precision", "recall"],
+      "properties": {
+        "tp": {"type": "integer", "minimum": 0},
+        "fp": {"type": "integer", "minimum": 0},
+        "tn": {"type": "integer", "minimum": 0},
+        "fn": {"type": "integer", "minimum": 0},
+        "precision": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "recall": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "expected", "observed", "anchor_ok", "source_ok", "passed"],
+      "oneOf": [
+        {"required": ["rule_id"]},
+        {"required": ["check_id"]}
+      ],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "rule_id": {"type": "string", "minLength": 1},
+        "check_id": {"type": "string", "minLength": 1},
+        "expected": {"type": "boolean"},
+        "observed": {"type": "boolean"},
+        "anchor_ok": {"type": "boolean"},
+        "source_ok": {"type": "boolean"},
+        "passed": {"type": "boolean"}
+      }
+    }
+  }
+}

@@ -34,6 +34,8 @@ catalog workflows.
 - Added benchmark-result release guardrails: verifier flags can require public-regression or
   sealed-holdout metadata, sealed status, manifests, and label scopes; docs now spell out claim
   boundaries before publishing benchmark numbers.
+- Bundled the benchmark-result schema behind `agentverify schema benchmark-result`, with distribution
+  smoke coverage and a drift test against the canonical `benchmarks/benchmark-results-v1.schema.json`.
 
 ## Current findings
 
@@ -51,5 +53,5 @@ catalog workflows.
 ## Next action
 
 Continue toward the highest-value local P1/P2 work: cryptographic signed policy provenance design,
-additional installed-artifact checks, stronger benchmark release artifact validation, or additional
-real-world framework coverage.
+additional release artifact checks once release packaging is explicit, or additional real-world
+framework coverage.

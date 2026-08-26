@@ -124,4 +124,5 @@ kind, label scope, input hashes, manifest hash, and claim scope. The actual seal
 for approved storage and reviewer workflow. Before publishing benchmark numbers, use
 [`release-checklist.md`](release-checklist.md); release workflows can require sealed-holdout metadata
 with `uv run python scripts/verify_benchmark_results.py path/to/holdout-results.json
---require-evaluation-kind sealed-holdout --require-sealed --require-manifest`.
+--require-evaluation-kind sealed-holdout --require-sealed --require-manifest`. Installed CLIs expose
+the same result contract with `agentverify schema benchmark-result`.

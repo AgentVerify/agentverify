@@ -14,6 +14,7 @@ from pathlib import Path
 REQUIRED_ENTRY_POINTS = {"agentverify": "agentverify.cli:main"}
 REQUIRED_SCHEMA_FILES = frozenset(
     {
+        "agentverify/schemas/agentverify-benchmark-result-v1.schema.json",
         "agentverify/schemas/agentverify-ai-bom-v1.schema.json",
         "agentverify/schemas/agentverify-policy-v1.schema.json",
         "agentverify/schemas/agentverify-policy-summary-v1.schema.json",
@@ -78,6 +79,7 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         command([str(python), "-m", "pip", "install", "--no-deps", str(path)])
         agentverify = script_path(venv_dir, "agentverify")
         version = command([str(agentverify), "--version"]).strip()
+        benchmark_schema = json.loads(command([str(agentverify), "schema", "benchmark-result"]))
         report_schema = json.loads(command([str(agentverify), "schema", "report"]))
         rules_schema = json.loads(command([str(agentverify), "schema", "rules"]))
         policy_summary_schema = json.loads(command([str(agentverify), "schema", "policy-summary"]))
@@ -106,6 +108,7 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         )
     checks = {
         "version": version,
+        "benchmark_schema_title": benchmark_schema.get("title"),
         "report_schema_title": report_schema.get("title"),
         "rules_schema_title": rules_schema.get("title"),
         "policy_summary_schema_title": policy_summary_schema.get("title"),
@@ -117,6 +120,8 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
     failed = []
     if not version.startswith("agentverify "):
         failed.append("version")
+    if benchmark_schema.get("title") != "AgentVerify Benchmark Results 1":
+        failed.append("benchmark_schema_title")
     if report_schema.get("title") != "AgentVerify JSON Report 1":
         failed.append("report_schema_title")
     if rules_schema.get("title") != "AgentVerify Rules Catalog 1":

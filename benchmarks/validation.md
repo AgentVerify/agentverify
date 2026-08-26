@@ -1502,7 +1502,8 @@ shape is validated by [`benchmark-results-v1.schema.json`](benchmark-results-v1.
 `uv run python scripts/verify_benchmark_results.py` to validate the checked-in result files and
 recompute their embedded label or manifest digests. Use
 [`release-checklist.md`](release-checklist.md) before publishing benchmark numbers; the verifier can
-fail release workflows that require `public-regression` or `sealed-holdout` metadata.
+fail release workflows that require `public-regression` or `sealed-holdout` metadata. The same
+contract is available from installed CLIs through `agentverify schema benchmark-result`.
 
 ## Agent IR control-edge checks
 

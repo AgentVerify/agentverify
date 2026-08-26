@@ -21,6 +21,7 @@ agentverify scan ./project --format json
 agentverify scan ./project --format bom
 agentverify scan ./project --format sarif
 agentverify scan ./project --format sarif --output agentverify.sarif
+agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
 agentverify schema report --output agentverify-report.schema.json
 agentverify schema bom --output agentverify-ai-bom.schema.json
 agentverify schema policy --output agentverify-policy.schema.json
@@ -66,6 +67,7 @@ treated as an empty baseline.
 Reports and schemas are written to standard output by default. Use `--output PATH` (or `-o PATH`)
 to write them directly to a file. Output write failures return exit code 2; successful scan writes
 still preserve policy and `--fail-on` exit decisions.
+`agentverify schema benchmark-result` prints the bundled schema for benchmark result files.
 `agentverify schema report` prints the bundled schema for validating normal `--format json` reports;
 `agentverify schema policy-summary` validates `agentverify policy --format json`, and
 `agentverify schema policy-trust-root` validates local digest allowlists for policy summaries.
@@ -118,6 +120,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`benchmarks/release-checklist.md`](benchmarks/release-checklist.md) — claim boundaries and verifier gates for benchmark releases
 - [`benchmarks/holdout-manifest.template.json`](benchmarks/holdout-manifest.template.json) — public sample manifest shape
 - [`benchmarks/benchmark-results-v1.schema.json`](benchmarks/benchmark-results-v1.schema.json) — benchmark result contract
+  (also available from an installed CLI with `agentverify schema benchmark-result`)
 
 SARIF output includes stable fingerprints, source locations, severity, remediation, Agent IR paths,
 and resolved/unresolved control context for code-scanning integrations.
@@ -143,6 +146,7 @@ PYTHONPATH=src python3 scripts/evaluate_truthset.py --evaluation-kind sealed-hol
   --output path/to/holdout-results.json
 uv run python scripts/verify_benchmark_results.py
 uv run python scripts/verify_benchmark_results.py --require-evaluation-kind public-regression
+agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
 ```
 
 The collector reuses commits from `research/repository-data.json` by default and samples up to 220

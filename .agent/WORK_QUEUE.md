@@ -22,7 +22,7 @@
   evidence graph.
 - Improve editor and CI integration examples using schema-backed report, policy, and rule-catalog
   contracts.
-- Consider release-artifact checks that bundle benchmark verification outputs with wheels or release
+- Consider release-artifact checks that attach benchmark verification outputs to wheels or release
   notes once the release process is explicit.
 
 ## Deferred until access/authorization
