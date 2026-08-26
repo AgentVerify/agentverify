@@ -17,6 +17,8 @@ SCHEMA_FILES = {
     "bom": "agentverify-ai-bom-v1.schema.json",
     "editor-contract-manifest": "agentverify-editor-contract-manifest-v1.schema.json",
     "editor-contract-verification": "agentverify-editor-contract-verification-v1.schema.json",
+    "holdout-labels": "agentverify-holdout-labels-v1.schema.json",
+    "holdout-manifest": "agentverify-holdout-manifest-v1.schema.json",
     "policy": "agentverify-policy-v1.schema.json",
     "policy-key-trust-root": "agentverify-policy-key-trust-root-v1.schema.json",
     "policy-signature": "agentverify-policy-signature-v1.schema.json",

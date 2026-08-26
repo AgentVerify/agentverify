@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentverify.dev/schemas/agentverify-holdout-labels-v1.schema.json",
+  "title": "AgentVerify Holdout Labels 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "name", "status", "manifest", "review", "labels"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "name": {"type": "string", "minLength": 1},
+    "status": {"enum": ["template", "draft", "sealed", "closed"]},
+    "manifest": {"type": "string", "minLength": 1},
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewers", "adjudication_required", "labels_sealed_until_round_closed"],
+      "properties": {
+        "reviewers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "adjudication_required": {"type": "boolean"},
+        "labels_sealed_until_round_closed": {"type": "boolean"}
+      }
+    },
+    "labels": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/label"}
+    }
+  },
+  "$defs": {
+    "label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "target",
+        "path",
+        "line",
+        "expected",
+        "source_contains",
+        "stratum",
+        "unsupported",
+        "review_state",
+        "rationale"
+      ],
+      "oneOf": [
+        {"required": ["rule_id"], "not": {"required": ["check_id"]}},
+        {"required": ["check_id"], "not": {"required": ["rule_id"]}}
+      ],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "target": {"$ref": "#/$defs/target"},
+        "path": {"type": "string", "minLength": 1},
+        "line": {"type": "integer", "minimum": 1},
+        "rule_id": {"type": "string", "minLength": 1},
+        "check_id": {"type": "string", "minLength": 1},
+        "expected": {"type": "boolean"},
+        "source_contains": {"type": "string", "minLength": 1},
+        "stratum": {
+          "enum": [
+            "reporting-rule",
+            "agent-ir-component",
+            "agent-ir-relationship",
+            "ambiguity-negative-control",
+            "integration-artifact"
+          ]
+        },
+        "unsupported": {"type": "boolean"},
+        "review_state": {"enum": ["proposed", "reviewed", "adjudicated"]},
+        "rationale": {"type": "string", "minLength": 1}
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {"enum": ["repository", "local"]},
+        "repository": {"type": "string", "pattern": "^[^/\\s]+/[^/\\s]+$"},
+        "path": {"type": "string", "minLength": 1},
+        "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "repository"}}},
+          "then": {"required": ["repository", "commit"], "not": {"required": ["path"]}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "local"}}},
+          "then": {"required": ["path"], "not": {"anyOf": [{"required": ["repository"]}, {"required": ["commit"]}]}}
+        }
+      ]
+    }
+  }
+}

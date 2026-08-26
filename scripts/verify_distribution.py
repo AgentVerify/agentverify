@@ -60,6 +60,8 @@ REQUIRED_SCHEMA_FILES = frozenset(
         "agentverify/schemas/agentverify-ai-bom-v1.schema.json",
         "agentverify/schemas/agentverify-editor-contract-manifest-v1.schema.json",
         "agentverify/schemas/agentverify-editor-contract-verification-v1.schema.json",
+        "agentverify/schemas/agentverify-holdout-labels-v1.schema.json",
+        "agentverify/schemas/agentverify-holdout-manifest-v1.schema.json",
         "agentverify/schemas/agentverify-policy-key-trust-root-v1.schema.json",
         "agentverify/schemas/agentverify-policy-signature-v1.schema.json",
         "agentverify/schemas/agentverify-policy-signing-payload-v1.schema.json",
@@ -171,6 +173,10 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         )
         editor_contract_verification_schema = json.loads(
             command([str(agentverify), "schema", "editor-contract-verification"])
+        )
+        holdout_labels_schema = json.loads(command([str(agentverify), "schema", "holdout-labels"]))
+        holdout_manifest_schema = json.loads(
+            command([str(agentverify), "schema", "holdout-manifest"])
         )
         report_schema = json.loads(command([str(agentverify), "schema", "report"]))
         rules_schema = json.loads(command([str(agentverify), "schema", "rules"]))
@@ -312,6 +318,8 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         "editor_contract_verification_schema_title": editor_contract_verification_schema.get(
             "title"
         ),
+        "holdout_labels_schema_title": holdout_labels_schema.get("title"),
+        "holdout_manifest_schema_title": holdout_manifest_schema.get("title"),
         "report_schema_title": report_schema.get("title"),
         "rules_schema_title": rules_schema.get("title"),
         "policy_key_trust_root_schema_title": policy_key_trust_root_schema.get("title"),
@@ -364,6 +372,8 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         "bom",
         "editor-contract-manifest",
         "editor-contract-verification",
+        "holdout-labels",
+        "holdout-manifest",
         "policy",
         "policy-key-trust-root",
         "policy-signature",
@@ -389,6 +399,10 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         != "AgentVerify Editor Contract Verification 1"
     ):
         failed.append("editor_contract_verification_schema_title")
+    if checks["holdout_labels_schema_title"] != "AgentVerify Holdout Labels 1":
+        failed.append("holdout_labels_schema_title")
+    if checks["holdout_manifest_schema_title"] != "AgentVerify Holdout Manifest 1":
+        failed.append("holdout_manifest_schema_title")
     if report_schema.get("title") != "AgentVerify JSON Report 1":
         failed.append("report_schema_title")
     if rules_schema.get("title") != "AgentVerify Rules Catalog 1":

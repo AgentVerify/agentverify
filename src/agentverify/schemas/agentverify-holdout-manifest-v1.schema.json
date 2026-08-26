@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentverify.dev/schemas/agentverify-holdout-manifest-v1.schema.json",
+  "title": "AgentVerify Holdout Manifest 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "name",
+    "status",
+    "created_from_agentverify_commit",
+    "storage",
+    "sampling_rules",
+    "samples"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "name": {"type": "string", "minLength": 1},
+    "status": {"enum": ["template", "draft", "sealed", "closed"]},
+    "created_from_agentverify_commit": {"type": "string", "minLength": 1},
+    "storage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sealed_labels_location", "public_labels_committed"],
+      "properties": {
+        "sealed_labels_location": {"type": "string", "minLength": 1},
+        "public_labels_committed": {"type": "boolean"}
+      }
+    },
+    "sampling_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "freeze_manifest_before_scanning",
+        "exclude_public_rule_fixtures_when_possible",
+        "replace_released_failure_labels_after_each_closed_round"
+      ],
+      "properties": {
+        "freeze_manifest_before_scanning": {"type": "boolean"},
+        "exclude_public_rule_fixtures_when_possible": {"type": "boolean"},
+        "replace_released_failure_labels_after_each_closed_round": {"type": "boolean"}
+      }
+    },
+    "samples": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/sample"}
+    }
+  },
+  "$defs": {
+    "sample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "repository",
+        "url",
+        "commit",
+        "category",
+        "language_strata",
+        "framework_strata",
+        "selected_roots",
+        "include_dependency_materialized_files",
+        "excluded_paths",
+        "selection_reason"
+      ],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "repository": {"type": "string", "pattern": "^[^/\\s]+/[^/\\s]+$"},
+        "url": {"type": "string", "minLength": 1},
+        "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "category": {"type": "string", "minLength": 1},
+        "language_strata": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "framework_strata": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "selected_roots": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "include_dependency_materialized_files": {"type": "boolean"},
+        "excluded_paths": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/excluded_path"}
+        },
+        "selection_reason": {"type": "string", "minLength": 1}
+      }
+    },
+    "excluded_path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "reason"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "reason": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

@@ -26,6 +26,8 @@ agentverify schema benchmark-result --output agentverify-benchmark-result.schema
 agentverify schema benchmark-verification --output agentverify-benchmark-verification.schema.json
 agentverify schema editor-contract-manifest --output agentverify-editor-contract-manifest.schema.json
 agentverify schema editor-contract-verification --output agentverify-editor-contract-verification.schema.json
+agentverify schema holdout-manifest --output agentverify-holdout-manifest.schema.json
+agentverify schema holdout-labels --output agentverify-holdout-labels.schema.json
 agentverify schema report --output agentverify-report.schema.json
 agentverify schema bom --output agentverify-ai-bom.schema.json
 agentverify schema policy --output agentverify-policy.schema.json
@@ -87,6 +89,8 @@ still preserve policy and `--fail-on` exit decisions.
 `agentverify schema editor-contract-manifest` validates the manifest emitted by
 `agentverify contracts`; `agentverify schema editor-contract-verification` validates the JSON emitted
 by `agentverify contracts --verify-dir`.
+`agentverify schema holdout-manifest` and `agentverify schema holdout-labels` validate the public
+sealed-holdout sampling and adjudicated-label templates.
 `agentverify schema report` prints the bundled schema for validating normal `--format json` reports;
 `agentverify schema policy-summary` validates `agentverify policy --format json`,
 `agentverify schema policy-signing-payload` validates deterministic source-digest manifests for
@@ -161,6 +165,8 @@ HIGH AV-EXEC001 [high; finding]
 - [`examples/benchmark-verification.json`](examples/benchmark-verification.json) — checked verifier-output example for public-regression release gates
 - [`benchmarks/holdout-manifest.template.json`](benchmarks/holdout-manifest.template.json) — public sample manifest shape
 - [`benchmarks/holdout-labels.template.json`](benchmarks/holdout-labels.template.json) — public sealed-label template shape
+- `agentverify schema holdout-manifest` and `agentverify schema holdout-labels` — installed
+  contracts for sealed-holdout setup templates
 - [`benchmarks/benchmark-results-v1.schema.json`](benchmarks/benchmark-results-v1.schema.json) — benchmark result contract
   (also available from an installed CLI with `agentverify schema benchmark-result`)
 - `agentverify schema benchmark-verification` — installed verifier-output contract for
@@ -196,6 +202,8 @@ uv run python scripts/verify_benchmark_results.py --require-evaluation-kind publ
 agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed
 agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
 agentverify schema benchmark-verification --output agentverify-benchmark-verification.schema.json
+agentverify schema holdout-manifest --output agentverify-holdout-manifest.schema.json
+agentverify schema holdout-labels --output agentverify-holdout-labels.schema.json
 ```
 
 The default CI workflow runs the installed CLI benchmark gate against the checked-in public

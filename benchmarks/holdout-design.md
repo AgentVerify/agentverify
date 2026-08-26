@@ -116,6 +116,10 @@ the sample manifest and label shape:
 - [`holdout-manifest.template.json`](holdout-manifest.template.json)
 - [`holdout-labels.template.json`](holdout-labels.template.json)
 
+Both templates are schema-backed installable contracts: use `agentverify schema holdout-manifest`
+and `agentverify schema holdout-labels` to export validators from the same AgentVerify build that
+will later verify result files.
+
 The evaluator accepts an alternate label file through `--labels` plus
 `--evaluation-kind sealed-holdout` and `--manifest`, so CI or a trusted maintainer can supply a sealed
 label path without checking private labels into the public regression corpus. Result JSON conforms to
@@ -125,5 +129,6 @@ for approved storage and reviewer workflow. Before publishing benchmark numbers,
 [`release-checklist.md`](release-checklist.md); release workflows can require sealed-holdout metadata
 with `agentverify benchmark verify path/to/holdout-results.json --require-evaluation-kind
 sealed-holdout --require-sealed --require-manifest`. Add `--require-all-passed` only when making an
-"all labels passed" claim. Installed CLIs expose the result contract with
-`agentverify schema benchmark-result`.
+"all labels passed" claim. Installed CLIs expose the result and setup-template contracts with
+`agentverify schema benchmark-result`, `agentverify schema holdout-manifest`, and
+`agentverify schema holdout-labels`.

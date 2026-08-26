@@ -195,6 +195,9 @@ catalog workflows.
 - Required `benchmarks/holdout-labels.template.json` in source distributions and README artifact
   links, so the sealed-holdout public scaffold ships both the manifest and label templates promised
   by `benchmarks/holdout-design.md`.
+- Added bundled `holdout-manifest` and `holdout-labels` schemas exposed through
+  `agentverify schema`, validating the checked public sealed-holdout setup templates and extending
+  installed-wheel schema smoke coverage to 15 schemas.
 
 ## Current findings
 
@@ -248,6 +251,9 @@ catalog workflows.
 - Source-release verification now protects both public sealed-holdout templates:
   `holdout-manifest.template.json` for samples and `holdout-labels.template.json` for adjudicated
   label shape.
+- Sealed-holdout setup templates are now machine contracts: installed CLIs expose
+  `agentverify schema holdout-manifest` and `agentverify schema holdout-labels`, and the checked
+  templates validate against those schemas before any private labels are introduced.
 - Python registered-class network propagation now accepts exact `module_alias.ClassName()` calls only
   when `module_alias` resolves to one local imported module and is unrebound in the method; locally
   shadowed module aliases, mutable fields, duplicate classes, and rebound constructors remain

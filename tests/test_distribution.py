@@ -80,7 +80,7 @@ def test_distribution_verifier_accepts_all_required_schemas(tmp_path: Path) -> N
     payload = verify_wheel(wheel)
 
     assert payload["passed"] is True
-    assert payload["required_schema_files"] == 13
+    assert payload["required_schema_files"] == 15
     assert payload["missing_schema_files"] == []
     assert payload["present_schema_files"] == sorted(REQUIRED_SCHEMA_FILES)
     assert payload["console_scripts"] == REQUIRED_ENTRY_POINTS

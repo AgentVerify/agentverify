@@ -443,6 +443,8 @@ def test_cli_lists_bundled_schemas(capsys) -> None:
         "bom",
         "editor-contract-manifest",
         "editor-contract-verification",
+        "holdout-labels",
+        "holdout-manifest",
         "policy",
         "policy-key-trust-root",
         "policy-signature",
@@ -468,6 +470,28 @@ def test_cli_prints_bundled_editor_contract_verification_schema(capsys) -> None:
     schema = __import__("json").loads(capsys.readouterr().out)
     Draft202012Validator.check_schema(schema)
     assert schema["title"] == "AgentVerify Editor Contract Verification 1"
+
+
+def test_cli_prints_bundled_holdout_template_schemas(capsys) -> None:
+    assert cli.main(["schema", "holdout-manifest"]) == 0
+    manifest_schema = __import__("json").loads(capsys.readouterr().out)
+    Draft202012Validator.check_schema(manifest_schema)
+    assert manifest_schema["title"] == "AgentVerify Holdout Manifest 1"
+    Draft202012Validator(manifest_schema).validate(
+        __import__("json").loads(
+            (ROOT / "benchmarks/holdout-manifest.template.json").read_text(encoding="utf-8")
+        )
+    )
+
+    assert cli.main(["schema", "holdout-labels"]) == 0
+    labels_schema = __import__("json").loads(capsys.readouterr().out)
+    Draft202012Validator.check_schema(labels_schema)
+    assert labels_schema["title"] == "AgentVerify Holdout Labels 1"
+    Draft202012Validator(labels_schema).validate(
+        __import__("json").loads(
+            (ROOT / "benchmarks/holdout-labels.template.json").read_text(encoding="utf-8")
+        )
+    )
 
 
 def test_cli_prints_bundled_benchmark_result_schema(capsys) -> None:

@@ -24,6 +24,8 @@ uv run python scripts/verify_benchmark_results.py \
 agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed
 agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
 agentverify schema benchmark-verification --output agentverify-benchmark-verification.schema.json
+agentverify schema holdout-manifest --output agentverify-holdout-manifest.schema.json
+agentverify schema holdout-labels --output agentverify-holdout-labels.schema.json
 ```
 
 For GitHub Actions, start from the copyable
@@ -44,8 +46,9 @@ Before publishing public regression numbers:
    to the same verifier.
 3. Confirm CI also ran the installed CLI benchmark gate on the checked-in result files for the
    release commit.
-4. Export `agentverify schema benchmark-result` and `agentverify schema benchmark-verification` from
-   the built or installed CLI when downstream release tooling needs the exact result and verifier
+4. Export `agentverify schema benchmark-result`, `agentverify schema benchmark-verification`,
+   `agentverify schema holdout-manifest`, and `agentverify schema holdout-labels` from the built or
+   installed CLI when downstream release tooling needs the exact result, verifier, and holdout setup
    contracts without a source checkout.
 5. State the claim boundary explicitly: curated public regression metrics, not an unbiased ecosystem
    accuracy estimate.
@@ -70,6 +73,8 @@ agentverify benchmark verify path/to/holdout-results.json \
   --require-manifest
 agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
 agentverify schema benchmark-verification --output agentverify-benchmark-verification.schema.json
+agentverify schema holdout-manifest --output agentverify-holdout-manifest.schema.json
+agentverify schema holdout-labels --output agentverify-holdout-labels.schema.json
 ```
 
 Before publishing sealed holdout numbers:

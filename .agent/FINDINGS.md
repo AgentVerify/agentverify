@@ -6,7 +6,7 @@
   outputs.
 - The runtime catalog currently contains 24 enabled reporting rules.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
-- A freshly rebuilt wheel includes all thirteen runtime schemas; a verifier script now guards that
+- A freshly rebuilt wheel includes all fifteen runtime schemas; a verifier script now guards that
   package artifact expectation.
 - Policy evaluation occurs after baseline filtering and preserves matched findings in all report
   formats.
@@ -55,6 +55,9 @@
   releases must include both `benchmarks/holdout-manifest.template.json` and
   `benchmarks/holdout-labels.template.json` so private-label workflows can start from the same
   reviewed shape described in `benchmarks/holdout-design.md`.
+- The public sealed-holdout scaffold is now schema-backed without exposing private labels:
+  `agentverify schema holdout-manifest` validates sample-manifest shape and
+  `agentverify schema holdout-labels` validates adjudicated-label shape for the checked templates.
 - The checked-in GitHub CI workflow now exercises `agentverify benchmark verify
   --require-evaluation-kind public-regression --require-all-passed`, so public regression artifact
   drift is caught during normal pull-request checks rather than only during manual release review.
