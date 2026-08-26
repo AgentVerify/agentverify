@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AgentVerify Rules Catalog 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "rules"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/rule"}
+    }
+  },
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id",
+        "result_kind",
+        "severity",
+        "confidence",
+        "summary",
+        "remediation"
+      ],
+      "properties": {
+        "rule_id": {
+          "enum": [
+            "AV-A2A001",
+            "AV-APPROVAL001",
+            "AV-APPROVAL002",
+            "AV-APPROVAL003",
+            "AV-APPROVAL004",
+            "AV-APPROVAL005",
+            "AV-APPROVAL006",
+            "AV-APPROVAL007",
+            "AV-APPROVAL008",
+            "AV-APPROVAL009",
+            "AV-APPROVAL010",
+            "AV-AUDIT001",
+            "AV-EXEC001",
+            "AV-EXEC002",
+            "AV-FS001",
+            "AV-FS002",
+            "AV-MCP002",
+            "AV-MCP003",
+            "AV-MCP004",
+            "AV-MCP005",
+            "AV-MCP006",
+            "AV-MCP007",
+            "AV-NET001",
+            "AV-SANDBOX001"
+          ]
+        },
+        "result_kind": {"enum": ["finding", "review"]},
+        "severity": {"enum": ["info", "low", "medium", "high"]},
+        "confidence": {"enum": ["low", "medium", "high"]},
+        "summary": {"type": "string", "minLength": 1, "pattern": "\\S"},
+        "remediation": {"type": "string", "minLength": 1, "pattern": "\\S"}
+      }
+    }
+  }
+}

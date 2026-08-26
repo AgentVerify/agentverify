@@ -423,6 +423,17 @@ def test_cli_prints_bundled_report_schema(capsys) -> None:
     ]
 
 
+def test_cli_prints_bundled_rules_schema(capsys) -> None:
+    assert cli.main(["schema", "rules"]) == 0
+
+    schema = __import__("json").loads(capsys.readouterr().out)
+    rules = __import__("json").loads(cli.render_rules(None, output_format="json"))
+    Draft202012Validator.check_schema(schema)
+    Draft202012Validator(schema).validate(rules)
+    assert schema["title"] == "AgentVerify Rules Catalog 1"
+    assert schema["$defs"]["rule"]["properties"]["rule_id"]["enum"] == list(RULE_CATALOG)
+
+
 def test_cli_writes_bundled_schema_to_output_file(tmp_path: Path, capsys) -> None:
     output = tmp_path / "agentverify-policy.schema.json"
 

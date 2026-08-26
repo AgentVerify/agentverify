@@ -12,6 +12,7 @@ results and allowing a gate to pass silently.
 ```console
 agentverify schema report --output agentverify-report.schema.json
 agentverify schema policy --output agentverify-policy.schema.json
+agentverify schema rules --output agentverify-rules.schema.json
 agentverify scan . --policy agentverify-policy.json
 ```
 
@@ -65,6 +66,7 @@ filters, matched counts, matched summaries by rule/result kind/severity, and mat
 Text and summary reports include the by-rule breakdown beside each matching gate for quick CI triage.
 Use `agentverify schema report` to validate the normal `--format json` report shape, including its
 `AgentVerify JSON Report` schema marker, baseline, risk, and policy summaries.
+Use `agentverify schema rules` to validate generated `agentverify rules --format json` payloads.
 Unknown fields or rules, duplicate gate IDs, kind/severity-incompatible rule filters, invalid
 enumerations, and negative budgets are rejected rather than ignored.
 

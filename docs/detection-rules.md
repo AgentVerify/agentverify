@@ -71,9 +71,10 @@ stated day.
 `agentverify rules` is the authoritative discovery surface for enabled reporting rules. It lists
 each rule's result kind, default severity, confidence, summary, and baseline remediation. Use
 `agentverify rules AV-FS001` for one rule or `agentverify rules --format json` for a stable
-schema-versioned payload. The engine checks every emitted finding against the same catalog, so a
-call site cannot silently drift to a different kind, severity, or confidence. Inventory-only IDs in
-the specification table above are not reporting rules and therefore do not appear in the runtime
-catalog or emit policy-counted findings; policy rule filters reject those IDs. SARIF rule
-descriptors use the catalog's stable summary, remediation, kind, severity, and confidence while
-individual results retain their context-specific messages.
+schema-versioned payload. `agentverify schema rules` emits the bundled validation contract for that
+payload, including the enabled rule-ID enum. The engine checks every emitted finding against the same
+catalog, so a call site cannot silently drift to a different kind, severity, or confidence.
+Inventory-only IDs in the specification table above are not reporting rules and therefore do not
+appear in the runtime catalog or emit policy-counted findings; policy rule filters reject those IDs.
+SARIF rule descriptors use the catalog's stable summary, remediation, kind, severity, and confidence
+while individual results retain their context-specific messages.

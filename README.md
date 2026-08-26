@@ -24,6 +24,7 @@ agentverify scan ./project --format sarif --output agentverify.sarif
 agentverify schema report --output agentverify-report.schema.json
 agentverify schema bom --output agentverify-ai-bom.schema.json
 agentverify schema policy --output agentverify-policy.schema.json
+agentverify schema rules --output agentverify-rules.schema.json
 agentverify scan ./project --policy agentverify-policy.json
 agentverify scan ./project --policy repository-policy.json  # may extend local organization policy
 agentverify scan ./project --fail-on high
@@ -60,12 +61,14 @@ treated as an empty baseline.
 Reports and schemas are written to standard output by default. Use `--output PATH` (or `-o PATH`)
 to write them directly to a file. Output write failures return exit code 2; successful scan writes
 still preserve policy and `--fail-on` exit decisions.
-`agentverify schema report` prints the bundled schema for validating normal `--format json` reports.
+`agentverify schema report` prints the bundled schema for validating normal `--format json` reports;
+`agentverify schema rules` validates the machine-readable rule catalog.
 Use `--format summary` for compact CI logs: it reports scan totals, baseline/policy status, counts by
 severity/result kind/rule, and the top evidence locations without printing the full component graph.
 `agentverify rules` lists every enabled reporting rule with its result kind, default severity,
 confidence, summary, and baseline remediation. Pass a rule ID for a focused explanation or
-`--format json` for policy tooling and editor integrations. Policy rule filters reject unknown or
+`--format json` for policy tooling and editor integrations; the bundled rules schema preserves this
+contract for generated configuration and editor metadata. Policy rule filters reject unknown or
 inventory-only IDs before scanning. They also reject selected rules excluded by the gate's result
 kind or severity threshold, so a typo or dead filter cannot silently turn a gate into an empty match.
 
