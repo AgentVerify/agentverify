@@ -528,7 +528,8 @@ scored IR component/relationship labels. Schema-v123 engine results and
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. The checked-in holdout design now defines the sampling strata, label protocol,
 leakage controls, reporting metrics, and public manifest/label templates for that process. Keep
-discovery sampling metrics separate from detection-quality metrics.
+discovery sampling metrics separate from detection-quality metrics. Evaluator outputs now identify
+public-regression versus sealed-holdout runs and include label/manifest digests for reproducibility.
 
 ## P2 — CI adoption workflow
 

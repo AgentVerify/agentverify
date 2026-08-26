@@ -21,6 +21,7 @@ catalog workflows.
 - Added a sealed holdout benchmark design to separate public regression metrics from unbiased
   evaluation claims.
 - Added public holdout manifest/label templates while keeping real sealed labels out of the repo.
+- Added benchmark evaluator metadata for public-regression versus sealed-holdout outputs.
 
 ## Current findings
 
@@ -38,5 +39,5 @@ catalog workflows.
 ## Next action
 
 Continue toward the highest-value local P1/P2 work: signed policy provenance design,
-installed-artifact CLI smoke tests, holdout evaluator metadata, or additional real-world framework
+installed-artifact CLI smoke tests, holdout result schema/docs, or additional real-world framework
 coverage.

@@ -1496,7 +1496,8 @@ This is a curated regression set, not an unbiased estimate of ecosystem precisio
 benchmark milestone is a separately sampled, externally reviewed holdout set with framework-stratified
 coverage; its labels must not drive rule implementation before evaluation.
 [`holdout-design.md`](holdout-design.md) defines the sampling, labeling, leakage-control, and
-reporting process for that future benchmark.
+reporting process for that future benchmark. Evaluator outputs now include benchmark metadata that
+distinguishes public regression runs from sealed-holdout runs and records label/manifest hashes.
 
 ## Agent IR control-edge checks
 

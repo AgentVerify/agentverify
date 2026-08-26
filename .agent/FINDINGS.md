@@ -13,6 +13,8 @@
   design records how to produce an unbiased sealed evaluation later.
 - The evaluator already accepts alternate `--labels` paths, so sealed labels can be supplied by CI or
   a trusted maintainer without committing them publicly.
+- Benchmark result JSON now records evaluation kind, label scope, input digests, sealed status, and
+  claim scope, reducing the risk that public regression metrics are reused as holdout claims.
 
 ## Hypotheses
 

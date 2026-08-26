@@ -8,8 +8,7 @@
 
 ## P1
 
-- Add holdout evaluator metadata to distinguish public regression outputs from sealed evaluation
-  outputs.
+- Add a documented/schema-backed contract for benchmark result JSON outputs.
 - Extend package/distribution checks beyond runtime schemas to examples and CLI entrypoint smoke
   tests in installed artifacts.
 - Expand selected real-world framework coverage where current docs record unresolved package

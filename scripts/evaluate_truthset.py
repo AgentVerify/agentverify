@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import subprocess
 from collections import Counter, defaultdict
@@ -11,13 +12,60 @@ from pathlib import Path
 
 from agentverify.scanner import scan_repository
 
+CLAIM_SCOPE = {
+    "public-regression": (
+        "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
+    ),
+    "sealed-holdout": "sealed holdout evaluation; suitable for unbiased accuracy claims if labels remained sealed",
+}
 
-def parse_args() -> argparse.Namespace:
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--labels", type=Path, default=Path("benchmarks/truthset.json"))
     parser.add_argument("--cache-dir", type=Path, default=Path(".agentverify-cache/repositories"))
     parser.add_argument("--output", type=Path, default=Path("benchmarks/truthset-results.json"))
-    return parser.parse_args()
+    parser.add_argument(
+        "--evaluation-kind",
+        choices=tuple(CLAIM_SCOPE),
+        default="public-regression",
+        help="declare whether labels are public regressions or a sealed holdout",
+    )
+    parser.add_argument(
+        "--manifest",
+        type=Path,
+        help="optional holdout/sample manifest used to create the label file",
+    )
+    return parser.parse_args(argv)
+
+
+def file_sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def label_scope(labels: list[dict]) -> str:
+    has_rules = any("rule_id" in label for label in labels)
+    has_ir = any("check_id" in label for label in labels)
+    if has_rules and has_ir:
+        return "mixed"
+    if has_ir:
+        return "agent-ir"
+    return "reporting-rules"
+
+
+def benchmark_metadata(args: argparse.Namespace, labels: list[dict]) -> dict[str, object]:
+    metadata: dict[str, object] = {
+        "evaluation_kind": args.evaluation_kind,
+        "label_scope": label_scope(labels),
+        "labels_source": str(args.labels),
+        "labels_sha256": file_sha256(args.labels),
+        "sealed": args.evaluation_kind == "sealed-holdout",
+        "claim_scope": CLAIM_SCOPE[args.evaluation_kind],
+    }
+    if args.manifest is not None:
+        metadata["manifest_source"] = str(args.manifest)
+        metadata["manifest_sha256"] = file_sha256(args.manifest)
+    return metadata
 
 
 def target_path(target: dict, cache_dir: Path) -> Path:
@@ -39,8 +87,8 @@ def verify_commit(path: Path, target: dict) -> None:
         raise RuntimeError(f"{target['repository']}: expected {target['commit']}, found {actual}")
 
 
-def main() -> int:
-    args = parse_args()
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
     labels = json.loads(args.labels.read_text(encoding="utf-8"))["labels"]
     scans = {}
     outcomes = []
@@ -142,13 +190,19 @@ def main() -> int:
     payload = {
         "schema_version": 1,
         "generated_at": datetime.now(UTC).isoformat(),
+        "benchmark": benchmark_metadata(args, labels),
         "labels": len(labels),
         "passed": sum(item["passed"] for item in outcomes),
         "metrics": metrics,
         "outcomes": outcomes,
     }
     args.output.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({key: payload[key] for key in ("labels", "passed", "metrics")}, indent=2))
+    print(
+        json.dumps(
+            {key: payload[key] for key in ("benchmark", "labels", "passed", "metrics")},
+            indent=2,
+        )
+    )
     return 0 if payload["passed"] == payload["labels"] else 1
 
 

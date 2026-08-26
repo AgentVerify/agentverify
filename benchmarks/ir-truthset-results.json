@@ -1,6 +1,14 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-26T09:20:18.885356+00:00",
+  "generated_at": "2026-08-26T10:18:54.431441+00:00",
+  "benchmark": {
+    "evaluation_kind": "public-regression",
+    "label_scope": "agent-ir",
+    "labels_source": "benchmarks/ir-truthset.json",
+    "labels_sha256": "d721fcade5ba1100b9fd6c4b7814ee8a02ecf48cedb326116c32129539e06a94",
+    "sealed": false,
+    "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
+  },
   "labels": 1449,
   "passed": 1449,
   "metrics": {

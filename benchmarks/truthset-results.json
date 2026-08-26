@@ -1,6 +1,14 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-26T09:14:45.827064+00:00",
+  "generated_at": "2026-08-26T10:19:11.508357+00:00",
+  "benchmark": {
+    "evaluation_kind": "public-regression",
+    "label_scope": "reporting-rules",
+    "labels_source": "benchmarks/truthset.json",
+    "labels_sha256": "dcba802f2cb7b19a09609e719c09ed89e1049656f339b6cbd4c03a4a8536f310",
+    "sealed": false,
+    "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
+  },
   "labels": 714,
   "passed": 714,
   "metrics": {

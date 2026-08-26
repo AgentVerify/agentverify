@@ -124,6 +124,9 @@ PYTHONPATH=src python3 scripts/benchmark_engine.py
 PYTHONPATH=src python3 scripts/evaluate_truthset.py
 PYTHONPATH=src python3 scripts/evaluate_truthset.py --labels benchmarks/ir-truthset.json \
   --output benchmarks/ir-truthset-results.json
+PYTHONPATH=src python3 scripts/evaluate_truthset.py --evaluation-kind sealed-holdout \
+  --manifest path/to/holdout-manifest.json --labels path/to/sealed-labels.json \
+  --output path/to/holdout-results.json
 ```
 
 The collector reuses commits from `research/repository-data.json` by default and samples up to 220

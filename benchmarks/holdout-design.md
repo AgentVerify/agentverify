@@ -116,6 +116,8 @@ the sample manifest and label shape:
 - [`holdout-manifest.template.json`](holdout-manifest.template.json)
 - [`holdout-labels.template.json`](holdout-labels.template.json)
 
-The existing evaluator already accepts an alternate label file through `--labels`, so CI or a trusted
-maintainer can supply a sealed label path without checking private labels into the public regression
-corpus. The actual sealed labels should wait for approved storage and reviewer workflow.
+The evaluator accepts an alternate label file through `--labels` plus
+`--evaluation-kind sealed-holdout` and `--manifest`, so CI or a trusted maintainer can supply a sealed
+label path without checking private labels into the public regression corpus. Result JSON records the
+evaluation kind, label scope, input hashes, manifest hash, and claim scope. The actual sealed labels
+should wait for approved storage and reviewer workflow.
