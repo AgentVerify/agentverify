@@ -41,6 +41,7 @@ agentverify policy repository-policy.json --export-signing-payload --output poli
 agentverify policy repository-policy.json --trust-root policy-trust-root.json --require-trusted
 agentverify policy examples/repository-policy.json --trust-root examples/policy-trust-root.json --require-trusted
 agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed
+agentverify contracts --output-dir agentverify-editor-contracts --sample-root examples/safe_agent
 agentverify scan ./project --fail-on high
 agentverify scan ./project --fail-on high --fail-on-kind any
 agentverify scan ./project --include-tests
@@ -179,9 +180,9 @@ agentverify schema benchmark-result --output agentverify-benchmark-result.schema
 
 The default CI workflow runs the installed CLI benchmark gate against the checked-in public
 regression results, so benchmark-result drift fails during pull requests before release packaging.
-For editor or custom CI integrations, `python scripts/export_editor_contracts.py --sample-root
-examples/safe_agent` exports the report schema, rules schema, current rules catalog, and optional
-sample report into a local artifact directory.
+For editor or custom CI integrations, `agentverify contracts --sample-root examples/safe_agent`
+exports the report schema, rules schema, current rules catalog, and optional sample report into a
+local artifact directory.
 
 The collector reuses commits from `research/repository-data.json` by default and samples up to 220
 source/manifest roots plus at most 20 bounded local source dependencies reached from MCP

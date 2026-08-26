@@ -6,7 +6,7 @@ CI dashboards can consume them without scraping text output.
 Export the stable contract bundle:
 
 ```console
-python scripts/export_editor_contracts.py \
+agentverify contracts \
   --output-dir agentverify-editor-contracts \
   --sample-root examples/safe_agent
 ```
@@ -27,6 +27,9 @@ agentverify schema rules --output agentverify-rules-v1.schema.json
 agentverify rules --format json --output agentverify-rules.json
 agentverify scan examples/safe_agent --format json --output agentverify-sample-report.json
 ```
+
+From a source checkout, `python scripts/export_editor_contracts.py` is a thin wrapper around the
+same installed package exporter.
 
 Editors should use `rule_id`, `result_kind`, `severity`, `confidence`, and `remediation` from the
 rules catalog when rendering diagnostics. Normal JSON reports preserve stable finding fingerprints,

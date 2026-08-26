@@ -145,6 +145,7 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
     with tempfile.TemporaryDirectory(prefix="agentverify-wheel-") as raw_dir:
         venv_dir = Path(raw_dir) / "venv"
         generated_trust_root = Path(raw_dir) / "generated-policy-trust-root.json"
+        editor_contracts_dir = Path(raw_dir) / "editor-contracts"
         venv.EnvBuilder(with_pip=True).create(venv_dir)
         python = script_path(venv_dir, "python")
         command([str(python), "-m", "pip", "install", str(path)])
@@ -180,6 +181,18 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
                     "--require-evaluation-kind",
                     "public-regression",
                     "--require-all-passed",
+                ]
+            )
+        )
+        editor_contracts = json.loads(
+            command(
+                [
+                    str(agentverify),
+                    "contracts",
+                    "--output-dir",
+                    str(editor_contracts_dir),
+                    "--sample-root",
+                    str(source_root / "examples/safe_agent"),
                 ]
             )
         )
@@ -265,6 +278,9 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
                 "summary",
             ]
         )
+        editor_contract_files_present = sorted(
+            path.name for path in editor_contracts_dir.iterdir() if path.is_file()
+        )
     checks = {
         "version": version,
         "schema_list": schema_list,
@@ -288,6 +304,10 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         "benchmark_verification_labels": [
             item.get("labels") for item in benchmark_verification.get("results", [])
         ],
+        "editor_contract_artifacts": [
+            item.get("path") for item in editor_contracts.get("artifacts", [])
+        ],
+        "editor_contract_files_present": editor_contract_files_present,
         "signed_policy_signature_verified": signed_policy_example.get("signature_verified"),
         "signed_policy_signature_trusted": signed_policy_example.get("signature_trusted"),
         "signed_policy_private_key_material": signed_policy_example.get("private_key_material"),
@@ -347,6 +367,18 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         failed.append("benchmark_verification_passed")
     if checks["benchmark_verification_labels"] != [714, 1545]:
         failed.append("benchmark_verification_labels")
+    expected_editor_contract_files = [
+        "agentverify-report-v1.schema.json",
+        "agentverify-rules-v1.schema.json",
+        "agentverify-rules.json",
+        "agentverify-sample-report.json",
+    ]
+    if checks["editor_contract_artifacts"] != expected_editor_contract_files:
+        failed.append("editor_contract_artifacts")
+    if checks["editor_contract_files_present"] != sorted(
+        [*expected_editor_contract_files, "manifest.json"]
+    ):
+        failed.append("editor_contract_files_present")
     if checks["signed_policy_signature_verified"] is not True:
         failed.append("signed_policy_signature_verified")
     if checks["signed_policy_signature_trusted"] is not True:

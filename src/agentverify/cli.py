@@ -14,6 +14,7 @@ from .benchmark import (
     render_benchmark_verification,
     verify_benchmark_results,
 )
+from .contracts import export_editor_contracts, render_editor_contract_manifest
 from .policy import (
     SEVERITY_RANK,
     PolicyError,
@@ -131,6 +132,27 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         metavar="PATH",
         help="write rule metadata to PATH instead of standard output",
+    )
+    contracts = subparsers.add_parser(
+        "contracts", help="export editor and CI integration contract artifacts"
+    )
+    contracts.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path("agentverify-editor-contracts"),
+        help="directory to create or update with exported contract artifacts",
+    )
+    contracts.add_argument(
+        "--sample-root",
+        type=Path,
+        help="optional repository path to scan and include as agentverify-sample-report.json",
+    )
+    contracts.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        metavar="PATH",
+        help="write the export manifest to PATH instead of standard output",
     )
     policy = subparsers.add_parser("policy", help="validate and explain a schema-v1 policy")
     policy.add_argument("path", type=Path)
@@ -311,6 +333,13 @@ def main(argv: list[str] | None = None) -> int:
         )
     if args.command == "rules":
         return emit_output(render_rules(args.rule_id, output_format=args.format), args.output) or 0
+    if args.command == "contracts":
+        try:
+            manifest = export_editor_contracts(args.output_dir, sample_root=args.sample_root)
+        except OSError as error:
+            print(f"agentverify: cannot export contracts: {error}", file=sys.stderr)
+            return 2
+        return emit_output(render_editor_contract_manifest(manifest), args.output) or 0
     if args.command == "benchmark":
         try:
             payload = verify_benchmark_results(

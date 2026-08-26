@@ -120,8 +120,11 @@
 - Evidence: Editor extensions and review bots need the report schema, rules schema, current rule
   catalog, and representative report shape together. `agentverify schema ...` and `agentverify rules
   --format json` already expose the primitives, but a generated bundle with a digest manifest makes
-  local integration and release verification easier to automate. Tests validate the exported rule
-  catalog and sample report against the bundled schemas.
+  local integration and release verification easier to automate. Promoting the exporter to
+  `agentverify contracts` makes the contract available from installed wheels, while the
+  source-checkout script remains a wrapper. Tests validate the exported rule catalog and sample
+  report against the bundled schemas, and installed-wheel smoke tests require the CLI command to
+  write every expected artifact.
 - Alternative: Check in generated copies of the rule catalog and schemas. Rejected because generated
   copies would drift whenever rules or schemas change unless every catalog update also regenerated
   secondary artifacts.

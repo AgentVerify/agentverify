@@ -119,6 +119,9 @@ catalog workflows.
 - Added an editor/CI contract exporter that writes the report schema, rules schema, current rules
   catalog, optional sample report, and digest manifest, with tests and source-distribution coverage
   for the exporter and integration guide.
+- Promoted editor/CI contract export into the installed CLI as `agentverify contracts`, with the
+  source-checkout script reduced to a wrapper and installed-wheel distribution smoke coverage that
+  exports the schema/catalog/sample-report bundle.
 - Added explicit all-labels-passed benchmark verification output and a `--require-all-passed` gate,
   so public regression release checks can fail closed on honest failing-label result files while
   still allowing failed sealed-holdout metrics to be validated when intentionally published.
@@ -135,6 +138,9 @@ catalog workflows.
 - The rule catalog is now the authoritative runtime source for reporting metadata and policy rule
   validation. Keeping schemas synchronized with `RULE_CATALOG` prevents generated policy/editor
   tooling from drifting.
+- Editor/CI contract export is now an installed-package behavior. Integrations can ask any
+  AgentVerify installation for a digest-manifested report schema, rules schema, current rules
+  catalog, and optional sample report without relying on source-tree scripts.
 - Baseline handling is intentionally conservative: malformed recognized artifacts are usage errors;
   partial selected-path scans do not claim no-longer-reported counts.
 
