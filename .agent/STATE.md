@@ -279,8 +279,13 @@ catalog workflows.
   and `memory()` factories in literal capability lists. The scanner records SDK-sandbox filesystem
   and memory reachability separately from host-local filesystem risk, while rebounded capability
   aliases stay unresolved. Local fixtures plus OpenAI Agents JS `memory.ts` and
-  `memory-generation.ts` labels raise regenerated public IR truth-set results to 1,712 passing
+  `memory-generation.ts` labels raised regenerated public IR truth-set results to 1,712 passing
   labels.
+- Extended exact TypeScript OpenAI Agents sandbox capability inventory to unshadowed `skills()`
+  factories in literal capability lists, recording `skill-loading` as SDK-sandbox reachability while
+  leaving aggregate `Capabilities.default()` and rebounded skill aliases unresolved. Local fixtures
+  plus OpenAI Agents JS sandbox coding/capability/docs examples raise regenerated public IR
+  truth-set results to 1,729 passing labels.
 
 ## Current findings
 

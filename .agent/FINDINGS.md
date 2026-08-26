@@ -245,7 +245,11 @@
   `filesystem()` and `memory()` factories in literal `capabilities` lists, marking both as
   SDK-sandbox reachability rather than host-local filesystem/memory risk. Rebounded capability
   aliases remain unresolved, and real OpenAI Agents JS memory examples pin same-line and multiline
-  factory evidence. The public IR truth set now covers 1,712 passing labels.
+  factory evidence. The public IR truth set then covered 1,712 passing labels.
+- Exact TypeScript OpenAI Agents sandbox skill-loading inventory now covers unshadowed `skills()`
+  factories in literal `capabilities` lists, without expanding aggregate `Capabilities.default()`
+  contents. Rebounded skill aliases remain unresolved, and real OpenAI Agents JS coding/docs examples
+  pin `skill-loading` edges. The public IR truth set now covers 1,729 passing labels.
 
 ## Hypotheses
 

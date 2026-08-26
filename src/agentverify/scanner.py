@@ -12489,11 +12489,12 @@ TS_OPENAI_BUILTIN_TOOL_CAPABILITIES = {
     "programmaticToolCallingTool": ("dynamic-tool-orchestration",),
     "shell": ("shell-execution",),
     "shellTool": ("shell-execution",),
+    "skills": ("skill-loading",),
     "toolSearchTool": ("dynamic-tool-discovery",),
     "webSearchTool": ("external-action",),
     "codexTool": ("code-execution",),
 }
-TS_OPENAI_SANDBOX_CAPABILITY_FACTORIES = {"filesystem", "memory", "shell"}
+TS_OPENAI_SANDBOX_CAPABILITY_FACTORIES = {"filesystem", "memory", "shell", "skills"}
 TS_OPENAI_APPROVAL_BUILTINS = {"applyPatchTool", "computerTool", "shellTool"}
 CONTAINER_CONFIG_SUFFIXES = {".yml", ".yaml"}
 INLINE_SUPPRESSION = re.compile(

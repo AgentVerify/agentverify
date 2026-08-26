@@ -1,7 +1,7 @@
 import { run } from '@openai/agents';
 import {
   SandboxAgent,
-  SandboxAgent as AliasedSandboxAgent, filesystem, memory,
+  SandboxAgent as AliasedSandboxAgent, filesystem, memory, skills,
   shell,
   shell as sandboxShell,
 } from '@openai/agents/sandbox';
@@ -9,7 +9,7 @@ import {
 const localSandbox = new SandboxAgent({
   name: 'Local Sandbox Assistant',
   model: 'gpt-5-mini',
-  capabilities: [filesystem(), shell()],
+  capabilities: [filesystem(), skills({ lazyFrom: { source: { type: 'local_dir', src: './skills' }, index: [] } }), shell()],
 });
 
 const aliasedSandbox = new AliasedSandboxAgent({
