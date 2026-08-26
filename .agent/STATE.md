@@ -290,9 +290,17 @@ catalog workflows.
   `@openai/agents/sandbox/local` `UnixLocalSandboxClient` and `DockerSandboxClient` constructors
   wired into `run(..., { sandbox: { client/session } })`. Direct client bindings, inline client
   construction, one exact `client.create(...)` session binding, and object-shorthand `{ session }`
-  now produce agent `configured-by` `sandbox-runtime` control edges. Rebounded local-client imports,
-  unknown sessions, and ternary client selection stay unresolved. Local fixtures plus four OpenAI
-  Agents JS examples raise regenerated public IR truth-set results to 1,747 passing labels.
+  now produce agent `configured-by` `sandbox-runtime` control edges. Rebounded local-client imports
+  and unknown sessions stay unresolved. Local fixtures plus four OpenAI Agents JS examples raised
+  regenerated public IR truth-set results to 1,747 passing labels.
+- Extended that runtime-client inventory to exact ternary client initializers whose outer expression
+  is a conditional and whose branches each contain exactly one unshadowed sandbox-local
+  `DockerSandboxClient`/`UnixLocalSandboxClient` constructor. The scanner records one
+  `conditional-local` `sandbox-runtime` control with Docker/Unix options and carries it through
+  direct `client.create(...)` session bindings into `run(..., { sandbox: { session } })`; half-known
+  ternaries remain unresolved. Local positive/negative fixtures plus OpenAI Agents JS
+  `examples/sandbox/basic.ts` and `examples/sandbox/resume.ts` raised regenerated public IR
+  truth-set results to 1,755 passing labels.
 - Strengthened source-release verification for the packaged GitHub workflow examples:
   `verify_sdist()` now checks benchmark verifier output/schema/upload, policy-gate
   permission/policy/summary/expiry arguments, and code-scanning SARIF permission/upload contracts.

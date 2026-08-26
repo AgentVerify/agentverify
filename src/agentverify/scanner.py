@@ -15642,6 +15642,98 @@ def typescript_new_expression_parts(expression: str) -> tuple[str, str, int] | N
     return match.group(1), expression[opening + 1 : end - 1], opening + 1
 
 
+def typescript_variable_initializers(text: str) -> list[tuple[str, str, int]]:
+    """Return simple const/let variable initializers and their source offsets."""
+    code = typescript_code_mask(text)
+    initializers: list[tuple[str, str, int]] = []
+    assignment = re.compile(r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=")
+    depths = {"(": 0, "[": 0, "{": 0}
+    closing = {")": "(", "]": "[", "}": "{"}
+    for match in assignment.finditer(code):
+        cursor = match.end()
+        while cursor < len(code) and code[cursor].isspace():
+            cursor += 1
+        expression_start = cursor
+        while cursor < len(code):
+            character = code[cursor]
+            if character in depths:
+                depths[character] += 1
+            elif character in closing and depths[closing[character]]:
+                depths[closing[character]] -= 1
+            elif character == ";" and not any(depths.values()):
+                break
+            cursor += 1
+        expression = text[expression_start:cursor].strip()
+        if expression:
+            leading = len(text[expression_start:cursor]) - len(
+                text[expression_start:cursor].lstrip()
+            )
+            initializers.append((match.group(1), expression, expression_start + leading))
+        for delimiter in depths:
+            depths[delimiter] = 0
+    return initializers
+
+
+def typescript_top_level_ternary_parts(
+    expression: str,
+) -> tuple[str, str, str] | None:
+    """Split one top-level conditional expression into condition/true/false parts."""
+    code = typescript_code_mask(expression)
+    depths = {"(": 0, "[": 0, "{": 0}
+    closing = {")": "(", "]": "[", "}": "{"}
+    question_index = None
+    colon_index = None
+    nested_ternaries = 0
+    for index, character in enumerate(code):
+        if character in depths:
+            depths[character] += 1
+        elif character in closing and depths[closing[character]]:
+            depths[closing[character]] -= 1
+        elif character == "?" and not any(depths.values()):
+            if question_index is None:
+                question_index = index
+            else:
+                nested_ternaries += 1
+        elif character == ":" and not any(depths.values()) and question_index is not None:
+            if nested_ternaries:
+                nested_ternaries -= 1
+                continue
+            colon_index = index
+            break
+    if question_index is None or colon_index is None:
+        return None
+    condition = expression[:question_index].strip()
+    true_branch = expression[question_index + 1 : colon_index].strip()
+    false_branch = expression[colon_index + 1 :].strip()
+    if not condition or not true_branch or not false_branch:
+        return None
+    return condition, true_branch, false_branch
+
+
+def typescript_openai_sandbox_client_constructors(
+    *,
+    expression: str,
+    sandbox_local_imports: dict[str, str],
+    text: str,
+) -> list[tuple[str, str]] | None:
+    """Return exact OpenAI sandbox-local client constructors in an expression.
+
+    A shadowed supported import makes the expression unresolved, because a same-named
+    constructor no longer proves an SDK sandbox-local runtime.
+    """
+    constructors: list[tuple[str, str]] = []
+    code = typescript_code_mask(expression)
+    for match in re.finditer(r"\bnew\s+([A-Za-z_$][\w$]*)\s*\(", code):
+        local_constructor = match.group(1)
+        constructor = sandbox_local_imports.get(local_constructor)
+        if constructor not in TS_OPENAI_SANDBOX_LOCAL_CLIENTS:
+            continue
+        if typescript_import_binding_is_shadowed(text, local_constructor):
+            return None
+        constructors.append((local_constructor, constructor))
+    return constructors
+
+
 def add_typescript_openai_sandbox_runtime_control(
     ir: RepositoryIR,
     *,
@@ -15668,6 +15760,49 @@ def add_typescript_openai_sandbox_runtime_control(
     }
     if local_constructor != constructor:
         attributes["local_constructor"] = local_constructor
+    ir.add_component(
+        Component(
+            "control",
+            "sandbox-runtime",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    return "sandbox-runtime", control_id
+
+
+def add_typescript_openai_sandbox_conditional_runtime_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    constructors: list[tuple[str, str]],
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add an exact conditional OpenAI Agents JS local sandbox runtime control."""
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    imported_constructors = [constructor for _, constructor in constructors]
+    local_constructors = [local for local, _ in constructors]
+    attributes = {
+        "analysis": "typescript-openai-sandbox-local-client",
+        "module": "@openai/agents/sandbox/local",
+        "constructor": "conditional",
+        "imported_symbol": "conditional",
+        "resolution": "exact-openai-sandbox-local-conditional-import",
+        "sandbox_runtime": "conditional-local",
+        "sandbox_runtime_options": [
+            TS_OPENAI_SANDBOX_LOCAL_CLIENTS[constructor]
+            for constructor in imported_constructors
+        ],
+        "constructors": imported_constructors,
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": source_scope(relative),
+    }
+    if local_constructors != imported_constructors:
+        attributes["local_constructors"] = local_constructors
     ir.add_component(
         Component(
             "control",
@@ -16131,6 +16266,41 @@ def typescript_graph(
             line=start_line,
             constructor=constructor,
             local_constructor=local_constructor,
+            symbol_identity=f"{variable_name}@{start_line}",
+        )
+    for variable_name, initializer, initializer_offset in typescript_variable_initializers(text):
+        if variable_name in sandbox_client_bindings:
+            continue
+        ternary = typescript_top_level_ternary_parts(initializer)
+        if ternary is None:
+            continue
+        _, true_branch, false_branch = ternary
+        true_constructors = typescript_openai_sandbox_client_constructors(
+            expression=true_branch,
+            sandbox_local_imports=sandbox_local_imports,
+            text=text,
+        )
+        false_constructors = typescript_openai_sandbox_client_constructors(
+            expression=false_branch,
+            sandbox_local_imports=sandbox_local_imports,
+            text=text,
+        )
+        if (
+            true_constructors is None
+            or false_constructors is None
+            or len(true_constructors) != 1
+            or len(false_constructors) != 1
+        ):
+            continue
+        start_line = line_at(text, initializer_offset)
+        sandbox_client_bindings[
+            variable_name
+        ] = add_typescript_openai_sandbox_conditional_runtime_control(
+            ir,
+            relative=relative,
+            lines=lines,
+            line=start_line,
+            constructors=[true_constructors[0], false_constructors[0]],
             symbol_identity=f"{variable_name}@{start_line}",
         )
     for match in TS_SANDBOX_SESSION_ASSIGNMENT.finditer(code):

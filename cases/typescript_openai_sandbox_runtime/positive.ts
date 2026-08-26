@@ -6,6 +6,7 @@ import {
 } from '@openai/agents/sandbox/local';
 
 declare const manifest: unknown;
+declare const useDocker: boolean;
 
 const directClient = new UnixLocalSandboxClient();
 const directAgent = new SandboxAgent({
@@ -42,4 +43,18 @@ const shorthandAgent = new SandboxAgent({
 });
 await run(shorthandAgent, 'inspect the workspace', {
   sandbox: { session },
+});
+
+const conditionalClient = useDocker
+  ? (() => {
+      return new DockerSandboxClient({ image: 'python:3.14-slim' });
+    })()
+  : new UnixLocalSandboxClient();
+const conditionalSession = await conditionalClient.create(manifest);
+const conditionalAgent = new SandboxAgent({
+  name: 'Conditional Runtime Sandbox',
+  capabilities: [shell()],
+});
+await run(conditionalAgent, 'inspect the workspace', {
+  sandbox: { session: conditionalSession },
 });

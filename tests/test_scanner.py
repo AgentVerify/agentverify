@@ -3960,30 +3960,53 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         if component.kind == "control" and component.name == "sandbox-runtime"
     }
     assert set(controls) == {
-        ("positive.ts", 10, "ts:positive.ts#control:directClient@10"),
-        ("positive.ts", 19, "ts:positive.ts#control:dockerClient@19"),
-        ("positive.ts", 34, "ts:positive.ts#control:sandbox-runtime@34"),
-        ("positive.ts", 37, "ts:positive.ts#control:client@37"),
+        ("positive.ts", 11, "ts:positive.ts#control:directClient@11"),
+        ("positive.ts", 20, "ts:positive.ts#control:dockerClient@20"),
+        ("positive.ts", 35, "ts:positive.ts#control:sandbox-runtime@35"),
+        ("positive.ts", 38, "ts:positive.ts#control:client@38"),
+        ("positive.ts", 48, "ts:positive.ts#control:conditionalClient@48"),
     }
     assert controls[
-        ("positive.ts", 10, "ts:positive.ts#control:directClient@10")
+        ("positive.ts", 11, "ts:positive.ts#control:directClient@11")
     ].attributes["sandbox_runtime"] == "unix-local"
     assert controls[
-        ("positive.ts", 19, "ts:positive.ts#control:dockerClient@19")
+        ("positive.ts", 20, "ts:positive.ts#control:dockerClient@20")
     ].attributes["sandbox_runtime"] == "docker-local"
     assert controls[
-        ("positive.ts", 34, "ts:positive.ts#control:sandbox-runtime@34")
+        ("positive.ts", 35, "ts:positive.ts#control:sandbox-runtime@35")
     ].attributes["sandbox_runtime"] == "unix-local"
     assert controls[
-        ("positive.ts", 37, "ts:positive.ts#control:client@37")
+        ("positive.ts", 38, "ts:positive.ts#control:client@38")
     ].attributes["sandbox_runtime"] == "unix-local"
+    conditional = controls[
+        ("positive.ts", 48, "ts:positive.ts#control:conditionalClient@48")
+    ]
+    assert conditional.attributes["sandbox_runtime"] == "conditional-local"
+    assert conditional.attributes["sandbox_runtime_options"] == ["docker-local", "unix-local"]
+    assert conditional.attributes["constructors"] == [
+        "DockerSandboxClient",
+        "UnixLocalSandboxClient",
+    ]
+    exact_import_controls = [
+        component
+        for key, component in controls.items()
+        if key != ("positive.ts", 48, "ts:positive.ts#control:conditionalClient@48")
+    ]
     assert all(
         component.attributes["analysis"] == "typescript-openai-sandbox-local-client"
         and component.attributes["module"] == "@openai/agents/sandbox/local"
         and component.attributes["resolution"] == "exact-openai-sandbox-local-import"
         and component.attributes["execution_environment"] == "sdk-sandbox"
         and component.attributes["sandbox_policy"] == "openai-agents-sdk-sandbox"
-        for component in controls.values()
+        for component in exact_import_controls
+    )
+    assert (
+        conditional.attributes["analysis"] == "typescript-openai-sandbox-local-client"
+        and conditional.attributes["module"] == "@openai/agents/sandbox/local"
+        and conditional.attributes["resolution"]
+        == "exact-openai-sandbox-local-conditional-import"
+        and conditional.attributes["execution_environment"] == "sdk-sandbox"
+        and conditional.attributes["sandbox_policy"] == "openai-agents-sdk-sandbox"
     )
 
     runtime_edges = {
@@ -4004,30 +4027,37 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         (
             "Direct Client Sandbox",
             "positive.ts",
-            15,
-            "ts:positive.ts#control:directClient@10",
+            16,
+            "ts:positive.ts#control:directClient@11",
             "client",
         ),
         (
             "Docker Session Sandbox",
             "positive.ts",
-            25,
-            "ts:positive.ts#control:dockerClient@19",
+            26,
+            "ts:positive.ts#control:dockerClient@20",
             "session",
         ),
         (
             "Inline Client Sandbox",
             "positive.ts",
-            33,
-            "ts:positive.ts#control:sandbox-runtime@34",
+            34,
+            "ts:positive.ts#control:sandbox-runtime@35",
             "inline-client",
         ),
         (
             "Session Shorthand Sandbox",
             "positive.ts",
-            43,
-            "ts:positive.ts#control:client@37",
+            44,
+            "ts:positive.ts#control:client@38",
             "session-shorthand",
+        ),
+        (
+            "Conditional Runtime Sandbox",
+            "positive.ts",
+            58,
+            "ts:positive.ts#control:conditionalClient@48",
+            "session",
         ),
     }
     assert not any(

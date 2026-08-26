@@ -173,9 +173,12 @@ imports, direct assignments, helper `return new SandboxAgent(...)` bodies, and t
 marked with `execution_environment: sdk-sandbox` and `sandbox_policy: openai-agents-sdk-sandbox`;
 exact `@openai/agents/sandbox/local` `UnixLocalSandboxClient` and `DockerSandboxClient` constructors
 can also configure agents through literal `run(..., { sandbox: { client/session } })` options and
-one direct `client.create(...)` session binding. Near-package constructors, rebound
-constructor/capability/client aliases, aggregate capability helpers, ternary client selection, and
-conditional, nested, indirect, or ambiguous helper forms remain unresolved.
+one direct `client.create(...)` session binding. A client initializer whose outer expression is a
+ternary is accepted only when each branch contains exactly one unshadowed sandbox-local client
+constructor, producing a `conditional-local` runtime control with Docker/Unix options. Near-package
+constructors, rebound
+constructor/capability/client aliases, aggregate capability helpers, half-known ternaries, and
+nested, indirect, or ambiguous helper forms remain unresolved.
 Schema v81 extends that identity proof to a project-local adapter class only when it directly
 subclasses an exact imported `MCPServer`, has one immutable module export, and directly defines both
 `list_tools` and `call_tool`. A unique local import and an earlier same-scope instance can then feed
