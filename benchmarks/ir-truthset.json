@@ -5055,6 +5055,12 @@
       "component":{"kind":"agent","name":"marvin-facade","attributes":{"constructor":"MarvinAgent","constructor_module":"marvin.agents","imported_symbol":"Agent","constructor_resolution":"exact-framework-agent-import"}}
     },
     {
+      "id":"taxonomy-local-framework-agent-alias-openai",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_alias_calls.py","line":13,"expected":true,
+      "component":{"kind":"agent","name":"openai-facade","attributes":{"constructor":"OpenAIAgent","constructor_module":"agents","imported_symbol":"Agent","constructor_resolution":"exact-framework-agent-import"}}
+    },
+    {
       "id":"taxonomy-local-framework-agent-reexport-agentscope",
       "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
       "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":6,"expected":true,
@@ -5071,6 +5077,18 @@
       "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
       "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":8,"expected":true,
       "component":{"kind":"agent","name":"star-marvin","attributes":{"constructor":"ProjectMarvinAgent","constructor_module":"marvin.agents","imported_symbol":"Agent","constructor_resolution":"exact-framework-agent-star-reexport"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-reexport-openai",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":14,"expected":true,
+      "component":{"kind":"agent","name":"reexport-openai","attributes":{"constructor":"ProjectOpenAIAgent","constructor_module":"agents","imported_symbol":"Agent","constructor_resolution":"exact-framework-agent-reexport"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-star-reexport-openai",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":15,"expected":true,
+      "component":{"kind":"agent","name":"star-openai","attributes":{"constructor":"ProjectStarOpenAIAgent","constructor_module":"agents","imported_symbol":"Agent","constructor_resolution":"exact-framework-agent-star-reexport"}}
     },
     {
       "id":"taxonomy-local-framework-agent-hidden-reexport-negative",

@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-26T13:07:55.503091+00:00",
+  "generated_at": "2026-08-26T13:16:35.240368+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "14264d9fb71a4d2fb3e1fa8f66aa5b8debf3ff91f69f356ec4cd05badebd72df",
+    "labels_sha256": "8604b44c251616b18064a771570fd9853391a57edabb5359f29df84eb566c6ce",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 1496,
-  "passed": 1496,
+  "labels": 1499,
+  "passed": 1499,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -45,7 +45,7 @@
       "recall": 1.0
     },
     "IR-COMPONENT-TAXONOMY": {
-      "tp": 353,
+      "tp": 356,
       "fp": 0,
       "tn": 140,
       "fn": 0,
@@ -5519,6 +5519,15 @@
       "passed": true
     },
     {
+      "id": "taxonomy-local-framework-agent-alias-openai",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
       "id": "taxonomy-local-framework-agent-reexport-agentscope",
       "check_id": "IR-COMPONENT-TAXONOMY",
       "expected": true,
@@ -5538,6 +5547,24 @@
     },
     {
       "id": "taxonomy-local-framework-agent-star-reexport-marvin",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-framework-agent-reexport-openai",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "taxonomy-local-framework-agent-star-reexport-openai",
       "check_id": "IR-COMPONENT-TAXONOMY",
       "expected": true,
       "observed": true,

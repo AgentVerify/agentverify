@@ -7,3 +7,9 @@ react = ImportedReActAgent(name="reexport-react")
 camel = ProjectChatAgent(name="reexport-camel")
 marvin = ProjectMarvinAgent(name="star-marvin")
 hidden = HiddenLagentAgent(name="hidden-lagent")
+
+from framework_agent_reexports import ProjectOpenAIAgent
+
+
+openai = ProjectOpenAIAgent(name="reexport-openai")
+openai_star = ProjectStarOpenAIAgent(name="star-openai")

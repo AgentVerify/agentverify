@@ -62,6 +62,9 @@ catalog workflows.
 - Preserved constructor provenance attributes for those exact framework agent aliases and local
   reexports, recording the origin module, imported symbol, and exact resolution mode while keeping
   the public IR truth set at 1,496 passing labels.
+- Added OpenAI Agents SDK `agents.Agent` alias, named-reexport, and star-reexport regression labels
+  for the same constructor-provenance contract, bringing the public IR truth set to 1,499 passing
+  labels.
 - Added a concrete signed policy provenance design that keeps digest allowlists separate from author
   authenticity and specifies detached source-digest payloads plus local key trust roots.
 - Added `agentverify policy --export-signing-payload` and a bundled policy-signing-payload schema so
