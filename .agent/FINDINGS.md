@@ -103,10 +103,11 @@
   `semantic_kernel.agents.ChatCompletionAgent`, Qwen-Agent `Assistant`, Lagent `AgentForInternLM`,
   and MetaGPT `Role`. Top-level absolute module imports of those frameworks now also prove
   module-qualified constructor calls when the imported root is unique/unrebound and the constructor
-  attribute is not reassigned, including explicit CAMEL and Marvin module-qualified positives. A
-  narrow absolute star-import path now proves the same exact constructor families, including CAMEL
-  and Marvin, only when one supported framework module can export the constructor name and the
-  consumer does not shadow it. Same-block local function factories now preserve those exact
+  attribute is not reassigned, including explicit CAMEL and Marvin module-qualified positives plus
+  attribute-rebound negatives. A narrow absolute star-import path now proves the same exact constructor
+  families, including CAMEL and Marvin, only when one supported framework module can export the
+  constructor name and the consumer does not shadow it; explicit CAMEL/Marvin shadowing negatives
+  pin that boundary. Same-block local function factories now preserve those exact
   framework constructor identities through direct returns, including module-qualified returns such
   as `adk_agents.Agent(...)`, while conditional, forward, and rebound factories remain unresolved.
   Agent components for those proven aliases now include constructor module, imported symbol, and

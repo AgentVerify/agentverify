@@ -5367,6 +5367,18 @@
       "component":{"kind":"agent","name":"shadowed-module-qwen","attributes":{"constructor_resolution":"exact-framework-agent-module-import"}}
     },
     {
+      "id":"taxonomy-local-framework-agent-module-camel-attribute-rebound-negative",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_module_rebound_camel_marvin.py","line":8,"expected":false,"source_contains":"camel_agents.ChatAgent",
+      "component":{"kind":"agent","name":"shadowed-module-camel","attributes":{"constructor_resolution":"exact-framework-agent-module-import"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-module-marvin-attribute-rebound-negative",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_module_rebound_camel_marvin.py","line":9,"expected":false,"source_contains":"marvin_agents.Agent",
+      "component":{"kind":"agent","name":"shadowed-module-marvin","attributes":{"constructor_resolution":"exact-framework-agent-module-import"}}
+    },
+    {
       "id":"taxonomy-local-framework-agent-module-near-package-negative",
       "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
       "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_module_rebound.py","line":14,"expected":false,"source_contains":"fake_agents.ReActAgent",
@@ -5443,6 +5455,18 @@
       "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
       "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_star_import_rebound.py","line":12,"expected":false,"source_contains":"shadowed_qwen = Assistant",
       "component":{"kind":"agent","name":"shadowed-star-qwen","attributes":{"constructor_resolution":"exact-framework-agent-star-import"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-star-import-rebound-camel-negative",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_star_import_rebound_camel_marvin.py","line":8,"expected":false,"source_contains":"camel = ChatAgent",
+      "component":{"kind":"agent","name":"shadowed-star-camel","attributes":{"constructor_resolution":"exact-framework-agent-star-import"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-star-import-rebound-marvin-negative",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_star_import_rebound_camel_marvin.py","line":9,"expected":false,"source_contains":"marvin = Agent",
+      "component":{"kind":"agent","name":"shadowed-star-marvin","attributes":{"constructor_resolution":"exact-framework-agent-star-import"}}
     },
     {
       "id":"taxonomy-local-framework-agent-star-import-near-package-negative",

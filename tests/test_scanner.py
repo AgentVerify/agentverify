@@ -1787,7 +1787,11 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
     )
     assert not any(
         item.kind == "agent"
-        and item.evidence.path == "framework_agent_module_rebound.py"
+        and item.evidence.path
+        in {
+            "framework_agent_module_rebound.py",
+            "framework_agent_module_rebound_camel_marvin.py",
+        }
         and item.attributes.get("constructor_resolution") == "exact-framework-agent-module-import"
         for item in ir.components
     )
@@ -1797,6 +1801,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         in {
             "framework_agent_star_import_near.py",
             "framework_agent_star_import_rebound.py",
+            "framework_agent_star_import_rebound_camel_marvin.py",
         }
         and item.attributes.get("constructor_resolution") == "exact-framework-agent-star-import"
         for item in ir.components

@@ -161,8 +161,9 @@ catalog workflows.
   alias chains while every hop copies an already proven compatible `os`/`shutil` mutator. Added
   positive and negative rule/IR labels.
 - Added explicit CAMEL and Marvin regression coverage for exact module-qualified and absolute
-  star-import Python framework agent constructors. The public IR truth set now covers 1,563 passing
-  labels, split across 1,141 positives and 422 negatives.
+  star-import Python framework agent constructors, plus matching module-attribute-rebound and
+  star-shadowed negative guards. The public IR truth set now covers 1,567 passing labels, split
+  across 1,141 positives and 426 negatives.
 
 ## Current findings
 
