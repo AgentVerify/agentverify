@@ -12,8 +12,8 @@
   release publishing is explicit.
 - Expand selected real-world framework coverage where current docs record unresolved ambiguous
   wrapper factories, type-driven symbols, generic same-named provider wrappers, or additional
-  non-provider wildcard import forms beyond the current exact provider-factory and literal-callable
-  cases.
+  non-provider wildcard/reexport forms beyond the current exact framework-constructor,
+  provider-factory, and literal-callable cases.
 
 ## P2
 

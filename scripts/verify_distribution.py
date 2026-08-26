@@ -417,7 +417,7 @@ json.dump(
         failed.append("policy_signature_verified")
     if checks["benchmark_verification_passed"] is not True:
         failed.append("benchmark_verification_passed")
-    if checks["benchmark_verification_labels"] != [714, 1525]:
+    if checks["benchmark_verification_labels"] != [714, 1536]:
         failed.append("benchmark_verification_labels")
     if checks["signed_policy_signature_verified"] is not True:
         failed.append("signed_policy_signature_verified")

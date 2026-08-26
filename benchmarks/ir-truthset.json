@@ -5265,6 +5265,72 @@
       "component":{"kind":"agent","name":"near-package-react","attributes":{"constructor_resolution":"exact-framework-agent-module-import"}}
     },
     {
+      "id":"taxonomy-local-framework-agent-star-import-agentscope",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_star_import_calls.py","line":8,"expected":true,
+      "component":{"kind":"agent","name":"star-react","attributes":{"constructor":"ReActAgent","constructor_module":"agentscope.agent","imported_symbol":"ReActAgent","constructor_resolution":"exact-framework-agent-star-import"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-star-import-semantic-kernel",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_star_import_calls.py","line":9,"expected":true,
+      "component":{"kind":"agent","name":"star-semantic-kernel","attributes":{"constructor":"ChatCompletionAgent","constructor_module":"semantic_kernel.agents","imported_symbol":"ChatCompletionAgent","constructor_resolution":"exact-framework-agent-star-import"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-star-import-qwen",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_star_import_calls.py","line":10,"expected":true,
+      "component":{"kind":"agent","name":"star-qwen","attributes":{"constructor":"Assistant","constructor_module":"qwen_agent.agents","imported_symbol":"Assistant","constructor_resolution":"exact-framework-agent-star-import"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-star-import-lagent",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_star_import_calls.py","line":11,"expected":true,
+      "component":{"kind":"agent","name":"star-lagent","attributes":{"constructor":"AgentForInternLM","constructor_module":"lagent.agents","imported_symbol":"AgentForInternLM","constructor_resolution":"exact-framework-agent-star-import"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-star-import-metagpt",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_star_import_calls.py","line":12,"expected":true,
+      "component":{"kind":"agent","name":"star-metagpt","attributes":{"constructor":"Role","constructor_module":"metagpt.roles","imported_symbol":"Role","constructor_resolution":"exact-framework-agent-star-import"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-star-import-openai",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_star_import_openai.py","line":4,"expected":true,
+      "component":{"kind":"agent","name":"star-openai","attributes":{"constructor":"Agent","constructor_module":"agents","imported_symbol":"Agent","constructor_resolution":"exact-framework-agent-star-import"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-star-import-google-adk",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_star_import_google.py","line":4,"expected":true,
+      "component":{"kind":"agent","name":"star-google-adk","attributes":{"constructor":"Agent","constructor_module":"google.adk.agents","imported_symbol":"Agent","constructor_resolution":"exact-framework-agent-star-import"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-star-import-ambiguous-negative",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_star_import_rebound.py","line":10,"expected":false,"source_contains":"ambiguous_agent = Agent",
+      "component":{"kind":"agent","name":"ambiguous-star-agent","attributes":{"constructor_resolution":"exact-framework-agent-star-import"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-star-import-rebound-agentscope-negative",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_star_import_rebound.py","line":11,"expected":false,"source_contains":"shadowed_react = ReActAgent",
+      "component":{"kind":"agent","name":"shadowed-star-react","attributes":{"constructor_resolution":"exact-framework-agent-star-import"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-star-import-rebound-qwen-negative",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_star_import_rebound.py","line":12,"expected":false,"source_contains":"shadowed_qwen = Assistant",
+      "component":{"kind":"agent","name":"shadowed-star-qwen","attributes":{"constructor_resolution":"exact-framework-agent-star-import"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-star-import-near-package-negative",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_star_import_near.py","line":4,"expected":false,"source_contains":"near_react = ReActAgent",
+      "component":{"kind":"agent","name":"near-star-react","attributes":{"constructor_resolution":"exact-framework-agent-star-import"}}
+    },
+    {
       "id":"taxonomy-local-google-adk-typescript",
       "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
       "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.ts","line":1,"expected":true,

@@ -527,6 +527,12 @@ PYTHON_FRAMEWORK_AGENT_CONSTRUCTORS = {
     "qwen_agent.agents": ("Assistant",),
     "semantic_kernel.agents": ("ChatCompletionAgent",),
 }
+PYTHON_FRAMEWORK_AGENT_STAR_IMPORT_CONSTRUCTORS = {
+    **PYTHON_FRAMEWORK_AGENT_CONSTRUCTORS,
+    "agents": ("Agent",),
+    "google.adk.agents": ("Agent",),
+    "marvin.agents": ("Agent",),
+}
 TOOL_DECORATORS = {"tool", "function_tool", "mcp.tool", "server.tool"}
 MODEL_CONSTRUCTORS = {
     "OpenAI": {"OpenAI", "AsyncOpenAI", "ChatOpenAI"},
@@ -1615,6 +1621,10 @@ def python_framework_agent_constructor_symbols(module: str) -> tuple[str, ...]:
     ):
         symbols.update(AGENT_CALLS)
     return tuple(sorted(symbols))
+
+
+def python_framework_agent_star_import_symbols(module: str) -> tuple[str, ...]:
+    return PYTHON_FRAMEWORK_AGENT_STAR_IMPORT_CONSTRUCTORS.get(module, ())
 
 
 def provider_for_model(model: str) -> str:
@@ -10499,6 +10509,7 @@ def scan_python(
         for name, statement in imported_mcp_constructors.items()
     }
     local_agent_constructor_origins: dict[str, PythonAgentConstructorOrigin] = {}
+    framework_agent_star_import_candidates: dict[str, list[tuple[str, str]]] = defaultdict(list)
     for statement in tree.body:
         if not isinstance(statement, ast.ImportFrom):
             continue
@@ -10518,6 +10529,12 @@ def scan_python(
         if statement.level != 0 or statement.module is None:
             continue
         for alias in statement.names:
+            if alias.name == "*":
+                for constructor in python_framework_agent_star_import_symbols(statement.module):
+                    framework_agent_star_import_candidates[constructor].append(
+                        (statement.module, constructor)
+                    )
+                continue
             local_name = alias.asname or alias.name
             if (
                 python_framework_agent_constructor(statement.module, alias.name)
@@ -10550,6 +10567,18 @@ def scan_python(
                     constructor,
                     "exact-framework-agent-module-import",
                 )
+    for constructor, candidates in framework_agent_star_import_candidates.items():
+        if (
+            len(candidates) == 1
+            and import_binding_counts[constructor] == 0
+            and nonimport_binding_counts[constructor] == 0
+        ):
+            module, imported_symbol = candidates[0]
+            local_agent_constructor_origins[constructor] = PythonAgentConstructorOrigin(
+                module,
+                imported_symbol,
+                "exact-framework-agent-star-import",
+            )
     local_agent_factory_constructors = set(local_agent_constructor_origins)
     for statement in (
         candidate for candidate in tree.body if isinstance(candidate, ast.ImportFrom)

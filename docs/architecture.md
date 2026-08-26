@@ -247,7 +247,10 @@ that body and no preceding mutation intervenes. AgentVerify does not infer capab
 constructor spelling. Exact framework Agent constructors may carry provenance through top-level
 absolute module imports only when the imported root is unique/unrebound and the constructor attribute
 is not reassigned; the resulting Agent records the origin module, imported symbol, and
-`exact-framework-agent-module-import` resolution. An exact imported class may also create a tool through the known
+`exact-framework-agent-module-import` resolution. A narrower external wildcard path is supported
+only for the same exact framework constructor modules when a single star import could provide the
+constructor name and the consumer does not shadow it; ambiguous stars, near packages, and local
+rebinding stay unresolved. An exact imported class may also create a tool through the known
 `from_settings` factory method, provided the class import is immutable and already establishes tool
 role. `agents.HostedMCPTool` and `google.adk.integrations.langchain.LangchainTool` are explicit
 integration adapters; the hosted MCP adapter records MCP access but does not invent approval state.

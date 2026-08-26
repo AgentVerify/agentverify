@@ -151,6 +151,9 @@ the group to twenty-seven labels. Eleven more labels pin exact top-level module 
 `import qwen_agent.agents`, including root rebinding, constructor-attribute rebinding, and near-package
 negatives; proven calls record `exact-framework-agent-module-import`. Ordinary same-named local
 constructors still stay unresolved.
+Eleven additional labels pin a narrow absolute framework-star-import path for those same exact
+constructor families, with ambiguous-star, shadowed-name, and near-package negatives; proven calls
+record `exact-framework-agent-star-import`.
 
 ## P0 — module-qualified symbols and graph identities
 
@@ -545,7 +548,7 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 714 pinned positive/negative locations, with 1,525 separately
+The curated regression set has reached 714 pinned positive/negative locations, with 1,536 separately
 scored IR component/relationship labels. Schema-v123 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule

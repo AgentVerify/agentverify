@@ -1336,6 +1336,9 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "framework_agent_alias_calls.py",
             "framework_agent_module_calls.py",
             "framework_agent_reexport_calls.py",
+            "framework_agent_star_import_calls.py",
+            "framework_agent_star_import_google.py",
+            "framework_agent_star_import_openai.py",
         }
     }
     assert framework_agent_aliases == {
@@ -1482,6 +1485,69 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "metagpt.roles",
             "Role",
             "exact-framework-agent-module-import",
+        ),
+        (
+            "framework_agent_star_import_calls.py",
+            8,
+            "star-react",
+            "ReActAgent",
+            "agentscope.agent",
+            "ReActAgent",
+            "exact-framework-agent-star-import",
+        ),
+        (
+            "framework_agent_star_import_calls.py",
+            9,
+            "star-semantic-kernel",
+            "ChatCompletionAgent",
+            "semantic_kernel.agents",
+            "ChatCompletionAgent",
+            "exact-framework-agent-star-import",
+        ),
+        (
+            "framework_agent_star_import_calls.py",
+            10,
+            "star-qwen",
+            "Assistant",
+            "qwen_agent.agents",
+            "Assistant",
+            "exact-framework-agent-star-import",
+        ),
+        (
+            "framework_agent_star_import_calls.py",
+            11,
+            "star-lagent",
+            "AgentForInternLM",
+            "lagent.agents",
+            "AgentForInternLM",
+            "exact-framework-agent-star-import",
+        ),
+        (
+            "framework_agent_star_import_calls.py",
+            12,
+            "star-metagpt",
+            "Role",
+            "metagpt.roles",
+            "Role",
+            "exact-framework-agent-star-import",
+        ),
+        (
+            "framework_agent_star_import_openai.py",
+            4,
+            "star-openai",
+            "Agent",
+            "agents",
+            "Agent",
+            "exact-framework-agent-star-import",
+        ),
+        (
+            "framework_agent_star_import_google.py",
+            4,
+            "star-google-adk",
+            "Agent",
+            "google.adk.agents",
+            "Agent",
+            "exact-framework-agent-star-import",
         ),
         (
             "framework_agent_reexport_calls.py",
@@ -1634,6 +1700,16 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         item.kind == "agent"
         and item.evidence.path == "framework_agent_module_rebound.py"
         and item.attributes.get("constructor_resolution") == "exact-framework-agent-module-import"
+        for item in ir.components
+    )
+    assert not any(
+        item.kind == "agent"
+        and item.evidence.path
+        in {
+            "framework_agent_star_import_near.py",
+            "framework_agent_star_import_rebound.py",
+        }
+        and item.attributes.get("constructor_resolution") == "exact-framework-agent-star-import"
         for item in ir.components
     )
 
