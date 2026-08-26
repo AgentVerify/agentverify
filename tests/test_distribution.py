@@ -34,6 +34,7 @@ SIGNED_POLICY_SPEC.loader.exec_module(verify_signed_policy_example)
 REQUIRED_SCHEMA_FILES = verify_distribution.REQUIRED_SCHEMA_FILES
 REQUIRED_BENCHMARK_RESULT_FILES = verify_distribution.REQUIRED_BENCHMARK_RESULT_FILES
 REQUIRED_BENCHMARK_WORKFLOW_FILE = verify_distribution.REQUIRED_BENCHMARK_WORKFLOW_FILE
+REQUIRED_SOURCE_WORKFLOW_FRAGMENTS = verify_distribution.REQUIRED_SOURCE_WORKFLOW_FRAGMENTS
 REQUIRED_SOURCE_FILES = verify_distribution.REQUIRED_SOURCE_FILES
 REQUIRED_ENTRY_POINTS = verify_distribution.REQUIRED_ENTRY_POINTS
 REQUIRED_RUNTIME_DEPENDENCIES = verify_distribution.REQUIRED_RUNTIME_DEPENDENCIES
@@ -78,8 +79,8 @@ def write_sdist(
         for name in sorted(names):
             if name in file_contents:
                 content = file_contents[name].encode("utf-8")
-            elif name == REQUIRED_BENCHMARK_WORKFLOW_FILE:
-                content = GITHUB_BENCHMARK_VERIFY.read_bytes()
+            elif name in REQUIRED_SOURCE_WORKFLOW_FRAGMENTS:
+                content = (ROOT / name).read_bytes()
             else:
                 content = b"{}\n" if name.endswith(".json") else b"placeholder\n"
             info = tarfile.TarInfo(f"{root}/{name}")
@@ -127,6 +128,8 @@ def test_distribution_verifier_accepts_required_source_artifacts(tmp_path: Path)
     assert payload["present_benchmark_result_files"] == sorted(REQUIRED_BENCHMARK_RESULT_FILES)
     assert payload["missing_benchmark_workflow_fragments"] == []
     assert payload["forbidden_benchmark_workflow_fragments"] == []
+    assert payload["missing_source_workflow_fragments"] == {}
+    assert payload["forbidden_source_workflow_fragments"] == {}
 
 
 def test_ci_workflow_verifies_checked_in_benchmark_results() -> None:
@@ -329,6 +332,44 @@ def test_distribution_verifier_rejects_benchmark_workflow_without_verifier_uploa
     )
 
     with pytest.raises(RuntimeError, match="actions/upload-artifact@v5"):
+        verify_sdist(sdist)
+
+
+def test_distribution_verifier_rejects_policy_gate_without_policy_argument(
+    tmp_path: Path,
+) -> None:
+    sdist = tmp_path / "agentverify-0.1.0.tar.gz"
+    workflow_file = "examples/github-policy-gate.yml"
+    workflow = (ROOT / workflow_file).read_text(encoding="utf-8").replace(
+        "--policy agentverify-policy.json",
+        "--baseline agentverify-baseline.json",
+    )
+    write_sdist(
+        sdist,
+        set(REQUIRED_SOURCE_FILES) | set(REQUIRED_BENCHMARK_RESULT_FILES),
+        file_contents={workflow_file: workflow},
+    )
+
+    with pytest.raises(RuntimeError, match="--policy agentverify-policy.json"):
+        verify_sdist(sdist)
+
+
+def test_distribution_verifier_rejects_code_scanning_without_sarif_upload(
+    tmp_path: Path,
+) -> None:
+    sdist = tmp_path / "agentverify-0.1.0.tar.gz"
+    workflow_file = "examples/github-code-scanning.yml"
+    workflow = (ROOT / workflow_file).read_text(encoding="utf-8").replace(
+        "github/codeql-action/upload-sarif@v4",
+        "actions/upload-artifact@v5",
+    )
+    write_sdist(
+        sdist,
+        set(REQUIRED_SOURCE_FILES) | set(REQUIRED_BENCHMARK_RESULT_FILES),
+        file_contents={workflow_file: workflow},
+    )
+
+    with pytest.raises(RuntimeError, match="github/codeql-action/upload-sarif@v4"):
         verify_sdist(sdist)
 
 

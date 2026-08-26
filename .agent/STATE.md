@@ -286,11 +286,11 @@ catalog workflows.
   leaving aggregate `Capabilities.default()` and rebounded skill aliases unresolved. Local fixtures
   plus OpenAI Agents JS sandbox coding/capability/docs examples raise regenerated public IR
   truth-set results to 1,729 passing labels.
-- Strengthened source-release verification for the packaged benchmark workflow: `verify_sdist()`
-  now requires `examples/github-benchmark-verify.yml` to run the public-regression verifier, validate
-  the benchmark-verification schema, and upload `agentverify-benchmark-verification.json` while
-  staying read-only. A negative distribution test proves the sdist verifier rejects a workflow with
-  the upload action removed.
+- Strengthened source-release verification for the packaged GitHub workflow examples:
+  `verify_sdist()` now checks benchmark verifier output/schema/upload, policy-gate
+  permission/policy/summary/expiry arguments, and code-scanning SARIF permission/upload contracts.
+  Negative distribution tests prove the sdist verifier rejects removed verifier upload, missing
+  policy argument, and missing SARIF upload cases.
 
 ## Current findings
 

@@ -250,11 +250,11 @@
   factories in literal `capabilities` lists, without expanding aggregate `Capabilities.default()`
   contents. Rebounded skill aliases remain unresolved, and real OpenAI Agents JS coding/docs examples
   pin `skill-loading` edges. The public IR truth set now covers 1,729 passing labels.
-- Source-release verification now treats the benchmark verifier workflow as a content contract, not
-  only a required filename. The sdist verifier checks that `examples/github-benchmark-verify.yml`
-  invokes `agentverify benchmark verify`, requires public-regression/all-labels-passed output,
-  validates the benchmark-verification schema, uploads `agentverify-benchmark-verification.json`,
-  and does not request code-scanning write permission.
+- Source-release verification now treats packaged GitHub workflow examples as content contracts, not
+  only required filenames. The sdist verifier checks that the benchmark workflow emits, validates,
+  and uploads verifier JSON while staying read-only; the policy gate keeps its policy/summary/expiry
+  arguments without code-scanning write permission; and the code-scanning workflow keeps SARIF upload
+  permission without becoming a policy gate.
 
 ## Hypotheses
 

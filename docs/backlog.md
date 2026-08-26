@@ -589,13 +589,13 @@ expiry status, and CI can require an active ISO date. A distributable pre-commit
 setup are included; publishing its remote form waits for an approved repository URL and release tag.
 The distribution verifier now checks wheel contents, the console-script entry point, and optional
 source distributions for the README-linked examples, policy docs, benchmark contracts, public truth
-sets, checked benchmark result outputs, and the benchmark workflow's verifier-output contract.
-`--smoke-install` installs the wheel in a temporary virtualenv before running version, schema,
-policy, trust-root export, and safe-example scan commands through the installed `agentverify`
-executable.
+sets, checked benchmark result outputs, and the packaged GitHub workflow examples' required
+permission/command/upload contracts. `--smoke-install` installs the wheel in a temporary virtualenv
+before running version, schema, policy, trust-root export, and safe-example scan commands through the
+installed `agentverify` executable.
 The default CI workflow now runs the installed CLI benchmark verifier with public-regression and
-all-labels-passed requirements, and workflow regression tests keep the release gate plus JSON upload
-step present.
+all-labels-passed requirements, and workflow regression tests keep the release gate, policy gate, and
+SARIF upload examples present.
 The scan command also provides a compact `--format summary` mode for CI logs and quick local triage:
 it keeps threshold and policy exit semantics while showing scan totals, baseline/policy status,
 severity/result-kind/rule counts, and top evidence locations without printing the full Agent IR graph.

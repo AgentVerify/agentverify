@@ -36,6 +36,33 @@ REQUIRED_BENCHMARK_WORKFLOW_FRAGMENTS = frozenset(
     }
 )
 FORBIDDEN_BENCHMARK_WORKFLOW_FRAGMENTS = frozenset({"security-events: write"})
+REQUIRED_SOURCE_WORKFLOW_FRAGMENTS = {
+    REQUIRED_BENCHMARK_WORKFLOW_FILE: REQUIRED_BENCHMARK_WORKFLOW_FRAGMENTS,
+    "examples/github-policy-gate.yml": frozenset(
+        {
+            "permissions:\n  contents: read",
+            "agentverify policy agentverify-policy.json",
+            "agentverify scan .",
+            "--format summary",
+            "--policy agentverify-policy.json",
+            "--require-suppression-expiry",
+        }
+    ),
+    "examples/github-code-scanning.yml": frozenset(
+        {
+            "permissions:\n  contents: read",
+            "security-events: write",
+            "agentverify scan . --format sarif --output agentverify.sarif",
+            "github/codeql-action/upload-sarif@v4",
+            "category: agentverify",
+        }
+    ),
+}
+FORBIDDEN_SOURCE_WORKFLOW_FRAGMENTS = {
+    REQUIRED_BENCHMARK_WORKFLOW_FILE: FORBIDDEN_BENCHMARK_WORKFLOW_FRAGMENTS,
+    "examples/github-policy-gate.yml": frozenset({"security-events: write"}),
+    "examples/github-code-scanning.yml": frozenset({"--policy", "--fail-on"}),
+}
 REQUIRED_SOURCE_FILES = frozenset(
     {
         ".pre-commit-hooks.yaml",
@@ -610,16 +637,41 @@ def verify_sdist(path: Path) -> dict[str, object]:
     present = sorted(required & names)
     missing_benchmark_results = sorted(REQUIRED_BENCHMARK_RESULT_FILES - names)
     present_benchmark_results = sorted(REQUIRED_BENCHMARK_RESULT_FILES & names)
-    benchmark_workflow = sdist_file_text(path, REQUIRED_BENCHMARK_WORKFLOW_FILE)
-    missing_benchmark_workflow_fragments = sorted(
-        fragment
-        for fragment in REQUIRED_BENCHMARK_WORKFLOW_FRAGMENTS
-        if fragment not in benchmark_workflow
+    workflow_texts = {
+        workflow_file: sdist_file_text(path, workflow_file)
+        for workflow_file in REQUIRED_SOURCE_WORKFLOW_FRAGMENTS
+    }
+    missing_source_workflow_fragments = {
+        workflow_file: sorted(
+            fragment
+            for fragment in required_fragments
+            if fragment not in workflow_texts[workflow_file]
+        )
+        for workflow_file, required_fragments in REQUIRED_SOURCE_WORKFLOW_FRAGMENTS.items()
+    }
+    missing_source_workflow_fragments = {
+        workflow_file: fragments
+        for workflow_file, fragments in missing_source_workflow_fragments.items()
+        if fragments
+    }
+    forbidden_source_workflow_fragments = {
+        workflow_file: sorted(
+            fragment
+            for fragment in forbidden_fragments
+            if fragment in workflow_texts.get(workflow_file, "")
+        )
+        for workflow_file, forbidden_fragments in FORBIDDEN_SOURCE_WORKFLOW_FRAGMENTS.items()
+    }
+    forbidden_source_workflow_fragments = {
+        workflow_file: fragments
+        for workflow_file, fragments in forbidden_source_workflow_fragments.items()
+        if fragments
+    }
+    missing_benchmark_workflow_fragments = missing_source_workflow_fragments.get(
+        REQUIRED_BENCHMARK_WORKFLOW_FILE, []
     )
-    forbidden_benchmark_workflow_fragments = sorted(
-        fragment
-        for fragment in FORBIDDEN_BENCHMARK_WORKFLOW_FRAGMENTS
-        if fragment in benchmark_workflow
+    forbidden_benchmark_workflow_fragments = forbidden_source_workflow_fragments.get(
+        REQUIRED_BENCHMARK_WORKFLOW_FILE, []
     )
     payload: dict[str, object] = {
         "sdist": str(path),
@@ -631,10 +683,12 @@ def verify_sdist(path: Path) -> dict[str, object]:
         "missing_benchmark_result_files": missing_benchmark_results,
         "missing_benchmark_workflow_fragments": missing_benchmark_workflow_fragments,
         "forbidden_benchmark_workflow_fragments": forbidden_benchmark_workflow_fragments,
+        "missing_source_workflow_fragments": missing_source_workflow_fragments,
+        "forbidden_source_workflow_fragments": forbidden_source_workflow_fragments,
         "passed": not (
             missing
-            or missing_benchmark_workflow_fragments
-            or forbidden_benchmark_workflow_fragments
+            or missing_source_workflow_fragments
+            or forbidden_source_workflow_fragments
         ),
     }
     if not payload["passed"]:
