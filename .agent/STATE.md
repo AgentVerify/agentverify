@@ -333,6 +333,10 @@ catalog workflows.
   proven sandbox-local `client.create(...)` call. Local positives/negative and the real
   `examples/sandbox/memory-generation.ts` edge raised regenerated public IR truth-set results to
   1,785 passing labels.
+- Added exact `SandboxAgent.asTool(...)` `runConfig.sandbox.session` runtime attribution for
+  delegated sandbox agents. Local positive/negative fixtures plus the real OpenAI Agents JS
+  `examples/sandbox/sandbox-agents-as-tools.ts` pricing and rollout agent runConfig sessions raised
+  regenerated public IR truth-set results to 1,789 passing labels.
 - Strengthened source-release verification for the packaged GitHub workflow examples:
   `verify_sdist()` now checks benchmark verifier output/schema/upload, policy-gate
   permission/policy/summary/expiry arguments, and code-scanning SARIF permission/upload contracts.

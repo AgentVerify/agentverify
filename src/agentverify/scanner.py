@@ -16643,6 +16643,94 @@ def typescript_graph(
                         target_id=target_id,
                     )
                 )
+                if target:
+                    call_opening = expression.find("(")
+                    call_end = balanced_call_end(expression, call_opening)
+                    call_arguments = typescript_call_arguments(
+                        expression[call_opening + 1 : call_end - 1],
+                        item_offset + call_opening + 1,
+                    )
+                    if call_arguments:
+                        run_config_expression = typescript_object_property_expression(
+                            call_arguments[0][0], "runConfig"
+                        )
+                        if run_config_expression is not None:
+                            sandbox_expression = typescript_object_property_expression(
+                                run_config_expression, "sandbox"
+                            )
+                        else:
+                            sandbox_expression = None
+                        runtime_control = None
+                        binding = None
+                        if sandbox_expression is not None:
+                            client_expression = typescript_object_property_expression(
+                                sandbox_expression, "client"
+                            )
+                            if client_expression is not None:
+                                client_code = typescript_code_mask(client_expression).strip()
+                                if client_identifier := re.fullmatch(
+                                    r"[A-Za-z_$][\w$]*", client_code
+                                ):
+                                    runtime_control = sandbox_client_bindings.get(
+                                        client_identifier.group(0)
+                                    )
+                                    binding = "client"
+                            elif typescript_object_has_shorthand_property(
+                                sandbox_expression, "client"
+                            ):
+                                runtime_control = sandbox_client_bindings.get("client")
+                                binding = "client-shorthand"
+                            session_expression = typescript_object_property_expression(
+                                sandbox_expression, "session"
+                            )
+                            if runtime_control is None and session_expression is not None:
+                                session_code = typescript_code_mask(session_expression).strip()
+                                if session_identifier := re.fullmatch(
+                                    r"[A-Za-z_$][\w$]*", session_code
+                                ):
+                                    runtime_control = sandbox_session_bindings.get(
+                                        session_identifier.group(0)
+                                    )
+                                    binding = "session"
+                            elif (
+                                runtime_control is None
+                                and typescript_object_has_shorthand_property(
+                                    sandbox_expression, "session"
+                                )
+                            ):
+                                runtime_control = sandbox_session_bindings.get("session")
+                                binding = "session-shorthand"
+                        if runtime_control is not None:
+                            runtime_name, runtime_id = runtime_control
+                            run_config_keyword = expression.find("runConfig")
+                            sandbox_keyword = expression.find("sandbox", run_config_keyword)
+                            sandbox_line_offset = (
+                                item_offset + sandbox_keyword
+                                if sandbox_keyword >= 0
+                                else item_offset
+                            )
+                            sandbox_line = line_at(text, sandbox_line_offset)
+                            delegated_agent_name, delegated_agent_id = target
+                            ir.add_relationship(
+                                Relationship(
+                                    "agent",
+                                    delegated_agent_name,
+                                    "configured-by",
+                                    "control",
+                                    runtime_name,
+                                    Evidence(relative, sandbox_line, excerpt(lines, sandbox_line)),
+                                    {
+                                        "analysis": sandbox_runtime_edge_analysis.get(
+                                            runtime_id,
+                                            "typescript-openai-sandbox-local-client",
+                                        ),
+                                        "configuration": "asTool-runConfig",
+                                        "binding": binding,
+                                    },
+                                    source_id=delegated_agent_id,
+                                    target_id=runtime_id,
+                                )
+                            )
                 continue
             call = typescript_call_parts(expression)
             if not call:

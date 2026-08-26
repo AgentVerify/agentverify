@@ -4121,7 +4121,22 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
             "ts:positive.ts#control:client@39",
             "session",
         ),
+        (
+            "asTool Runtime Sandbox",
+            "positive.ts",
+            144,
+            "ts:positive.ts#control:client@39",
+            "session-shorthand",
+        ),
     }
+    as_tool_edges = [
+        edge
+        for edge in ir.relationships
+        if edge.source_name == "asTool Runtime Sandbox"
+        and edge.target_name == "sandbox-runtime"
+    ]
+    assert len(as_tool_edges) == 1
+    assert as_tool_edges[0].attributes["configuration"] == "asTool-runConfig"
     assert not any(
         component.evidence.path == "negative.ts" and component.kind == "control"
         for component in ir.components

@@ -1,4 +1,4 @@
-import { Runner, run } from '@openai/agents';
+import { Agent, Runner, run } from '@openai/agents';
 import { SandboxAgent, shell } from '@openai/agents/sandbox';
 import { BlaxelSandboxClient } from '@openai/agents-extensions/sandbox/blaxel';
 import {
@@ -129,4 +129,20 @@ const typedOptionRunner = new Runner({
 });
 await typedOptionRunner.run(typedOptionRunnerAgent, 'inspect the typed option workspace', {
   sandbox: { session: typedSession },
+});
+
+const asToolRuntimeAgent = new SandboxAgent({
+  name: 'asTool Runtime Sandbox',
+  capabilities: [shell()],
+});
+const asToolOrchestrator = new Agent({
+  name: 'asTool Runtime Orchestrator',
+  tools: [
+    asToolRuntimeAgent.asTool({
+      toolName: 'review_sandbox_workspace',
+      runConfig: {
+        sandbox: { session },
+      },
+    }),
+  ],
 });

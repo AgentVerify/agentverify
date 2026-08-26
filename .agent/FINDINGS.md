@@ -285,7 +285,12 @@
   `sandbox-runtime` control, separate from Runner-constructor sandbox config. The session binding
   also accepts TypeScript type annotations when the initializer remains an exact proven
   `client.create(...)` call. Unknown option sessions remain unresolved, and the public IR truth set
-  now covers 1,785 passing labels.
+  then covered 1,785 passing labels.
+- Inline `SandboxAgent.asTool({ runConfig: { sandbox: { session } } })` entries now attach the
+  proven `sandbox-runtime` control to the delegated sandbox agent, not just to the orchestrator's
+  delegation edge. This recovers OpenAI Agents JS nested sandbox-agent-as-tool examples while
+  unknown runConfig sessions remain unresolved. The public IR truth set now covers 1,789 passing
+  labels.
 - Source-release verification now treats packaged GitHub workflow examples as content contracts, not
   only required filenames. The sdist verifier checks that the benchmark workflow emits, validates,
   and uploads verifier JSON while staying read-only; the policy gate keeps its policy/summary/expiry

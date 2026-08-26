@@ -1,4 +1,4 @@
-import { Runner, run } from '@openai/agents';
+import { Agent, Runner, run } from '@openai/agents';
 import { SandboxAgent } from '@openai/agents/sandbox';
 import {
   UnixLocalSandboxClient,
@@ -85,4 +85,19 @@ const unknownOptionRunner = new Runner({
 });
 await unknownOptionRunner.run(unknownOptionRunnerAgent, 'inspect the option workspace', {
   sandbox: { session: inlineUnknownSession },
+});
+
+const unknownAsToolRuntimeAgent = new SandboxAgent({
+  name: 'Unknown asTool Runtime Sandbox',
+});
+const unknownAsToolOrchestrator = new Agent({
+  name: 'Unknown asTool Runtime Orchestrator',
+  tools: [
+    unknownAsToolRuntimeAgent.asTool({
+      toolName: 'review_unknown_sandbox_workspace',
+      runConfig: {
+        sandbox: { session: inlineUnknownSession },
+      },
+    }),
+  ],
 });
