@@ -55,9 +55,11 @@
 - Editor/CI integrations can now consume a generated local contract bundle from an installed
   AgentVerify package instead of copying commands from prose or depending on a source checkout:
   `agentverify contracts` validates and exports report/rules schemas, the current `agentverify rules
-  --format json` payload, an optional sample report, and a digest manifest. The source script is a
-  compatibility wrapper, the guide remains a required source-distribution artifact, and distribution
-  smoke tests prove the built wheel exports the bundle.
+  --format json` payload, an optional sample report, and a digest manifest. Manifest artifact entries
+  now include `kind`, `contract`, and `required` metadata in addition to path/byte/SHA-256 fields, so
+  integrations can consume the bundle without inferring semantics from filenames. The source script
+  is a compatibility wrapper, the guide remains a required source-distribution artifact, and
+  distribution smoke tests prove the built wheel exports the bundle.
 - The editor integration guide now includes a checked LSP-style diagnostic mapping example derived
   from `cases/approval_callback_bypass`. Tests regenerate the example from `agentverify scan
   --format json`, proving the documented mapping preserves evidence paths, zero-based ranges,

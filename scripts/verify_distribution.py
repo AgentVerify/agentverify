@@ -312,6 +312,14 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         "editor_contract_artifacts": [
             item.get("path") for item in editor_contracts.get("artifacts", [])
         ],
+        "editor_contract_artifact_metadata": {
+            item.get("path"): {
+                "kind": item.get("kind"),
+                "contract": item.get("contract"),
+                "required": item.get("required"),
+            }
+            for item in editor_contracts.get("artifacts", [])
+        },
         "editor_contract_files_present": editor_contract_files_present,
         "signed_policy_signature_verified": signed_policy_example.get("signature_verified"),
         "signed_policy_signature_trusted": signed_policy_example.get("signature_trusted"),
@@ -380,6 +388,30 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
     ]
     if checks["editor_contract_artifacts"] != expected_editor_contract_files:
         failed.append("editor_contract_artifacts")
+    expected_editor_contract_metadata = {
+        "agentverify-report-v1.schema.json": {
+            "kind": "schema",
+            "contract": "report",
+            "required": True,
+        },
+        "agentverify-rules-v1.schema.json": {
+            "kind": "schema",
+            "contract": "rules",
+            "required": True,
+        },
+        "agentverify-rules.json": {
+            "kind": "catalog",
+            "contract": "rules",
+            "required": True,
+        },
+        "agentverify-sample-report.json": {
+            "kind": "sample-report",
+            "contract": "report",
+            "required": False,
+        },
+    }
+    if checks["editor_contract_artifact_metadata"] != expected_editor_contract_metadata:
+        failed.append("editor_contract_artifact_metadata")
     if checks["editor_contract_files_present"] != sorted(
         [*expected_editor_contract_files, "manifest.json"]
     ):

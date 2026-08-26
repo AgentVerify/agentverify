@@ -17,7 +17,12 @@ The exporter writes:
 - `agentverify-rules-v1.schema.json` — validates `agentverify rules --format json`.
 - `agentverify-rules.json` — the current enabled reporting-rule catalog.
 - `agentverify-sample-report.json` — optional sample report when `--sample-root` is provided.
-- `manifest.json` — artifact names, byte counts, SHA-256 digests, and generator version.
+- `manifest.json` — artifact names, `kind`, `contract`, `required`, byte counts, SHA-256 digests,
+  and generator version.
+
+Each manifest artifact keeps the original filename-oriented fields and adds `kind`, `contract`, and
+`required` so integrations can distinguish required report/rules schemas, the required rules catalog,
+and optional sample reports without hard-coding filename conventions.
 
 For installed-package workflows, the equivalent direct commands are:
 

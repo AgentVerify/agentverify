@@ -13,16 +13,33 @@ from .report import render_json, render_rules, render_schema
 from .scanner import scan_repository
 
 CONTRACT_FILES = {
-    "agentverify-report-v1.schema.json": ("schema", "report"),
-    "agentverify-rules-v1.schema.json": ("schema", "rules"),
-    "agentverify-rules.json": ("catalog", "rules"),
+    "agentverify-report-v1.schema.json": {
+        "kind": "schema",
+        "contract": "report",
+        "required": True,
+    },
+    "agentverify-rules-v1.schema.json": {
+        "kind": "schema",
+        "contract": "rules",
+        "required": True,
+    },
+    "agentverify-rules.json": {
+        "kind": "catalog",
+        "contract": "rules",
+        "required": True,
+    },
 }
 
 
-def _write(path: Path, content: str) -> dict[str, object]:
+def _write(path: Path, content: str, **metadata: object) -> dict[str, object]:
     path.write_text(content, encoding="utf-8")
     digest = sha256(content.encode("utf-8")).hexdigest()
-    return {"path": path.name, "sha256": digest, "bytes": len(content.encode("utf-8"))}
+    return {
+        "path": path.name,
+        "sha256": digest,
+        "bytes": len(content.encode("utf-8")),
+        **metadata,
+    }
 
 
 def export_editor_contracts(
@@ -37,18 +54,27 @@ def export_editor_contracts(
     Draft202012Validator.check_schema(report_schema)
 
     artifacts = []
-    for filename, (kind, name) in CONTRACT_FILES.items():
-        if kind == "schema":
+    for filename, metadata in CONTRACT_FILES.items():
+        name = str(metadata["contract"])
+        if metadata["kind"] == "schema":
             content = render_schema(name)
         else:
             content = render_rules(None, output_format="json")
             Draft202012Validator(rules_schema).validate(json.loads(content))
-        artifacts.append(_write(output_dir / filename, content))
+        artifacts.append(_write(output_dir / filename, content, **metadata))
 
     if sample_root is not None:
         report = render_json(scan_repository(sample_root))
         Draft202012Validator(report_schema).validate(json.loads(report))
-        artifacts.append(_write(output_dir / "agentverify-sample-report.json", report))
+        artifacts.append(
+            _write(
+                output_dir / "agentverify-sample-report.json",
+                report,
+                kind="sample-report",
+                contract="report",
+                required=False,
+            )
+        )
 
     manifest = {
         "schema_version": 1,

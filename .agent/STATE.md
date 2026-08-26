@@ -164,6 +164,10 @@ catalog workflows.
   star-import Python framework agent constructors, plus matching module-attribute-rebound and
   star-shadowed negative guards. The public IR truth set now covers 1,567 passing labels, split
   across 1,141 positives and 426 negatives.
+- Extended `agentverify contracts` manifest artifacts with explicit `kind`, `contract`, and
+  `required` metadata while preserving path/byte/digest fields, so editor and CI integrations can
+  distinguish report schemas, rules schemas, rules catalogs, and optional sample reports without
+  hard-coding filenames.
 
 ## Current findings
 
@@ -193,6 +197,8 @@ catalog workflows.
 - Benchmark release-claim guardrails now have a copyable CI artifact, not just prose and this
   repository's internal CI: `examples/github-benchmark-verify.yml` uses only read permission and
   archives the installed CLI verifier JSON for release review.
+- Editor/CI contract manifests now identify each artifact's role directly through `kind`,
+  `contract`, and `required` fields while retaining SHA-256 digests for reproducibility.
 - Python filesystem callable aliasing is deliberately narrow: local alias chains may copy already
   proven same-function callable bindings, but aliases before source proof, rebound alias targets,
   incompatible operation families, and imported wrapper helpers remain unresolved.

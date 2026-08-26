@@ -57,6 +57,15 @@ def test_editor_contract_export_writes_valid_rules_and_sample_report(tmp_path: P
     }
     assert {path.name for path in tmp_path.iterdir()} == names | {"manifest.json"}
     assert json.loads((tmp_path / "manifest.json").read_text(encoding="utf-8")) == manifest
+    assert {
+        item["path"]: (item["kind"], item["contract"], item["required"])
+        for item in manifest["artifacts"]
+    } == {
+        "agentverify-report-v1.schema.json": ("schema", "report", True),
+        "agentverify-rules-v1.schema.json": ("schema", "rules", True),
+        "agentverify-rules.json": ("catalog", "rules", True),
+        "agentverify-sample-report.json": ("sample-report", "report", False),
+    }
 
     rules_schema = json.loads((tmp_path / "agentverify-rules-v1.schema.json").read_text())
     report_schema = json.loads((tmp_path / "agentverify-report-v1.schema.json").read_text())
@@ -101,6 +110,7 @@ def test_cli_exports_editor_contracts(tmp_path: Path, capsys) -> None:
         "agentverify-rules.json",
         "agentverify-sample-report.json",
     }
+    assert all({"kind", "contract", "required"} <= set(item) for item in manifest["artifacts"])
 
 
 def test_editor_integration_docs_reference_exported_artifacts() -> None:
@@ -114,6 +124,9 @@ def test_editor_integration_docs_reference_exported_artifacts() -> None:
     assert "agentverify-rules.json" in docs
     assert "agentverify-report-v1.schema.json" in docs
     assert "agentverify rules --format json --output agentverify-rules.json" in docs
+    assert "`kind`" in docs
+    assert "`contract`" in docs
+    assert "`required`" in docs
     assert "[`examples/editor-diagnostics.json`](examples/editor-diagnostics.json)" in readme
     assert "[`docs/editor-integration.md`](docs/editor-integration.md)" in readme
 
