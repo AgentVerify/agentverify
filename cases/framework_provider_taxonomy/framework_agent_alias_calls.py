@@ -16,3 +16,8 @@ from google.adk.agents import Agent as GoogleADKAgent
 
 
 google = GoogleADKAgent(name="google-adk-facade")
+
+from semantic_kernel.agents import ChatCompletionAgent as SemanticKernelAgent
+
+
+semantic = SemanticKernelAgent(name="semantic-kernel-facade")

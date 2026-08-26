@@ -5067,6 +5067,12 @@
       "component":{"kind":"agent","name":"google-adk-facade","attributes":{"constructor":"GoogleADKAgent","constructor_module":"google.adk.agents","imported_symbol":"Agent","constructor_resolution":"exact-framework-agent-import"}}
     },
     {
+      "id":"taxonomy-local-framework-agent-alias-semantic-kernel",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_alias_calls.py","line":23,"expected":true,
+      "component":{"kind":"agent","name":"semantic-kernel-facade","attributes":{"constructor":"SemanticKernelAgent","constructor_module":"semantic_kernel.agents","imported_symbol":"ChatCompletionAgent","constructor_resolution":"exact-framework-agent-import"}}
+    },
+    {
       "id":"taxonomy-local-framework-agent-reexport-agentscope",
       "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
       "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":6,"expected":true,
@@ -5107,6 +5113,18 @@
       "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
       "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":21,"expected":true,
       "component":{"kind":"agent","name":"star-google-adk","attributes":{"constructor":"ProjectStarGoogleADKAgent","constructor_module":"google.adk.agents","imported_symbol":"Agent","constructor_resolution":"exact-framework-agent-star-reexport"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-reexport-semantic-kernel",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":26,"expected":true,
+      "component":{"kind":"agent","name":"reexport-semantic-kernel","attributes":{"constructor":"ProjectSemanticKernelAgent","constructor_module":"semantic_kernel.agents","imported_symbol":"ChatCompletionAgent","constructor_resolution":"exact-framework-agent-reexport"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-star-reexport-semantic-kernel",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":27,"expected":true,
+      "component":{"kind":"agent","name":"star-semantic-kernel","attributes":{"constructor":"ProjectStarSemanticKernelAgent","constructor_module":"semantic_kernel.agents","imported_symbol":"ChatCompletionAgent","constructor_resolution":"exact-framework-agent-star-reexport"}}
     },
     {
       "id":"taxonomy-local-framework-agent-hidden-reexport-negative",

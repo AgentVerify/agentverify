@@ -142,8 +142,9 @@ framework constructor symbols. Nine IR labels pin direct alias, named reexport, 
 resolution mode for those proven aliases. Three additional labels pin the same provenance contract
 for OpenAI Agents SDK `agents.Agent` aliases/reexports, bringing this local constructor group to
 twelve labels. Three more labels pin Google ADK `google.adk.agents.Agent` through the same generic
-framework-prefix path, bringing the group to fifteen labels. Ordinary same-named local constructors
-still stay unresolved.
+framework-prefix path, bringing the group to fifteen labels. Three additional labels pin exact
+Semantic Kernel `semantic_kernel.agents.ChatCompletionAgent` aliases/reexports, bringing the group
+to eighteen labels. Ordinary same-named local constructors still stay unresolved.
 
 ## P0 — module-qualified symbols and graph identities
 

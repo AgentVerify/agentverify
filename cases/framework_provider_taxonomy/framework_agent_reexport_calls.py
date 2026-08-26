@@ -19,3 +19,9 @@ from framework_agent_reexports import ProjectGoogleADKAgent
 
 google = ProjectGoogleADKAgent(name="reexport-google-adk")
 google_star = ProjectStarGoogleADKAgent(name="star-google-adk")
+
+from framework_agent_reexports import ProjectSemanticKernelAgent
+
+
+semantic = ProjectSemanticKernelAgent(name="reexport-semantic-kernel")
+semantic_star = ProjectStarSemanticKernelAgent(name="star-semantic-kernel")

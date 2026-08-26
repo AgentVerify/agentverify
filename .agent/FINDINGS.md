@@ -62,9 +62,10 @@
 - Python framework agent constructor attribution now carries exact import-proven constructor aliases
   through selected local reexport and star-reexport facades when names remain unrebound and visible
   under literal `__all__` rules, including OpenAI Agents SDK `agents.Agent` and Google ADK
-  `google.adk.agents.Agent`. Agent components for those proven aliases now include constructor
-  module, imported symbol, and resolution-mode provenance; hidden exports, rebound imports, and
-  same-named ordinary local constructors remain unresolved.
+  `google.adk.agents.Agent`, plus exact Semantic Kernel
+  `semantic_kernel.agents.ChatCompletionAgent`. Agent components for those proven aliases now
+  include constructor module, imported symbol, and resolution-mode provenance; hidden exports,
+  rebound imports, and same-named ordinary local constructors remain unresolved.
 - Python imported literal tool-list attribution now resolves star imports from selected local
   callable modules when the callable is visible through literal `__all__`/non-underscore exports and
   the Agent use is not locally shadowed.

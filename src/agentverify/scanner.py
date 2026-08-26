@@ -525,6 +525,7 @@ PYTHON_FRAMEWORK_AGENT_CONSTRUCTORS = {
     "lagent.agents": ("AgentForInternLM",),
     "metagpt.roles": ("Role",),
     "qwen_agent.agents": ("Assistant",),
+    "semantic_kernel.agents": ("ChatCompletionAgent",),
 }
 TOOL_DECORATORS = {"tool", "function_tool", "mcp.tool", "server.tool"}
 MODEL_CONSTRUCTORS = {
