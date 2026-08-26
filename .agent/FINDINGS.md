@@ -11,6 +11,8 @@
   formats.
 - Published precision/recall numbers still describe public seed/regression labels only; the holdout
   design records how to produce an unbiased sealed evaluation later.
+- The evaluator already accepts alternate `--labels` paths, so sealed labels can be supplied by CI or
+  a trusted maintainer without committing them publicly.
 
 ## Hypotheses
 

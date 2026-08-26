@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "name": "agentverify-sealed-holdout-labels",
+  "status": "template",
+  "manifest": "benchmarks/holdout-manifest.template.json",
+  "review": {
+    "reviewers": ["reviewer-a", "reviewer-b"],
+    "adjudication_required": true,
+    "labels_sealed_until_round_closed": true
+  },
+  "labels": [
+    {
+      "id": "holdout-AV-EXEC001-001",
+      "target": {
+        "kind": "repository",
+        "repository": "owner/name",
+        "commit": "0123456789abcdef0123456789abcdef01234567"
+      },
+      "path": "src/agent/tool.py",
+      "line": 42,
+      "rule_id": "AV-EXEC001",
+      "expected": true,
+      "source_contains": "subprocess.run(command, shell=True)",
+      "stratum": "reporting-rule",
+      "unsupported": false,
+      "review_state": "adjudicated",
+      "rationale": "Model-supplied command reaches a shell execution primitive."
+    }
+  ]
+}

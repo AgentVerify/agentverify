@@ -20,6 +20,7 @@ catalog workflows.
 - Added a reusable distribution verifier that checks built wheels for every runtime schema file.
 - Added a sealed holdout benchmark design to separate public regression metrics from unbiased
   evaluation claims.
+- Added public holdout manifest/label templates while keeping real sealed labels out of the repo.
 
 ## Current findings
 
@@ -36,5 +37,6 @@ catalog workflows.
 
 ## Next action
 
-Continue toward the highest-value local P1/P2 work: holdout manifest/evaluator support, signed policy
-provenance design, installed-artifact CLI smoke tests, or additional real-world framework coverage.
+Continue toward the highest-value local P1/P2 work: signed policy provenance design,
+installed-artifact CLI smoke tests, holdout evaluator metadata, or additional real-world framework
+coverage.

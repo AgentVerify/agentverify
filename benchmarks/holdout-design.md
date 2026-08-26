@@ -110,7 +110,12 @@ report pass/fail smoke checks instead of precision/recall.
 
 ## Current local next step
 
-Without external trust or private storage access, the safe local step is to draft a public
-`benchmarks/holdout-manifest.template.json` and update the evaluator to accept a sealed label file
-path supplied by CI or a trusted maintainer. The actual sealed labels should wait for approved
-storage and reviewer workflow.
+Without external trust or private storage access, the safe local step is to keep public templates for
+the sample manifest and label shape:
+
+- [`holdout-manifest.template.json`](holdout-manifest.template.json)
+- [`holdout-labels.template.json`](holdout-labels.template.json)
+
+The existing evaluator already accepts an alternate label file through `--labels`, so CI or a trusted
+maintainer can supply a sealed label path without checking private labels into the public regression
+corpus. The actual sealed labels should wait for approved storage and reviewer workflow.

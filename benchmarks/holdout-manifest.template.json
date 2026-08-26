@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "name": "agentverify-sealed-holdout",
+  "status": "template",
+  "created_from_agentverify_commit": "<agentverify-commit>",
+  "storage": {
+    "sealed_labels_location": "<private-or-encrypted-location>",
+    "public_labels_committed": false
+  },
+  "sampling_rules": {
+    "freeze_manifest_before_scanning": true,
+    "exclude_public_rule_fixtures_when_possible": true,
+    "replace_released_failure_labels_after_each_closed_round": true
+  },
+  "samples": [
+    {
+      "id": "holdout-sample-001",
+      "repository": "owner/name",
+      "url": "https://github.com/owner/name",
+      "commit": "0123456789abcdef0123456789abcdef01234567",
+      "category": "coding-agent",
+      "language_strata": ["Python"],
+      "framework_strata": ["OpenAI Agents SDK"],
+      "selected_roots": ["src", "pyproject.toml"],
+      "include_dependency_materialized_files": false,
+      "excluded_paths": [
+        {
+          "path": "tests",
+          "reason": "negative-control sample is tracked separately"
+        }
+      ],
+      "selection_reason": "Representative production agent tool implementation not used as a public fixture."
+    }
+  ]
+}
