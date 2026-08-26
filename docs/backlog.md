@@ -569,8 +569,10 @@ composed policy sources without a repository scan, including a machine-readable 
 keeps SHA-256 content digests separate from author signatures. The policy summary JSON is covered by
 a bundled schema and installed-wheel smoke checks. Local digest trust roots can now require every
 composed policy source to match an approved SHA-256 allowlist while still reporting
-`signature_verified: false`. Next add cryptographic signed policy provenance with explicit trust-root
-configuration; a content hash alone must not be presented as author authenticity.
+`signature_verified: false`. The signed policy provenance design now specifies detached
+source-digest payloads, local Ed25519-style key trust roots, fail-closed verification states, and a
+migration path from digest allowlists; implementation should keep content hashes distinct from
+author authenticity.
 The JSON report now carries a deterministic post-suppression/post-baseline `risk_summary`, matching
 the native AI BOM's by-rule, by-result-kind, and by-severity governance counts without requiring
 external CI parsers to reimplement report aggregation.

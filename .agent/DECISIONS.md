@@ -32,6 +32,19 @@
 - Revisit when: cryptographic signed policy provenance has a concrete key/trust-root design and
   migration path from digest allowlists.
 
+## Signed policy provenance should sign source digests
+
+- Decision: Design future cryptographic policy provenance around detached signatures over a manifest
+  of exact composed policy source digests, not over normalized policy objects.
+- Evidence: Current policy summaries already preserve source paths and SHA-256 bytes for every
+  composed policy. Signing those byte digests avoids JSON canonicalization ambiguity and lets teams
+  migrate from existing digest allowlists without changing policy composition semantics.
+- Alternative: Sign normalized policy JSON or only the root policy digest. Rejected because
+  normalization rules are easy to drift and root-only signatures can hide unapproved base-policy
+  substitutions unless the composition graph is separately pinned.
+- Revisit when: signature implementation chooses an Ed25519 dependency, threshold signatures, or a
+  rule-catalog-version binding.
+
 ## Benchmark release claims must be verifier-gated
 
 - Decision: Treat benchmark result metadata as a release gate, not just explanatory JSON. Release

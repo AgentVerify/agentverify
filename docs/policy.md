@@ -140,7 +140,8 @@ integrity/approval check for local policy content, not a signature scheme; summa
 report `signature_verified: false`. The checked-in
 [`examples/policy-trust-root.json`](../examples/policy-trust-root.json) is a runnable allowlist for
 the composed [`examples/repository-policy.json`](../examples/repository-policy.json) and
-[`examples/org-policy.json`](../examples/org-policy.json) pair.
+[`examples/org-policy.json`](../examples/org-policy.json) pair. The future cryptographic provenance
+design is tracked separately in [`docs/policy-signatures.md`](policy-signatures.md).
 
 ## Baselines and partial scans
 

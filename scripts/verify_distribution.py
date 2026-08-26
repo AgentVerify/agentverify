@@ -30,6 +30,7 @@ REQUIRED_SOURCE_FILES = frozenset(
         "benchmarks/truthset.json",
         "docs/code-scanning.md",
         "docs/policy.md",
+        "docs/policy-signatures.md",
         "examples/ci-policy.json",
         "examples/org-policy.json",
         "examples/policy-trust-root.json",

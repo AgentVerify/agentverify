@@ -53,6 +53,8 @@ catalog workflows.
 - Added literal-visibility star-import resolution for simple local provider wrapper factories, with
   exported/static positives, a filtered negative, and regenerated IR truth-set results now covering
   1,474 labels.
+- Added a concrete signed policy provenance design that keeps digest allowlists separate from author
+  authenticity and specifies detached source-digest payloads plus local key trust roots.
 - Extended distribution verification so release checks can require a source distribution containing
   README-linked examples, policy docs, benchmark contracts, and public truth sets.
 - Extended source-distribution verification to require the checked public benchmark result outputs
@@ -74,5 +76,5 @@ catalog workflows.
 ## Next action
 
 Continue toward the highest-value local P1/P2 work: additional real-world framework coverage
-without broad name matching, cryptographic signed policy provenance design, or release artifact
+without broad name matching, signature-verification implementation planning, or release artifact
 checks that attach benchmark verifier logs once release packaging is explicit.
