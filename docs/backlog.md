@@ -545,7 +545,10 @@ evidence in every report. Local organization policy composition resolves relativ
 rejects cycles and duplicate gate IDs, and preserves file and gate SHA-256 provenance without
 weakening strict unknown-field validation. Next add signed policy provenance with explicit trust-root
 configuration; a content hash alone must not be presented as author authenticity.
-The CLI now exposes an authoritative 22-rule runtime catalog in text or schema-versioned JSON, with
+The JSON report now carries a deterministic post-suppression/post-baseline `risk_summary`, matching
+the native AI BOM's by-rule, by-result-kind, and by-severity governance counts without requiring
+external CI parsers to reimplement report aggregation.
+The CLI now exposes an authoritative 24-rule runtime catalog in text or schema-versioned JSON, with
 focused lookup by rule ID. Every emission site is checked against the catalog's result kind,
 severity, and confidence, preventing policy-facing metadata drift while keeping context-specific
 finding messages and remediation details in reports.

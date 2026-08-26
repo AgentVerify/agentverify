@@ -8,12 +8,24 @@ from hashlib import sha256
 from importlib.resources import files
 
 from . import __version__
-from .ir import Component, Evidence, Relationship, RepositoryIR
+from .ir import Component, Evidence, Finding, Relationship, RepositoryIR
 from .rules import RULE_CATALOG, RULE_DEFINITIONS
 
 
+def _risk_summary(findings: list[Finding]) -> dict[str, dict[str, int]]:
+    return {
+        "by_result_kind": dict(
+            sorted(Counter(finding.result_kind for finding in findings).items())
+        ),
+        "by_rule": dict(sorted(Counter(finding.rule_id for finding in findings).items())),
+        "by_severity": dict(sorted(Counter(finding.severity for finding in findings).items())),
+    }
+
+
 def render_json(ir: RepositoryIR) -> str:
-    return json.dumps(ir.to_dict(), indent=2, sort_keys=True) + "\n"
+    payload = ir.to_dict()
+    payload["risk_summary"] = _risk_summary(ir.findings)
+    return json.dumps(payload, indent=2, sort_keys=True) + "\n"
 
 
 def render_schema(name: str) -> str:
@@ -297,13 +309,7 @@ def render_bom(ir: RepositoryIR) -> str:
                 asset["id"] for asset in assets if asset["kind"] == "sandbox-boundary"
             ),
             "unresolved_policy_asset_ids": unresolved_policy_assets,
-            "risk_summary": {
-                "by_rule": dict(sorted(Counter(risk["rule_id"] for risk in risks).items())),
-                "by_result_kind": dict(
-                    sorted(Counter(risk["result_kind"] for risk in risks).items())
-                ),
-                "by_severity": dict(sorted(Counter(risk["severity"] for risk in risks).items())),
-            },
+            "risk_summary": _risk_summary(ir.findings),
         },
         "risks": risks,
     }

@@ -8289,6 +8289,11 @@ subprocess.run(third_command, shell=True)
     assert ir.suppressions[0].reason == "reviewed wrapper; input is allowlisted upstream"
     report = json.loads(render_json(ir))
     assert report["suppressions"][0]["finding"]["line"] == 4
+    assert report["risk_summary"] == {
+        "by_result_kind": {"finding": 2},
+        "by_rule": {"AV-EXEC001": 2},
+        "by_severity": {"high": 2},
+    }
     assert ir.suppressions[0].expires_on is None
     assert ir.suppressions[0].status == "active"
     assert "Inline suppression directives:" in render_text(ir)
