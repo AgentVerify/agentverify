@@ -183,6 +183,9 @@ catalog workflows.
 - Added a bundled `benchmark-verification` schema and runtime validation for
   `agentverify benchmark verify` JSON output, and upgraded the copyable GitHub benchmark workflow to
   validate its uploaded verifier artifact against that schema.
+- Extended Python registered-class network propagation to exact local module-qualified constructors,
+  while preserving local module-alias shadowing as an unresolved counterexample; regenerated IR
+  truth-set results still cover 1,567 passing labels.
 
 ## Current findings
 
@@ -229,6 +232,10 @@ catalog workflows.
 - Benchmark release evidence now has two installable contracts: `benchmark-result` for measured
   result files and `benchmark-verification` for the release-gate artifact emitted after digest,
   outcome, and claim-boundary checks.
+- Python registered-class network propagation now accepts exact `module_alias.ClassName()` calls only
+  when `module_alias` resolves to one local imported module and is unrebound in the method; locally
+  shadowed module aliases, mutable fields, duplicate classes, and rebound constructors remain
+  unresolved.
 - Python filesystem callable aliasing is deliberately narrow: local alias chains may copy already
   proven same-function callable bindings, but aliases before source proof, rebound alias targets,
   incompatible operation families, and imported wrapper helpers remain unresolved.

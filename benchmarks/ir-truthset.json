@@ -2801,11 +2801,10 @@
       "relationship": {"source_kind":"tool","source_name":"mutable_class_loader","relation":"uses","target_kind":"capability","target_name":"network"}
     },
     {
-      "id": "python-imported-class-module-local-negative",
+      "id": "python-imported-class-module-local",
       "target": {"kind":"local","path":"cases/python_imported_network_helper"},
       "check_id": "IR-PY-IMPORTED-CLASS-NETWORK",
-      "path": "pkg/class_tools.py", "line": 53, "expected": false,
-      "source_contains": "parsers.UrlParser",
+      "path": "pkg/class_tools.py", "line": 53, "expected": true,
       "relationship": {"source_kind":"tool","source_name":"module_class_loader","relation":"uses","target_kind":"capability","target_name":"network"}
     },
     {

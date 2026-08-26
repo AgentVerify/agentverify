@@ -100,3 +100,10 @@ class NestedBindingLoader:
 
     def call(self, url: str):
         return self.parser.call({"url": url})
+
+
+@register_tool("shadowed_module_class_loader")
+class ShadowedModuleClassLoader:
+    def call(self, url: str):
+        parsers = object()
+        return parsers.UrlParser().call({"url": url})

@@ -480,9 +480,9 @@ now propagate positional/destructured parameter flow to exact tool edges. Python
 unique top-level functions through exact named local imports when one of their parameters directly
 controls a recognized HTTP origin; local rebinding, nested helpers, and module-object calls remain
 unresolved. Single-entrypoint registered classes now propagate that proven behavior through exact
-direct construction or immutable constructor-bound fields for up to four graph layers. Mutable
-fields, module-qualified constructors, ambiguous classes, and rebound/shadowed constructors remain
-unresolved. Exact module-level `urllib.request.urlopen` imports and aliases now add network inventory;
+direct construction, exact local module-qualified construction, or immutable constructor-bound fields
+for up to four graph layers. Mutable fields, ambiguous classes, and rebound/shadowed constructors
+remain unresolved. Exact module-level `urllib.request.urlopen` imports and aliases now add network inventory;
 `Request(url)` is unwrapped so a fixed host plus a dynamic query stays inventory-only, while local
 shadowing and module rebinding invalidate the API proof.
 Exact same-function Python `urlparse`/`urlsplit` guards now add a control edge only when immutable

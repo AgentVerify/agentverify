@@ -458,8 +458,10 @@ network edge. Exact imported direct construction or one immutable `self` field c
 the caller's positional/keyword argument back to the callee's first entrypoint parameter. This
 resolves `DocParser`, `ExtractDocVocabulary`, and `WebExtractor` through `SimpleDocParser`, then
 resolves `Retrieval` through `DocParser` on the next graph iteration. All four are dynamic and cite
-two exact callee summaries. Fixed arguments retain inventory edges. Multiple assignments, `setattr`,
-constructor shadowing/rebinding, duplicate classes, and module-qualified calls remain unresolved. A
+two exact callee summaries. A local module-qualified fixture now also resolves `parsers.UrlParser()`
+style calls when the module alias comes from one exact local import and remains unrebound. Fixed
+arguments retain inventory edges. Multiple assignments, `setattr`, constructor
+shadowing/rebinding, duplicate classes, and locally shadowed module aliases remain unresolved. A
 unique literal callee key is mapped field-sensitively, preserving a fixed URL beside dynamic sibling
 fields as an inventory-only edge.
 

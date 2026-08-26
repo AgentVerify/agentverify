@@ -141,6 +141,11 @@
 - Python imported literal tool-list attribution now resolves star imports from selected local
   callable modules when the callable is visible through literal `__all__`/non-underscore exports and
   the Agent use is not locally shadowed.
+- Python registered-class network propagation now follows exact local module-qualified constructor
+  calls such as `parsers.UrlParser().call(...)` when the module alias resolves to one local file and
+  is not rebound in the method. A local shadowed-module fixture keeps the boundary pinned, and the IR
+  truth set remains at 1,567 passing labels with `IR-PY-IMPORTED-CLASS-NETWORK` moving to 11
+  positives and 4 negatives.
 
 ## Hypotheses
 

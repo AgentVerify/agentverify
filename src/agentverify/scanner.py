@@ -20815,8 +20815,6 @@ def propagate_python_class_network_helpers(
             value = observations[0][1]
             if not (
                 isinstance(value, ast.Call)
-                and isinstance(value.func, ast.Name)
-                and value.func.id in imports
             ):
                 continue
             init_methods = [
@@ -20825,12 +20823,33 @@ def propagate_python_class_network_helpers(
                 if isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef))
                 and method.name == "__init__"
             ]
-            if len(init_methods) != 1 or value.func.id in python_function_local_bindings(
-                init_methods[0]
-            ):
+            if len(init_methods) != 1:
                 continue
-            resolved[attribute] = imports[value.func.id]
+            identity = imported_class_constructor_identity(
+                value.func,
+                imports,
+                python_function_local_bindings(init_methods[0]),
+            )
+            if identity is None:
+                continue
+            resolved[attribute] = identity
         return resolved
+
+    def imported_class_constructor_identity(
+        function: ast.AST,
+        imports: dict[str, tuple[str, str]],
+        local_bindings: set[str],
+    ) -> tuple[str, str] | None:
+        if isinstance(function, ast.Name) and function.id not in local_bindings:
+            return imports.get(function.id)
+        if (
+            isinstance(function, ast.Attribute)
+            and isinstance(function.value, ast.Name)
+            and function.value.id not in local_bindings
+            and function.value.id in imports
+        ):
+            return (imports[function.value.id][0], function.attr)
+        return None
 
     seen_calls: set[tuple[str, int, str]] = set()
     for _ in range(4):
@@ -20959,12 +20978,12 @@ def propagate_python_class_network_helpers(
                     continue
                 callee_identity: tuple[str, str] | None = None
                 receiver = candidate.func.value
-                if (
-                    isinstance(receiver, ast.Call)
-                    and isinstance(receiver.func, ast.Name)
-                    and receiver.func.id not in local_bindings
-                ):
-                    callee_identity = imports.get(receiver.func.id)
+                if isinstance(receiver, ast.Call):
+                    callee_identity = imported_class_constructor_identity(
+                        receiver.func,
+                        imports,
+                        local_bindings,
+                    )
                 elif (
                     isinstance(receiver, ast.Attribute)
                     and isinstance(receiver.value, ast.Name)

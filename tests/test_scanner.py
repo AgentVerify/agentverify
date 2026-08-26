@@ -7874,6 +7874,7 @@ def test_python_imported_class_network_helpers_are_iterative_and_binding_scoped(
         ("pkg/class_tools.py", 23, True, "UrlParser.call", [10]),
         ("pkg/class_tools.py", 29, False, "UrlParser.call", [10]),
         ("pkg/class_tools.py", 35, True, "ChainParser.call", [12]),
+        ("pkg/class_tools.py", 53, True, "UrlParser.call", [10]),
         ("pkg/class_tools.py", 87, False, "UrlParser.call", [10]),
     ]
     assert [
@@ -7887,6 +7888,7 @@ def test_python_imported_class_network_helpers_are_iterative_and_binding_scoped(
         ("bound_class_loader", "pkg/class_tools.py", 23),
         ("fixed_class_loader", "pkg/class_tools.py", 29),
         ("multi_hop_loader", "pkg/class_tools.py", 35),
+        ("module_class_loader", "pkg/class_tools.py", 53),
         ("mixed_field_loader", "pkg/class_tools.py", 87),
     ]
     assert [
@@ -7898,6 +7900,7 @@ def test_python_imported_class_network_helpers_are_iterative_and_binding_scoped(
         ("pkg/class_tools.py", 14),
         ("pkg/class_tools.py", 23),
         ("pkg/class_tools.py", 35),
+        ("pkg/class_tools.py", 53),
     ]
 
 
