@@ -12,7 +12,7 @@
   publishing is explicit.
 - Expand selected real-world framework coverage where current docs record unresolved ambiguous
   wrapper factories, type-driven symbols, generic same-named provider wrappers, or non-provider
-  wildcard import forms.
+  wildcard import forms beyond literal-`__all__` local callable exports.
 
 ## P2
 

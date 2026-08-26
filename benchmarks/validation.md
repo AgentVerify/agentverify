@@ -1623,8 +1623,9 @@ unresolved edges, and four pinned production CrewAI projects. Eighteen typed-too
 parameter edges, the non-collapsing concrete-ID negative, and mismatched, reassigned, uncalled,
 rebound, class/nested-scope shadowed, union-typed, and wrong-annotation cases. Sixteen literal-tool-
 binding labels cover local exact/unresolved boundaries plus pinned Agno, CrewAI, Google ADK, and
-Marvin paths. Sixteen imported-literal-tool labels cover the exact local export/import boundary,
-six unresolved ambiguity/shadowing/order forms, and all seven pinned Google ADK edges. Twenty-three
+Marvin paths. Nineteen imported-literal-tool labels cover the exact local export/import boundary,
+literal-`__all__` star-import visibility, filtered wildcard negatives, six unresolved
+ambiguity/shadowing/order forms, and all seven pinned Google ADK edges. Twenty-three
 tool-factory/adapter labels cover four local Agent edges, one hosted-MCP capability, one local
 Agent-as-tool delegation, eight conservative local negatives, two AutoGen factory edges, one Google
 ADK LangChain adapter edge, four Composio HostedMCP edges, and the OpenAI Agent edge plus delegation.
@@ -1649,7 +1650,7 @@ Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,466 IR labels pass (1,069 positives and 397 negatives):
+negatives. All 1,469 IR labels pass (1,072 positives and 397 negatives):
 333 component-taxonomy positives/133 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
@@ -1657,7 +1658,7 @@ contextual network-import positives, three imported-literal-origin positives/sev
 four import-shadow positives/one negative, eight block-dominance positives/three negatives, 20
 Agent-helper-return positives/seven negatives, seven imported-Agent-factory proof labels,
 23 tool-factory/adapter proof labels,
-16 imported-literal-tool proof labels, 16 literal-tool-binding proof labels,
+19 imported-literal-tool proof labels, 16 literal-tool-binding proof labels,
 16 typed-tool-parameter positives/two negatives, seven
 Python ComputerTool positives/one negative, 11 Python LocalShellTool positives/four negatives,
 11 Python CodeInterpreterTool positives/four negatives, 27 Python OpenAI hosted-tool positives/six

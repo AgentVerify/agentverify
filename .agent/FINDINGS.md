@@ -49,6 +49,9 @@
   reexport modules respect literal `__all__`/non-underscore visibility; simple imported local wrapper
   factories can carry literal/parameter model attribution when they have one proven return path,
   while rebound, ambiguous, and generic same-named wrapper forms remain unresolved.
+- Python imported literal tool-list attribution now resolves star imports from selected local
+  callable modules when the callable is visible through literal `__all__`/non-underscore exports and
+  the Agent use is not locally shadowed.
 
 ## Hypotheses
 

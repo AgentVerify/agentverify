@@ -8083,6 +8083,12 @@ def test_imported_literal_tools_require_immutable_binding_or_exact_export() -> N
         "target_path": "pkg/tools.py",
         "target_identity": "imported-callable-single-export",
     }
+    star_imported = edges[("star-import-operator", "star_writer")]
+    assert star_imported.target_id == "py:pkg/star_tools.py#tool:star_writer"
+    assert star_imported.attributes == {
+        "target_path": "pkg/star_tools.py",
+        "target_identity": "imported-callable-single-export",
+    }
     external = edges[("imported-operator", "sdk_tool")]
     assert external.target_id == "py:positive.py#tool:sdk_tool"
     assert external.attributes == {"target_identity": "literal-tools-list-import-binding"}
@@ -8094,6 +8100,7 @@ def test_imported_literal_tools_require_immutable_binding_or_exact_export() -> N
         ("duplicate-import", "duplicated"),
         ("forward-import", "forward_tool"),
         ("duplicate-local-import", "duplicate_local"),
+        ("star-import-filtered", "filtered_hidden"),
     }:
         assert edges[(agent_name, tool_name)].target_id is None
 
@@ -8109,6 +8116,15 @@ def test_imported_literal_tools_require_immutable_binding_or_exact_export() -> N
         "resolution": "imported-callable-single-export",
         "import_line": 3,
     }
+    assert components["py:pkg/star_tools.py#tool:star_writer"].attributes == {
+        "decorators": [],
+        "needs_approval": False,
+        "registration": "agent-tool-reference",
+        "registration_path": "star_positive.py",
+        "registration_line": 5,
+        "resolution": "imported-callable-single-export",
+        "import_line": 2,
+    }
     assert components["py:positive.py#tool:sdk_tool"].attributes == {
         "binding": "literal-tools-list-import",
         "module": "external_sdk.tools",
@@ -8122,6 +8138,12 @@ def test_imported_literal_tools_require_immutable_binding_or_exact_export() -> N
         finding.rule_id == "AV-FS001"
         and finding.evidence.path == "pkg/tools.py"
         and finding.evidence.line == 5
+        for finding in ir.findings
+    )
+    assert any(
+        finding.rule_id == "AV-FS001"
+        and finding.evidence.path == "pkg/star_tools.py"
+        and finding.evidence.line == 7
         for finding in ir.findings
     )
 

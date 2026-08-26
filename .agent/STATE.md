@@ -46,7 +46,10 @@ catalog workflows.
 - Added exact local package reexport-chain attribution for AgentScope/PydanticAI provider-wrapper
   symbols, including direct/transitive/wildcard provider-model positives, rebound and filtered
   negatives, imported simple wrapper-factory positives with ambiguous/rebound negatives, and
-  regenerated IR truth-set results now covering 1,466 labels.
+  regenerated IR truth-set results then covering 1,466 labels.
+- Added literal-`__all__` star-import resolution for selected local callables used in Python Agent
+  literal tool lists, with wildcard positive/filtered-negative IR labels and regenerated IR
+  truth-set results now covering 1,469 labels.
 - Extended distribution verification so release checks can require a source distribution containing
   README-linked examples, policy docs, benchmark contracts, and public truth sets.
 

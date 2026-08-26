@@ -8901,16 +8901,22 @@ class PythonVisitor(ast.NodeVisitor):
                     if target_name:
                         attributes = {}
                         root_name, separator, suffix = target_name.partition(".")
+                        imported_callable_usage = self.imported_tool_export_usages.get(
+                            (node.lineno, node.col_offset, root_name)
+                        )
                         imported_path = self.imported_symbol_paths.get(
                             target_name
                         ) or self.imported_symbol_paths.get(root_name)
+                        if imported_path is None and imported_callable_usage is not None:
+                            imported_path = imported_callable_usage.target_path
                         if imported_path:
-                            original = self.imported_symbol_names.get(root_name, root_name)
+                            original = (
+                                imported_callable_usage.original_name
+                                if imported_callable_usage is not None
+                                else self.imported_symbol_names.get(root_name, root_name)
+                            )
                             resolved_name = f"{original}.{suffix}" if separator else original
                             import_basis = self.imported_symbol_resolutions.get(root_name)
-                            imported_callable_usage = self.imported_tool_export_usages.get(
-                                (node.lineno, node.col_offset, root_name)
-                            )
                             contextual_export_id = self.decorated_tool_exports.get(
                                 (imported_path, resolved_name)
                             )
@@ -16830,6 +16836,7 @@ def build_python_literal_imported_tool_references(
 ]:
     """Index immutable names imported directly into literal Python Agent tool lists."""
     parsed: dict[str, ast.Module] = {}
+    module_all_exports: dict[str, set[str] | None] = {}
     callable_exports: dict[tuple[str, str], list[ast.FunctionDef | ast.AsyncFunctionDef]] = (
         defaultdict(list)
     )
@@ -16852,6 +16859,15 @@ def build_python_literal_imported_tool_references(
         except (OSError, SyntaxError):
             continue
         parsed[relative] = tree
+        module_all_exports[relative] = None
+        for statement in tree.body:
+            if not isinstance(statement, ast.Assign) or len(statement.targets) != 1:
+                continue
+            target = statement.targets[0]
+            if not isinstance(target, ast.Name) or target.id != "__all__":
+                continue
+            values = python_literal_string_list(statement.value)
+            module_all_exports[relative] = set(values) if values is not None else set()
         for statement in tree.body:
             if not isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 continue
@@ -16868,6 +16884,13 @@ def build_python_literal_imported_tool_references(
         key for key, definitions in callable_exports.items() if len(definitions) == 1
     }
 
+    def star_visible_callable_exports(path: str) -> set[str]:
+        explicit_exports = module_all_exports.get(path)
+        visible = {name for source_path, name in unique_callable_exports if source_path == path}
+        if explicit_exports is not None:
+            return visible & explicit_exports
+        return {name for name in visible if not name.startswith("_")}
+
     references_by_importer: dict[str, list[PythonImportedToolReference]] = defaultdict(list)
     references_by_export: dict[tuple[str, str], list[PythonImportedToolReference]] = defaultdict(
         list
@@ -16883,7 +16906,19 @@ def build_python_literal_imported_tool_references(
             if not isinstance(statement, (ast.Import, ast.ImportFrom)):
                 continue
             for alias in statement.names:
-                if alias.name == "*":
+                if alias.name == "*" and isinstance(statement, ast.ImportFrom):
+                    resolution = resolve_python_import(
+                        root,
+                        relative,
+                        statement,
+                        alias.name,
+                        module_paths,
+                    )
+                    if resolution is None:
+                        continue
+                    for exported in sorted(star_visible_callable_exports(resolution.path)):
+                        import_counts[exported] += 1
+                        imports[exported].append((statement, ast.alias(name=exported)))
                     continue
                 local_name = alias.asname or alias.name.split(".", 1)[0]
                 import_counts[local_name] += 1
