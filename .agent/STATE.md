@@ -72,6 +72,9 @@ catalog workflows.
   their own key-management workflow.
 - Extended source-distribution verification to require `pyproject.toml`, so source releases carry
   the runtime dependency declaration that signed policy verification relies on.
+- Extended installed-wheel smoke verification to install runtime dependencies and exercise a full
+  ephemeral detached-policy-signature verification path through the installed `agentverify`
+  executable.
 - Extended distribution verification so release checks can require a source distribution containing
   README-linked examples, policy docs, benchmark contracts, and public truth sets.
 - Extended source-distribution verification to require the checked public benchmark result outputs
