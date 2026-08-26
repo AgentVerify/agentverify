@@ -8830,7 +8830,13 @@ def test_policy_decision_evidence_is_retained_by_all_reporters() -> None:
             encoding="utf-8"
         )
     )
+    report_schema = json.loads(
+        (ROOT / "src/agentverify/schemas/agentverify-report-v1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
     Draft202012Validator(bom_schema).validate(bom)
+    Draft202012Validator(report_schema).validate(json_report)
     assert bom["metadata"]["policy_summary"] == json_report["policy_summary"]
     assert sarif["runs"][0]["properties"]["policySummary"] == json_report["policy_summary"]
     assert "Policy: release [failed; 1 gates]" in text_report

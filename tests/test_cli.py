@@ -228,6 +228,12 @@ def test_partial_baseline_does_not_claim_resolved_findings(tmp_path: Path, capsy
         == 0
     )
     payload = __import__("json").loads(capsys.readouterr().out)
+    schema = __import__("json").loads(
+        (ROOT / "src/agentverify/schemas/agentverify-report-v1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    Draft202012Validator(schema).validate(payload)
     assert payload["baseline_summary"] == {
         "baseline_fingerprints": 1,
         "current_fingerprints": 0,
@@ -311,6 +317,21 @@ def test_cli_prints_bundled_policy_schema(capsys) -> None:
     )
     assert schema["title"] == "AgentVerify Policy 1"
     assert schema["$defs"]["gate"]["properties"]["rules"]["items"]["enum"] == list(RULE_CATALOG)
+
+
+def test_cli_prints_bundled_report_schema(capsys) -> None:
+    assert cli.main(["schema", "report"]) == 0
+
+    schema = __import__("json").loads(capsys.readouterr().out)
+    report = __import__("json").loads(render_json(scan_repository(ROOT / "cases/python_dangerous")))
+    Draft202012Validator.check_schema(schema)
+    Draft202012Validator(schema).validate(report)
+    assert schema["title"] == "AgentVerify JSON Report 1"
+    assert schema["$defs"]["riskSummary"]["required"] == [
+        "by_rule",
+        "by_result_kind",
+        "by_severity",
+    ]
 
 
 def test_cli_writes_bundled_schema_to_output_file(tmp_path: Path, capsys) -> None:

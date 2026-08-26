@@ -71,7 +71,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="evaluate a schema-v1 JSON policy against post-baseline results",
     )
     schema = subparsers.add_parser("schema", help="print a bundled machine-readable schema")
-    schema.add_argument("name", choices=("bom", "policy"))
+    schema.add_argument("name", choices=("bom", "policy", "report"))
     schema.add_argument(
         "-o",
         "--output",

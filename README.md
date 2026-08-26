@@ -21,6 +21,7 @@ agentverify scan ./project --format json
 agentverify scan ./project --format bom
 agentverify scan ./project --format sarif
 agentverify scan ./project --format sarif --output agentverify.sarif
+agentverify schema report --output agentverify-report.schema.json
 agentverify schema bom --output agentverify-ai-bom.schema.json
 agentverify schema policy --output agentverify-policy.schema.json
 agentverify scan ./project --policy agentverify-policy.json
@@ -56,6 +57,7 @@ longer reported by a full scan. Partial selected-path scans leave that last coun
 Reports and schemas are written to standard output by default. Use `--output PATH` (or `-o PATH`)
 to write them directly to a file. Output write failures return exit code 2; successful scan writes
 still preserve policy and `--fail-on` exit decisions.
+`agentverify schema report` prints the bundled schema for validating normal `--format json` reports.
 Use `--format summary` for compact CI logs: it reports scan totals, baseline/policy status, counts by
 severity/result kind/rule, and the top evidence locations without printing the full component graph.
 `agentverify rules` lists every enabled reporting rule with its result kind, default severity,
