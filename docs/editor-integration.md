@@ -39,6 +39,17 @@ The manifest schema is bundled with installed wheels:
 agentverify schema editor-contract-manifest
 ```
 
+To validate a copied or cached bundle before an editor extension or CI job consumes it, run:
+
+```console
+agentverify contracts --verify-dir agentverify-editor-contracts
+```
+
+The verifier checks `manifest.json` against the bundled manifest schema, confirms every manifest
+artifact exists, recomputes byte counts and SHA-256 digests, and validates the rules catalog and
+sample report against the schemas in the bundle. It exits with status `1` when the bundle is present
+but fails verification, and `2` when the manifest or output path cannot be read or written.
+
 From a source checkout, `python scripts/export_editor_contracts.py` is a thin wrapper around the
 same installed package exporter.
 

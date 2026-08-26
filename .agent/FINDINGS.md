@@ -59,9 +59,11 @@
   now include `kind`, `contract`, and `required` metadata in addition to path/byte/SHA-256 fields, so
   integrations can consume the bundle without inferring semantics from filenames. The manifest is
   itself validated by a bundled `editor-contract-manifest` schema exposed through `agentverify
-  schema`; the source script is a compatibility wrapper, the guide remains a required
-  source-distribution artifact, and distribution smoke tests prove the built wheel exports the bundle
-  and its schema.
+  schema`; copied bundles can be checked with `agentverify contracts --verify-dir`, which recomputes
+  byte counts and SHA-256 digests and validates the rules catalog/sample report against the schemas
+  in the bundle. The source script is a compatibility wrapper, the guide remains a required
+  source-distribution artifact, and distribution smoke tests prove the built wheel exports and
+  verifies the bundle and its schema.
 - The editor integration guide now includes a checked LSP-style diagnostic mapping example derived
   from `cases/approval_callback_bypass`. Tests regenerate the example from `agentverify scan
   --format json`, proving the documented mapping preserves evidence paths, zero-based ranges,

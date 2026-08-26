@@ -171,6 +171,9 @@ catalog workflows.
 - Added a bundled `editor-contract-manifest` schema and runtime validation for `agentverify
   contracts`, with CLI schema discovery and installed-wheel smoke checks proving the schema ships
   with release artifacts.
+- Added `agentverify contracts --verify-dir` to validate copied editor/CI contract bundles against
+  their manifest schema, required artifact entries, recomputed byte counts and SHA-256 digests, and
+  bundled rules/sample-report schemas. Installed-wheel smoke now exports and verifies a bundle.
 
 ## Current findings
 
@@ -204,6 +207,9 @@ catalog workflows.
   `contract`, and `required` fields while retaining SHA-256 digests for reproducibility.
 - The editor/CI contract manifest is now itself schema-backed via `agentverify schema
   editor-contract-manifest`, matching the broader installed machine-contract pattern.
+- Copied editor/CI contract bundles can now be independently verified with `agentverify contracts
+  --verify-dir`, giving downstream tools a fail-closed integrity check before loading schemas or rule
+  catalogs.
 - Python filesystem callable aliasing is deliberately narrow: local alias chains may copy already
   proven same-function callable bindings, but aliases before source proof, rebound alias targets,
   incompatible operation families, and imported wrapper helpers remain unresolved.

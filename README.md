@@ -43,6 +43,7 @@ agentverify policy repository-policy.json --trust-root policy-trust-root.json --
 agentverify policy examples/repository-policy.json --trust-root examples/policy-trust-root.json --require-trusted
 agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed
 agentverify contracts --output-dir agentverify-editor-contracts --sample-root examples/safe_agent
+agentverify contracts --verify-dir agentverify-editor-contracts
 agentverify scan ./project --fail-on high
 agentverify scan ./project --fail-on high --fail-on-kind any
 agentverify scan ./project --include-tests
@@ -191,7 +192,8 @@ The default CI workflow runs the installed CLI benchmark gate against the checke
 regression results, so benchmark-result drift fails during pull requests before release packaging.
 For editor or custom CI integrations, `agentverify contracts --sample-root examples/safe_agent`
 exports the report schema, rules schema, current rules catalog, and optional sample report into a
-local artifact directory with a schema-backed digest manifest. The editor guide also includes a checked
+local artifact directory with a schema-backed digest manifest. `agentverify contracts --verify-dir`
+rechecks copied bundles before consumers load them. The editor guide also includes a checked
 [`examples/editor-diagnostics.json`](examples/editor-diagnostics.json) mapping from AgentVerify
 findings to Language Server Protocol-style diagnostics.
 

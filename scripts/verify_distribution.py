@@ -205,6 +205,9 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
                 ]
             )
         )
+        editor_contract_verification = json.loads(
+            command([str(agentverify), "contracts", "--verify-dir", str(editor_contracts_dir)])
+        )
         policy_signing_payload = json.loads(
             command(
                 [
@@ -326,6 +329,7 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
             for item in editor_contracts.get("artifacts", [])
         },
         "editor_contract_files_present": editor_contract_files_present,
+        "editor_contract_verification_passed": editor_contract_verification.get("passed"),
         "signed_policy_signature_verified": signed_policy_example.get("signature_verified"),
         "signed_policy_signature_trusted": signed_policy_example.get("signature_trusted"),
         "signed_policy_private_key_material": signed_policy_example.get("private_key_material"),
@@ -427,6 +431,8 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         [*expected_editor_contract_files, "manifest.json"]
     ):
         failed.append("editor_contract_files_present")
+    if checks["editor_contract_verification_passed"] is not True:
+        failed.append("editor_contract_verification_passed")
     if checks["signed_policy_signature_verified"] is not True:
         failed.append("signed_policy_signature_verified")
     if checks["signed_policy_signature_trusted"] is not True:

@@ -6,7 +6,7 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 
 from agentverify import cli
-from agentverify.contracts import export_editor_contracts
+from agentverify.contracts import export_editor_contracts, verify_editor_contracts
 from agentverify.report import render_json, render_sarif
 from agentverify.scanner import scan_repository
 
@@ -119,6 +119,75 @@ def test_cli_exports_editor_contracts(tmp_path: Path, capsys) -> None:
     assert all({"kind", "contract", "required"} <= set(item) for item in manifest["artifacts"])
 
 
+def test_editor_contract_verifier_accepts_exported_bundle(tmp_path: Path) -> None:
+    export_editor_contracts(
+        tmp_path,
+        sample_root=ROOT / "examples/safe_agent",
+    )
+
+    verification = verify_editor_contracts(tmp_path)
+
+    assert verification["passed"] is True
+    assert verification["manifest_schema_valid"] is True
+    assert verification["required_artifacts_present"] is True
+    assert verification["errors"] == []
+    assert {
+        item["path"]: (item["present"], item["digest_ok"], item["bytes_ok"], item["content_valid"])
+        for item in verification["artifacts"]
+    } == {
+        "agentverify-report-v1.schema.json": (True, True, True, True),
+        "agentverify-rules-v1.schema.json": (True, True, True, True),
+        "agentverify-rules.json": (True, True, True, True),
+        "agentverify-sample-report.json": (True, True, True, True),
+    }
+
+
+def test_editor_contract_verifier_rejects_digest_drift(tmp_path: Path) -> None:
+    export_editor_contracts(
+        tmp_path,
+        sample_root=ROOT / "examples/safe_agent",
+    )
+    (tmp_path / "agentverify-rules.json").write_text('{"schema_version":1,"rules":[]}\n')
+
+    verification = verify_editor_contracts(tmp_path)
+
+    assert verification["passed"] is False
+    rules_result = next(
+        item for item in verification["artifacts"] if item["path"] == "agentverify-rules.json"
+    )
+    assert rules_result["present"] is True
+    assert rules_result["digest_ok"] is False
+    assert rules_result["bytes_ok"] is False
+    assert any("artifact digest mismatch: agentverify-rules.json" in error for error in verification["errors"])
+
+
+def test_cli_contract_verifier_rejects_missing_required_artifact(
+    tmp_path: Path, capsys
+) -> None:
+    bundle = tmp_path / "contracts"
+    manifest_path = tmp_path / "verification.json"
+    export_editor_contracts(bundle, sample_root=ROOT / "examples/safe_agent")
+    (bundle / "agentverify-report-v1.schema.json").unlink()
+
+    assert (
+        cli.main(
+            [
+                "contracts",
+                "--verify-dir",
+                str(bundle),
+                "--output",
+                str(manifest_path),
+            ]
+        )
+        == 1
+    )
+
+    assert capsys.readouterr().out == ""
+    verification = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert verification["passed"] is False
+    assert any("missing artifact file: agentverify-report-v1.schema.json" in error for error in verification["errors"])
+
+
 def test_editor_integration_docs_reference_exported_artifacts() -> None:
     docs = (ROOT / "docs/editor-integration.md").read_text(encoding="utf-8")
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
@@ -131,6 +200,8 @@ def test_editor_integration_docs_reference_exported_artifacts() -> None:
     assert "agentverify-report-v1.schema.json" in docs
     assert "agentverify rules --format json --output agentverify-rules.json" in docs
     assert "agentverify schema editor-contract-manifest" in docs
+    assert "agentverify contracts --verify-dir agentverify-editor-contracts" in docs
+    assert "agentverify contracts --verify-dir" in readme
     assert "`kind`" in docs
     assert "`contract`" in docs
     assert "`required`" in docs

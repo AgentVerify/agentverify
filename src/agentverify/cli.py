@@ -14,7 +14,13 @@ from .benchmark import (
     render_benchmark_verification,
     verify_benchmark_results,
 )
-from .contracts import export_editor_contracts, render_editor_contract_manifest
+from .contracts import (
+    CONTRACT_VERIFICATION_ERRORS,
+    export_editor_contracts,
+    render_editor_contract_manifest,
+    render_editor_contract_verification,
+    verify_editor_contracts,
+)
 from .policy import (
     SEVERITY_RANK,
     PolicyError,
@@ -146,6 +152,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--sample-root",
         type=Path,
         help="optional repository path to scan and include as agentverify-sample-report.json",
+    )
+    contracts.add_argument(
+        "--verify-dir",
+        type=Path,
+        metavar="PATH",
+        help="verify an exported contract bundle directory instead of exporting a new bundle",
     )
     contracts.add_argument(
         "-o",
@@ -334,6 +346,19 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "rules":
         return emit_output(render_rules(args.rule_id, output_format=args.format), args.output) or 0
     if args.command == "contracts":
+        if args.verify_dir is not None:
+            if args.sample_root is not None:
+                print("agentverify: --verify-dir cannot be combined with --sample-root", file=sys.stderr)
+                return 2
+            try:
+                verification = verify_editor_contracts(args.verify_dir)
+            except CONTRACT_VERIFICATION_ERRORS as error:
+                print(f"agentverify: cannot verify contracts: {error}", file=sys.stderr)
+                return 2
+            output_error = emit_output(render_editor_contract_verification(verification), args.output)
+            if output_error:
+                return output_error
+            return 0 if verification["passed"] is True else 1
         try:
             manifest = export_editor_contracts(args.output_dir, sample_root=args.sample_root)
         except OSError as error:
