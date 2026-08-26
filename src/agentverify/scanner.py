@@ -12482,8 +12482,10 @@ TS_OPENAI_BUILTIN_TOOL_CAPABILITIES = {
     "codeInterpreterTool": ("code-execution",),
     "computerTool": ("computer-control",),
     "fileSearchTool": ("filesystem",),
+    "filesystem": ("filesystem",),
     "hostedMcpTool": ("mcp-access",),
     "imageGenerationTool": ("external-action",),
+    "memory": ("memory",),
     "programmaticToolCallingTool": ("dynamic-tool-orchestration",),
     "shell": ("shell-execution",),
     "shellTool": ("shell-execution",),
@@ -12491,6 +12493,7 @@ TS_OPENAI_BUILTIN_TOOL_CAPABILITIES = {
     "webSearchTool": ("external-action",),
     "codexTool": ("code-execution",),
 }
+TS_OPENAI_SANDBOX_CAPABILITY_FACTORIES = {"filesystem", "memory", "shell"}
 TS_OPENAI_APPROVAL_BUILTINS = {"applyPatchTool", "computerTool", "shellTool"}
 CONTAINER_CONFIG_SUFFIXES = {".yml", ".yaml"}
 INLINE_SUPPRESSION = re.compile(
@@ -15651,7 +15654,7 @@ def add_typescript_tool_observation(
     else:
         approval_policy = "unresolved"
     execution_environment = "unresolved"
-    if constructor == "shell":
+    if constructor in TS_OPENAI_SANDBOX_CAPABILITY_FACTORIES:
         execution_environment = "sdk-sandbox"
     elif constructor == "shellTool":
         environment = typescript_object_property_expression(call_body, "environment")
@@ -15681,7 +15684,7 @@ def add_typescript_tool_observation(
             {
                 "sandbox_policy": "openai-agents-sdk-sandbox",
             }
-            if constructor == "shell"
+            if constructor in TS_OPENAI_SANDBOX_CAPABILITY_FACTORIES
             else {}
         ),
         **(
@@ -15699,9 +15702,9 @@ def add_typescript_tool_observation(
         "approval_policy": approval_policy,
         "scope": source_scope(relative),
     }
-    if constructor in {"shell", "shellTool"}:
+    if constructor in {"shellTool", *TS_OPENAI_SANDBOX_CAPABILITY_FACTORIES}:
         capability_attributes["execution_environment"] = execution_environment
-    if constructor == "shell":
+    if constructor in TS_OPENAI_SANDBOX_CAPABILITY_FACTORIES:
         capability_attributes["sandbox_policy"] = "openai-agents-sdk-sandbox"
     if constructor == "applyPatchTool":
         capability_attributes["write_access"] = True
@@ -15932,6 +15935,7 @@ def typescript_graph(
         )
         is_openai_builtin = (
             local_factory in openai_imports and constructor in TS_OPENAI_BUILTIN_TOOL_CAPABILITIES
+            and not typescript_import_binding_is_shadowed(text, local_factory)
         )
         if not is_generic and not is_openai_builtin:
             continue
@@ -16216,6 +16220,7 @@ def typescript_graph(
             elif (
                 local_factory in openai_imports
                 and constructor in TS_OPENAI_BUILTIN_TOOL_CAPABILITIES
+                and not typescript_import_binding_is_shadowed(text, local_factory)
             ):
                 target_id = source_symbol("ts", relative, "tool", tool_name)
                 add_typescript_tool_observation(

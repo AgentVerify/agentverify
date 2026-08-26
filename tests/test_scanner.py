@@ -3778,6 +3778,7 @@ def test_typescript_openai_sandbox_agent_capabilities_require_exact_import() -> 
         if component.kind == "agent"
     }
     assert set(agents) == {
+        ("capability-negative.ts", 10, "Capability Shadow Sandbox"),
         ("positive.ts", 9, "Local Sandbox Assistant"),
         ("positive.ts", 15, "Aliased Sandbox Assistant"),
         ("positive.ts", 23, "buildReturnedSandboxAgent"),
@@ -3812,8 +3813,10 @@ def test_typescript_openai_sandbox_agent_capabilities_require_exact_import() -> 
         if component.kind == "tool"
     }
     assert set(tools) == {
+        ("positive.ts", 12, "filesystem@12"),
         ("positive.ts", 12, "shell@12"),
         ("positive.ts", 18, "shell@18"),
+        ("positive.ts", 25, "memory@25"),
         ("positive.ts", 25, "shell@25"),
         ("positive.ts", 32, "shell@32"),
     }
@@ -3822,14 +3825,64 @@ def test_typescript_openai_sandbox_agent_capabilities_require_exact_import() -> 
         and component.attributes["execution_environment"] == "sdk-sandbox"
         and component.attributes["sandbox_policy"] == "openai-agents-sdk-sandbox"
         and component.attributes["approval_policy"] == "not-applicable"
-        for component in tools.values()
+        for key, component in tools.items()
+        if key[2].startswith("shell@")
+    )
+    assert tools[("positive.ts", 12, "filesystem@12")].attributes[
+        "execution_environment"
+    ] == "sdk-sandbox"
+    assert tools[("positive.ts", 12, "filesystem@12")].attributes[
+        "sandbox_policy"
+    ] == "openai-agents-sdk-sandbox"
+    assert tools[("positive.ts", 25, "memory@25")].attributes[
+        "execution_environment"
+    ] == "sdk-sandbox"
+    assert tools[("positive.ts", 25, "memory@25")].attributes[
+        "sandbox_policy"
+    ] == "openai-agents-sdk-sandbox"
+
+    capabilities = {
+        (
+            component.evidence.path,
+            component.evidence.line,
+            component.name,
+            component.attributes["builtin_tool"],
+        )
+        for component in ir.components
+        if component.kind == "capability"
+    }
+    assert (
+        "positive.ts",
+        12,
+        "filesystem",
+        "filesystem",
+    ) in capabilities
+    assert (
+        "positive.ts",
+        25,
+        "memory",
+        "memory",
+    ) in capabilities
+    assert all(
+        component.attributes.get("execution_environment") == "sdk-sandbox"
+        and component.attributes.get("sandbox_policy") == "openai-agents-sdk-sandbox"
+        for component in ir.components
+        if component.kind == "capability"
+        and component.attributes.get("builtin_tool") in {"filesystem", "memory", "shell"}
     )
 
     assert {
         (edge.source_name, edge.relation, edge.target_kind, edge.target_name, edge.target_id)
         for edge in ir.relationships
-        if edge.source_kind == "agent"
+        if edge.source_kind == "agent" and edge.evidence.path == "positive.ts"
     } == {
+        (
+            "Local Sandbox Assistant",
+            "uses",
+            "tool",
+            "filesystem@12",
+            "ts:positive.ts#tool:filesystem@12",
+        ),
         (
             "Local Sandbox Assistant",
             "uses",
@@ -3843,6 +3896,13 @@ def test_typescript_openai_sandbox_agent_capabilities_require_exact_import() -> 
             "tool",
             "shell@18",
             "ts:positive.ts#tool:shell@18",
+        ),
+        (
+            "buildReturnedSandboxAgent",
+            "uses",
+            "tool",
+            "memory@25",
+            "ts:positive.ts#tool:memory@25",
         ),
         (
             "buildReturnedSandboxAgent",
@@ -3862,6 +3922,11 @@ def test_typescript_openai_sandbox_agent_capabilities_require_exact_import() -> 
     assert not any(
         component.evidence.path == "negative.ts"
         and component.kind in {"agent", "tool", "capability"}
+        for component in ir.components
+    )
+    assert not any(
+        component.evidence.path == "capability-negative.ts"
+        and component.kind in {"tool", "capability"}
         for component in ir.components
     )
     assert not ir.findings

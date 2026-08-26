@@ -1,7 +1,7 @@
 import { run } from '@openai/agents';
 import {
   SandboxAgent,
-  SandboxAgent as AliasedSandboxAgent,
+  SandboxAgent as AliasedSandboxAgent, filesystem, memory,
   shell,
   shell as sandboxShell,
 } from '@openai/agents/sandbox';
@@ -9,7 +9,7 @@ import {
 const localSandbox = new SandboxAgent({
   name: 'Local Sandbox Assistant',
   model: 'gpt-5-mini',
-  capabilities: [shell()],
+  capabilities: [filesystem(), shell()],
 });
 
 const aliasedSandbox = new AliasedSandboxAgent({
@@ -22,7 +22,7 @@ const aliasedSandbox = new AliasedSandboxAgent({
 function buildReturnedSandboxAgent(name: string) {
   return new SandboxAgent({
     name,
-    capabilities: [shell()],
+    capabilities: [memory({ generate: false }), shell()],
   });
 }
 

@@ -239,8 +239,13 @@
 - The same TypeScript OpenAI Agents sandbox inventory now also recognizes same-file helper returns
   of exact `@openai/agents/sandbox` `SandboxAgent` constructors, using the helper name when the
   agent name is dynamic. Local near/rebound/conditional helper negatives and three real OpenAI Agents
-  JS helper-returned sandbox agents are pinned. The public IR truth set now covers 1,686 passing
+  JS helper-returned sandbox agents are pinned. The public IR truth set then covered 1,686 passing
   labels.
+- Exact TypeScript OpenAI Agents sandbox capability inventory now also covers unshadowed
+  `filesystem()` and `memory()` factories in literal `capabilities` lists, marking both as
+  SDK-sandbox reachability rather than host-local filesystem/memory risk. Rebounded capability
+  aliases remain unresolved, and real OpenAI Agents JS memory examples pin same-line and multiline
+  factory evidence. The public IR truth set now covers 1,712 passing labels.
 
 ## Hypotheses
 

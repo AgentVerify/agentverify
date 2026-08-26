@@ -288,7 +288,7 @@ remain withheld. Local regressions now pin nine positive object-map model labels
 negatives. Exact `@ai-sdk/azure` factory/configured embedding calls are now covered with a matching
 custom-endpoint spread negative and a real Activepieces Azure embedding provider label. Together with
 the expanded local-reexport, real Activepieces boundary, and TypeScript sandbox-helper labels, the
-public IR truth set now covers 1,686 labels.
+public IR truth set now covers 1,712 labels.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
 Agent→MCP-server identities. Import-proven literal stdio constructor calls are inventoried for any
@@ -344,11 +344,12 @@ calls, and has one direct top-level return of an import-proven Agent constructor
 with conditional or indirect returns, helper rebinding, forward use, constructor shadowing, or
 result rebinding stay unresolved. No production edge is added.
 TypeScript OpenAI Agents sandbox examples now contribute exact `@openai/agents/sandbox`
-`SandboxAgent` inventory and sandbox `shell()` capability edges when the agent is directly assigned
-or directly returned from a same-file helper using an exact imported constructor and lists literal
-`capabilities`. Five real OpenAI Agents JS example edges pin SDK-sandbox shell execution without
-promoting it to host-local shell risk; near-package, rebound-constructor, and conditional helper
-fixtures remain unresolved.
+`SandboxAgent` inventory and sandbox `shell()`, `filesystem()`, and `memory()` capability edges when
+the agent is directly assigned or directly returned from a same-file helper using exact imported
+constructors and lists literal `capabilities`. Real OpenAI Agents JS examples pin SDK-sandbox shell,
+filesystem, and memory reachability without promoting them to host-local shell/filesystem risk;
+near-package, rebound-constructor/capability, aggregate capability, and conditional helper fixtures
+remain unresolved.
 
 Schema v83 recognizes OpenAI Agents Python `LocalShellTool` only through one immutable top-level
 import from `agents` or `agents.tool`. It records the SDK's lack of an approval parameter as
@@ -994,7 +995,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 719-label rule truth set and 1,686-label IR component/relationship set are curated regression
+The 719-label rule truth set and 1,712-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

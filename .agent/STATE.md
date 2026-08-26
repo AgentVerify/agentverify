@@ -274,7 +274,13 @@ catalog workflows.
   `@openai/agents/sandbox` `SandboxAgent` constructors, preserving SDK-sandbox shell classification
   and keeping near/rebound/conditional helper forms unresolved. Local helper fixtures plus
   shared-session and memory multi-agent OpenAI Agents JS examples are pinned. Regenerated public IR
-  truth-set results now cover 1,686 passing labels.
+  truth-set results then covered 1,686 passing labels.
+- Extended exact TypeScript OpenAI Agents sandbox capability inventory to unshadowed `filesystem()`
+  and `memory()` factories in literal capability lists. The scanner records SDK-sandbox filesystem
+  and memory reachability separately from host-local filesystem risk, while rebounded capability
+  aliases stay unresolved. Local fixtures plus OpenAI Agents JS `memory.ts` and
+  `memory-generation.ts` labels raise regenerated public IR truth-set results to 1,712 passing
+  labels.
 
 ## Current findings
 
