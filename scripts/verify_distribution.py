@@ -37,6 +37,7 @@ REQUIRED_SOURCE_FILES = frozenset(
         "docs/policy.md",
         "docs/policy-signatures.md",
         "examples/ci-policy.json",
+        "examples/benchmark-verification.json",
         "examples/editor-diagnostics.json",
         "examples/github-benchmark-verify.yml",
         "examples/github-code-scanning.yml",

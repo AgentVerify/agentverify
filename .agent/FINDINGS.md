@@ -47,6 +47,10 @@
 - Benchmark outcomes are now tied to their declared label file, not just the label count: verifier
   checks reject changed label scopes, outcome ids, rule/check ids, or expected values that do not
   match the digested labels.
+- A checked verifier-output example now covers the release-gate artifact shape:
+  `examples/benchmark-verification.json` is expected to match current public-regression
+  `agentverify benchmark verify` output, validate against the bundled benchmark-verification schema,
+  and ship in source distributions.
 - The checked-in GitHub CI workflow now exercises `agentverify benchmark verify
   --require-evaluation-kind public-regression --require-all-passed`, so public regression artifact
   drift is caught during normal pull-request checks rather than only during manual release review.

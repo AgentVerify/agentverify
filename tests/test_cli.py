@@ -525,6 +525,29 @@ def test_cli_verifies_checked_in_benchmark_results(capsys) -> None:
     Draft202012Validator(schema).validate(payload)
 
 
+def test_checked_benchmark_verification_example_matches_cli_output(capsys) -> None:
+    assert (
+        cli.main(
+            [
+                "benchmark",
+                "verify",
+                "--require-evaluation-kind",
+                "public-regression",
+                "--require-all-passed",
+            ]
+        )
+        == 0
+    )
+
+    generated = __import__("json").loads(capsys.readouterr().out)
+    checked = __import__("json").loads(
+        (ROOT / "examples/benchmark-verification.json").read_text(encoding="utf-8")
+    )
+    assert checked == generated
+    schema = __import__("json").loads(render_schema("benchmark-verification"))
+    Draft202012Validator(schema).validate(checked)
+
+
 def test_cli_benchmark_verify_writes_output_file(tmp_path: Path, capsys) -> None:
     output = tmp_path / "benchmark-verification.json"
 

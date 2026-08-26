@@ -169,6 +169,7 @@ def test_github_benchmark_verify_example_is_read_only_and_exports_verifier_json(
     workflow = GITHUB_BENCHMARK_VERIFY.read_text(encoding="utf-8")
     release_checklist = (ROOT / "benchmarks/release-checklist.md").read_text(encoding="utf-8")
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    checked_example = (ROOT / "examples/benchmark-verification.json").read_text(encoding="utf-8")
 
     assert "permissions:\n  contents: read" in workflow
     assert "security-events: write" not in workflow
@@ -184,6 +185,11 @@ def test_github_benchmark_verify_example_is_read_only_and_exports_verifier_json(
         release_checklist
     )
     assert "[`examples/github-benchmark-verify.yml`](examples/github-benchmark-verify.yml)" in readme
+    assert "[`examples/benchmark-verification.json`](../examples/benchmark-verification.json)" in (
+        release_checklist
+    )
+    assert "[`examples/benchmark-verification.json`](examples/benchmark-verification.json)" in readme
+    assert "\"all_labels_passed\": true" in checked_example
 
 
 def test_signed_policy_example_uses_ephemeral_key(tmp_path: Path) -> None:
