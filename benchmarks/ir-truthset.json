@@ -5040,37 +5040,37 @@
       "id":"taxonomy-local-framework-agent-alias-agentscope",
       "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
       "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_alias_calls.py","line":6,"expected":true,
-      "component":{"kind":"agent","name":"react-facade","attributes":{"constructor":"ReActAgent"}}
+      "component":{"kind":"agent","name":"react-facade","attributes":{"constructor":"ReActAgent","constructor_module":"agentscope.agent","imported_symbol":"ReActAgent","constructor_resolution":"exact-framework-agent-import"}}
     },
     {
       "id":"taxonomy-local-framework-agent-alias-camel",
       "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
       "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_alias_calls.py","line":7,"expected":true,
-      "component":{"kind":"agent","name":"camel-facade","attributes":{"constructor":"CamelChatAgent"}}
+      "component":{"kind":"agent","name":"camel-facade","attributes":{"constructor":"CamelChatAgent","constructor_module":"camel.agents","imported_symbol":"ChatAgent","constructor_resolution":"exact-framework-agent-import"}}
     },
     {
       "id":"taxonomy-local-framework-agent-alias-marvin",
       "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
       "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_alias_calls.py","line":8,"expected":true,
-      "component":{"kind":"agent","name":"marvin-facade","attributes":{"constructor":"MarvinAgent"}}
+      "component":{"kind":"agent","name":"marvin-facade","attributes":{"constructor":"MarvinAgent","constructor_module":"marvin.agents","imported_symbol":"Agent","constructor_resolution":"exact-framework-agent-import"}}
     },
     {
       "id":"taxonomy-local-framework-agent-reexport-agentscope",
       "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
       "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":6,"expected":true,
-      "component":{"kind":"agent","name":"reexport-react","attributes":{"constructor":"ImportedReActAgent"}}
+      "component":{"kind":"agent","name":"reexport-react","attributes":{"constructor":"ImportedReActAgent","constructor_module":"agentscope.agent","imported_symbol":"ReActAgent","constructor_resolution":"exact-framework-agent-reexport"}}
     },
     {
       "id":"taxonomy-local-framework-agent-reexport-camel",
       "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
       "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":7,"expected":true,
-      "component":{"kind":"agent","name":"reexport-camel","attributes":{"constructor":"ProjectChatAgent"}}
+      "component":{"kind":"agent","name":"reexport-camel","attributes":{"constructor":"ProjectChatAgent","constructor_module":"camel.agents","imported_symbol":"ChatAgent","constructor_resolution":"exact-framework-agent-reexport"}}
     },
     {
       "id":"taxonomy-local-framework-agent-star-reexport-marvin",
       "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
       "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":8,"expected":true,
-      "component":{"kind":"agent","name":"star-marvin","attributes":{"constructor":"ProjectMarvinAgent"}}
+      "component":{"kind":"agent","name":"star-marvin","attributes":{"constructor":"ProjectMarvinAgent","constructor_module":"marvin.agents","imported_symbol":"Agent","constructor_resolution":"exact-framework-agent-star-reexport"}}
     },
     {
       "id":"taxonomy-local-framework-agent-hidden-reexport-negative",

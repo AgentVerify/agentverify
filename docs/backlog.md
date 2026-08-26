@@ -138,7 +138,9 @@ selected package reexports without trusting generic `Client` names or framework-
 Exact Python framework agent constructor attribution now also follows direct aliases and selected
 local reexport/star-reexport chains for import-proven AgentScope, CAMEL, Marvin, and related
 framework constructor symbols. Nine IR labels pin direct alias, named reexport, star reexport, hidden
-`__all__`, and rebound negatives; ordinary same-named local constructors still stay unresolved.
+`__all__`, and rebound negatives; agent components preserve the origin module, imported symbol, and
+resolution mode for those proven aliases. Ordinary same-named local constructors still stay
+unresolved.
 
 ## P0 — module-qualified symbols and graph identities
 

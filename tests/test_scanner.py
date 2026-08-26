@@ -1320,7 +1320,15 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         for item in ir.components
     )
     framework_agent_aliases = {
-        (item.evidence.path, item.evidence.line, item.name, item.attributes.get("constructor"))
+        (
+            item.evidence.path,
+            item.evidence.line,
+            item.name,
+            item.attributes.get("constructor"),
+            item.attributes.get("constructor_module"),
+            item.attributes.get("imported_symbol"),
+            item.attributes.get("constructor_resolution"),
+        )
         for item in ir.components
         if item.kind == "agent"
         and item.evidence.path
@@ -1330,12 +1338,60 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         }
     }
     assert framework_agent_aliases == {
-        ("framework_agent_alias_calls.py", 6, "react-facade", "ReActAgent"),
-        ("framework_agent_alias_calls.py", 7, "camel-facade", "CamelChatAgent"),
-        ("framework_agent_alias_calls.py", 8, "marvin-facade", "MarvinAgent"),
-        ("framework_agent_reexport_calls.py", 6, "reexport-react", "ImportedReActAgent"),
-        ("framework_agent_reexport_calls.py", 7, "reexport-camel", "ProjectChatAgent"),
-        ("framework_agent_reexport_calls.py", 8, "star-marvin", "ProjectMarvinAgent"),
+        (
+            "framework_agent_alias_calls.py",
+            6,
+            "react-facade",
+            "ReActAgent",
+            "agentscope.agent",
+            "ReActAgent",
+            "exact-framework-agent-import",
+        ),
+        (
+            "framework_agent_alias_calls.py",
+            7,
+            "camel-facade",
+            "CamelChatAgent",
+            "camel.agents",
+            "ChatAgent",
+            "exact-framework-agent-import",
+        ),
+        (
+            "framework_agent_alias_calls.py",
+            8,
+            "marvin-facade",
+            "MarvinAgent",
+            "marvin.agents",
+            "Agent",
+            "exact-framework-agent-import",
+        ),
+        (
+            "framework_agent_reexport_calls.py",
+            6,
+            "reexport-react",
+            "ImportedReActAgent",
+            "agentscope.agent",
+            "ReActAgent",
+            "exact-framework-agent-reexport",
+        ),
+        (
+            "framework_agent_reexport_calls.py",
+            7,
+            "reexport-camel",
+            "ProjectChatAgent",
+            "camel.agents",
+            "ChatAgent",
+            "exact-framework-agent-reexport",
+        ),
+        (
+            "framework_agent_reexport_calls.py",
+            8,
+            "star-marvin",
+            "ProjectMarvinAgent",
+            "marvin.agents",
+            "Agent",
+            "exact-framework-agent-star-reexport",
+        ),
     }
     assert not any(
         item.kind == "agent"

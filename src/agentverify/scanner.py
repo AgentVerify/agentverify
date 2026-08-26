@@ -1847,6 +1847,13 @@ class PythonImportResolution:
 
 
 @dataclass(frozen=True)
+class PythonAgentConstructorOrigin:
+    module: str
+    imported_symbol: str
+    resolution: str
+
+
+@dataclass(frozen=True)
 class PythonProviderFactorySummary:
     provider: str
     module: str
@@ -6043,6 +6050,7 @@ class PythonVisitor(ast.NodeVisitor):
         mcp_server_binding_resolutions: dict[int, str],
         mcp_in_process_server_bindings: dict[str, tuple[str, str]],
         agent_constructor_bindings: set[str],
+        agent_constructor_origins: dict[str, PythonAgentConstructorOrigin],
         exact_openai_builtin_call_names: dict[int, str],
         observed_mcp_server_ids: set[str],
         definition_symbol_ids: dict[int, str],
@@ -6160,6 +6168,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.mcp_server_binding_resolutions = mcp_server_binding_resolutions
         self.mcp_in_process_server_bindings = mcp_in_process_server_bindings
         self.agent_constructor_bindings = agent_constructor_bindings
+        self.agent_constructor_origins = agent_constructor_origins
         self.exact_openai_builtin_call_names = exact_openai_builtin_call_names
         self.definition_symbol_ids = definition_symbol_ids
         self.referenced_tool_functions = referenced_tool_functions
@@ -8843,9 +8852,16 @@ class PythonVisitor(ast.NodeVisitor):
             agent_id = self.call_symbol_ids.get(id(node)) or source_symbol(
                 "py", self.path, "agent", f"{name}@{node.lineno}"
             )
-            self.ir.add_component(
-                Component("agent", name, self.ev(node), {"constructor": call_name}, agent_id)
-            )
+            attributes: dict[str, object] = {"constructor": call_name}
+            if origin := self.agent_constructor_origins.get(call_name):
+                attributes.update(
+                    {
+                        "constructor_module": origin.module,
+                        "imported_symbol": origin.imported_symbol,
+                        "constructor_resolution": origin.resolution,
+                    }
+                )
+            self.ir.add_component(Component("agent", name, self.ev(node), attributes, agent_id))
             for keyword in node.keywords:
                 if keyword.arg == "model" and isinstance(keyword.value, ast.Constant):
                     model_value = str(keyword.value.value)
@@ -10466,26 +10482,38 @@ def scan_python(
         name: next(alias.name for alias in statement.names if (alias.asname or alias.name) == name)
         for name, statement in imported_mcp_constructors.items()
     }
-    agent_constructor_bindings = {
-        alias.asname or alias.name
-        for statement in tree.body
-        if isinstance(statement, ast.ImportFrom) and statement.module == "agents.sandbox"
-        for alias in statement.names
-        if alias.name == "SandboxAgent"
-        and import_binding_counts[alias.asname or alias.name] == 1
-        and nonimport_binding_counts[alias.asname or alias.name] == 0
-    }
-    local_agent_factory_constructors = agent_constructor_bindings | {
-        alias.asname or alias.name
-        for statement in tree.body
-        if isinstance(statement, ast.ImportFrom)
-        and statement.level == 0
-        and statement.module is not None
-        for alias in statement.names
-        if python_framework_agent_constructor(statement.module, alias.name)
-        and import_binding_counts[alias.asname or alias.name] == 1
-        and nonimport_binding_counts[alias.asname or alias.name] == 0
-    }
+    local_agent_constructor_origins: dict[str, PythonAgentConstructorOrigin] = {}
+    for statement in tree.body:
+        if not isinstance(statement, ast.ImportFrom):
+            continue
+        if statement.module == "agents.sandbox":
+            for alias in statement.names:
+                local_name = alias.asname or alias.name
+                if (
+                    alias.name == "SandboxAgent"
+                    and import_binding_counts[local_name] == 1
+                    and nonimport_binding_counts[local_name] == 0
+                ):
+                    local_agent_constructor_origins[local_name] = PythonAgentConstructorOrigin(
+                        "agents.sandbox",
+                        "SandboxAgent",
+                        "exact-openai-sandbox-import",
+                    )
+        if statement.level != 0 or statement.module is None:
+            continue
+        for alias in statement.names:
+            local_name = alias.asname or alias.name
+            if (
+                python_framework_agent_constructor(statement.module, alias.name)
+                and import_binding_counts[local_name] == 1
+                and nonimport_binding_counts[local_name] == 0
+            ):
+                local_agent_constructor_origins[local_name] = PythonAgentConstructorOrigin(
+                    statement.module,
+                    alias.name,
+                    "exact-framework-agent-import",
+                )
+    local_agent_factory_constructors = set(local_agent_constructor_origins)
     for statement in (
         candidate for candidate in tree.body if isinstance(candidate, ast.ImportFrom)
     ):
@@ -10500,12 +10528,19 @@ def scan_python(
                 )
                 if not resolution:
                     continue
-                for exported in framework_agent_star_reexports.get(resolution.path, {}):
+                for exported, reexport in framework_agent_star_reexports.get(
+                    resolution.path, {}
+                ).items():
                     if (
                         import_binding_counts[exported] == 0
                         and nonimport_binding_counts[exported] == 0
                     ):
                         local_agent_factory_constructors.add(exported)
+                        local_agent_constructor_origins[exported] = PythonAgentConstructorOrigin(
+                            reexport[0],
+                            reexport[1],
+                            "exact-framework-agent-star-reexport",
+                        )
                 continue
             local_name = alias.asname or alias.name
             if import_binding_counts[local_name] != 1 or nonimport_binding_counts[local_name] != 0:
@@ -10517,8 +10552,15 @@ def scan_python(
                 alias.name,
                 module_paths,
             )
-            if resolution and (resolution.path, alias.name) in framework_agent_reexports:
+            if resolution and (
+                reexport := framework_agent_reexports.get((resolution.path, alias.name))
+            ):
                 local_agent_factory_constructors.add(local_name)
+                local_agent_constructor_origins[local_name] = PythonAgentConstructorOrigin(
+                    reexport[0],
+                    reexport[1],
+                    "exact-framework-agent-reexport",
+                )
     exact_openai_builtin_imports = {
         alias.asname or alias.name: (alias.name, statement.lineno)
         for statement in tree.body
@@ -12205,6 +12247,7 @@ def scan_python(
         mcp_server_binding_resolutions=mcp_server_binding_resolutions,
         mcp_in_process_server_bindings=mcp_in_process_server_bindings,
         agent_constructor_bindings=local_agent_factory_constructors,
+        agent_constructor_origins=local_agent_constructor_origins,
         exact_openai_builtin_call_names=exact_openai_builtin_call_names,
         observed_mcp_server_ids=observed_mcp_server_ids,
         definition_symbol_ids=definition_symbol_ids,

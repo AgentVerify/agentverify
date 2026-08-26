@@ -59,6 +59,9 @@ catalog workflows.
 - Added exact Python framework agent constructor aliases and selected local reexport/star-reexport
   resolution for import-proven AgentScope/CAMEL/Marvin-style constructors, with hidden-export and
   rebound negatives, and regenerated IR truth-set results now covering 1,496 labels.
+- Preserved constructor provenance attributes for those exact framework agent aliases and local
+  reexports, recording the origin module, imported symbol, and exact resolution mode while keeping
+  the public IR truth set at 1,496 passing labels.
 - Added a concrete signed policy provenance design that keeps digest allowlists separate from author
   authenticity and specifies detached source-digest payloads plus local key trust roots.
 - Added `agentverify policy --export-signing-payload` and a bundled policy-signing-payload schema so
