@@ -1319,6 +1319,35 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         and item.attributes.get("resolution") == "exact-provider-wrapper-factory"
         for item in ir.components
     )
+    framework_agent_aliases = {
+        (item.evidence.path, item.evidence.line, item.name, item.attributes.get("constructor"))
+        for item in ir.components
+        if item.kind == "agent"
+        and item.evidence.path
+        in {
+            "framework_agent_alias_calls.py",
+            "framework_agent_reexport_calls.py",
+        }
+    }
+    assert framework_agent_aliases == {
+        ("framework_agent_alias_calls.py", 6, "react-facade", "ReActAgent"),
+        ("framework_agent_alias_calls.py", 7, "camel-facade", "CamelChatAgent"),
+        ("framework_agent_alias_calls.py", 8, "marvin-facade", "MarvinAgent"),
+        ("framework_agent_reexport_calls.py", 6, "reexport-react", "ImportedReActAgent"),
+        ("framework_agent_reexport_calls.py", 7, "reexport-camel", "ProjectChatAgent"),
+        ("framework_agent_reexport_calls.py", 8, "star-marvin", "ProjectMarvinAgent"),
+    }
+    assert not any(
+        item.kind == "agent"
+        and (
+            item.evidence.path == "framework_agent_alias_rebound.py"
+            or (
+                item.evidence.path == "framework_agent_reexport_calls.py"
+                and item.evidence.line == 9
+            )
+        )
+        for item in ir.components
+    )
 
 
 def test_python_dify_shell_layer_requires_default_off_runtime_composition() -> None:

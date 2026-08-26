@@ -519,6 +519,13 @@ AGENT_CALLS = {
     "StateGraph",
     "Crew",
 }
+PYTHON_FRAMEWORK_AGENT_CONSTRUCTORS = {
+    "agentscope.agent": ("ReActAgent",),
+    "camel.agents": ("ChatAgent",),
+    "lagent.agents": ("AgentForInternLM",),
+    "metagpt.roles": ("Role",),
+    "qwen_agent.agents": ("Assistant",),
+}
 TOOL_DECORATORS = {"tool", "function_tool", "mcp.tool", "server.tool"}
 MODEL_CONSTRUCTORS = {
     "OpenAI": {"OpenAI", "AsyncOpenAI", "ChatOpenAI"},
@@ -1569,6 +1576,34 @@ def component_from_import(
                     for prefix in prefixes
                 ):
                     ir.add_component(Component(kind, name, evidence, {"module": module}))
+
+
+def python_framework_module_prefixes() -> tuple[str, ...]:
+    return tuple(
+        prefix
+        for prefix in (
+            *(
+                prefix
+                for prefixes in IMPORT_SIGNATURES["framework"].values()
+                for prefix in prefixes
+            ),
+            *(
+                prefix
+                for prefixes in FRONTEND_IMPORT_SIGNATURES["python"]["framework"].values()
+                for prefix in prefixes
+            ),
+        )
+        if not prefix.startswith("@")
+    )
+
+
+def python_framework_agent_constructor(module: str, symbol: str) -> bool:
+    if symbol in PYTHON_FRAMEWORK_AGENT_CONSTRUCTORS.get(module, ()):
+        return True
+    return symbol in AGENT_CALLS and any(
+        module == prefix or module.startswith(f"{prefix}.")
+        for prefix in python_framework_module_prefixes()
+    )
 
 
 def provider_for_model(model: str) -> str:
@@ -9653,6 +9688,8 @@ def scan_python(
     agent_factory_class_exports: dict[tuple[str, str], PythonAgentFactoryClassTarget],
     mcp_server_subclass_exports: dict[tuple[str, str], PythonMCPServerSubclassTarget],
     registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
+    framework_agent_reexports: dict[tuple[str, str], tuple[str, str]],
+    framework_agent_star_reexports: dict[str, dict[str, tuple[str, str]]],
     provider_reexports: dict[tuple[str, str], tuple[str, str, str]],
     provider_star_reexports: dict[str, dict[str, tuple[str, str, str]]],
     provider_factory_summaries: dict[tuple[str, str], PythonProviderFactorySummary],
@@ -10438,38 +10475,50 @@ def scan_python(
         and import_binding_counts[alias.asname or alias.name] == 1
         and nonimport_binding_counts[alias.asname or alias.name] == 0
     }
-    python_framework_modules = {
-        prefix
-        for prefix in (
-            *(
-                prefix
-                for prefixes in IMPORT_SIGNATURES["framework"].values()
-                for prefix in prefixes
-            ),
-            *(
-                prefix
-                for prefixes in FRONTEND_IMPORT_SIGNATURES["python"]["framework"].values()
-                for prefix in prefixes
-            ),
-        )
-        if not prefix.startswith("@")
-    }
     local_agent_factory_constructors = agent_constructor_bindings | {
         alias.asname or alias.name
         for statement in tree.body
         if isinstance(statement, ast.ImportFrom)
         and statement.level == 0
         and statement.module is not None
-        and any(
-            statement.module == prefix or statement.module.startswith(f"{prefix}.")
-            for prefix in python_framework_modules
-        )
         for alias in statement.names
-        if alias.asname is None
-        and alias.name in AGENT_CALLS
+        if python_framework_agent_constructor(statement.module, alias.name)
         and import_binding_counts[alias.asname or alias.name] == 1
         and nonimport_binding_counts[alias.asname or alias.name] == 0
     }
+    for statement in (
+        candidate for candidate in tree.body if isinstance(candidate, ast.ImportFrom)
+    ):
+        for alias in statement.names:
+            if alias.name == "*":
+                resolution = resolve_python_import(
+                    root,
+                    relative,
+                    statement,
+                    alias.name,
+                    module_paths,
+                )
+                if not resolution:
+                    continue
+                for exported in framework_agent_star_reexports.get(resolution.path, {}):
+                    if (
+                        import_binding_counts[exported] == 0
+                        and nonimport_binding_counts[exported] == 0
+                    ):
+                        local_agent_factory_constructors.add(exported)
+                continue
+            local_name = alias.asname or alias.name
+            if import_binding_counts[local_name] != 1 or nonimport_binding_counts[local_name] != 0:
+                continue
+            resolution = resolve_python_import(
+                root,
+                relative,
+                statement,
+                alias.name,
+                module_paths,
+            )
+            if resolution and (resolution.path, alias.name) in framework_agent_reexports:
+                local_agent_factory_constructors.add(local_name)
     exact_openai_builtin_imports = {
         alias.asname or alias.name: (alias.name, statement.lineno)
         for statement in tree.body
@@ -10493,7 +10542,8 @@ def scan_python(
     def is_agent_call(call: ast.Call) -> bool:
         call_name = dotted_name(call.func)
         return (
-            call_name.rsplit(".", 1)[-1] in AGENT_CALLS or call_name in agent_constructor_bindings
+            call_name.rsplit(".", 1)[-1] in AGENT_CALLS
+            or call_name in local_agent_factory_constructors
         )
 
     def lexical_owner(node: ast.AST) -> ast.AST:
@@ -12154,7 +12204,7 @@ def scan_python(
         mcp_server_symbol_names=mcp_server_symbol_names,
         mcp_server_binding_resolutions=mcp_server_binding_resolutions,
         mcp_in_process_server_bindings=mcp_in_process_server_bindings,
-        agent_constructor_bindings=agent_constructor_bindings,
+        agent_constructor_bindings=local_agent_factory_constructors,
         exact_openai_builtin_call_names=exact_openai_builtin_call_names,
         observed_mcp_server_ids=observed_mcp_server_ids,
         definition_symbol_ids=definition_symbol_ids,
@@ -16607,6 +16657,167 @@ def build_python_provider_reexports(
                 if not isinstance(statement, ast.ImportFrom) or not statement.module:
                     continue
                 if statement.module in PYTHON_PROVIDER_SDK_CALLS:
+                    continue
+                for alias in statement.names:
+                    if alias.name == "*":
+                        resolution = resolve_python_import(
+                            root,
+                            relative,
+                            statement,
+                            alias.name,
+                            module_paths,
+                        )
+                        if not resolution:
+                            continue
+                        for exported, reexport in star_visible_exports(resolution.path).items():
+                            if (
+                                import_binding_counts[exported] != 0
+                                or exported in rebound_names
+                                or (relative, exported) in exports
+                            ):
+                                continue
+                            exports[(relative, exported)] = reexport
+                            changed = True
+                        continue
+                    exported = alias.asname or alias.name
+                    if (
+                        import_binding_counts[exported] != 1
+                        or exported in rebound_names
+                        or (relative, exported) in exports
+                    ):
+                        continue
+                    resolution = resolve_python_import(
+                        root,
+                        relative,
+                        statement,
+                        alias.name,
+                        module_paths,
+                    )
+                    if resolution and (reexport := exports.get((resolution.path, alias.name))):
+                        exports[(relative, exported)] = reexport
+                        changed = True
+    star_exports = {path: star_visible_exports(path) for path in module_all_exports}
+    return exports, star_exports
+
+
+def build_python_framework_agent_reexports(
+    root: Path,
+    paths: list[Path],
+    module_paths: dict[str, str],
+) -> tuple[
+    dict[tuple[str, str], tuple[str, str]],
+    dict[str, dict[str, tuple[str, str]]],
+]:
+    """Index local reexports rooted in exact framework agent constructors."""
+    exports: dict[tuple[str, str], tuple[str, str]] = {}
+    module_all_exports: dict[str, set[str] | None] = {}
+    parsed_modules: list[tuple[str, ast.Module, Counter[str], set[str]]] = []
+
+    def star_visible_exports(path: str) -> dict[str, tuple[str, str]]:
+        explicit_exports = module_all_exports.get(path)
+        visible: dict[str, tuple[str, str]] = {}
+        for (source_path, exported), reexport in exports.items():
+            if source_path != path:
+                continue
+            if explicit_exports is not None:
+                if exported not in explicit_exports:
+                    continue
+            elif exported.startswith("_"):
+                continue
+            visible[exported] = reexport
+        return visible
+
+    for path in paths:
+        if (
+            path.is_symlink()
+            or not path.is_file()
+            or path.suffix.lower() != ".py"
+            or set(path.relative_to(root).parts) & SKIP_DIRECTORIES
+        ):
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            tree = ast.parse(
+                path.read_text(encoding="utf-8-sig", errors="ignore"),
+                filename=path.relative_to(root).as_posix(),
+            )
+        except (OSError, SyntaxError):
+            continue
+        relative = path.relative_to(root).as_posix()
+        module_all_exports[relative] = None
+        for statement in tree.body:
+            if (
+                isinstance(statement, ast.Assign)
+                and len(statement.targets) == 1
+                and isinstance(statement.targets[0], ast.Name)
+                and statement.targets[0].id == "__all__"
+            ):
+                values = python_literal_string_list(statement.value)
+                module_all_exports[relative] = set(values) if values is not None else set()
+        imported_bindings = {
+            alias.asname or alias.name
+            for statement in tree.body
+            if isinstance(statement, ast.ImportFrom)
+            for alias in statement.names
+            if alias.name != "*"
+        }
+        import_binding_counts = Counter(
+            alias.asname or alias.name
+            for statement in tree.body
+            if isinstance(statement, ast.ImportFrom)
+            for alias in statement.names
+            if alias.name != "*"
+        )
+        mutations: set[str] = set()
+
+        def collect_mutations(candidate: ast.AST, target_mutations: set[str]) -> None:
+            if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                target_mutations.add(candidate.name)
+                return
+            if isinstance(candidate, (ast.Import, ast.ImportFrom, ast.Lambda)):
+                return
+            if isinstance(candidate, ast.ExceptHandler) and candidate.name:
+                target_mutations.add(candidate.name)
+            if isinstance(candidate, (ast.MatchAs, ast.MatchStar)) and candidate.name:
+                target_mutations.add(candidate.name)
+            if isinstance(candidate, ast.MatchMapping) and candidate.rest:
+                target_mutations.add(candidate.rest)
+            if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
+                target_mutations.add(candidate.id)
+            for child in ast.iter_child_nodes(candidate):
+                collect_mutations(child, target_mutations)
+
+        for statement in tree.body:
+            if not isinstance(statement, (ast.Import, ast.ImportFrom)):
+                collect_mutations(statement, mutations)
+        rebound_names = imported_bindings & mutations
+        parsed_modules.append((relative, tree, import_binding_counts, rebound_names))
+        for statement in tree.body:
+            if (
+                not isinstance(statement, ast.ImportFrom)
+                or not statement.module
+                or statement.level != 0
+            ):
+                continue
+            module = statement.module
+            for alias in statement.names:
+                if alias.name == "*":
+                    continue
+                exported = alias.asname or alias.name
+                if (
+                    import_binding_counts[exported] != 1
+                    or exported in rebound_names
+                    or not python_framework_agent_constructor(module, alias.name)
+                ):
+                    continue
+                exports[(relative, exported)] = (module, alias.name)
+    changed = True
+    while changed:
+        changed = False
+        for relative, tree, import_binding_counts, rebound_names in parsed_modules:
+            for statement in tree.body:
+                if not isinstance(statement, ast.ImportFrom) or not statement.module:
                     continue
                 for alias in statement.names:
                     if alias.name == "*":
@@ -29960,6 +30171,13 @@ def scan_repository(
         registry_paths,
         module_paths,
     )
+    framework_agent_reexports, framework_agent_star_reexports = (
+        build_python_framework_agent_reexports(
+            root,
+            registry_paths,
+            module_paths,
+        )
+    )
     provider_reexports, provider_star_reexports = build_python_provider_reexports(
         root,
         registry_paths,
@@ -30065,6 +30283,8 @@ def scan_repository(
                 agent_factory_class_exports,
                 mcp_server_subclass_exports,
                 registry_class_exports,
+                framework_agent_reexports,
+                framework_agent_star_reexports,
                 provider_reexports,
                 provider_star_reexports,
                 provider_factory_summaries,

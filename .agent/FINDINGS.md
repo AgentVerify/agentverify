@@ -59,6 +59,10 @@
   factories can carry literal/parameter model attribution when they have one proven return path, and
   those factory summaries now survive exact local reexport chains plus literal-visibility star
   imports; rebound, ambiguous, and generic same-named wrapper forms remain unresolved.
+- Python framework agent constructor attribution now carries exact import-proven constructor aliases
+  through selected local reexport and star-reexport facades when names remain unrebound and visible
+  under literal `__all__` rules; hidden exports, rebound imports, and same-named ordinary local
+  constructors remain unresolved.
 - Python imported literal tool-list attribution now resolves star imports from selected local
   callable modules when the callable is visible through literal `__all__`/non-underscore exports and
   the Agent use is not locally shadowed.

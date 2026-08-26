@@ -5037,6 +5037,60 @@
       "component":{"kind":"model","name":"gemini-2.5-pro","attributes":{"provider":"Google"}}
     },
     {
+      "id":"taxonomy-local-framework-agent-alias-agentscope",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_alias_calls.py","line":6,"expected":true,
+      "component":{"kind":"agent","name":"react-facade","attributes":{"constructor":"ReActAgent"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-alias-camel",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_alias_calls.py","line":7,"expected":true,
+      "component":{"kind":"agent","name":"camel-facade","attributes":{"constructor":"CamelChatAgent"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-alias-marvin",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_alias_calls.py","line":8,"expected":true,
+      "component":{"kind":"agent","name":"marvin-facade","attributes":{"constructor":"MarvinAgent"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-reexport-agentscope",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":6,"expected":true,
+      "component":{"kind":"agent","name":"reexport-react","attributes":{"constructor":"ImportedReActAgent"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-reexport-camel",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":7,"expected":true,
+      "component":{"kind":"agent","name":"reexport-camel","attributes":{"constructor":"ProjectChatAgent"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-star-reexport-marvin",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":8,"expected":true,
+      "component":{"kind":"agent","name":"star-marvin","attributes":{"constructor":"ProjectMarvinAgent"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-hidden-reexport-negative",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":9,"expected":false,"source_contains":"HiddenLagentAgent",
+      "component":{"kind":"agent","name":"hidden-lagent"}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-rebound-agentscope-negative",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_alias_rebound.py","line":8,"expected":false,"source_contains":"ReActAgent",
+      "component":{"kind":"agent","name":"shadowed-react"}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-rebound-camel-negative",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_alias_rebound.py","line":9,"expected":false,"source_contains":"ChatAgent",
+      "component":{"kind":"agent","name":"shadowed-camel"}
+    },
+    {
       "id":"taxonomy-local-google-adk-typescript",
       "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
       "check_id":"IR-COMPONENT-TAXONOMY","path":"positive.ts","line":1,"expected":true,

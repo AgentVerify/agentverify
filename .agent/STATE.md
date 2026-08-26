@@ -56,6 +56,9 @@ catalog workflows.
 - Added exact local reexport-chain resolution for simple provider wrapper factories, with
   direct/wildcard reexport positives, filtered/rebound negatives, and regenerated IR truth-set
   results now covering 1,487 labels.
+- Added exact Python framework agent constructor aliases and selected local reexport/star-reexport
+  resolution for import-proven AgentScope/CAMEL/Marvin-style constructors, with hidden-export and
+  rebound negatives, and regenerated IR truth-set results now covering 1,496 labels.
 - Added a concrete signed policy provenance design that keeps digest allowlists separate from author
   authenticity and specifies detached source-digest payloads plus local key trust roots.
 - Added `agentverify policy --export-signing-payload` and a bundled policy-signing-payload schema so

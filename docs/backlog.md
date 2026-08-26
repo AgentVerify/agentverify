@@ -135,6 +135,10 @@ also survive direct local reexport chains and star imports when visible through 
 the normal non-underscore wildcard rule. Thirty-five IR labels pin direct/transitive/wildcard/factory
 provider-model positives plus rebound, filtered, and ambiguous negatives. Next generalize additional
 selected package reexports without trusting generic `Client` names or framework-adjacent packages.
+Exact Python framework agent constructor attribution now also follows direct aliases and selected
+local reexport/star-reexport chains for import-proven AgentScope, CAMEL, Marvin, and related
+framework constructor symbols. Nine IR labels pin direct alias, named reexport, star reexport, hidden
+`__all__`, and rebound negatives; ordinary same-named local constructors still stay unresolved.
 
 ## P0 — module-qualified symbols and graph identities
 
