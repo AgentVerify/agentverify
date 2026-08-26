@@ -9,7 +9,7 @@ agents, MCP servers, workflow platforms, tool integrations, sandboxes, and obser
 The first engine supports Python AST analysis, structure-aware TypeScript/JavaScript discovery, MCP
 configuration, framework/provider/tool inventory, deterministic JSON, and initial
 agent-security review rules. Its curated cross-rule regression set contains 714 pinned positive and
-negative labels, plus 1,487 separately scored Agent IR component and relationship labels.
+negative labels, plus 1,514 separately scored Agent IR component and relationship labels.
 
 ## Install and scan
 
@@ -40,6 +40,7 @@ agentverify policy repository-policy.json --export-trust-root --output policy-tr
 agentverify policy repository-policy.json --export-signing-payload --output policy-signing-payload.json
 agentverify policy repository-policy.json --trust-root policy-trust-root.json --require-trusted
 agentverify policy examples/repository-policy.json --trust-root examples/policy-trust-root.json --require-trusted
+agentverify benchmark verify --require-evaluation-kind public-regression
 agentverify scan ./project --fail-on high
 agentverify scan ./project --fail-on high --fail-on-kind any
 agentverify scan ./project --include-tests
@@ -84,6 +85,9 @@ external policy signing, `agentverify schema policy-signature` and
 trust roots, and `agentverify schema policy-trust-root` validates local digest allowlists for policy
 summaries.
 `agentverify schema rules` validates the machine-readable rule catalog.
+`agentverify benchmark verify` validates benchmark result JSON against the bundled schema, recomputes
+label and manifest digests, and can fail closed on release-claim requirements such as
+`--require-evaluation-kind sealed-holdout`, `--require-sealed`, and `--require-manifest`.
 Use `--format summary` for compact CI logs: it reports scan totals, baseline/policy status, counts by
 severity/result kind/rule, and the top evidence locations without printing the full component graph.
 `agentverify rules` lists every enabled reporting rule with its result kind, default severity,

@@ -470,6 +470,68 @@ def test_cli_prints_bundled_benchmark_result_schema(capsys) -> None:
     )
 
 
+def test_cli_verifies_checked_in_benchmark_results(capsys) -> None:
+    assert cli.main(["benchmark", "verify", "--require-evaluation-kind", "public-regression"]) == 0
+
+    payload = __import__("json").loads(capsys.readouterr().out)
+    assert payload["passed"] is True
+    assert [
+        (item["label_scope"], item["labels"], item["digest_ok"]) for item in payload["results"]
+    ] == [
+        ("reporting-rules", 714, True),
+        ("agent-ir", 1514, True),
+    ]
+
+
+def test_cli_benchmark_verify_writes_output_file(tmp_path: Path, capsys) -> None:
+    output = tmp_path / "benchmark-verification.json"
+
+    assert (
+        cli.main(
+            [
+                "benchmark",
+                "verify",
+                str(ROOT / "benchmarks/truthset-results.json"),
+                "--root",
+                str(ROOT),
+                "--require-label-scope",
+                "reporting-rules",
+                "--output",
+                str(output),
+            ]
+        )
+        == 0
+    )
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == ""
+    payload = __import__("json").loads(output.read_text(encoding="utf-8"))
+    assert payload["results"][0]["labels"] == 714
+    assert payload["results"][0]["digest_ok"] is True
+
+
+def test_cli_benchmark_verify_rejects_public_results_as_sealed_claim(capsys) -> None:
+    assert (
+        cli.main(
+            [
+                "benchmark",
+                "verify",
+                str(ROOT / "benchmarks/truthset-results.json"),
+                "--root",
+                str(ROOT),
+                "--require-evaluation-kind",
+                "sealed-holdout",
+                "--require-sealed",
+            ]
+        )
+        == 2
+    )
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "agentverify: benchmark verification failed:" in captured.err
+    assert "expected evaluation_kind sealed-holdout" in captured.err
+
+
 def test_cli_prints_bundled_policy_schema(capsys) -> None:
     assert cli.main(["schema", "policy"]) == 0
 

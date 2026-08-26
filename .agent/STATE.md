@@ -97,6 +97,9 @@ catalog workflows.
   README-linked examples, policy docs, benchmark contracts, and public truth sets.
 - Extended source-distribution verification to require the checked public benchmark result outputs
   alongside their labels, so release artifacts carry both benchmark contracts and verifier evidence.
+- Added installed CLI benchmark result verification via `agentverify benchmark verify`, backed by
+  the bundled benchmark-result schema, shared with the source-checkout verifier script, and covered
+  by installed-wheel smoke tests.
 
 ## Current findings
 
@@ -114,5 +117,5 @@ catalog workflows.
 ## Next action
 
 Continue toward the highest-value local P1/P2 work: additional real-world framework coverage
-without broad name matching or release-artifact checks that attach benchmark verifier logs once
-release packaging is explicit.
+without broad name matching, CI/editor adoption polish, or release-artifact checks that attach
+benchmark verifier logs once release publishing is explicit.

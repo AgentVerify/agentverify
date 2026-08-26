@@ -10,14 +10,16 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
 authors = [{ name = "AgentVerify contributors" }]
-dependencies = ["cryptography>=46.0"]
+dependencies = [
+  "cryptography>=46.0",
+  "jsonschema>=4.23",
+]
 
 [project.scripts]
 agentverify = "agentverify.cli:main"
 
 [project.optional-dependencies]
 dev = [
-  "jsonschema>=4.23",
   "pytest>=8.3",
   "ruff>=0.9",
 ]

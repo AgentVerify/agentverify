@@ -550,7 +550,10 @@ leakage controls, reporting metrics, and public manifest/label templates for tha
 discovery sampling metrics separate from detection-quality metrics. Evaluator outputs now identify
 public-regression versus sealed-holdout runs, include label/manifest digests for reproducibility, and
 are covered by a benchmark result JSON schema. A benchmark verifier validates checked-in result files
-against that schema and recomputes embedded input digests.
+against that schema and recomputes embedded input digests. The same verifier is now available from
+the installed CLI as `agentverify benchmark verify`, while the source-checkout script delegates to
+the packaged implementation; installed-wheel smoke tests prove the command validates the checked
+public benchmark results.
 
 ## P2 — CI adoption workflow
 

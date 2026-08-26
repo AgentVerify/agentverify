@@ -33,6 +33,9 @@
 - Benchmark verification can now fail release workflows unless result files declare the required
   evaluation kind, label scope, sealed status, and manifest provenance, reducing the chance of
   accidentally publishing public regression metrics as unbiased accuracy claims.
+- Benchmark result verification is now an installed CLI behavior (`agentverify benchmark verify`)
+  using the bundled benchmark-result schema; the source-checkout script delegates to the same package
+  code, and distribution smoke tests prove the command works from a built wheel.
 - Policy composition can now be inspected without scanning. The policy summary intentionally reports
   `signature_verified: false`, preserving the distinction between content integrity and author trust.
 - Policy summary JSON is now schema-backed and included in distribution verification, matching the

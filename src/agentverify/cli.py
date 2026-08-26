@@ -8,6 +8,12 @@ import sys
 from pathlib import Path
 
 from . import __version__
+from .benchmark import (
+    BENCHMARK_VERIFICATION_ERRORS,
+    DEFAULT_BENCHMARK_RESULTS,
+    render_benchmark_verification,
+    verify_benchmark_results,
+)
 from .policy import (
     SEVERITY_RANK,
     PolicyError,
@@ -164,6 +170,56 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="PATH",
         help="write policy metadata to PATH instead of standard output",
     )
+    benchmark = subparsers.add_parser("benchmark", help="verify benchmark result artifacts")
+    benchmark_subparsers = benchmark.add_subparsers(dest="benchmark_command", required=True)
+    benchmark_verify = benchmark_subparsers.add_parser(
+        "verify", help="validate benchmark results and input digests"
+    )
+    benchmark_verify.add_argument(
+        "results",
+        nargs="*",
+        type=Path,
+        default=list(DEFAULT_BENCHMARK_RESULTS),
+        help="benchmark result JSON files; defaults to the checked-in public results",
+    )
+    benchmark_verify.add_argument(
+        "--schema",
+        type=Path,
+        help="benchmark-result schema; defaults to the AgentVerify bundled schema",
+    )
+    benchmark_verify.add_argument(
+        "--root",
+        type=Path,
+        default=Path("."),
+        help="repository root used to resolve relative labels_source and manifest_source values",
+    )
+    benchmark_verify.add_argument(
+        "--require-evaluation-kind",
+        choices=("public-regression", "sealed-holdout"),
+        help="fail unless every result declares this benchmark evaluation kind",
+    )
+    benchmark_verify.add_argument(
+        "--require-label-scope",
+        choices=("reporting-rules", "agent-ir", "mixed"),
+        help="fail unless every result declares this label scope",
+    )
+    benchmark_verify.add_argument(
+        "--require-sealed",
+        action="store_true",
+        help="fail unless every result declares sealed=true",
+    )
+    benchmark_verify.add_argument(
+        "--require-manifest",
+        action="store_true",
+        help="fail unless every result declares a manifest source and matching digest",
+    )
+    benchmark_verify.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        metavar="PATH",
+        help="write verification JSON to PATH instead of standard output",
+    )
     return parser
 
 
@@ -250,6 +306,21 @@ def main(argv: list[str] | None = None) -> int:
         )
     if args.command == "rules":
         return emit_output(render_rules(args.rule_id, output_format=args.format), args.output) or 0
+    if args.command == "benchmark":
+        try:
+            payload = verify_benchmark_results(
+                args.results,
+                schema_path=args.schema,
+                root=args.root,
+                evaluation_kind=args.require_evaluation_kind,
+                label_scope=args.require_label_scope,
+                require_sealed=args.require_sealed,
+                require_manifest=args.require_manifest,
+            )
+        except BENCHMARK_VERIFICATION_ERRORS as error:
+            print(f"agentverify: benchmark verification failed: {error}", file=sys.stderr)
+            return 2
+        return emit_output(render_benchmark_verification(payload), args.output) or 0
     if args.command == "policy":
         if args.export_trust_root and args.export_signing_payload:
             print(

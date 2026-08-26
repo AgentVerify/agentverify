@@ -13,7 +13,7 @@ import zipfile
 from pathlib import Path, PurePosixPath
 
 REQUIRED_ENTRY_POINTS = {"agentverify": "agentverify.cli:main"}
-REQUIRED_RUNTIME_DEPENDENCIES = {"cryptography>=46.0"}
+REQUIRED_RUNTIME_DEPENDENCIES = {"cryptography>=46.0", "jsonschema>=4.23"}
 REQUIRED_BENCHMARK_RESULT_FILES = frozenset(
     {
         "benchmarks/ir-truthset-results.json",
@@ -163,6 +163,21 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         )
         policy_trust_root_schema = json.loads(
             command([str(agentverify), "schema", "policy-trust-root"])
+        )
+        benchmark_verification = json.loads(
+            command(
+                [
+                    str(agentverify),
+                    "benchmark",
+                    "verify",
+                    str(source_root / "benchmarks/truthset-results.json"),
+                    str(source_root / "benchmarks/ir-truthset-results.json"),
+                    "--root",
+                    str(source_root),
+                    "--require-evaluation-kind",
+                    "public-regression",
+                ]
+            )
         )
         policy_signing_payload = json.loads(
             command(
@@ -337,6 +352,10 @@ json.dump(
         ],
         "policy_summary_format": policy_summary.get("policy_format"),
         "policy_signature_verified": policy_summary.get("trust", {}).get("signature_verified"),
+        "benchmark_verification_passed": benchmark_verification.get("passed"),
+        "benchmark_verification_labels": [
+            item.get("labels") for item in benchmark_verification.get("results", [])
+        ],
         "signed_policy_signature_verified": signed_policy_summary.get("trust", {}).get(
             "signature_verified"
         ),
@@ -395,6 +414,10 @@ json.dump(
         failed.append("policy_summary_format")
     if policy_summary.get("trust", {}).get("signature_verified") is not False:
         failed.append("policy_signature_verified")
+    if checks["benchmark_verification_passed"] is not True:
+        failed.append("benchmark_verification_passed")
+    if checks["benchmark_verification_labels"] != [714, 1514]:
+        failed.append("benchmark_verification_labels")
     if checks["signed_policy_signature_verified"] is not True:
         failed.append("signed_policy_signature_verified")
     if checks["signed_policy_signature_trusted"] is not True:

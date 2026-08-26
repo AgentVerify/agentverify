@@ -8,8 +8,8 @@
 
 ## P1
 
-- Extend release-artifact checks to attach benchmark verifier logs once release publishing is
-  explicit.
+- Attach `agentverify benchmark verify` JSON outputs to release artifacts or release notes once
+  release publishing is explicit.
 - Expand selected real-world framework coverage where current docs record unresolved ambiguous
   wrapper factories, type-driven symbols, generic same-named provider wrappers, or additional
   non-provider wildcard import forms beyond the current exact provider-factory and literal-callable
@@ -25,8 +25,8 @@
   evidence graph.
 - Improve editor and CI integration examples using discoverable schema-backed report, benchmark,
   policy, and rule-catalog contracts.
-- Consider release-artifact checks that attach benchmark verification outputs to wheels or release
-  notes once the release process is explicit.
+- Improve installed CLI examples for benchmark verification, schema exports, and policy gates in
+  CI/editor workflows.
 
 ## Deferred until access/authorization
 
