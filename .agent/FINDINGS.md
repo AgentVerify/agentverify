@@ -184,7 +184,11 @@
 - Native TypeScript provider class fields can prove provider-call provenance without proving the
   exact model id. Method parameters such as `modelName` remain unresolved model evidence unless they
   can be tied to a direct literal or earlier immutable module-level literal binding; the public IR
-  truth set now covers 1,587 passing labels.
+  truth set then covered 1,587 passing labels.
+- Type-only named OpenAI imports in TypeScript are also non-evidence: `import type { OpenAI as T }
+  from "openai"` can describe SDK-shaped tool/message types in Roo Code-style code without proving a
+  runtime SDK client. Native provider/model attribution remains restricted to exact value imports or
+  stable constructor proof, and the public IR truth set now covers 1,588 passing labels.
 
 ## Hypotheses
 
