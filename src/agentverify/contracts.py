@@ -113,6 +113,20 @@ def _artifact_index(manifest: dict[str, object]) -> dict[str, dict[str, object]]
     }
 
 
+def _safe_bundle_artifact_path(bundle_dir: Path, relative_path: str) -> tuple[Path | None, str | None]:
+    if (
+        not relative_path
+        or relative_path in {".", ".."}
+        or "/" in relative_path
+        or "\\" in relative_path
+        or "\x00" in relative_path
+        or Path(relative_path).is_absolute()
+        or Path(relative_path).name != relative_path
+    ):
+        return None, f"invalid artifact path: {relative_path}"
+    return bundle_dir / relative_path, None
+
+
 def verify_editor_contracts(bundle_dir: Path) -> dict[str, object]:
     manifest_path = bundle_dir / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -148,17 +162,24 @@ def verify_editor_contracts(bundle_dir: Path) -> dict[str, object]:
         if not isinstance(artifact, dict) or not isinstance(artifact.get("path"), str):
             continue
         relative_path = artifact["path"]
-        artifact_path = bundle_dir / relative_path
         result: dict[str, object] = {
             "path": relative_path,
             "kind": artifact.get("kind"),
             "contract": artifact.get("contract"),
             "required": artifact.get("required"),
-            "present": artifact_path.is_file(),
+            "path_valid": True,
+            "present": False,
             "digest_ok": False,
             "bytes_ok": False,
             "content_valid": None,
         }
+        artifact_path, path_error = _safe_bundle_artifact_path(bundle_dir, relative_path)
+        if path_error is not None or artifact_path is None:
+            result["path_valid"] = False
+            errors.append(path_error or f"invalid artifact path: {relative_path}")
+            artifact_results.append(result)
+            continue
+        result["present"] = artifact_path.is_file()
         if not artifact_path.is_file():
             errors.append(f"missing artifact file: {relative_path}")
             artifact_results.append(result)
@@ -193,7 +214,9 @@ def verify_editor_contracts(bundle_dir: Path) -> dict[str, object]:
         if not isinstance(artifact, dict) or not isinstance(artifact.get("path"), str):
             continue
         relative_path = artifact["path"]
-        artifact_path = bundle_dir / relative_path
+        artifact_path, path_error = _safe_bundle_artifact_path(bundle_dir, relative_path)
+        if path_error is not None or artifact_path is None:
+            continue
         if not artifact_path.is_file():
             continue
         matching_results = [item for item in artifact_results if item["path"] == relative_path]

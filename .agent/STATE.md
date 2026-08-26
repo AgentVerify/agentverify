@@ -174,6 +174,8 @@ catalog workflows.
 - Added `agentverify contracts --verify-dir` to validate copied editor/CI contract bundles against
   their manifest schema, required artifact entries, recomputed byte counts and SHA-256 digests, and
   bundled rules/sample-report schemas. Installed-wheel smoke now exports and verifies a bundle.
+- Hardened contract-bundle verification so malformed manifests cannot cause verification to read
+  parent-relative, nested, absolute, or otherwise non-basename artifact paths.
 
 ## Current findings
 
@@ -210,6 +212,8 @@ catalog workflows.
 - Copied editor/CI contract bundles can now be independently verified with `agentverify contracts
   --verify-dir`, giving downstream tools a fail-closed integrity check before loading schemas or rule
   catalogs.
+- Contract-bundle artifact paths are intentionally basename-only; invalid manifest paths are reported
+  as verification failures before any artifact file is read.
 - Python filesystem callable aliasing is deliberately narrow: local alias chains may copy already
   proven same-function callable bindings, but aliases before source proof, rebound alias targets,
   incompatible operation families, and imported wrapper helpers remain unresolved.

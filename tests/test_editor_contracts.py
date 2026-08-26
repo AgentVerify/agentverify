@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from hashlib import sha256
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
@@ -159,6 +160,38 @@ def test_editor_contract_verifier_rejects_digest_drift(tmp_path: Path) -> None:
     assert rules_result["digest_ok"] is False
     assert rules_result["bytes_ok"] is False
     assert any("artifact digest mismatch: agentverify-rules.json" in error for error in verification["errors"])
+
+
+def test_editor_contract_verifier_rejects_manifest_path_traversal(tmp_path: Path) -> None:
+    bundle = tmp_path / "contracts"
+    export_editor_contracts(bundle, sample_root=ROOT / "examples/safe_agent")
+    outside = tmp_path / "outside.json"
+    outside_content = "{}\n"
+    outside.write_text(outside_content, encoding="utf-8")
+    manifest_path = bundle / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["artifacts"].append(
+        {
+            "path": "../outside.json",
+            "sha256": sha256(outside_content.encode("utf-8")).hexdigest(),
+            "bytes": len(outside_content.encode("utf-8")),
+            "kind": "catalog",
+            "contract": "rules",
+            "required": False,
+        }
+    )
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    verification = verify_editor_contracts(bundle)
+
+    assert verification["passed"] is False
+    traversal_result = next(
+        item for item in verification["artifacts"] if item["path"] == "../outside.json"
+    )
+    assert traversal_result["path_valid"] is False
+    assert traversal_result["present"] is False
+    assert traversal_result["digest_ok"] is False
+    assert any("invalid artifact path: ../outside.json" in error for error in verification["errors"])
 
 
 def test_cli_contract_verifier_rejects_missing_required_artifact(
