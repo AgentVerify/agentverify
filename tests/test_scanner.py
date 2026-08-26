@@ -372,6 +372,14 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "ai-sdk-provider-model",
             None,
         ),
+        (
+            "provider_ai_sdk_reexport_calls.ts",
+            7,
+            "Azure OpenAI",
+            "projectAzureFactory.embeddingModel",
+            "ai-sdk-provider-model",
+            "projectAzureFactory",
+        ),
         *(
             (
                 "provider_ai_sdk_model_bindings_unresolved.ts",
@@ -955,6 +963,13 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         (4, "gpt-5-reexport", "OpenAI", "language", "@ai-sdk/openai"),
         (5, "gemini-embedding-reexport", "Google", "embedding", "@ai-sdk/google"),
         (6, "gpt-5-transitive-reexport", "OpenAI", "language", "@ai-sdk/openai"),
+        (
+            7,
+            "text-embedding-3-small-azure-reexport",
+            "Azure OpenAI",
+            "embedding",
+            "@ai-sdk/azure",
+        ),
     }
     assert not any(
         item.kind in {"provider", "model"}

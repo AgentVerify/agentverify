@@ -288,9 +288,9 @@ counterexample.
 
 Local TypeScript AI SDK reexport regressions now preserve exact provider and model attribution
 through named local barrels when the export chain reaches one supported official `@ai-sdk/*`
-instance or factory symbol. Six positive labels cover direct OpenAI, Google factory, and transitive
-OpenAI reexports; two negative labels keep ambiguous reexports and function-parameter-shadowed local
-imports unresolved.
+instance or factory symbol. Eight positive labels cover direct OpenAI, Google factory, transitive
+OpenAI, and Azure factory reexports; four negative labels keep ambiguous reexports,
+function-parameter-shadowed local imports, and Azure baseURL-spread reexports unresolved.
 Three additional real Activepieces negatives pin the opposite boundary: the workspace
 `createLanguageModel({ provider, modelId })` wrapper and Cloudflare `@ai-sdk/openai-compatible`
 gateway branch remain unresolved because the wrapper implementation is not source-visible in the
@@ -310,7 +310,7 @@ cover `MODEL_IDS.chat`, `MODEL_IDS["chat"]`, and `MODEL_IDS["chat-model"]`-style
 AI SDK language, and AI SDK embedding calls; eight negative labels keep mutable object properties,
 nonliteral object values, dynamic bracket keys, and dynamic bracket member writes unresolved. Exact
 `@ai-sdk/azure` factory/configured embedding labels plus a real Activepieces Azure embedding provider
-raise the public IR truth set to 1,622 passing labels without broadening provider identity
+and Azure reexport boundary labels raise the public IR truth set to 1,626 passing labels without broadening provider identity
 inference.
 
 Schema v105 adds the immutable direct CommonJS default-export form for the OpenAI and Anthropic

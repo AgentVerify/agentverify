@@ -218,7 +218,11 @@
   `createAzure` factory/model calls that use the default Azure endpoint shape. Endpoint-neutral
   `spreadIfDefined('apiVersion', ...)` is accepted because the real Activepieces call uses it for
   API-version selection, while baseURL spreads, arbitrary object spreads, and dynamic model IDs remain
-  unresolved. The public IR truth set now covers 1,622 passing labels.
+  unresolved. The public IR truth set then covered 1,622 passing labels.
+- The same exact local named-reexport machinery now has Azure coverage: reexported `createAzure`
+  preserves provider/model attribution only for default-endpoint embedding calls, while a reexported
+  factory with a baseURL spread remains unresolved for both provider and model evidence. The public
+  IR truth set now covers 1,626 passing labels.
 
 ## Hypotheses
 

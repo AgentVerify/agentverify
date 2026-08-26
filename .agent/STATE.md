@@ -255,7 +255,10 @@ catalog workflows.
   `createAzure` factory/configured embedding calls, while allowing only endpoint-neutral
   `spreadIfDefined('apiVersion', ...)` spreads and keeping baseURL spreads unresolved. A real
   Activepieces Azure embedding provider is now pinned; regenerated public IR truth-set results now
-  cover 1,622 passing labels.
+  covered 1,622 passing labels.
+- Extended exact local TypeScript AI SDK named-reexport regression coverage to the Azure factory
+  path, including a provider/model positive and provider/model negatives for a baseURL-spread
+  reexport. Regenerated public IR truth-set results now cover 1,626 passing labels.
 
 ## Current findings
 
