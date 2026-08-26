@@ -176,9 +176,10 @@ can also configure agents through literal `run(..., { sandbox: { client/session 
 one direct `client.create(...)` session binding. A client initializer whose outer expression is a
 ternary is accepted only when each branch contains exactly one unshadowed sandbox-local client
 constructor, producing a `conditional-local` runtime control with Docker/Unix options. Near-package
-constructors, rebound
-constructor/capability/client aliases, aggregate capability helpers, half-known ternaries, and
-nested, indirect, or ambiguous helper forms remain unresolved.
+constructors, rebound constructor/capability/client aliases, aggregate capability helpers,
+half-known ternaries, and nested, indirect, or ambiguous helper forms remain unresolved. A local
+`client as ...` alias can carry the same proven runtime into a `.resume(...)` session assignment, but
+unknown resumable aliases remain disconnected.
 Schema v81 extends that identity proof to a project-local adapter class only when it directly
 subclasses an exact imported `MCPServer`, has one immutable module export, and directly defines both
 `list_tools` and `call_tool`. A unique local import and an earlier same-scope instance can then feed

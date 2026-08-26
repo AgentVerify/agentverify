@@ -58,3 +58,16 @@ const conditionalAgent = new SandboxAgent({
 await run(conditionalAgent, 'inspect the workspace', {
   sandbox: { session: conditionalSession },
 });
+
+const resumableClient = client as {
+  resume(value: unknown): Promise<unknown>;
+};
+let resumedSession: unknown;
+resumedSession = await resumableClient.resume(session);
+const resumedAgent = new SandboxAgent({
+  name: 'Resumed Session Sandbox',
+  capabilities: [shell()],
+});
+await run(resumedAgent, 'inspect the workspace', {
+  sandbox: { session: resumedSession },
+});

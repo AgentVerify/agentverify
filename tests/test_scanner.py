@@ -4059,6 +4059,13 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
             "ts:positive.ts#control:conditionalClient@48",
             "session",
         ),
+        (
+            "Resumed Session Sandbox",
+            "positive.ts",
+            71,
+            "ts:positive.ts#control:client@38",
+            "session",
+        ),
     }
     assert not any(
         component.evidence.path == "negative.ts" and component.kind == "control"

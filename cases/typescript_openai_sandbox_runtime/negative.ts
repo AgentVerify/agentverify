@@ -37,3 +37,15 @@ const halfKnownAgent = new SandboxAgent({
 await run(halfKnownAgent, 'inspect the workspace', {
   sandbox: { session: halfKnownSession },
 });
+
+const unknownResumableClient = unknownClient as {
+  resume(value: unknown): Promise<unknown>;
+};
+let unknownResumedSession: unknown;
+unknownResumedSession = await unknownResumableClient.resume(manifest);
+const unknownResumedAgent = new SandboxAgent({
+  name: 'Unknown Resumed Session Sandbox',
+});
+await run(unknownResumedAgent, 'inspect the workspace', {
+  sandbox: { session: unknownResumedSession },
+});

@@ -301,6 +301,12 @@ catalog workflows.
   ternaries remain unresolved. Local positive/negative fixtures plus OpenAI Agents JS
   `examples/sandbox/basic.ts` and `examples/sandbox/resume.ts` raised regenerated public IR
   truth-set results to 1,755 passing labels.
+- Extended sandbox runtime session binding through exact local `const resumableClient = client as ...`
+  aliases and `resumedSession = await resumableClient.resume(...)` assignments. The resumed session
+  inherits the original proven `sandbox-runtime` control rather than creating a second control;
+  unknown resumable aliases remain unresolved. Local positive/negative fixtures plus OpenAI Agents JS
+  `examples/sandbox/resume.ts` and `examples/sandbox/memory.ts` raised regenerated public IR
+  truth-set results to 1,759 passing labels.
 - Strengthened source-release verification for the packaged GitHub workflow examples:
   `verify_sdist()` now checks benchmark verifier output/schema/upload, policy-gate
   permission/policy/summary/expiry arguments, and code-scanning SARIF permission/upload contracts.

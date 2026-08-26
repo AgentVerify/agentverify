@@ -258,7 +258,10 @@
   shorthand. Exact ternary client initializers whose outer expression is the conditional also prove a
   `conditional-local` `sandbox-runtime` control only when both branches contain exactly one
   unshadowed supported local sandbox client constructor; half-known or rebound ternaries remain
-  unresolved. The public IR truth set now covers 1,755 passing labels.
+  unresolved. The public IR truth set then covered 1,755 passing labels. Resumed sandbox sessions now
+  inherit the proven runtime control through exact local `client as ...` aliases and `.resume(...)`
+  assignments, while unknown resumable aliases remain unresolved; the public IR truth set now covers
+  1,759 passing labels.
 - Source-release verification now treats packaged GitHub workflow examples as content contracts, not
   only required filenames. The sdist verifier checks that the benchmark workflow emits, validates,
   and uploads verifier JSON while staying read-only; the policy gate keeps its policy/summary/expiry

@@ -12449,6 +12449,14 @@ TS_SANDBOX_SESSION_ASSIGNMENT = re.compile(
     r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:await\s+)?"
     r"([A-Za-z_$][\w$]*)\.create\s*\("
 )
+TS_SANDBOX_CLIENT_CAST_ASSIGNMENT = re.compile(
+    r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*"
+    r"([A-Za-z_$][\w$]*)\s+as\b"
+)
+TS_SANDBOX_RESUME_SESSION_ASSIGNMENT = re.compile(
+    r"(?:\b(?:const|let)\s+|(?<![\w$.]))([A-Za-z_$][\w$]*)\s*=\s*"
+    r"(?:await\s+)?([A-Za-z_$][\w$]*)\.resume\s*\("
+)
 TS_LITERAL_APPROVAL = re.compile(r"\bneedsApproval\s*:\s*true\b")
 TS_AUTO_APPROVAL_ENABLED = re.compile(
     r"\b(?:autoApprove|auto_approve|skipConfirmation|skip_confirmation|"
@@ -16303,7 +16311,17 @@ def typescript_graph(
             constructors=[true_constructors[0], false_constructors[0]],
             symbol_identity=f"{variable_name}@{start_line}",
         )
+    for match in TS_SANDBOX_CLIENT_CAST_ASSIGNMENT.finditer(code):
+        alias_name = match.group(1)
+        client_name = match.group(2)
+        if client_binding := sandbox_client_bindings.get(client_name):
+            sandbox_client_bindings[alias_name] = client_binding
     for match in TS_SANDBOX_SESSION_ASSIGNMENT.finditer(code):
+        session_name = match.group(1)
+        client_name = match.group(2)
+        if client_binding := sandbox_client_bindings.get(client_name):
+            sandbox_session_bindings[session_name] = client_binding
+    for match in TS_SANDBOX_RESUME_SESSION_ASSIGNMENT.finditer(code):
         session_name = match.group(1)
         client_name = match.group(2)
         if client_binding := sandbox_client_bindings.get(client_name):
