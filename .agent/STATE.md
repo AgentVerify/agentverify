@@ -106,6 +106,8 @@ catalog workflows.
 - Hardened benchmark result verification to reject cross-field drift between labels, outcomes,
   passed totals, and outcome-derived metrics, so release gates cannot be satisfied by editing
   aggregate result fields without matching per-label evidence.
+- Wired the default CI workflow to run the installed CLI benchmark verification gate on checked-in
+  public regression results, with a workflow regression test and release-checklist guidance.
 
 ## Current findings
 

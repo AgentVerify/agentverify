@@ -42,6 +42,9 @@
 - Benchmark verification now treats benchmark result aggregates as derived evidence: it rejects
   mismatches between `labels` and outcome count, `passed` and per-outcome pass status, or `metrics`
   and the expected/observed outcome matrix.
+- The checked-in GitHub CI workflow now exercises `agentverify benchmark verify
+  --require-evaluation-kind public-regression --require-all-passed`, so public regression artifact
+  drift is caught during normal pull-request checks rather than only during manual release review.
 - Policy composition can now be inspected without scanning. The policy summary intentionally reports
   `signature_verified: false`, preserving the distinction between content integrity and author trust.
 - Policy summary JSON is now schema-backed and included in distribution verification, matching the

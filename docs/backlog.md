@@ -572,6 +572,8 @@ source distributions for the README-linked examples, policy docs, benchmark cont
 sets, and checked benchmark result outputs. `--smoke-install` installs the wheel in a temporary
 virtualenv before running version, schema, policy, trust-root export, and safe-example scan commands
 through the installed `agentverify` executable.
+The default CI workflow now runs the installed CLI benchmark verifier with public-regression and
+all-labels-passed requirements, and a workflow regression test keeps that release gate present.
 The scan command also provides a compact `--format summary` mode for CI logs and quick local triage:
 it keeps threshold and policy exit semantics while showing scan totals, baseline/policy status,
 severity/result-kind/rule counts, and top evidence locations without printing the full Agent IR graph.

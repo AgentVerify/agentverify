@@ -33,11 +33,13 @@ Before publishing public regression numbers:
    --require-all-passed` from the built or installed CLI and keep the JSON output with the release
    notes. The source-checkout script `uv run python scripts/verify_benchmark_results.py` delegates
    to the same verifier.
-3. Export `agentverify schema benchmark-result` from the built or installed CLI when downstream
+3. Confirm CI also ran the installed CLI benchmark gate on the checked-in result files for the
+   release commit.
+4. Export `agentverify schema benchmark-result` from the built or installed CLI when downstream
    release tooling needs the exact result contract without a source checkout.
-4. State the claim boundary explicitly: curated public regression metrics, not an unbiased ecosystem
+5. State the claim boundary explicitly: curated public regression metrics, not an unbiased ecosystem
    accuracy estimate.
-5. If a result file changes, review the per-label outcomes rather than relying only on aggregate
+6. If a result file changes, review the per-label outcomes rather than relying only on aggregate
    precision and recall.
 
 ## Sealed holdout release

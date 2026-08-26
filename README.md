@@ -175,6 +175,9 @@ agentverify benchmark verify --require-evaluation-kind public-regression --requi
 agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
 ```
 
+The default CI workflow runs the installed CLI benchmark gate against the checked-in public
+regression results, so benchmark-result drift fails during pull requests before release packaging.
+
 The collector reuses commits from `research/repository-data.json` by default and samples up to 220
 source/manifest roots plus at most 20 bounded local source dependencies reached from MCP
 forwarding/URL-security roots or listed as audited evidence hints per repository. Use `--refresh` only

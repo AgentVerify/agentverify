@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
+CI_WORKFLOW = ROOT / ".github/workflows/ci.yml"
 SPEC = importlib.util.spec_from_file_location(
     "verify_distribution", ROOT / "scripts/verify_distribution.py"
 )
@@ -99,6 +100,15 @@ def test_distribution_verifier_accepts_required_source_artifacts(tmp_path: Path)
     assert payload["required_benchmark_result_files"] == len(REQUIRED_BENCHMARK_RESULT_FILES)
     assert payload["missing_benchmark_result_files"] == []
     assert payload["present_benchmark_result_files"] == sorted(REQUIRED_BENCHMARK_RESULT_FILES)
+
+
+def test_ci_workflow_verifies_checked_in_benchmark_results() -> None:
+    workflow = CI_WORKFLOW.read_text(encoding="utf-8")
+
+    assert (
+        "agentverify benchmark verify --require-evaluation-kind public-regression "
+        "--require-all-passed"
+    ) in workflow
 
 
 def test_distribution_verifier_rejects_missing_schema(tmp_path: Path) -> None:
