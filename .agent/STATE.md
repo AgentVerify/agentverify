@@ -38,6 +38,8 @@ catalog workflows.
   smoke coverage and a drift test against the canonical `benchmarks/benchmark-results-v1.schema.json`.
 - Added a checked-in runnable policy trust-root example for the composed organization/repository
   policy pair, and extended installed-wheel smoke tests to require that trust root to pass.
+- Added `agentverify schema` discovery output so installed users can list all bundled machine
+  contracts from the same schema registry used by rendering and smoke tests.
 
 ## Current findings
 

@@ -21,6 +21,7 @@ agentverify scan ./project --format json
 agentverify scan ./project --format bom
 agentverify scan ./project --format sarif
 agentverify scan ./project --format sarif --output agentverify.sarif
+agentverify schema
 agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
 agentverify schema report --output agentverify-report.schema.json
 agentverify schema bom --output agentverify-ai-bom.schema.json
@@ -68,6 +69,7 @@ treated as an empty baseline.
 Reports and schemas are written to standard output by default. Use `--output PATH` (or `-o PATH`)
 to write them directly to a file. Output write failures return exit code 2; successful scan writes
 still preserve policy and `--fail-on` exit decisions.
+`agentverify schema` lists every bundled machine-readable schema.
 `agentverify schema benchmark-result` prints the bundled schema for benchmark result files.
 `agentverify schema report` prints the bundled schema for validating normal `--format json` reports;
 `agentverify schema policy-summary` validates `agentverify policy --format json`, and

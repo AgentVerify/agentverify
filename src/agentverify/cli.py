@@ -18,11 +18,13 @@ from .policy import (
     render_policy_summary,
 )
 from .report import (
+    SCHEMA_FILES,
     render_bom,
     render_json,
     render_rules,
     render_sarif,
     render_schema,
+    render_schema_list,
     render_summary,
     render_text,
 )
@@ -96,18 +98,12 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="evaluate a schema-v1 JSON policy against post-baseline results",
     )
-    schema = subparsers.add_parser("schema", help="print a bundled machine-readable schema")
+    schema = subparsers.add_parser("schema", help="list or print bundled machine-readable schemas")
     schema.add_argument(
         "name",
-        choices=(
-            "benchmark-result",
-            "bom",
-            "policy",
-            "policy-summary",
-            "policy-trust-root",
-            "report",
-            "rules",
-        ),
+        nargs="?",
+        choices=tuple(SCHEMA_FILES),
+        help="schema name; omit to list available schemas",
     )
     schema.add_argument(
         "-o",
@@ -226,7 +222,13 @@ def emit_output(content: str, output: Path | None) -> int | None:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "schema":
-        return emit_output(render_schema(args.name), args.output) or 0
+        return (
+            emit_output(
+                render_schema(args.name) if args.name is not None else render_schema_list(),
+                args.output,
+            )
+            or 0
+        )
     if args.command == "rules":
         return emit_output(render_rules(args.rule_id, output_format=args.format), args.output) or 0
     if args.command == "policy":

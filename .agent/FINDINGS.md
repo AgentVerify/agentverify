@@ -5,7 +5,7 @@
 - The repository contains a 71-repository pinned research corpus and schema-v123 benchmark outputs.
 - The runtime catalog currently contains 24 enabled reporting rules.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
-- A freshly rebuilt wheel includes all four runtime schemas; a verifier script now guards that
+- A freshly rebuilt wheel includes all seven runtime schemas; a verifier script now guards that
   package artifact expectation.
 - Policy evaluation occurs after baseline filtering and preserves matched findings in all report
   formats.
@@ -35,6 +35,8 @@
   verify signatures; this is a useful precursor, not a replacement, for cryptographic provenance.
 - The checked-in example policy trust root turns the digest-allowlist workflow into a copyable,
   installed-wheel-smoked command rather than a prose-only feature.
+- Schema discovery is now an installed CLI behavior (`agentverify schema`), reducing documentation
+  dependence when new machine contracts are added.
 
 ## Hypotheses
 

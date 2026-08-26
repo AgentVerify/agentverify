@@ -373,6 +373,20 @@ def test_cli_prints_bundled_bom_schema(capsys) -> None:
     assert schema["title"] == "AgentVerify AI BOM 1.2"
 
 
+def test_cli_lists_bundled_schemas(capsys) -> None:
+    assert cli.main(["schema"]) == 0
+
+    assert capsys.readouterr().out.splitlines() == [
+        "benchmark-result",
+        "bom",
+        "policy",
+        "policy-summary",
+        "policy-trust-root",
+        "report",
+        "rules",
+    ]
+
+
 def test_cli_prints_bundled_benchmark_result_schema(capsys) -> None:
     assert cli.main(["schema", "benchmark-result"]) == 0
 

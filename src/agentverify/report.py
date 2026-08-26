@@ -11,6 +11,16 @@ from . import __version__
 from .ir import Component, Evidence, Finding, Relationship, RepositoryIR
 from .rules import RULE_CATALOG, RULE_DEFINITIONS
 
+SCHEMA_FILES = {
+    "benchmark-result": "agentverify-benchmark-result-v1.schema.json",
+    "bom": "agentverify-ai-bom-v1.schema.json",
+    "policy": "agentverify-policy-v1.schema.json",
+    "policy-summary": "agentverify-policy-summary-v1.schema.json",
+    "policy-trust-root": "agentverify-policy-trust-root-v1.schema.json",
+    "report": "agentverify-report-v1.schema.json",
+    "rules": "agentverify-rules-v1.schema.json",
+}
+
 
 def _risk_summary(findings: list[Finding]) -> dict[str, dict[str, int]]:
     return {
@@ -31,17 +41,12 @@ def render_json(ir: RepositoryIR) -> str:
 
 
 def render_schema(name: str) -> str:
-    filenames = {
-        "benchmark-result": "agentverify-benchmark-result-v1.schema.json",
-        "bom": "agentverify-ai-bom-v1.schema.json",
-        "policy": "agentverify-policy-v1.schema.json",
-        "policy-summary": "agentverify-policy-summary-v1.schema.json",
-        "policy-trust-root": "agentverify-policy-trust-root-v1.schema.json",
-        "report": "agentverify-report-v1.schema.json",
-        "rules": "agentverify-rules-v1.schema.json",
-    }
-    schema = files("agentverify").joinpath(f"schemas/{filenames[name]}")
+    schema = files("agentverify").joinpath(f"schemas/{SCHEMA_FILES[name]}")
     return schema.read_text(encoding="utf-8")
+
+
+def render_schema_list() -> str:
+    return "\n".join(SCHEMA_FILES) + "\n"
 
 
 def render_rules(rule_id: str | None = None, *, output_format: str = "text") -> str:

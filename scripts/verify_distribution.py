@@ -79,6 +79,7 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         command([str(python), "-m", "pip", "install", "--no-deps", str(path)])
         agentverify = script_path(venv_dir, "agentverify")
         version = command([str(agentverify), "--version"]).strip()
+        schema_list = command([str(agentverify), "schema"]).splitlines()
         benchmark_schema = json.loads(command([str(agentverify), "schema", "benchmark-result"]))
         report_schema = json.loads(command([str(agentverify), "schema", "report"]))
         rules_schema = json.loads(command([str(agentverify), "schema", "rules"]))
@@ -122,6 +123,7 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         )
     checks = {
         "version": version,
+        "schema_list": schema_list,
         "benchmark_schema_title": benchmark_schema.get("title"),
         "report_schema_title": report_schema.get("title"),
         "rules_schema_title": rules_schema.get("title"),
@@ -137,6 +139,17 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
     failed = []
     if not version.startswith("agentverify "):
         failed.append("version")
+    expected_schema_names = [
+        "benchmark-result",
+        "bom",
+        "policy",
+        "policy-summary",
+        "policy-trust-root",
+        "report",
+        "rules",
+    ]
+    if schema_list != expected_schema_names:
+        failed.append("schema_list")
     if benchmark_schema.get("title") != "AgentVerify Benchmark Results 1":
         failed.append("benchmark_schema_title")
     if report_schema.get("title") != "AgentVerify JSON Report 1":

@@ -22,8 +22,8 @@
   example policies change.
 - Explore CycloneDX/SPDX adapters only when a mapping preserves links back to the native AgentVerify
   evidence graph.
-- Improve editor and CI integration examples using schema-backed report, policy, and rule-catalog
-  contracts.
+- Improve editor and CI integration examples using discoverable schema-backed report, benchmark,
+  policy, and rule-catalog contracts.
 - Consider release-artifact checks that attach benchmark verification outputs to wheels or release
   notes once the release process is explicit.
 
