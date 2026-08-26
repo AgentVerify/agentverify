@@ -265,6 +265,12 @@ embedding provider now resolves the earlier `OPENAI_3_SMALL_MODEL_ID` constant t
 call counts stay at 70 and literal models rise from 28 to 29; three model components now record the
 immutable-module-literal basis. Runtime parameters in Activepieces and Mastra, plus mutable,
 forward, composed, shadowed, and rebound fixture arguments, remain withheld.
+The same immutable-module-literal basis now also covers exact module-level literal object maps such
+as `MODEL_IDS.chat` for native request objects and official AI SDK first model arguments. The object
+must be a single top-level `const` with direct literal string properties and no object/member
+reassignment; mutable object properties, nonliteral object values, bracket reads, and unknown
+template values remain withheld. Local regressions add three positive object-map model labels and
+four guarded negatives, bringing the public IR truth set to 1,595 labels.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
 Agent→MCP-server identities. Import-proven literal stdio constructor calls are inventoried for any
@@ -725,8 +731,9 @@ and `network-ssrf-policy` edge.
   forms are an immutable direct module-level `const` require of the OpenAI or Anthropic package
   default constructor, plus exact top-level direct or aliased `GoogleGenAI` destructuring. Immutable native
   instances expose exact OpenAI chat/response, Anthropic message, and Google content-generation
-  model calls only when the direct request object contains a literal `model` or a proven immutable
-  module literal/template binding. Exact imported
+  model calls only when the direct request object contains a literal `model`, a proven immutable
+  module literal/template binding, or an exact immutable module-level literal object-map property
+  such as `MODEL_IDS.chat`. Exact imported
   type annotations can carry provider identity through unique non-exported same-file helpers when
   every direct call site agrees; other require shapes, exported/ambiguous helper graphs, and
   instance/method flows remain unresolved.
@@ -962,7 +969,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 719-label rule truth set and 1,588-label IR component/relationship set are curated regression
+The 719-label rule truth set and 1,595-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

@@ -13256,6 +13256,18 @@ def typescript_immutable_module_literal_string_bindings(
         if depths[match.start()] != 0 or code[match.start() : match.start(1)].strip() != "const":
             continue
         template_candidates[match.group(1)].append((match.start(), match.group(2), match.end()))
+    object_candidates: dict[str, list[tuple[int, str, int]]] = defaultdict(list)
+    object_pattern = re.compile(
+        r"\bconst\s+([A-Za-z_$][\w$]*)\s*(?:\:\s*[^=;\n]+)?=\s*\{"
+    )
+    for match in object_pattern.finditer(text):
+        if depths[match.start()] != 0 or code[match.start() : match.start(1)].strip() != "const":
+            continue
+        opening = match.end() - 1
+        end = typescript_balanced_end(code, opening, "{", "}")
+        if end is None:
+            continue
+        object_candidates[match.group(1)].append((opening, text[opening:end], end))
 
     imported_names = set()
     for match in TS_DEFAULT_IMPORT.finditer(text):
@@ -13305,6 +13317,15 @@ def typescript_immutable_module_literal_string_bindings(
             or name in imported_names
         )
 
+    def object_is_stable(name: str, values_count: int) -> bool:
+        if not is_stable(name, values_count):
+            return False
+        escaped = re.escape(name)
+        return not (
+            re.search(rf"(?<![\w$]){escaped}\s*\.\s*[A-Za-z_$][\w$]*\s*=(?!=)", code)
+            or re.search(rf"(?<![\w$]){escaped}\s*\[\s*(['\"]).*?\1\s*\]\s*=(?!=)", code)
+        )
+
     resolved: dict[str, TypeScriptLiteralStringBinding] = {}
     for name, values in candidates.items():
         if not is_stable(name, len(values)):
@@ -13334,7 +13355,49 @@ def typescript_immutable_module_literal_string_bindings(
             continue
         parts.append(template[cursor:])
         resolved[name] = TypeScriptLiteralStringBinding("".join(parts), template_end)
+
+    for name, values in object_candidates.items():
+        if not object_is_stable(name, len(values)):
+            continue
+        object_start, object_body, object_end = values[0]
+        property_values: dict[str, list[TypeScriptLiteralStringBinding]] = defaultdict(list)
+        for property_text, _ in typescript_literal_object_items(object_body, object_start):
+            property_value = typescript_named_object_property(property_text)
+            if property_value is None:
+                continue
+            property_name, expression = property_value
+            if re.fullmatch(r"[A-Za-z_$][\w$]*", property_name) is None:
+                continue
+            literal = re.fullmatch(
+                r"(?:'([^'\\\r\n]*)'|\"([^\"\\\r\n]*)\")(?:\s+as\s+const)?",
+                expression,
+            )
+            if literal is None:
+                continue
+            property_values[f"{name}.{property_name}"].append(
+                TypeScriptLiteralStringBinding(
+                    literal.group(1) if literal.group(1) is not None else literal.group(2),
+                    object_end,
+                )
+            )
+        for key, property_bindings in property_values.items():
+            if len(property_bindings) == 1:
+                resolved[key] = property_bindings[0]
     return resolved
+
+
+def typescript_literal_string_binding_for_expression(
+    expression: str,
+    literal_bindings: dict[str, TypeScriptLiteralStringBinding],
+) -> TypeScriptLiteralStringBinding | None:
+    """Resolve direct identifiers or exact immutable object-map property reads."""
+    expression = expression.strip()
+    if re.fullmatch(r"[A-Za-z_$][\w$]*", expression):
+        return literal_bindings.get(expression)
+    member = re.fullmatch(r"([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*)", expression)
+    if member is None:
+        return None
+    return literal_bindings.get(f"{member.group(1)}.{member.group(2)}")
 
 
 def typescript_provider_request_model(
@@ -13351,10 +13414,7 @@ def typescript_provider_request_model(
     expression = typescript_call_object_property_expression(text, opening, end, "model")
     if expression is None:
         return None, None
-    identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", expression)
-    if identifier is None:
-        return None, None
-    binding = literal_bindings.get(identifier.group(0))
+    binding = typescript_literal_string_binding_for_expression(expression, literal_bindings)
     if binding is None or binding.declaration_end > call_offset:
         return None, None
     return binding.value, "immutable-module-literal-binding"
@@ -13374,10 +13434,7 @@ def typescript_provider_first_argument_model(
     arguments = typescript_call_arguments(text[opening + 1 : end - 1])
     if not arguments:
         return None, None
-    identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", arguments[0][0].strip())
-    if identifier is None:
-        return None, None
-    binding = literal_bindings.get(identifier.group(0))
+    binding = typescript_literal_string_binding_for_expression(arguments[0][0], literal_bindings)
     if binding is None or binding.declaration_end > call_offset:
         return None, None
     return binding.value, "immutable-module-literal-binding"

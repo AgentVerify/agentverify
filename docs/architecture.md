@@ -128,6 +128,11 @@ factory model methods may inherit the earlier string constant only after provide
 provenance are exact. The same bounded template-string proof applies; runtime parameters,
 mutable/rebound names, forward declarations, unknown template expressions, and shadowed constants
 remain unresolved.
+The same model-binding table also accepts exact module-level literal object maps: a top-level
+`const MODEL_IDS = { chat: "..." }` may prove `model: MODEL_IDS.chat` or `openai(MODEL_IDS.chat)`
+when the object has one declaration, direct literal string properties, exact dot-member reads, and no
+object/member reassignment. Mutable object properties, nonliteral object values, bracket reads, and
+unknown template values remain unresolved.
 Schema v77 gives import-proven, assigned Python MCP stdio constructors stable component identities.
 An Agent receives an exact `uses` edge only when its literal `mcp_servers=[...]` list names an
 earlier, unreassigned server binding in the same statement block. Package and version facts remain

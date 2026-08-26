@@ -30,4 +30,17 @@ const runtimeSuffix = process.env.MODEL_SUFFIX ?? 'runtime';
 const unknownTemplateModelId = `${composedPrefix}-${runtimeSuffix}`;
 const unknownTemplateModel = openai(unknownTemplateModelId);
 
+const mutableModelIds = {
+  language: 'gpt-mutable-object',
+};
+mutableModelIds.language = process.env.MODEL_ID ?? mutableModelIds.language;
+const mutableObjectModel = openai(mutableModelIds.language);
+
+const unknownModelIds = {
+  language: `${composedPrefix}-${runtimeSuffix}`,
+};
+const unknownObjectModel = openai(unknownModelIds.language);
+
 void unknownTemplateModel;
+void mutableObjectModel;
+void unknownObjectModel;

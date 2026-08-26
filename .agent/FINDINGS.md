@@ -195,7 +195,13 @@
 - Type-only named OpenAI imports in TypeScript are also non-evidence: `import type { OpenAI as T }
   from "openai"` can describe SDK-shaped tool/message types in Roo Code-style code without proving a
   runtime SDK client. Native provider/model attribution remains restricted to exact value imports or
-  stable constructor proof, and the public IR truth set now covers 1,588 passing labels.
+  stable constructor proof, and the public IR truth set then covered 1,588 passing labels.
+- TypeScript exact model attribution now accepts immutable module-level literal object maps such as
+  `MODEL_IDS.chat` for native SDK request objects and official AI SDK first-argument calls. The proof
+  is deliberately limited to top-level `const` objects with direct literal string properties, exact
+  dot-member reads, and no object or member reassignment; mutable object properties, nonliteral
+  object values, bracket reads, and unknown template values remain unresolved. The public IR truth
+  set now covers 1,595 passing labels.
 
 ## Hypotheses
 

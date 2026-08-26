@@ -27,3 +27,14 @@ void shadowed;
 const runtimeSuffix = process.env.MODEL_SUFFIX ?? 'runtime';
 const UNKNOWN_TEMPLATE_MODEL = `${MODEL_PREFIX}-${runtimeSuffix}`;
 await client.responses.create({ model: UNKNOWN_TEMPLATE_MODEL });
+
+const MUTABLE_MODEL_IDS = {
+  chat: 'gpt-object-original',
+};
+MUTABLE_MODEL_IDS.chat = process.env.MODEL_ID ?? MUTABLE_MODEL_IDS.chat;
+await client.responses.create({ model: MUTABLE_MODEL_IDS.chat });
+
+const UNKNOWN_MODEL_IDS = {
+  chat: `${MODEL_PREFIX}-${runtimeSuffix}`,
+};
+await client.responses.create({ model: UNKNOWN_MODEL_IDS.chat });
