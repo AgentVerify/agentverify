@@ -148,6 +148,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`benchmarks/ir-truthset.json`](benchmarks/ir-truthset.json) — 1,554 separately scored component and relationship labels
 - [`benchmarks/holdout-design.md`](benchmarks/holdout-design.md) — sealed benchmark plan for unbiased evaluation
 - [`benchmarks/release-checklist.md`](benchmarks/release-checklist.md) — claim boundaries and verifier gates for benchmark releases
+- [`examples/github-benchmark-verify.yml`](examples/github-benchmark-verify.yml) — copyable benchmark verifier workflow
 - [`benchmarks/holdout-manifest.template.json`](benchmarks/holdout-manifest.template.json) — public sample manifest shape
 - [`benchmarks/benchmark-results-v1.schema.json`](benchmarks/benchmark-results-v1.schema.json) — benchmark result contract
   (also available from an installed CLI with `agentverify schema benchmark-result`)

@@ -155,6 +155,9 @@ catalog workflows.
 - Added a checked GitHub code-scanning SARIF payload example generated from
   `cases/approval_callback_bypass`, with a regression test proving it matches real renderer output
   and source-distribution verification requiring the artifact.
+- Added a checked copyable GitHub benchmark-verification workflow that runs the installed
+  `agentverify benchmark verify` public-regression/all-labels-passed gate, validates the JSON output,
+  uploads it as a workflow artifact, and is now required in source distributions.
 
 ## Current findings
 
@@ -181,6 +184,9 @@ catalog workflows.
 - The checked SARIF example preserves the same integration metadata GitHub receives from the CLI:
   rule descriptors, `agentverify/v1` partial fingerprints, source locations, result kind,
   confidence, analysis details, and Agent IR paths.
+- Benchmark release-claim guardrails now have a copyable CI artifact, not just prose and this
+  repository's internal CI: `examples/github-benchmark-verify.yml` uses only read permission and
+  archives the installed CLI verifier JSON for release review.
 
 ## Blockers
 

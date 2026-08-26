@@ -25,6 +25,11 @@ agentverify benchmark verify --require-evaluation-kind public-regression --requi
 agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
 ```
 
+For GitHub Actions, start from the copyable
+[`examples/github-benchmark-verify.yml`](../examples/github-benchmark-verify.yml) workflow. It runs
+the installed CLI verifier with the public-regression/all-labels-passed gates and uploads the
+machine-readable verifier JSON as a workflow artifact for release-note review.
+
 Before publishing public regression numbers:
 
 1. Confirm `benchmarks/truthset-results.json` and `benchmarks/ir-truthset-results.json` were

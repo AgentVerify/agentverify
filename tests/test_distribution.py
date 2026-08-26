@@ -12,6 +12,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 CI_WORKFLOW = ROOT / ".github/workflows/ci.yml"
+GITHUB_BENCHMARK_VERIFY = ROOT / "examples/github-benchmark-verify.yml"
 GITHUB_CODE_SCANNING = ROOT / "examples/github-code-scanning.yml"
 GITHUB_POLICY_GATE = ROOT / "examples/github-policy-gate.yml"
 SPEC = importlib.util.spec_from_file_location(
@@ -162,6 +163,26 @@ def test_github_code_scanning_example_uploads_sarif_without_policy_gate() -> Non
         code_scanning_docs
     )
     assert "[GitHub code-scanning workflow](examples/github-code-scanning.yml)" in readme
+
+
+def test_github_benchmark_verify_example_is_read_only_and_exports_verifier_json() -> None:
+    workflow = GITHUB_BENCHMARK_VERIFY.read_text(encoding="utf-8")
+    release_checklist = (ROOT / "benchmarks/release-checklist.md").read_text(encoding="utf-8")
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+
+    assert "permissions:\n  contents: read" in workflow
+    assert "security-events: write" not in workflow
+    assert "agentverify benchmark verify" in workflow
+    assert "--require-evaluation-kind public-regression" in workflow
+    assert "--require-all-passed" in workflow
+    assert "--output agentverify-benchmark-verification.json" in workflow
+    assert "python -m json.tool agentverify-benchmark-verification.json" in workflow
+    assert "actions/upload-artifact@v5" in workflow
+    assert "python -m pip install agentverify==0.1.0" in workflow
+    assert "[`examples/github-benchmark-verify.yml`](../examples/github-benchmark-verify.yml)" in (
+        release_checklist
+    )
+    assert "[`examples/github-benchmark-verify.yml`](examples/github-benchmark-verify.yml)" in readme
 
 
 def test_signed_policy_example_uses_ephemeral_key(tmp_path: Path) -> None:
