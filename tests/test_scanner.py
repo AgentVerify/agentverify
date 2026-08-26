@@ -595,6 +595,22 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "Anthropic",
         ),
         (
+            "provider_native_class_getter.ts",
+            20,
+            "Anthropic",
+            "Anthropic",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
+            "provider_native_class_getter.ts",
+            24,
+            "Anthropic",
+            "this.anthropic.messages.create",
+            "provider-sdk-model",
+            "Anthropic",
+        ),
+        (
             "provider_native_class_getter_unresolved.ts",
             16,
             "OpenAI",
@@ -795,9 +811,16 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "provider_native_calls.ts",
             "provider_native_calls_commonjs.js",
             "provider_native_calls_commonjs_alias.js",
+            "provider_native_class_getter.ts",
         }
         and item.attributes.get("resolution") == "exact-typescript-provider-import"
     } == {
+        (
+            "provider_native_class_getter.ts",
+            24,
+            "claude-sonnet-4-6-local",
+            "Anthropic",
+        ),
         ("provider_native_calls.ts", 10, "gpt-5-mini", "OpenAI"),
         ("provider_native_calls.ts", 11, "gpt-5.4", "OpenAI"),
         ("provider_native_calls.ts", 12, "claude-sonnet-4-6", "Anthropic"),

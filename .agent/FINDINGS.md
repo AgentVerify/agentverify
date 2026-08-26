@@ -171,11 +171,16 @@
   aliases as well as Google GenAI: exact top-level `const { OpenAI: Alias } = require("openai")` and
   `const { Anthropic: Alias } = require("@anthropic-ai/sdk")` carry constructor and model attribution
   only while the binding remains top-level and stable, with scoped named requires kept unresolved;
-  the public IR truth set now covers 1,584 passing labels.
+  the public IR truth set then covered 1,584 passing labels.
 - TypeScript SDK type references are intentionally not provider evidence: `import type OpenAI from
   "openai"` and inline `import("openai").default...` annotations can describe message/tool schemas in
   real agent code without proving a runtime native SDK client, so provider/model attribution still
   requires value-import or stable constructor proof.
+- Native TypeScript provider lazy getters can safely carry provider and exact model attribution when
+  the getter is private, caches through a single `??=` write to a private backing field, constructs a
+  default-endpoint SDK client, and the SDK call uses an earlier immutable module-level literal model.
+  The local regression mirrors the MCP TypeScript quickstart shape, and the public IR truth set now
+  covers 1,586 passing labels.
 
 ## Hypotheses
 
