@@ -167,6 +167,10 @@
   Google GenAI, including direct and aliased bindings, under the same immutable default-endpoint
   constraints as other native SDK constructors. Scoped named requires remain unresolved, and the IR
   truth set now covers 1,574 passing labels.
+- Native TypeScript provider SDK CommonJS named destructuring is now pinned for OpenAI and Anthropic
+  aliases as well as Google GenAI: exact top-level `const { OpenAI: Alias } = require("openai")` and
+  `const { Anthropic: Alias } = require("@anthropic-ai/sdk")` carry constructor and model attribution
+  only while the binding remains stable; the public IR truth set now covers 1,580 passing labels.
 
 ## Hypotheses
 

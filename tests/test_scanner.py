@@ -368,6 +368,22 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "GeminiAliasClient",
         ),
         (
+            "provider_native_calls_commonjs_alias.js",
+            13,
+            "OpenAI",
+            "aliasedOpenAIClient.responses.create",
+            "provider-sdk-model",
+            "NamedOpenAICommonJS",
+        ),
+        (
+            "provider_native_calls_commonjs_alias.js",
+            14,
+            "Anthropic",
+            "aliasedAnthropicClient.messages.create",
+            "provider-sdk-model",
+            "NamedAnthropicCommonJS",
+        ),
+        (
             "provider_native_calls_commonjs.js",
             5,
             "OpenAI",
@@ -670,6 +686,22 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             None,
         ),
         (
+            "provider_native_calls_commonjs_alias.js",
+            10,
+            "OpenAI",
+            "NamedOpenAICommonJS",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
+            "provider_native_calls_commonjs_alias.js",
+            11,
+            "Anthropic",
+            "NamedAnthropicCommonJS",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
             "provider_native_calls.ts",
             6,
             "OpenAI",
@@ -788,6 +820,18 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             5,
             "gemini-2.5-pro",
             "Google",
+        ),
+        (
+            "provider_native_calls_commonjs_alias.js",
+            13,
+            "gpt-5.6-mini",
+            "OpenAI",
+        ),
+        (
+            "provider_native_calls_commonjs_alias.js",
+            14,
+            "claude-sonnet-4-6",
+            "Anthropic",
         ),
     }
     assert any(
