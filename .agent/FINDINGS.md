@@ -107,6 +107,11 @@
   Agent components for those proven aliases now include constructor module, imported symbol, and
   resolution-mode provenance; hidden exports, rebound imports, rebound constructor attributes,
   ambiguous star imports, and same-named ordinary local constructors remain unresolved.
+- TypeScript native provider SDK model attribution now follows non-exported `const` arrow helpers
+  with balanced block bodies through the same same-file typed-parameter call-site consensus used for
+  function declarations. Exported arrows, mixed constructor/non-provider call sites, escaped
+  callbacks, and expression-bodied arrows remain unresolved so the scanner does not infer provider
+  identity from type annotations alone.
 - Python imported literal tool-list attribution now resolves star imports from selected local
   callable modules when the callable is visible through literal `__all__`/non-underscore exports and
   the Agent use is not locally shadowed.

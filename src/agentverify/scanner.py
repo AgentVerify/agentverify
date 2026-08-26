@@ -13505,26 +13505,21 @@ def typescript_provider_function_definitions(
 ) -> dict[str, TypeScriptProviderFunction]:
     """Return unique local functions with exact native-provider parameter types."""
     code = typescript_code_mask(text)
-    pattern = re.compile(
+    function_pattern = re.compile(
         r"\b(?P<export>export\s+)?(?:async\s+)?function\s+"
         r"(?P<name>[A-Za-z_$][\w$]*)\s*\("
     )
     definitions: list[TypeScriptProviderFunction] = []
-    for match in pattern.finditer(code):
-        if match.group("export"):
-            continue
-        opening = code.find("(", match.start(), match.end())
-        parameter_end = typescript_balanced_end(code, opening, "(", ")")
-        if parameter_end is None:
-            continue
-        body_opening = code.find("{", parameter_end)
-        if body_opening < 0 or body_opening - parameter_end > 500:
-            continue
-        if code.find(";", parameter_end, body_opening) >= 0:
-            continue
-        body_end = typescript_balanced_end(code, body_opening, "{", "}")
-        if body_end is None:
-            continue
+
+    def add_definition(
+        *,
+        name: str,
+        name_offset: int,
+        opening: int,
+        parameter_end: int,
+        body_opening: int,
+        body_end: int,
+    ) -> None:
         parameter_text = text[opening + 1 : parameter_end - 1]
         parameters = typescript_function_parameters(parameter_text)
         provider_parameters = []
@@ -13539,16 +13534,68 @@ def typescript_provider_function_definitions(
                 continue
             provider_parameters.append((index, typed.group(1), imports[typed.group(2)]))
         if not provider_parameters:
-            continue
+            return
         definitions.append(
             TypeScriptProviderFunction(
-                match.group("name"),
-                match.start("name"),
+                name,
+                name_offset,
                 body_opening + 1,
                 body_end - 1,
                 parameters,
                 tuple(provider_parameters),
             )
+        )
+
+    for match in function_pattern.finditer(code):
+        if match.group("export"):
+            continue
+        opening = code.find("(", match.start(), match.end())
+        parameter_end = typescript_balanced_end(code, opening, "(", ")")
+        if parameter_end is None:
+            continue
+        body_opening = code.find("{", parameter_end)
+        if body_opening < 0 or body_opening - parameter_end > 500:
+            continue
+        if code.find(";", parameter_end, body_opening) >= 0:
+            continue
+        body_end = typescript_balanced_end(code, body_opening, "{", "}")
+        if body_end is None:
+            continue
+        add_definition(
+            name=match.group("name"),
+            name_offset=match.start("name"),
+            opening=opening,
+            parameter_end=parameter_end,
+            body_opening=body_opening,
+            body_end=body_end,
+        )
+
+    arrow_pattern = re.compile(
+        r"\bconst\s+(?P<name>[A-Za-z_$][\w$]*)\s*"
+        r"(?::\s*[A-Za-z_$][\w$]*(?:\s*<[^=;\n]+>)?)?\s*=\s*"
+        r"(?:async\s*)?\("
+    )
+    for match in arrow_pattern.finditer(code):
+        if re.search(r"\bexport\s+$", code[max(0, match.start() - 16) : match.start()]):
+            continue
+        opening = code.rfind("(", match.start(), match.end())
+        parameter_end = typescript_balanced_end(code, opening, "(", ")")
+        if parameter_end is None:
+            continue
+        arrow = re.match(r"\s*(?::\s*[^=;\n]+)?=>\s*\{", code[parameter_end:])
+        if arrow is None:
+            continue
+        body_opening = parameter_end + arrow.end() - 1
+        body_end = typescript_balanced_end(code, body_opening, "{", "}")
+        if body_end is None:
+            continue
+        add_definition(
+            name=match.group("name"),
+            name_offset=match.start("name"),
+            opening=opening,
+            parameter_end=parameter_end,
+            body_opening=body_opening,
+            body_end=body_end,
         )
     counts = Counter(item.name for item in definitions)
     return {item.name: item for item in definitions if counts[item.name] == 1}

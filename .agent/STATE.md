@@ -84,6 +84,10 @@ catalog workflows.
 - Extended same-block local Agent factory-return resolution to exact module-qualified framework
   constructors, with AgentScope/OpenAI/Google ADK factory positives and conditional/forward/rebound
   negatives, bringing the public IR truth set to 1,545 passing labels.
+- Extended native TypeScript provider typed-parameter attribution to non-exported `const` arrow
+  helpers with balanced block bodies under the same call-site consensus rule, while exported,
+  mixed-call-site, escaped, and expression-bodied arrows remain unresolved; regenerated public IR
+  truth-set results now cover 1,552 labels.
 - Added a concrete signed policy provenance design that keeps digest allowlists separate from author
   authenticity and specifies detached source-digest payloads plus local key trust roots.
 - Added `agentverify policy --export-signing-payload` and a bundled policy-signing-payload schema so

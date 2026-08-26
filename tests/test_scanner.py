@@ -384,6 +384,33 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "OpenAI",
         ),
         (
+            "provider_native_typed_arrow_calls.ts",
+            4,
+            "OpenAI",
+            "OpenAI",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
+            "provider_native_typed_arrow_calls.ts",
+            12,
+            "OpenAI",
+            "client.responses.create",
+            "provider-sdk-model",
+            "OpenAI",
+        ),
+        *(
+            (
+                "provider_native_typed_arrow_calls_unresolved.ts",
+                line,
+                "OpenAI",
+                "OpenAI",
+                "provider-sdk-constructor",
+                None,
+            )
+            for line in (7, 13, 21, 26)
+        ),
+        (
             "provider_native_typed_parameter_calls_unresolved.ts",
             11,
             "OpenAI",

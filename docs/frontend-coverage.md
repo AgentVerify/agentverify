@@ -220,6 +220,9 @@ TypeScript reaches 59 exact calls across nine repositories: 23 constructors, fou
 calls, and 32 AI SDK calls. The typed proof requires unanimous direct call sites; exported helpers,
 mixed or unproven arguments, cycles without a constructor root, and actual parameter shadowing are
 withheld, as are functions passed or stored as values.
+Current local regressions also cover non-exported `const` arrow helpers with balanced block bodies
+under the same call-site consensus rule. Exported, mixed-call-site, escaped, and expression-bodied
+arrow helpers remain unresolved.
 
 Schema v108 separates exact provider-request identity from literal model identity. A proven native
 client now contributes an exact provider call for its provider-owned request method even when the
@@ -944,7 +947,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 714-label rule truth set and 1,545-label IR component/relationship set are curated regression
+The 714-label rule truth set and 1,552-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed
