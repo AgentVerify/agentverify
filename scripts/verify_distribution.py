@@ -23,6 +23,7 @@ REQUIRED_BENCHMARK_RESULT_FILES = frozenset(
 REQUIRED_SOURCE_FILES = frozenset(
     {
         "README.md",
+        "pyproject.toml",
         "benchmarks/benchmark-results-v1.schema.json",
         "benchmarks/holdout-design.md",
         "benchmarks/holdout-manifest.template.json",

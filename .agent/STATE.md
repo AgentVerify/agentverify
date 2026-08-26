@@ -70,6 +70,8 @@ catalog workflows.
 - Added a signed-policy dry-run walkthrough that generates an ephemeral key only in a temporary
   directory, demonstrates detached signature verification, and warns production users to rely on
   their own key-management workflow.
+- Extended source-distribution verification to require `pyproject.toml`, so source releases carry
+  the runtime dependency declaration that signed policy verification relies on.
 - Extended distribution verification so release checks can require a source distribution containing
   README-linked examples, policy docs, benchmark contracts, and public truth sets.
 - Extended source-distribution verification to require the checked public benchmark result outputs
