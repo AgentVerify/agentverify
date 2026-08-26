@@ -129,12 +129,12 @@ provenance are exact. The same bounded template-string proof applies; runtime pa
 mutable/rebound names, forward declarations, unknown template expressions, and shadowed constants
 remain unresolved.
 The same model-binding table also accepts exact module-level literal object maps: a top-level
-`const MODEL_IDS = { chat: "..." }` may prove `model: MODEL_IDS.chat`,
-`model: MODEL_IDS["chat"]`, or `openai(MODEL_IDS.chat)`
-when the object has one declaration, direct literal string properties, exact dot-member reads, and no
-object/member reassignment. String-literal bracket reads are supported under the same exact
-literal-key rule; mutable object properties, nonliteral object values, dynamic bracket keys, and
-unknown template values remain unresolved.
+`const MODEL_IDS = { chat: "...", "chat-model": "..." }` may prove `model: MODEL_IDS.chat`,
+`model: MODEL_IDS["chat"]`, `model: MODEL_IDS["chat-model"]`, or `openai(MODEL_IDS.chat)`
+when the object has one declaration, direct literal string properties, exact dot or string-literal
+bracket reads, and no object/member reassignment. Mutable object properties, nonliteral object
+values, dynamic bracket keys, dynamic bracket member writes, and unknown template values remain
+unresolved.
 Schema v77 gives import-proven, assigned Python MCP stdio constructors stable component identities.
 An Agent receives an exact `uses` edge only when its literal `mcp_servers=[...]` list names an
 earlier, unreassigned server binding in the same statement block. Package and version facts remain

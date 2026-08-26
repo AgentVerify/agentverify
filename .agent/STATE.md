@@ -239,7 +239,10 @@ catalog workflows.
   results then covered 1,595 passing labels.
 - Extended that TypeScript object-map proof to exact literal bracket reads such as
   `MODEL_IDS["chat"]` while keeping dynamic bracket keys unresolved; regenerated public IR truth-set
-  results now cover 1,600 passing labels.
+  results then covered 1,600 passing labels.
+- Extended exact literal bracket reads to quoted object-map keys such as `MODEL_IDS["chat-model"]`
+  and hardened object-map stability so any bracket member write invalidates the map; regenerated
+  public IR truth-set results now cover 1,605 passing labels.
 
 ## Current findings
 

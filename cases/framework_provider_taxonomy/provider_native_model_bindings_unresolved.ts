@@ -41,3 +41,10 @@ await client.responses.create({ model: UNKNOWN_MODEL_IDS.chat });
 
 const dynamicKey = 'chat';
 await client.responses.create({ model: UNKNOWN_MODEL_IDS[dynamicKey] });
+
+const DYNAMIC_MUTATED_MODEL_IDS = {
+  chat: 'gpt-dynamic-member-original',
+};
+const mutatedKey = 'chat';
+DYNAMIC_MUTATED_MODEL_IDS[mutatedKey] = process.env.MODEL_ID ?? DYNAMIC_MUTATED_MODEL_IDS.chat;
+await client.responses.create({ model: DYNAMIC_MUTATED_MODEL_IDS.chat });

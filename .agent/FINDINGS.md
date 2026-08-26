@@ -197,11 +197,12 @@
   runtime SDK client. Native provider/model attribution remains restricted to exact value imports or
   stable constructor proof, and the public IR truth set then covered 1,588 passing labels.
 - TypeScript exact model attribution now accepts immutable module-level literal object maps such as
-  `MODEL_IDS.chat` for native SDK request objects and official AI SDK first-argument calls. The proof
-  is deliberately limited to top-level `const` objects with direct literal string properties, exact
-  dot-member or literal bracket reads, and no object or member reassignment; mutable object
-  properties, nonliteral object values, dynamic bracket keys, and unknown template values remain
-  unresolved. The public IR truth set now covers 1,600 passing labels.
+  `MODEL_IDS.chat` and `MODEL_IDS["chat-model"]` for native SDK request objects and official AI SDK
+  first-argument calls. The proof is deliberately limited to top-level `const` objects with direct
+  literal string properties, exact dot-member or literal bracket reads, and no object or member
+  reassignment; mutable object properties, nonliteral object values, dynamic bracket keys, dynamic
+  bracket member writes, and unknown template values remain unresolved. The public IR truth set now
+  covers 1,605 passing labels.
 
 ## Hypotheses
 

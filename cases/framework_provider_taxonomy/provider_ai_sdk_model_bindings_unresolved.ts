@@ -44,7 +44,16 @@ const unknownObjectModel = openai(unknownModelIds.language);
 const dynamicKey = 'language';
 const dynamicBracketModel = openai(unknownModelIds[dynamicKey]);
 
+const dynamicallyMutatedModelIds = {
+  language: 'gpt-dynamic-member-original',
+};
+const mutatedKey = 'language';
+dynamicallyMutatedModelIds[mutatedKey] =
+  process.env.MODEL_ID ?? dynamicallyMutatedModelIds.language;
+const dynamicMutatedObjectModel = openai(dynamicallyMutatedModelIds.language);
+
 void unknownTemplateModel;
 void mutableObjectModel;
 void unknownObjectModel;
 void dynamicBracketModel;
+void dynamicMutatedObjectModel;

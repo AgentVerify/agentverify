@@ -293,11 +293,12 @@ imports are withheld. Two pinned real-source custom-endpoint/config boundaries c
 local positive, rebound, and endpoint fixtures.
 
 Local TypeScript model-binding regressions now also prove exact immutable module-level literal object
-maps for native SDK request objects and official AI SDK first model arguments. Six positive labels
-cover `MODEL_IDS.chat` and `MODEL_IDS["chat"]`-style native language, AI SDK language, and AI SDK
-embedding calls; six negative labels keep mutable object properties, nonliteral object values, and
-dynamic bracket keys unresolved. This raises the public IR truth set to 1,600 passing labels without
-broadening provider identity inference.
+maps for native SDK request objects and official AI SDK first model arguments. Nine positive labels
+cover `MODEL_IDS.chat`, `MODEL_IDS["chat"]`, and `MODEL_IDS["chat-model"]`-style native language,
+AI SDK language, and AI SDK embedding calls; eight negative labels keep mutable object properties,
+nonliteral object values, dynamic bracket keys, and dynamic bracket member writes unresolved. This
+raises the public IR truth set to 1,605 passing labels without broadening provider identity
+inference.
 
 Schema v105 adds the immutable direct CommonJS default-export form for the OpenAI and Anthropic
 packages. Two GPT Pilot templates contribute four production constructors, bringing TypeScript to

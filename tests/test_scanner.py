@@ -286,22 +286,6 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "provider_ai_sdk_model_bindings.ts",
-            13,
-            "OpenAI",
-            "openai",
-            "ai-sdk-provider-model",
-            None,
-        ),
-        (
-            "provider_ai_sdk_model_bindings.ts",
-            14,
-            "OpenAI",
-            "createOpenAI.embeddingModel",
-            "ai-sdk-provider-model",
-            "createOpenAI",
-        ),
-        (
-            "provider_ai_sdk_model_bindings.ts",
             15,
             "OpenAI",
             "openai",
@@ -316,6 +300,38 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "ai-sdk-provider-model",
             "createOpenAI",
         ),
+        (
+            "provider_ai_sdk_model_bindings.ts",
+            17,
+            "OpenAI",
+            "openai",
+            "ai-sdk-provider-model",
+            None,
+        ),
+        (
+            "provider_ai_sdk_model_bindings.ts",
+            18,
+            "OpenAI",
+            "createOpenAI.embeddingModel",
+            "ai-sdk-provider-model",
+            "createOpenAI",
+        ),
+        (
+            "provider_ai_sdk_model_bindings.ts",
+            19,
+            "OpenAI",
+            "openai",
+            "ai-sdk-provider-model",
+            None,
+        ),
+        (
+            "provider_ai_sdk_model_bindings.ts",
+            20,
+            "OpenAI",
+            "createOpenAI.embeddingModel",
+            "ai-sdk-provider-model",
+            "createOpenAI",
+        ),
         *(
             (
                 "provider_ai_sdk_model_bindings_unresolved.ts",
@@ -325,7 +341,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
                 "ai-sdk-provider-model",
                 None,
             )
-            for line in (5, 9, 13, 18, 20, 31, 37, 42, 45)
+            for line in (5, 9, 13, 18, 20, 31, 37, 42, 45, 53)
         ),
         (
             "provider_native_calls.ts",
@@ -692,7 +708,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "provider_native_model_bindings.ts",
-            10,
+            11,
             "OpenAI",
             "client.responses.create",
             "provider-sdk-model",
@@ -700,7 +716,15 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "provider_native_model_bindings.ts",
-            11,
+            12,
+            "OpenAI",
+            "client.responses.create",
+            "provider-sdk-model",
+            "OpenAI",
+        ),
+        (
+            "provider_native_model_bindings.ts",
+            13,
             "OpenAI",
             "client.responses.create",
             "provider-sdk-model",
@@ -723,7 +747,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
                 "provider-sdk-model",
                 "OpenAI",
             )
-            for line in (7, 9, 14, 18, 23, 29, 35, 40, 43)
+            for line in (7, 9, 14, 18, 23, 29, 35, 40, 43, 50)
         ),
         (
             "provider_native_calls_commonjs.js",
@@ -827,18 +851,26 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "embedding",
             "immutable-module-literal-binding",
         ),
-        (13, "gpt-5-mini-object", "OpenAI", "language", "immutable-module-literal-binding"),
+        (15, "gpt-5-mini-object", "OpenAI", "language", "immutable-module-literal-binding"),
         (
-            14,
+            16,
             "text-embedding-3-large",
             "OpenAI",
             "embedding",
             "immutable-module-literal-binding",
         ),
-        (15, "gpt-5-mini-bracket", "OpenAI", "language", "immutable-module-literal-binding"),
+        (17, "gpt-5-mini-bracket", "OpenAI", "language", "immutable-module-literal-binding"),
         (
-            16,
+            18,
             "text-embedding-3-bracket",
+            "OpenAI",
+            "embedding",
+            "immutable-module-literal-binding",
+        ),
+        (19, "gpt-5-mini-quoted-key", "OpenAI", "language", "immutable-module-literal-binding"),
+        (
+            20,
+            "text-embedding-3-quoted-key",
             "OpenAI",
             "embedding",
             "immutable-module-literal-binding",
@@ -951,7 +983,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
     assert any(
         item.kind == "model"
         and item.evidence.path == "provider_native_model_bindings.ts"
-        and item.evidence.line == 10
+        and item.evidence.line == 11
         and item.name == "gpt-5.4-object"
         and item.attributes.get("provider") == "OpenAI"
         and item.attributes.get("model_resolution_basis") == "immutable-module-literal-binding"
@@ -960,8 +992,17 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
     assert any(
         item.kind == "model"
         and item.evidence.path == "provider_native_model_bindings.ts"
-        and item.evidence.line == 11
+        and item.evidence.line == 12
         and item.name == "gpt-5.4-bracket"
+        and item.attributes.get("provider") == "OpenAI"
+        and item.attributes.get("model_resolution_basis") == "immutable-module-literal-binding"
+        for item in ir.components
+    )
+    assert any(
+        item.kind == "model"
+        and item.evidence.path == "provider_native_model_bindings.ts"
+        and item.evidence.line == 13
+        and item.name == "gpt-5.4-quoted-key"
         and item.attributes.get("provider") == "OpenAI"
         and item.attributes.get("model_resolution_basis") == "immutable-module-literal-binding"
         for item in ir.components

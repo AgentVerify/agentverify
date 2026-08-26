@@ -13323,7 +13323,7 @@ def typescript_immutable_module_literal_string_bindings(
         escaped = re.escape(name)
         return not (
             re.search(rf"(?<![\w$]){escaped}\s*\.\s*[A-Za-z_$][\w$]*\s*=(?!=)", code)
-            or re.search(rf"(?<![\w$]){escaped}\s*\[\s*(['\"]).*?\1\s*\]\s*=(?!=)", code)
+            or re.search(rf"(?<![\w$]){escaped}\s*\[[^\]]+\]\s*=(?!=)", code)
         )
 
     resolved: dict[str, TypeScriptLiteralStringBinding] = {}
@@ -13366,7 +13366,7 @@ def typescript_immutable_module_literal_string_bindings(
             if property_value is None:
                 continue
             property_name, expression = property_value
-            if re.fullmatch(r"[A-Za-z_$][\w$]*", property_name) is None:
+            if "\\" in property_name or "\r" in property_name or "\n" in property_name:
                 continue
             literal = re.fullmatch(
                 r"(?:'([^'\\\r\n]*)'|\"([^\"\\\r\n]*)\")(?:\s+as\s+const)?",
@@ -13398,7 +13398,7 @@ def typescript_literal_string_binding_for_expression(
     if member is not None:
         return literal_bindings.get(f"{member.group(1)}.{member.group(2)}")
     bracket_member = re.fullmatch(
-        r"([A-Za-z_$][\w$]*)\[\s*(['\"])([A-Za-z_$][\w$]*)\2\s*\]",
+        r"([A-Za-z_$][\w$]*)\[\s*(['\"])([^\\\r\n]*)\2\s*\]",
         expression,
     )
     if bracket_member is None:
