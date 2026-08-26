@@ -26,6 +26,8 @@ agentverify schema benchmark-result --output agentverify-benchmark-result.schema
 agentverify schema report --output agentverify-report.schema.json
 agentverify schema bom --output agentverify-ai-bom.schema.json
 agentverify schema policy --output agentverify-policy.schema.json
+agentverify schema policy-key-trust-root --output agentverify-policy-key-trust-root.schema.json
+agentverify schema policy-signature --output agentverify-policy-signature.schema.json
 agentverify schema policy-signing-payload --output agentverify-policy-signing-payload.schema.json
 agentverify schema policy-summary --output agentverify-policy-summary.schema.json
 agentverify schema policy-trust-root --output agentverify-policy-trust-root.schema.json
@@ -77,8 +79,10 @@ still preserve policy and `--fail-on` exit decisions.
 `agentverify schema report` prints the bundled schema for validating normal `--format json` reports;
 `agentverify schema policy-summary` validates `agentverify policy --format json`,
 `agentverify schema policy-signing-payload` validates deterministic source-digest manifests for
-external policy signing, and `agentverify schema policy-trust-root` validates local digest allowlists
-for policy summaries.
+external policy signing, `agentverify schema policy-signature` and
+`agentverify schema policy-key-trust-root` validate the planned detached signature bundle and local
+public-key trust root shapes, and `agentverify schema policy-trust-root` validates local digest
+allowlists for policy summaries.
 `agentverify schema rules` validates the machine-readable rule catalog.
 Use `--format summary` for compact CI logs: it reports scan totals, baseline/policy status, counts by
 severity/result kind/rule, and the top evidence locations without printing the full component graph.

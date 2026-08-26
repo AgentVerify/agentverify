@@ -9,6 +9,8 @@ This document is a design target for signature verification. AgentVerify can alr
 deterministic source-digest payload that external signing tools should sign, but until the CLI
 reports `signature_verified: true`, AgentVerify policy summaries should continue to say that only
 local content hashes were checked.
+The `policy-signature` and `policy-key-trust-root` schemas are bundled as installable contracts for
+the planned detached signature bundle and local public-key trust root shapes.
 
 ## Goals
 
@@ -160,6 +162,13 @@ agentverify policy repository-policy.json \
   --signature policy-signature.json \
   --trust-root policy-key-trust-root.json \
   --require-trusted
+```
+
+The schemas for the two future verification inputs are already discoverable:
+
+```console
+agentverify schema policy-signature --output agentverify-policy-signature.schema.json
+agentverify schema policy-key-trust-root --output agentverify-policy-key-trust-root.schema.json
 ```
 
 ## Migration from digest allowlists

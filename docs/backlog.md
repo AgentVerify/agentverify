@@ -571,9 +571,9 @@ a bundled schema and installed-wheel smoke checks. Local digest trust roots can 
 composed policy source to match an approved SHA-256 allowlist while still reporting
 `signature_verified: false`. The signed policy provenance design now specifies detached
 source-digest payloads, and `agentverify policy --export-signing-payload` emits the deterministic
-manifest that external tools should sign. Future implementation should add local Ed25519-style key
-trust roots and fail-closed verification states while keeping content hashes distinct from author
-authenticity.
+manifest that external tools should sign. Bundled schemas now also define the future detached
+signature bundle and local Ed25519-style key trust-root contracts. Future implementation should add
+fail-closed verification behavior while keeping content hashes distinct from author authenticity.
 The JSON report now carries a deterministic post-suppression/post-baseline `risk_summary`, matching
 the native AI BOM's by-rule, by-result-kind, and by-severity governance counts without requiring
 external CI parsers to reimplement report aggregation.

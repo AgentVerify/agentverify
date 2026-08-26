@@ -12,6 +12,8 @@ results and allowing a gate to pass silently.
 ```console
 agentverify schema report --output agentverify-report.schema.json
 agentverify schema policy --output agentverify-policy.schema.json
+agentverify schema policy-key-trust-root --output agentverify-policy-key-trust-root.schema.json
+agentverify schema policy-signature --output agentverify-policy-signature.schema.json
 agentverify schema policy-signing-payload --output agentverify-policy-signing-payload.schema.json
 agentverify schema policy-summary --output agentverify-policy-summary.schema.json
 agentverify schema policy-trust-root --output agentverify-policy-trust-root.schema.json
@@ -151,11 +153,15 @@ payload:
 ```console
 agentverify policy PATH --export-signing-payload --output policy-signing-payload.json
 agentverify schema policy-signing-payload --output agentverify-policy-signing-payload.schema.json
+agentverify schema policy-signature --output agentverify-policy-signature.schema.json
+agentverify schema policy-key-trust-root --output agentverify-policy-key-trust-root.schema.json
 ```
 
 The signing payload records the root policy source/digest and every composed policy source/digest.
 It does not contain a signature and does not change `signature_verified`; it is the stable manifest
-that future detached signature bundles should cover.
+that future detached signature bundles should cover. The `policy-signature` and
+`policy-key-trust-root` schemas document the planned detached signature and local public-key trust
+root contracts before verification behavior is enabled.
 
 ## Baselines and partial scans
 

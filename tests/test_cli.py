@@ -380,6 +380,8 @@ def test_cli_lists_bundled_schemas(capsys) -> None:
         "benchmark-result",
         "bom",
         "policy",
+        "policy-key-trust-root",
+        "policy-signature",
         "policy-signing-payload",
         "policy-summary",
         "policy-trust-root",
@@ -434,6 +436,65 @@ def test_cli_prints_bundled_policy_summary_schema(capsys) -> None:
     assert schema["title"] == "AgentVerify Policy Summary 1"
     assert schema["properties"]["policy_format"]["const"] == "AgentVerify Policy Summary"
     assert schema["$defs"]["trust"]["properties"]["signature_verified"]["const"] is False
+
+
+def test_cli_prints_bundled_policy_key_trust_root_schema(capsys) -> None:
+    assert cli.main(["schema", "policy-key-trust-root"]) == 0
+
+    schema = __import__("json").loads(capsys.readouterr().out)
+    Draft202012Validator.check_schema(schema)
+    assert schema["title"] == "AgentVerify Policy Key Trust Root 1"
+    assert schema["properties"]["trust_model"]["const"] == "local-key-signature"
+    Draft202012Validator(schema).validate(
+        {
+            "schema_version": 1,
+            "trust_model": "local-key-signature",
+            "keys": [
+                {
+                    "key_id": "security-team-2026",
+                    "algorithm": "ed25519",
+                    "public_key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                    "trusted_for": ["policy-signing"],
+                    "not_before": "2026-01-01T00:00:00Z",
+                    "not_after": "2027-01-01T00:00:00Z",
+                }
+            ],
+        }
+    )
+
+
+def test_cli_prints_bundled_policy_signature_schema(capsys) -> None:
+    assert cli.main(["schema", "policy-signature"]) == 0
+
+    schema = __import__("json").loads(capsys.readouterr().out)
+    Draft202012Validator.check_schema(schema)
+    assert schema["title"] == "AgentVerify Policy Signature 1"
+    assert schema["properties"]["signature_format"]["const"] == "agentverify-policy-signature"
+    digest = "0" * 64
+    Draft202012Validator(schema).validate(
+        {
+            "schema_version": 1,
+            "signature_format": "agentverify-policy-signature",
+            "signed_at": "2026-08-26T00:00:00Z",
+            "payload": {
+                "policy_signing_payload_format": "AgentVerify Policy Signing Payload",
+                "schema_version": 1,
+                "root_source": "repository-policy.json",
+                "root_sha256": digest,
+                "policy_set": [
+                    {"source": "org-policy.json", "sha256": "a" * 64},
+                    {"source": "repository-policy.json", "sha256": digest},
+                ],
+            },
+            "signatures": [
+                {
+                    "key_id": "security-team-2026",
+                    "algorithm": "ed25519",
+                    "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                }
+            ],
+        }
+    )
 
 
 def test_cli_prints_bundled_policy_signing_payload_schema(capsys) -> None:

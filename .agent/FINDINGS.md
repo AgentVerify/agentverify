@@ -6,7 +6,7 @@
   outputs.
 - The runtime catalog currently contains 24 enabled reporting rules.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
-- A freshly rebuilt wheel includes all eight runtime schemas; a verifier script now guards that
+- A freshly rebuilt wheel includes all ten runtime schemas; a verifier script now guards that
   package artifact expectation.
 - Policy evaluation occurs after baseline filtering and preserves matched findings in all report
   formats.
@@ -50,6 +50,8 @@
   digests, preserving byte-level reproducibility and avoiding JSON canonicalization drift.
 - Policy signing payload export now provides that exact source-digest manifest as an installed,
   schema-backed CLI artifact, while still leaving `signature_verified: false`.
+- Policy signature and key-trust-root schemas now make the future detached-signature and local-key
+  contracts installable before verification behavior is enabled.
 - Python provider-wrapper attribution now follows exact selected local package reexport chains for
   AgentScope/PydanticAI symbols when every alias hop is unrebound; star imports from proven local
   reexport modules respect literal `__all__`/non-underscore visibility; simple imported local wrapper
