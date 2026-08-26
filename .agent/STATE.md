@@ -178,6 +178,8 @@ catalog workflows.
   parent-relative, nested, absolute, or otherwise non-basename artifact paths.
 - Added a bundled `editor-contract-verification` schema and runtime validation for
   `agentverify contracts --verify-dir`, with CLI discovery and installed-wheel smoke coverage.
+- Added a malformed-manifest regression proving verifier failure output stays schema-valid and
+  normalizes invalid artifact metadata instead of leaking unexpected JSON types.
 
 ## Current findings
 
@@ -219,6 +221,8 @@ catalog workflows.
 - Contract-bundle verification output is now itself schema-backed via `agentverify schema
   editor-contract-verification`, so editor bootstrap and CI logging code can validate verifier JSON
   the same way they validate exported manifests.
+- Verifier failure output should stay consumable even when manifest metadata fields are malformed;
+  invalid `kind`, `contract`, and `required` values are normalized to `null` in artifact results.
 - Python filesystem callable aliasing is deliberately narrow: local alias chains may copy already
   proven same-function callable bindings, but aliases before source proof, rebound alias targets,
   incompatible operation families, and imported wrapper helpers remain unresolved.

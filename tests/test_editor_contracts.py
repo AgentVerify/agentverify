@@ -170,6 +170,38 @@ def test_editor_contract_verifier_rejects_digest_drift(tmp_path: Path) -> None:
     assert any("artifact digest mismatch: agentverify-rules.json" in error for error in verification["errors"])
 
 
+def test_editor_contract_verifier_normalizes_bad_manifest_metadata(tmp_path: Path) -> None:
+    export_editor_contracts(
+        tmp_path,
+        sample_root=ROOT / "examples/safe_agent",
+    )
+    manifest_path = tmp_path / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["artifacts"][0]["kind"] = 123
+    manifest["artifacts"][0]["contract"] = ["report"]
+    manifest["artifacts"][0]["required"] = "yes"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    verification = verify_editor_contracts(tmp_path)
+
+    _verify_against_verification_schema(verification)
+    assert verification["passed"] is False
+    assert verification["manifest_schema_valid"] is False
+    report_result = next(
+        item
+        for item in verification["artifacts"]
+        if item["path"] == "agentverify-report-v1.schema.json"
+    )
+    assert report_result["kind"] is None
+    assert report_result["contract"] is None
+    assert report_result["required"] is None
+    assert report_result["present"] is True
+    assert report_result["digest_ok"] is True
+    assert report_result["bytes_ok"] is True
+    assert report_result["content_valid"] is True
+    assert any("manifest schema validation failed:" in error for error in verification["errors"])
+
+
 def test_editor_contract_verifier_rejects_manifest_path_traversal(tmp_path: Path) -> None:
     bundle = tmp_path / "contracts"
     export_editor_contracts(bundle, sample_root=ROOT / "examples/safe_agent")
