@@ -16663,6 +16663,21 @@ def build_python_provider_factory_summaries(
     """Index simple local factories that return exact provider wrapper constructors."""
     summaries: dict[tuple[str, str], PythonProviderFactorySummary] = {}
     module_all_exports: dict[str, set[str] | None] = {}
+    parsed_modules: list[tuple[str, ast.Module, Counter[str], set[str], set[str]]] = []
+
+    def star_visible_factory_summaries(path: str) -> dict[str, PythonProviderFactorySummary]:
+        explicit_exports = module_all_exports.get(path)
+        visible: dict[str, PythonProviderFactorySummary] = {}
+        for (source_path, exported), summary in summaries.items():
+            if source_path != path:
+                continue
+            if explicit_exports is not None:
+                if exported not in explicit_exports:
+                    continue
+            elif exported.startswith("_"):
+                continue
+            visible[exported] = summary
+        return visible
 
     def collect_mutations(candidate: ast.AST, target_mutations: set[str]) -> None:
         if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
@@ -16732,6 +16747,7 @@ def build_python_provider_factory_summaries(
             if not isinstance(statement, (ast.Import, ast.ImportFrom)):
                 collect_mutations(statement, mutations)
         rebound_names = imported_bindings & mutations
+        parsed_modules.append((relative, tree, import_binding_counts, rebound_names, mutations))
         provider_bindings: dict[str, tuple[str, str, str]] = {}
         for statement in tree.body:
             if not isinstance(statement, ast.ImportFrom) or not statement.module:
@@ -16847,19 +16863,56 @@ def build_python_provider_factory_summaries(
                 model_parameter=model_parameter,
                 model_parameter_position=model_parameter_position,
             )
-    star_summaries: dict[str, dict[str, PythonProviderFactorySummary]] = {}
-    for path, explicit_exports in module_all_exports.items():
-        visible: dict[str, PythonProviderFactorySummary] = {}
-        for (source_path, exported), summary in summaries.items():
-            if source_path != path:
-                continue
-            if explicit_exports is not None:
-                if exported not in explicit_exports:
+    changed = True
+    while changed:
+        changed = False
+        for relative, tree, import_binding_counts, rebound_names, mutations in parsed_modules:
+            for statement in tree.body:
+                if not isinstance(statement, ast.ImportFrom) or not statement.module:
                     continue
-            elif exported.startswith("_"):
-                continue
-            visible[exported] = summary
-        star_summaries[path] = visible
+                for alias in statement.names:
+                    if alias.name == "*":
+                        resolution = resolve_python_import(
+                            root,
+                            relative,
+                            statement,
+                            alias.name,
+                            module_paths,
+                        )
+                        if not resolution:
+                            continue
+                        for exported, summary in star_visible_factory_summaries(
+                            resolution.path
+                        ).items():
+                            if (
+                                import_binding_counts[exported] != 0
+                                or exported in mutations
+                                or (relative, exported) in summaries
+                            ):
+                                continue
+                            summaries[(relative, exported)] = summary
+                            changed = True
+                        continue
+                    exported = alias.asname or alias.name
+                    if (
+                        import_binding_counts[exported] != 1
+                        or exported in rebound_names
+                        or (relative, exported) in summaries
+                    ):
+                        continue
+                    resolution = resolve_python_import(
+                        root,
+                        relative,
+                        statement,
+                        alias.name,
+                        module_paths,
+                    )
+                    if resolution and (summary := summaries.get((resolution.path, alias.name))):
+                        summaries[(relative, exported)] = summary
+                        changed = True
+    star_summaries: dict[str, dict[str, PythonProviderFactorySummary]] = {}
+    for path in module_all_exports:
+        star_summaries[path] = star_visible_factory_summaries(path)
     return summaries, star_summaries
 
 

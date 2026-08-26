@@ -1222,6 +1222,103 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         and item.attributes.get("resolution") == "exact-provider-wrapper-factory"
         for item in ir.components
     )
+    reexport_factory_providers = {
+        (
+            item.evidence.path,
+            item.evidence.line,
+            item.name,
+            item.attributes.get("call"),
+            item.attributes.get("module"),
+            item.attributes.get("imported_symbol"),
+        )
+        for item in ir.components
+        if item.kind == "provider"
+        and item.evidence.path
+        in {
+            "provider_factory_reexport_calls.py",
+            "provider_factory_reexport_star_calls.py",
+        }
+        and item.attributes.get("resolution") == "exact-provider-wrapper-factory"
+    }
+    assert reexport_factory_providers == {
+        (
+            "provider_factory_reexport_calls.py",
+            8,
+            "OpenAI",
+            "ReexportedOpenAIFactory",
+            "agentscope.model",
+            "OpenAIChatModel",
+        ),
+        (
+            "provider_factory_reexport_calls.py",
+            9,
+            "Anthropic",
+            "ReexportedAnthropicFactory",
+            "pydantic_ai.models.anthropic",
+            "AnthropicModel",
+        ),
+        (
+            "provider_factory_reexport_calls.py",
+            10,
+            "OpenAI",
+            "ReexportedStaticOpenAIFactory",
+            "agentscope.model",
+            "OpenAIChatModel",
+        ),
+        (
+            "provider_factory_reexport_star_calls.py",
+            3,
+            "OpenAI",
+            "ReexportedOpenAIFactory",
+            "agentscope.model",
+            "OpenAIChatModel",
+        ),
+        (
+            "provider_factory_reexport_star_calls.py",
+            4,
+            "OpenAI",
+            "ReexportedStaticOpenAIFactory",
+            "agentscope.model",
+            "OpenAIChatModel",
+        ),
+    }
+    assert {
+        (item.evidence.path, item.evidence.line, item.name, item.attributes["provider"])
+        for item in ir.components
+        if item.kind == "model"
+        and item.evidence.path
+        in {
+            "provider_factory_reexport_calls.py",
+            "provider_factory_reexport_star_calls.py",
+        }
+        and item.attributes.get("resolution") == "exact-provider-wrapper-factory"
+    } == {
+        ("provider_factory_reexport_calls.py", 8, "gpt-4.1-reexport", "OpenAI"),
+        (
+            "provider_factory_reexport_calls.py",
+            9,
+            "claude-sonnet-4-5-reexport",
+            "Anthropic",
+        ),
+        ("provider_factory_reexport_calls.py", 10, "gpt-4.1-mini", "OpenAI"),
+        ("provider_factory_reexport_star_calls.py", 3, "gpt-4.1-star-reexport", "OpenAI"),
+        ("provider_factory_reexport_star_calls.py", 4, "gpt-4.1-mini", "OpenAI"),
+    }
+    assert not any(
+        item.kind in {"provider", "model"}
+        and (
+            (
+                item.evidence.path == "provider_factory_reexport_calls.py"
+                and item.evidence.line == 11
+            )
+            or (
+                item.evidence.path == "provider_factory_reexport_star_calls.py"
+                and item.evidence.line in {5, 6}
+            )
+        )
+        and item.attributes.get("resolution") == "exact-provider-wrapper-factory"
+        for item in ir.components
+    )
 
 
 def test_python_dify_shell_layer_requires_default_off_runtime_composition() -> None:

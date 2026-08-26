@@ -12,7 +12,8 @@
   explicit.
 - Expand selected real-world framework coverage where current docs record unresolved ambiguous
   wrapper factories, type-driven symbols, generic same-named provider wrappers, or additional
-  non-provider wildcard import forms beyond the current literal-visibility cases.
+  non-provider wildcard import forms beyond the current exact provider-factory and literal-callable
+  cases.
 
 ## P2
 

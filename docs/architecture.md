@@ -66,9 +66,9 @@ exported alias. Star imports from proven local reexport modules are supported wh
 is visible through literal `__all__` or the normal non-underscore wildcard rule. Simple imported
 local wrapper factories are supported when they have one return path to a proven provider-wrapper
 constructor and the model comes from a literal or factory parameter; factory summaries also survive
-star imports when visible through literal `__all__` or the normal non-underscore wildcard rule.
-Rebound aliases, ambiguous factory returns, shadowed constructors, and generic same-named classes
-remain unresolved.
+direct local reexport chains and star imports when visible through literal `__all__` or the normal
+non-underscore wildcard rule. Rebound aliases, ambiguous factory returns, shadowed constructors, and
+generic same-named classes remain unresolved.
 Schema v102 adds Agno's exact public and direct OpenAI, Google, Anthropic, Azure OpenAI, and Groq
 model modules. Literal model identity may come from Agno's `id=` field or first positional argument;
 the proof is invalidated by import rebinding or a custom OpenAI/Groq `base_url` and is not generalized

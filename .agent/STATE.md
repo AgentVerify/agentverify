@@ -53,6 +53,9 @@ catalog workflows.
 - Added literal-visibility star-import resolution for simple local provider wrapper factories, with
   exported/static positives, a filtered negative, and regenerated IR truth-set results now covering
   1,474 labels.
+- Added exact local reexport-chain resolution for simple provider wrapper factories, with
+  direct/wildcard reexport positives, filtered/rebound negatives, and regenerated IR truth-set
+  results now covering 1,487 labels.
 - Added a concrete signed policy provenance design that keeps digest allowlists separate from author
   authenticity and specifies detached source-digest payloads plus local key trust roots.
 - Extended distribution verification so release checks can require a source distribution containing
