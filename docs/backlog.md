@@ -149,11 +149,13 @@ Qwen-Agent, Lagent, and MetaGPT across direct aliases, named reexports, and star
 the group to twenty-seven labels. Eleven more labels pin exact top-level module imports such as
 `import agentscope.agent as agentscope_agents`, `import agents as openai_agents`, and
 `import qwen_agent.agents`, including root rebinding, constructor-attribute rebinding, and near-package
-negatives; proven calls record `exact-framework-agent-module-import`. Ordinary same-named local
+negatives; four additional labels pin CAMEL and Marvin module-qualified positives through the same
+exact provenance contract. Proven calls record `exact-framework-agent-module-import`. Ordinary same-named local
 constructors still stay unresolved.
 Eleven additional labels pin a narrow absolute framework-star-import path for those same exact
-constructor families, with ambiguous-star, shadowed-name, and near-package negatives; proven calls
-record `exact-framework-agent-star-import`.
+constructor families, with ambiguous-star, shadowed-name, and near-package negatives; four additional
+labels pin CAMEL and Marvin star-import positives. Proven calls record
+`exact-framework-agent-star-import`.
 
 ## P0 — module-qualified symbols and graph identities
 
@@ -550,7 +552,7 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 719 pinned positive/negative locations, with 1,559 separately
+The curated regression set has reached 719 pinned positive/negative locations, with 1,563 separately
 scored IR component/relationship labels. Schema-v123 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule

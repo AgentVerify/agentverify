@@ -1478,7 +1478,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "framework_agent_module_calls.py",
-            10,
+            12,
             "module-react",
             "agentscope_agents.ReActAgent",
             "agentscope.agent",
@@ -1487,7 +1487,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "framework_agent_module_calls.py",
-            11,
+            13,
             "module-openai",
             "openai_agents.Agent",
             "agents",
@@ -1496,7 +1496,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "framework_agent_module_calls.py",
-            12,
+            14,
             "module-google-adk",
             "adk_agents.Agent",
             "google.adk.agents",
@@ -1505,7 +1505,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "framework_agent_module_calls.py",
-            13,
+            15,
             "module-semantic-kernel",
             "sk_agents.ChatCompletionAgent",
             "semantic_kernel.agents",
@@ -1514,7 +1514,25 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "framework_agent_module_calls.py",
-            14,
+            16,
+            "module-camel",
+            "camel_agents.ChatAgent",
+            "camel.agents",
+            "ChatAgent",
+            "exact-framework-agent-module-import",
+        ),
+        (
+            "framework_agent_module_calls.py",
+            17,
+            "module-marvin",
+            "marvin_agents.Agent",
+            "marvin.agents",
+            "Agent",
+            "exact-framework-agent-module-import",
+        ),
+        (
+            "framework_agent_module_calls.py",
+            18,
             "module-qwen",
             "qwen_agent.agents.Assistant",
             "qwen_agent.agents",
@@ -1523,7 +1541,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "framework_agent_module_calls.py",
-            15,
+            19,
             "module-lagent",
             "lagent.agents.AgentForInternLM",
             "lagent.agents",
@@ -1532,7 +1550,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "framework_agent_module_calls.py",
-            16,
+            20,
             "module-metagpt",
             "metagpt_roles.Role",
             "metagpt.roles",
@@ -1541,7 +1559,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "framework_agent_star_import_calls.py",
-            8,
+            10,
             "star-react",
             "ReActAgent",
             "agentscope.agent",
@@ -1550,7 +1568,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "framework_agent_star_import_calls.py",
-            9,
+            11,
             "star-semantic-kernel",
             "ChatCompletionAgent",
             "semantic_kernel.agents",
@@ -1559,7 +1577,25 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "framework_agent_star_import_calls.py",
-            10,
+            12,
+            "star-camel",
+            "ChatAgent",
+            "camel.agents",
+            "ChatAgent",
+            "exact-framework-agent-star-import",
+        ),
+        (
+            "framework_agent_star_import_calls.py",
+            13,
+            "star-marvin",
+            "Agent",
+            "marvin.agents",
+            "Agent",
+            "exact-framework-agent-star-import",
+        ),
+        (
+            "framework_agent_star_import_calls.py",
+            14,
             "star-qwen",
             "Assistant",
             "qwen_agent.agents",
@@ -1568,7 +1604,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "framework_agent_star_import_calls.py",
-            11,
+            15,
             "star-lagent",
             "AgentForInternLM",
             "lagent.agents",
@@ -1577,7 +1613,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "framework_agent_star_import_calls.py",
-            12,
+            16,
             "star-metagpt",
             "Role",
             "metagpt.roles",

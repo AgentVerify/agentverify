@@ -145,8 +145,7 @@ catalog workflows.
 - Extended TypeScript model literal binding so module-level template strings composed only from
   earlier immutable literal constants resolve as exact model ids for native OpenAI/Anthropic calls
   and official AI SDK provider calls; runtime, mutable, forward, shadowed, rebound, and unknown
-  template expressions remain unresolved. The public IR truth set now covers 1,559 passing labels,
-  split across 1,137 positives and 422 negatives.
+  template expressions remain unresolved.
 - Added a checked copyable GitHub SARIF upload workflow in `examples/github-code-scanning.yml`,
   documented it separately from policy enforcement, and made it a required source-distribution
   artifact so SARIF adoption guidance survives release packaging.
@@ -160,8 +159,10 @@ catalog workflows.
   uploads it as a workflow artifact, and is now required in source distributions.
 - Extended Python filesystem mutation detection to follow same-function, statement-ordered callable
   alias chains while every hop copies an already proven compatible `os`/`shutil` mutator. Added
-  positive and negative rule/IR labels; public benchmarks now pass 719 reporting-rule labels and
-  1,559 IR labels.
+  positive and negative rule/IR labels.
+- Added explicit CAMEL and Marvin regression coverage for exact module-qualified and absolute
+  star-import Python framework agent constructors. The public IR truth set now covers 1,563 passing
+  labels, split across 1,141 positives and 422 negatives.
 
 ## Current findings
 
