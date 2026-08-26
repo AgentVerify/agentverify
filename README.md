@@ -46,9 +46,9 @@ subprocess.run(command, shell=True)
 ```
 
 JSON and text reports retain the suppression's rule, reason, directive location, and finding location.
-They also retain expiry and status. JSON reports include a deterministic `risk_summary` by rule,
-severity, and result kind after inline suppression and baseline filtering. Expired or malformed dates
-never suppress a finding;
+They also retain expiry and status. JSON reports self-identify as `AgentVerify JSON Report` schema
+version 1 and include a deterministic `risk_summary` by rule, severity, and result kind after inline
+suppression and baseline filtering. Expired or malformed dates never suppress a finding;
 `--require-suppression-expiry` also restores reason-only exceptions. Broad file-level or reason-free
 inline ignores are intentionally unsupported. Expiry dates are evaluated in UTC and remain active
 through the stated date.

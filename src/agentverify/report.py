@@ -24,7 +24,9 @@ def _risk_summary(findings: list[Finding]) -> dict[str, dict[str, int]]:
 
 def render_json(ir: RepositoryIR) -> str:
     payload = ir.to_dict()
+    payload["report_format"] = "AgentVerify JSON Report"
     payload["risk_summary"] = _risk_summary(ir.findings)
+    payload["schema_version"] = 1
     return json.dumps(payload, indent=2, sort_keys=True) + "\n"
 
 

@@ -41,6 +41,8 @@ def test_cli_writes_report_to_output_file(tmp_path: Path, capsys) -> None:
     assert captured.out == ""
     assert captured.err == ""
     payload = __import__("json").loads(output.read_text(encoding="utf-8"))
+    assert payload["report_format"] == "AgentVerify JSON Report"
+    assert payload["schema_version"] == 1
     assert payload["files_scanned"] == 1
 
 
@@ -326,6 +328,8 @@ def test_cli_prints_bundled_report_schema(capsys) -> None:
     report = __import__("json").loads(render_json(scan_repository(ROOT / "cases/python_dangerous")))
     Draft202012Validator.check_schema(schema)
     Draft202012Validator(schema).validate(report)
+    assert report["report_format"] == "AgentVerify JSON Report"
+    assert report["schema_version"] == 1
     assert schema["title"] == "AgentVerify JSON Report 1"
     assert schema["$defs"]["riskSummary"]["required"] == [
         "by_rule",

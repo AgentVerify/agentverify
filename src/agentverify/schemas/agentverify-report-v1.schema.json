@@ -4,6 +4,8 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
+    "report_format",
+    "schema_version",
     "root",
     "scan_scope",
     "path_filters",
@@ -20,6 +22,8 @@
     "risk_summary"
   ],
   "properties": {
+    "report_format": {"const": "AgentVerify JSON Report"},
+    "schema_version": {"const": 1},
     "root": {"type": "string"},
     "scan_scope": {"enum": ["repository", "selected-paths"]},
     "path_filters": {"type": "array", "items": {"type": "string"}},

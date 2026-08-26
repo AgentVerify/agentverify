@@ -930,9 +930,10 @@ Policy evaluation is a post-baseline reporting stage, not a rule filter. Gates c
 fingerprints by rule, result kind, and minimum severity; findings remain in every output. JSON, text,
 AI BOM, and SARIF retain the policy file digest, per-gate decision evidence, and matched summaries by
 rule, result kind, and severity. The ordinary JSON report has a bundled schema so integrations can
-validate the report contract directly. Local `extends` composition loads base policies depth first,
-deduplicates shared files by resolved path, rejects cycles and duplicate gate identities, and
-attaches the contributing file digest to every gate.
+validate the report contract directly; each JSON report carries `report_format` and `schema_version`
+markers for artifact routing. Local `extends` composition loads base policies depth first,
+deduplicates shared files by resolved path, rejects cycles and duplicate gate identities, and attaches
+the contributing file digest to every gate.
 Rule IDs, result kinds, severities, and confidence come from one runtime catalog. Policy loading
 rejects unknown IDs and any selected rule excluded by the gate's kind or severity filters before a
 scan begins; the bundled schema carries the same enabled ID set.

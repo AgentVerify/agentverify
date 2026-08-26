@@ -8288,6 +8288,8 @@ subprocess.run(third_command, shell=True)
     assert ir.suppressions[0].directive.line == 3
     assert ir.suppressions[0].reason == "reviewed wrapper; input is allowlisted upstream"
     report = json.loads(render_json(ir))
+    assert report["report_format"] == "AgentVerify JSON Report"
+    assert report["schema_version"] == 1
     assert report["suppressions"][0]["finding"]["line"] == 4
     assert report["risk_summary"] == {
         "by_result_kind": {"finding": 2},
