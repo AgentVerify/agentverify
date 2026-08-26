@@ -8,8 +8,8 @@
 
 ## P1
 
-- Extend package/distribution checks beyond runtime schemas to examples and CLI entrypoint smoke
-  tests in installed artifacts.
+- Extend package/distribution checks to cover source examples or documented sample bundles when the
+  packaging strategy is explicit.
 - Expand selected real-world framework coverage where current docs record unresolved package
   reexports, wildcard imports, wrapper factories, or type-driven symbols.
 

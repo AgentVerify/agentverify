@@ -23,6 +23,8 @@ catalog workflows.
 - Added public holdout manifest/label templates while keeping real sealed labels out of the repo.
 - Added benchmark evaluator metadata for public-regression versus sealed-holdout outputs.
 - Added a benchmark result JSON schema and tests for checked-in and synthetic sealed outputs.
+- Extended distribution verification to cover the wheel console-script entry point and optional
+  installed-CLI smoke tests.
 
 ## Current findings
 
@@ -39,6 +41,6 @@ catalog workflows.
 
 ## Next action
 
-Continue toward the highest-value local P1/P2 work: signed policy provenance design,
-installed-artifact CLI smoke tests, benchmark-result documentation refinements, or additional
-real-world framework coverage.
+Continue toward the highest-value local P1/P2 work: signed policy provenance design, additional
+installed-artifact checks, benchmark-result documentation refinements, or additional real-world
+framework coverage.

@@ -144,4 +144,5 @@ python3 -m venv .venv
 .venv/bin/ruff check src tests scripts
 uv build --wheel
 python3 scripts/verify_distribution.py
+python3 scripts/verify_distribution.py --smoke-install
 ```

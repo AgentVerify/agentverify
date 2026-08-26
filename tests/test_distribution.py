@@ -17,14 +17,20 @@ assert SPEC.loader is not None
 SPEC.loader.exec_module(verify_distribution)
 
 REQUIRED_SCHEMA_FILES = verify_distribution.REQUIRED_SCHEMA_FILES
+REQUIRED_ENTRY_POINTS = verify_distribution.REQUIRED_ENTRY_POINTS
 latest_wheel = verify_distribution.latest_wheel
 verify_wheel = verify_distribution.verify_wheel
 
 
-def write_wheel(path: Path, names: set[str]) -> None:
+def write_wheel(path: Path, names: set[str], *, entry_points: bool = True) -> None:
     with zipfile.ZipFile(path, "w") as archive:
         for name in sorted(names):
             archive.writestr(name, "{}\n")
+        if entry_points:
+            archive.writestr(
+                "agentverify-0.1.0.dist-info/entry_points.txt",
+                "[console_scripts]\nagentverify = agentverify.cli:main\n",
+            )
 
 
 def test_distribution_verifier_accepts_all_required_schemas(tmp_path: Path) -> None:
@@ -37,6 +43,8 @@ def test_distribution_verifier_accepts_all_required_schemas(tmp_path: Path) -> N
     assert payload["required_schema_files"] == 4
     assert payload["missing_schema_files"] == []
     assert payload["present_schema_files"] == sorted(REQUIRED_SCHEMA_FILES)
+    assert payload["console_scripts"] == REQUIRED_ENTRY_POINTS
+    assert payload["missing_entry_points"] == {}
 
 
 def test_distribution_verifier_rejects_missing_schema(tmp_path: Path) -> None:
@@ -45,6 +53,14 @@ def test_distribution_verifier_rejects_missing_schema(tmp_path: Path) -> None:
     write_wheel(wheel, set(REQUIRED_SCHEMA_FILES) - missing)
 
     with pytest.raises(RuntimeError, match="agentverify-rules-v1.schema.json"):
+        verify_wheel(wheel)
+
+
+def test_distribution_verifier_rejects_missing_console_script(tmp_path: Path) -> None:
+    wheel = tmp_path / "agentverify-0.1.0-py3-none-any.whl"
+    write_wheel(wheel, set(REQUIRED_SCHEMA_FILES), entry_points=False)
+
+    with pytest.raises(RuntimeError, match="missing_entry_points"):
         verify_wheel(wheel)
 
 
