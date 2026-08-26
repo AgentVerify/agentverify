@@ -540,6 +540,9 @@ setup are included; publishing its remote form waits for an approved repository 
 The scan command also provides a compact `--format summary` mode for CI logs and quick local triage:
 it keeps threshold and policy exit semantics while showing scan totals, baseline/policy status,
 severity/result-kind/rule counts, and top evidence locations without printing the full Agent IR graph.
+Baseline parsing is now fail-closed for unknown JSON objects while still accepting explicit
+fingerprint lists, AgentVerify JSON reports, native AI BOMs, and SARIF files with `agentverify/v1`
+partial fingerprints.
 Schema-backed JSON policies now provide per-rule/result-kind/severity count budgets with decision
 evidence in every report. Local organization policy composition resolves relative files depth first,
 rejects cycles and duplicate gate IDs, and preserves file and gate SHA-256 provenance without

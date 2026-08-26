@@ -98,23 +98,37 @@ def baseline_fingerprints(path: Path) -> set[str]:
         return {str(item) for item in payload}
     if not isinstance(payload, dict):
         raise TypeError("baseline must be a JSON object or fingerprint list")
-    if isinstance(payload.get("findings"), list):
+    if payload.get("report_format") == "AgentVerify JSON Report" or "findings" in payload:
+        if not isinstance(payload.get("findings"), list):
+            raise TypeError("AgentVerify JSON baseline must contain a findings array")
         return {
             str(item["fingerprint"])
             for item in payload["findings"]
             if isinstance(item, dict) and item.get("fingerprint")
         }
-    if payload.get("bom_format") == "AgentVerify AI BOM" and isinstance(payload.get("risks"), list):
+    if payload.get("bom_format") == "AgentVerify AI BOM":
+        if not isinstance(payload.get("risks"), list):
+            raise TypeError("AgentVerify AI BOM baseline must contain a risks array")
         return {
             str(item["id"])
             for item in payload["risks"]
             if isinstance(item, dict) and item.get("id")
         }
+    if "runs" not in payload:
+        raise TypeError(
+            "baseline must be an AgentVerify JSON report, AI BOM, SARIF report, or fingerprint list"
+        )
+    if not isinstance(payload.get("runs"), list):
+        raise TypeError("SARIF baseline must contain a runs array")
     fingerprints = set()
-    for run in payload.get("runs", []):
+    for run in payload["runs"]:
+        if not isinstance(run, dict):
+            continue
         for result in run.get("results", []):
+            if not isinstance(result, dict):
+                continue
             values = result.get("partialFingerprints", {})
-            if values.get("agentverify/v1"):
+            if isinstance(values, dict) and values.get("agentverify/v1"):
                 fingerprints.add(str(values["agentverify/v1"]))
     return fingerprints
 

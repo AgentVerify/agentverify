@@ -6,7 +6,7 @@ import pytest
 from jsonschema import Draft202012Validator
 
 from agentverify import cli
-from agentverify.report import render_bom, render_json
+from agentverify.report import render_bom, render_json, render_sarif
 from agentverify.rules import RULE_CATALOG
 from agentverify.scanner import scan_repository
 
@@ -205,6 +205,30 @@ def test_native_ai_bom_can_be_reused_as_baseline(tmp_path: Path, capsys) -> None
     payload = __import__("json").loads(capsys.readouterr().out)
     assert payload["risks"] == []
     assert payload["metadata"]["baseline_summary"]["unchanged"] == 1
+
+
+def test_sarif_can_be_reused_as_baseline(tmp_path: Path, capsys) -> None:
+    target = ROOT / "cases/python_dangerous"
+    baseline = tmp_path / "baseline.sarif"
+    baseline.write_text(render_sarif(scan_repository(target)), encoding="utf-8")
+
+    assert cli.main(["scan", str(target), "--baseline", str(baseline), "--format", "json"]) == 0
+    payload = __import__("json").loads(capsys.readouterr().out)
+    assert payload["findings"] == []
+    assert payload["baseline_summary"]["unchanged"] == 1
+
+
+def test_unknown_json_baseline_object_is_rejected(tmp_path: Path, capsys) -> None:
+    baseline = tmp_path / "baseline.json"
+    baseline.write_text('{"notes":"not an AgentVerify, BOM, or SARIF baseline"}', encoding="utf-8")
+
+    assert (
+        cli.main(["scan", str(ROOT / "cases/python_dangerous"), "--baseline", str(baseline)]) == 2
+    )
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "agentverify: invalid baseline:" in captured.err
+    assert "AgentVerify JSON report, AI BOM, SARIF report, or fingerprint list" in captured.err
 
 
 def test_partial_baseline_does_not_claim_resolved_findings(tmp_path: Path, capsys) -> None:

@@ -53,6 +53,9 @@ upload step unless it uses `if: always()`. For an existing repository, `--baseli
 fingerprints while new results remain visible; commit and review that baseline as policy data. JSON,
 text, and SARIF include counts for new, unchanged, and no-longer-reported fingerprints. The last count
 is deliberately unavailable for selected-path scans because unscanned findings are not proven fixed.
+Baseline input is fail-closed: AgentVerify accepts only a raw fingerprint list, an AgentVerify JSON
+report, a native AI BOM, or SARIF with `agentverify/v1` partial fingerprints. Other JSON objects are
+usage errors rather than empty baselines.
 
 The workflow deliberately grants `security-events: write` only to the scanning job. Do not pass a
 personal token to the upload action; its default is the job-scoped GitHub token.

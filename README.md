@@ -54,6 +54,8 @@ inline ignores are intentionally unsupported. Expiry dates are evaluated in UTC 
 through the stated date.
 When `--baseline` is used, reports separate new and unchanged fingerprints and count fingerprints no
 longer reported by a full scan. Partial selected-path scans leave that last count unavailable.
+Baselines must be a fingerprint list, an AgentVerify JSON report, a native AI BOM, or a SARIF report;
+unknown JSON objects are rejected instead of treated as an empty baseline.
 Reports and schemas are written to standard output by default. Use `--output PATH` (or `-o PATH`)
 to write them directly to a file. Output write failures return exit code 2; successful scan writes
 still preserve policy and `--fail-on` exit decisions.
