@@ -37,6 +37,12 @@ Use `github/codeql-action/upload-sarif@v4` with a stable category:
 
 [GitHub code scanning accepts third-party SARIF](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/integrate-with-existing-tools/upload-sarif-file)
 for public repositories. Private and internal repositories need GitHub Code Security enabled. The
+checked [`examples/github-code-scanning.sarif`](../examples/github-code-scanning.sarif) artifact is
+generated from `agentverify scan cases/approval_callback_bypass --format sarif` and shows the rule
+descriptors, `agentverify/v1` partial fingerprints, source locations, result kinds, confidence, and
+Agent IR paths that GitHub receives.
+
+The
 default AgentVerify exit status does not fail a build merely because review findings exist, so the
 SARIF upload still runs. To enforce a policy in a separate step, add a second scan such as:
 

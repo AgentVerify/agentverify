@@ -7,7 +7,7 @@ from jsonschema import Draft202012Validator
 
 from agentverify import cli
 from agentverify.contracts import export_editor_contracts
-from agentverify.report import render_json
+from agentverify.report import render_json, render_sarif
 from agentverify.scanner import scan_repository
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -134,3 +134,19 @@ def test_editor_diagnostics_example_matches_real_report() -> None:
 
     actual = json.loads((ROOT / "examples/editor-diagnostics.json").read_text(encoding="utf-8"))
     assert actual == expected
+
+
+def test_github_code_scanning_sarif_example_matches_real_report() -> None:
+    expected = json.loads(render_sarif(scan_repository(ROOT / "cases/approval_callback_bypass")))
+    actual = json.loads((ROOT / "examples/github-code-scanning.sarif").read_text(encoding="utf-8"))
+
+    assert actual == expected
+    assert actual["version"] == "2.1.0"
+    assert actual["runs"][0]["tool"]["driver"]["name"] == "AgentVerify"
+    assert [rule["id"] for rule in actual["runs"][0]["tool"]["driver"]["rules"]] == [
+        "AV-APPROVAL001",
+        "AV-APPROVAL003",
+    ]
+    assert {
+        result["properties"]["resultKind"] for result in actual["runs"][0]["results"]
+    } == {"finding", "review"}

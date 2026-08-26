@@ -138,6 +138,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`docs/policy.md`](docs/policy.md) — schema-backed, non-hiding CI gate policies
 - [`docs/code-scanning.md`](docs/code-scanning.md) — copy-ready GitHub SARIF integration
 - [`examples/github-code-scanning.yml`](examples/github-code-scanning.yml) — copyable SARIF upload workflow
+- [`examples/github-code-scanning.sarif`](examples/github-code-scanning.sarif) — checked SARIF upload payload example
 - [`docs/editor-integration.md`](docs/editor-integration.md) — exportable schemas and rule catalog for editor/CI tooling
 - [`docs/pre-commit.md`](docs/pre-commit.md) — local and tagged-release hook setup
 - [`docs/backlog.md`](docs/backlog.md) — prioritized issue-ready future work

@@ -1,0 +1,345 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "runs": [
+    {
+      "properties": {
+        "baselineSummary": {},
+        "pathFilters": [],
+        "policySummary": {},
+        "scanScope": "repository"
+      },
+      "results": [
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "approval.py"
+                },
+                "region": {
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Configuration or code exposes an approval-bypass path"
+          },
+          "partialFingerprints": {
+            "agentverify/v1": "20307b0f1b5d860a0ad8"
+          },
+          "properties": {
+            "analysis": {},
+            "confidence": "medium",
+            "irPath": [],
+            "resultKind": "review"
+          },
+          "ruleId": "AV-APPROVAL001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "approval.py"
+                },
+                "region": {
+                  "startLine": 21
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Configuration or code exposes an approval-bypass path"
+          },
+          "partialFingerprints": {
+            "agentverify/v1": "5a9a2d9476d188172939"
+          },
+          "properties": {
+            "analysis": {},
+            "confidence": "medium",
+            "irPath": [],
+            "resultKind": "review"
+          },
+          "ruleId": "AV-APPROVAL001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "approval.py"
+                },
+                "region": {
+                  "startLine": 33
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "An environment variable can auto-approve a reachable local shell tool"
+          },
+          "partialFingerprints": {
+            "agentverify/v1": "84dcafbc505e4199b55d"
+          },
+          "properties": {
+            "analysis": {
+              "approval_bypass_environment_names": [
+                "SHELL_AUTO_APPROVE"
+              ],
+              "approval_bypass_resolution": "same-file-transitive-callback",
+              "approval_coverage": "unresolved",
+              "audit_coverage": "unresolved",
+              "direct_agents": [
+                "operator"
+              ],
+              "governing_control_effects": {},
+              "governing_controls": [],
+              "reachable_agents": [
+                "operator"
+              ],
+              "tool": "ShellTool@33"
+            },
+            "confidence": "high",
+            "irPath": [
+              "agent:operator",
+              "tool:ShellTool@33",
+              "capability:shell-execution"
+            ],
+            "resultKind": "finding"
+          },
+          "ruleId": "AV-APPROVAL003"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "approval.ts"
+                },
+                "region": {
+                  "startLine": 4
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Configuration or code exposes an approval-bypass path"
+          },
+          "partialFingerprints": {
+            "agentverify/v1": "d5a58f65bc93cd9183c3"
+          },
+          "properties": {
+            "analysis": {},
+            "confidence": "medium",
+            "irPath": [],
+            "resultKind": "review"
+          },
+          "ruleId": "AV-APPROVAL001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "approval.ts"
+                },
+                "region": {
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Configuration or code exposes an approval-bypass path"
+          },
+          "partialFingerprints": {
+            "agentverify/v1": "2682967b944c8ac818e2"
+          },
+          "properties": {
+            "analysis": {},
+            "confidence": "medium",
+            "irPath": [],
+            "resultKind": "review"
+          },
+          "ruleId": "AV-APPROVAL001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "approval.ts"
+                },
+                "region": {
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Configuration or code exposes an approval-bypass path"
+          },
+          "partialFingerprints": {
+            "agentverify/v1": "413cb57720e84fd08add"
+          },
+          "properties": {
+            "analysis": {},
+            "confidence": "medium",
+            "irPath": [],
+            "resultKind": "review"
+          },
+          "ruleId": "AV-APPROVAL001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "approval.ts"
+                },
+                "region": {
+                  "startLine": 27
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "An environment variable can auto-approve a reachable local shell tool"
+          },
+          "partialFingerprints": {
+            "agentverify/v1": "9f9ac1defce2aa37955c"
+          },
+          "properties": {
+            "analysis": {
+              "approval_bypass_environment_names": [
+                "SHELL_AUTO_APPROVE"
+              ],
+              "approval_bypass_resolution": "same-file-transitive-callback",
+              "approval_coverage": "enabled",
+              "audit_coverage": "unresolved",
+              "direct_agents": [
+                "operator"
+              ],
+              "governing_control_effects": {
+                "human-approval": []
+              },
+              "governing_controls": [
+                "human-approval"
+              ],
+              "reachable_agents": [
+                "operator"
+              ],
+              "tool": "shellTool@27"
+            },
+            "confidence": "high",
+            "irPath": [
+              "agent:operator",
+              "tool:shellTool@27",
+              "capability:shell-execution"
+            ],
+            "resultKind": "finding"
+          },
+          "ruleId": "AV-APPROVAL003"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "approval.ts"
+                },
+                "region": {
+                  "startLine": 32
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "An environment variable can auto-approve a reachable filesystem-write tool"
+          },
+          "partialFingerprints": {
+            "agentverify/v1": "5e5452debc6b9e8d4ea7"
+          },
+          "properties": {
+            "analysis": {
+              "approval_bypass_environment_names": [
+                "APPLY_PATCH_AUTO_APPROVE"
+              ],
+              "approval_bypass_resolution": "same-file-transitive-callback",
+              "approval_coverage": "enabled",
+              "audit_coverage": "unresolved",
+              "direct_agents": [
+                "operator"
+              ],
+              "governing_control_effects": {
+                "human-approval": []
+              },
+              "governing_controls": [
+                "human-approval"
+              ],
+              "reachable_agents": [
+                "operator"
+              ],
+              "tool": "applyPatchTool@32"
+            },
+            "confidence": "high",
+            "irPath": [
+              "agent:operator",
+              "tool:applyPatchTool@32",
+              "capability:filesystem"
+            ],
+            "resultKind": "finding"
+          },
+          "ruleId": "AV-APPROVAL003"
+        }
+      ],
+      "tool": {
+        "driver": {
+          "name": "AgentVerify",
+          "rules": [
+            {
+              "help": {
+                "text": "Disable auto-approval for privileged tools or scope it to an explicit low-risk allowlist."
+              },
+              "id": "AV-APPROVAL001",
+              "name": "AV-APPROVAL001",
+              "properties": {
+                "defaultSeverity": "high",
+                "precision": "medium",
+                "resultKind": "review"
+              },
+              "shortDescription": {
+                "text": "Configuration or code exposes an approval-bypass path"
+              }
+            },
+            {
+              "help": {
+                "text": "Remove the environment-driven shortcut and require an authenticated per-action decision."
+              },
+              "id": "AV-APPROVAL003",
+              "name": "AV-APPROVAL003",
+              "properties": {
+                "defaultSeverity": "high",
+                "precision": "high",
+                "resultKind": "finding"
+              },
+              "shortDescription": {
+                "text": "An environment variable can auto-approve a reachable privileged local tool"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "version": "2.1.0"
+}

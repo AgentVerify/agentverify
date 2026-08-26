@@ -152,6 +152,9 @@ catalog workflows.
   artifact so SARIF adoption guidance survives release packaging.
 - Added two explicit TypeScript unknown-template negative model-binding labels so runtime-derived
   template interpolations remain guarded in the public IR regression set.
+- Added a checked GitHub code-scanning SARIF payload example generated from
+  `cases/approval_callback_bypass`, with a regression test proving it matches real renderer output
+  and source-distribution verification requiring the artifact.
 
 ## Current findings
 
@@ -175,6 +178,9 @@ catalog workflows.
   copyable `examples/github-code-scanning.yml` workflow with `security-events: write`, while
   enforcement-only gates belong in `examples/github-policy-gate.yml` without code-scanning upload
   permissions.
+- The checked SARIF example preserves the same integration metadata GitHub receives from the CLI:
+  rule descriptors, `agentverify/v1` partial fingerprints, source locations, result kind,
+  confidence, analysis details, and Agent IR paths.
 
 ## Blockers
 
