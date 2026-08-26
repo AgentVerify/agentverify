@@ -13,6 +13,7 @@ import zipfile
 from pathlib import Path, PurePosixPath
 
 REQUIRED_ENTRY_POINTS = {"agentverify": "agentverify.cli:main"}
+REQUIRED_RUNTIME_DEPENDENCIES = {"cryptography>=46.0"}
 REQUIRED_BENCHMARK_RESULT_FILES = frozenset(
     {
         "benchmarks/ir-truthset-results.json",
@@ -106,6 +107,19 @@ def entry_points(path: Path) -> dict[str, str]:
         if section == "console_scripts" and "=" in line:
             name, target = line.split("=", 1)
             values[name.strip()] = target.strip()
+    return values
+
+
+def requires_dist(path: Path) -> set[str]:
+    with zipfile.ZipFile(path) as archive:
+        candidates = [name for name in archive.namelist() if name.endswith(".dist-info/METADATA")]
+        if not candidates:
+            return set()
+        content = archive.read(candidates[0]).decode("utf-8")
+    values = set()
+    for raw_line in content.splitlines():
+        if raw_line.startswith("Requires-Dist:"):
+            values.add(raw_line.partition(":")[2].strip())
     return values
 
 
@@ -306,7 +320,9 @@ def verify_wheel(
 ) -> dict[str, object]:
     names = wheel_names(path)
     console_scripts = entry_points(path)
+    dependencies = requires_dist(path)
     missing = sorted(REQUIRED_SCHEMA_FILES - names)
+    missing_dependencies = sorted(REQUIRED_RUNTIME_DEPENDENCIES - dependencies)
     missing_entry_points = {
         name: target
         for name, target in REQUIRED_ENTRY_POINTS.items()
@@ -320,9 +336,11 @@ def verify_wheel(
         "missing_schema_files": missing,
         "console_scripts": console_scripts,
         "missing_entry_points": missing_entry_points,
-        "passed": not missing and not missing_entry_points,
+        "runtime_dependencies": sorted(dependencies),
+        "missing_runtime_dependencies": missing_dependencies,
+        "passed": not missing and not missing_entry_points and not missing_dependencies,
     }
-    if missing or missing_entry_points:
+    if missing or missing_entry_points or missing_dependencies:
         raise RuntimeError(json.dumps(payload, indent=2))
     if smoke:
         payload["smoke_install"] = smoke_install(path, source_root)

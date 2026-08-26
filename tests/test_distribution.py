@@ -22,13 +22,20 @@ REQUIRED_SCHEMA_FILES = verify_distribution.REQUIRED_SCHEMA_FILES
 REQUIRED_BENCHMARK_RESULT_FILES = verify_distribution.REQUIRED_BENCHMARK_RESULT_FILES
 REQUIRED_SOURCE_FILES = verify_distribution.REQUIRED_SOURCE_FILES
 REQUIRED_ENTRY_POINTS = verify_distribution.REQUIRED_ENTRY_POINTS
+REQUIRED_RUNTIME_DEPENDENCIES = verify_distribution.REQUIRED_RUNTIME_DEPENDENCIES
 latest_sdist = verify_distribution.latest_sdist
 latest_wheel = verify_distribution.latest_wheel
 verify_sdist = verify_distribution.verify_sdist
 verify_wheel = verify_distribution.verify_wheel
 
 
-def write_wheel(path: Path, names: set[str], *, entry_points: bool = True) -> None:
+def write_wheel(
+    path: Path,
+    names: set[str],
+    *,
+    entry_points: bool = True,
+    runtime_dependencies: bool = True,
+) -> None:
     with zipfile.ZipFile(path, "w") as archive:
         for name in sorted(names):
             archive.writestr(name, "{}\n")
@@ -37,6 +44,12 @@ def write_wheel(path: Path, names: set[str], *, entry_points: bool = True) -> No
                 "agentverify-0.1.0.dist-info/entry_points.txt",
                 "[console_scripts]\nagentverify = agentverify.cli:main\n",
             )
+        if runtime_dependencies:
+            dependencies = "".join(
+                f"Requires-Dist: {dependency}\n"
+                for dependency in sorted(REQUIRED_RUNTIME_DEPENDENCIES)
+            )
+            archive.writestr("agentverify-0.1.0.dist-info/METADATA", dependencies)
 
 
 def write_sdist(path: Path, names: set[str], *, root: str = "agentverify-0.1.0") -> None:
@@ -60,6 +73,8 @@ def test_distribution_verifier_accepts_all_required_schemas(tmp_path: Path) -> N
     assert payload["present_schema_files"] == sorted(REQUIRED_SCHEMA_FILES)
     assert payload["console_scripts"] == REQUIRED_ENTRY_POINTS
     assert payload["missing_entry_points"] == {}
+    assert set(payload["runtime_dependencies"]) >= REQUIRED_RUNTIME_DEPENDENCIES
+    assert payload["missing_runtime_dependencies"] == []
 
 
 def test_distribution_verifier_accepts_required_source_artifacts(tmp_path: Path) -> None:
@@ -92,6 +107,18 @@ def test_distribution_verifier_rejects_missing_schema(tmp_path: Path) -> None:
     write_wheel(wheel, set(REQUIRED_SCHEMA_FILES) - missing)
 
     with pytest.raises(RuntimeError, match="agentverify-rules-v1.schema.json"):
+        verify_wheel(wheel)
+
+
+def test_distribution_verifier_rejects_missing_runtime_dependency(tmp_path: Path) -> None:
+    wheel = tmp_path / "agentverify-0.1.0-py3-none-any.whl"
+    write_wheel(
+        wheel,
+        set(REQUIRED_SCHEMA_FILES) | {"agentverify/__init__.py"},
+        runtime_dependencies=False,
+    )
+
+    with pytest.raises(RuntimeError, match="cryptography"):
         verify_wheel(wheel)
 
 

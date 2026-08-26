@@ -34,7 +34,7 @@
 
 ## Signed policy provenance should sign source digests
 
-- Decision: Design future cryptographic policy provenance around detached signatures over a manifest
+- Decision: Design cryptographic policy provenance around detached signatures over a manifest
   of exact composed policy source digests, not over normalized policy objects.
 - Evidence: Current policy summaries already preserve source paths and SHA-256 bytes for every
   composed policy. Signing those byte digests avoids JSON canonicalization ambiguity and lets teams
@@ -42,8 +42,20 @@
 - Alternative: Sign normalized policy JSON or only the root policy digest. Rejected because
   normalization rules are easy to drift and root-only signatures can hide unapproved base-policy
   substitutions unless the composition graph is separately pinned.
-- Revisit when: signature implementation chooses an Ed25519 dependency, threshold signatures, or a
-  rule-catalog-version binding.
+- Revisit when: threshold signatures or a rule-catalog-version binding become necessary.
+
+## Signed policy verification uses local Ed25519 key trust roots
+
+- Decision: Implement policy signature verification with `cryptography` Ed25519 support and a
+  fail-closed `local-key-signature` trust root, keeping it separate from digest allowlists.
+- Evidence: AgentVerify already exports deterministic source-digest signing payload bytes. Verifying
+  detached signatures over those bytes preserves exact source-byte provenance while avoiding policy
+  JSON canonicalization drift. Local public-key trust roots keep CI offline and explicit.
+- Alternative: Treat digest allowlist matches as signatures or make signature verification a remote
+  trust service. Rejected because digest allowlists do not prove author authenticity, and remote
+  trust would weaken offline reproducibility for the first implementation.
+- Revisit when: threshold signatures, remote transparency logs, hardware-backed key attestations, or
+  rule-catalog-version binding become concrete requirements.
 
 ## Benchmark release claims must be verifier-gated
 

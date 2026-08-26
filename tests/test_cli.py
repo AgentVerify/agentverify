@@ -1,17 +1,77 @@
 from __future__ import annotations
 
+import base64
+import json
 from pathlib import Path
 
 import pytest
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from jsonschema import Draft202012Validator
 
 from agentverify import cli
-from agentverify.policy import load_policy
+from agentverify.policy import load_policy, render_policy_signing_payload
 from agentverify.report import render_bom, render_json, render_sarif
 from agentverify.rules import RULE_CATALOG
 from agentverify.scanner import scan_repository
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def write_signed_policy_artifacts(
+    tmp_path: Path,
+    repository: Path,
+    *,
+    signed_at: str = "2026-08-26T00:00:00Z",
+) -> tuple[Path, Path]:
+    policy, digest = load_policy(repository)
+    signing_payload = render_policy_signing_payload(policy, source=repository.name, digest=digest)
+    private_key = Ed25519PrivateKey.generate()
+    signature = private_key.sign(signing_payload.encode("utf-8"))
+    public_key = private_key.public_key().public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw,
+    )
+    key_trust_root = tmp_path / "policy-key-trust-root.json"
+    key_trust_root.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "trust_model": "local-key-signature",
+                "keys": [
+                    {
+                        "key_id": "security-team-2026",
+                        "algorithm": "ed25519",
+                        "public_key": base64.b64encode(public_key).decode("ascii"),
+                        "trusted_for": ["policy-signing"],
+                        "not_before": "2026-01-01T00:00:00Z",
+                        "not_after": "2027-01-01T00:00:00Z",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    signature_bundle = tmp_path / "policy-signature.json"
+    signature_bundle.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "signature_format": "agentverify-policy-signature",
+                "signed_at": signed_at,
+                "payload": json.loads(signing_payload),
+                "signatures": [
+                    {
+                        "key_id": "security-team-2026",
+                        "algorithm": "ed25519",
+                        "signature": base64.b64encode(signature).decode("ascii"),
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return key_trust_root, signature_bundle
 
 
 def test_cli_handles_closed_output_pipe(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -435,7 +495,7 @@ def test_cli_prints_bundled_policy_summary_schema(capsys) -> None:
     Draft202012Validator.check_schema(schema)
     assert schema["title"] == "AgentVerify Policy Summary 1"
     assert schema["properties"]["policy_format"]["const"] == "AgentVerify Policy Summary"
-    assert schema["$defs"]["trust"]["properties"]["signature_verified"]["const"] is False
+    assert schema["$defs"]["trust"]["properties"]["signature_verified"]["type"] == "boolean"
 
 
 def test_cli_prints_bundled_policy_key_trust_root_schema(capsys) -> None:
@@ -968,6 +1028,216 @@ def test_cli_policy_can_export_deterministic_signing_payload(tmp_path: Path, cap
         == 0
     )
     assert payload_path.read_text(encoding="utf-8") == first
+
+
+def test_cli_policy_verifies_detached_policy_signature(tmp_path: Path, capsys) -> None:
+    org = tmp_path / "org.json"
+    org.write_text(
+        '{"schema_version":1,"name":"org","gates":['
+        '{"id":"org-high","result_kinds":["finding"],"max_count":0}]}',
+        encoding="utf-8",
+    )
+    repository = tmp_path / "repository.json"
+    repository.write_text(
+        '{"schema_version":1,"name":"repository","extends":["org.json"],"gates":['
+        '{"id":"repository-reviews","result_kinds":["review"],"max_count":5}]}',
+        encoding="utf-8",
+    )
+    key_trust_root, signature_bundle = write_signed_policy_artifacts(tmp_path, repository)
+
+    assert (
+        cli.main(
+            [
+                "policy",
+                str(repository),
+                "--signature",
+                str(signature_bundle),
+                "--trust-root",
+                str(key_trust_root),
+                "--require-trusted",
+                "--format",
+                "json",
+            ]
+        )
+        == 0
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    trust = payload["trust"]
+    assert trust["signature_verified"] is True
+    signature = trust["signature"]
+    assert signature["trusted"] is True
+    assert signature["trust_model"] == "local-key-signature"
+    assert signature["signature_format"] == "agentverify-policy-signature"
+    assert signature["matched_sources"] == ["org.json", "repository.json"]
+    assert signature["missing_sources"] == []
+    assert signature["digest_mismatches"] == []
+    assert signature["payload_mismatches"] == []
+    assert signature["verified_signatures"] == [{"key_id": "security-team-2026"}]
+    assert signature["invalid_signatures"] == []
+    schema = json.loads(
+        (ROOT / "src/agentverify/schemas/agentverify-policy-summary-v1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    Draft202012Validator(schema).validate(payload)
+
+
+def test_cli_policy_signature_fails_closed_when_policy_changes(tmp_path: Path, capsys) -> None:
+    org = tmp_path / "org.json"
+    org.write_text(
+        '{"schema_version":1,"name":"org","gates":['
+        '{"id":"org-high","result_kinds":["finding"],"max_count":0}]}',
+        encoding="utf-8",
+    )
+    repository = tmp_path / "repository.json"
+    repository.write_text(
+        '{"schema_version":1,"name":"repository","extends":["org.json"],"gates":['
+        '{"id":"repository-reviews","result_kinds":["review"],"max_count":5}]}',
+        encoding="utf-8",
+    )
+    key_trust_root, signature_bundle = write_signed_policy_artifacts(tmp_path, repository)
+    org.write_text(
+        '{"schema_version":1,"name":"org","gates":['
+        '{"id":"org-high","result_kinds":["finding"],"max_count":1}]}',
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "policy",
+                str(repository),
+                "--signature",
+                str(signature_bundle),
+                "--trust-root",
+                str(key_trust_root),
+                "--require-trusted",
+                "--format",
+                "json",
+            ]
+        )
+        == 1
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    signature = payload["trust"]["signature"]
+    assert payload["trust"]["signature_verified"] is False
+    assert signature["trusted"] is False
+    assert signature["digest_mismatches"][0]["source"] == "org.json"
+    assert "policy_set" in signature["payload_mismatches"]
+    assert signature["verified_signatures"] == [{"key_id": "security-team-2026"}]
+    schema = json.loads(
+        (ROOT / "src/agentverify/schemas/agentverify-policy-summary-v1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    Draft202012Validator(schema).validate(payload)
+
+
+def test_cli_policy_signature_fails_closed_on_invalid_signature(tmp_path: Path, capsys) -> None:
+    policy = tmp_path / "policy.json"
+    policy.write_text(
+        '{"schema_version":1,"name":"release","gates":[{"id":"no-high","max_count":0}]}',
+        encoding="utf-8",
+    )
+    key_trust_root, signature_bundle = write_signed_policy_artifacts(tmp_path, policy)
+    bundle = json.loads(signature_bundle.read_text(encoding="utf-8"))
+    bundle["signatures"][0]["signature"] = base64.b64encode(b"\0" * 64).decode("ascii")
+    signature_bundle.write_text(json.dumps(bundle), encoding="utf-8")
+
+    assert (
+        cli.main(
+            [
+                "policy",
+                str(policy),
+                "--signature",
+                str(signature_bundle),
+                "--trust-root",
+                str(key_trust_root),
+                "--require-trusted",
+                "--format",
+                "json",
+            ]
+        )
+        == 1
+    )
+    signature = json.loads(capsys.readouterr().out)["trust"]["signature"]
+    assert signature["trusted"] is False
+    assert signature["verified_signatures"] == []
+    assert signature["invalid_signatures"] == [{"key_id": "security-team-2026"}]
+
+
+def test_cli_policy_signature_requires_key_trust_root(tmp_path: Path, capsys) -> None:
+    policy = tmp_path / "policy.json"
+    policy.write_text(
+        '{"schema_version":1,"name":"release","gates":[{"id":"no-high","max_count":0}]}',
+        encoding="utf-8",
+    )
+    _, signature_bundle = write_signed_policy_artifacts(tmp_path, policy)
+
+    assert cli.main(["policy", str(policy), "--signature", str(signature_bundle)]) == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "--signature requires --trust-root" in captured.err
+
+
+def test_cli_policy_signature_rejects_invalid_key_trust_root(tmp_path: Path, capsys) -> None:
+    policy = tmp_path / "policy.json"
+    policy.write_text(
+        '{"schema_version":1,"name":"release","gates":[{"id":"no-high","max_count":0}]}',
+        encoding="utf-8",
+    )
+    key_trust_root, signature_bundle = write_signed_policy_artifacts(tmp_path, policy)
+    key_trust_root.write_text(
+        '{"schema_version":1,"trust_model":"local-content-digest-allowlist","keys":[]}',
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "policy",
+                str(policy),
+                "--signature",
+                str(signature_bundle),
+                "--trust-root",
+                str(key_trust_root),
+            ]
+        )
+        == 2
+    )
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "invalid policy key trust root" in captured.err
+    assert "trust_model must be local-key-signature" in captured.err
+
+
+def test_cli_policy_signature_rejects_export_option_conflict(tmp_path: Path, capsys) -> None:
+    policy = tmp_path / "policy.json"
+    policy.write_text(
+        '{"schema_version":1,"name":"release","gates":[{"id":"no-high","max_count":0}]}',
+        encoding="utf-8",
+    )
+    key_trust_root, signature_bundle = write_signed_policy_artifacts(tmp_path, policy)
+
+    assert (
+        cli.main(
+            [
+                "policy",
+                str(policy),
+                "--export-signing-payload",
+                "--signature",
+                str(signature_bundle),
+                "--trust-root",
+                str(key_trust_root),
+            ]
+        )
+        == 2
+    )
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "export options cannot be combined" in captured.err
 
 
 def test_cli_policy_export_trust_root_rejects_conflicting_trust_options(

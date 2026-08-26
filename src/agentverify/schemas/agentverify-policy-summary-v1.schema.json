@@ -72,9 +72,10 @@
       "required": ["content_hashes", "signature_verified", "note"],
       "properties": {
         "content_hashes": {"const": true},
-        "signature_verified": {"const": false},
+        "signature_verified": {"type": "boolean"},
         "note": {"type": "string", "minLength": 1},
-        "trust_root": {"$ref": "#/$defs/trustRootResult"}
+        "trust_root": {"$ref": "#/$defs/trustRootResult"},
+        "signature": {"$ref": "#/$defs/signatureTrustResult"}
       }
     },
     "trustRootResult": {
@@ -116,6 +117,102 @@
         "source": {"type": "string", "minLength": 1},
         "expected_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         "actual_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "signatureTrustResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "sha256",
+        "trust_root_source",
+        "trust_root_sha256",
+        "trust_model",
+        "signature_format",
+        "trusted",
+        "signed_at",
+        "matched_sources",
+        "missing_sources",
+        "digest_mismatches",
+        "payload_mismatches",
+        "verified_signatures",
+        "untrusted_signatures",
+        "expired_signatures",
+        "invalid_signatures",
+        "unsupported_algorithms"
+      ],
+      "properties": {
+        "source": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "trust_root_source": {"type": "string", "minLength": 1},
+        "trust_root_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "trust_model": {"const": "local-key-signature"},
+        "signature_format": {"const": "agentverify-policy-signature"},
+        "trusted": {"type": "boolean"},
+        "signed_at": {"type": "string", "format": "date-time"},
+        "matched_sources": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "missing_sources": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "digest_mismatches": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/digestMismatch"}
+        },
+        "payload_mismatches": {
+          "type": "array",
+          "items": {"enum": ["root_source", "root_sha256", "policy_set"]}
+        },
+        "verified_signatures": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/signatureKeyResult"}
+        },
+        "untrusted_signatures": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/signatureKeyResult"}
+        },
+        "expired_signatures": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/expiredSignatureResult"}
+        },
+        "invalid_signatures": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/signatureKeyResult"}
+        },
+        "unsupported_algorithms": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/unsupportedAlgorithmResult"}
+        }
+      }
+    },
+    "signatureKeyResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key_id"],
+      "properties": {
+        "key_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "expiredSignatureResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key_id", "not_before", "not_after"],
+      "properties": {
+        "key_id": {"type": "string", "minLength": 1},
+        "not_before": {"type": "string", "format": "date-time"},
+        "not_after": {"type": "string", "format": "date-time"}
+      }
+    },
+    "unsupportedAlgorithmResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key_id", "algorithm"],
+      "properties": {
+        "key_id": {"type": "string", "minLength": 1},
+        "algorithm": {"type": "string", "minLength": 1}
       }
     }
   }

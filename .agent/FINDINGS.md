@@ -50,8 +50,9 @@
   digests, preserving byte-level reproducibility and avoiding JSON canonicalization drift.
 - Policy signing payload export now provides that exact source-digest manifest as an installed,
   schema-backed CLI artifact, while still leaving `signature_verified: false`.
-- Policy signature and key-trust-root schemas now make the future detached-signature and local-key
-  contracts installable before verification behavior is enabled.
+- Detached Ed25519 policy signatures now verify against local key trust roots over the exact
+  exported source-digest signing payload bytes. Digest allowlists remain a separate content
+  approval workflow and still report `signature_verified: false`.
 - Python provider-wrapper attribution now follows exact selected local package reexport chains for
   AgentScope/PydanticAI symbols when every alias hop is unrebound; star imports from proven local
   reexport modules respect literal `__all__`/non-underscore visibility; simple imported local wrapper

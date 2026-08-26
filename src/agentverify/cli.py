@@ -13,6 +13,8 @@ from .policy import (
     PolicyError,
     evaluate_policy,
     load_policy,
+    load_policy_key_trust_root,
+    load_policy_signature,
     load_policy_trust_root,
     policy_summary,
     render_policy_signing_payload,
@@ -141,14 +143,19 @@ def build_parser() -> argparse.ArgumentParser:
         "--trust-root",
         type=Path,
         help=(
-            "validate composed policy content against a schema-v1 local digest allowlist; "
-            "does not verify author signatures"
+            "validate composed policy content against a schema-v1 local digest allowlist, "
+            "or against a local key trust root when --signature is supplied"
         ),
+    )
+    policy.add_argument(
+        "--signature",
+        type=Path,
+        help="verify a schema-v1 detached policy signature bundle with --trust-root keys",
     )
     policy.add_argument(
         "--require-trusted",
         action="store_true",
-        help="return exit code 1 unless every composed policy source matches --trust-root",
+        help="return exit code 1 unless policy trust verification succeeds",
     )
     policy.add_argument(
         "-o",
@@ -251,13 +258,16 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 2
         if (args.export_trust_root or args.export_signing_payload) and (
-            args.trust_root or args.require_trusted
+            args.trust_root or args.require_trusted or args.signature
         ):
             print(
                 "agentverify: export options cannot be combined with "
-                "--trust-root or --require-trusted",
+                "--trust-root, --signature, or --require-trusted",
                 file=sys.stderr,
             )
+            return 2
+        if args.signature and not args.trust_root:
+            print("agentverify: --signature requires --trust-root", file=sys.stderr)
             return 2
         if args.require_trusted and not args.trust_root:
             print("agentverify: --require-trusted requires --trust-root", file=sys.stderr)
@@ -283,11 +293,30 @@ def main(argv: list[str] | None = None) -> int:
             )
         trust_root = None
         trust_root_digest = None
+        key_trust_root = None
+        key_trust_root_digest = None
+        signature_bundle = None
+        signature_digest = None
         if args.trust_root:
+            if args.signature:
+                try:
+                    key_trust_root, key_trust_root_digest = load_policy_key_trust_root(
+                        args.trust_root
+                    )
+                except (OSError, PolicyError) as error:
+                    print(f"agentverify: invalid policy key trust root: {error}", file=sys.stderr)
+                    return 2
+            else:
+                try:
+                    trust_root, trust_root_digest = load_policy_trust_root(args.trust_root)
+                except (OSError, PolicyError) as error:
+                    print(f"agentverify: invalid policy trust root: {error}", file=sys.stderr)
+                    return 2
+        if args.signature:
             try:
-                trust_root, trust_root_digest = load_policy_trust_root(args.trust_root)
+                signature_bundle, signature_digest = load_policy_signature(args.signature)
             except (OSError, PolicyError) as error:
-                print(f"agentverify: invalid policy trust root: {error}", file=sys.stderr)
+                print(f"agentverify: invalid policy signature: {error}", file=sys.stderr)
                 return 2
         report = render_policy_summary(
             loaded_policy,
@@ -297,9 +326,28 @@ def main(argv: list[str] | None = None) -> int:
             trust_root=trust_root,
             trust_root_source=args.trust_root.name if args.trust_root else None,
             trust_root_digest=trust_root_digest,
+            key_trust_root=key_trust_root,
+            key_trust_root_source=args.trust_root.name if args.signature else None,
+            key_trust_root_digest=key_trust_root_digest,
+            signature_bundle=signature_bundle,
+            signature_source=args.signature.name if args.signature else None,
+            signature_digest=signature_digest,
         )
         trusted = True
-        if trust_root is not None:
+        if signature_bundle is not None:
+            summary = policy_summary(
+                loaded_policy,
+                source=args.path.name,
+                digest=policy_digest,
+                key_trust_root=key_trust_root,
+                key_trust_root_source=args.trust_root.name,
+                key_trust_root_digest=key_trust_root_digest,
+                signature_bundle=signature_bundle,
+                signature_source=args.signature.name,
+                signature_digest=signature_digest,
+            )
+            trusted = bool(summary["trust"]["signature_verified"])
+        elif trust_root is not None:
             summary = policy_summary(
                 loaded_policy,
                 source=args.path.name,

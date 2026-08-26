@@ -1,16 +1,15 @@
-# Signed policy provenance design
+# Signed policy provenance
 
 AgentVerify currently supports local policy content trust through SHA-256 digest allowlists. That is
 useful for CI reproducibility, but it deliberately does not prove who authored, approved, or
-published a policy. Signed policy provenance should add author authenticity without weakening the
+published a policy. Signed policy provenance adds author authenticity without weakening the
 current fail-closed digest behavior.
 
-This document is a design target for signature verification. AgentVerify can already export the
-deterministic source-digest payload that external signing tools should sign, but until the CLI
-reports `signature_verified: true`, AgentVerify policy summaries should continue to say that only
-local content hashes were checked.
-The `policy-signature` and `policy-key-trust-root` schemas are bundled as installable contracts for
-the planned detached signature bundle and local public-key trust root shapes.
+AgentVerify exports the deterministic source-digest payload that external signing tools sign, then
+verifies a detached Ed25519 signature bundle against a local public-key trust root with
+`agentverify policy --signature ... --trust-root ...`. Digest-only allowlists continue to report
+`signature_verified: false`; signature mode reports `signature_verified: true` only after the signed
+manifest and at least one trusted signature verify.
 
 ## Goals
 
@@ -56,19 +55,20 @@ The exported signing payload includes:
 - `root_sha256`
 
 The verifier recomputes each source digest from local bytes, compares it to the signed manifest, and
-then verifies the detached signature over the canonical signed-manifest bytes. A composed policy is
-signature-verified only when every evaluated source appears in a trusted, valid signature bundle and
-the signed digest matches local content.
+then verifies the detached signature over the exact bytes produced by
+`agentverify policy --export-signing-payload`. A composed policy is signature-verified only when
+every evaluated source appears in a trusted, valid signature bundle and the signed digest matches
+local content.
 
 ## Signature bundle shape
 
-Proposed trust model name:
+Trust model name:
 
 ```text
 local-key-signature
 ```
 
-Proposed detached bundle:
+Detached bundle:
 
 ```json
 {
@@ -105,7 +105,7 @@ Proposed detached bundle:
 
 ## Local key trust root shape
 
-The trust root should stay local and explicit:
+The trust root stays local and explicit:
 
 ```json
 {
@@ -130,7 +130,7 @@ current wall clock, so historical approvals remain reproducible after rotation.
 
 ## Summary reporting
 
-The policy summary trust block should remain conservative:
+The policy summary trust block remains conservative:
 
 - `content_hashes: true` whenever source digests are reported.
 - `signature_verified: true` only when every composed source has a matching signed digest and at
@@ -138,12 +138,13 @@ The policy summary trust block should remain conservative:
 - `signature_verified: false` for digest-only allowlists, missing signatures, untrusted keys,
   unsupported algorithms, or partial signature coverage.
 
-The summary should also expose machine-readable failure reasons such as `missing_signed_sources`,
-`digest_mismatches`, `untrusted_signatures`, `expired_signatures`, and `unsupported_algorithms`.
+The summary also exposes machine-readable failure reasons such as `missing_sources`,
+`digest_mismatches`, `payload_mismatches`, `untrusted_signatures`, `expired_signatures`,
+`invalid_signatures`, and `unsupported_algorithms`.
 
 ## CLI design
 
-Implemented signing-payload export:
+Export the payload to sign:
 
 ```console
 agentverify policy repository-policy.json \
@@ -151,11 +152,10 @@ agentverify policy repository-policy.json \
   --output policy-signing-payload.json
 ```
 
-`--export-signing-payload` should produce the exact payload bytes to sign. AgentVerify should not
-need to hold private keys for the first implementation; signing can be done by external tools or
-organizational key management.
+`--export-signing-payload` produces the exact payload bytes to sign. AgentVerify does not hold
+private keys; signing is done by external tools or organizational key management.
 
-Future verification command shape:
+Verify a detached signature:
 
 ```console
 agentverify policy repository-policy.json \
@@ -164,7 +164,7 @@ agentverify policy repository-policy.json \
   --require-trusted
 ```
 
-The schemas for the two future verification inputs are already discoverable:
+The verification input schemas are discoverable:
 
 ```console
 agentverify schema policy-signature --output agentverify-policy-signature.schema.json
@@ -187,10 +187,8 @@ During migration, the summary should clearly distinguish:
 - signed and trusted content;
 - signed content from an untrusted key.
 
-## Open implementation questions
+## Deferred design questions
 
-- Whether to depend directly on a small Ed25519 library or keep signature verification behind an
-  optional extra.
 - Whether to support multiple signatures with threshold policies in schema v1 or defer thresholds to
   schema v2.
 - Whether signed payloads should optionally include rule-catalog schema versions so policy approvals

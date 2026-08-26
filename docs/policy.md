@@ -114,7 +114,7 @@ and the source/digest that contributed each gate. These hashes make the evaluate
 auditable; they are not signatures and do not prove who authored a policy.
 Use `agentverify policy PATH` to validate and explain this composition without scanning a repository.
 The JSON form includes the same sources, gate provenance, and a trust block that explicitly records
-`signature_verified: false` until explicit trust-root support exists. Use
+whether a digest allowlist or detached signature/key trust root verified the composed policy. Use
 `agentverify schema policy-summary` to validate that machine-readable summary.
 
 `agentverify policy PATH --trust-root policy-trust-root.json` compares every composed policy source
@@ -144,8 +144,7 @@ integrity/approval check for local policy content, not a signature scheme; summa
 report `signature_verified: false`. The checked-in
 [`examples/policy-trust-root.json`](../examples/policy-trust-root.json) is a runnable allowlist for
 the composed [`examples/repository-policy.json`](../examples/repository-policy.json) and
-[`examples/org-policy.json`](../examples/org-policy.json) pair. The future cryptographic provenance
-design is tracked separately in [`docs/policy-signatures.md`](policy-signatures.md).
+[`examples/org-policy.json`](../examples/org-policy.json) pair.
 
 To prepare the same composed source-digest list for external signing, export a deterministic signing
 payload:
@@ -159,9 +158,23 @@ agentverify schema policy-key-trust-root --output agentverify-policy-key-trust-r
 
 The signing payload records the root policy source/digest and every composed policy source/digest.
 It does not contain a signature and does not change `signature_verified`; it is the stable manifest
-that future detached signature bundles should cover. The `policy-signature` and
-`policy-key-trust-root` schemas document the planned detached signature and local public-key trust
-root contracts before verification behavior is enabled.
+that detached signature bundles cover.
+
+To verify author authenticity, provide a detached signature bundle and a local key trust root:
+
+```console
+agentverify policy PATH \
+  --signature policy-signature.json \
+  --trust-root policy-key-trust-root.json \
+  --require-trusted
+```
+
+In this mode, `--trust-root` is interpreted as a `local-key-signature` key trust root instead of a
+digest allowlist. Verification succeeds only when every composed policy source matches the signed
+manifest and at least one Ed25519 signature verifies under a trusted, in-window key. Missing sources,
+stale digests, expired keys, untrusted key IDs, malformed bundles, and invalid signatures fail
+closed. See [`docs/policy-signatures.md`](policy-signatures.md) for the exact contracts and threat
+model.
 
 ## Baselines and partial scans
 

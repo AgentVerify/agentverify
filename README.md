@@ -80,9 +80,9 @@ still preserve policy and `--fail-on` exit decisions.
 `agentverify schema policy-summary` validates `agentverify policy --format json`,
 `agentverify schema policy-signing-payload` validates deterministic source-digest manifests for
 external policy signing, `agentverify schema policy-signature` and
-`agentverify schema policy-key-trust-root` validate the planned detached signature bundle and local
-public-key trust root shapes, and `agentverify schema policy-trust-root` validates local digest
-allowlists for policy summaries.
+`agentverify schema policy-key-trust-root` validate detached signature bundles and local public-key
+trust roots, and `agentverify schema policy-trust-root` validates local digest allowlists for policy
+summaries.
 `agentverify schema rules` validates the machine-readable rule catalog.
 Use `--format summary` for compact CI logs: it reports scan totals, baseline/policy status, counts by
 severity/result kind/rule, and the top evidence locations without printing the full component graph.
@@ -95,9 +95,12 @@ kind or severity threshold, so a typo or dead filter cannot silently turn a gate
 `agentverify policy PATH` validates a policy without scanning a repository and explains composed
 gate sources and SHA-256 content digests. These digests make local inputs auditable; they are not
 author signatures. A policy trust root can require every composed policy source to match an approved
-local SHA-256 digest allowlist, but `signature_verified` remains false until cryptographic signature
-support exists. Use `agentverify policy PATH --export-trust-root --output policy-trust-root.json` to
-generate a local digest allowlist from the exact composed policy inputs, or
+local SHA-256 digest allowlist while keeping `signature_verified: false`. For author authenticity,
+`agentverify policy PATH --signature policy-signature.json --trust-root policy-key-trust-root.json`
+verifies a detached Ed25519 signature over the composed source-digest manifest and can be combined
+with `--require-trusted` as a fail-closed CI gate. Use
+`agentverify policy PATH --export-trust-root --output policy-trust-root.json` to generate a local
+digest allowlist from the exact composed policy inputs, or
 `agentverify policy PATH --export-signing-payload --output policy-signing-payload.json` to emit the
 deterministic source-digest manifest that external signing tools should sign.
 
