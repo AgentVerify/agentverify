@@ -387,13 +387,16 @@ only this selected-mode, unclassified-tool path. Normal mode's wildcard remains 
 non-default, and MCP servers must already be configured. Next model locally reviewed MCP effect
 manifests without trusting server-supplied names, descriptions, or advisory annotations alone.
 
-Schema v122 resolves a delegation-specific approval gap in Cline VS Code. The root SDK host installs
-explicit policies and a live callback, but the SDK auto-approves unlisted tools; default-enabled
-`spawn_agent` is unlisted, and its local wrapper gives the child Act-mode shell/edit tools without
-forwarding either supported approval input. AV-APPROVAL010 reports only that exact nine-source
-composition. A gated spawn tool, default-ask behavior, disabled spawning, forwarded policy/callback,
-or incomplete path stays negative. Next generalize approval inheritance across nested agents only
-where parent intent, child tool authority, and execution-policy propagation can all be proven.
+Schema v123 extends the delegation-specific approval gap from Cline VS Code into Cline CLI sandbox
+mode. VS Code installs explicit root policies and a live callback, but the SDK auto-approves
+unlisted tools; default-enabled `spawn_agent` is unlisted. CLI sandbox sessions route through the
+local backend with `requestToolApproval` and `toolPolicies`, and `spawn_agent` can be approved as a
+parent action. Both hosts reach the same local wrapper, which gives the child Act-mode shell/edit
+tools without forwarding either supported approval input. AV-APPROVAL010 reports only these exact
+compositions. A gated spawn tool, default-ask behavior, disabled spawning, non-local CLI routing,
+forwarded policy/callback, or incomplete path stays negative. Next generalize approval inheritance
+across nested agents only where parent intent, child tool authority, and execution-policy
+propagation can all be proven.
 
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
@@ -519,8 +522,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 710 pinned positive/negative locations, with 1,423 separately
-scored IR component/relationship labels. Schema-v122 engine results and
+The curated regression set has reached 714 pinned positive/negative locations, with 1,449 separately
+scored IR component/relationship labels. Schema-v123 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. Keep discovery sampling metrics separate from detection-quality metrics.

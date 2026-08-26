@@ -65,6 +65,9 @@ tool. The same model command passes through `shell-quote` classification and rea
 - `cases/typescript_cline_subagent_approval`: an exact nine-source Cline VS Code composition resolves
   root approval policy, default-enabled spawning, child local tools, and dropped policy/callback
   propagation; incomplete chains and forwarded approval state stay negative.
+- `cases/typescript_cline_subagent_approval_cli`: an exact ten-source Cline CLI sandbox composition
+  resolves startup policy, approval callback, local backend routing, child local tools, and dropped
+  policy/callback propagation; incomplete chains and forwarded approval state stay negative.
 - `cases/python_semantic_kernel_mcp_sampling`: exact Agent/plugin binding distinguishes explicit
   sampling auto-approval from default/explicit denial, callback, dynamic, and disconnected states.
 - `cases/mcp_sampling_consent`: exact Python and TypeScript MCP sampling handlers distinguish
@@ -164,9 +167,9 @@ tool. The same model command passes through `shell-quote` classification and rea
 
 ## Full-corpus engine benchmark
 
-The 2026-08-23 default scan covered 70 source-bearing repositories plus one docs-only upstream
-snapshot. It parsed 10,795 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,378 relationships, and completed in 381.7229 seconds on the development machine. Three parse
+The 2026-08-26 default scan covered 70 source-bearing repositories plus one docs-only upstream
+snapshot. It parsed 10,797 selected Python/TypeScript/JavaScript files plus 155 configuration files,
+resolved 2,383 relationships, and completed in 412.7624 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.
@@ -174,10 +177,10 @@ so the benchmark records zero suppressed findings.
 The locked collector prioritizes manifests, production SSRF/URL-safety sources, and then general
 security/agent/tool/MCP sources within the 220-file cap. It adds at most 20 local source files:
 versioned audited evidence hints plus Python imports reached from MCP forwarding or source-proven
-URL-security call sites, all charged against the dependency cap. This refresh materialized 200 dependency files across 25
+URL-security call sites, all charged against the dependency cap. This refresh materialized 202 dependency files across 25
 repositories; the engine scans all of them, while the collector's lexical-signal inventory retains
 its independent 2 MB per-repository byte cap. Collector schema v4 records the hint manifest and
-dependency count per repository; engine schema v122 carries both the 200-file total and the
+dependency count per repository; engine schema v123 carries both the 202-file total and the
 25-repository coverage.
 
 Engine benchmark schema v96 retains stable component-name taxonomies, category presence counts,
@@ -879,17 +882,20 @@ read-only allowlist.
 
 ## AV-APPROVAL010 — spawned sub-agent loses approval state
 
-Schema v122 requires the exact Cline VS Code composition across nine production sources: the root
-policy builder and live session wiring, host callback wiring, SDK fail-open policy dispatch, Act
-preset and spawn default, local spawn registration, child tool construction, and the shared spawn
+Schema v123 requires two exact Cline production compositions. The VS Code path spans nine sources:
+the root policy builder and live session wiring, host callback wiring, SDK fail-open policy dispatch,
+Act preset and spawn default, local spawn registration, child tool construction, and the shared spawn
 factory. Root `editor` and `run_commands` are explicitly gated, but `spawn_agent` is absent and the
-SDK auto-approves unlisted tools.
+SDK auto-approves unlisted tools. The CLI sandbox path spans ten sources: startup policy, interactive
+safe-tool policy, terminal approval callback, `runAgent` capability/policy wiring, CLI core local
+backend routing, SDK policy dispatch, spawn default, local host registration, child tool
+construction, and the shared spawn factory.
 
 The review is anchored at
 [`createSpawnAgentTool({`](https://github.com/cline/cline/blob/80b3b0348e694bafc48e3dcd70154de3cf4289d9/sdk/packages/core/src/runtime/host/local/spawn-tool.ts#L149):
 the wrapper constructs child tools from the Act preset but omits both `toolPolicies` and
 `requestToolApproval`, even though the factory accepts and forwards those fields. The rule matrix is
-2 TP, 2 TN, 0 FP, and 0 FN; the exact composition has 24 positive and two negative IR labels.
+4 TP, 4 TN, 0 FP, and 0 FN; the exact compositions have 48 positive and four negative IR labels.
 Remediation is to gate the parent spawn operation and propagate the effective policy/callback into
 every delegated agent, failing closed when propagation is unavailable.
 
@@ -975,7 +981,7 @@ Two default-scope clients qualify: the Microsoft tutorial and FastMCP CLI both a
 do not show the target URL. The TypeScript SDK host is the negative control: it displays the full URL,
 rejects unsafe non-HTTPS/non-loopback destinations, and asks before proceeding. The rule matrix is 4
 TP, 3 TN, 0 FP, and 0 FN; seven additional positive IR labels pin full versus missing disclosure.
-All 710 cross-rule labels pass (324 positives and 386 negatives).
+All 714 cross-rule labels pass (326 positives and 388 negatives).
 
 During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
 to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
@@ -991,8 +997,8 @@ findings while preserving interpolated templates. Broad approval-name matching c
 and version-check flags with human approval; requiring approval-specific names removed six review
 candidates. Corpus totals are now 25 `AV-EXEC001` findings, 15 `AV-APPROVAL001` reviews, one
 `AV-APPROVAL007` raw-prefix review, one `AV-APPROVAL008` plan-mode precedence review, one
-`AV-APPROVAL009` plan-mode MCP-classification review, one `AV-APPROVAL010` sub-agent propagation
-review, one specialized `AV-MCP004` review, three generic `AV-MCP005`
+`AV-APPROVAL009` plan-mode MCP-classification review, two `AV-APPROVAL010` sub-agent propagation
+reviews, one specialized `AV-MCP004` review, three generic `AV-MCP005`
 sampling-consent reviews, and three
 `AV-MCP006` elicitation-consent reviews, plus two `AV-MCP007` full-URL-disclosure reviews.
 The dependency closure also exposes CAMEL's production `func_string_to_callable(code)` helper, whose
@@ -1474,14 +1480,14 @@ and surfacing failed writes through metrics or alerts.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 710 exact labels across all 24 enabled rules: 324 positives and 386
+`benchmarks/truthset.json` contains 714 exact labels across all 24 enabled rules: 326 positives and 388
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
 Compose/Kubernetes/Docker SDK settings, host credential bind near misses, and exact/prompt-only MCP
-package launchers. All 710 currently pass;
+package launchers. All 714 currently pass;
 each rule's seed precision and recall are 1.0. Negative labels must retain either an observed Agent IR
 component anchor or verified source text at the exact pinned line, preventing a missing or drifting
 location from passing silently.
@@ -1617,7 +1623,7 @@ Twenty-two Continue plan-mode labels add 20 exact framework/Agent/tool/capabilit
 positives plus incomplete-composition and dynamic-ask negatives.
 Twenty-four Continue MCP labels add 22 exact Agent/tool/server/capability/control/edge positives plus
 incomplete-composition negatives.
-Twenty-six Cline sub-agent approval labels add 24 exact root/child Agent, tool, capability,
+Fifty-two Cline sub-agent approval labels add 48 exact root/child Agent, tool, capability,
 setting/control, and relationship positives plus incomplete and safely propagated negatives.
 Three path-segment-sanitizer labels pin the exact local and Qwen
 SHA-256 edges plus a lookalike negative.
@@ -1625,7 +1631,7 @@ Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,423 IR labels pass (1,033 positives and 390 negatives):
+negatives. All 1,449 IR labels pass (1,057 positives and 392 negatives):
 321 component-taxonomy positives/128 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three

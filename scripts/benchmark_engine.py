@@ -151,9 +151,7 @@ def main() -> int:
             if edge.attributes.get("target_identity") == "same-class-helper-return"
         ]
         if any(
-            edge.source_kind != "agent"
-            or edge.target_kind != "agent"
-            or edge.target_id is None
+            edge.source_kind != "agent" or edge.target_kind != "agent" or edge.target_id is None
             for edge in python_agent_helper_return_edges
         ):
             raise RuntimeError(
@@ -162,13 +160,10 @@ def main() -> int:
         python_local_agent_factory_return_edges = [
             edge
             for edge in ir.relationships
-            if edge.attributes.get("target_identity")
-            == "same-block-function-factory-return"
+            if edge.attributes.get("target_identity") == "same-block-function-factory-return"
         ]
         if any(
-            edge.source_kind != "agent"
-            or edge.target_kind != "agent"
-            or edge.target_id is None
+            edge.source_kind != "agent" or edge.target_kind != "agent" or edge.target_id is None
             for edge in python_local_agent_factory_return_edges
         ):
             raise RuntimeError(
@@ -177,19 +172,15 @@ def main() -> int:
         python_typed_tool_parameter_edges = [
             edge
             for edge in ir.relationships
-            if edge.attributes.get("target_identity")
-            == "typed-parameter-callsite-consensus"
+            if edge.attributes.get("target_identity") == "typed-parameter-callsite-consensus"
         ]
         python_typed_tool_parameters = [
             component
             for component in ir.components
-            if component.kind == "tool"
-            and component.attributes.get("binding") == "typed-parameter"
+            if component.kind == "tool" and component.attributes.get("binding") == "typed-parameter"
         ]
         if any(
-            edge.source_kind != "agent"
-            or edge.target_kind != "tool"
-            or edge.target_id is None
+            edge.source_kind != "agent" or edge.target_kind != "tool" or edge.target_id is None
             for edge in python_typed_tool_parameter_edges
         ):
             raise RuntimeError(
@@ -211,8 +202,7 @@ def main() -> int:
         python_contextual_tool_import_edges = [
             edge
             for edge in ir.relationships
-            if edge.attributes.get("target_identity")
-            == "contextual-absolute-import-single-export"
+            if edge.attributes.get("target_identity") == "contextual-absolute-import-single-export"
         ]
         if any(
             edge.source_kind != "agent"
@@ -245,9 +235,7 @@ def main() -> int:
             or not edge.attributes.get("target_path")
             for edge in python_imported_agent_factory_edges
         ):
-            raise RuntimeError(
-                f"{repository}: imported Agent factory lacks an exact graph edge"
-            )
+            raise RuntimeError(f"{repository}: imported Agent factory lacks an exact graph edge")
         typed_tool_concrete_ids = {
             target_id
             for component in python_typed_tool_parameters
@@ -304,8 +292,7 @@ def main() -> int:
         python_registry_tools = [
             item
             for item in ir.components
-            if item.kind == "tool"
-            and item.attributes.get("registration") == "registry-decorator"
+            if item.kind == "tool" and item.attributes.get("registration") == "registry-decorator"
         ]
         python_registry_tool_ids = {
             item.symbol_id for item in python_registry_tools if item.symbol_id
@@ -315,8 +302,7 @@ def main() -> int:
             for item in ir.components
             if item.kind == "tool"
             and item.evidence.path.endswith(".py")
-            and str(item.attributes.get("constructor", "")).rsplit(".", 1)[-1]
-            == "ComputerTool"
+            and str(item.attributes.get("constructor", "")).rsplit(".", 1)[-1] == "ComputerTool"
         ]
         python_computer_tool_ids = {
             item.symbol_id for item in python_computer_tools if item.symbol_id
@@ -344,17 +330,14 @@ def main() -> int:
             for item in ir.components
             if item.kind == "tool"
             and item.name.startswith("LocalShellTool@")
-            and item.attributes.get("approval_source")
-            == "sdk-no-approval-parameter"
+            and item.attributes.get("approval_source") == "sdk-no-approval-parameter"
             and item.attributes.get("execution_environment") == "local"
         ]
         python_local_shell_tool_ids = {
             item.symbol_id for item in python_local_shell_tools if item.symbol_id
         }
         if len(python_local_shell_tool_ids) != len(python_local_shell_tools):
-            raise RuntimeError(
-                f"{repository}: Python LocalShellTool lacks a unique symbol ID"
-            )
+            raise RuntimeError(f"{repository}: Python LocalShellTool lacks a unique symbol ID")
         python_local_shell_capability_edges = [
             edge
             for edge in ir.relationships
@@ -363,9 +346,7 @@ def main() -> int:
             and edge.target_name == "shell-execution"
         ]
         if len(python_local_shell_capability_edges) != len(python_local_shell_tools):
-            raise RuntimeError(
-                f"{repository}: Python LocalShellTool lacks an exact shell edge"
-            )
+            raise RuntimeError(f"{repository}: Python LocalShellTool lacks an exact shell edge")
         python_code_interpreter_tools = [
             item
             for item in ir.components
@@ -377,12 +358,8 @@ def main() -> int:
         python_code_interpreter_tool_ids = {
             item.symbol_id for item in python_code_interpreter_tools if item.symbol_id
         }
-        if len(python_code_interpreter_tool_ids) != len(
-            python_code_interpreter_tools
-        ):
-            raise RuntimeError(
-                f"{repository}: Python CodeInterpreterTool lacks a unique symbol ID"
-            )
+        if len(python_code_interpreter_tool_ids) != len(python_code_interpreter_tools):
+            raise RuntimeError(f"{repository}: Python CodeInterpreterTool lacks a unique symbol ID")
         python_code_interpreter_capability_edges = [
             edge
             for edge in ir.relationships
@@ -390,12 +367,8 @@ def main() -> int:
             and edge.target_kind == "capability"
             and edge.target_name == "code-execution"
         ]
-        if len(python_code_interpreter_capability_edges) != len(
-            python_code_interpreter_tools
-        ):
-            raise RuntimeError(
-                f"{repository}: Python CodeInterpreterTool lacks an exact code edge"
-            )
+        if len(python_code_interpreter_capability_edges) != len(python_code_interpreter_tools):
+            raise RuntimeError(f"{repository}: Python CodeInterpreterTool lacks an exact code edge")
         python_openai_hosted_tools = [
             item
             for item in ir.components
@@ -407,18 +380,13 @@ def main() -> int:
             item.symbol_id for item in python_openai_hosted_tools if item.symbol_id
         }
         if len(python_openai_hosted_tool_ids) != len(python_openai_hosted_tools):
-            raise RuntimeError(
-                f"{repository}: Python OpenAI hosted tool lacks a unique symbol ID"
-            )
+            raise RuntimeError(f"{repository}: Python OpenAI hosted tool lacks a unique symbol ID")
         python_openai_hosted_capability_edges = [
             edge
             for edge in ir.relationships
-            if edge.source_id in python_openai_hosted_tool_ids
-            and edge.target_kind == "capability"
+            if edge.source_id in python_openai_hosted_tool_ids and edge.target_kind == "capability"
         ]
-        if len(python_openai_hosted_capability_edges) != len(
-            python_openai_hosted_tools
-        ):
+        if len(python_openai_hosted_capability_edges) != len(python_openai_hosted_tools):
             raise RuntimeError(
                 f"{repository}: Python OpenAI hosted tool lacks an exact capability edge"
             )
@@ -435,8 +403,7 @@ def main() -> int:
         python_agent_referenced_tools = [
             item
             for item in ir.components
-            if item.kind == "tool"
-            and item.attributes.get("registration") == "agent-tool-reference"
+            if item.kind == "tool" and item.attributes.get("registration") == "agent-tool-reference"
         ]
         python_agent_tool_edges = [
             edge
@@ -446,9 +413,7 @@ def main() -> int:
             and edge.evidence.path.endswith(".py")
         ]
         python_non_test_agent_tool_edges = [
-            edge
-            for edge in python_agent_tool_edges
-            if not is_test_path(edge.evidence.path)
+            edge for edge in python_agent_tool_edges if not is_test_path(edge.evidence.path)
         ]
         python_agent_mcp_server_edges = [
             edge
@@ -472,15 +437,12 @@ def main() -> int:
             and edge.evidence.path.endswith(".py")
         ]
         agent_reachable_fastmcp_server_ids = {
-            edge.target_id
-            for edge in python_agent_mcp_server_edges
-            if edge.target_id is not None
+            edge.target_id for edge in python_agent_mcp_server_edges if edge.target_id is not None
         }
         agent_reachable_fastmcp_tool_ids = {
             edge.target_id
             for edge in python_fastmcp_server_tool_edges
-            if edge.source_id in agent_reachable_fastmcp_server_ids
-            and edge.target_id is not None
+            if edge.source_id in agent_reachable_fastmcp_server_ids and edge.target_id is not None
         }
         python_fastmcp_agent_capability_edges = [
             edge
@@ -504,8 +466,7 @@ def main() -> int:
         python_agent_referenced_agent_edges = [
             edge
             for edge in ir.relationships
-            if edge.source_kind == "agent"
-            and edge.target_id in python_agent_referenced_tool_ids
+            if edge.source_kind == "agent" and edge.target_id in python_agent_referenced_tool_ids
         ]
         referenced_tool_agent_targets = {
             edge.target_id for edge in python_agent_referenced_agent_edges
@@ -517,8 +478,7 @@ def main() -> int:
         python_agent_as_tool_adapter_ids = {
             item.symbol_id
             for item in python_agent_referenced_tools
-            if item.symbol_id
-            and item.attributes.get("binding") == "agent-as-tool-adapter"
+            if item.symbol_id and item.attributes.get("binding") == "agent-as-tool-adapter"
         }
         python_agent_as_tool_delegations = [
             edge
@@ -557,8 +517,7 @@ def main() -> int:
         python_function_tool_wrapper_agent_edges = [
             edge
             for edge in ir.relationships
-            if edge.source_kind == "agent"
-            and edge.target_id in python_function_tool_wrapper_ids
+            if edge.source_kind == "agent" and edge.target_id in python_function_tool_wrapper_ids
         ]
         function_tool_wrapper_agent_targets = {
             edge.target_id for edge in python_function_tool_wrapper_agent_edges
@@ -584,24 +543,20 @@ def main() -> int:
         python_contextual_network_helpers = [
             item
             for item in python_imported_network_helpers
-            if item.attributes.get("import_resolution")
-            == "contextual-absolute-import-single-path"
+            if item.attributes.get("import_resolution") == "contextual-absolute-import-single-path"
         ]
         python_imported_literal_origins = [
             item
             for item in ir.components
             if item.kind == "capability"
             and item.name == "network"
-            and item.attributes.get("origin_resolution")
-            == "imported-module-literal"
+            and item.attributes.get("origin_resolution") == "imported-module-literal"
         ]
         python_imported_literal_origin_locations = {
-            (item.evidence.path, item.evidence.line)
-            for item in python_imported_literal_origins
+            (item.evidence.path, item.evidence.line) for item in python_imported_literal_origins
         }
         python_imported_network_locations = {
-            (item.evidence.path, item.evidence.line)
-            for item in python_imported_network_helpers
+            (item.evidence.path, item.evidence.line) for item in python_imported_network_helpers
         }
         python_imported_class_network_helpers = [
             item
@@ -664,28 +619,24 @@ def main() -> int:
             and item.attributes.get("summary") == "same-file-axios-instance"
         ]
         typescript_axios_instance_locations = {
-            (item.evidence.path, item.evidence.line)
-            for item in typescript_axios_instance_network
+            (item.evidence.path, item.evidence.line) for item in typescript_axios_instance_network
         }
         typescript_composio_cli_upload = [
             item
             for item in ir.components
             if item.kind == "capability"
             and item.name == "network"
-            and item.attributes.get("analysis")
-            == "typescript-composio-cli-file-upload-flow"
+            and item.attributes.get("analysis") == "typescript-composio-cli-file-upload-flow"
         ]
         typescript_composio_cli_upload_locations = {
-            (item.evidence.path, item.evidence.line)
-            for item in typescript_composio_cli_upload
+            (item.evidence.path, item.evidence.line) for item in typescript_composio_cli_upload
         }
         typescript_google_adk_openapi_rest_tool = [
             item
             for item in ir.components
             if item.kind == "capability"
             and item.name == "network"
-            and item.attributes.get("analysis")
-            == "typescript-google-adk-openapi-rest-tool"
+            and item.attributes.get("analysis") == "typescript-google-adk-openapi-rest-tool"
         ]
         typescript_google_adk_openapi_rest_tool_locations = {
             (item.evidence.path, item.evidence.line)
@@ -696,14 +647,12 @@ def main() -> int:
             for item in ir.components
             if item.kind == "control-setting"
             and item.name == "mcp-tool-approval"
-            and item.attributes.get("analysis")
-            == "python-openai-agents-mcp-approval-default"
+            and item.attributes.get("analysis") == "python-openai-agents-mcp-approval-default"
         ]
         python_openhands_components = [
             item
             for item in ir.components
-            if item.attributes.get("analysis")
-            == "python-openhands-conversation-security"
+            if item.attributes.get("analysis") == "python-openhands-conversation-security"
         ]
         python_openhands_tools = [
             item for item in python_openhands_components if item.kind == "tool"
@@ -725,26 +674,26 @@ def main() -> int:
         typescript_roo_command_components = [
             item
             for item in ir.components
-            if item.attributes.get("analysis")
-            == "typescript-roo-command-auto-approval"
+            if item.attributes.get("analysis") == "typescript-roo-command-auto-approval"
         ]
         typescript_continue_plan_components = [
             item
             for item in ir.components
-            if item.attributes.get("analysis")
-            == "typescript-continue-plan-mode-approval"
+            if item.attributes.get("analysis") == "typescript-continue-plan-mode-approval"
         ]
         typescript_continue_plan_mcp_components = [
             item
             for item in ir.components
-            if item.attributes.get("analysis")
-            == "typescript-continue-plan-mode-mcp-approval"
+            if item.attributes.get("analysis") == "typescript-continue-plan-mode-mcp-approval"
         ]
+        typescript_cline_subagent_analyses = {
+            "typescript-cline-subagent-approval-propagation",
+            "typescript-cline-cli-subagent-approval-propagation",
+        }
         typescript_cline_subagent_components = [
             item
             for item in ir.components
-            if item.attributes.get("analysis")
-            == "typescript-cline-subagent-approval-propagation"
+            if item.attributes.get("analysis") in typescript_cline_subagent_analyses
         ]
         typescript_letta_default_components = [
             item
@@ -755,46 +704,40 @@ def main() -> int:
             item
             for item in ir.components
             if item.kind == "mcp-server"
-            and item.attributes.get("analysis")
-            == "typescript-openai-agents-mcp-approval-default"
+            and item.attributes.get("analysis") == "typescript-openai-agents-mcp-approval-default"
         ]
         typescript_openai_mcp_approval_capabilities = [
             item
             for item in ir.components
             if item.kind == "capability"
             and item.name == "filesystem"
-            and item.attributes.get("analysis")
-            == "typescript-openai-agents-mcp-approval-default"
+            and item.attributes.get("analysis") == "typescript-openai-agents-mcp-approval-default"
         ]
         python_agno_mcp_confirmation_servers = [
             item
             for item in ir.components
             if item.kind == "mcp-server"
-            and item.attributes.get("analysis")
-            == "python-agno-mcp-confirmation-default"
+            and item.attributes.get("analysis") == "python-agno-mcp-confirmation-default"
         ]
         python_agno_mcp_confirmation_capabilities = [
             item
             for item in ir.components
             if item.kind == "capability"
             and item.name == "filesystem"
-            and item.attributes.get("analysis")
-            == "python-agno-mcp-confirmation-default"
+            and item.attributes.get("analysis") == "python-agno-mcp-confirmation-default"
         ]
         python_semantic_kernel_mcp_sampling_servers = [
             item
             for item in ir.components
             if item.kind == "mcp-server"
-            and item.attributes.get("analysis")
-            == "python-semantic-kernel-mcp-sampling-approval"
+            and item.attributes.get("analysis") == "python-semantic-kernel-mcp-sampling-approval"
         ]
         python_semantic_kernel_mcp_sampling_capabilities = [
             item
             for item in ir.components
             if item.kind == "capability"
             and item.name == "model-sampling"
-            and item.attributes.get("analysis")
-            == "python-semantic-kernel-mcp-sampling-approval"
+            and item.attributes.get("analysis") == "python-semantic-kernel-mcp-sampling-approval"
         ]
         mcp_sampling_consent_capabilities = [
             item
@@ -824,8 +767,7 @@ def main() -> int:
             item
             for item in ir.components
             if item.kind == "tool"
-            and item.attributes.get("approval_bypass_resolution")
-            == "same-file-transitive-callback"
+            and item.attributes.get("approval_bypass_resolution") == "same-file-transitive-callback"
         ]
         mcp_package_launchers = [
             item
@@ -845,21 +787,17 @@ def main() -> int:
             item
             for item in ir.components
             if item.kind == "mcp-server"
-            and item.attributes.get("analysis")
-            == "python-import-bound-mcp-server-constructor"
+            and item.attributes.get("analysis") == "python-import-bound-mcp-server-constructor"
             and item.attributes.get("transport") == "in-process"
         ]
         python_imported_mcp_server_subclasses = [
             item
             for item in ir.components
             if item.kind == "mcp-server"
-            and item.attributes.get("analysis")
-            == "python-imported-mcp-server-subclass"
+            and item.attributes.get("analysis") == "python-imported-mcp-server-subclass"
         ]
         python_imported_mcp_server_subclass_ids = {
-            item.symbol_id
-            for item in python_imported_mcp_server_subclasses
-            if item.symbol_id
+            item.symbol_id for item in python_imported_mcp_server_subclasses if item.symbol_id
         }
         python_provider_call_attributions = [
             item
@@ -890,40 +828,35 @@ def main() -> int:
             for item in ir.components
             if item.kind == "control"
             and item.name == "durable-action-audit"
-            and item.attributes.get("analysis")
-            == "python-google-adk-bigquery-action-audit"
+            and item.attributes.get("analysis") == "python-google-adk-bigquery-action-audit"
         ]
         python_google_adk_bigquery_audit_storage = [
             item
             for item in ir.components
             if item.kind == "capability"
             and item.name == "audit-storage"
-            and item.attributes.get("analysis")
-            == "python-google-adk-bigquery-action-audit"
+            and item.attributes.get("analysis") == "python-google-adk-bigquery-action-audit"
         ]
         python_google_adk_bigquery_audit_settings = [
             item
             for item in ir.components
             if item.kind == "control-setting"
             and item.name == "action-audit"
-            and item.attributes.get("analysis")
-            == "python-google-adk-bigquery-action-audit"
+            and item.attributes.get("analysis") == "python-google-adk-bigquery-action-audit"
         ]
         python_skyvern_action_history_controls = [
             item
             for item in ir.components
             if item.kind == "control"
             and item.name == "durable-action-record"
-            and item.attributes.get("analysis")
-            == "python-skyvern-taskv3-action-history"
+            and item.attributes.get("analysis") == "python-skyvern-taskv3-action-history"
         ]
         python_skyvern_action_history_storage = [
             item
             for item in ir.components
             if item.kind == "capability"
             and item.name == "audit-storage"
-            and item.attributes.get("analysis")
-            == "python-skyvern-taskv3-action-history"
+            and item.attributes.get("analysis") == "python-skyvern-taskv3-action-history"
         ]
         typescript_network_origin_controls = [
             edge
@@ -1060,8 +993,7 @@ def main() -> int:
                     for item in python_provider_call_attributions
                 ),
                 "test_calls": sum(
-                    is_test_path(item.evidence.path)
-                    for item in python_provider_call_attributions
+                    is_test_path(item.evidence.path) for item in python_provider_call_attributions
                 ),
                 "repositories": bool(python_provider_call_attributions),
                 "production_repositories": any(
@@ -1093,17 +1025,12 @@ def main() -> int:
                     for item in python_provider_call_attributions
                 ),
                 "autogen_wrapper_calls": sum(
-                    str(item.attributes.get("module", "")).startswith(
-                        "autogen_ext.models."
-                    )
+                    str(item.attributes.get("module", "")).startswith("autogen_ext.models.")
                     for item in python_provider_call_attributions
                 ),
                 "literal_models": len(python_provider_call_models),
                 **{
-                    metric: sum(
-                        item.name == provider
-                        for item in python_provider_call_attributions
-                    )
+                    metric: sum(item.name == provider for item in python_provider_call_attributions)
                     for metric, provider in PYTHON_PROVIDER_METRICS.items()
                 },
             },
@@ -1127,9 +1054,7 @@ def main() -> int:
                     for item in typescript_provider_call_attributions
                 ),
                 "ai_sdk_calls": sum(
-                    str(item.attributes.get("call_kind", "")).startswith(
-                        "ai-sdk-provider-"
-                    )
+                    str(item.attributes.get("call_kind", "")).startswith("ai-sdk-provider-")
                     for item in typescript_provider_call_attributions
                 ),
                 "factory_calls": sum(
@@ -1151,13 +1076,11 @@ def main() -> int:
                     for item in typescript_provider_call_attributions
                 ),
                 "class_field_model_calls": sum(
-                    item.attributes.get("resolution_basis")
-                    == "immutable-class-field-constructor"
+                    item.attributes.get("resolution_basis") == "immutable-class-field-constructor"
                     for item in typescript_provider_call_attributions
                 ),
                 "class_accessor_model_calls": sum(
-                    item.attributes.get("resolution_basis")
-                    == "same-class-lazy-getter-constructor"
+                    item.attributes.get("resolution_basis") == "same-class-lazy-getter-constructor"
                     for item in typescript_provider_call_attributions
                 ),
                 "literal_binding_models": sum(
@@ -1168,8 +1091,7 @@ def main() -> int:
                 "literal_models": len(typescript_provider_call_models),
                 **{
                     metric: sum(
-                        item.name == provider
-                        for item in typescript_provider_call_attributions
+                        item.name == provider for item in typescript_provider_call_attributions
                     )
                     for metric, provider in TYPESCRIPT_PROVIDER_METRICS.items()
                 },
@@ -1223,21 +1145,18 @@ def main() -> int:
             "python_tool_registrations": {
                 "post_definition": len(python_post_registered_tools),
                 "transparent_wrapped": sum(
-                    bool(item.attributes.get("wrappers"))
-                    for item in python_post_registered_tools
+                    bool(item.attributes.get("wrappers")) for item in python_post_registered_tools
                 ),
                 "wrapper_layers": sum(
                     len(item.attributes.get("wrappers", []))
                     for item in python_post_registered_tools
                 ),
                 "relative_import": sum(
-                    item.attributes.get("resolution")
-                    == "relative-import-single-definition"
+                    item.attributes.get("resolution") == "relative-import-single-definition"
                     for item in python_post_registered_tools
                 ),
                 "same_module": sum(
-                    item.attributes.get("resolution")
-                    == "same-module-single-definition"
+                    item.attributes.get("resolution") == "same-module-single-definition"
                     for item in python_post_registered_tools
                 ),
                 "approval_enabled": sum(
@@ -1266,24 +1185,21 @@ def main() -> int:
                     for item in python_registry_tools
                 ),
                 "metagpt": sum(
-                    item.attributes.get("framework") == "MetaGPT"
-                    for item in python_registry_tools
+                    item.attributes.get("framework") == "MetaGPT" for item in python_registry_tools
                 ),
                 "qwen_agent": sum(
                     item.attributes.get("framework") == "Qwen-Agent"
                     for item in python_registry_tools
                 ),
                 "capability_edges": sum(
-                    edge.source_id in python_registry_tool_ids
-                    and edge.target_kind == "capability"
+                    edge.source_id in python_registry_tool_ids and edge.target_kind == "capability"
                     for edge in ir.relationships
                 ),
             },
             "python_computer_tools": {
                 "instances": len(python_computer_tools),
                 "non_test_instances": sum(
-                    not is_test_path(item.evidence.path)
-                    for item in python_computer_tools
+                    not is_test_path(item.evidence.path) for item in python_computer_tools
                 ),
                 "local_execution": sum(
                     item.attributes.get("execution_environment") == "local"
@@ -1299,8 +1215,7 @@ def main() -> int:
             "python_local_shell_tools": {
                 "instances": len(python_local_shell_tools),
                 "non_test_instances": sum(
-                    not is_test_path(item.evidence.path)
-                    for item in python_local_shell_tools
+                    not is_test_path(item.evidence.path) for item in python_local_shell_tools
                 ),
                 "approval_unavailable": sum(
                     item.attributes.get("approval_policy") == "unavailable"
@@ -1317,8 +1232,7 @@ def main() -> int:
             "python_code_interpreter_tools": {
                 "instances": len(python_code_interpreter_tools),
                 "non_test_instances": sum(
-                    not is_test_path(item.evidence.path)
-                    for item in python_code_interpreter_tools
+                    not is_test_path(item.evidence.path) for item in python_code_interpreter_tools
                 ),
                 "approval_unavailable": sum(
                     item.attributes.get("approval_policy") == "unavailable"
@@ -1339,28 +1253,24 @@ def main() -> int:
             "python_openai_hosted_tools": {
                 "instances": len(python_openai_hosted_tools),
                 "non_test_instances": sum(
-                    not is_test_path(item.evidence.path)
-                    for item in python_openai_hosted_tools
+                    not is_test_path(item.evidence.path) for item in python_openai_hosted_tools
                 ),
                 "approval_unavailable": sum(
                     item.attributes.get("approval_policy") == "unavailable"
                     for item in python_openai_hosted_tools
                 ),
                 "web_search": sum(
-                    item.name.startswith("WebSearchTool@")
-                    for item in python_openai_hosted_tools
+                    item.name.startswith("WebSearchTool@") for item in python_openai_hosted_tools
                 ),
                 "web_external_access_sdk_default": sum(
                     item.attributes.get("external_web_access") == "sdk-default"
                     for item in python_openai_hosted_tools
                 ),
                 "file_search": sum(
-                    item.name.startswith("FileSearchTool@")
-                    for item in python_openai_hosted_tools
+                    item.name.startswith("FileSearchTool@") for item in python_openai_hosted_tools
                 ),
                 "literal_vector_store_scope": sum(
-                    item.attributes.get("vector_store_scope")
-                    in {"literal-empty", "literal-ids"}
+                    item.attributes.get("vector_store_scope") in {"literal-empty", "literal-ids"}
                     for item in python_openai_hosted_tools
                 ),
                 "image_generation": sum(
@@ -1378,8 +1288,7 @@ def main() -> int:
             "python_sandbox_agents": {
                 "total": len(python_sandbox_agents),
                 "non_test": sum(
-                    not is_test_path(item.evidence.path)
-                    for item in python_sandbox_agents
+                    not is_test_path(item.evidence.path) for item in python_sandbox_agents
                 ),
                 "mcp_server_edges": sum(
                     edge.source_id in python_sandbox_agent_ids
@@ -1390,28 +1299,22 @@ def main() -> int:
             "python_agent_referenced_tools": {
                 "instances": len(python_agent_referenced_tools),
                 "callables": sum(
-                    item.attributes.get("binding") is None
-                    for item in python_agent_referenced_tools
+                    item.attributes.get("binding") is None for item in python_agent_referenced_tools
                 ),
                 "constructor_bindings": sum(
-                    item.attributes.get("binding")
-                    == "literal-tools-list-constructor"
+                    item.attributes.get("binding") == "literal-tools-list-constructor"
                     for item in python_agent_referenced_tools
                 ),
                 "inline_constructors": sum(
-                    item.attributes.get("binding")
-                    == "literal-tools-list-inline-constructor"
+                    item.attributes.get("binding") == "literal-tools-list-inline-constructor"
                     for item in python_agent_referenced_tools
                 ),
                 "context_manager_bindings": sum(
-                    item.attributes.get("binding")
-                    == "literal-tools-list-context-manager"
+                    item.attributes.get("binding") == "literal-tools-list-context-manager"
                     for item in python_agent_referenced_tools
                 ),
                 "agent_as_tool_adapters": len(python_agent_as_tool_adapter_ids),
-                "agent_as_tool_delegations": len(
-                    python_agent_as_tool_delegations
-                ),
+                "agent_as_tool_delegations": len(python_agent_as_tool_delegations),
                 "import_bindings": sum(
                     item.attributes.get("binding") == "literal-tools-list-import"
                     for item in python_agent_referenced_tools
@@ -1429,24 +1332,18 @@ def main() -> int:
                     for item in python_agent_referenced_tools
                 ),
                 "non_test_instances": sum(
-                    not is_test_path(item.evidence.path)
-                    for item in python_agent_referenced_tools
+                    not is_test_path(item.evidence.path) for item in python_agent_referenced_tools
                 ),
                 "capability_edges": len(python_agent_referenced_capability_edges),
                 "resolved_agent_edges": len(python_agent_referenced_agent_edges),
             },
             "python_agent_tool_edges": {
                 "total": len(python_agent_tool_edges),
-                "resolved": sum(
-                    edge.target_id is not None for edge in python_agent_tool_edges
-                ),
-                "unresolved": sum(
-                    edge.target_id is None for edge in python_agent_tool_edges
-                ),
+                "resolved": sum(edge.target_id is not None for edge in python_agent_tool_edges),
+                "unresolved": sum(edge.target_id is None for edge in python_agent_tool_edges),
                 "non_test": len(python_non_test_agent_tool_edges),
                 "unresolved_non_test": sum(
-                    edge.target_id is None
-                    for edge in python_non_test_agent_tool_edges
+                    edge.target_id is None for edge in python_non_test_agent_tool_edges
                 ),
             },
             "python_agent_mcp_server_edges": {
@@ -1455,12 +1352,10 @@ def main() -> int:
                     edge.target_id is not None for edge in python_agent_mcp_server_edges
                 ),
                 "non_test": sum(
-                    not is_test_path(edge.evidence.path)
-                    for edge in python_agent_mcp_server_edges
+                    not is_test_path(edge.evidence.path) for edge in python_agent_mcp_server_edges
                 ),
                 "same_block": sum(
-                    edge.attributes.get("target_identity")
-                    == "literal-mcp-servers-list-binding"
+                    edge.attributes.get("target_identity") == "literal-mcp-servers-list-binding"
                     for edge in python_agent_mcp_server_edges
                 ),
                 "immutable_module": sum(
@@ -1486,9 +1381,7 @@ def main() -> int:
                     for edge in python_fastmcp_server_tool_edges
                 ),
                 "agent_reachable_tools": len(agent_reachable_fastmcp_tool_ids),
-                "agent_reachable_capabilities": len(
-                    python_fastmcp_agent_capability_edges
-                ),
+                "agent_reachable_capabilities": len(python_fastmcp_agent_capability_edges),
                 "non_test_agent_reachable_capabilities": sum(
                     not is_test_path(edge.evidence.path)
                     for edge in python_fastmcp_agent_capability_edges
@@ -1498,8 +1391,7 @@ def main() -> int:
             "python_function_tool_wrappers": {
                 "instances": len(python_function_tool_wrappers),
                 "non_test_instances": sum(
-                    not is_test_path(item.evidence.path)
-                    for item in python_function_tool_wrappers
+                    not is_test_path(item.evidence.path) for item in python_function_tool_wrappers
                 ),
                 "approval_enabled": sum(
                     item.attributes.get("needs_approval") is True
@@ -1521,10 +1413,7 @@ def main() -> int:
             "python_local_agent_factory_returns": {
                 "resolved_edges": len(python_local_agent_factory_return_edges),
                 "unique_agent_targets": len(
-                    {
-                        edge.target_id
-                        for edge in python_local_agent_factory_return_edges
-                    }
+                    {edge.target_id for edge in python_local_agent_factory_return_edges}
                 ),
                 "non_test_edges": sum(
                     not is_test_path(edge.evidence.path)
@@ -1543,9 +1432,7 @@ def main() -> int:
                     {
                         target_id
                         for component in python_typed_tool_parameters
-                        for target_id in component.attributes.get(
-                            "callsite_target_ids", []
-                        )
+                        for target_id in component.attributes.get("callsite_target_ids", [])
                     }
                 ),
                 "non_test_edges": sum(
@@ -1568,9 +1455,7 @@ def main() -> int:
                     not is_test_path(edge.evidence.path)
                     for edge in python_contextual_tool_import_edges
                 ),
-                "network_helper_capabilities": len(
-                    python_contextual_network_helpers
-                ),
+                "network_helper_capabilities": len(python_contextual_network_helpers),
                 "dynamic_network_helper_capabilities": sum(
                     bool(item.attributes.get("dynamic_origin"))
                     for item in python_contextual_network_helpers
@@ -1590,9 +1475,7 @@ def main() -> int:
                 "apis": dict(
                     sorted(
                         Counter(
-                            str(item.attributes.get("api", "unknown")).rsplit(
-                                ".", 1
-                            )[-1]
+                            str(item.attributes.get("api", "unknown")).rsplit(".", 1)[-1]
                             for item in python_browser_evaluations
                         ).items()
                     )
@@ -1675,14 +1558,12 @@ def main() -> int:
             "python_urllib_network": {
                 "capabilities": len(python_urllib_network),
                 "dynamic_origins": sum(
-                    bool(item.attributes.get("dynamic_origin"))
-                    for item in python_urllib_network
+                    bool(item.attributes.get("dynamic_origin")) for item in python_urllib_network
                 ),
                 "capability_edges": sum(
                     edge.target_kind == "capability"
                     and edge.target_name == "network"
-                    and (edge.evidence.path, edge.evidence.line)
-                    in python_urllib_network_locations
+                    and (edge.evidence.path, edge.evidence.line) in python_urllib_network_locations
                     for edge in ir.relationships
                 ),
             },
@@ -1724,8 +1605,7 @@ def main() -> int:
                     for edge in python_secure_network_controls
                 ),
                 "dns_connection_pinned_unless_proxied": sum(
-                    edge.attributes.get("dns_scope")
-                    == "connection-pinned-unless-proxied"
+                    edge.attributes.get("dns_scope") == "connection-pinned-unless-proxied"
                     for edge in python_secure_network_controls
                 ),
                 "dns_connection_pinned_when_enforced": sum(
@@ -1737,8 +1617,7 @@ def main() -> int:
                     for edge in python_secure_network_controls
                 ),
                 "proxies_environment_or_caller_dependent": sum(
-                    edge.attributes.get("proxy_scope")
-                    == "environment-or-caller-dependent"
+                    edge.attributes.get("proxy_scope") == "environment-or-caller-dependent"
                     for edge in python_secure_network_controls
                 ),
                 "proxies_disabled_when_enforced": sum(
@@ -1825,15 +1704,13 @@ def main() -> int:
                     and edge.relation == "governed-by"
                     and edge.target_kind == "control"
                     and edge.target_name == "network-origin-policy"
-                    and edge.attributes.get("analysis")
-                    == "typescript-google-adk-openapi-rest-tool"
+                    and edge.attributes.get("analysis") == "typescript-google-adk-openapi-rest-tool"
                     for edge in ir.relationships
                 ),
                 "segment_encoded": sum(
                     edge.attributes.get("model_path_scope") == "segment-encoded"
                     for edge in ir.relationships
-                    if edge.attributes.get("analysis")
-                    == "typescript-google-adk-openapi-rest-tool"
+                    if edge.attributes.get("analysis") == "typescript-google-adk-openapi-rest-tool"
                 ),
             },
             "python_openai_mcp_approval_default": {
@@ -1890,24 +1767,21 @@ def main() -> int:
                     edge.source_kind == "agent"
                     and edge.relation == "uses"
                     and edge.target_kind == "tool"
-                    and edge.attributes.get("analysis")
-                    == "python-openhands-conversation-security"
+                    and edge.attributes.get("analysis") == "python-openhands-conversation-security"
                     for edge in ir.relationships
                 ),
                 "risk_analysis_edges": sum(
                     edge.source_kind == "tool"
                     and edge.relation == "governed-by"
                     and edge.target_name == "action-risk-analysis"
-                    and edge.attributes.get("analysis")
-                    == "python-openhands-conversation-security"
+                    and edge.attributes.get("analysis") == "python-openhands-conversation-security"
                     for edge in ir.relationships
                 ),
                 "human_approval_edges": sum(
                     edge.source_kind == "tool"
                     and edge.relation == "governed-by"
                     and edge.target_name == "human-approval"
-                    and edge.attributes.get("analysis")
-                    == "python-openhands-conversation-security"
+                    and edge.attributes.get("analysis") == "python-openhands-conversation-security"
                     for edge in ir.relationships
                 ),
                 "approval_findings": sum(
@@ -1946,16 +1820,14 @@ def main() -> int:
                     edge.source_kind == "agent"
                     and edge.relation == "uses"
                     and edge.target_kind == "tool"
-                    and edge.attributes.get("analysis")
-                    == "python-trae-agent-default-tools"
+                    and edge.attributes.get("analysis") == "python-trae-agent-default-tools"
                     for edge in ir.relationships
                 ),
                 "configured_by_edges": sum(
                     edge.source_kind == "tool"
                     and edge.relation == "configured-by"
                     and edge.target_kind == "control-setting"
-                    and edge.attributes.get("analysis")
-                    == "python-trae-agent-default-tools"
+                    and edge.attributes.get("analysis") == "python-trae-agent-default-tools"
                     for edge in ir.relationships
                 ),
                 "execution_findings": sum(
@@ -1975,53 +1847,43 @@ def main() -> int:
                 ),
             },
             "typescript_roo_command_auto_approval": {
-                "agents": sum(
-                    item.kind == "agent" for item in typescript_roo_command_components
-                ),
-                "tools": sum(
-                    item.kind == "tool" for item in typescript_roo_command_components
-                ),
+                "agents": sum(item.kind == "agent" for item in typescript_roo_command_components),
+                "tools": sum(item.kind == "tool" for item in typescript_roo_command_components),
                 "capabilities": sum(
-                    item.kind == "capability"
-                    for item in typescript_roo_command_components
+                    item.kind == "capability" for item in typescript_roo_command_components
                 ),
                 "controls": sum(
                     item.kind == "control" for item in typescript_roo_command_components
                 ),
                 "settings": sum(
-                    item.kind == "control-setting"
-                    for item in typescript_roo_command_components
+                    item.kind == "control-setting" for item in typescript_roo_command_components
                 ),
                 "agent_tool_edges": sum(
                     edge.source_kind == "agent"
                     and edge.relation == "uses"
                     and edge.target_kind == "tool"
-                    and edge.attributes.get("analysis")
-                    == "typescript-roo-command-auto-approval"
+                    and edge.attributes.get("analysis") == "typescript-roo-command-auto-approval"
                     for edge in ir.relationships
                 ),
                 "capability_edges": sum(
                     edge.source_kind == "tool"
                     and edge.relation == "uses"
                     and edge.target_kind == "capability"
-                    and edge.attributes.get("analysis")
-                    == "typescript-roo-command-auto-approval"
+                    and edge.attributes.get("analysis") == "typescript-roo-command-auto-approval"
                     for edge in ir.relationships
                 ),
                 "setting_edges": sum(
                     edge.source_kind == "tool"
                     and edge.relation == "configured-by"
                     and edge.target_kind == "control-setting"
-                    and edge.attributes.get("analysis")
-                    == "typescript-roo-command-auto-approval"
+                    and edge.attributes.get("analysis") == "typescript-roo-command-auto-approval"
                     for edge in ir.relationships
                 ),
                 "control_edges": sum(
                     edge.source_kind == "tool"
                     and edge.relation == "governed-by"
                     and edge.target_kind == "control"
-                    and edge.attributes.get("analysis")
-                    == "typescript-roo-command-auto-approval"
+                    and edge.attributes.get("analysis") == "typescript-roo-command-auto-approval"
                     for edge in ir.relationships
                 ),
                 "execution_findings": sum(
@@ -2037,59 +1899,45 @@ def main() -> int:
             },
             "typescript_continue_plan_mode_approval": {
                 "frameworks": sum(
-                    item.kind == "framework"
-                    for item in typescript_continue_plan_components
+                    item.kind == "framework" for item in typescript_continue_plan_components
                 ),
-                "agents": sum(
-                    item.kind == "agent"
-                    for item in typescript_continue_plan_components
-                ),
-                "tools": sum(
-                    item.kind == "tool"
-                    for item in typescript_continue_plan_components
-                ),
+                "agents": sum(item.kind == "agent" for item in typescript_continue_plan_components),
+                "tools": sum(item.kind == "tool" for item in typescript_continue_plan_components),
                 "capabilities": sum(
-                    item.kind == "capability"
-                    for item in typescript_continue_plan_components
+                    item.kind == "capability" for item in typescript_continue_plan_components
                 ),
                 "controls": sum(
-                    item.kind == "control"
-                    for item in typescript_continue_plan_components
+                    item.kind == "control" for item in typescript_continue_plan_components
                 ),
                 "settings": sum(
-                    item.kind == "control-setting"
-                    for item in typescript_continue_plan_components
+                    item.kind == "control-setting" for item in typescript_continue_plan_components
                 ),
                 "agent_tool_edges": sum(
                     edge.source_kind == "agent"
                     and edge.relation == "uses"
                     and edge.target_kind == "tool"
-                    and edge.attributes.get("analysis")
-                    == "typescript-continue-plan-mode-approval"
+                    and edge.attributes.get("analysis") == "typescript-continue-plan-mode-approval"
                     for edge in ir.relationships
                 ),
                 "capability_edges": sum(
                     edge.source_kind == "tool"
                     and edge.relation == "uses"
                     and edge.target_kind == "capability"
-                    and edge.attributes.get("analysis")
-                    == "typescript-continue-plan-mode-approval"
+                    and edge.attributes.get("analysis") == "typescript-continue-plan-mode-approval"
                     for edge in ir.relationships
                 ),
                 "setting_edges": sum(
                     edge.source_kind == "tool"
                     and edge.relation == "configured-by"
                     and edge.target_kind == "control-setting"
-                    and edge.attributes.get("analysis")
-                    == "typescript-continue-plan-mode-approval"
+                    and edge.attributes.get("analysis") == "typescript-continue-plan-mode-approval"
                     for edge in ir.relationships
                 ),
                 "control_edges": sum(
                     edge.source_kind == "tool"
                     and edge.relation == "governed-by"
                     and edge.target_kind == "control"
-                    and edge.attributes.get("analysis")
-                    == "typescript-continue-plan-mode-approval"
+                    and edge.attributes.get("analysis") == "typescript-continue-plan-mode-approval"
                     for edge in ir.relationships
                 ),
                 "execution_findings": sum(
@@ -2105,24 +1953,19 @@ def main() -> int:
             },
             "typescript_continue_plan_mode_mcp_approval": {
                 "agents": sum(
-                    item.kind == "agent"
-                    for item in typescript_continue_plan_mcp_components
+                    item.kind == "agent" for item in typescript_continue_plan_mcp_components
                 ),
                 "tools": sum(
-                    item.kind == "tool"
-                    for item in typescript_continue_plan_mcp_components
+                    item.kind == "tool" for item in typescript_continue_plan_mcp_components
                 ),
                 "capabilities": sum(
-                    item.kind == "capability"
-                    for item in typescript_continue_plan_mcp_components
+                    item.kind == "capability" for item in typescript_continue_plan_mcp_components
                 ),
                 "servers": sum(
-                    item.kind == "mcp-server"
-                    for item in typescript_continue_plan_mcp_components
+                    item.kind == "mcp-server" for item in typescript_continue_plan_mcp_components
                 ),
                 "controls": sum(
-                    item.kind == "control"
-                    for item in typescript_continue_plan_mcp_components
+                    item.kind == "control" for item in typescript_continue_plan_mcp_components
                 ),
                 "settings": sum(
                     item.kind == "control-setting"
@@ -2176,95 +2019,76 @@ def main() -> int:
             },
             "typescript_cline_subagent_approval": {
                 "frameworks": sum(
-                    item.kind == "framework"
-                    for item in typescript_cline_subagent_components
+                    item.kind == "framework" for item in typescript_cline_subagent_components
                 ),
                 "agents": sum(
-                    item.kind == "agent"
-                    for item in typescript_cline_subagent_components
+                    item.kind == "agent" for item in typescript_cline_subagent_components
                 ),
-                "tools": sum(
-                    item.kind == "tool"
-                    for item in typescript_cline_subagent_components
-                ),
+                "tools": sum(item.kind == "tool" for item in typescript_cline_subagent_components),
                 "capabilities": sum(
-                    item.kind == "capability"
-                    for item in typescript_cline_subagent_components
+                    item.kind == "capability" for item in typescript_cline_subagent_components
                 ),
                 "controls": sum(
-                    item.kind == "control"
-                    for item in typescript_cline_subagent_components
+                    item.kind == "control" for item in typescript_cline_subagent_components
                 ),
                 "settings": sum(
-                    item.kind == "control-setting"
-                    for item in typescript_cline_subagent_components
+                    item.kind == "control-setting" for item in typescript_cline_subagent_components
                 ),
                 "parent_tool_edges": sum(
                     edge.source_kind == "agent"
                     and edge.relation == "uses"
                     and edge.target_kind == "tool"
-                    and edge.attributes.get("analysis")
-                    == "typescript-cline-subagent-approval-propagation"
+                    and edge.attributes.get("analysis") in typescript_cline_subagent_analyses
                     for edge in ir.relationships
                 ),
                 "delegation_edges": sum(
                     edge.source_kind == "tool"
                     and edge.relation == "delegates-to"
                     and edge.target_kind == "agent"
-                    and edge.attributes.get("analysis")
-                    == "typescript-cline-subagent-approval-propagation"
+                    and edge.attributes.get("analysis") in typescript_cline_subagent_analyses
                     for edge in ir.relationships
                 ),
                 "child_capability_edges": sum(
                     edge.source_kind == "agent"
                     and edge.relation == "uses"
                     and edge.target_kind == "capability"
-                    and edge.attributes.get("analysis")
-                    == "typescript-cline-subagent-approval-propagation"
+                    and edge.attributes.get("analysis") in typescript_cline_subagent_analyses
                     for edge in ir.relationships
                 ),
                 "setting_edges": sum(
                     edge.source_kind == "agent"
                     and edge.relation == "configured-by"
                     and edge.target_kind == "control-setting"
-                    and edge.attributes.get("analysis")
-                    == "typescript-cline-subagent-approval-propagation"
+                    and edge.attributes.get("analysis") in typescript_cline_subagent_analyses
                     for edge in ir.relationships
                 ),
                 "control_edges": sum(
                     edge.source_kind == "tool"
                     and edge.relation == "governed-by"
                     and edge.target_kind == "control"
-                    and edge.attributes.get("analysis")
-                    == "typescript-cline-subagent-approval-propagation"
+                    and edge.attributes.get("analysis") in typescript_cline_subagent_analyses
                     for edge in ir.relationships
                 ),
                 "approval_findings": sum(
                     finding.rule_id == "AV-APPROVAL010"
-                    and finding.analysis.get("tool") == "Cline spawn_agent tool"
+                    and finding.analysis.get("tool")
+                    in {"Cline spawn_agent tool", "Cline CLI spawn_agent tool"}
                     for finding in ir.findings
                 ),
             },
             "typescript_letta_default_tools": {
-                "agents": sum(
-                    item.kind == "agent" for item in typescript_letta_default_components
-                ),
-                "tools": sum(
-                    item.kind == "tool" for item in typescript_letta_default_components
-                ),
+                "agents": sum(item.kind == "agent" for item in typescript_letta_default_components),
+                "tools": sum(item.kind == "tool" for item in typescript_letta_default_components),
                 "bash_tools": sum(
-                    item.kind == "tool"
-                    and item.attributes.get("builtin_tool_name") == "bash"
+                    item.kind == "tool" and item.attributes.get("builtin_tool_name") == "bash"
                     for item in typescript_letta_default_components
                 ),
                 "write_tools": sum(
-                    item.kind == "tool"
-                    and item.attributes.get("builtin_tool_name") == "write"
+                    item.kind == "tool" and item.attributes.get("builtin_tool_name") == "write"
                     for item in typescript_letta_default_components
                 ),
                 "capabilities": sum(
-                    item.kind == "capability"
-                    for item in typescript_letta_default_components
+                    item.kind == "capability" for item in typescript_letta_default_components
                 ),
                 "approval_settings": sum(
                     item.kind == "control-setting"
@@ -2282,24 +2106,21 @@ def main() -> int:
                     edge.source_kind == "agent"
                     and edge.relation == "uses"
                     and edge.target_kind == "tool"
-                    and edge.attributes.get("analysis")
-                    == "typescript-letta-default-tools"
+                    and edge.attributes.get("analysis") == "typescript-letta-default-tools"
                     for edge in ir.relationships
                 ),
                 "configured_by_edges": sum(
                     edge.source_kind == "tool"
                     and edge.relation == "configured-by"
                     and edge.target_kind == "control-setting"
-                    and edge.attributes.get("analysis")
-                    == "typescript-letta-default-tools"
+                    and edge.attributes.get("analysis") == "typescript-letta-default-tools"
                     for edge in ir.relationships
                 ),
                 "capability_edges": sum(
                     edge.source_kind == "tool"
                     and edge.relation == "uses"
                     and edge.target_kind == "capability"
-                    and edge.attributes.get("analysis")
-                    == "typescript-letta-default-tools"
+                    and edge.attributes.get("analysis") == "typescript-letta-default-tools"
                     for edge in ir.relationships
                 ),
                 "execution_findings": sum(
@@ -2346,9 +2167,7 @@ def main() -> int:
                     == "typescript-openai-agents-mcp-approval-default"
                     for edge in ir.relationships
                 ),
-                "findings": sum(
-                    finding.rule_id == "AV-APPROVAL004" for finding in ir.findings
-                ),
+                "findings": sum(finding.rule_id == "AV-APPROVAL004" for finding in ir.findings),
             },
             "python_agno_mcp_confirmation": {
                 "servers": len(python_agno_mcp_confirmation_servers),
@@ -2362,16 +2181,14 @@ def main() -> int:
                     for item in python_agno_mcp_confirmation_capabilities
                 ),
                 "fully_confirmed": sum(
-                    item.attributes.get("approval_policy")
-                    == "enabled-static-mutations"
+                    item.attributes.get("approval_policy") == "enabled-static-mutations"
                     for item in python_agno_mcp_confirmation_capabilities
                 ),
                 "agent_server_edges": sum(
                     edge.source_kind == "agent"
                     and edge.relation == "uses"
                     and edge.target_kind == "mcp-server"
-                    and edge.attributes.get("analysis")
-                    == "python-agno-mcp-confirmation-default"
+                    and edge.attributes.get("analysis") == "python-agno-mcp-confirmation-default"
                     for edge in ir.relationships
                 ),
                 "configured_by_edges": sum(
@@ -2379,20 +2196,16 @@ def main() -> int:
                     and edge.relation == "configured-by"
                     and edge.target_kind == "control-setting"
                     and edge.target_name == "mcp-tool-confirmation"
-                    and edge.attributes.get("analysis")
-                    == "python-agno-mcp-confirmation-default"
+                    and edge.attributes.get("analysis") == "python-agno-mcp-confirmation-default"
                     for edge in ir.relationships
                 ),
-                "findings": sum(
-                    finding.rule_id == "AV-APPROVAL005" for finding in ir.findings
-                ),
+                "findings": sum(finding.rule_id == "AV-APPROVAL005" for finding in ir.findings),
             },
             "python_semantic_kernel_mcp_sampling": {
                 "servers": len(python_semantic_kernel_mcp_sampling_servers),
                 "capabilities": len(python_semantic_kernel_mcp_sampling_capabilities),
                 "auto_approved": sum(
-                    item.attributes.get("approval_policy")
-                    == "auto-approved-explicit"
+                    item.attributes.get("approval_policy") == "auto-approved-explicit"
                     for item in python_semantic_kernel_mcp_sampling_capabilities
                 ),
                 "denied_default": sum(
@@ -2438,9 +2251,7 @@ def main() -> int:
                     == "python-semantic-kernel-mcp-sampling-approval"
                     for edge in ir.relationships
                 ),
-                "findings": sum(
-                    finding.rule_id == "AV-MCP004" for finding in ir.findings
-                ),
+                "findings": sum(finding.rule_id == "AV-MCP004" for finding in ir.findings),
             },
             "mcp_sampling_consent": {
                 "handlers": len(mcp_sampling_consent_capabilities),
@@ -2454,8 +2265,7 @@ def main() -> int:
                 ),
                 "default_scope_automatic_fulfilment": sum(
                     item.attributes.get("scope") != "test"
-                    and item.attributes.get("approval_policy")
-                    == "automatic-fulfilment"
+                    and item.attributes.get("approval_policy") == "automatic-fulfilment"
                     for item in mcp_sampling_consent_capabilities
                 ),
                 "human_confirmed": sum(
@@ -2530,13 +2340,10 @@ def main() -> int:
                     and edge.relation == "governed-by"
                     and edge.target_kind == "control"
                     and edge.target_name == "mcp-sampling-token-budget"
-                    and edge.attributes.get("analysis")
-                    == "typescript-mcp-sampling-handler-consent"
+                    and edge.attributes.get("analysis") == "typescript-mcp-sampling-handler-consent"
                     for edge in ir.relationships
                 ),
-                "findings": sum(
-                    finding.rule_id == "AV-MCP005" for finding in ir.findings
-                ),
+                "findings": sum(finding.rule_id == "AV-MCP005" for finding in ir.findings),
             },
             "mcp_elicitation_consent": {
                 "handlers": len(mcp_elicitation_consent_capabilities),
@@ -2638,9 +2445,7 @@ def main() -> int:
                     }
                     for edge in ir.relationships
                 ),
-                "findings": sum(
-                    finding.rule_id == "AV-MCP006" for finding in ir.findings
-                ),
+                "findings": sum(finding.rule_id == "AV-MCP006" for finding in ir.findings),
                 "url_disclosure_findings": sum(
                     finding.rule_id == "AV-MCP007" for finding in ir.findings
                 ),
@@ -2648,8 +2453,7 @@ def main() -> int:
             "approval_callback_bypass": {
                 "tools": len(approval_callback_bypass_tools),
                 "python_tools": sum(
-                    item.evidence.path.endswith(".py")
-                    for item in approval_callback_bypass_tools
+                    item.evidence.path.endswith(".py") for item in approval_callback_bypass_tools
                 ),
                 "typescript_tools": sum(
                     item.evidence.path.endswith((".ts", ".tsx", ".js", ".jsx"))
@@ -2660,23 +2464,18 @@ def main() -> int:
                     and edge.relation == "configured-by"
                     and edge.target_kind == "control-setting"
                     and edge.target_name == "auto-approval"
-                    and edge.attributes.get("resolution")
-                    == "same-file-transitive-callback"
+                    and edge.attributes.get("resolution") == "same-file-transitive-callback"
                     for edge in ir.relationships
                 ),
-                "findings": sum(
-                    finding.rule_id == "AV-APPROVAL003" for finding in ir.findings
-                ),
+                "findings": sum(finding.rule_id == "AV-APPROVAL003" for finding in ir.findings),
             },
             "mcp_package_launchers": {
                 "total": len(mcp_package_launchers),
                 "non_test": sum(
-                    item.attributes.get("scope") != "test"
-                    for item in mcp_package_launchers
+                    item.attributes.get("scope") != "test" for item in mcp_package_launchers
                 ),
                 "auto_install": sum(
-                    item.attributes.get("auto_install") is True
-                    for item in mcp_package_launchers
+                    item.attributes.get("auto_install") is True for item in mcp_package_launchers
                 ),
                 "unpinned": sum(
                     item.attributes.get("version_scope") == "unpinned"
@@ -2691,20 +2490,16 @@ def main() -> int:
                     for item in mcp_package_launchers
                 ),
                 "python": sum(
-                    item.attributes.get("frontend") == "python"
-                    for item in mcp_package_launchers
+                    item.attributes.get("frontend") == "python" for item in mcp_package_launchers
                 ),
                 "json": sum(
-                    item.attributes.get("frontend") == "json"
-                    for item in mcp_package_launchers
+                    item.attributes.get("frontend") == "json" for item in mcp_package_launchers
                 ),
                 "typescript": sum(
                     item.attributes.get("frontend") == "typescript"
                     for item in mcp_package_launchers
                 ),
-                "findings": sum(
-                    finding.rule_id == "AV-MCP003" for finding in ir.findings
-                ),
+                "findings": sum(finding.rule_id == "AV-MCP003" for finding in ir.findings),
             },
             "python_import_bound_mcp_stdio_servers": {
                 "total": len(python_import_bound_mcp_stdio_servers),
@@ -2717,13 +2512,11 @@ def main() -> int:
                     for item in python_import_bound_mcp_stdio_servers
                 ),
                 "symbolized_context_managed": sum(
-                    item.attributes.get("binding_resolution")
-                    == "context-manager-binding"
+                    item.attributes.get("binding_resolution") == "context-manager-binding"
                     for item in python_import_bound_mcp_stdio_servers
                 ),
                 "symbolized_bound": sum(
-                    item.symbol_id is not None
-                    for item in python_import_bound_mcp_stdio_servers
+                    item.symbol_id is not None for item in python_import_bound_mcp_stdio_servers
                 ),
                 "package_backed": sum(
                     bool(item.attributes.get("package"))
@@ -2746,8 +2539,7 @@ def main() -> int:
                     for item in python_import_bound_mcp_in_process_servers
                 ),
                 "symbolized_context_managed": sum(
-                    item.attributes.get("binding_resolution")
-                    == "context-manager-binding"
+                    item.attributes.get("binding_resolution") == "context-manager-binding"
                     for item in python_import_bound_mcp_in_process_servers
                 ),
                 "symbolized_bound": sum(
@@ -2796,8 +2588,7 @@ def main() -> int:
                     edge.source_kind == "agent"
                     and edge.relation == "governed-by"
                     and edge.target_name == "durable-action-audit"
-                    and edge.attributes.get("analysis")
-                    == "python-google-adk-bigquery-action-audit"
+                    and edge.attributes.get("analysis") == "python-google-adk-bigquery-action-audit"
                     for edge in ir.relationships
                 ),
                 "external_action_control_edges": sum(
@@ -2805,8 +2596,7 @@ def main() -> int:
                     and edge.source_name == "external-action"
                     and edge.relation == "governed-by"
                     and edge.target_name == "durable-action-audit"
-                    and edge.attributes.get("analysis")
-                    == "python-google-adk-bigquery-action-audit"
+                    and edge.attributes.get("analysis") == "python-google-adk-bigquery-action-audit"
                     for edge in ir.relationships
                 ),
                 "storage_edges": sum(
@@ -2814,8 +2604,7 @@ def main() -> int:
                     and edge.source_name == "durable-action-audit"
                     and edge.relation == "exports-to"
                     and edge.target_name == "audit-storage"
-                    and edge.attributes.get("analysis")
-                    == "python-google-adk-bigquery-action-audit"
+                    and edge.attributes.get("analysis") == "python-google-adk-bigquery-action-audit"
                     for edge in ir.relationships
                 ),
             },
@@ -2839,16 +2628,14 @@ def main() -> int:
                     edge.source_kind == "agent"
                     and edge.relation == "governed-by"
                     and edge.target_name == "durable-action-record"
-                    and edge.attributes.get("analysis")
-                    == "python-skyvern-taskv3-action-history"
+                    and edge.attributes.get("analysis") == "python-skyvern-taskv3-action-history"
                     for edge in ir.relationships
                 ),
                 "tool_control_edges": sum(
                     edge.source_kind == "tool"
                     and edge.relation == "governed-by"
                     and edge.target_name == "durable-action-record"
-                    and edge.attributes.get("analysis")
-                    == "python-skyvern-taskv3-action-history"
+                    and edge.attributes.get("analysis") == "python-skyvern-taskv3-action-history"
                     for edge in ir.relationships
                 ),
                 "external_action_control_edges": sum(
@@ -2856,8 +2643,7 @@ def main() -> int:
                     and edge.source_name == "external-action"
                     and edge.relation == "governed-by"
                     and edge.target_name == "durable-action-record"
-                    and edge.attributes.get("analysis")
-                    == "python-skyvern-taskv3-action-history"
+                    and edge.attributes.get("analysis") == "python-skyvern-taskv3-action-history"
                     for edge in ir.relationships
                 ),
                 "storage_edges": sum(
@@ -2865,8 +2651,7 @@ def main() -> int:
                     and edge.source_name == "durable-action-record"
                     and edge.relation == "exports-to"
                     and edge.target_name == "audit-storage"
-                    and edge.attributes.get("analysis")
-                    == "python-skyvern-taskv3-action-history"
+                    and edge.attributes.get("analysis") == "python-skyvern-taskv3-action-history"
                     for edge in ir.relationships
                 ),
             },
@@ -2908,8 +2693,7 @@ def main() -> int:
                     for edge in typescript_secure_network_controls
                 ),
                 "bounded_redirect_hooks": sum(
-                    edge.attributes.get("redirect_scope")
-                    == "bounded-each-hop-hooks-when-enforced"
+                    edge.attributes.get("redirect_scope") == "bounded-each-hop-hooks-when-enforced"
                     for edge in typescript_secure_network_controls
                 ),
                 "redirects_validated": sum(
@@ -2921,18 +2705,15 @@ def main() -> int:
                     for edge in typescript_secure_network_controls
                 ),
                 "redirects_direct_connection_filtered": sum(
-                    edge.attributes.get("redirect_scope")
-                    == "each-direct-connection-filtered"
+                    edge.attributes.get("redirect_scope") == "each-direct-connection-filtered"
                     for edge in typescript_secure_network_controls
                 ),
                 "secure_lookup_configured": sum(
-                    edge.attributes.get("dns_scope")
-                    == "secure-lookup-configured-when-enforced"
+                    edge.attributes.get("dns_scope") == "secure-lookup-configured-when-enforced"
                     for edge in typescript_secure_network_controls
                 ),
                 "dns_connection_pinned_unless_proxied": sum(
-                    edge.attributes.get("dns_scope")
-                    == "connection-pinned-unless-proxied"
+                    edge.attributes.get("dns_scope") == "connection-pinned-unless-proxied"
                     for edge in typescript_secure_network_controls
                 ),
                 "dns_connection_pinned": sum(
@@ -2940,18 +2721,15 @@ def main() -> int:
                     for edge in typescript_secure_network_controls
                 ),
                 "dns_preflight_only_rebinding_residual": sum(
-                    edge.attributes.get("dns_scope")
-                    == "preflight-only-rebinding-residual"
+                    edge.attributes.get("dns_scope") == "preflight-only-rebinding-residual"
                     for edge in typescript_secure_network_controls
                 ),
                 "dns_connection_time_filtered_unless_proxied": sum(
-                    edge.attributes.get("dns_scope")
-                    == "connection-time-filtered-unless-proxied"
+                    edge.attributes.get("dns_scope") == "connection-time-filtered-unless-proxied"
                     for edge in typescript_secure_network_controls
                 ),
                 "dns_connection_pinned_unless_configured_route": sum(
-                    edge.attributes.get("dns_scope")
-                    == "connection-pinned-unless-configured-route"
+                    edge.attributes.get("dns_scope") == "connection-pinned-unless-configured-route"
                     for edge in typescript_secure_network_controls
                 ),
                 "proxy_unresolved": sum(
@@ -2967,8 +2745,7 @@ def main() -> int:
                     for edge in typescript_secure_network_controls
                 ),
                 "proxy_caller_global_or_environment_dependent": sum(
-                    edge.attributes.get("proxy_scope")
-                    == "caller-global-or-environment-dependent"
+                    edge.attributes.get("proxy_scope") == "caller-global-or-environment-dependent"
                     for edge in typescript_secure_network_controls
                 ),
                 "fixed_caller_config": sum(
@@ -2984,13 +2761,11 @@ def main() -> int:
                     for edge in typescript_secure_network_controls
                 ),
                 "imported_axios_client_instance": sum(
-                    edge.attributes.get("transport_scope")
-                    == "imported-axios-client-instance"
+                    edge.attributes.get("transport_scope") == "imported-axios-client-instance"
                     for edge in typescript_secure_network_controls
                 ),
                 "configured_address_allowlist": sum(
-                    edge.attributes.get("escape_hatch")
-                    == "configured-address-allowlist"
+                    edge.attributes.get("escape_hatch") == "configured-address-allowlist"
                     for edge in typescript_secure_network_controls
                 ),
                 "undici_pinned_dispatcher_unless_configured_route": sum(
@@ -3030,17 +2805,14 @@ def main() -> int:
                     for item in a2a_rpc_capabilities
                 ),
                 "same_origin_constrained": sum(
-                    item.attributes.get("remote_card_endpoint_scope")
-                    == "same-origin-constrained"
+                    item.attributes.get("remote_card_endpoint_scope") == "same-origin-constrained"
                     for item in a2a_rpc_capabilities
                 ),
                 "typescript": sum(
-                    item.attributes.get("frontend") == "typescript"
-                    for item in a2a_rpc_capabilities
+                    item.attributes.get("frontend") == "typescript" for item in a2a_rpc_capabilities
                 ),
                 "python": sum(
-                    item.attributes.get("frontend") == "python"
-                    for item in a2a_rpc_capabilities
+                    item.attributes.get("frontend") == "python" for item in a2a_rpc_capabilities
                 ),
                 "undici_agent_or_proxy": sum(
                     item.attributes.get("transport_scope") == "undici-agent-or-proxy"
@@ -3174,7 +2946,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 122,
+        "schema_version": 123,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -3253,10 +3025,7 @@ def main() -> int:
                 for frontend in ("py", "ts")
             },
             "python_provider_call_attribution": {
-                name: sum(
-                    result["python_provider_call_attribution"][name]
-                    for result in successful
-                )
+                name: sum(result["python_provider_call_attribution"][name] for result in successful)
                 for name in (
                     "calls",
                     "production_calls",
@@ -3276,8 +3045,7 @@ def main() -> int:
             },
             "typescript_provider_call_attribution": {
                 name: sum(
-                    result["typescript_provider_call_attribution"][name]
-                    for result in successful
+                    result["typescript_provider_call_attribution"][name] for result in successful
                 )
                 for name in (
                     "calls",
@@ -3354,10 +3122,7 @@ def main() -> int:
                 )
             },
             "python_local_shell_tools": {
-                name: sum(
-                    result["python_local_shell_tools"][name]
-                    for result in successful
-                )
+                name: sum(result["python_local_shell_tools"][name] for result in successful)
                 for name in (
                     "instances",
                     "non_test_instances",
@@ -3368,10 +3133,7 @@ def main() -> int:
                 )
             },
             "python_code_interpreter_tools": {
-                name: sum(
-                    result["python_code_interpreter_tools"][name]
-                    for result in successful
-                )
+                name: sum(result["python_code_interpreter_tools"][name] for result in successful)
                 for name in (
                     "instances",
                     "non_test_instances",
@@ -3383,10 +3145,7 @@ def main() -> int:
                 )
             },
             "python_openai_hosted_tools": {
-                name: sum(
-                    result["python_openai_hosted_tools"][name]
-                    for result in successful
-                )
+                name: sum(result["python_openai_hosted_tools"][name] for result in successful)
                 for name in (
                     "instances",
                     "non_test_instances",
@@ -3402,10 +3161,7 @@ def main() -> int:
                 )
             },
             "python_sandbox_agents": {
-                name: sum(
-                    result["python_sandbox_agents"][name]
-                    for result in successful
-                )
+                name: sum(result["python_sandbox_agents"][name] for result in successful)
                 for name in (
                     "total",
                     "non_test",
@@ -3414,10 +3170,7 @@ def main() -> int:
                 )
             },
             "python_agent_referenced_tools": {
-                name: sum(
-                    result["python_agent_referenced_tools"][name]
-                    for result in successful
-                )
+                name: sum(result["python_agent_referenced_tools"][name] for result in successful)
                 for name in (
                     "instances",
                     "callables",
@@ -3435,10 +3188,7 @@ def main() -> int:
                 )
             },
             "python_agent_tool_edges": {
-                name: sum(
-                    result["python_agent_tool_edges"][name]
-                    for result in successful
-                )
+                name: sum(result["python_agent_tool_edges"][name] for result in successful)
                 for name in (
                     "total",
                     "resolved",
@@ -3448,10 +3198,7 @@ def main() -> int:
                 )
             },
             "python_agent_mcp_server_edges": {
-                name: sum(
-                    result["python_agent_mcp_server_edges"][name]
-                    for result in successful
-                )
+                name: sum(result["python_agent_mcp_server_edges"][name] for result in successful)
                 for name in (
                     "total",
                     "resolved",
@@ -3463,10 +3210,7 @@ def main() -> int:
                 )
             },
             "python_fastmcp_server_tool_edges": {
-                name: sum(
-                    result["python_fastmcp_server_tool_edges"][name]
-                    for result in successful
-                )
+                name: sum(result["python_fastmcp_server_tool_edges"][name] for result in successful)
                 for name in (
                     "total",
                     "resolved",
@@ -3478,10 +3222,7 @@ def main() -> int:
                 )
             },
             "python_function_tool_wrappers": {
-                name: sum(
-                    result["python_function_tool_wrappers"][name]
-                    for result in successful
-                )
+                name: sum(result["python_function_tool_wrappers"][name] for result in successful)
                 for name in (
                     "instances",
                     "non_test_instances",
@@ -3491,10 +3232,7 @@ def main() -> int:
                 )
             },
             "python_agent_helper_returns": {
-                name: sum(
-                    result["python_agent_helper_returns"][name]
-                    for result in successful
-                )
+                name: sum(result["python_agent_helper_returns"][name] for result in successful)
                 for name in (
                     "resolved_edges",
                     "unique_agent_targets",
@@ -3503,8 +3241,7 @@ def main() -> int:
             },
             "python_local_agent_factory_returns": {
                 name: sum(
-                    result["python_local_agent_factory_returns"][name]
-                    for result in successful
+                    result["python_local_agent_factory_returns"][name] for result in successful
                 )
                 for name in (
                     "resolved_edges",
@@ -3514,10 +3251,7 @@ def main() -> int:
                 )
             },
             "python_typed_tool_parameters": {
-                name: sum(
-                    result["python_typed_tool_parameters"][name]
-                    for result in successful
-                )
+                name: sum(result["python_typed_tool_parameters"][name] for result in successful)
                 for name in (
                     "parameter_bindings",
                     "resolved_edges",
@@ -3527,10 +3261,7 @@ def main() -> int:
                 )
             },
             "python_contextual_imports": {
-                name: sum(
-                    result["python_contextual_imports"][name]
-                    for result in successful
-                )
+                name: sum(result["python_contextual_imports"][name] for result in successful)
                 for name in (
                     "resolved_tool_edges",
                     "unique_tool_targets",
@@ -3571,10 +3302,7 @@ def main() -> int:
                 for name in ("capabilities", "dynamic_origins", "helpers", "capability_edges")
             },
             "python_imported_literal_origins": {
-                name: sum(
-                    result["python_imported_literal_origins"][name]
-                    for result in successful
-                )
+                name: sum(result["python_imported_literal_origins"][name] for result in successful)
                 for name in (
                     "capabilities",
                     "source_bindings",
@@ -3584,8 +3312,7 @@ def main() -> int:
             },
             "python_imported_class_network_helpers": {
                 name: sum(
-                    result["python_imported_class_network_helpers"][name]
-                    for result in successful
+                    result["python_imported_class_network_helpers"][name] for result in successful
                 )
                 for name in ("capabilities", "dynamic_origins", "callees", "capability_edges")
             },
@@ -3594,10 +3321,7 @@ def main() -> int:
                 for name in ("capabilities", "dynamic_origins", "capability_edges")
             },
             "python_network_origin_controls": {
-                name: sum(
-                    result["python_network_origin_controls"][name]
-                    for result in successful
-                )
+                name: sum(result["python_network_origin_controls"][name] for result in successful)
                 for name in (
                     "total",
                     "redirects_disabled",
@@ -3606,10 +3330,7 @@ def main() -> int:
                 )
             },
             "python_secure_network_controls": {
-                name: sum(
-                    result["python_secure_network_controls"][name]
-                    for result in successful
-                )
+                name: sum(result["python_secure_network_controls"][name] for result in successful)
                 for name in (
                     "total",
                     "enabled_default",
@@ -3629,8 +3350,7 @@ def main() -> int:
             },
             "typescript_axios_instance_network": {
                 name: sum(
-                    result["typescript_axios_instance_network"][name]
-                    for result in successful
+                    result["typescript_axios_instance_network"][name] for result in successful
                 )
                 for name in (
                     "capabilities",
@@ -3641,10 +3361,7 @@ def main() -> int:
                 )
             },
             "typescript_composio_cli_upload": {
-                name: sum(
-                    result["typescript_composio_cli_upload"][name]
-                    for result in successful
-                )
+                name: sum(result["typescript_composio_cli_upload"][name] for result in successful)
                 for name in (
                     "capabilities",
                     "dynamic_origins",
@@ -3655,8 +3372,7 @@ def main() -> int:
             },
             "typescript_google_adk_openapi_rest_tool": {
                 name: sum(
-                    result["typescript_google_adk_openapi_rest_tool"][name]
-                    for result in successful
+                    result["typescript_google_adk_openapi_rest_tool"][name] for result in successful
                 )
                 for name in (
                     "capabilities",
@@ -3668,8 +3384,7 @@ def main() -> int:
             },
             "python_openai_mcp_approval_default": {
                 name: sum(
-                    result["python_openai_mcp_approval_default"][name]
-                    for result in successful
+                    result["python_openai_mcp_approval_default"][name] for result in successful
                 )
                 for name in (
                     "settings",
@@ -3680,8 +3395,7 @@ def main() -> int:
             },
             "python_openhands_conversation_security": {
                 name: sum(
-                    result["python_openhands_conversation_security"][name]
-                    for result in successful
+                    result["python_openhands_conversation_security"][name] for result in successful
                 )
                 for name in (
                     "tools",
@@ -3705,10 +3419,7 @@ def main() -> int:
                 )
             },
             "python_trae_agent_default_tools": {
-                name: sum(
-                    result["python_trae_agent_default_tools"][name]
-                    for result in successful
-                )
+                name: sum(result["python_trae_agent_default_tools"][name] for result in successful)
                 for name in (
                     "tools",
                     "bash_tools",
@@ -3725,14 +3436,12 @@ def main() -> int:
             }
             | {
                 "repositories": sum(
-                    result["python_trae_agent_default_tools"]["tools"] > 0
-                    for result in successful
+                    result["python_trae_agent_default_tools"]["tools"] > 0 for result in successful
                 )
             },
             "typescript_roo_command_auto_approval": {
                 name: sum(
-                    result["typescript_roo_command_auto_approval"][name]
-                    for result in successful
+                    result["typescript_roo_command_auto_approval"][name] for result in successful
                 )
                 for name in (
                     "agents",
@@ -3756,8 +3465,7 @@ def main() -> int:
             },
             "typescript_continue_plan_mode_approval": {
                 name: sum(
-                    result["typescript_continue_plan_mode_approval"][name]
-                    for result in successful
+                    result["typescript_continue_plan_mode_approval"][name] for result in successful
                 )
                 for name in (
                     "frameworks",
@@ -3802,15 +3510,13 @@ def main() -> int:
             }
             | {
                 "repositories": sum(
-                    result["typescript_continue_plan_mode_mcp_approval"]["tools"]
-                    > 0
+                    result["typescript_continue_plan_mode_mcp_approval"]["tools"] > 0
                     for result in successful
                 )
             },
             "typescript_cline_subagent_approval": {
                 name: sum(
-                    result["typescript_cline_subagent_approval"][name]
-                    for result in successful
+                    result["typescript_cline_subagent_approval"][name] for result in successful
                 )
                 for name in (
                     "frameworks",
@@ -3834,10 +3540,7 @@ def main() -> int:
                 )
             },
             "typescript_letta_default_tools": {
-                name: sum(
-                    result["typescript_letta_default_tools"][name]
-                    for result in successful
-                )
+                name: sum(result["typescript_letta_default_tools"][name] for result in successful)
                 for name in (
                     "agents",
                     "tools",
@@ -3856,14 +3559,12 @@ def main() -> int:
             }
             | {
                 "repositories": sum(
-                    result["typescript_letta_default_tools"]["tools"] > 0
-                    for result in successful
+                    result["typescript_letta_default_tools"]["tools"] > 0 for result in successful
                 )
             },
             "typescript_openai_mcp_approval_default": {
                 name: sum(
-                    result["typescript_openai_mcp_approval_default"][name]
-                    for result in successful
+                    result["typescript_openai_mcp_approval_default"][name] for result in successful
                 )
                 for name in (
                     "servers",
@@ -3875,10 +3576,7 @@ def main() -> int:
                 )
             },
             "python_agno_mcp_confirmation": {
-                name: sum(
-                    result["python_agno_mcp_confirmation"][name]
-                    for result in successful
-                )
+                name: sum(result["python_agno_mcp_confirmation"][name] for result in successful)
                 for name in (
                     "servers",
                     "writable_servers",
@@ -3891,8 +3589,7 @@ def main() -> int:
             },
             "python_semantic_kernel_mcp_sampling": {
                 name: sum(
-                    result["python_semantic_kernel_mcp_sampling"][name]
-                    for result in successful
+                    result["python_semantic_kernel_mcp_sampling"][name] for result in successful
                 )
                 for name in (
                     "servers",
@@ -3953,10 +3650,7 @@ def main() -> int:
                 )
             },
             "approval_callback_bypass": {
-                name: sum(
-                    result["approval_callback_bypass"][name]
-                    for result in successful
-                )
+                name: sum(result["approval_callback_bypass"][name] for result in successful)
                 for name in (
                     "tools",
                     "python_tools",
@@ -3966,10 +3660,7 @@ def main() -> int:
                 )
             },
             "mcp_package_launchers": {
-                name: sum(
-                    result["mcp_package_launchers"][name]
-                    for result in successful
-                )
+                name: sum(result["mcp_package_launchers"][name] for result in successful)
                 for name in (
                     "total",
                     "non_test",
@@ -3985,8 +3676,7 @@ def main() -> int:
             },
             "python_import_bound_mcp_stdio_servers": {
                 name: sum(
-                    result["python_import_bound_mcp_stdio_servers"][name]
-                    for result in successful
+                    result["python_import_bound_mcp_stdio_servers"][name] for result in successful
                 )
                 for name in (
                     "total",
@@ -4015,8 +3705,7 @@ def main() -> int:
             },
             "python_imported_mcp_server_subclasses": {
                 name: sum(
-                    result["python_imported_mcp_server_subclasses"][name]
-                    for result in successful
+                    result["python_imported_mcp_server_subclasses"][name] for result in successful
                 )
                 for name in (
                     "instances",
@@ -4026,10 +3715,7 @@ def main() -> int:
                 )
             },
             "python_google_adk_bigquery_audit": {
-                name: sum(
-                    result["python_google_adk_bigquery_audit"][name]
-                    for result in successful
-                )
+                name: sum(result["python_google_adk_bigquery_audit"][name] for result in successful)
                 for name in (
                     "available_controls",
                     "deployed_controls",
@@ -4043,10 +3729,7 @@ def main() -> int:
                 )
             },
             "python_skyvern_action_history": {
-                name: sum(
-                    result["python_skyvern_action_history"][name]
-                    for result in successful
-                )
+                name: sum(result["python_skyvern_action_history"][name] for result in successful)
                 for name in (
                     "deployed_controls",
                     "production_deployments",
@@ -4061,8 +3744,7 @@ def main() -> int:
             },
             "typescript_network_origin_controls": {
                 name: sum(
-                    result["typescript_network_origin_controls"][name]
-                    for result in successful
+                    result["typescript_network_origin_controls"][name] for result in successful
                 )
                 for name in (
                     "total",
@@ -4073,8 +3755,7 @@ def main() -> int:
             },
             "typescript_secure_network_controls": {
                 name: sum(
-                    result["typescript_secure_network_controls"][name]
-                    for result in successful
+                    result["typescript_secure_network_controls"][name] for result in successful
                 )
                 for name in (
                     "total",
@@ -4140,35 +3821,26 @@ def main() -> int:
                 for name in ("python", "weak_string_prefix")
             },
             "python_path_segment_sanitizers": {
-                name: sum(
-                    result["python_path_segment_sanitizers"][name]
-                    for result in successful
-                )
+                name: sum(result["python_path_segment_sanitizers"][name] for result in successful)
                 for name in ("total", "sha256", "hexadecimal", "capability_edges")
             }
             | {
                 "repositories": sum(
-                    result["python_path_segment_sanitizers"]["total"] > 0
-                    for result in successful
+                    result["python_path_segment_sanitizers"]["total"] > 0 for result in successful
                 )
             },
             "python_dify_agent_shell_layers": {
-                name: sum(
-                    result["python_dify_agent_shell_layers"][name]
-                    for result in successful
-                )
+                name: sum(result["python_dify_agent_shell_layers"][name] for result in successful)
                 for name in ("total", "runtime_edges", "default_disabled")
             }
             | {
                 "repositories": sum(
-                    result["python_dify_agent_shell_layers"]["total"] > 0
-                    for result in successful
+                    result["python_dify_agent_shell_layers"]["total"] > 0 for result in successful
                 )
             },
             "python_filesystem_mutations": {
                 "total": sum(
-                    result["python_filesystem_mutations"]["total"]
-                    for result in successful
+                    result["python_filesystem_mutations"]["total"] for result in successful
                 ),
                 "callable_aliases": sum(
                     result["python_filesystem_mutations"]["callable_aliases"]
@@ -4179,12 +3851,10 @@ def main() -> int:
                     for result in successful
                 ),
                 "dynamic_paths": sum(
-                    result["python_filesystem_mutations"]["dynamic_paths"]
-                    for result in successful
+                    result["python_filesystem_mutations"]["dynamic_paths"] for result in successful
                 ),
                 "guarded": sum(
-                    result["python_filesystem_mutations"]["guarded"]
-                    for result in successful
+                    result["python_filesystem_mutations"]["guarded"] for result in successful
                 ),
                 "operations": dict(
                     sorted(

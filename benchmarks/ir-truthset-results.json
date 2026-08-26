@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-23T15:48:17.899685+00:00",
-  "labels": 1423,
-  "passed": 1423,
+  "generated_at": "2026-08-26T09:20:18.885356+00:00",
+  "labels": 1449,
+  "passed": 1449,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -461,9 +461,9 @@
       "recall": 1.0
     },
     "IR-TS-CLINE-SUBAGENT-APPROVAL": {
-      "tp": 24,
+      "tp": 48,
       "fp": 0,
-      "tn": 2,
+      "tn": 4,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -13404,6 +13404,222 @@
       "passed": true
     },
     {
+      "id": "typescript-cline-cli-subagent-framework-local",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-parent-local",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-child-local",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-tool-local",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-capability-local",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-setting-local",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-control-local",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-parent-tool-edge-local",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-tool-child-edge-local",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-child-capability-edge-local",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-parent-setting-edge-local",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-tool-control-edge-local",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-framework-real",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-parent-real",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-child-real",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-tool-real",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-capability-real",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-setting-real",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-control-real",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-parent-tool-edge-real",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-tool-child-edge-real",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-child-capability-edge-real",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-parent-setting-edge-real",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-tool-control-edge-real",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
       "id": "typescript-cline-subagent-near-local-negative",
       "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
       "expected": false,
@@ -13414,6 +13630,24 @@
     },
     {
       "id": "typescript-cline-subagent-forwarded-local-negative",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-near-local-negative",
+      "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-cline-cli-subagent-forwarded-local-negative",
       "check_id": "IR-TS-CLINE-SUBAGENT-APPROVAL",
       "expected": false,
       "observed": false,

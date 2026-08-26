@@ -3550,9 +3550,9 @@
       "status": "ok",
       "commit": "80b3b0348e694bafc48e3dcd70154de3cf4289d9",
       "files_in_tree": 3793,
-      "files_scanned": 227,
-      "dependency_files_materialized": 7,
-      "bytes_scanned": 1800696,
+      "files_scanned": 229,
+      "dependency_files_materialized": 9,
+      "bytes_scanned": 1844684,
       "languages": [
         "TypeScript",
         "TypeScript",

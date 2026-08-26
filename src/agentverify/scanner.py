@@ -142,21 +142,15 @@ def add_python_dify_agent_shell_layers(
 
     run_layer_constructors = imported_bindings("dify_agent.protocol", "RunLayerSpec")
     create_request_types = imported_bindings("dify_agent.protocol", "CreateRunRequest")
-    run_composition_constructors = imported_bindings(
-        "dify_agent.protocol", "RunComposition"
-    )
+    run_composition_constructors = imported_bindings("dify_agent.protocol", "RunComposition")
     runtime_layer_types = imported_bindings(
         "dify_agent.layers.runtime", "DIFY_RUNTIME_LAYER_TYPE_ID"
     )
     runtime_config_constructors = imported_bindings(
         "dify_agent.layers.runtime", "DifyRuntimeLayerConfig"
     )
-    shell_layer_types = imported_bindings(
-        "dify_agent.layers.shell", "DIFY_SHELL_LAYER_TYPE_ID"
-    )
-    shell_config_constructors = imported_bindings(
-        "dify_agent.layers.shell", "DifyShellLayerConfig"
-    )
+    shell_layer_types = imported_bindings("dify_agent.layers.shell", "DIFY_SHELL_LAYER_TYPE_ID")
+    shell_config_constructors = imported_bindings("dify_agent.layers.shell", "DifyShellLayerConfig")
     if not all(
         (
             run_layer_constructors,
@@ -181,9 +175,10 @@ def add_python_dify_agent_shell_layers(
             and isinstance(statement.target, ast.Name)
             and isinstance(statement.value, ast.Constant)
         }
-        if defaults.get("include_shell") is False and defaults.get(
-            "config_layer_config", object()
-        ) is None:
+        if (
+            defaults.get("include_shell") is False
+            and defaults.get("config_layer_config", object()) is None
+        ):
             default_disabled_inputs.add(candidate.name)
     if not default_disabled_inputs:
         return
@@ -269,9 +264,7 @@ def add_python_dify_agent_shell_layers(
         ):
             return False
         binding = keyword_value(config, "backend_binding_ref")
-        return binding is not None and exact_attribute(
-            binding, input_name, "backend_binding_ref"
-        )
+        return binding is not None and exact_attribute(binding, input_name, "backend_binding_ref")
 
     def shell_call_is_exact(call: ast.Call, input_name: str) -> bool:
         layer_type = keyword_value(call, "type")
@@ -299,7 +292,9 @@ def add_python_dify_agent_shell_layers(
             and not deps.keywords
         )
 
-    def returns_layers_composition(function: ast.FunctionDef | ast.AsyncFunctionDef, layers_name: str) -> bool:
+    def returns_layers_composition(
+        function: ast.FunctionDef | ast.AsyncFunctionDef, layers_name: str
+    ) -> bool:
         matching_returns = 0
         for statement in function.body:
             if not (
@@ -358,8 +353,7 @@ def add_python_dify_agent_shell_layers(
         local_counts = Counter(
             candidate.id
             for candidate in ast.walk(function)
-            if isinstance(candidate, ast.Name)
-            and isinstance(candidate.ctx, (ast.Store, ast.Del))
+            if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del))
         )
         include_name: str | None = None
         layers_name: str | None = None
@@ -379,16 +373,12 @@ def add_python_dify_agent_shell_layers(
                 and isinstance(statement.value, ast.BoolOp)
                 and isinstance(statement.value.op, ast.Or)
                 and len(statement.value.values) == 2
-                and exact_attribute(
-                    statement.value.values[0], input_name, "include_shell"
-                )
+                and exact_attribute(statement.value.values[0], input_name, "include_shell")
                 and isinstance(statement.value.values[1], ast.Compare)
                 and len(statement.value.values[1].ops) == 1
                 and isinstance(statement.value.values[1].ops[0], ast.IsNot)
                 and len(statement.value.values[1].comparators) == 1
-                and isinstance(
-                    statement.value.values[1].comparators[0], ast.Constant
-                )
+                and isinstance(statement.value.values[1].comparators[0], ast.Constant)
                 and statement.value.values[1].comparators[0].value is None
                 and exact_attribute(
                     statement.value.values[1].left,
@@ -420,13 +410,9 @@ def add_python_dify_agent_shell_layers(
                 if (call := appended_layer_call(child, layers_name)) is not None
             ]
             runtime_calls = [
-                call
-                for call in layer_calls
-                if runtime_call_is_exact(call, input_name)
+                call for call in layer_calls if runtime_call_is_exact(call, input_name)
             ]
-            shell_calls = [
-                call for call in layer_calls if shell_call_is_exact(call, input_name)
-            ]
+            shell_calls = [call for call in layer_calls if shell_call_is_exact(call, input_name)]
             if len(runtime_calls) != 1 or len(shell_calls) != 1:
                 break
             runtime_call = runtime_calls[0]
@@ -441,9 +427,7 @@ def add_python_dify_agent_shell_layers(
                 runtime_call.lineno,
                 excerpt(lines, runtime_call.lineno),
             )
-            tool_id = source_symbol(
-                "py", relative, "tool", f"dify.shell@{shell_call.lineno}"
-            )
+            tool_id = source_symbol("py", relative, "tool", f"dify.shell@{shell_call.lineno}")
             shared = {
                 "scope": source_scope(relative),
                 "frontend": "python",
@@ -525,6 +509,7 @@ def add_python_dify_agent_shell_layers(
                 )
             )
             break
+
 
 AGENT_CALLS = {
     "Agent",
@@ -816,8 +801,7 @@ MCP_IN_PROCESS_SERVER_CONSTRUCTORS = {"FastMCP"}
 def is_mcp_server_constructor_module(module: str, constructor: str) -> bool:
     if constructor in MCP_IN_PROCESS_SERVER_CONSTRUCTORS:
         return bool(
-            module in {"fastmcp", "mcp.server"}
-            or module.startswith(("fastmcp.", "mcp.server."))
+            module in {"fastmcp", "mcp.server"} or module.startswith(("fastmcp.", "mcp.server."))
         )
     return bool(
         re.search(r"(?:^|[._])mcp(?:[._]|$)", module, re.IGNORECASE)
@@ -829,9 +813,7 @@ def literal_string_arguments(node: ast.AST | None) -> list[str | None] | None:
     """Return a literal-preserving argument sequence, including an unresolved suffix."""
     if isinstance(node, (ast.List, ast.Tuple)):
         return [
-            item.value
-            if isinstance(item, ast.Constant) and isinstance(item.value, str)
-            else None
+            item.value if isinstance(item, ast.Constant) and isinstance(item.value, str) else None
             for item in node.elts
         ]
     if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
@@ -956,16 +938,10 @@ def mcp_package_reference(
     return {
         "package": package_name,
         "package_spec": package_spec,
-        "version_scope": (
-            "exact" if exact_version else "floating" if reference else "unpinned"
-        ),
+        "version_scope": ("exact" if exact_version else "floating" if reference else "unpinned"),
         "auto_install": automatic and not no_install,
         "install_mode": (
-            "disabled"
-            if no_install
-            else "automatic"
-            if automatic
-            else "prompt-or-local-cache"
+            "disabled" if no_install else "automatic" if automatic else "prompt-or-local-cache"
         ),
     }
 
@@ -1147,9 +1123,7 @@ def add_python_openhands_sdk_flows(
             return expression
         return None
 
-    def tool_specs(
-        expression: ast.AST | None, before_line: int
-    ) -> list[tuple[ast.Call, str]]:
+    def tool_specs(expression: ast.AST | None, before_line: int) -> list[tuple[ast.Call, str]]:
         if isinstance(expression, ast.Name):
             assignment = assignments.get(expression.id)
             if assignment is None or assignment.lineno >= before_line:
@@ -1190,9 +1164,7 @@ def add_python_openhands_sdk_flows(
             continue
         agent_name_node = keyword_value(value, "name")
         agent_name = (
-            str(agent_name_node.value)
-            if isinstance(agent_name_node, ast.Constant)
-            else "Agent"
+            str(agent_name_node.value) if isinstance(agent_name_node, ast.Constant) else "Agent"
         )
         agents[binding] = (
             agent_name,
@@ -1201,9 +1173,7 @@ def add_python_openhands_sdk_flows(
             configured_tools,
         )
 
-    conversations: dict[
-        str, tuple[str, str, ast.Call, list[tuple[ast.Call, str]]]
-    ] = {}
+    conversations: dict[str, tuple[str, str, ast.Call, list[tuple[ast.Call, str]]]] = {}
     conversation_lines: dict[str, int] = {}
     for binding, statement in assignments.items():
         value = assignment_value(statement)
@@ -1242,18 +1212,14 @@ def add_python_openhands_sdk_flows(
         conversation = setter.func.value.id
         if setter.func.attr == "set_security_analyzer":
             analyzer_setter_counts[conversation] += 1
-            analyzer = exact_call(
-                setter.args[0], set(analyzer_factories), setter.lineno
-            )
+            analyzer = exact_call(setter.args[0], set(analyzer_factories), setter.lineno)
             if analyzer is not None and isinstance(analyzer.func, ast.Name):
                 analyzer_setters[conversation].append(
                     (setter, analyzer, analyzer_factories[analyzer.func.id])
                 )
         elif setter.func.attr == "set_confirmation_policy":
             policy_setter_counts[conversation] += 1
-            policy = exact_call(
-                setter.args[0], confirm_risky_factories, setter.lineno
-            )
+            policy = exact_call(setter.args[0], confirm_risky_factories, setter.lineno)
             if policy is not None:
                 policy_setters[conversation].append((setter, policy))
 
@@ -1409,8 +1375,7 @@ def add_python_openhands_sdk_flows(
                     "builtin_tool": True,
                     "builtin_tool_name": builtin_name,
                     "execution_environment": "conversation-workspace",
-                    "approval_gap_anchor": approval_policy == "disabled-default"
-                    and index == 0,
+                    "approval_gap_anchor": approval_policy == "disabled-default" and index == 0,
                 }
                 if capability == "shell-execution":
                     capability_attributes.update(
@@ -1431,9 +1396,7 @@ def add_python_openhands_sdk_flows(
                             "write_access": True,
                         }
                     )
-                evidence = Evidence(
-                    relative, tool_call.lineno, excerpt(lines, tool_call.lineno)
-                )
+                evidence = Evidence(relative, tool_call.lineno, excerpt(lines, tool_call.lineno))
                 ir.add_component(
                     Component("capability", capability, evidence, capability_attributes)
                 )
@@ -1466,9 +1429,7 @@ def add_python_openhands_sdk_flows(
                     target_id=tool_id,
                 )
             )
-            tool_evidence = Evidence(
-                relative, tool_call.lineno, excerpt(lines, tool_call.lineno)
-            )
+            tool_evidence = Evidence(relative, tool_call.lineno, excerpt(lines, tool_call.lineno))
             if analyzer_evidence is not None:
                 ir.add_relationship(
                     Relationship(
@@ -1571,11 +1532,7 @@ def python_static_http_prefix_proof(
     known_proofs: dict[str, PythonStaticHttpPrefixProof],
 ) -> PythonStaticHttpPrefixProof | None:
     """Return one unambiguous imported-literal proof used by an expression."""
-    proofs = {
-        known_proofs[name]
-        for name in python_expression_names(node)
-        if name in known_proofs
-    }
+    proofs = {known_proofs[name] for name in python_expression_names(node) if name in known_proofs}
     return next(iter(proofs)) if len(proofs) == 1 else None
 
 
@@ -1584,19 +1541,12 @@ def python_urllib_request_url(
     request_constructors: set[str],
 ) -> ast.AST | None:
     """Unwrap an import-proven urllib Request to its original URL expression."""
-    if not (
-        isinstance(node, ast.Call)
-        and dotted_name(node.func) in request_constructors
-    ):
+    if not (isinstance(node, ast.Call) and dotted_name(node.func) in request_constructors):
         return node
     if node.args:
         return node.args[0]
     return next(
-        (
-            keyword.value
-            for keyword in node.keywords
-            if keyword.arg in {"url", "full_url"}
-        ),
+        (keyword.value for keyword in node.keywords if keyword.arg in {"url", "full_url"}),
         None,
     )
 
@@ -1712,9 +1662,7 @@ def python_approval_bypass_function_summaries(
                 module_flags[target.id] = environment_names
 
     functions = [
-        node
-        for node in ast.walk(tree)
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        node for node in ast.walk(tree) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
     ]
     name_counts = Counter(node.name for node in functions)
     functions_by_name = {node.name: node for node in functions if name_counts[node.name] == 1}
@@ -2067,10 +2015,7 @@ def python_assigned_names_in_statement(statement: ast.stmt) -> set[str]:
         if isinstance(candidate, ast.Lambda):
             return
         if isinstance(candidate, (ast.Import, ast.ImportFrom)):
-            names.update(
-                alias.asname or alias.name.split(".", 1)[0]
-                for alias in candidate.names
-            )
+            names.update(alias.asname or alias.name.split(".", 1)[0] for alias in candidate.names)
             return
         if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
             names.add(candidate.id)
@@ -2101,8 +2046,7 @@ def python_function_local_bindings(
             return
         if isinstance(candidate, (ast.Import, ast.ImportFrom)):
             bindings.update(
-                alias.asname or alias.name.split(".", 1)[0]
-                for alias in candidate.names
+                alias.asname or alias.name.split(".", 1)[0] for alias in candidate.names
             )
             return
         if isinstance(candidate, ast.ExceptHandler) and candidate.name:
@@ -2141,28 +2085,20 @@ def python_browser_annotation_is_type(
         return False
     wrapper = dotted_name(annotation.value).rsplit(".", 1)[-1]
     elements = (
-        annotation.slice.elts
-        if isinstance(annotation.slice, ast.Tuple)
-        else [annotation.slice]
+        annotation.slice.elts if isinstance(annotation.slice, ast.Tuple) else [annotation.slice]
     )
     if wrapper in {"Annotated", "Optional"}:
-        return bool(elements) and python_browser_annotation_is_type(
-            elements[0], browser_type_names
-        )
+        return bool(elements) and python_browser_annotation_is_type(elements[0], browser_type_names)
     if wrapper == "Union":
         browser_elements = [
-            item
-            for item in elements
-            if python_browser_annotation_is_type(item, browser_type_names)
+            item for item in elements if python_browser_annotation_is_type(item, browser_type_names)
         ]
         nullable_elements = [
-            item
-            for item in elements
-            if isinstance(item, ast.Constant) and item.value is None
+            item for item in elements if isinstance(item, ast.Constant) and item.value is None
         ]
-        return len(browser_elements) == 1 and len(browser_elements) + len(
-            nullable_elements
-        ) == len(elements)
+        return len(browser_elements) == 1 and len(browser_elements) + len(nullable_elements) == len(
+            elements
+        )
     return False
 
 
@@ -2226,16 +2162,12 @@ def build_python_browser_class_exports(
 
         module_mutations: Counter[str] = Counter()
 
-        def collect_module_mutations(
-            candidate: ast.AST, mutations: Counter[str]
-        ) -> None:
+        def collect_module_mutations(candidate: ast.AST, mutations: Counter[str]) -> None:
             if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
                 return
             if isinstance(candidate, (ast.Import, ast.ImportFrom, ast.Lambda)):
                 return
-            if isinstance(candidate, ast.Name) and isinstance(
-                candidate.ctx, (ast.Store, ast.Del)
-            ):
+            if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
                 mutations[candidate.id] += 1
             for child in ast.iter_child_nodes(candidate):
                 collect_module_mutations(child, mutations)
@@ -2252,8 +2184,7 @@ def build_python_browser_class_exports(
         type_checking_counts = Counter(
             alias.asname or alias.name
             for statement in tree.body
-            if isinstance(statement, ast.ImportFrom)
-            and statement.module == "typing"
+            if isinstance(statement, ast.ImportFrom) and statement.module == "typing"
             for alias in statement.names
             if alias.name == "TYPE_CHECKING"
         )
@@ -2280,9 +2211,7 @@ def build_python_browser_class_exports(
         import_binding_counts = Counter(
             alias.asname
             or (
-                alias.name
-                if isinstance(statement, ast.ImportFrom)
-                else alias.name.split(".", 1)[0]
+                alias.name if isinstance(statement, ast.ImportFrom) else alias.name.split(".", 1)[0]
             )
             for statement in browser_imports
             for alias in statement.names
@@ -2324,25 +2253,18 @@ def build_python_browser_class_exports(
                 or module_mutations[statement.name] != 0
             ):
                 continue
-            attributes = python_class_browser_receiver_attributes(
-                statement, browser_type_names
-            )
+            attributes = python_class_browser_receiver_attributes(statement, browser_type_names)
             class_binding_counts: Counter[str] = Counter()
 
-            def collect_class_bindings(
-                candidate: ast.AST, bindings: Counter[str]
-            ) -> None:
-                if isinstance(
-                    candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
-                ):
+            def collect_class_bindings(candidate: ast.AST, bindings: Counter[str]) -> None:
+                if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
                     bindings[candidate.name] += 1
                     return
                 if isinstance(candidate, ast.Lambda):
                     return
                 if isinstance(candidate, (ast.Import, ast.ImportFrom)):
                     bindings.update(
-                        alias.asname or alias.name.split(".", 1)[0]
-                        for alias in candidate.names
+                        alias.asname or alias.name.split(".", 1)[0] for alias in candidate.names
                     )
                     return
                 if isinstance(candidate, ast.Name) and isinstance(
@@ -2374,9 +2296,7 @@ def build_python_browser_class_exports(
                 and class_binding_counts[child.name] == 1
                 and not child.decorator_list
                 and exact_instance_signature(child)
-                and python_browser_annotation_is_type(
-                    child.returns, browser_type_names
-                )
+                and python_browser_annotation_is_type(child.returns, browser_type_names)
             }
             sync_receiver_methods = {
                 child.name
@@ -2385,9 +2305,7 @@ def build_python_browser_class_exports(
                 and class_binding_counts[child.name] == 1
                 and not child.decorator_list
                 and exact_instance_signature(child)
-                and python_browser_annotation_is_type(
-                    child.returns, browser_type_names
-                )
+                and python_browser_annotation_is_type(child.returns, browser_type_names)
             }
             if attributes or async_receiver_methods or sync_receiver_methods:
                 exports[(relative, statement.name)] = PythonBrowserClassExport(
@@ -2405,9 +2323,7 @@ def python_module_browser_receiver_variables(
     annotations: dict[str, list[ast.AST]] = defaultdict(list)
     bindings: Counter[str] = Counter()
     for statement in tree.body:
-        if isinstance(statement, ast.AnnAssign) and isinstance(
-            statement.target, ast.Name
-        ):
+        if isinstance(statement, ast.AnnAssign) and isinstance(statement.target, ast.Name):
             annotations[statement.target.id].append(statement.annotation)
 
     def collect_module_bindings(candidate: ast.AST) -> None:
@@ -2418,8 +2334,7 @@ def python_module_browser_receiver_variables(
             return
         if isinstance(candidate, (ast.Import, ast.ImportFrom)):
             bindings.update(
-                alias.asname or alias.name.split(".", 1)[0]
-                for alias in candidate.names
+                alias.asname or alias.name.split(".", 1)[0] for alias in candidate.names
             )
             return
         if isinstance(candidate, ast.ExceptHandler) and candidate.name:
@@ -2428,9 +2343,7 @@ def python_module_browser_receiver_variables(
             bindings[candidate.name] += 1
         if isinstance(candidate, ast.MatchMapping) and candidate.rest:
             bindings[candidate.rest] += 1
-        if isinstance(candidate, ast.Name) and isinstance(
-            candidate.ctx, (ast.Store, ast.Del)
-        ):
+        if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
             bindings[candidate.id] += 1
         for child in ast.iter_child_nodes(candidate):
             collect_module_bindings(child)
@@ -2466,11 +2379,7 @@ def python_browser_evaluator_script_argument(
     if len(call.args) > argument_index:
         return True, call.args[argument_index]
     return True, next(
-        (
-            keyword.value
-            for keyword in call.keywords
-            if keyword.arg == "expression"
-        ),
+        (keyword.value for keyword in call.keywords if keyword.arg == "expression"),
         None,
     )
 
@@ -2508,8 +2417,7 @@ def python_browser_contextmanager_page_factories(
     decorator_names = {
         name
         for name, count in decorator_imports.items()
-        if count == 1
-        and module_mutation_counts[name.split(".", 1)[0]] == 0
+        if count == 1 and module_mutation_counts[name.split(".", 1)[0]] == 0
     }
     if not decorator_names:
         return set()
@@ -2583,27 +2491,24 @@ def python_browser_contextmanager_page_factories(
                 for alias in candidate.names:
                     if (
                         isinstance(candidate, ast.ImportFrom)
-                        and candidate.module
-                        in {"playwright.async_api", "playwright.sync_api"}
-                        and alias.name
-                        in {"async_playwright", "sync_playwright"}
+                        and candidate.module in {"playwright.async_api", "playwright.sync_api"}
+                        and alias.name in {"async_playwright", "sync_playwright"}
                     ):
                         continue
-                    mutation_counts[
-                        alias.asname or alias.name.split(".", 1)[0]
-                    ] += 1
-            elif isinstance(
-                candidate,
-                (ast.ExceptHandler, ast.MatchAs, ast.MatchStar),
-            ) and candidate.name:
+                    mutation_counts[alias.asname or alias.name.split(".", 1)[0]] += 1
+            elif (
+                isinstance(
+                    candidate,
+                    (ast.ExceptHandler, ast.MatchAs, ast.MatchStar),
+                )
+                and candidate.name
+            ):
                 mutation_counts[candidate.name] += 1
             elif isinstance(candidate, ast.MatchMapping) and candidate.rest:
                 mutation_counts[candidate.rest] += 1
             elif isinstance(candidate, (ast.With, ast.AsyncWith)):
                 targets.extend(
-                    item.optional_vars
-                    for item in candidate.items
-                    if item.optional_vars is not None
+                    item.optional_vars for item in candidate.items if item.optional_vars is not None
                 )
             for target in targets:
                 mutation_counts.update(python_assigned_names(target))
@@ -2612,8 +2517,7 @@ def python_browser_contextmanager_page_factories(
         for statement in function.body:
             if not (
                 isinstance(statement, ast.ImportFrom)
-                and statement.module
-                in {"playwright.async_api", "playwright.sync_api"}
+                and statement.module in {"playwright.async_api", "playwright.sync_api"}
             ):
                 continue
             local_runtime_imports.update(
@@ -2626,10 +2530,7 @@ def python_browser_contextmanager_page_factories(
             for name, count in (module_runtime_imports + local_runtime_imports).items()
             if count == 1
             and mutation_counts[name] == 0
-            and (
-                local_runtime_imports[name] == 1
-                or module_mutation_counts[name] == 0
-            )
+            and (local_runtime_imports[name] == 1 or module_mutation_counts[name] == 0)
         }
         if not runtime_factories:
             continue
@@ -2653,11 +2554,7 @@ def python_browser_contextmanager_page_factories(
             parent = parent_map.get(id(child))
             while parent is not None and parent is not container:
                 if isinstance(parent, ast.Try):
-                    if (
-                        child not in parent.body
-                        or parent.handlers
-                        or parent.orelse
-                    ):
+                    if child not in parent.body or parent.handlers or parent.orelse:
                         return False
                 elif isinstance(
                     parent,
@@ -2708,8 +2605,7 @@ def python_browser_contextmanager_page_factories(
                         return current_bindings.get(expression.id)
                     return None
                 if not (
-                    isinstance(expression, ast.Call)
-                    and isinstance(expression.func, ast.Attribute)
+                    isinstance(expression, ast.Call) and isinstance(expression.func, ast.Attribute)
                 ):
                     return None
                 receiver = expression.func.value
@@ -2772,8 +2668,7 @@ def python_browser_contextmanager_page_factories(
             if (
                 allowed_path(yielded, context_manager, parents)
                 and isinstance(yielded.value, ast.Name)
-                and binding_lines.get(yielded.value.id, yielded.lineno)
-                < yielded.lineno
+                and binding_lines.get(yielded.value.id, yielded.lineno) < yielded.lineno
                 and bindings.get(yielded.value.id) == "local-playwright-page"
             ):
                 factories.add(function.name)
@@ -2786,9 +2681,7 @@ def python_function_owned_nodes(
 ) -> tuple[list[ast.AST], dict[int, ast.AST]]:
     """Return nodes whose nearest function scope is ``function``."""
     parents = {
-        id(child): parent
-        for parent in ast.walk(function)
-        for child in ast.iter_child_nodes(parent)
+        id(child): parent for parent in ast.walk(function) for child in ast.iter_child_nodes(parent)
     }
     owned: list[ast.AST] = []
     for candidate in ast.walk(function):
@@ -2844,11 +2737,7 @@ def python_browser_literal_selector_attributes(
 
     resolved: set[str] = set()
     for name, declarations in candidates.items():
-        if (
-            len(declarations) != 1
-            or direct_bindings[name] != 1
-            or instance_mutations[name]
-        ):
+        if len(declarations) != 1 or direct_bindings[name] != 1 or instance_mutations[name]:
             continue
         declaration = declarations[0]
         elements = (
@@ -2859,8 +2748,7 @@ def python_browser_literal_selector_attributes(
         values = {
             element.value
             for element in elements
-            if isinstance(element, ast.Constant)
-            and isinstance(element.value, str)
+            if isinstance(element, ast.Constant) and isinstance(element.value, str)
         }
         if (
             len(values) != len(elements)
@@ -2898,19 +2786,20 @@ def python_function_playwright_binding_kinds(
     mutation_counts.update(
         candidate.id
         for candidate in owned
-        if isinstance(candidate, ast.Name)
-        and isinstance(candidate.ctx, (ast.Store, ast.Del))
+        if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del))
     )
     for candidate in owned:
         if isinstance(candidate, (ast.Import, ast.ImportFrom)):
             mutation_counts.update(
-                alias.asname or alias.name.split(".", 1)[0]
-                for alias in candidate.names
+                alias.asname or alias.name.split(".", 1)[0] for alias in candidate.names
             )
-        elif isinstance(
-            candidate,
-            (ast.ExceptHandler, ast.MatchAs, ast.MatchStar),
-        ) and candidate.name:
+        elif (
+            isinstance(
+                candidate,
+                (ast.ExceptHandler, ast.MatchAs, ast.MatchStar),
+            )
+            and candidate.name
+        ):
             mutation_counts[candidate.name] += 1
         elif isinstance(candidate, ast.MatchMapping) and candidate.rest:
             mutation_counts[candidate.rest] += 1
@@ -2934,8 +2823,7 @@ def python_function_playwright_binding_kinds(
                 isinstance(item.optional_vars, ast.Name)
                 and mutation_counts[item.optional_vars.id] == 1
                 and isinstance(item.context_expr, ast.Call)
-                and dotted_name(item.context_expr.func)
-                in browser_runtime_factories
+                and dotted_name(item.context_expr.func) in browser_runtime_factories
                 and not item.context_expr.args
                 and not item.context_expr.keywords
             ):
@@ -2967,8 +2855,7 @@ def python_function_playwright_binding_kinds(
             and expression.func.id == "getattr"
             and len(expression.args) == 2
             and not expression.keywords
-            and resolve(expression.args[0], line, scope)
-            == "local-playwright-runtime"
+            and resolve(expression.args[0], line, scope) == "local-playwright-runtime"
             and isinstance(expression.args[1], ast.Attribute)
             and isinstance(expression.args[1].value, ast.Name)
             and expression.args[1].value.id == "self"
@@ -2992,10 +2879,7 @@ def python_function_playwright_binding_kinds(
             and resolve(receiver.value, line, scope) == "local-playwright-runtime"
         ):
             return "local-playwright-browser"
-        if (
-            expression.func.attr == "new_context"
-            and receiver_kind == "local-playwright-browser"
-        ):
+        if expression.func.attr == "new_context" and receiver_kind == "local-playwright-browser":
             return "local-playwright-context"
         if expression.func.attr == "new_page" and receiver_kind in {
             "local-playwright-browser",
@@ -3024,10 +2908,7 @@ def python_function_playwright_binding_kinds(
             bindings[target] = kind
             binding_lines[target] = assignment.lineno
             binding_scopes[target] = scope
-    return {
-        name: (kind, binding_lines[name])
-        for name, kind in bindings.items()
-    }
+    return {name: (kind, binding_lines[name]) for name, kind in bindings.items()}
 
 
 def python_same_class_browser_parameter_proofs(
@@ -3078,27 +2959,21 @@ def python_same_class_browser_parameter_proofs(
     literal_type_names = {
         name
         for name, count in literal_imports.items()
-        if count == 1
-        and module_mutation_counts[name.split(".", 1)[0]] == 0
+        if count == 1 and module_mutation_counts[name.split(".", 1)[0]] == 0
     }
     browser_runtime_factories = {
         name
         for name, count in runtime_imports.items()
-        if count == 1
-        and module_mutation_counts[name.split(".", 1)[0]] == 0
+        if count == 1 and module_mutation_counts[name.split(".", 1)[0]] == 0
     }
     if not literal_type_names or not browser_runtime_factories:
         return {}
 
     module_parents = {
-        id(child): parent
-        for parent in ast.walk(tree)
-        for child in ast.iter_child_nodes(parent)
+        id(child): parent for parent in ast.walk(tree) for child in ast.iter_child_nodes(parent)
     }
     proofs: dict[int, dict[str, str]] = {}
-    for class_node in (
-        statement for statement in tree.body if isinstance(statement, ast.ClassDef)
-    ):
+    for class_node in (statement for statement in tree.body if isinstance(statement, ast.ClassDef)):
         methods_by_name: dict[
             str,
             list[ast.FunctionDef | ast.AsyncFunctionDef],
@@ -3256,9 +3131,7 @@ def python_same_class_browser_parameter_proofs(
                     if index < len(call.args):
                         values.append(call.args[index])
                     values.extend(
-                        keyword.value
-                        for keyword in call.keywords
-                        if keyword.arg == parameter.arg
+                        keyword.value for keyword in call.keywords if keyword.arg == parameter.arg
                     )
                     if len(values) != 1:
                         arguments[parameter.arg] = None
@@ -3268,8 +3141,7 @@ def python_same_class_browser_parameter_proofs(
                         kind_and_line = binding_kinds.get(value.id)
                         arguments[parameter.arg] = (
                             kind_and_line[0]
-                            if kind_and_line is not None
-                            and kind_and_line[1] < call.lineno
+                            if kind_and_line is not None and kind_and_line[1] < call.lineno
                             else None
                         )
                     else:
@@ -3284,10 +3156,7 @@ def python_same_class_browser_parameter_proofs(
             resolved = {
                 parameter.arg: "same-class-playwright-browser-parameter"
                 for parameter in parameters
-                if all(
-                    call.get(parameter.arg) == "local-playwright-browser"
-                    for call in calls
-                )
+                if all(call.get(parameter.arg) == "local-playwright-browser" for call in calls)
             }
             if resolved:
                 proofs[id(method)] = resolved
@@ -3322,9 +3191,7 @@ def python_same_module_page_parameter_proofs(
     calls: dict[str, list[dict[str, str | None]]] = defaultdict(list)
     unsafe: set[str] = set()
     module_parents = {
-        id(child): parent
-        for parent in ast.walk(tree)
-        for child in ast.iter_child_nodes(parent)
+        id(child): parent for parent in ast.walk(tree) for child in ast.iter_child_nodes(parent)
     }
     for candidate in ast.walk(tree):
         if not (
@@ -3347,9 +3214,7 @@ def python_same_module_page_parameter_proofs(
             unsafe.add(candidate.id)
 
     for caller in (
-        node
-        for node in ast.walk(tree)
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        node for node in ast.walk(tree) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
     ):
         local_bindings = python_function_local_bindings(caller)
         shadowed_helpers = local_bindings & helpers.keys()
@@ -3363,8 +3228,7 @@ def python_same_module_page_parameter_proofs(
         mutation_counts: Counter[str] = Counter(
             candidate.id
             for candidate in owned
-            if isinstance(candidate, ast.Name)
-            and isinstance(candidate.ctx, (ast.Store, ast.Del))
+            if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del))
         )
         page_bindings: dict[str, int] = {}
         for candidate in owned:
@@ -3383,8 +3247,7 @@ def python_same_module_page_parameter_proofs(
                     isinstance(item.optional_vars, ast.Name)
                     and mutation_counts[item.optional_vars.id] == 1
                     and isinstance(context, ast.Call)
-                    and dotted_name(context.func)
-                    in function_contextmanager_page_factories
+                    and dotted_name(context.func) in function_contextmanager_page_factories
                 ):
                     page_bindings[item.optional_vars.id] = candidate.lineno
 
@@ -3420,9 +3283,7 @@ def python_same_module_page_parameter_proofs(
                 if index < len(call.args):
                     values.append(call.args[index])
                 values.extend(
-                    keyword.value
-                    for keyword in call.keywords
-                    if keyword.arg == parameter.arg
+                    keyword.value for keyword in call.keywords if keyword.arg == parameter.arg
                 )
                 if len(values) != 1 or not isinstance(values[0], ast.Name):
                     arguments[parameter.arg] = None
@@ -3444,8 +3305,7 @@ def python_same_module_page_parameter_proofs(
             parameter.arg: "same-module-contextmanager-page-parameter"
             for parameter in [*helper.args.posonlyargs, *helper.args.args]
             if all(
-                arguments.get(parameter.arg)
-                == "local-playwright-contextmanager-yield"
+                arguments.get(parameter.arg) == "local-playwright-contextmanager-yield"
                 for arguments in call_arguments
             )
         }
@@ -3463,9 +3323,7 @@ def python_class_browser_receiver_properties(
     """Resolve exact Playwright return annotations on immutable properties."""
     if not builtin_property_available:
         return set()
-    definitions: dict[str, list[ast.FunctionDef | ast.AsyncFunctionDef]] = defaultdict(
-        list
-    )
+    definitions: dict[str, list[ast.FunctionDef | ast.AsyncFunctionDef]] = defaultdict(list)
     assigned_names: set[str] = set()
     for statement in node.body:
         if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -3474,9 +3332,7 @@ def python_class_browser_receiver_properties(
             assigned_names.update(
                 target.id for target in statement.targets if isinstance(target, ast.Name)
             )
-        elif isinstance(statement, ast.AnnAssign) and isinstance(
-            statement.target, ast.Name
-        ):
+        elif isinstance(statement, ast.AnnAssign) and isinstance(statement.target, ast.Name):
             assigned_names.add(statement.target.id)
 
     properties: set[str] = set()
@@ -3493,9 +3349,7 @@ def python_class_browser_receiver_properties(
             or getter.args.vararg is not None
             or getter.args.kwonlyargs
             or getter.args.kwarg is not None
-            or not python_browser_annotation_is_type(
-                getter.returns, browser_type_names
-            )
+            or not python_browser_annotation_is_type(getter.returns, browser_type_names)
         ):
             continue
         properties.add(name)
@@ -3532,9 +3386,7 @@ def python_class_constructor_browser_receivers(
         ):
             return {target.attr}
         if isinstance(target, (ast.Tuple, ast.List)):
-            return {
-                name for element in target.elts for name in self_attributes(element)
-            }
+            return {name for element in target.elts for name in self_attributes(element)}
         return set()
 
     attribute_mutations: Counter[str] = Counter()
@@ -3551,9 +3403,7 @@ def python_class_constructor_browser_receivers(
             targets.extend(candidate.targets)
         elif isinstance(candidate, (ast.With, ast.AsyncWith)):
             targets.extend(
-                item.optional_vars
-                for item in candidate.items
-                if item.optional_vars is not None
+                item.optional_vars for item in candidate.items if item.optional_vars is not None
             )
         for target in targets:
             attribute_mutations.update(self_attributes(target))
@@ -3572,9 +3422,7 @@ def python_class_constructor_browser_receivers(
             targets.extend(candidate.targets)
         elif isinstance(candidate, (ast.With, ast.AsyncWith)):
             targets.extend(
-                item.optional_vars
-                for item in candidate.items
-                if item.optional_vars is not None
+                item.optional_vars for item in candidate.items if item.optional_vars is not None
             )
         for target in targets:
             local_mutations.update(python_assigned_names(target))
@@ -3711,11 +3559,7 @@ def python_class_lifecycle_browser_receivers(
                 and candidate.value.value is None
             ):
                 continue
-            targets = (
-                candidate.targets
-                if isinstance(candidate, ast.Assign)
-                else [candidate.target]
-            )
+            targets = candidate.targets if isinstance(candidate, ast.Assign) else [candidate.target]
             if len(targets) == 1 and (name := self_attribute(targets[0])):
                 initial_none_attributes.add(name)
 
@@ -3751,9 +3595,7 @@ def python_class_lifecycle_browser_receivers(
                 targets.extend(candidate.targets)
             elif isinstance(candidate, (ast.With, ast.AsyncWith)):
                 targets.extend(
-                    item.optional_vars
-                    for item in candidate.items
-                    if item.optional_vars is not None
+                    item.optional_vars for item in candidate.items if item.optional_vars is not None
                 )
             for target in targets:
                 local_mutations.update(python_assigned_names(target))
@@ -3775,11 +3617,7 @@ def python_class_lifecycle_browser_receivers(
             if not isinstance(expression, ast.Call):
                 return None
             call_name = dotted_name(expression.func)
-            if (
-                call_name in factories
-                and not expression.args
-                and not expression.keywords
-            ):
+            if call_name in factories and not expression.args and not expression.keywords:
                 return "playwright-context-manager"
             if not isinstance(expression.func, ast.Attribute):
                 return None
@@ -3799,10 +3637,7 @@ def python_class_lifecycle_browser_receivers(
             ):
                 return "playwright-browser"
             receiver_kind = resolve(receiver)
-            if (
-                expression.func.attr == "new_context"
-                and receiver_kind == "playwright-browser"
-            ):
+            if expression.func.attr == "new_context" and receiver_kind == "playwright-browser":
                 return "playwright-context"
             if expression.func.attr == "new_page" and receiver_kind in {
                 "playwright-browser",
@@ -3814,11 +3649,7 @@ def python_class_lifecycle_browser_receivers(
         for statement in lifecycle.body:
             if not isinstance(statement, (ast.Assign, ast.AnnAssign)):
                 continue
-            targets = (
-                statement.targets
-                if isinstance(statement, ast.Assign)
-                else [statement.target]
-            )
+            targets = statement.targets if isinstance(statement, ast.Assign) else [statement.target]
             if len(targets) != 1 or statement.value is None:
                 continue
             target = targets[0]
@@ -3827,10 +3658,7 @@ def python_class_lifecycle_browser_receivers(
                 if local_mutations[target.id] != 1:
                     continue
             elif (name := self_attribute(target)) is not None:
-                if (
-                    attribute_mutations[name] != 2
-                    or name not in initial_none_attributes
-                ):
+                if attribute_mutations[name] != 2 or name not in initial_none_attributes:
                     continue
             else:
                 continue
@@ -3876,13 +3704,12 @@ def python_class_branching_lifecycle_browser_receivers(
         if not isinstance(statement, (ast.Import, ast.ImportFrom)):
             continue
         all_initializer_imports.update(
-            alias.asname or alias.name.split(".", 1)[0]
-            for alias in statement.names
+            alias.asname or alias.name.split(".", 1)[0] for alias in statement.names
         )
-        if (
-            isinstance(statement, ast.ImportFrom)
-            and statement.module in {"playwright.async_api", "playwright.sync_api"}
-        ):
+        if isinstance(statement, ast.ImportFrom) and statement.module in {
+            "playwright.async_api",
+            "playwright.sync_api",
+        }:
             local_runtime_imports.update(
                 alias.asname or alias.name
                 for alias in statement.names
@@ -3892,8 +3719,7 @@ def python_class_branching_lifecycle_browser_receivers(
     initializer_stores = Counter(
         candidate.id
         for candidate in initializer_owned
-        if isinstance(candidate, ast.Name)
-        and isinstance(candidate.ctx, (ast.Store, ast.Del))
+        if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del))
     )
     local_factories = {
         name
@@ -3925,11 +3751,7 @@ def python_class_branching_lifecycle_browser_receivers(
         if name := self_attribute(target):
             return {name}
         if isinstance(target, (ast.Tuple, ast.List)):
-            return {
-                name
-                for element in target.elts
-                for name in nested_self_attributes(element)
-            }
+            return {name for element in target.elts for name in nested_self_attributes(element)}
         return set()
 
     assignments: dict[
@@ -3964,10 +3786,7 @@ def python_class_branching_lifecycle_browser_receivers(
                 ):
                     setattr_name = candidate.args[0]
             if setattr_name is not None:
-                if (
-                    isinstance(setattr_name, ast.Constant)
-                    and isinstance(setattr_name.value, str)
-                ):
+                if isinstance(setattr_name, ast.Constant) and isinstance(setattr_name.value, str):
                     unsafe_attributes.add(setattr_name.value)
                 else:
                     dynamic_self_setattr = True
@@ -3988,9 +3807,7 @@ def python_class_branching_lifecycle_browser_receivers(
                 targets.extend(candidate.targets)
             elif isinstance(candidate, (ast.With, ast.AsyncWith)):
                 targets.extend(
-                    item.optional_vars
-                    for item in candidate.items
-                    if item.optional_vars is not None
+                    item.optional_vars for item in candidate.items if item.optional_vars is not None
                 )
             for target in targets:
                 if (
@@ -4000,9 +3817,8 @@ def python_class_branching_lifecycle_browser_receivers(
                     and isinstance(target.value.value, ast.Name)
                     and target.value.value.id == "self"
                 ):
-                    if (
-                        isinstance(target.slice, ast.Constant)
-                        and isinstance(target.slice.value, str)
+                    if isinstance(target.slice, ast.Constant) and isinstance(
+                        target.slice.value, str
                     ):
                         unsafe_attributes.add(target.slice.value)
                     else:
@@ -4073,17 +3889,11 @@ def python_class_branching_lifecycle_browser_receivers(
                 targets.extend(candidate.targets)
             elif isinstance(candidate, (ast.With, ast.AsyncWith)):
                 targets.extend(
-                    item.optional_vars
-                    for item in candidate.items
-                    if item.optional_vars is not None
+                    item.optional_vars for item in candidate.items if item.optional_vars is not None
                 )
             for target in targets:
                 local_mutations.update(python_assigned_names(target))
-                if (
-                    value is not None
-                    and len(targets) == 1
-                    and isinstance(target, ast.Name)
-                ):
+                if value is not None and len(targets) == 1 and isinstance(target, ast.Name):
                     local_values[target.id].append(value)
 
         aliases: dict[str, str] = {}
@@ -4106,12 +3916,7 @@ def python_class_branching_lifecycle_browser_receivers(
                     valid = False
                     break
                 sources.add(popup_infos[expression.value.id])
-            if (
-                valid
-                and non_none
-                and len(sources) == 1
-                and local_mutations[name] == len(values)
-            ):
+            if valid and non_none and len(sources) == 1 and local_mutations[name] == len(values):
                 aliases[name] = next(iter(sources))
         popup_aliases[id(method)] = aliases
 
@@ -4195,10 +4000,7 @@ def python_class_branching_lifecycle_browser_receivers(
             for method, value in values:
                 if isinstance(value, ast.Constant) and value.value is None:
                     continue
-                if (
-                    isinstance(value, ast.Name)
-                    and value.id in popup_aliases[id(method)]
-                ):
+                if isinstance(value, ast.Name) and value.id in popup_aliases[id(method)]:
                     deferred_popup_sources.append(popup_aliases[id(method)][value.id])
                     continue
                 kind = resolve(value, method)
@@ -4260,9 +4062,7 @@ def python_browser_receiver_proofs(
         "or_",
     }
     parents = {
-        id(child): parent
-        for parent in ast.walk(node)
-        for child in ast.iter_child_nodes(parent)
+        id(child): parent for parent in ast.walk(node) for child in ast.iter_child_nodes(parent)
     }
     function_local_bindings = python_function_local_bindings(node)
 
@@ -4274,20 +4074,21 @@ def python_browser_receiver_proofs(
             parent = parents.get(id(parent))
         return False
 
-    bindings = {
-        name: "module-variable-annotation" for name in module_browser_variables
-    } | {
-        argument.arg: "parameter-annotation"
-        for argument in (*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs)
-        if python_browser_annotation_is_type(argument.annotation, browser_type_names)
-    } | browser_helper_parameter_proofs
+    bindings = (
+        {name: "module-variable-annotation" for name in module_browser_variables}
+        | {
+            argument.arg: "parameter-annotation"
+            for argument in (*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs)
+            if python_browser_annotation_is_type(argument.annotation, browser_type_names)
+        }
+        | browser_helper_parameter_proofs
+    )
     binding_lines = {name: 0 for name in bindings}
     instance_method = bool(
         node.args.args
         and node.args.args[0].arg == "self"
         and not any(
-            dotted_name(decorator).rsplit(".", 1)[-1]
-            in {"classmethod", "staticmethod"}
+            dotted_name(decorator).rsplit(".", 1)[-1] in {"classmethod", "staticmethod"}
             for decorator in node.decorator_list
         )
     )
@@ -4307,9 +4108,7 @@ def python_browser_receiver_proofs(
             targets.extend(candidate.targets)
         elif isinstance(candidate, (ast.With, ast.AsyncWith)):
             targets.extend(
-                item.optional_vars
-                for item in candidate.items
-                if item.optional_vars is not None
+                item.optional_vars for item in candidate.items if item.optional_vars is not None
             )
         for target in targets:
             mutation_counts.update(python_assigned_names(target))
@@ -4325,16 +4124,13 @@ def python_browser_receiver_proofs(
         if mutation_counts[factory.split(".", 1)[0]] == 0
     }
 
-    bindings = {
-        name: proof for name, proof in bindings.items() if mutation_counts[name] == 0
-    }
+    bindings = {name: proof for name, proof in bindings.items() if mutation_counts[name] == 0}
     binding_lines = {name: binding_lines[name] for name in bindings}
     imported_browser_context_parameters = {
         argument.arg: imported_browser_class_exports[annotation_name]
         for argument in (*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs)
         if mutation_counts[argument.arg] == 0
-        if (annotation_name := dotted_name(argument.annotation))
-        in imported_browser_class_exports
+        if (annotation_name := dotted_name(argument.annotation)) in imported_browser_class_exports
     }
     closure_nonlocal_names = {
         name
@@ -4345,8 +4141,7 @@ def python_browser_receiver_proofs(
     visible_imported_browser_contexts = {
         name: export
         for name, export in enclosing_imported_browser_contexts.items()
-        if name not in function_local_bindings
-        and name not in closure_nonlocal_names
+        if name not in function_local_bindings and name not in closure_nonlocal_names
     }
     visible_imported_browser_contexts.update(
         {
@@ -4391,14 +4186,10 @@ def python_browser_receiver_proofs(
             expression.func.attr == "launch"
             and isinstance(receiver, ast.Attribute)
             and receiver.attr in {"chromium", "firefox", "webkit"}
-            and constructed_browser_kind(receiver.value, line)
-            == "local-playwright-runtime"
+            and constructed_browser_kind(receiver.value, line) == "local-playwright-runtime"
         ):
             return "local-playwright-browser"
-        if (
-            expression.func.attr == "new_context"
-            and receiver_kind == "local-playwright-browser"
-        ):
+        if expression.func.attr == "new_context" and receiver_kind == "local-playwright-browser":
             return "local-playwright-context"
         if (
             expression.func.attr == "new_context"
@@ -4431,8 +4222,7 @@ def python_browser_receiver_proofs(
                 if child not in parent.body or (
                     parent.handlers
                     and not all(
-                        python_block_always_terminates(handler.body)
-                        for handler in parent.handlers
+                        python_block_always_terminates(handler.body) for handler in parent.handlers
                     )
                 ):
                     return False
@@ -4505,11 +4295,7 @@ def python_browser_receiver_proofs(
         context = visible_imported_browser_contexts.get(call.func.value.id)
         if context is None:
             return None
-        methods = (
-            context.async_receiver_methods
-            if awaited
-            else context.sync_receiver_methods
-        )
+        methods = context.async_receiver_methods if awaited else context.sync_receiver_methods
         if call.func.attr not in methods:
             return None
         return "imported-class-playwright-method-return"
@@ -4523,10 +4309,7 @@ def python_browser_receiver_proofs(
             return "module-variable-derived-receiver"
         if direct_proof:
             return "playwright-derived-receiver"
-        if (
-            isinstance(expression, ast.Attribute)
-            and expression.attr in {"first", "last"}
-        ):
+        if isinstance(expression, ast.Attribute) and expression.attr in {"first", "last"}:
             nested_proof = derived_receiver_proof(expression.value, line)
             if nested_proof:
                 return nested_proof
@@ -4540,9 +4323,7 @@ def python_browser_receiver_proofs(
                 return nested_proof
         return None
 
-    def imported_wrapper_scope_proof(
-        expression: ast.AST, line: int
-    ) -> str | None:
+    def imported_wrapper_scope_proof(expression: ast.AST, line: int) -> str | None:
         if not (
             builtin_getattr_available
             and "getattr" not in function_local_bindings
@@ -4566,10 +4347,7 @@ def python_browser_receiver_proofs(
                 and isinstance(candidate.args[1].value, str)
             ):
                 return None
-            if (
-                direct_receiver_proof(candidate.args[0], line)
-                != "imported-browser-factory"
-            ):
+            if direct_receiver_proof(candidate.args[0], line) != "imported-browser-factory":
                 return None
             return candidate.args[1].value, candidate.args[2]
 
@@ -4604,12 +4382,9 @@ def python_browser_receiver_proofs(
                     isinstance(target, ast.Name)
                     and mutation_counts[target.id] == 1
                     and isinstance(context, ast.Call)
-                    and dotted_name(context.func)
-                    in browser_contextmanager_page_factories
+                    and dotted_name(context.func) in browser_contextmanager_page_factories
                 ):
-                    bindings[target.id] = (
-                        "local-playwright-contextmanager-yield"
-                    )
+                    bindings[target.id] = "local-playwright-contextmanager-yield"
                     binding_lines[target.id] = candidate.lineno
                     continue
                 if not (
@@ -4631,11 +4406,7 @@ def python_browser_receiver_proofs(
             and candidate.value is not None
             and mutation_counts[candidate.target.id] == 1
             and parents.get(id(candidate)) is node
-            and (
-                wrapper_proof := imported_wrapper_scope_proof(
-                    candidate.value, candidate.lineno
-                )
-            )
+            and (wrapper_proof := imported_wrapper_scope_proof(candidate.value, candidate.lineno))
         ):
             bindings[candidate.target.id] = wrapper_proof
             binding_lines[candidate.target.id] = candidate.lineno
@@ -4667,9 +4438,7 @@ def python_browser_receiver_proofs(
                 and mutation_counts[target.id] == 1
                 and imported_method_return_proof(raw_value)
             ):
-                bindings[target.id] = (
-                    "imported-class-playwright-method-return-alias"
-                )
+                bindings[target.id] = "imported-class-playwright-method-return-alias"
                 binding_lines[target.id] = candidate.lineno
             elif (
                 isinstance(target, ast.Name)
@@ -4685,8 +4454,7 @@ def python_browser_receiver_proofs(
                 and isinstance(value, ast.Attribute)
                 and isinstance(value.value, ast.Name)
                 and value.value.id == "self"
-                and class_browser_attributes.get(value.attr)
-                == "constructor-bound-playwright-page"
+                and class_browser_attributes.get(value.attr) == "constructor-bound-playwright-page"
             ):
                 bindings[target.id] = "constructor-bound-playwright-page-alias"
                 binding_lines[target.id] = candidate.lineno
@@ -4702,29 +4470,19 @@ def python_browser_receiver_proofs(
             elif (
                 isinstance(target, ast.Name)
                 and mutation_counts[target.id] == 1
-                and (
-                    constructed_kind := constructed_browser_kind(
-                        value, candidate.lineno
-                    )
-                )
+                and (constructed_kind := constructed_browser_kind(value, candidate.lineno))
             ):
                 bindings[target.id] = constructed_kind
                 binding_lines[target.id] = candidate.lineno
             elif (
                 isinstance(target, ast.Name)
                 and mutation_counts[target.id] == 1
-                and (
-                    derived_proof := derived_receiver_proof(
-                        value, candidate.lineno
-                    )
-                )
+                and (derived_proof := derived_receiver_proof(value, candidate.lineno))
             ):
                 bindings[target.id] = derived_proof
                 binding_lines[target.id] = candidate.lineno
 
-    scoped_derived_bindings: dict[
-        str, tuple[str, ast.Assign | ast.AnnAssign]
-    ] = {}
+    scoped_derived_bindings: dict[str, tuple[str, ast.Assign | ast.AnnAssign]] = {}
     for candidate in sorted(ast.walk(node), key=lambda item: getattr(item, "lineno", 0)):
         if (
             belongs_to_function(candidate)
@@ -4733,11 +4491,7 @@ def python_browser_receiver_proofs(
             and candidate.value is not None
             and mutation_counts[candidate.target.id] == 1
             and not assignment_dominates_continuation(candidate)
-            and (
-                wrapper_proof := imported_wrapper_scope_proof(
-                    candidate.value, candidate.lineno
-                )
-            )
+            and (wrapper_proof := imported_wrapper_scope_proof(candidate.value, candidate.lineno))
         ):
             scoped_derived_bindings[candidate.target.id] = (
                 wrapper_proof,
@@ -4763,20 +4517,13 @@ def python_browser_receiver_proofs(
 
     proofs: dict[int, str] = {}
 
-    def scoped_derived_receiver_proof(
-        expression: ast.AST, evaluator: ast.Call
-    ) -> str | None:
+    def scoped_derived_receiver_proof(expression: ast.AST, evaluator: ast.Call) -> str | None:
         if isinstance(expression, ast.Name):
             scoped_binding = scoped_derived_bindings.get(expression.id)
-            if scoped_binding and assignment_dominates_candidate(
-                scoped_binding[1], evaluator
-            ):
+            if scoped_binding and assignment_dominates_candidate(scoped_binding[1], evaluator):
                 return scoped_binding[0]
             return None
-        if (
-            isinstance(expression, ast.Attribute)
-            and expression.attr in {"first", "last"}
-        ):
+        if isinstance(expression, ast.Attribute) and expression.attr in {"first", "last"}:
             return scoped_derived_receiver_proof(expression.value, evaluator)
         if (
             isinstance(expression, ast.Call)
@@ -4795,9 +4542,9 @@ def python_browser_receiver_proofs(
         ):
             continue
         receiver_node = candidate.func.value
-        proof = direct_receiver_proof(
+        proof = direct_receiver_proof(receiver_node, candidate.lineno) or derived_receiver_proof(
             receiver_node, candidate.lineno
-        ) or derived_receiver_proof(receiver_node, candidate.lineno)
+        )
         if not proof:
             proof = scoped_derived_receiver_proof(receiver_node, candidate)
         if proof:
@@ -4852,8 +4599,7 @@ def python_network_origin_guard_proofs(
         values = tuple(
             element.value
             for element in expression.elts
-            if isinstance(element, ast.Constant)
-            and isinstance(element.value, str)
+            if isinstance(element, ast.Constant) and isinstance(element.value, str)
         )
         return tuple(sorted(set(values))) if len(values) == len(expression.elts) else None
 
@@ -4890,9 +4636,7 @@ def python_network_origin_guard_proofs(
             if any(value not in {"http", "https"} for value in normalized):
                 return []
         elif any(
-            not value
-            or value.startswith(".")
-            or any(character in value for character in "/*:@[]")
+            not value or value.startswith(".") or any(character in value for character in "/*:@[]")
             for value in normalized
         ):
             return []
@@ -4902,7 +4646,9 @@ def python_network_origin_guard_proofs(
         calls: list[ast.Call] = []
 
         def collect(candidate: ast.AST) -> None:
-            if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
+            if isinstance(
+                candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)
+            ):
                 return
             if isinstance(candidate, ast.Call):
                 calls.append(candidate)
@@ -4932,11 +4678,7 @@ def python_network_origin_guard_proofs(
             if len(targets) == 1 and isinstance(targets[0], ast.Name) and value is not None:
                 target = targets[0].id
                 static_values = literal_strings(value)
-                if (
-                    mutation_counts[target] == 1
-                    and isinstance(value, ast.Tuple)
-                    and static_values
-                ):
+                if mutation_counts[target] == 1 and isinstance(value, ast.Tuple) and static_values:
                     literal_sets[target] = static_values
                 if (
                     mutation_counts[target] == 1
@@ -4998,9 +4740,7 @@ def python_network_origin_guard_proofs(
     return proofs
 
 
-def canonical_python_filesystem_api(
-    call_name: str, aliases: dict[str, str]
-) -> str | None:
+def canonical_python_filesystem_api(call_name: str, aliases: dict[str, str]) -> str | None:
     if canonical := aliases.get(call_name):
         return canonical if python_filesystem_write_spec(canonical) is not None else None
     if "." not in call_name:
@@ -5058,13 +4798,8 @@ def python_filesystem_callable_calls(
             if isinstance(candidate, ast.NamedExpr):
                 collect(candidate.value)
                 invalidate(candidate.target, state)
-                if (
-                    isinstance(candidate.target, ast.Name)
-                    and (
-                        canonical := python_filesystem_callable_reference(
-                            candidate.value, aliases
-                        )
-                    )
+                if isinstance(candidate.target, ast.Name) and (
+                    canonical := python_filesystem_callable_reference(candidate.value, aliases)
                 ):
                     state[candidate.target.id] = canonical
                 return
@@ -5088,13 +4823,7 @@ def python_filesystem_callable_calls(
         common_names = set(branches[0]).intersection(*(set(branch) for branch in branches[1:]))
         for name in common_names:
             family = "|".join(
-                sorted(
-                    {
-                        api
-                        for branch in branches
-                        for api in branch[name].split("|")
-                    }
-                )
+                sorted({api for branch in branches for api in branch[name].split("|")})
             )
             if python_filesystem_write_spec(family) is not None:
                 state[name] = family
@@ -5118,11 +4847,7 @@ def python_filesystem_callable_calls(
             if (
                 len(statement.targets) == 1
                 and isinstance(statement.targets[0], ast.Name)
-                and (
-                    canonical := python_filesystem_callable_reference(
-                        statement.value, aliases
-                    )
-                )
+                and (canonical := python_filesystem_callable_reference(statement.value, aliases))
             ):
                 state[statement.targets[0].id] = canonical
             return
@@ -5132,11 +4857,7 @@ def python_filesystem_callable_calls(
             if (
                 isinstance(statement.target, ast.Name)
                 and statement.value is not None
-                and (
-                    canonical := python_filesystem_callable_reference(
-                        statement.value, aliases
-                    )
-                )
+                and (canonical := python_filesystem_callable_reference(statement.value, aliases))
             ):
                 state[statement.target.id] = canonical
             return
@@ -5215,17 +4936,15 @@ PYTHON_PATH_DERIVING_METHODS = {
 }
 
 
-def python_path_annotation(
-    annotation: ast.AST | None, path_constructors: set[str]
-) -> bool:
+def python_path_annotation(annotation: ast.AST | None, path_constructors: set[str]) -> bool:
     if annotation is None:
         return False
     if dotted_name(annotation) in path_constructors:
         return True
-    if (
-        isinstance(annotation, ast.Subscript)
-        and dotted_name(annotation.value) in {"Annotated", "typing.Annotated"}
-    ):
+    if isinstance(annotation, ast.Subscript) and dotted_name(annotation.value) in {
+        "Annotated",
+        "typing.Annotated",
+    }:
         elements = (
             annotation.slice.elts
             if isinstance(annotation.slice, ast.Tuple)
@@ -5249,13 +4968,8 @@ def python_path_expression_proof(
             isinstance(expression.func, ast.Attribute)
             and expression.func.attr in PYTHON_PATH_DERIVING_METHODS
         ):
-            return python_path_expression_proof(
-                expression.func.value, path_constructors, bindings
-            )
-    if (
-        isinstance(expression, ast.Attribute)
-        and expression.attr in PYTHON_PATH_DERIVING_ATTRIBUTES
-    ):
+            return python_path_expression_proof(expression.func.value, path_constructors, bindings)
+    if isinstance(expression, ast.Attribute) and expression.attr in PYTHON_PATH_DERIVING_ATTRIBUTES:
         return python_path_expression_proof(expression.value, path_constructors, bindings)
     if isinstance(expression, ast.BinOp) and isinstance(expression.op, ast.Div):
         return python_path_expression_proof(expression.left, path_constructors, bindings)
@@ -5277,8 +4991,7 @@ def python_immutable_path_bindings(
             return
         if isinstance(candidate, (ast.Import, ast.ImportFrom)):
             binding_counts.update(
-                alias.asname or alias.name.split(".", 1)[0]
-                for alias in candidate.names
+                alias.asname or alias.name.split(".", 1)[0] for alias in candidate.names
             )
             return
         if isinstance(candidate, ast.ExceptHandler) and candidate.name:
@@ -5335,9 +5048,7 @@ def python_path_method_write(
 ) -> tuple[str, PythonFilesystemWriteSpec, ast.AST, str] | None:
     if not isinstance(node.func, ast.Attribute) or node.func.attr not in {"rename", "replace"}:
         return None
-    receiver_proof = python_path_expression_proof(
-        node.func.value, path_constructors, path_bindings
-    )
+    receiver_proof = python_path_expression_proof(node.func.value, path_constructors, path_bindings)
     if receiver_proof is None:
         return None
     destination = python_call_argument(node, 0, ("target",))
@@ -5352,9 +5063,7 @@ def python_path_method_write(
     )
 
 
-def python_call_argument(
-    node: ast.Call, index: int, keywords: tuple[str, ...]
-) -> ast.AST | None:
+def python_call_argument(node: ast.Call, index: int, keywords: tuple[str, ...]) -> ast.AST | None:
     if len(node.args) > index:
         return node.args[index]
     return next(
@@ -5372,9 +5081,7 @@ def python_filesystem_function_write(
     aliases: dict[str, str],
     local_callable: str | None = None,
 ) -> tuple[str, PythonFilesystemWriteSpec, ast.AST] | None:
-    canonical = local_callable or canonical_python_filesystem_api(
-        dotted_name(node.func), aliases
-    )
+    canonical = local_callable or canonical_python_filesystem_api(dotted_name(node.func), aliases)
     if canonical is None:
         return None
     spec = python_filesystem_write_spec(canonical)
@@ -5531,9 +5238,9 @@ def python_boundary_predicate(
         names = {dotted_name(term.left), dotted_name(term.comparators[0])}
         if names != {candidate_name, root_name}:
             continue
-        strict_descendant = (
-            positive and isinstance(term.ops[0], (ast.NotEq, ast.IsNot))
-        ) or (not positive and isinstance(term.ops[0], (ast.Eq, ast.Is)))
+        strict_descendant = (positive and isinstance(term.ops[0], (ast.NotEq, ast.IsNot))) or (
+            not positive and isinstance(term.ops[0], (ast.Eq, ast.Is))
+        )
     return candidate_name, root_name, positive, strict_descendant
 
 
@@ -5555,9 +5262,7 @@ def python_path_prefix_predicate(
 
     positive = True
     call = prefix_call(expression)
-    if call is None and isinstance(expression, ast.UnaryOp) and isinstance(
-        expression.op, ast.Not
-    ):
+    if call is None and isinstance(expression, ast.UnaryOp) and isinstance(expression.op, ast.Not):
         call = prefix_call(expression.operand)
         positive = False
     if call is None:
@@ -5645,16 +5350,10 @@ def python_relative_to_try_guard(
         return None
 
     matching_handler = next(
-        (
-            handler
-            for handler in statement.handlers
-            if python_handler_catches_value_error(handler)
-        ),
+        (handler for handler in statement.handlers if python_handler_catches_value_error(handler)),
         None,
     )
-    if matching_handler is None or not python_block_always_terminates(
-        matching_handler.body
-    ):
+    if matching_handler is None or not python_block_always_terminates(matching_handler.body):
         return None
     return expression, candidate, root_name
 
@@ -5740,16 +5439,10 @@ def python_class_path_helper_summaries(
         if guard.orelse or guard.finalbody:
             continue
         matching_handler = next(
-            (
-                handler
-                for handler in guard.handlers
-                if python_handler_catches_value_error(handler)
-            ),
+            (handler for handler in guard.handlers if python_handler_catches_value_error(handler)),
             None,
         )
-        if matching_handler is None or not python_block_always_terminates(
-            matching_handler.body
-        ):
+        if matching_handler is None or not python_block_always_terminates(matching_handler.body):
             continue
         root_expression = check.args[0]
         root_name = dotted_name(root_expression)
@@ -5778,15 +5471,12 @@ def python_class_path_helper_summaries(
                 and isinstance(statement.target, ast.Name)
                 and statement.value is not None
             ):
-                assignments[statement.target.id].append(
-                    (statement.lineno, statement.value)
-                )
+                assignments[statement.target.id].append((statement.lineno, statement.value))
 
         local_path_constructors = {
             constructor
             for constructor in path_constructors
-            if constructor.split(".", 1)[0]
-            not in python_function_local_bindings(method)
+            if constructor.split(".", 1)[0] not in python_function_local_bindings(method)
         }
         parameter_names = {argument.arg for argument in call_parameters}
 
@@ -5816,10 +5506,7 @@ def python_class_path_helper_summaries(
                 if key in seen:
                     return None
                 return path_dependencies(value, line, seen | {key})
-            if (
-                isinstance(expression, ast.Call)
-                and dotted_name(expression.func) in constructors
-            ):
+            if isinstance(expression, ast.Call) and dotted_name(expression.func) in constructors:
                 if len(expression.args) != 1 or expression.keywords:
                     return None
                 values = path_dependencies(expression.args[0], before_line, seen)
@@ -5852,9 +5539,7 @@ def python_class_path_helper_summaries(
             return None
 
         prior_candidate_assignments = [
-            (line, value)
-            for line, value in assignments.get(candidate, [])
-            if line < guard.lineno
+            (line, value) for line, value in assignments.get(candidate, []) if line < guard.lineno
         ]
         if not prior_candidate_assignments:
             continue
@@ -5906,9 +5591,7 @@ def python_filesystem_path_name(
     call_name = dotted_name(node.func)
     short_name = call_name.rsplit(".", 1)[-1]
     expression: ast.AST | None = None
-    if function_write := python_filesystem_function_write(
-        node, aliases, local_callable
-    ):
+    if function_write := python_filesystem_function_write(node, aliases, local_callable):
         expression = function_write[2]
     elif path_write := python_path_method_write(
         node, path_constructors or set(), path_bindings or {}
@@ -6071,9 +5754,7 @@ def python_path_boundary_calls(
             state.roots[name] = scope
         elif root_name := python_candidate_root(value, state, path_constructors):
             state.candidates[name] = root_name
-        elif root_name := python_unresolved_candidate_root(
-            value, state, path_constructors
-        ):
+        elif root_name := python_unresolved_candidate_root(value, state, path_constructors):
             state.unresolved_candidates[name] = root_name
         if (
             isinstance(value, ast.Call)
@@ -6111,9 +5792,7 @@ def python_path_boundary_calls(
         """Retain facts that hold after every feasible compound-statement branch."""
         if not branches:
             return
-        state.dynamic_names = set().union(
-            *(branch.dynamic_names for branch in branches)
-        )
+        state.dynamic_names = set().union(*(branch.dynamic_names for branch in branches))
         state.roots = {
             name: scope
             for name, scope in branches[0].roots.items()
@@ -6123,18 +5802,13 @@ def python_path_boundary_calls(
             name: root_name
             for name, root_name in branches[0].candidates.items()
             if root_name in state.roots
-            and all(
-                branch.candidates.get(name) == root_name for branch in branches[1:]
-            )
+            and all(branch.candidates.get(name) == root_name for branch in branches[1:])
         }
         state.unresolved_candidates = {
             name: root_name
             for name, root_name in branches[0].unresolved_candidates.items()
             if root_name in state.roots
-            and all(
-                branch.unresolved_candidates.get(name) == root_name
-                for branch in branches[1:]
-            )
+            and all(branch.unresolved_candidates.get(name) == root_name for branch in branches[1:])
         }
         state.guards = {
             name: proof
@@ -6179,9 +5853,7 @@ def python_path_boundary_calls(
             else_state = state.clone()
             if predicate is not None:
                 candidate, root_name, positive = predicate[:3]
-                strict_descendant = (
-                    strong_predicate[3] if strong_predicate is not None else False
-                )
+                strict_descendant = strong_predicate[3] if strong_predicate is not None else False
                 proof = PythonPathBoundaryProof(
                     Evidence(path, statement.lineno, excerpt(lines, statement.lineno)),
                     state.roots[root_name],
@@ -6197,9 +5869,7 @@ def python_path_boundary_calls(
             propagated_continuation = False
             if predicate is not None:
                 candidate, root_name, positive = predicate[:3]
-                strict_descendant = (
-                    strong_predicate[3] if strong_predicate is not None else False
-                )
+                strict_descendant = strong_predicate[3] if strong_predicate is not None else False
                 rejecting = statement.orelse if positive else statement.body
                 if python_block_always_terminates(rejecting):
                     continuing = body_state if positive else else_state
@@ -6231,9 +5901,7 @@ def python_path_boundary_calls(
                                     else "str.startswith"
                                 ),
                                 strength=(
-                                    "strong"
-                                    if strong_predicate is not None
-                                    else "weak-prefix"
+                                    "strong" if strong_predicate is not None else "weak-prefix"
                                 ),
                             ),
                         )
@@ -6337,16 +6005,12 @@ class PythonVisitor(ast.NodeVisitor):
         wrapped_tool_functions: dict[int, PythonFunctionToolWrapper],
         inline_usage_tool_calls: dict[int, tuple[str, str]],
         decorated_tool_exports: dict[tuple[str, str], str],
-        imported_tool_export_usages: dict[
-            tuple[int, int, str], PythonImportedToolReference
-        ],
+        imported_tool_export_usages: dict[tuple[int, int, str], PythonImportedToolReference],
         imported_tool_promoted_exports: set[tuple[str, str]],
         imported_agent_factory_target_paths: dict[str, str],
         registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
         network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
-        path_segment_sanitizer_bindings: dict[
-            str, PythonPathSegmentSanitizerSummary
-        ],
+        path_segment_sanitizer_bindings: dict[str, PythonPathSegmentSanitizerSummary],
         registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
         registry_function_tools: dict[int, PythonRegistryTool],
         registry_class_tools: dict[int, PythonRegistryTool],
@@ -6380,9 +6044,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.dynamic_http_origin_names: set[str] = set()
         self.dynamic_tool_input_names: set[str] = set()
         self.path_segment_sanitizer_bindings = path_segment_sanitizer_bindings
-        self.sanitized_filesystem_paths: dict[
-            str, PythonPathSegmentSanitizerSummary
-        ] = {}
+        self.sanitized_filesystem_paths: dict[str, PythonPathSegmentSanitizerSummary] = {}
         self.class_stack: list[str] = []
         self.active_audit_controls: list[Evidence] = []
         self.http_client_names: set[str] = set()
@@ -6406,21 +6068,15 @@ class PythonVisitor(ast.NodeVisitor):
         self.function_path_bindings: list[dict[str, str]] = []
         self.function_path_constructors: list[set[str]] = []
         self.function_browser_receiver_proofs: list[dict[int, str]] = []
-        self.function_imported_browser_contexts: list[
-            dict[str, PythonBrowserClassExport]
-        ] = []
+        self.function_imported_browser_contexts: list[dict[str, PythonBrowserClassExport]] = []
         self.function_network_origin_guards: list[dict[int, PythonNetworkOriginProof]] = []
         self.urllib_openers = urllib_openers
         self.urllib_request_constructors = urllib_request_constructors
         self.browser_type_names = browser_type_names
         self.browser_page_factories = browser_page_factories
         self.browser_runtime_factories = browser_runtime_factories
-        self.browser_contextmanager_page_factories = (
-            browser_contextmanager_page_factories
-        )
-        self.same_class_browser_parameter_proofs = (
-            same_class_browser_parameter_proofs
-        )
+        self.browser_contextmanager_page_factories = browser_contextmanager_page_factories
+        self.same_class_browser_parameter_proofs = same_class_browser_parameter_proofs
         self.module_browser_variables = module_browser_variables
         self.imported_browser_class_exports = imported_browser_class_exports
         self.builtin_property_available = builtin_property_available
@@ -6596,9 +6252,7 @@ class PythonVisitor(ast.NodeVisitor):
             "root": proof.root_name,
             "strength": proof.strength,
         }
-        self.ir.add_component(
-            Component("control", "path-prefix-check", proof.evidence, attributes)
-        )
+        self.ir.add_component(Component("control", "path-prefix-check", proof.evidence, attributes))
         self.ir.add_relationship(
             Relationship(
                 "capability",
@@ -6636,9 +6290,7 @@ class PythonVisitor(ast.NodeVisitor):
             return None
         proof: PythonPathSegmentSanitizerSummary | None = None
         for segment in expression.args[1:]:
-            dynamic_names = (
-                python_expression_names(segment) & self.dynamic_tool_input_names
-            )
+            dynamic_names = python_expression_names(segment) & self.dynamic_tool_input_names
             if not dynamic_names:
                 continue
             if not isinstance(segment, ast.Call) or not isinstance(segment.func, ast.Name):
@@ -6840,11 +6492,7 @@ class PythonVisitor(ast.NodeVisitor):
                     "scope": source_scope(self.path),
                     **(
                         {"binding_resolution": resolution}
-                        if (
-                            resolution := self.mcp_server_binding_resolutions.get(
-                                id(node)
-                            )
-                        )
+                        if (resolution := self.mcp_server_binding_resolutions.get(id(node)))
                         else {}
                     ),
                 },
@@ -6871,16 +6519,12 @@ class PythonVisitor(ast.NodeVisitor):
                     continue
                 config_entries = {
                     config_key.value: config_value
-                    for config_key, config_value in zip(
-                        config.keys, config.values, strict=True
-                    )
-                    if isinstance(config_key, ast.Constant)
-                    and isinstance(config_key.value, str)
+                    for config_key, config_value in zip(config.keys, config.values, strict=True)
+                    if isinstance(config_key, ast.Constant) and isinstance(config_key.value, str)
                 }
                 command_node = config_entries.get("command")
                 if not (
-                    isinstance(command_node, ast.Constant)
-                    and isinstance(command_node.value, str)
+                    isinstance(command_node, ast.Constant) and isinstance(command_node.value, str)
                 ):
                     continue
                 arguments = literal_string_arguments(config_entries.get("args"))
@@ -6959,9 +6603,7 @@ class PythonVisitor(ast.NodeVisitor):
             if provider := PYTHON_PROVIDER_MODULES.get(alias.name):
                 self.provider_module_bindings[local_name] = (provider, alias.name)
             if not self.class_stack or self.function_depth > 0:
-                self.network_helper_bindings.pop(
-                    local_name, None
-                )
+                self.network_helper_bindings.pop(local_name, None)
             component_from_import(self.ir, alias.name, self.ev(node), "python")
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
@@ -6970,11 +6612,10 @@ class PythonVisitor(ast.NodeVisitor):
             self.invalidate_imported_symbol(local_name)
             module = node.module or ""
             if (
-                (provider := PYTHON_PROVIDER_SYMBOL_PROVIDERS.get(
+                provider := PYTHON_PROVIDER_SYMBOL_PROVIDERS.get(
                     (module, alias.name), PYTHON_PROVIDER_MODULES.get(module)
-                ))
-                and alias.name in PYTHON_PROVIDER_SDK_CALLS[module]
-            ):
+                )
+            ) and alias.name in PYTHON_PROVIDER_SDK_CALLS[module]:
                 self.provider_call_bindings[local_name] = (
                     provider,
                     module,
@@ -6983,8 +6624,7 @@ class PythonVisitor(ast.NodeVisitor):
             if (
                 self.function_depth == 0
                 and not self.class_stack
-                and alias.name
-                in MCP_LAUNCHER_CONSTRUCTORS | MCP_IN_PROCESS_SERVER_CONSTRUCTORS
+                and alias.name in MCP_LAUNCHER_CONSTRUCTORS | MCP_IN_PROCESS_SERVER_CONSTRUCTORS
                 and is_mcp_server_constructor_module(module, alias.name)
             ):
                 self.mcp_server_constructors[local_name] = (module, alias.name)
@@ -7028,9 +6668,11 @@ class PythonVisitor(ast.NodeVisitor):
                             self.ev(node),
                             "python",
                         )
-            if node.module == "langchain_aws" and {
-                alias.name for alias in node.names
-            } & {"ChatBedrock", "ChatBedrockConverse", "BedrockEmbeddings"}:
+            if node.module == "langchain_aws" and {alias.name for alias in node.names} & {
+                "ChatBedrock",
+                "ChatBedrockConverse",
+                "BedrockEmbeddings",
+            }:
                 self.ir.add_component(
                     Component(
                         "provider",
@@ -7059,9 +6701,7 @@ class PythonVisitor(ast.NodeVisitor):
             dynamic_tool_input = bool(
                 python_expression_names(node.value) & self.dynamic_tool_input_names
             )
-            static_http_prefix = python_static_url_prefix(
-                origin_value, self.static_http_prefixes
-            )
+            static_http_prefix = python_static_url_prefix(origin_value, self.static_http_prefixes)
             static_http_prefix_proof = python_static_http_prefix_proof(
                 origin_value, self.static_http_prefix_proofs
             )
@@ -7126,27 +6766,19 @@ class PythonVisitor(ast.NodeVisitor):
                     self.invalidate_imported_symbol(target.id)
 
     def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
-        if (
-            not self.class_stack or self.function_depth > 0
-        ) and isinstance(node.target, ast.Name):
+        if (not self.class_stack or self.function_depth > 0) and isinstance(node.target, ast.Name):
             self.network_helper_bindings.pop(node.target.id, None)
             self.sanitized_filesystem_paths.pop(node.target.id, None)
         self.generic_visit(node)
-        if (
-            not self.class_stack or self.function_depth > 0
-        ) and isinstance(node.target, ast.Name):
+        if (not self.class_stack or self.function_depth > 0) and isinstance(node.target, ast.Name):
             self.invalidate_imported_symbol(node.target.id)
 
     def visit_AugAssign(self, node: ast.AugAssign) -> None:
-        if (
-            not self.class_stack or self.function_depth > 0
-        ) and isinstance(node.target, ast.Name):
+        if (not self.class_stack or self.function_depth > 0) and isinstance(node.target, ast.Name):
             self.network_helper_bindings.pop(node.target.id, None)
             self.sanitized_filesystem_paths.pop(node.target.id, None)
         self.generic_visit(node)
-        if (
-            not self.class_stack or self.function_depth > 0
-        ) and isinstance(node.target, ast.Name):
+        if (not self.class_stack or self.function_depth > 0) and isinstance(node.target, ast.Name):
             self.invalidate_imported_symbol(node.target.id)
 
     def visit_Delete(self, node: ast.Delete) -> None:
@@ -7265,9 +6897,7 @@ class PythonVisitor(ast.NodeVisitor):
         previous_static_http_prefix_proofs = self.static_http_prefix_proofs
         previous_network_helper_bindings = self.network_helper_bindings
         self.network_helper_bindings = dict(self.network_helper_bindings)
-        previous_path_segment_sanitizer_bindings = (
-            self.path_segment_sanitizer_bindings
-        )
+        previous_path_segment_sanitizer_bindings = self.path_segment_sanitizer_bindings
         previous_sanitized_filesystem_paths = self.sanitized_filesystem_paths
         previous_path_join_functions = self.path_join_functions
         local_bindings = python_function_local_bindings(node)
@@ -7277,9 +6907,7 @@ class PythonVisitor(ast.NodeVisitor):
             if name not in local_bindings
         }
         self.path_join_functions = {
-            name
-            for name in self.path_join_functions
-            if name.split(".", 1)[0] not in local_bindings
+            name for name in self.path_join_functions if name.split(".", 1)[0] not in local_bindings
         }
         self.sanitized_filesystem_paths = {}
         self.allowlisted_names = set()
@@ -7289,15 +6917,9 @@ class PythonVisitor(ast.NodeVisitor):
         if self.function_depth == 0:
             self.static_http_prefixes = {
                 **self.module_static_http_prefixes,
-                **(
-                    self.class_static_http_prefixes[-1]
-                    if self.class_static_http_prefixes
-                    else {}
-                ),
+                **(self.class_static_http_prefixes[-1] if self.class_static_http_prefixes else {}),
             }
-            self.static_http_prefix_proofs = dict(
-                self.module_static_http_prefix_proofs
-            )
+            self.static_http_prefix_proofs = dict(self.module_static_http_prefix_proofs)
         else:
             self.static_http_prefixes = dict(self.static_http_prefixes)
             self.static_http_prefix_proofs = dict(self.static_http_prefix_proofs)
@@ -7453,9 +7075,7 @@ class PythonVisitor(ast.NodeVisitor):
             for constructor in self.path_constructors
             if constructor.split(".", 1)[0] not in local_bindings
         }
-        function_path_bindings = python_immutable_path_bindings(
-            node, function_path_constructors
-        )
+        function_path_bindings = python_immutable_path_bindings(node, function_path_constructors)
         function_filesystem_aliases = {
             alias: canonical
             for alias, canonical in self.filesystem_api_aliases.items()
@@ -7477,11 +7097,7 @@ class PythonVisitor(ast.NodeVisitor):
                 self.filesystem_api_aliases,
                 filesystem_callable_calls,
                 function_path_bindings,
-                (
-                    self.class_path_helper_summaries[-1]
-                    if self.class_path_helper_summaries
-                    else {}
-                ),
+                (self.class_path_helper_summaries[-1] if self.class_path_helper_summaries else {}),
             )
         )
         decorators = {
@@ -7626,16 +7242,14 @@ class PythonVisitor(ast.NodeVisitor):
                         else dotted_name(decorator)
                     )
                     if decorator_name.endswith(".tool"):
-                        fastmcp_registrations[
-                            decorator_name.removesuffix(".tool")
-                        ] = self.ev(decorator)
+                        fastmcp_registrations[decorator_name.removesuffix(".tool")] = self.ev(
+                            decorator
+                        )
                 if registration and registration.registrar.endswith(".tool"):
-                    fastmcp_registrations[
-                        registration.registrar.removesuffix(".tool")
-                    ] = registration.evidence
-                for registrar, registration_evidence in sorted(
-                    fastmcp_registrations.items()
-                ):
+                    fastmcp_registrations[registration.registrar.removesuffix(".tool")] = (
+                        registration.evidence
+                    )
+                for registrar, registration_evidence in sorted(fastmcp_registrations.items()):
                     server = self.mcp_in_process_server_bindings.get(registrar)
                     if server is None:
                         continue
@@ -7664,9 +7278,7 @@ class PythonVisitor(ast.NodeVisitor):
                     if wrapped_tool
                     else self.ev(node)
                 )
-                self.ir.add_component(
-                    Component("control", "human-approval", approval_evidence)
-                )
+                self.ir.add_component(Component("control", "human-approval", approval_evidence))
                 self.ir.add_relationship(
                     Relationship(
                         "tool",
@@ -7727,9 +7339,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.static_http_prefixes = previous_static_http_prefixes
         self.static_http_prefix_proofs = previous_static_http_prefix_proofs
         self.network_helper_bindings = previous_network_helper_bindings
-        self.path_segment_sanitizer_bindings = (
-            previous_path_segment_sanitizer_bindings
-        )
+        self.path_segment_sanitizer_bindings = previous_path_segment_sanitizer_bindings
         self.sanitized_filesystem_paths = previous_sanitized_filesystem_paths
         self.path_join_functions = previous_path_join_functions
         self.imported_symbol_paths = previous_imported_symbol_paths
@@ -7785,7 +7395,10 @@ class PythonVisitor(ast.NodeVisitor):
         self.active_registry_class_tools.append(active_registry_tool)
         class_url_assignments: dict[str, list[ast.AST | None]] = defaultdict(list)
         for method in node.body:
-            if not isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef)) or method.name != "__init__":
+            if (
+                not isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef))
+                or method.name != "__init__"
+            ):
                 continue
             for candidate in ast.walk(method):
                 if isinstance(candidate, ast.Assign):
@@ -7802,9 +7415,7 @@ class PythonVisitor(ast.NodeVisitor):
                 for name, values in class_url_assignments.items()
                 if len(values) == 1
                 and (
-                    prefix := python_static_url_prefix(
-                        values[0], self.module_static_http_prefixes
-                    )
+                    prefix := python_static_url_prefix(values[0], self.module_static_http_prefixes)
                 )
             }
         )
@@ -7816,9 +7427,7 @@ class PythonVisitor(ast.NodeVisitor):
         )
         self.class_registry_manager_bindings.append(self.registry_manager_bindings(node))
         self.class_path_helper_summaries.append(
-            python_class_path_helper_summaries(
-                node, self.path, self.lines, self.path_constructors
-            )
+            python_class_path_helper_summaries(node, self.path, self.lines, self.path_constructors)
         )
         annotated_browser_attributes = python_class_browser_receiver_attributes(
             node, self.browser_type_names
@@ -7834,10 +7443,8 @@ class PythonVisitor(ast.NodeVisitor):
         lifecycle_browser_attributes = python_class_lifecycle_browser_receivers(
             node, self.browser_runtime_factories
         )
-        branching_lifecycle_browser_attributes = (
-            python_class_branching_lifecycle_browser_receivers(
-                node, self.browser_runtime_factories
-            )
+        branching_lifecycle_browser_attributes = python_class_branching_lifecycle_browser_receivers(
+            node, self.browser_runtime_factories
         )
         self.class_browser_receiver_attributes.append(
             {
@@ -7846,17 +7453,13 @@ class PythonVisitor(ast.NodeVisitor):
                     for name in constructed_browser_attributes
                 },
                 **{
-                    name: "lifecycle-bound-playwright-page"
-                    for name in lifecycle_browser_attributes
+                    name: "lifecycle-bound-playwright-page" for name in lifecycle_browser_attributes
                 },
                 **{
                     name: "branching-lifecycle-playwright-page"
                     for name in branching_lifecycle_browser_attributes
                 },
-                **{
-                    name: "class-attribute-annotation"
-                    for name in annotated_browser_attributes
-                },
+                **{name: "class-attribute-annotation" for name in annotated_browser_attributes},
                 **{
                     name: "class-property-return-annotation"
                     for name in annotated_browser_properties
@@ -8528,8 +8131,7 @@ class PythonVisitor(ast.NodeVisitor):
         short_name = call_name.rsplit(".", 1)[-1]
         imported_mcp_constructor = (
             self.mcp_server_constructors.get(node.func.id)
-            if isinstance(node.func, ast.Name)
-            and (not self.class_stack or self.function_depth > 0)
+            if isinstance(node.func, ast.Name) and (not self.class_stack or self.function_depth > 0)
             else None
         )
         if imported_mcp_constructor is not None:
@@ -8545,16 +8147,11 @@ class PythonVisitor(ast.NodeVisitor):
                     constructor=constructor,
                 )
             keywords = {
-                keyword.arg: keyword.value
-                for keyword in node.keywords
-                if keyword.arg is not None
+                keyword.arg: keyword.value for keyword in node.keywords if keyword.arg is not None
             }
             if constructor == "MCPTools":
                 command_node = node.args[0] if node.args else keywords.get("command")
-                if (
-                    isinstance(command_node, ast.Constant)
-                    and isinstance(command_node.value, str)
-                ):
+                if isinstance(command_node, ast.Constant) and isinstance(command_node.value, str):
                     try:
                         invocation = shlex.split(command_node.value)
                     except ValueError:
@@ -8579,11 +8176,8 @@ class PythonVisitor(ast.NodeVisitor):
                 if isinstance(params_node, ast.Dict):
                     params = {
                         key.value: value
-                        for key, value in zip(
-                            params_node.keys, params_node.values, strict=True
-                        )
-                        if isinstance(key, ast.Constant)
-                        and isinstance(key.value, str)
+                        for key, value in zip(params_node.keys, params_node.values, strict=True)
+                        if isinstance(key, ast.Constant) and isinstance(key.value, str)
                     }
                     command_node = params.get("command", command_node)
                     arguments_node = params.get("args", arguments_node)
@@ -8616,12 +8210,9 @@ class PythonVisitor(ast.NodeVisitor):
                         analysis="python-import-bound-mcp-constructor",
                     )
         builtin_name = self.exact_openai_builtin_call_names.get(id(node), short_name)
-        exact_builtin_call = (
-            builtin_name in BUILTIN_TOOL_CAPABILITIES
-            and (
-                builtin_name not in EXACT_IMPORT_OPENAI_BUILTINS
-                or id(node) in self.exact_openai_builtin_call_names
-            )
+        exact_builtin_call = builtin_name in BUILTIN_TOOL_CAPABILITIES and (
+            builtin_name not in EXACT_IMPORT_OPENAI_BUILTINS
+            or id(node) in self.exact_openai_builtin_call_names
         )
         if self.has_openai_agents_import and exact_builtin_call:
             tool_name = f"{builtin_name}@{node.lineno}"
@@ -8664,15 +8255,13 @@ class PythonVisitor(ast.NodeVisitor):
                     isinstance(item, ast.Constant) and isinstance(item.value, str)
                     for item in vector_store_ids.elts
                 ):
-                    vector_store_scope = (
-                        "literal-ids" if vector_store_ids.elts else "literal-empty"
-                    )
+                    vector_store_scope = "literal-ids" if vector_store_ids.elts else "literal-empty"
             approval_evidence = self.ev(node)
             for keyword in node.keywords:
-                if (
-                    builtin_name not in OPENAI_BUILTINS_WITHOUT_APPROVAL
-                    and keyword.arg in {"needs_approval", "require_approval"}
-                ):
+                if builtin_name not in OPENAI_BUILTINS_WITHOUT_APPROVAL and keyword.arg in {
+                    "needs_approval",
+                    "require_approval",
+                }:
                     approval_evidence = self.ev(keyword.value)
                     if isinstance(keyword.value, ast.Constant) and keyword.value.value is True:
                         approval_state = "enabled"
@@ -8687,14 +8276,13 @@ class PythonVisitor(ast.NodeVisitor):
                     builtin_name not in OPENAI_BUILTINS_WITHOUT_APPROVAL
                     and keyword.arg == "on_approval"
                     and not (
-                        isinstance(keyword.value, ast.Constant)
-                        and keyword.value.value is None
+                        isinstance(keyword.value, ast.Constant) and keyword.value.value is None
                     )
                 ):
                     approval_handler = "configured"
                     handler_name = dotted_name(keyword.value).rsplit(".", 1)[-1]
-                    approval_bypass_environment_names = (
-                        self.approval_bypass_function_summaries.get(handler_name, ())
+                    approval_bypass_environment_names = self.approval_bypass_function_summaries.get(
+                        handler_name, ()
                     )
                 elif (
                     builtin_name == "ComputerTool"
@@ -8734,9 +8322,7 @@ class PythonVisitor(ast.NodeVisitor):
                         ),
                         None,
                     )
-                    if isinstance(container, ast.Constant) and isinstance(
-                        container.value, str
-                    ):
+                    if isinstance(container, ast.Constant) and isinstance(container.value, str):
                         container_policy = (
                             "auto" if container.value == "auto" else "existing-reference"
                         )
@@ -8744,9 +8330,7 @@ class PythonVisitor(ast.NodeVisitor):
                         container_type = next(
                             (
                                 value.value
-                                for key, value in zip(
-                                    container.keys, container.values, strict=True
-                                )
+                                for key, value in zip(container.keys, container.values, strict=True)
                                 if isinstance(key, ast.Constant)
                                 and key.value == "type"
                                 and isinstance(value, ast.Constant)
@@ -8756,18 +8340,14 @@ class PythonVisitor(ast.NodeVisitor):
                         )
                         if container_type is not None:
                             container_policy = (
-                                "auto"
-                                if container_type == "auto"
-                                else "existing-reference"
+                                "auto" if container_type == "auto" else "existing-reference"
                             )
                 elif builtin_name == "WebSearchTool" and keyword.arg == "external_web_access":
                     if isinstance(keyword.value, ast.Constant) and isinstance(
                         keyword.value.value, bool
                     ):
                         external_web_access = (
-                            "enabled-explicit"
-                            if keyword.value.value
-                            else "disabled-explicit"
+                            "enabled-explicit" if keyword.value.value else "disabled-explicit"
                         )
                     else:
                         external_web_access = "unresolved"
@@ -8840,9 +8420,7 @@ class PythonVisitor(ast.NodeVisitor):
             for capability in BUILTIN_TOOL_CAPABILITIES[builtin_name]:
                 attributes = {
                     "api": (
-                        builtin_name
-                        if builtin_name in EXACT_IMPORT_OPENAI_BUILTINS
-                        else call_name
+                        builtin_name if builtin_name in EXACT_IMPORT_OPENAI_BUILTINS else call_name
                     ),
                     "builtin_tool": True,
                     "scope": source_scope(self.path),
@@ -8857,10 +8435,7 @@ class PythonVisitor(ast.NodeVisitor):
                     )
                 elif capability == "computer-control":
                     attributes["execution_environment"] = execution_environment
-                elif (
-                    builtin_name == "CodeInterpreterTool"
-                    and capability == "code-execution"
-                ):
+                elif builtin_name == "CodeInterpreterTool" and capability == "code-execution":
                     attributes.update(
                         {
                             "container_policy": container_policy,
@@ -8929,9 +8504,7 @@ class PythonVisitor(ast.NodeVisitor):
                         "auto-approval",
                         approval_evidence,
                         {
-                            "environment_names": list(
-                                approval_bypass_environment_names
-                            ),
+                            "environment_names": list(approval_bypass_environment_names),
                             "resolution": "same-file-transitive-callback",
                         },
                         source_id=tool_id,
@@ -8956,9 +8529,7 @@ class PythonVisitor(ast.NodeVisitor):
         if node.args and isinstance(node.args[0], ast.Constant):
             service_name = node.args[0].value
         for keyword in node.keywords:
-            if keyword.arg == "service_name" and isinstance(
-                keyword.value, ast.Constant
-            ):
+            if keyword.arg == "service_name" and isinstance(keyword.value, ast.Constant):
                 service_name = keyword.value.value
         bedrock_client_call = call_name.endswith(".client") or short_name in {
             "AwsClient",
@@ -8987,19 +8558,15 @@ class PythonVisitor(ast.NodeVisitor):
                     else ""
                 )
                 expected_call = f"{expected_prefix}{short_name}"
-                if (
-                    call_suffix == expected_call
-                    and short_name in PYTHON_PROVIDER_SDK_CALLS[module]
-                ):
+                if call_suffix == expected_call and short_name in PYTHON_PROVIDER_SDK_CALLS[module]:
                     provider = PYTHON_PROVIDER_SYMBOL_PROVIDERS.get(
                         (module, short_name), default_provider
                     )
                     imported_provider = (provider, module, short_name)
         if imported_provider:
             provider, module, imported_symbol = imported_provider
-            if (
-                (module, imported_symbol) in PYTHON_PROVIDER_CONFIGURABLE_ENDPOINT_CALLS
-                and any(keyword.arg == "base_url" for keyword in node.keywords)
+            if (module, imported_symbol) in PYTHON_PROVIDER_CONFIGURABLE_ENDPOINT_CALLS and any(
+                keyword.arg == "base_url" for keyword in node.keywords
             ):
                 imported_provider = None
         if imported_provider:
@@ -9139,9 +8706,7 @@ class PythonVisitor(ast.NodeVisitor):
                     continue
                 for value in keyword.value.elts:
                     binding = dotted_name(value)
-                    dominating = self.dominating_symbol_ids.get(
-                        (id(node), "mcp-server", binding)
-                    )
+                    dominating = self.dominating_symbol_ids.get((id(node), "mcp-server", binding))
                     if dominating is None:
                         continue
                     target_id, resolution_basis = dominating
@@ -9149,12 +8714,8 @@ class PythonVisitor(ast.NodeVisitor):
                     if target_name is None or target_id not in self.observed_mcp_server_ids:
                         continue
                     target_identity = {
-                        "immutable-module-binding": (
-                            "literal-mcp-servers-list-module-binding"
-                        ),
-                        "context-manager-binding": (
-                            "literal-mcp-servers-list-context-manager"
-                        ),
+                        "immutable-module-binding": ("literal-mcp-servers-list-module-binding"),
+                        "context-manager-binding": ("literal-mcp-servers-list-context-manager"),
                     }.get(
                         resolution_basis,
                         "literal-mcp-servers-list-binding",
@@ -9216,9 +8777,8 @@ class PythonVisitor(ast.NodeVisitor):
                             "py", self.path, "tool", target_name
                         )
                         target_identity = None
-                    elif (
-                        isinstance(value, ast.Call)
-                        and (inline_tool := self.inline_usage_tool_calls.get(id(value)))
+                    elif isinstance(value, ast.Call) and (
+                        inline_tool := self.inline_usage_tool_calls.get(id(value))
                     ):
                         target_name, target_id = inline_tool
                         target_identity = "literal-tools-list-inline-constructor"
@@ -9544,9 +9104,7 @@ class PythonVisitor(ast.NodeVisitor):
                     )
                 )
 
-        browser_evaluator, browser_script_argument = (
-            python_browser_evaluator_script_argument(node)
-        )
+        browser_evaluator, browser_script_argument = python_browser_evaluator_script_argument(node)
         browser_evaluate = self.has_browser_import and browser_evaluator
         browser_receiver_proof = (
             self.function_browser_receiver_proofs[-1].get(id(node))
@@ -9555,20 +9113,13 @@ class PythonVisitor(ast.NodeVisitor):
         )
         if call_name in {"eval", "exec"} or browser_evaluate:
             argument = (
-                browser_script_argument
-                if browser_evaluate
-                else node.args[0]
-                if node.args
-                else None
+                browser_script_argument if browser_evaluate else node.args[0] if node.args else None
             )
-            dynamic_input = argument is not None and not isinstance(
-                argument, ast.Constant
-            )
+            dynamic_input = argument is not None and not isinstance(argument, ast.Constant)
             if browser_evaluate:
                 dynamic_input = bool(
                     argument is not None
-                    and python_expression_names(argument)
-                    & self.dynamic_tool_input_names
+                    and python_expression_names(argument) & self.dynamic_tool_input_names
                 )
             if browser_evaluate and dynamic_input and browser_receiver_proof is None:
                 return self.generic_visit(node)
@@ -9651,9 +9202,7 @@ class PythonVisitor(ast.NodeVisitor):
                 if path_control is not None and path_control.strength == "weak-prefix"
                 else None
             )
-            path_segment_sanitizer = self.path_segment_sanitizer_for_expression(
-                path_expression
-            )
+            path_segment_sanitizer = self.path_segment_sanitizer_for_expression(path_expression)
             self.add_capability(
                 "filesystem",
                 node,
@@ -9666,8 +9215,7 @@ class PythonVisitor(ast.NodeVisitor):
                     "write_access": True,
                     "dynamic_path": not isinstance(path_expression, ast.Constant),
                     "tool_input_path": bool(
-                        python_expression_names(path_expression)
-                        & self.dynamic_tool_input_names
+                        python_expression_names(path_expression) & self.dynamic_tool_input_names
                     ),
                     **(
                         {"tool_input_path_sanitized": True}
@@ -9688,9 +9236,7 @@ class PythonVisitor(ast.NodeVisitor):
             if prefix_check is not None:
                 self.add_python_path_prefix_control(node, prefix_check)
             if path_segment_sanitizer is not None:
-                self.add_python_path_segment_sanitizer_control(
-                    node, path_segment_sanitizer
-                )
+                self.add_python_path_segment_sanitizer_control(node, path_segment_sanitizer)
         proven_path_open = (
             short_name == "open"
             and isinstance(node.func, ast.Attribute)
@@ -9701,16 +9247,21 @@ class PythonVisitor(ast.NodeVisitor):
             )
             is not None
         )
-        if filesystem_function is None and path_method is None and (
-            call_name == "open"
-            or proven_path_open
-            or short_name in {
-                "write_text",
-                "write_bytes",
-                "unlink",
-                "rmdir",
-                "mkdir",
-            }
+        if (
+            filesystem_function is None
+            and path_method is None
+            and (
+                call_name == "open"
+                or proven_path_open
+                or short_name
+                in {
+                    "write_text",
+                    "write_bytes",
+                    "unlink",
+                    "rmdir",
+                    "mkdir",
+                }
+            )
         ):
             path_expression = (
                 node.func.value
@@ -9737,9 +9288,7 @@ class PythonVisitor(ast.NodeVisitor):
             tool_input_path = bool(
                 python_expression_names(path_expression) & self.dynamic_tool_input_names
             )
-            path_segment_sanitizer = self.path_segment_sanitizer_for_expression(
-                path_expression
-            )
+            path_segment_sanitizer = self.path_segment_sanitizer_for_expression(path_expression)
             path_control = (
                 self.function_path_boundary_calls[-1].get(id(node))
                 if self.function_path_boundary_calls and write_access
@@ -9780,9 +9329,7 @@ class PythonVisitor(ast.NodeVisitor):
             if prefix_check is not None:
                 self.add_python_path_prefix_control(node, prefix_check)
             if path_segment_sanitizer is not None:
-                self.add_python_path_segment_sanitizer_control(
-                    node, path_segment_sanitizer
-                )
+                self.add_python_path_segment_sanitizer_control(node, path_segment_sanitizer)
         root_name = call_name.split(".", 1)[0]
         http_method = short_name.lower() in {"get", "post", "put", "patch", "delete", "request"}
         if http_method and (
@@ -9838,11 +9385,7 @@ class PythonVisitor(ast.NodeVisitor):
                 node.args[0]
                 if node.args
                 else next(
-                    (
-                        keyword.value
-                        for keyword in node.keywords
-                        if keyword.arg == "url"
-                    ),
+                    (keyword.value for keyword in node.keywords if keyword.arg == "url"),
                     None,
                 )
             )
@@ -9914,9 +9457,7 @@ class PythonVisitor(ast.NodeVisitor):
                         (
                             re.match(
                                 r"^https?://[^/?#]+",
-                                python_static_url_prefix(
-                                    argument, self.static_http_prefixes
-                                ),
+                                python_static_url_prefix(argument, self.static_http_prefixes),
                                 re.IGNORECASE,
                             )
                             is None
@@ -9940,8 +9481,7 @@ class PythonVisitor(ast.NodeVisitor):
                     **origin_attributes,
                     **(
                         {"import_resolution": import_resolution}
-                        if import_resolution
-                        == "contextual-absolute-import-single-path"
+                        if import_resolution == "contextual-absolute-import-single-path"
                         else {}
                     ),
                     **(
@@ -9980,20 +9520,12 @@ def scan_python(
     module_paths: dict[str, str],
     decorated_tool_exports: dict[tuple[str, str], str],
     imported_tool_references: dict[str, tuple[PythonImportedToolReference, ...]],
-    imported_tool_export_references: dict[
-        tuple[str, str], tuple[PythonImportedToolReference, ...]
-    ],
-    agent_factory_class_exports: dict[
-        tuple[str, str], PythonAgentFactoryClassTarget
-    ],
-    mcp_server_subclass_exports: dict[
-        tuple[str, str], PythonMCPServerSubclassTarget
-    ],
+    imported_tool_export_references: dict[tuple[str, str], tuple[PythonImportedToolReference, ...]],
+    agent_factory_class_exports: dict[tuple[str, str], PythonAgentFactoryClassTarget],
+    mcp_server_subclass_exports: dict[tuple[str, str], PythonMCPServerSubclassTarget],
     registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
     network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
-    path_segment_sanitizer_summaries: dict[
-        tuple[str, str], PythonPathSegmentSanitizerSummary
-    ],
+    path_segment_sanitizer_summaries: dict[tuple[str, str], PythonPathSegmentSanitizerSummary],
     registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
     browser_class_exports: dict[tuple[str, str], frozenset[str]],
     literal_http_exports: dict[tuple[str, str], PythonStaticHttpPrefixProof],
@@ -10023,11 +9555,7 @@ def scan_python(
     }
     module_import_binding_counts = Counter(
         alias.asname
-        or (
-            alias.name.split(".", 1)[0]
-            if isinstance(node, ast.Import)
-            else alias.name
-        )
+        or (alias.name.split(".", 1)[0] if isinstance(node, ast.Import) else alias.name)
         for node in tree.body
         if isinstance(node, (ast.Import, ast.ImportFrom))
         for alias in node.names
@@ -10061,10 +9589,7 @@ def scan_python(
         if not isinstance(statement, (ast.Import, ast.ImportFrom)):
             collect_module_mutations(statement)
     module_global_mutations = {
-        name
-        for candidate in nodes
-        if isinstance(candidate, ast.Global)
-        for name in candidate.names
+        name for candidate in nodes if isinstance(candidate, ast.Global) for name in candidate.names
     }
     module_mutations.update(module_global_mutations)
     module_mutation_counts.update(module_global_mutations)
@@ -10104,22 +9629,16 @@ def scan_python(
             if alias.name == "*":
                 continue
             local_name = alias.asname or alias.name
-            if (
-                module_import_binding_counts[local_name] != 1
-                or local_name in module_rebound_names
-            ):
+            if module_import_binding_counts[local_name] != 1 or local_name in module_rebound_names:
                 continue
-            resolution = resolve_python_import(
-                root, relative, statement, alias.name, module_paths
-            )
+            resolution = resolve_python_import(root, relative, statement, alias.name, module_paths)
             if resolution is None:
                 continue
             if proof := literal_http_exports.get((resolution.path, alias.name)):
                 imported_static_http_prefix_proofs[local_name] = proof
 
     module_static_http_prefixes: dict[str, str] = {
-        name: proof.prefix
-        for name, proof in imported_static_http_prefix_proofs.items()
+        name: proof.prefix for name, proof in imported_static_http_prefix_proofs.items()
     }
     module_static_http_prefix_proofs = dict(imported_static_http_prefix_proofs)
     path_segment_sanitizer_bindings = {
@@ -10134,18 +9653,11 @@ def scan_python(
             if alias.name == "*":
                 continue
             local_name = alias.asname or alias.name
-            if (
-                module_import_binding_counts[local_name] != 1
-                or local_name in module_rebound_names
-            ):
+            if module_import_binding_counts[local_name] != 1 or local_name in module_rebound_names:
                 continue
-            resolution = resolve_python_import(
-                root, relative, statement, alias.name, module_paths
-            )
+            resolution = resolve_python_import(root, relative, statement, alias.name, module_paths)
             if resolution is not None and (
-                summary := path_segment_sanitizer_summaries.get(
-                    (resolution.path, alias.name)
-                )
+                summary := path_segment_sanitizer_summaries.get((resolution.path, alias.name))
             ):
                 path_segment_sanitizer_bindings[local_name] = summary
     for statement in tree.body:
@@ -10155,10 +9667,7 @@ def scan_python(
         if len(targets) != 1 or not isinstance(targets[0], ast.Name):
             continue
         target = targets[0].id
-        if (
-            module_assignment_counts[target] != 1
-            or module_mutation_counts[target] != 1
-        ):
+        if module_assignment_counts[target] != 1 or module_mutation_counts[target] != 1:
             continue
         prefix = python_static_url_prefix(statement.value, module_static_http_prefixes)
         if prefix:
@@ -10187,8 +9696,7 @@ def scan_python(
         values = tuple(
             element.value
             for element in container.elts
-            if isinstance(element, ast.Constant)
-            and isinstance(element.value, str)
+            if isinstance(element, ast.Constant) and isinstance(element.value, str)
         )
         return tuple(sorted(set(values))) if len(values) == len(container.elts) else None
 
@@ -10243,15 +9751,13 @@ def scan_python(
     mutated_path_attributes = {
         dotted_name(candidate)
         for candidate in nodes
-        if isinstance(candidate, ast.Attribute)
-        and isinstance(candidate.ctx, (ast.Store, ast.Del))
+        if isinstance(candidate, ast.Attribute) and isinstance(candidate.ctx, (ast.Store, ast.Del))
     }
     path_join_functions = {
         name
         for name in path_join_functions
         if not any(
-            name == mutated or name.startswith(f"{mutated}.")
-            for mutated in mutated_path_attributes
+            name == mutated or name.startswith(f"{mutated}.") for mutated in mutated_path_attributes
         )
     }
     browser_receiver_type_exports = {
@@ -10264,16 +9770,13 @@ def scan_python(
     type_checking_names = {
         alias.asname or alias.name
         for statement in tree.body
-        if isinstance(statement, ast.ImportFrom)
-        and statement.module == "typing"
+        if isinstance(statement, ast.ImportFrom) and statement.module == "typing"
         for alias in statement.names
         if alias.name == "TYPE_CHECKING"
         and (alias.asname or alias.name) not in module_rebound_names
     }
     browser_import_statements: list[ast.Import | ast.ImportFrom] = [
-        statement
-        for statement in tree.body
-        if isinstance(statement, (ast.Import, ast.ImportFrom))
+        statement for statement in tree.body if isinstance(statement, (ast.Import, ast.ImportFrom))
     ]
     module_sys_bindings = 0
     module_sys_exit_mutated = False
@@ -10342,10 +9845,7 @@ def scan_python(
         for statement in tree.body
         if isinstance(statement, ast.Try)
         and statement.handlers
-        and all(
-            browser_import_handler_terminates(handler)
-            for handler in statement.handlers
-        )
+        and all(browser_import_handler_terminates(handler) for handler in statement.handlers)
         for child in statement.body
         if isinstance(child, (ast.Import, ast.ImportFrom))
     )
@@ -10361,11 +9861,7 @@ def scan_python(
     )
     browser_import_binding_counts = Counter(
         alias.asname
-        or (
-            alias.name
-            if isinstance(statement, ast.ImportFrom)
-            else alias.name.split(".", 1)[0]
-        )
+        or (alias.name if isinstance(statement, ast.ImportFrom) else alias.name.split(".", 1)[0])
         for statement in browser_import_statements
         for alias in statement.names
     )
@@ -10417,9 +9913,7 @@ def scan_python(
         if browser_import_binding_counts[factory.split(".", 1)[0]] == 1
         if factory.split(".", 1)[0] not in module_mutations
     }
-    module_browser_variables = python_module_browser_receiver_variables(
-        tree, browser_type_names
-    )
+    module_browser_variables = python_module_browser_receiver_variables(tree, browser_type_names)
     browser_page_factories: set[str] = set()
     for statement in tree.body:
         if not isinstance(statement, ast.ImportFrom):
@@ -10441,9 +9935,7 @@ def scan_python(
         for factory in browser_page_factories
         if factory.split(".", 1)[0] not in module_rebound_names
     }
-    imported_browser_class_candidates: dict[
-        str, list[PythonBrowserClassExport]
-    ] = defaultdict(list)
+    imported_browser_class_candidates: dict[str, list[PythonBrowserClassExport]] = defaultdict(list)
     for statement in tree.body:
         if not isinstance(statement, ast.ImportFrom):
             continue
@@ -10461,9 +9953,7 @@ def scan_python(
                 else None
             )
             if export is not None:
-                imported_browser_class_candidates[alias.asname or alias.name].append(
-                    export
-                )
+                imported_browser_class_candidates[alias.asname or alias.name].append(export)
     imported_browser_class_exports = {
         name: candidates[0]
         for name, candidates in imported_browser_class_candidates.items()
@@ -10471,21 +9961,16 @@ def scan_python(
         and module_import_binding_counts[name] == 1
         and name not in module_rebound_names
     }
-    browser_contextmanager_page_factories = (
-        python_browser_contextmanager_page_factories(
-            tree,
-            module_mutation_counts,
-        )
+    browser_contextmanager_page_factories = python_browser_contextmanager_page_factories(
+        tree,
+        module_mutation_counts,
     )
-    same_class_browser_parameter_proofs = (
-        python_same_class_browser_parameter_proofs(
-            tree,
-            module_mutation_counts,
-            builtin_getattr_available=(
-                "getattr" not in imported_bindings
-                and "getattr" not in module_mutations
-            ),
-        )
+    same_class_browser_parameter_proofs = python_same_class_browser_parameter_proofs(
+        tree,
+        module_mutation_counts,
+        builtin_getattr_available=(
+            "getattr" not in imported_bindings and "getattr" not in module_mutations
+        ),
     )
     same_class_browser_parameter_proofs.update(
         python_same_module_page_parameter_proofs(
@@ -10505,11 +9990,9 @@ def scan_python(
         {
             alias.asname or alias.name: f"{statement.module}.{alias.name}"
             for statement in tree.body
-            if isinstance(statement, ast.ImportFrom)
-            and statement.module in {"os", "shutil"}
+            if isinstance(statement, ast.ImportFrom) and statement.module in {"os", "shutil"}
             for alias in statement.names
-            if f"{statement.module}.{alias.name}"
-            in PYTHON_FILESYSTEM_WRITE_FUNCTIONS
+            if f"{statement.module}.{alias.name}" in PYTHON_FILESYSTEM_WRITE_FUNCTIONS
         }
     )
     filesystem_api_aliases = {
@@ -10546,9 +10029,7 @@ def scan_python(
                     elif alias.name == "Request":
                         urllib_request_constructors.add(binding)
     urllib_openers = {
-        opener
-        for opener in urllib_openers
-        if opener.split(".", 1)[0] not in module_rebound_names
+        opener for opener in urllib_openers if opener.split(".", 1)[0] not in module_rebound_names
     }
     urllib_request_constructors = {
         constructor
@@ -10565,25 +10046,19 @@ def scan_python(
                         {f"{binding}.parse.urlparse", f"{binding}.parse.urlsplit"}
                     )
                 elif alias.name == "urllib.parse":
-                    url_parser_names.update(
-                        {f"{binding}.urlparse", f"{binding}.urlsplit"}
-                    )
+                    url_parser_names.update({f"{binding}.urlparse", f"{binding}.urlsplit"})
         elif isinstance(statement, ast.ImportFrom):
             if statement.module == "urllib":
                 for alias in statement.names:
                     if alias.name == "parse":
                         binding = alias.asname or alias.name
-                        url_parser_names.update(
-                            {f"{binding}.urlparse", f"{binding}.urlsplit"}
-                        )
+                        url_parser_names.update({f"{binding}.urlparse", f"{binding}.urlsplit"})
             elif statement.module == "urllib.parse":
                 for alias in statement.names:
                     if alias.name in {"urlparse", "urlsplit"}:
                         url_parser_names.add(alias.asname or alias.name)
     url_parser_names = {
-        parser
-        for parser in url_parser_names
-        if parser.split(".", 1)[0] not in module_rebound_names
+        parser for parser in url_parser_names if parser.split(".", 1)[0] not in module_rebound_names
     }
     registry_decorator_origins = {
         "metagpt.tools.tool_registry": "MetaGPT",
@@ -10653,9 +10128,7 @@ def scan_python(
                 for keyword in decorator.keywords
                 if keyword.arg == "include_functions"
             ]
-            if len(include_values) == 1 and isinstance(
-                include_values[0], (ast.List, ast.Tuple)
-            ):
+            if len(include_values) == 1 and isinstance(include_values[0], (ast.List, ast.Tuple)):
                 names = [
                     element.value
                     for element in include_values[0].elts
@@ -10668,9 +10141,7 @@ def scan_python(
         registry_class_tools[id(node)] = PythonRegistryTool(
             framework, tool_name, registrar, entrypoints
         )
-    parent_by_id = {
-        id(child): parent for parent in nodes for child in ast.iter_child_nodes(parent)
-    }
+    parent_by_id = {id(child): parent for parent in nodes for child in ast.iter_child_nodes(parent)}
 
     def enclosing_statement_block(node: ast.AST) -> tuple[list[ast.stmt], int] | None:
         current = node
@@ -10697,15 +10168,12 @@ def scan_python(
                 return
             if isinstance(candidate, (ast.Import, ast.ImportFrom)):
                 mutations.update(
-                    alias.asname or alias.name.split(".", 1)[0]
-                    for alias in candidate.names
+                    alias.asname or alias.name.split(".", 1)[0] for alias in candidate.names
                 )
                 return
             if isinstance(candidate, ast.ExceptHandler) and candidate.name:
                 mutations.add(candidate.name)
-            if isinstance(candidate, ast.Name) and isinstance(
-                candidate.ctx, (ast.Store, ast.Del)
-            ):
+            if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
                 mutations.add(candidate.id)
             for child in ast.iter_child_nodes(candidate):
                 collect(child)
@@ -10723,16 +10191,12 @@ def scan_python(
             for alias in statement.names:
                 if alias.name == "function_tool":
                     binding = alias.asname or alias.name
-                    function_tool_factories[binding] = (
-                        f"{statement.module}.function_tool"
-                    )
+                    function_tool_factories[binding] = f"{statement.module}.function_tool"
         elif isinstance(statement, ast.Import):
             for alias in statement.names:
                 if alias.name == "agents":
                     binding = alias.asname or "agents"
-                    function_tool_factories[f"{binding}.function_tool"] = (
-                        "agents.function_tool"
-                    )
+                    function_tool_factories[f"{binding}.function_tool"] = "agents.function_tool"
                 elif alias.name == "agents.tool":
                     if alias.asname:
                         function_tool_factories[f"{alias.asname}.function_tool"] = (
@@ -10778,10 +10242,7 @@ def scan_python(
             and parent in tree.body
             and statement in parent.body
             and parent.handlers
-            and all(
-                python_block_always_terminates(handler.body)
-                for handler in parent.handlers
-            )
+            and all(python_block_always_terminates(handler.body) for handler in parent.handlers)
         )
 
     for statement in (candidate for candidate in nodes if isinstance(candidate, ast.ImportFrom)):
@@ -10789,24 +10250,24 @@ def scan_python(
         for alias in statement.names:
             local_name = alias.asname or alias.name
             import_binding_counts[local_name] += 1
-            if any("tool" in part.lower() for part in module_parts) or (
-                statement.module or "",
-                alias.name,
-            ) in EXACT_TOOL_CONSTRUCTOR_IMPORTS:
+            if (
+                any("tool" in part.lower() for part in module_parts)
+                or (
+                    statement.module or "",
+                    alias.name,
+                )
+                in EXACT_TOOL_CONSTRUCTOR_IMPORTS
+            ):
                 tool_constructor_import_candidates[local_name].append(statement)
             if (
                 module_mcp_constructor_import(statement)
-                and alias.name
-                in MCP_LAUNCHER_CONSTRUCTORS | MCP_IN_PROCESS_SERVER_CONSTRUCTORS
-                and is_mcp_server_constructor_module(
-                    statement.module or "", alias.name
-                )
+                and alias.name in MCP_LAUNCHER_CONSTRUCTORS | MCP_IN_PROCESS_SERVER_CONSTRUCTORS
+                and is_mcp_server_constructor_module(statement.module or "", alias.name)
             ):
                 mcp_constructor_import_candidates[local_name].append(statement)
     for statement in (candidate for candidate in nodes if isinstance(candidate, ast.Import)):
         import_binding_counts.update(
-            alias.asname or alias.name.split(".", 1)[0]
-            for alias in statement.names
+            alias.asname or alias.name.split(".", 1)[0] for alias in statement.names
         )
 
     nonimport_binding_counts: Counter[str] = Counter()
@@ -10832,18 +10293,13 @@ def scan_python(
         and nonimport_binding_counts[name] == 0
     }
     imported_mcp_constructor_names = {
-        name: next(
-            alias.name
-            for alias in statement.names
-            if (alias.asname or alias.name) == name
-        )
+        name: next(alias.name for alias in statement.names if (alias.asname or alias.name) == name)
         for name, statement in imported_mcp_constructors.items()
     }
     agent_constructor_bindings = {
         alias.asname or alias.name
         for statement in tree.body
-        if isinstance(statement, ast.ImportFrom)
-        and statement.module == "agents.sandbox"
+        if isinstance(statement, ast.ImportFrom) and statement.module == "agents.sandbox"
         for alias in statement.names
         if alias.name == "SandboxAgent"
         and import_binding_counts[alias.asname or alias.name] == 1
@@ -10859,9 +10315,7 @@ def scan_python(
             ),
             *(
                 prefix
-                for prefixes in FRONTEND_IMPORT_SIGNATURES["python"][
-                    "framework"
-                ].values()
+                for prefixes in FRONTEND_IMPORT_SIGNATURES["python"]["framework"].values()
                 for prefix in prefixes
             ),
         )
@@ -10874,8 +10328,7 @@ def scan_python(
         and statement.level == 0
         and statement.module is not None
         and any(
-            statement.module == prefix
-            or statement.module.startswith(f"{prefix}.")
+            statement.module == prefix or statement.module.startswith(f"{prefix}.")
             for prefix in python_framework_modules
         )
         for alias in statement.names
@@ -10907,14 +10360,15 @@ def scan_python(
     def is_agent_call(call: ast.Call) -> bool:
         call_name = dotted_name(call.func)
         return (
-            call_name.rsplit(".", 1)[-1] in AGENT_CALLS
-            or call_name in agent_constructor_bindings
+            call_name.rsplit(".", 1)[-1] in AGENT_CALLS or call_name in agent_constructor_bindings
         )
 
     def lexical_owner(node: ast.AST) -> ast.AST:
         current = node
         while parent := parent_by_id.get(id(current)):
-            if isinstance(parent, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+            if isinstance(
+                parent, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)
+            ):
                 return parent
             current = parent
         return tree
@@ -10923,9 +10377,7 @@ def scan_python(
         str,
         list[tuple[PythonMCPServerSubclassTarget, ast.ImportFrom, ast.AST, str]],
     ] = defaultdict(list)
-    for statement in (
-        candidate for candidate in nodes if isinstance(candidate, ast.ImportFrom)
-    ):
+    for statement in (candidate for candidate in nodes if isinstance(candidate, ast.ImportFrom)):
         for alias in statement.names:
             resolution = resolve_python_import(
                 root,
@@ -11016,8 +10468,7 @@ def scan_python(
                     return None
                 use_index = parent.body.index(current)
                 if any(
-                    name in statement_mutations(statement)
-                    for statement in parent.body[:use_index]
+                    name in statement_mutations(statement) for statement in parent.body[:use_index]
                 ):
                     return None
                 matches = [
@@ -11038,9 +10489,7 @@ def scan_python(
     for statement in tree.body:
         if not isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
             continue
-        references = imported_tool_export_references.get(
-            (relative, statement.name), ()
-        )
+        references = imported_tool_export_references.get((relative, statement.name), ())
         if not references:
             continue
         reference = references[0]
@@ -11049,8 +10498,7 @@ def scan_python(
             registration_line=reference.agent_line,
             resolution=(
                 "contextual-imported-callable-single-export"
-                if reference.import_resolution
-                == "contextual-absolute-import-single-path"
+                if reference.import_resolution == "contextual-absolute-import-single-path"
                 else "imported-callable-single-export"
             ),
             import_line=reference.import_line,
@@ -11060,13 +10508,10 @@ def scan_python(
     context_usage_tool_bindings: dict[
         tuple[int, str], tuple[ast.With | ast.AsyncWith, ast.Call, list[ast.Call]]
     ] = {}
-    agent_as_tool_assignments: dict[
-        int, tuple[ast.Assign, ast.Call, ast.Assign]
-    ] = {}
+    agent_as_tool_assignments: dict[int, tuple[ast.Assign, ast.Call, ast.Assign]] = {}
     wrapper_candidates: dict[int, PythonFunctionToolWrapper] = {}
     openai_agents_context = any(
-        module == "agents" or module.startswith("agents.")
-        for module in imported_modules
+        module == "agents" or module.startswith("agents.") for module in imported_modules
     )
     for call in (
         candidate
@@ -11099,9 +10544,7 @@ def scan_python(
                             )
                         )
                     ):
-                        inline_usage_tool_candidates.setdefault(
-                            id(value), (value, call)
-                        )
+                        inline_usage_tool_candidates.setdefault(id(value), (value, call))
                     continue
                 if not isinstance(value, ast.Name):
                     continue
@@ -11257,9 +10700,9 @@ def scan_python(
     decorated_tools: list[tuple[ast.FunctionDef | ast.AsyncFunctionDef, str]] = []
     registered_class_tools: list[tuple[ast.ClassDef, PythonRegistryTool]] = []
     external_import_tool_ids: dict[tuple[str, int], str] = {}
-    external_import_groups: dict[
-        tuple[str, int, str, str], list[PythonImportedToolReference]
-    ] = defaultdict(list)
+    external_import_groups: dict[tuple[str, int, str, str], list[PythonImportedToolReference]] = (
+        defaultdict(list)
+    )
     for reference in current_imported_tool_references:
         if reference.import_resolution is None:
             external_import_groups[
@@ -11328,10 +10771,7 @@ def scan_python(
                 or any(name.endswith(".tool") for name in decorators)
                 or id(node) in registry_function_tools
                 or id(node) in referenced_tool_functions
-                or (
-                    module_scope
-                    and (relative, node.name) in registered_tool_functions
-                )
+                or (module_scope and (relative, node.name) in registered_tool_functions)
             ):
                 qualified_name = ".".join([*class_stack, node.name])
                 decorated_tools.append((node, qualified_name))
@@ -11370,9 +10810,7 @@ def scan_python(
         symbol_candidates.setdefault(("tool", node.name), set()).add(symbol_id)
         definition_symbol_ids[id(node)] = symbol_id
     assigned_constructors: list[tuple[ast.Assign, str, str]] = []
-    mcp_adapter_assignments: dict[
-        int, tuple[PythonMCPServerSubclassTarget, str]
-    ] = {}
+    mcp_adapter_assignments: dict[int, tuple[PythonMCPServerSubclassTarget, str]] = {}
     for node in nodes:
         if (
             isinstance(node, ast.Assign)
@@ -11408,10 +10846,7 @@ def scan_python(
                 or id(node) in agent_as_tool_assignments
                 else "mcp-server"
                 if isinstance(node.value.func, ast.Name)
-                and (
-                    node.value.func.id in imported_mcp_constructors
-                    or adapter_target is not None
-                )
+                and (node.value.func.id in imported_mcp_constructors or adapter_target is not None)
                 else None
             )
             if kind:
@@ -11421,9 +10856,7 @@ def scan_python(
                         adapter_target,
                         adapter_import[3],
                     )
-    context_mcp_servers: list[
-        tuple[ast.With | ast.AsyncWith, ast.Call, str, str]
-    ] = []
+    context_mcp_servers: list[tuple[ast.With | ast.AsyncWith, ast.Call, str, str]] = []
     for node in nodes:
         if not isinstance(node, (ast.With, ast.AsyncWith)):
             continue
@@ -11439,12 +10872,9 @@ def scan_python(
             context_mcp_servers.append(
                 (node, item.context_expr, item.optional_vars.id, constructor)
             )
-    definition_counts = Counter(
-        (kind, binding) for _, kind, binding in assigned_constructors
-    )
+    definition_counts = Counter((kind, binding) for _, kind, binding in assigned_constructors)
     definition_counts.update(
-        ("mcp-server", binding)
-        for _with_node, _call, binding, _constructor in context_mcp_servers
+        ("mcp-server", binding) for _with_node, _call, binding, _constructor in context_mcp_servers
     )
     for node, kind, binding in assigned_constructors:
         identity = f"{binding}@{node.lineno}" if definition_counts[(kind, binding)] > 1 else binding
@@ -11545,9 +10975,9 @@ def scan_python(
                 symbol_id,
             )
         )
-    context_mcp_server_scope_candidates: dict[
-        tuple[int, str], list[tuple[ast.Call, str]]
-    ] = defaultdict(list)
+    context_mcp_server_scope_candidates: dict[tuple[int, str], list[tuple[ast.Call, str]]] = (
+        defaultdict(list)
+    )
     for with_node, call, binding, _constructor in context_mcp_servers:
         context_mcp_server_scope_candidates[(id(with_node), binding)].append(
             (call, call_symbol_ids[id(call)])
@@ -11586,18 +11016,14 @@ def scan_python(
         if isinstance(candidate, ast.Call) and is_agent_call(candidate)
     ):
         for keyword in agent_call.keywords:
-            if keyword.arg != "mcp_servers" or not isinstance(
-                keyword.value, (ast.List, ast.Tuple)
-            ):
+            if keyword.arg != "mcp_servers" or not isinstance(keyword.value, (ast.List, ast.Tuple)):
                 continue
             for value in keyword.value.elts:
                 if not isinstance(value, ast.Name):
                     continue
                 if resolved := direct_context_mcp_server(agent_call, value.id):
                     _context_call, symbol_id = resolved
-                    context_usage_mcp_resolutions.append(
-                        (agent_call, value.id, symbol_id)
-                    )
+                    context_usage_mcp_resolutions.append((agent_call, value.id, symbol_id))
     mcp_in_process_server_bindings = {
         binding: (
             mcp_server_symbol_names[call_symbol_ids[id(node.value)]],
@@ -11605,8 +11031,7 @@ def scan_python(
         )
         for node, kind, binding in assigned_constructors
         if kind == "mcp-server"
-        and mcp_server_constructor(node.value)
-        in MCP_IN_PROCESS_SERVER_CONSTRUCTORS
+        and mcp_server_constructor(node.value) in MCP_IN_PROCESS_SERVER_CONSTRUCTORS
         and isinstance(parent_by_id.get(id(node)), ast.Module)
         and module_mutation_counts[binding] == 1
     }
@@ -11623,15 +11048,11 @@ def scan_python(
         if id(node) not in usage_tool_assignment_ids or kind != "tool":
             continue
         constructor = dotted_name(node.value.func)
-        if (
-            openai_agents_context
-            and (
-                id(node.value) in exact_openai_builtin_call_names
-                or (
-                    constructor.rsplit(".", 1)[-1] in BUILTIN_TOOL_CAPABILITIES
-                    and constructor.rsplit(".", 1)[-1]
-                    not in EXACT_IMPORT_OPENAI_BUILTINS
-                )
+        if openai_agents_context and (
+            id(node.value) in exact_openai_builtin_call_names
+            or (
+                constructor.rsplit(".", 1)[-1] in BUILTIN_TOOL_CAPABILITIES
+                and constructor.rsplit(".", 1)[-1] not in EXACT_IMPORT_OPENAI_BUILTINS
             )
         ):
             continue
@@ -11655,8 +11076,7 @@ def scan_python(
         constructor_root = constructor.split(".", 1)[0]
         constructor_import = imported_tool_constructors.get(constructor_root)
         is_hosted_mcp_tool = constructor_import is not None and any(
-            alias.name == "HostedMCPTool"
-            and (alias.asname or alias.name) == constructor_root
+            alias.name == "HostedMCPTool" and (alias.asname or alias.name) == constructor_root
             for alias in constructor_import.names
         )
         if (
@@ -11774,18 +11194,14 @@ def scan_python(
         )
 
     context_usage_tool_resolutions: list[tuple[ast.Call, str, str]] = []
-    context_binding_counts = Counter(
-        name for _node_id, name in context_usage_tool_bindings
-    )
+    context_binding_counts = Counter(name for _node_id, name in context_usage_tool_bindings)
     for (_node_id, binding), (
         context_node,
         context_call,
         agent_calls,
     ) in context_usage_tool_bindings.items():
         identity = (
-            f"{binding}@{context_node.lineno}"
-            if context_binding_counts[binding] > 1
-            else binding
+            f"{binding}@{context_node.lineno}" if context_binding_counts[binding] > 1 else binding
         )
         symbol_id = source_symbol("py", relative, "tool", identity)
         symbol_candidates.setdefault(("tool", binding), set()).add(symbol_id)
@@ -11803,9 +11219,7 @@ def scan_python(
                     "binding": "literal-tools-list-context-manager",
                     "constructor": dotted_name(context_call.func),
                     "registration": "agent-tool-reference",
-                    "registration_lines": sorted(
-                        {agent_call.lineno for agent_call in agent_calls}
-                    ),
+                    "registration_lines": sorted({agent_call.lineno for agent_call in agent_calls}),
                     "resolution": "direct-context-manager-binding",
                     "scope": source_scope(relative),
                 },
@@ -11824,9 +11238,7 @@ def scan_python(
         }:
             for alias in statement.names:
                 if alias.name in BUILTIN_TOOL_CAPABILITIES:
-                    builtin_tool_type_candidates[alias.asname or alias.name].add(
-                        alias.name
-                    )
+                    builtin_tool_type_candidates[alias.asname or alias.name].add(alias.name)
         elif isinstance(statement, ast.Import):
             for alias in statement.names:
                 if alias.name == "agents":
@@ -11836,20 +11248,15 @@ def scan_python(
                 else:
                     continue
                 for constructor in BUILTIN_TOOL_CAPABILITIES:
-                    builtin_tool_type_candidates[f"{prefix}.{constructor}"].add(
-                        constructor
-                    )
+                    builtin_tool_type_candidates[f"{prefix}.{constructor}"].add(constructor)
     builtin_tool_types = {
         binding: next(iter(constructors))
         for binding, constructors in builtin_tool_type_candidates.items()
-        if len(constructors) == 1
-        and binding.split(".", 1)[0] not in module_rebound_names
+        if len(constructors) == 1 and binding.split(".", 1)[0] not in module_rebound_names
     }
     function_local_bindings_cache: dict[int, set[str]] = {}
 
-    enclosing_function_cache: dict[
-        int, ast.FunctionDef | ast.AsyncFunctionDef | None
-    ] = {}
+    enclosing_function_cache: dict[int, ast.FunctionDef | ast.AsyncFunctionDef | None] = {}
 
     def enclosing_function(
         node: ast.AST,
@@ -11861,11 +11268,7 @@ def scan_python(
             parent, (ast.FunctionDef, ast.AsyncFunctionDef)
         ):
             parent = parent_by_id.get(id(parent))
-        function = (
-            parent
-            if isinstance(parent, (ast.FunctionDef, ast.AsyncFunctionDef))
-            else None
-        )
+        function = parent if isinstance(parent, (ast.FunctionDef, ast.AsyncFunctionDef)) else None
         enclosing_function_cache[id(node)] = function
         return function
 
@@ -11875,9 +11278,7 @@ def scan_python(
         if function is None:
             return set()
         if id(function) not in function_local_bindings_cache:
-            function_local_bindings_cache[id(function)] = python_function_local_bindings(
-                function
-            )
+            function_local_bindings_cache[id(function)] = python_function_local_bindings(function)
         return function_local_bindings_cache[id(function)]
 
     def enclosed_by_lambda(node: ast.AST) -> bool:
@@ -11979,10 +11380,7 @@ def scan_python(
     for candidate in (node for node in nodes if isinstance(node, ast.Call)):
         if isinstance(candidate.func, ast.Name):
             direct_name_calls[candidate.func.id].append(candidate)
-        if (
-            is_agent_call(candidate)
-            and (owner := enclosing_function(candidate))
-        ):
+        if is_agent_call(candidate) and (owner := enclosing_function(candidate)):
             agent_calls_by_function[id(owner)].append(candidate)
 
     typed_tool_parameter_resolutions: list[tuple[ast.Call, str, str]] = []
@@ -12031,8 +11429,7 @@ def scan_python(
             annotation = dotted_name(parameter.annotation) if parameter.annotation else ""
             declared_constructor = builtin_tool_types.get(annotation)
             if declared_constructor is None or any(
-                parameter.arg in statement_mutations(statement)
-                for statement in function.body
+                parameter.arg in statement_mutations(statement) for statement in function.body
             ):
                 continue
             concrete_targets: list[str] = []
@@ -12040,9 +11437,7 @@ def scan_python(
             for call in direct_calls:
                 argument = call_argument_for_parameter(function, parameter, call)
                 concrete = (
-                    concrete_builtin_tool_argument(argument, call)
-                    if argument is not None
-                    else None
+                    concrete_builtin_tool_argument(argument, call) if argument is not None else None
                 )
                 if concrete is None or concrete[0] != declared_constructor:
                     call_sites_valid = False
@@ -12071,10 +11466,7 @@ def scan_python(
             typed_tool_parameter_components.append(
                 Component(
                     "tool",
-                    (
-                        f"{declared_constructor} parameter "
-                        f"{parameter.arg}@{parameter.lineno}"
-                    ),
+                    (f"{declared_constructor} parameter {parameter.arg}@{parameter.lineno}"),
                     Evidence(
                         relative,
                         parameter.lineno,
@@ -12092,8 +11484,7 @@ def scan_python(
                 )
             )
             typed_tool_parameter_resolutions.extend(
-                (agent_call, parameter.arg, parameter_id)
-                for agent_call in agent_calls
+                (agent_call, parameter.arg, parameter_id) for agent_call in agent_calls
             )
     for component in typed_tool_parameter_components:
         ir.add_component(component)
@@ -12137,9 +11528,7 @@ def scan_python(
         returned: ast.AST,
         return_statement: ast.Return,
     ) -> str | None:
-        if (
-            isinstance(returned, ast.Call) and is_agent_call(returned)
-        ):
+        if isinstance(returned, ast.Call) and is_agent_call(returned):
             return agent_call_symbol_id(returned)
         if not isinstance(returned, ast.Name):
             return None
@@ -12175,10 +11564,13 @@ def scan_python(
         ]
         method_counts = Counter(method.name for method in methods)
         for method in methods:
-            if method_counts[method.name] != 1 or sum(
-                method.name in statement_mutations(statement)
-                for statement in class_node.body
-            ) != 1:
+            if (
+                method_counts[method.name] != 1
+                or sum(
+                    method.name in statement_mutations(statement) for statement in class_node.body
+                )
+                != 1
+            ):
                 continue
             returns = direct_method_returns(method)
             if len(returns) != 1 or parent_by_id.get(id(returns[0])) is not method:
@@ -12192,33 +11584,24 @@ def scan_python(
                 else (return_statement.value,)
             )
             returned_ids = tuple(
-                returned_agent_id(method, value, return_statement)
-                for value in returned_values
+                returned_agent_id(method, value, return_statement) for value in returned_values
             )
             if any(returned_ids):
                 agent_factory_returns[(id(class_node), method.name)] = returned_ids
 
     helper_agent_assignments: list[tuple[ast.Assign, str, str, str]] = []
     local_function_agent_returns: dict[int, str] = {}
-    for function in (
-        node for node in nodes if isinstance(node, ast.FunctionDef)
-    ):
-        if (
-            function.decorator_list
-            or not isinstance(
-                parent_by_id.get(id(function)),
-                (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef),
-            )
+    for function in (node for node in nodes if isinstance(node, ast.FunctionDef)):
+        if function.decorator_list or not isinstance(
+            parent_by_id.get(id(function)),
+            (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef),
         ):
             continue
         block = enclosing_statement_block(function)
         if block is None:
             continue
         statements, _definition_index = block
-        if sum(
-            function.name in statement_mutations(statement)
-            for statement in statements
-        ) != 1:
+        if sum(function.name in statement_mutations(statement) for statement in statements) != 1:
             continue
         returns = direct_method_returns(function)
         if (
@@ -12228,14 +11611,10 @@ def scan_python(
             or not isinstance(returns[0].value.func, ast.Name)
             or returns[0].value.func.id not in local_agent_factory_constructors
             or returns[0].value.func.id in python_function_local_bindings(function)
-            or shadowed_in_enclosing_functions(
-                function, returns[0].value.func.id
-            )
+            or shadowed_in_enclosing_functions(function, returns[0].value.func.id)
         ):
             continue
-        local_function_agent_returns[id(function)] = agent_call_symbol_id(
-            returns[0].value
-        )
+        local_function_agent_returns[id(function)] = agent_call_symbol_id(returns[0].value)
 
     for assignment in (node for node in nodes if isinstance(node, ast.Assign)):
         if not (
@@ -12298,16 +11677,11 @@ def scan_python(
         if receiver in {"self", "cls"}:
             if not positional_arguments or positional_arguments[0].arg != receiver:
                 continue
-            if any(
-                receiver in statement_mutations(statement)
-                for statement in method.body
-            ):
+            if any(receiver in statement_mutations(statement) for statement in method.body):
                 continue
         elif receiver in python_function_local_bindings(method):
             continue
-        returned_ids = agent_factory_returns.get(
-            (id(parent), assignment.value.func.attr)
-        )
+        returned_ids = agent_factory_returns.get((id(parent), assignment.value.func.attr))
         if returned_ids is None or len(assignment.targets) != 1:
             continue
         target = assignment.targets[0]
@@ -12324,13 +11698,9 @@ def scan_python(
                         "same-class-helper-return",
                     )
                 )
-                symbol_candidates.setdefault(("agent", target_item.id), set()).add(
-                    returned_id
-                )
+                symbol_candidates.setdefault(("agent", target_item.id), set()).add(returned_id)
 
-    imported_factory_classes: dict[
-        str, tuple[PythonAgentFactoryClassTarget, str, int]
-    ] = {}
+    imported_factory_classes: dict[str, tuple[PythonAgentFactoryClassTarget, str, int]] = {}
     imported_agent_factory_target_paths: dict[str, str] = {}
     top_level_import_counts = Counter(
         alias.asname or alias.name.split(".", 1)[0]
@@ -12339,9 +11709,9 @@ def scan_python(
         for alias in statement.names
         if alias.name != "*"
     )
-    imported_factory_candidates: dict[
-        str, list[tuple[PythonAgentFactoryClassTarget, str, int]]
-    ] = defaultdict(list)
+    imported_factory_candidates: dict[str, list[tuple[PythonAgentFactoryClassTarget, str, int]]] = (
+        defaultdict(list)
+    )
     for statement in tree.body:
         if not isinstance(statement, ast.ImportFrom):
             continue
@@ -12356,9 +11726,7 @@ def scan_python(
             )
             if resolution is None:
                 continue
-            target = agent_factory_class_exports.get(
-                (resolution.path, alias.name)
-            )
+            target = agent_factory_class_exports.get((resolution.path, alias.name))
             if target is not None:
                 imported_factory_candidates[local_name].append(
                     (target, resolution.basis, statement.lineno)
@@ -12410,9 +11778,7 @@ def scan_python(
         if (
             import_line >= constructor_assignment.lineno
             or enclosed_by_lambda(constructor_assignment)
-            or shadowed_in_enclosing_functions(
-                constructor_assignment, constructor_name
-            )
+            or shadowed_in_enclosing_functions(constructor_assignment, constructor_name)
         ):
             continue
         returned_id = target.methods.get(assignment.value.func.attr)
@@ -12424,9 +11790,7 @@ def scan_python(
             if import_basis == "contextual-absolute-import-single-path"
             else "imported-class-factory-return"
         )
-        helper_agent_assignments.append(
-            (assignment, binding, returned_id, target_identity)
-        )
+        helper_agent_assignments.append((assignment, binding, returned_id, target_identity))
         imported_agent_factory_target_paths[returned_id] = target.path
         symbol_candidates.setdefault(("agent", binding), set()).add(returned_id)
     local_symbol_ids = {
@@ -12452,7 +11816,11 @@ def scan_python(
     }
     dominating_symbol_ids.update(
         {
-            (id(agent_calls_by_location[(reference.agent_line, reference.agent_col)]), "tool", reference.local_name): (
+            (
+                id(agent_calls_by_location[(reference.agent_line, reference.agent_col)]),
+                "tool",
+                reference.local_name,
+            ): (
                 external_import_tool_ids[(reference.local_name, reference.import_line)],
                 "literal-tools-list-import-binding",
             )
@@ -12503,9 +11871,7 @@ def scan_python(
             node
             for node in nodes
             if isinstance(node, (ast.Assign, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))
-            or (
-                isinstance(node, ast.Call) and is_agent_call(node)
-            )
+            or (isinstance(node, ast.Call) and is_agent_call(node))
         ]
         node_scopes = {id(node): lexical_scope(node) for node in scope_nodes}
         for node in nodes:
@@ -12518,9 +11884,9 @@ def scan_python(
                 scope_bound_names.add((scope, node.arg))
             elif isinstance(node, ast.alias):
                 scope_bound_names.add((scope, node.asname or node.name.split(".", 1)[0]))
-            elif isinstance(
-                node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
-            ) or (isinstance(node, ast.ExceptHandler) and node.name):
+            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) or (
+                isinstance(node, ast.ExceptHandler) and node.name
+            ):
                 scope_bound_names.add((scope, node.name))
         for node, qualified_name in decorated_tools:
             if not isinstance(
@@ -12592,9 +11958,7 @@ def scan_python(
                     "handoffs",
                     "agents",
                     "mcp_servers",
-                } or not isinstance(
-                    keyword.value, (ast.List, ast.Tuple)
-                ):
+                } or not isinstance(keyword.value, (ast.List, ast.Tuple)):
                     continue
                 for value in keyword.value.elts:
                     kind = (
@@ -12617,9 +11981,7 @@ def scan_python(
                     if name in statement_mutations(statement)
                 ]
                 if len(mutations) == 1:
-                    definition = definition_by_statement.get(
-                        (id(mutations[0]), kind, name)
-                    )
+                    definition = definition_by_statement.get((id(mutations[0]), kind, name))
                     if definition:
                         dominating_symbol_ids[(id(call), kind, name)] = definition
                         continue
@@ -12695,12 +12057,8 @@ def scan_python(
         browser_type_names=browser_type_names,
         browser_page_factories=browser_page_factories,
         browser_runtime_factories=browser_runtime_factories,
-        browser_contextmanager_page_factories=(
-            browser_contextmanager_page_factories
-        ),
-        same_class_browser_parameter_proofs=(
-            same_class_browser_parameter_proofs
-        ),
+        browser_contextmanager_page_factories=(browser_contextmanager_page_factories),
+        same_class_browser_parameter_proofs=(same_class_browser_parameter_proofs),
         module_browser_variables=module_browser_variables,
         imported_browser_class_exports=imported_browser_class_exports,
         builtin_property_available=(
@@ -12713,8 +12071,7 @@ def scan_python(
         module_literal_string_sets=module_literal_string_sets,
         approval_bypass_function_summaries=(
             python_approval_bypass_function_summaries(tree)
-            if "on_approval" in text
-            and re.search(r"\b(?:from|import)\s+agents\b", text)
+            if "on_approval" in text and re.search(r"\b(?:from|import)\s+agents\b", text)
             else {}
         ),
     ).visit(tree)
@@ -12876,9 +12233,7 @@ class TypeScriptProviderFunction:
     body_start: int
     body_end: int
     parameters: tuple[TypeScriptHelperParameter, ...]
-    provider_parameters: tuple[
-        tuple[int, str, TypeScriptProviderImportBinding], ...
-    ]
+    provider_parameters: tuple[tuple[int, str, TypeScriptProviderImportBinding], ...]
 
 
 @dataclass(frozen=True)
@@ -13169,9 +12524,7 @@ def typescript_object_items(body: str, body_offset: int = 0) -> list[tuple[str, 
     return typescript_top_level_items(body[opening + 1 : end - 1], body_offset + opening + 1)
 
 
-def typescript_literal_object_items(
-    body: str, body_offset: int = 0
-) -> list[tuple[str, int]]:
+def typescript_literal_object_items(body: str, body_offset: int = 0) -> list[tuple[str, int]]:
     """Extract literal object properties while retaining quoted property names."""
     code = typescript_code_mask(body)
     opening = len(code) - len(code.lstrip())
@@ -13544,10 +12897,7 @@ def typescript_immutable_module_literal_string_bindings(
         r"(?:'([^'\\\r\n]*)'|\"([^\"\\\r\n]*)\")",
     )
     for match in pattern.finditer(text):
-        if (
-            depths[match.start()] != 0
-            or code[match.start() : match.start(1)].strip() != "const"
-        ):
+        if depths[match.start()] != 0 or code[match.start() : match.start(1)].strip() != "const":
             continue
         candidates[match.group(1)].append(
             TypeScriptLiteralStringBinding(
@@ -13564,9 +12914,7 @@ def typescript_immutable_module_literal_string_bindings(
                 parts = imported.strip().removeprefix("type ").split()
                 if parts:
                     imported_names.add(
-                        parts[2]
-                        if len(parts) >= 3 and parts[1] == "as"
-                        else parts[0]
+                        parts[2] if len(parts) >= 3 and parts[1] == "as" else parts[0]
                     )
     for match in TS_NAMED_IMPORT.finditer(text):
         if clause := match.group(1):
@@ -13574,9 +12922,7 @@ def typescript_immutable_module_literal_string_bindings(
                 parts = imported.strip().removeprefix("type ").split()
                 if parts:
                     imported_names.add(
-                        parts[2]
-                        if len(parts) >= 3 and parts[1] == "as"
-                        else parts[0]
+                        parts[2] if len(parts) >= 3 and parts[1] == "as" else parts[0]
                     )
 
     resolved = {}
@@ -13602,9 +12948,7 @@ def typescript_immutable_module_literal_string_bindings(
             != 1
             or typescript_parameter_binding_is_declared(text, name)
             or re.search(
-                r"\b(?:const|let|var)\s*(?:\{|\[)[^}\]]*\b"
-                + escaped
-                + r"\b",
+                r"\b(?:const|let|var)\s*(?:\{|\[)[^}\]]*\b" + escaped + r"\b",
                 code,
             )
             or re.search(rf"\bcatch\s*\(\s*{escaped}\b", code)
@@ -13623,14 +12967,10 @@ def typescript_provider_request_model(
     literal_bindings: dict[str, TypeScriptLiteralStringBinding],
 ) -> tuple[str | None, str | None]:
     """Resolve a direct literal model or an earlier immutable module literal binding."""
-    literal = typescript_literal_call_object_string_property(
-        text, opening, end, "model"
-    )
+    literal = typescript_literal_call_object_string_property(text, opening, end, "model")
     if literal is not None:
         return literal, None
-    expression = typescript_call_object_property_expression(
-        text, opening, end, "model"
-    )
+    expression = typescript_call_object_property_expression(text, opening, end, "model")
     if expression is None:
         return None, None
     identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", expression)
@@ -13656,9 +12996,7 @@ def typescript_provider_first_argument_model(
     arguments = typescript_call_arguments(text[opening + 1 : end - 1])
     if not arguments:
         return None, None
-    identifier = re.fullmatch(
-        r"[A-Za-z_$][\w$]*", arguments[0][0].strip()
-    )
+    identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", arguments[0][0].strip())
     if identifier is None:
         return None, None
     binding = literal_bindings.get(identifier.group(0))
@@ -13724,14 +13062,11 @@ def typescript_ai_sdk_provider_calls(text: str) -> list[TypeScriptProviderCall]:
     """Resolve exact official AI SDK factories and model calls through stable bindings."""
     code = typescript_code_mask(text)
     imports = typescript_ai_sdk_provider_imports(text)
-    literal_model_bindings = typescript_immutable_module_literal_string_bindings(
-        text
-    )
+    literal_model_bindings = typescript_immutable_module_literal_string_bindings(text)
     observations: list[TypeScriptProviderCall] = []
     configured_instances: list[tuple[str, TypeScriptProviderImportBinding, int]] = []
     model_methods = "|".join(
-        re.escape(name)
-        for name in sorted(TYPESCRIPT_AI_SDK_MODEL_METHODS, key=len, reverse=True)
+        re.escape(name) for name in sorted(TYPESCRIPT_AI_SDK_MODEL_METHODS, key=len, reverse=True)
     )
 
     for local_name, binding in imports.items():
@@ -13750,32 +13085,24 @@ def typescript_ai_sdk_provider_calls(text: str) -> list[TypeScriptProviderCall]:
                 continue
             method_name = None if is_factory else match.group(1)
             model_method = (
-                None
-                if is_factory
-                else TYPESCRIPT_AI_SDK_MODEL_METHODS.get(method_name, "language")
+                None if is_factory else TYPESCRIPT_AI_SDK_MODEL_METHODS.get(method_name, "language")
             )
             chained_model = False
             if is_factory:
-                chained_method = re.match(
-                    rf"\s*\.\s*({model_methods})\s*\(", code[end:]
-                )
+                chained_method = re.match(rf"\s*\.\s*({model_methods})\s*\(", code[end:])
                 if chained_method is not None:
                     method_name = chained_method.group(1)
                     method_opening = code.find(
                         "(", end + chained_method.start(), end + chained_method.end()
                     )
-                    method_end = typescript_balanced_end(
-                        code, method_opening, "(", ")"
-                    )
+                    method_end = typescript_balanced_end(code, method_opening, "(", ")")
                     if method_end is not None:
-                        model, model_resolution_basis = (
-                            typescript_provider_first_argument_model(
-                                text,
-                                method_opening,
-                                method_end,
-                                match.start(),
-                                literal_model_bindings,
-                            )
+                        model, model_resolution_basis = typescript_provider_first_argument_model(
+                            text,
+                            method_opening,
+                            method_end,
+                            match.start(),
+                            literal_model_bindings,
                         )
                         observations.append(
                             TypeScriptProviderCall(
@@ -13809,11 +13136,7 @@ def typescript_ai_sdk_provider_calls(text: str) -> list[TypeScriptProviderCall]:
                     TypeScriptProviderCall(
                         match.start(),
                         code[match.start() : opening].strip(),
-                        (
-                            "ai-sdk-provider-factory"
-                            if is_factory
-                            else "ai-sdk-provider-model"
-                        ),
+                        ("ai-sdk-provider-factory" if is_factory else "ai-sdk-provider-model"),
                         binding.module,
                         binding.imported_symbol,
                         binding.provider,
@@ -13914,9 +13237,7 @@ def typescript_provider_function_definitions(
             )
             if typed is None or typed.group(2) not in imports:
                 continue
-            provider_parameters.append(
-                (index, typed.group(1), imports[typed.group(2)])
-            )
+            provider_parameters.append((index, typed.group(1), imports[typed.group(2)]))
         if not provider_parameters:
             continue
         definitions.append(
@@ -13979,9 +13300,7 @@ def typescript_provider_typed_parameter_bindings(
                     match.start(),
                     [
                         argument
-                        for argument, _ in typescript_call_arguments(
-                            text[opening + 1 : end - 1]
-                        )
+                        for argument, _ in typescript_call_arguments(text[opening + 1 : end - 1])
                     ],
                 )
             )
@@ -13998,11 +13317,13 @@ def typescript_provider_typed_parameter_bindings(
 
     def enclosing_function(offset: int) -> TypeScriptProviderFunction | None:
         candidates = [
-            item
-            for item in definitions.values()
-            if item.body_start <= offset < item.body_end
+            item for item in definitions.values() if item.body_start <= offset < item.body_end
         ]
-        return min(candidates, key=lambda item: item.body_end - item.body_start) if candidates else None
+        return (
+            min(candidates, key=lambda item: item.body_end - item.body_start)
+            if candidates
+            else None
+        )
 
     changed = True
     while changed:
@@ -14026,12 +13347,8 @@ def typescript_provider_typed_parameter_bindings(
                     argument = arguments[index].strip()
                     binding = configured_instances.get(argument)
                     if binding is None:
-                        binding = typescript_inline_provider_constructor_binding(
-                            argument, imports
-                        )
-                    if binding is None and re.fullmatch(
-                        r"[A-Za-z_$][\w$]*", argument
-                    ):
+                        binding = typescript_inline_provider_constructor_binding(argument, imports)
+                    if binding is None and re.fullmatch(r"[A-Za-z_$][\w$]*", argument):
                         caller = enclosing_function(offset)
                         if caller is not None:
                             for (
@@ -14040,9 +13357,7 @@ def typescript_provider_typed_parameter_bindings(
                                 _,
                             ) in caller.provider_parameters:
                                 if caller_parameter == argument:
-                                    binding = resolved.get(
-                                        (caller.name, caller_index)
-                                    )
+                                    binding = resolved.get((caller.name, caller_index))
                                     break
                     if binding != declared_binding:
                         valid = False
@@ -14057,9 +13372,7 @@ def typescript_provider_typed_parameter_bindings(
 def typescript_provider_class_definitions(text: str) -> list[TypeScriptProviderClass]:
     """Return balanced TypeScript class bodies for field-scoped provider analysis."""
     code = typescript_code_mask(text)
-    pattern = re.compile(
-        r"\b(?:export\s+)?(?:abstract\s+)?class\s+([A-Za-z_$][\w$]*)\b"
-    )
+    pattern = re.compile(r"\b(?:export\s+)?(?:abstract\s+)?class\s+([A-Za-z_$][\w$]*)\b")
     classes = []
     for match in pattern.finditer(code):
         body_opening = code.find("{", match.end())
@@ -14068,16 +13381,12 @@ def typescript_provider_class_definitions(text: str) -> list[TypeScriptProviderC
         body_end = typescript_balanced_end(code, body_opening, "{", "}")
         if body_end is None:
             continue
-        classes.append(
-            TypeScriptProviderClass(match.group(1), body_opening + 1, body_end - 1)
-        )
+        classes.append(TypeScriptProviderClass(match.group(1), body_opening + 1, body_end - 1))
     return classes
 
 
 def add_typescript_provider_class_receiver(
-    receiver_bindings: dict[
-        str, tuple[TypeScriptProviderImportBinding, str, str]
-    ],
+    receiver_bindings: dict[str, tuple[TypeScriptProviderImportBinding, str, str]],
     invalid_receivers: set[str],
     receiver: str,
     binding: TypeScriptProviderImportBinding,
@@ -14118,9 +13427,7 @@ def typescript_provider_class_field_calls(
 
     for class_definition in class_definitions:
         body_code = code[class_definition.body_start : class_definition.body_end]
-        receiver_bindings: dict[
-            str, tuple[TypeScriptProviderImportBinding, str, str]
-        ] = {}
+        receiver_bindings: dict[str, tuple[TypeScriptProviderImportBinding, str, str]] = {}
         invalid_receivers: set[str] = set()
 
         for local_name, binding in imports.items():
@@ -14134,14 +13441,10 @@ def typescript_provider_class_field_calls(
                 end = typescript_balanced_end(code, opening, "(", ")")
                 if end is None or end > class_definition.body_end:
                     continue
-                if not typescript_provider_config_uses_default_endpoint(
-                    text, opening, end
-                ):
+                if not typescript_provider_config_uses_default_endpoint(text, opening, end):
                     continue
                 prefix = code[max(class_definition.body_start, match.start() - 300) : match.start()]
-                assignment = re.search(
-                    r"\bthis\s*\.\s*([A-Za-z_$][\w$]*)\s*=\s*$", prefix
-                )
+                assignment = re.search(r"\bthis\s*\.\s*([A-Za-z_$][\w$]*)\s*=\s*$", prefix)
                 initializer = None
                 if assignment is None:
                     initializer = re.search(
@@ -14215,15 +13518,11 @@ def typescript_provider_class_field_calls(
             if binding is None:
                 continue
             constructor_opening = getter.end() + lazy_return.end() - 1
-            constructor_end = typescript_balanced_end(
-                code, constructor_opening, "(", ")"
-            )
+            constructor_end = typescript_balanced_end(code, constructor_opening, "(", ")")
             if (
                 constructor_end is None
                 or constructor_end > getter_end
-                or not re.fullmatch(
-                    r"\s*;?\s*", code[constructor_end : getter_end - 1]
-                )
+                or not re.fullmatch(r"\s*;?\s*", code[constructor_end : getter_end - 1])
                 or not typescript_provider_config_uses_default_endpoint(
                     text, constructor_opening, constructor_end
                 )
@@ -14235,11 +13534,14 @@ def typescript_provider_class_field_calls(
                 rf"(?:=\s*(?:null|undefined))?\s*;",
                 body_code,
             )
-            if sum(
-                owning_class(class_definition.body_start + declaration.start())
-                == class_definition
-                for declaration in backing_declarations
-            ) != 1:
+            if (
+                sum(
+                    owning_class(class_definition.body_start + declaration.start())
+                    == class_definition
+                    for declaration in backing_declarations
+                )
+                != 1
+            ):
                 continue
             backing_writes = [
                 write.group(1)
@@ -14248,18 +13550,14 @@ def typescript_provider_class_field_calls(
                     rf"(\?\?=|\|\|=|&&=|=(?!=))",
                     body_code,
                 )
-                if owning_class(class_definition.body_start + write.start())
-                == class_definition
+                if owning_class(class_definition.body_start + write.start()) == class_definition
             ]
             if backing_writes != ["??="]:
                 continue
             receiver = getter.group(1)
             if any(
-                owning_class(class_definition.body_start + setter.start())
-                == class_definition
-                for setter in re.finditer(
-                    rf"\bset\s+{re.escape(receiver)}\s*\(", body_code
-                )
+                owning_class(class_definition.body_start + setter.start()) == class_definition
+                for setter in re.finditer(rf"\bset\s+{re.escape(receiver)}\s*\(", body_code)
             ):
                 continue
             add_typescript_provider_class_receiver(
@@ -14321,9 +13619,7 @@ def typescript_provider_sdk_calls(text: str) -> list[TypeScriptProviderCall]:
     """Resolve exact native provider SDK constructors with default endpoint proof."""
     code = typescript_code_mask(text)
     imports = typescript_provider_sdk_imports(text)
-    literal_model_bindings = typescript_immutable_module_literal_string_bindings(
-        text
-    )
+    literal_model_bindings = typescript_immutable_module_literal_string_bindings(text)
     observations: list[TypeScriptProviderCall] = []
     configured_instances: list[tuple[str, TypeScriptProviderImportBinding, int]] = []
     for local_name, binding in imports.items():
@@ -14395,8 +13691,7 @@ def typescript_provider_sdk_calls(text: str) -> list[TypeScriptProviderCall]:
                 )
 
     stable_instances = {
-        instance_name: binding
-        for instance_name, binding, _ in configured_instances
+        instance_name: binding for instance_name, binding, _ in configured_instances
     }
     typed_parameters, definitions = typescript_provider_typed_parameter_bindings(
         text, imports, stable_instances
@@ -14404,9 +13699,7 @@ def typescript_provider_sdk_calls(text: str) -> list[TypeScriptProviderCall]:
     for (function_name, parameter_index), binding in typed_parameters.items():
         definition = definitions[function_name]
         parameter_name = next(
-            name
-            for index, name, _ in definition.provider_parameters
-            if index == parameter_index
+            name for index, name, _ in definition.provider_parameters if index == parameter_index
         )
         body = text[definition.body_start : definition.body_end]
         if typescript_import_binding_is_shadowed(body, parameter_name):
@@ -14418,9 +13711,7 @@ def typescript_provider_sdk_calls(text: str) -> list[TypeScriptProviderCall]:
                 rf"(?<![\w$.]){re.escape(parameter_name)}\s*\.\s*"
                 rf"{method_pattern}\s*\("
             )
-            for match in pattern.finditer(
-                code, definition.body_start, definition.body_end
-            ):
+            for match in pattern.finditer(code, definition.body_start, definition.body_end):
                 opening = code.find("(", match.start(), match.end())
                 end = typescript_balanced_end(code, opening, "(", ")")
                 if end is None or end > definition.body_end:
@@ -14448,9 +13739,7 @@ def typescript_provider_sdk_calls(text: str) -> list[TypeScriptProviderCall]:
                     )
                 )
     observations.extend(
-        typescript_provider_class_field_calls(
-            text, imports, literal_model_bindings
-        )
+        typescript_provider_class_field_calls(text, imports, literal_model_bindings)
     )
     return sorted(observations, key=lambda item: item.offset)
 
@@ -14514,9 +13803,7 @@ def typescript_mcp_package_launchers(
             end = typescript_balanced_end(code, opening, "(", ")")
             if end is None:
                 continue
-            call_arguments = typescript_call_arguments(
-                text[opening + 1 : end - 1], opening + 1
-            )
+            call_arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
             if not call_arguments:
                 continue
             config, _ = call_arguments[0]
@@ -14608,9 +13895,7 @@ def typescript_axios_default_bindings(text: str) -> set[str]:
             if not structural.strip():
                 continue
             name = match.group(1)
-            assignment_count = len(
-                re.findall(rf"(?<![\w$.]){re.escape(name)}\s*=", code)
-            )
+            assignment_count = len(re.findall(rf"(?<![\w$.]){re.escape(name)}\s*=", code))
             expected = 1 if structural.lstrip().startswith("const") else 0
             if assignment_count == expected:
                 bindings.add(name)
@@ -14853,9 +14138,7 @@ def typescript_network_calls(
     )
     alternatives = [r"(?<![\w$.])fetch\s*\("]
     if direct_names:
-        alternatives.append(
-            rf"(?<![\w$.])(?:{direct_names})\.(get|post|put|patch|delete)\s*\("
-        )
+        alternatives.append(rf"(?<![\w$.])(?:{direct_names})\.(get|post|put|patch|delete)\s*\(")
     if instance_names:
         alternatives.append(
             rf"(?<![\w$.])({instance_names})\.(request|get|post|put|patch|delete)\s*\("
@@ -14880,9 +14163,7 @@ def typescript_network_calls(
             url_expression = arguments[0][0]
             if method == "request":
                 request_object = url_expression
-                url_expression = (
-                    typescript_object_property_expression(request_object, "url") or ""
-                )
+                url_expression = typescript_object_property_expression(request_object, "url") or ""
                 if not url_expression:
                     shorthand_urls = [
                         item.strip()
@@ -14910,9 +14191,7 @@ def typescript_network_calls(
             matched_code,
         )
         api = f"axios.{direct_method.group(1)}" if direct_method else "fetch"
-        calls[line_at(text, match.start())].append(
-            TypeScriptNetworkCall(api, arguments[0][0])
-        )
+        calls[line_at(text, match.start())].append(TypeScriptNetworkCall(api, arguments[0][0]))
     return calls
 
 
@@ -14992,9 +14271,7 @@ def typescript_approval_bypass_function_summaries(
     """Resolve unique same-file functions that transitively return env-backed approval."""
     definitions = typescript_function_definitions(text)
     name_counts = Counter(name for name, _, _, _ in definitions)
-    unique_definitions = {
-        name: body for name, _, _, body in definitions if name_counts[name] == 1
-    }
+    unique_definitions = {name: body for name, _, _, body in definitions if name_counts[name] == 1}
     resolved: dict[str, set[str]] = {}
     calls: dict[str, set[str]] = {}
     for name, body in unique_definitions.items():
@@ -15154,9 +14431,7 @@ def typescript_optional_domain_bindings(text: str) -> dict[str, str]:
         if code[: match.start()].count("{") != code[: match.start()].count("}"):
             continue
         binding = match.group("binding")
-        assignment = re.compile(
-            rf"(?<![\w$]){re.escape(binding)}\s*=(?!=|>)"
-        )
+        assignment = re.compile(rf"(?<![\w$]){re.escape(binding)}\s*=(?!=|>)")
         if len(list(assignment.finditer(code))) != 1:
             continue
         unexpected_use = any(
@@ -15174,9 +14449,7 @@ def typescript_optional_domain_bindings(text: str) -> dict[str, str]:
     }
 
 
-def typescript_rejected_scheme_set(
-    condition: str, parsed_name: str
-) -> tuple[str, ...] | None:
+def typescript_rejected_scheme_set(condition: str, parsed_name: str) -> tuple[str, ...] | None:
     parts = re.split(r"\s*&&\s*", condition.strip())
     if not parts:
         return None
@@ -15225,10 +14498,7 @@ def typescript_configured_hostname_policy(
                 )
             ):
                 continue
-            protocol_values = {
-                match.group(2)
-                for match in protocol_matches
-            }
+            protocol_values = {match.group(2) for match in protocol_matches}
             if protocol_values != {"http:", "https:"}:
                 continue
             domain_assignment = re.search(
@@ -15303,9 +14573,7 @@ def typescript_network_origin_helpers(
             if re.match(r"\s*throw\b", typescript_code_mask(block))
             and (schemes := typescript_rejected_scheme_set(condition, parsed_name)) is not None
         ]
-        hostname_policy = typescript_configured_hostname_policy(
-            body, parsed_name, domain_bindings
-        )
+        hostname_policy = typescript_configured_hostname_policy(body, parsed_name, domain_bindings)
         if len(scheme_sets) != 1 or hostname_policy is None:
             continue
         _, environment_name = hostname_policy
@@ -15860,8 +15128,7 @@ def typescript_graph(
     literal_bindings = typescript_literal_string_bindings(text)
     approval_bypass_function_summaries = (
         typescript_approval_bypass_function_summaries(text)
-        if "onApproval" in text
-        and set(openai_imports.values()) & TS_OPENAI_APPROVAL_BUILTINS
+        if "onApproval" in text and set(openai_imports.values()) & TS_OPENAI_APPROVAL_BUILTINS
         else {}
     )
     has_mcp_import = "@modelcontextprotocol/" in text or bool(
@@ -16259,7 +15526,9 @@ def typescript_named_import_reaches_path(
             continue
         specifier = specifier_match.group(2)
         synthetic_import = f"import {{ {original_name} }} from '{specifier}'"
-        resolved = resolve_typescript_imports(root, barrel_path, synthetic_import).get(original_name)
+        resolved = resolve_typescript_imports(root, barrel_path, synthetic_import).get(
+            original_name
+        )
         if resolved == (target_path, original_name):
             matches.append(resolved)
     return len(matches) == 1
@@ -16368,9 +15637,7 @@ def add_typescript_network_origin_control(
         "redirect_scope": "unresolved",
         "dns_scope": "unresolved",
     }
-    ir.add_component(
-        Component("control", "network-origin-policy", helper.evidence, attributes)
-    )
+    ir.add_component(Component("control", "network-origin-policy", helper.evidence, attributes))
     ir.add_relationship(
         Relationship(
             "capability",
@@ -16405,9 +15672,9 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
     guarded_path_names_by_tool: dict[str, dict[str, TypeScriptPathBoundaryHelper]] = defaultdict(
         dict
     )
-    guarded_network_names_by_tool: dict[
-        str, dict[str, TypeScriptNetworkOriginHelper]
-    ] = defaultdict(dict)
+    guarded_network_names_by_tool: dict[str, dict[str, TypeScriptNetworkOriginHelper]] = (
+        defaultdict(dict)
+    )
     network_callback_depth_by_tool: dict[str, int] = {}
     literal_bindings = typescript_literal_string_bindings(text)
     axios_bindings = typescript_axios_default_bindings(text)
@@ -16464,9 +15731,7 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
             attributes["configured_by"] = provider_call.configured_by
         if provider_call.resolution_basis is not None:
             attributes["resolution_basis"] = provider_call.resolution_basis
-        ir.add_component(
-            Component("provider", provider_call.provider, ev, attributes)
-        )
+        ir.add_component(Component("provider", provider_call.provider, ev, attributes))
         if provider_call.model is not None:
             model_attributes = {
                 "provider": provider_call.provider,
@@ -16476,9 +15741,7 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                 "resolution": "exact-typescript-provider-import",
             }
             if provider_call.model_resolution_basis is not None:
-                model_attributes["model_resolution_basis"] = (
-                    provider_call.model_resolution_basis
-                )
+                model_attributes["model_resolution_basis"] = provider_call.model_resolution_basis
             ir.add_component(
                 Component(
                     "model",
@@ -16522,22 +15785,16 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                 and typescript_expression_names(code_line[: callback_opening.start()])
                 & dynamic_names
             ):
-                network_callback_depth_by_tool.setdefault(
-                    tool[1], line_depths[line_number][1]
-                )
+                network_callback_depth_by_tool.setdefault(tool[1], line_depths[line_number][1])
             typescript_update_guarded_path_names(line, guarded_path_names)
             typescript_update_guarded_network_names(line, guarded_network_names)
             if boundary_assignment := typescript_path_boundary_assignment(
                 line, path_boundary_helpers, dynamic_names
             ):
                 guarded_path_names[boundary_assignment[0]] = boundary_assignment[1]
-            if (
-                line_depths[line_number][0]
-                == network_callback_depth_by_tool.get(tool[1])
-                and (
-                    origin_assignment := typescript_network_origin_assignment(
-                        line, network_origin_helpers, dynamic_names
-                    )
+            if line_depths[line_number][0] == network_callback_depth_by_tool.get(tool[1]) and (
+                origin_assignment := typescript_network_origin_assignment(
+                    line, network_origin_helpers, dynamic_names
                 )
             ):
                 guarded_network_names[origin_assignment[0]] = origin_assignment[1]
@@ -16705,9 +15962,7 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                             for name in typescript_expression_names(argument)
                             if name in guarded_network_names
                         )
-                origin_policy = (
-                    next(iter(origin_policies)) if len(origin_policies) == 1 else None
-                )
+                origin_policy = next(iter(origin_policies)) if len(origin_policies) == 1 else None
                 add_typescript_capability(
                     ir,
                     relative,
@@ -16824,9 +16079,7 @@ def scan_mcp_config(ir: RepositoryIR, root: Path, path: Path) -> None:
                 else:
                     sanitized_args.append(value)
             attributes["args"] = sanitized_args
-            if isinstance(command, str) and all(
-                isinstance(argument, str) for argument in args
-            ):
+            if isinstance(command, str) and all(isinstance(argument, str) for argument in args):
                 package = mcp_package_reference(command, list(args))
                 if package is not None:
                     attributes.update(
@@ -16889,11 +16142,7 @@ def compose_host_credential_mount(stripped: str) -> dict[str, object] | None:
     )
     if credential_kind is None:
         return None
-    option_names = {
-        option
-        for value in options
-        for option in value.lower().split(",")
-    }
+    option_names = {option for value in options for option in value.lower().split(",")}
     return {
         "host_path": source,
         "container_path": target,
@@ -17032,9 +16281,7 @@ def build_python_module_index(root: Path, paths: list[Path]) -> dict[str, str]:
             parts.pop()
         module_parts = [parts]
         module_parts.extend(
-            parts[index + 1 :]
-            for index, part in enumerate(parts)
-            if part in {"src", "python"}
+            parts[index + 1 :] for index, part in enumerate(parts) if part in {"src", "python"}
         )
         for candidate_parts in module_parts:
             if candidate_parts:
@@ -17144,9 +16391,7 @@ def build_python_literal_imported_tool_references(
                 else dotted_name(decorator)
                 for decorator in statement.decorator_list
             }
-            if decorators & TOOL_DECORATORS or any(
-                name.endswith(".tool") for name in decorators
-            ):
+            if decorators & TOOL_DECORATORS or any(name.endswith(".tool") for name in decorators):
                 continue
             callable_exports[(relative, statement.name)].append(statement)
     unique_callable_exports = {
@@ -17154,9 +16399,9 @@ def build_python_literal_imported_tool_references(
     }
 
     references_by_importer: dict[str, list[PythonImportedToolReference]] = defaultdict(list)
-    references_by_export: dict[
-        tuple[str, str], list[PythonImportedToolReference]
-    ] = defaultdict(list)
+    references_by_export: dict[tuple[str, str], list[PythonImportedToolReference]] = defaultdict(
+        list
+    )
     for relative, tree in parsed.items():
         nodes = list(ast.walk(tree))
         parent_by_id = {
@@ -17183,9 +16428,7 @@ def build_python_literal_imported_tool_references(
                 return
             if isinstance(candidate, (ast.Import, ast.ImportFrom, ast.Lambda)):
                 return
-            if isinstance(candidate, ast.Name) and isinstance(
-                candidate.ctx, (ast.Store, ast.Del)
-            ):
+            if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
                 mutations.add(candidate.id)
             for child in ast.iter_child_nodes(candidate):
                 collect_module_mutations(child, mutations)
@@ -17207,20 +16450,14 @@ def build_python_literal_imported_tool_references(
             and dotted_name(candidate.func).rsplit(".", 1)[-1] in AGENT_CALLS
         ):
             for keyword in call.keywords:
-                if keyword.arg != "tools" or not isinstance(
-                    keyword.value, (ast.List, ast.Tuple)
-                ):
+                if keyword.arg != "tools" or not isinstance(keyword.value, (ast.List, ast.Tuple)):
                     continue
                 for value in keyword.value.elts:
                     if not isinstance(value, ast.Name):
                         continue
                     name = value.id
                     candidates = imports.get(name, [])
-                    if (
-                        len(candidates) != 1
-                        or import_counts[name] != 1
-                        or name in module_mutations
-                    ):
+                    if len(candidates) != 1 or import_counts[name] != 1 or name in module_mutations:
                         continue
                     shadowed = False
                     parent = parent_by_id.get(id(call))
@@ -17256,9 +16493,7 @@ def build_python_literal_imported_tool_references(
                     )
                     if resolution is None and import_node.level:
                         continue
-                    export_key = (
-                        (resolution.path, alias.name) if resolution is not None else None
-                    )
+                    export_key = (resolution.path, alias.name) if resolution is not None else None
                     target_path = (
                         resolution.path
                         if export_key is not None and export_key in unique_callable_exports
@@ -17315,9 +16550,7 @@ def build_python_mcp_server_subclass_exports(
     paths: list[Path],
 ) -> dict[tuple[str, str], PythonMCPServerSubclassTarget]:
     """Index immutable project classes implementing an exact SDK MCPServer contract."""
-    exports: dict[
-        tuple[str, str], list[PythonMCPServerSubclassTarget]
-    ] = defaultdict(list)
+    exports: dict[tuple[str, str], list[PythonMCPServerSubclassTarget]] = defaultdict(list)
     exact_bases = {
         ("agents.mcp", "MCPServer"),
         ("agents.mcp.server", "MCPServer"),
@@ -17360,8 +16593,7 @@ def build_python_mcp_server_subclass_exports(
         base_bindings = {
             alias.asname or alias.name: (statement.module or "", alias.name)
             for statement in tree.body
-            if isinstance(statement, ast.ImportFrom)
-            and statement.level == 0
+            if isinstance(statement, ast.ImportFrom) and statement.level == 0
             for alias in statement.names
             if (statement.module or "", alias.name) in exact_bases
             and binding_counts[alias.asname or alias.name] == 1
@@ -17396,11 +16628,7 @@ def build_python_mcp_server_subclass_exports(
                     base_name,
                 )
             )
-    return {
-        key: targets[0]
-        for key, targets in exports.items()
-        if len(targets) == 1
-    }
+    return {key: targets[0] for key, targets in exports.items() if len(targets) == 1}
 
 
 def build_python_agent_factory_class_exports(
@@ -17413,9 +16641,7 @@ def build_python_agent_factory_class_exports(
     indirect returns, local constructor shadowing, and rebound class or method
     names. Call-site resolution applies additional same-block dominance checks.
     """
-    exports: dict[
-        tuple[str, str], list[PythonAgentFactoryClassTarget]
-    ] = defaultdict(list)
+    exports: dict[tuple[str, str], list[PythonAgentFactoryClassTarget]] = defaultdict(list)
     framework_modules = tuple(
         prefix
         for prefixes in IMPORT_SIGNATURES["framework"].values()
@@ -17441,9 +16667,7 @@ def build_python_agent_factory_class_exports(
                 return
             if isinstance(candidate, ast.ExceptHandler) and candidate.name:
                 counts[candidate.name] += 1
-            if isinstance(candidate, ast.Name) and isinstance(
-                candidate.ctx, (ast.Store, ast.Del)
-            ):
+            if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
                 counts[candidate.id] += 1
             for child in ast.iter_child_nodes(candidate):
                 collect(child)
@@ -17567,8 +16791,7 @@ def build_python_agent_factory_class_exports(
             and statement.level == 0
             and statement.module is not None
             and any(
-                statement.module == prefix
-                or statement.module.startswith(f"{prefix}.")
+                statement.module == prefix or statement.module.startswith(f"{prefix}.")
                 for prefix in framework_modules
             )
             for alias in statement.names
@@ -17607,9 +16830,7 @@ def build_python_agent_factory_class_exports(
                 ):
                     continue
                 returns = [
-                    candidate
-                    for candidate in ast.walk(method)
-                    if isinstance(candidate, ast.Return)
+                    candidate for candidate in ast.walk(method) if isinstance(candidate, ast.Return)
                 ]
                 if (
                     len(returns) != 1
@@ -17640,11 +16861,7 @@ def build_python_agent_factory_class_exports(
                         methods,
                     )
                 )
-    return {
-        key: targets[0]
-        for key, targets in exports.items()
-        if len(targets) == 1
-    }
+    return {key: targets[0] for key, targets in exports.items() if len(targets) == 1}
 
 
 def build_python_secure_network_helper_summaries(
@@ -17675,8 +16892,7 @@ def build_python_secure_network_helper_summaries(
         matches = [
             node
             for node in tree.body
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-            and node.name == name
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == name
         ]
         return matches[0] if len(matches) == 1 else None
 
@@ -17759,9 +16975,7 @@ def build_python_secure_network_helper_summaries(
             elif isinstance(statement, ast.Delete):
                 mutation_targets = list(statement.targets)
             mutation_counts.update(
-                name
-                for target in mutation_targets
-                for name in python_assigned_names(target)
+                name for target in mutation_targets for name in python_assigned_names(target)
             )
             if not isinstance(statement, (ast.Assign, ast.AnnAssign)):
                 continue
@@ -17790,8 +17004,7 @@ def build_python_secure_network_helper_summaries(
         force_guard = any(
             isinstance(candidate, ast.If)
             and isinstance(candidate.test, ast.Call)
-            and dotted_name(candidate.test.func).rsplit(".", 1)[-1]
-            == "_env_flag_enabled"
+            and dotted_name(candidate.test.func).rsplit(".", 1)[-1] == "_env_flag_enabled"
             and len(candidate.test.args) == 1
             and isinstance(candidate.test.args[0], ast.Name)
             and candidate.test.args[0].id == "_FORCE_SAFE_PATHS_ENV"
@@ -17806,8 +17019,7 @@ def build_python_secure_network_helper_summaries(
         bypass_return = any(
             isinstance(candidate, ast.Return)
             and isinstance(candidate.value, ast.Call)
-            and dotted_name(candidate.value.func).rsplit(".", 1)[-1]
-            == "_env_flag_enabled"
+            and dotted_name(candidate.value.func).rsplit(".", 1)[-1] == "_env_flag_enabled"
             and len(candidate.value.args) == 1
             and isinstance(candidate.value.args[0], ast.Name)
             and candidate.value.args[0].id == "_UNSAFE_PATHS_ENV"
@@ -17825,11 +17037,11 @@ def build_python_secure_network_helper_summaries(
             and isinstance(flag_expression.ops[0], ast.In)
             and len(flag_expression.comparators) == 1
             and isinstance(flag_expression.comparators[0], (ast.Tuple, ast.List, ast.Set))
-            and "" not in {
+            and ""
+            not in {
                 element.value
                 for element in flag_expression.comparators[0].elts
-                if isinstance(element, ast.Constant)
-                and isinstance(element.value, str)
+                if isinstance(element, ast.Constant) and isinstance(element.value, str)
             }
             and any(
                 isinstance(candidate, ast.Call)
@@ -17857,8 +17069,7 @@ def build_python_secure_network_helper_summaries(
         parser_bindings = {
             alias.asname or alias.name
             for statement in tree.body
-            if isinstance(statement, ast.ImportFrom)
-            and statement.module == "urllib.parse"
+            if isinstance(statement, ast.ImportFrom) and statement.module == "urllib.parse"
             for alias in statement.names
             if alias.name in {"urlparse", "urlsplit"}
         }
@@ -17937,8 +17148,7 @@ def build_python_secure_network_helper_summaries(
             and {
                 element.value
                 for element in candidate.test.comparators[0].elts
-                if isinstance(element, ast.Constant)
-                and isinstance(element.value, str)
+                if isinstance(element, ast.Constant) and isinstance(element.value, str)
             }
             == {"http", "https"}
             and python_block_always_terminates(candidate.body)
@@ -17976,12 +17186,11 @@ def build_python_secure_network_helper_summaries(
         for node in tree.body:
             if isinstance(node, ast.ClassDef):
                 class_groups[node.name].append(node)
-        classes = {
-            name: nodes[0] for name, nodes in class_groups.items() if len(nodes) == 1
-        }
+        classes = {name: nodes[0] for name, nodes in class_groups.items() if len(nodes) == 1}
         adapter = classes.get(class_name)
         if adapter is None:
             return False
+
         def method(node: ast.ClassDef, name: str) -> ast.FunctionDef | ast.AsyncFunctionDef | None:
             matches = [
                 candidate
@@ -18026,8 +17235,7 @@ def build_python_secure_network_helper_summaries(
             for node in lexical_nodes(pool_init)
             if isinstance(node, ast.Assign)
             and any(
-                isinstance(target, ast.Attribute)
-                and target.attr == "pool_classes_by_scheme"
+                isinstance(target, ast.Attribute) and target.attr == "pool_classes_by_scheme"
                 for target in node.targets
             )
             and isinstance(node.value, ast.Name)
@@ -18085,14 +17293,11 @@ def build_python_secure_network_helper_summaries(
         for connection_class_name in connection_classes:
             connection_class = classes.get(connection_class_name)
             new_connection = (
-                method(connection_class, "_new_conn")
-                if connection_class is not None
-                else None
+                method(connection_class, "_new_conn") if connection_class is not None else None
             )
             if new_connection is None or not any(
                 isinstance(node, ast.Call)
-                and dotted_name(node.func).rsplit(".", 1)[-1]
-                == "_open_validated_socket"
+                and dotted_name(node.func).rsplit(".", 1)[-1] == "_open_validated_socket"
                 for node in lexical_nodes(new_connection)
             ):
                 return False
@@ -18115,8 +17320,7 @@ def build_python_secure_network_helper_summaries(
                 if isinstance(node, ast.Call)
             }
             and "create_validated_connection" in open_calls
-            and {"getaddrinfo", "is_blocked_ip", "_assert_safe_peer"}
-            <= connection_calls
+            and {"getaddrinfo", "is_blocked_ip", "_assert_safe_peer"} <= connection_calls
         )
 
     summaries: dict[tuple[str, str], PythonNetworkHelperSummary] = {}
@@ -18166,8 +17370,7 @@ def build_python_secure_network_helper_summaries(
             and len(assignment.targets) == 1
             and isinstance((target := assignment.targets[0]), ast.Name)
             and isinstance(assignment.value, ast.Call)
-            and dotted_name(assignment.value.func).rsplit(".", 1)[-1]
-            == "create_safe_session"
+            and dotted_name(assignment.value.func).rsplit(".", 1)[-1] == "create_safe_session"
         }
         if len(raw_session_names) != 1:
             continue
@@ -18176,9 +17379,7 @@ def build_python_secure_network_helper_summaries(
             raw_session_name in python_assigned_names(target)
             for node in raw_nodes
             if isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign))
-            for target in (
-                node.targets if isinstance(node, ast.Assign) else [node.target]
-            )
+            for target in (node.targets if isinstance(node, ast.Assign) else [node.target])
         )
         raw_network_lines = tuple(
             sorted(
@@ -18198,8 +17399,7 @@ def build_python_secure_network_helper_summaries(
             and len(assignment.targets) == 1
             and isinstance((target := assignment.targets[0]), ast.Name)
             and isinstance(assignment.value, ast.Call)
-            and dotted_name(assignment.value.func).rsplit(".", 1)[-1]
-            in {"Session", "_SafeSession"}
+            and dotted_name(assignment.value.func).rsplit(".", 1)[-1] in {"Session", "_SafeSession"}
         }
         adapter_names = {
             target.id
@@ -18208,8 +17408,7 @@ def build_python_secure_network_helper_summaries(
             and len(assignment.targets) == 1
             and isinstance((target := assignment.targets[0]), ast.Name)
             and isinstance(assignment.value, ast.Call)
-            and dotted_name(assignment.value.func).rsplit(".", 1)[-1]
-            == "SSRFProtectedAdapter"
+            and dotted_name(assignment.value.func).rsplit(".", 1)[-1] == "SSRFProtectedAdapter"
         }
         session_mounts = {
             argument.value
@@ -18231,7 +17430,8 @@ def build_python_secure_network_helper_summaries(
             for node in session_nodes
             if isinstance(node, ast.Assign)
             and any(
-                isinstance(target, ast.Attribute) and target.attr == "trust_env"
+                isinstance(target, ast.Attribute)
+                and target.attr == "trust_env"
                 and isinstance(target.value, ast.Name)
                 and target.value.id in session_names
                 for target in node.targets
@@ -18246,15 +17446,15 @@ def build_python_secure_network_helper_summaries(
             for node in session_nodes
             if isinstance(node, ast.Assign)
             and any(
-                isinstance(target, ast.Attribute) and target.attr == "proxies"
+                isinstance(target, ast.Attribute)
+                and target.attr == "proxies"
                 and isinstance(target.value, ast.Name)
                 and target.value.id in session_names
                 for target in node.targets
             )
         ]
         proxies_disabled = len(proxy_assignments) == 1 and (
-            isinstance(proxy_assignments[0].value, ast.Dict)
-            and not proxy_assignments[0].value.keys
+            isinstance(proxy_assignments[0].value, ast.Dict) and not proxy_assignments[0].value.keys
         )
         rejects_caller_proxies = (
             any(isinstance(node, ast.Raise) for node in reject_proxy_nodes)
@@ -18326,8 +17526,7 @@ def build_python_secure_network_helper_summaries(
                 and len(assignment.targets) == 1
                 and isinstance((target := assignment.targets[0]), ast.Name)
                 and isinstance(assignment.value, ast.Call)
-                and dotted_name(assignment.value.func).rsplit(".", 1)[-1]
-                == "validate_url"
+                and dotted_name(assignment.value.func).rsplit(".", 1)[-1] == "validate_url"
                 and len(assignment.value.args) == 1
                 and isinstance(assignment.value.args[0], ast.Name)
                 and assignment.value.args[0].id == url_name
@@ -18389,12 +17588,10 @@ def build_python_secure_network_helper_summaries(
                     and len(assignment.targets) == 1
                     and isinstance((target := assignment.targets[0]), ast.Name)
                     and isinstance(assignment.value, ast.Call)
-                    and dotted_name(assignment.value.func).rsplit(".", 1)[-1]
-                    == "validate_url"
+                    and dotted_name(assignment.value.func).rsplit(".", 1)[-1] == "validate_url"
                     and len(assignment.value.args) == 1
                     and isinstance(assignment.value.args[0], ast.Call)
-                    and dotted_name(assignment.value.args[0].func).rsplit(".", 1)[-1]
-                    == "urljoin"
+                    and dotted_name(assignment.value.args[0].func).rsplit(".", 1)[-1] == "urljoin"
                 }
                 updates = [
                     assignment
@@ -18438,7 +17635,9 @@ def build_python_secure_network_helper_summaries(
                 function.lineno,
                 raw_network_lines,
                 PythonSecureNetworkPolicy(
-                    Evidence(relative, function.lineno, excerpt(text.splitlines(), function.lineno)),
+                    Evidence(
+                        relative, function.lineno, excerpt(text.splitlines(), function.lineno)
+                    ),
                     ("http", "https"),
                     "each-hop-validated",
                     "connection-pinned",
@@ -18473,8 +17672,7 @@ def build_python_proxy_conditional_secure_network_helper_summaries(
         matches = [
             node
             for node in tree.body
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-            and node.name == name
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == name
         ]
         return matches[0] if len(matches) == 1 else None
 
@@ -18484,8 +17682,7 @@ def build_python_proxy_conditional_secure_network_helper_summaries(
         matches = [
             child
             for child in node.body
-            if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef))
-            and child.name == name
+            if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)) and child.name == name
         ]
         return matches[0] if len(matches) == 1 else None
 
@@ -18577,16 +17774,15 @@ def build_python_proxy_conditional_secure_network_helper_summaries(
             for node in ast.walk(blocked_ip)
             if isinstance(node, ast.Return) and node.value is not None
         ]
-        blocked_policy = (
-            any(dotted_name(call.func) == "ipaddress.ip_address" for call in calls(blocked_ip))
-            and any(
-                isinstance(child, ast.UnaryOp)
-                and isinstance(child.op, ast.Not)
-                and isinstance(child.operand, ast.Attribute)
-                and child.operand.attr == "is_global"
-                for node in blocked_returns
-                for child in ast.walk(node.value)
-            )
+        blocked_policy = any(
+            dotted_name(call.func) == "ipaddress.ip_address" for call in calls(blocked_ip)
+        ) and any(
+            isinstance(child, ast.UnaryOp)
+            and isinstance(child.op, ast.Not)
+            and isinstance(child.operand, ast.Attribute)
+            and child.operand.attr == "is_global"
+            for node in blocked_returns
+            for child in ast.walk(node.value)
         )
         validator_args = (*validator.args.posonlyargs, *validator.args.args)
         if not validator_args:
@@ -18596,8 +17792,7 @@ def build_python_proxy_conditional_secure_network_helper_summaries(
         parser_names = {
             alias.asname or alias.name
             for statement in tree.body
-            if isinstance(statement, ast.ImportFrom)
-            and statement.module == "urllib.parse"
+            if isinstance(statement, ast.ImportFrom) and statement.module == "urllib.parse"
             for alias in statement.names
             if alias.name in {"urlparse", "urlsplit"}
         }
@@ -18676,17 +17871,13 @@ def build_python_proxy_conditional_secure_network_helper_summaries(
                 )
                 and node.value is not None
                 and any(
-                    dotted_name(call.func) == "socket.getaddrinfo"
-                    for call in calls(node.value)
+                    dotted_name(call.func) == "socket.getaddrinfo" for call in calls(node.value)
                 )
                 for node in ast.walk(validator)
                 if isinstance(node, (ast.Assign, ast.AnnAssign))
             )
             loop_resolution = any(
-                any(
-                    dotted_name(call.func) == "socket.getaddrinfo"
-                    for call in calls(loop.iter)
-                )
+                any(dotted_name(call.func) == "socket.getaddrinfo" for call in calls(loop.iter))
                 and any(
                     isinstance(call.func, ast.Attribute)
                     and call.func.attr == "append"
@@ -18716,7 +17907,11 @@ def build_python_proxy_conditional_secure_network_helper_summaries(
             for node in tree.body
             if isinstance(node, ast.ClassDef) and node.name == "_PinnedAddressAdapter"
         ]
-        adapter_method = unique_method(adapters[0], "get_connection_with_tls_context") if len(adapters) == 1 else None
+        adapter_method = (
+            unique_method(adapters[0], "get_connection_with_tls_context")
+            if len(adapters) == 1
+            else None
+        )
         adapter_policy = False
         if adapter_method is not None:
             adapter_calls = calls(adapter_method)
@@ -18740,9 +17935,7 @@ def build_python_proxy_conditional_secure_network_helper_summaries(
             )
         peer_policy = (
             any(short_call_name(call) == "getpeername" for call in calls(peer_guard))
-            and sum(
-                dotted_name(call.func) == "ipaddress.ip_address" for call in calls(peer_guard)
-            )
+            and sum(dotted_name(call.func) == "ipaddress.ip_address" for call in calls(peer_guard))
             >= 2
             and any(short_call_name(call) == "close" for call in calls(peer_guard))
             and any(isinstance(node, ast.Raise) for node in ast.walk(peer_guard))
@@ -18803,8 +17996,7 @@ def build_python_proxy_conditional_secure_network_helper_summaries(
             and node.test.operand.args[1].func.attr == "get"
             and isinstance(node.test.operand.args[1].func.value, ast.Name)
             and pinned_request.args.kwarg is not None
-            and node.test.operand.args[1].func.value.id
-            == pinned_request.args.kwarg.arg
+            and node.test.operand.args[1].func.value.id == pinned_request.args.kwarg.arg
             and node.test.operand.args[1].args
             and isinstance(node.test.operand.args[1].args[0], ast.Constant)
             and node.test.operand.args[1].args[0].value == "proxies"
@@ -18901,9 +18093,7 @@ def build_python_proxy_conditional_secure_network_helper_summaries(
         if len(redirect_loops) == 1 and len(current_names) == 1 and len(request_args) >= 2:
             current_name = next(iter(current_names))
             loop = redirect_loops[0]
-            redirect_limit_names = {
-                argument.arg for argument in safe_request.args.kwonlyargs
-            }
+            redirect_limit_names = {argument.arg for argument in safe_request.args.kwonlyargs}
             bounded_loop = (
                 isinstance(loop.iter, ast.Call)
                 and isinstance(loop.iter.func, ast.Name)
@@ -19022,8 +18212,7 @@ def build_python_configurable_pinned_network_helper_summaries(
         matches = [
             node
             for node in tree.body
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-            and node.name == name
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == name
         ]
         return matches[0] if len(matches) == 1 else None
 
@@ -19110,9 +18299,7 @@ def build_python_configurable_pinned_network_helper_summaries(
             )
         ):
             continue
-        protection_path = imported_path(
-            relative, tree, "validate_and_resolve_connector_url"
-        )
+        protection_path = imported_path(relative, tree, "validate_and_resolve_connector_url")
         async_transport_path = imported_path(relative, tree, "SSRFProtectedTransport")
         sync_transport_path = imported_path(relative, tree, "SSRFProtectedSyncTransport")
         if (
@@ -19130,20 +18317,14 @@ def build_python_configurable_pinned_network_helper_summaries(
         _, transport_tree = transport_source
 
         global_gate = unique_function(protection_tree, "is_ssrf_protection_enabled")
-        connector_gate = unique_function(
-            protection_tree, "is_connector_ssrf_validation_enabled"
-        )
-        loopback_gate = unique_function(
-            protection_tree, "is_connector_loopback_allowed"
-        )
+        connector_gate = unique_function(protection_tree, "is_connector_ssrf_validation_enabled")
+        loopback_gate = unique_function(protection_tree, "is_connector_loopback_allowed")
         loopback_exemption = unique_function(
             protection_tree, "_connector_url_has_loopback_exemption"
         )
         allowed_hosts = unique_function(protection_tree, "get_allowed_hosts")
         host_allowed = unique_function(protection_tree, "is_host_allowed")
-        connector_validator = unique_function(
-            protection_tree, "validate_and_resolve_connector_url"
-        )
+        connector_validator = unique_function(protection_tree, "validate_and_resolve_connector_url")
         core_validator = unique_function(protection_tree, "validate_and_resolve_url")
         if None in {
             global_gate,
@@ -19168,8 +18349,7 @@ def build_python_configurable_pinned_network_helper_summaries(
             "LANGFLOW_SSRF_PROTECTION_ENABLED" in string_constants(global_gate)
             and "getenv" in call_names(global_gate)
             and "get_settings_service" in call_names(global_gate)
-            and "LANGFLOW_CONNECTOR_SSRF_VALIDATION_ENABLED"
-            in string_constants(connector_gate)
+            and "LANGFLOW_CONNECTOR_SSRF_VALIDATION_ENABLED" in string_constants(connector_gate)
             and "getenv" in call_names(connector_gate)
             and "get_settings_service" in call_names(connector_gate)
         )
@@ -19249,7 +18429,10 @@ def build_python_configurable_pinned_network_helper_summaries(
                 continue
             transport_calls = calls(transport)
             transport_policy = transport_policy and (
-                any(short_name(call) in {"ConnectionPool", "AsyncConnectionPool"} for call in transport_calls)
+                any(
+                    short_name(call) in {"ConnectionPool", "AsyncConnectionPool"}
+                    for call in transport_calls
+                )
                 and any(
                     keyword.arg == "network_backend"
                     and isinstance(keyword.value, ast.Name)
@@ -19413,8 +18596,7 @@ def build_python_literal_http_exports(
                 return
             if isinstance(candidate, ast.Import):
                 counts.update(
-                    alias.asname or alias.name.split(".", 1)[0]
-                    for alias in candidate.names
+                    alias.asname or alias.name.split(".", 1)[0] for alias in candidate.names
                 )
                 return
             if isinstance(candidate, ast.ImportFrom):
@@ -19426,9 +18608,7 @@ def build_python_literal_http_exports(
                 counts[candidate.name] += 1
             if isinstance(candidate, ast.MatchMapping) and candidate.rest:
                 counts[candidate.rest] += 1
-            if isinstance(candidate, ast.Name) and isinstance(
-                candidate.ctx, (ast.Store, ast.Del)
-            ):
+            if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
                 counts[candidate.id] += 1
             for child in ast.iter_child_nodes(candidate):
                 collect_module_bindings(child)
@@ -19439,11 +18619,7 @@ def build_python_literal_http_exports(
         for statement in tree.body:
             if not isinstance(statement, (ast.Assign, ast.AnnAssign)):
                 continue
-            targets = (
-                statement.targets
-                if isinstance(statement, ast.Assign)
-                else [statement.target]
-            )
+            targets = statement.targets if isinstance(statement, ast.Assign) else [statement.target]
             if len(targets) != 1 or not isinstance(targets[0], ast.Name):
                 continue
             target = targets[0].id
@@ -19517,8 +18693,7 @@ def build_python_path_segment_sanitizer_summaries(
             for statement in tree.body
             if isinstance(statement, ast.Import)
             for alias in statement.names
-            if alias.name == "hashlib"
-            and module_counts[alias.asname or alias.name] == 1
+            if alias.name == "hashlib" and module_counts[alias.asname or alias.name] == 1
         }
         hashlib_functions = {
             alias.asname or alias.name: alias.name
@@ -19527,8 +18702,7 @@ def build_python_path_segment_sanitizer_summaries(
             and statement.level == 0
             and statement.module == "hashlib"
             for alias in statement.names
-            if alias.name in algorithms
-            and module_counts[alias.asname or alias.name] == 1
+            if alias.name in algorithms and module_counts[alias.asname or alias.name] == 1
         }
         global_bindings = {
             name
@@ -19591,9 +18765,7 @@ def build_python_path_segment_sanitizer_summaries(
             def digest_algorithm(
                 expression: ast.AST,
                 modules: frozenset[str] = frozenset(function_hashlib_modules),
-                functions: tuple[tuple[str, str], ...] = tuple(
-                    function_hashlib_functions.items()
-                ),
+                functions: tuple[tuple[str, str], ...] = tuple(function_hashlib_functions.items()),
                 input_name: str = parameter,
             ) -> str | None:
                 if not isinstance(expression, ast.Call) or expression.keywords:
@@ -19604,12 +18776,10 @@ def build_python_path_segment_sanitizer_summaries(
                         name
                         for name in algorithms
                         if call_name
-                        in ({f"{module}.{name}" for module in modules}
-                            | {
-                                local
-                                for local, imported in functions
-                                if imported == name
-                            })
+                        in (
+                            {f"{module}.{name}" for module in modules}
+                            | {local for local, imported in functions if imported == name}
+                        )
                     ),
                     None,
                 )
@@ -19742,32 +18912,33 @@ def build_python_network_helper_summaries(
         imported_methods = {
             alias.asname or alias.name
             for node in tree.body
-            if isinstance(node, ast.ImportFrom)
-            and node.module in {"requests", "httpx", "aiohttp"}
+            if isinstance(node, ast.ImportFrom) and node.module in {"requests", "httpx", "aiohttp"}
             for alias in node.names
             if alias.name.lower() in {"get", "post", "put", "patch", "delete", "request"}
         }
-        mutated_names = {
-            node.name
-            for node in tree.body
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
-        } | {
-            target.id
-            for statement in tree.body
-            if isinstance(statement, (ast.Assign, ast.AnnAssign, ast.AugAssign))
-            for target in (
-                statement.targets
-                if isinstance(statement, ast.Assign)
-                else [statement.target]
-            )
-            if isinstance(target, ast.Name)
-        } | {
-            target.id
-            for statement in tree.body
-            if isinstance(statement, ast.Delete)
-            for target in statement.targets
-            if isinstance(target, ast.Name)
-        }
+        mutated_names = (
+            {
+                node.name
+                for node in tree.body
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+            }
+            | {
+                target.id
+                for statement in tree.body
+                if isinstance(statement, (ast.Assign, ast.AnnAssign, ast.AugAssign))
+                for target in (
+                    statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+                )
+                if isinstance(target, ast.Name)
+            }
+            | {
+                target.id
+                for statement in tree.body
+                if isinstance(statement, ast.Delete)
+                for target in statement.targets
+                if isinstance(target, ast.Name)
+            }
+        )
         module_clients -= mutated_names
         imported_methods -= mutated_names
         if not module_clients and not imported_methods:
@@ -19795,9 +18966,7 @@ def build_python_network_helper_summaries(
                 static_prefixes[name] = prefix
 
         parent_by_id = {
-            id(child): parent
-            for parent in ast.walk(tree)
-            for child in ast.iter_child_nodes(parent)
+            id(child): parent for parent in ast.walk(tree) for child in ast.iter_child_nodes(parent)
         }
 
         def enclosing_function(
@@ -19991,9 +19160,7 @@ def build_python_tool_registrations(
                     if alias.name != "*"
                 )
                 return
-            if isinstance(candidate, ast.Name) and isinstance(
-                candidate.ctx, (ast.Store, ast.Del)
-            ):
+            if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
                 counts[candidate.id] += 1
             for child in ast.iter_child_nodes(candidate):
                 collect(child)
@@ -20006,7 +19173,9 @@ def build_python_tool_registrations(
         imports: list[ast.Import | ast.ImportFrom] = []
 
         def collect(candidate: ast.AST) -> None:
-            if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
+            if isinstance(
+                candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)
+            ):
                 return
             if isinstance(candidate, (ast.Import, ast.ImportFrom)):
                 imports.append(candidate)
@@ -20041,9 +19210,7 @@ def build_python_tool_registrations(
             text = path.read_text(encoding="utf-8-sig", errors="ignore")
         except OSError:
             return
-        if require_registration_signal and not (
-            "FastMCP" in text and ".tool" in text
-        ):
+        if require_registration_signal and not ("FastMCP" in text and ".tool" in text):
             return
         relative = path.relative_to(root).as_posix()
         try:
@@ -20075,9 +19242,7 @@ def build_python_tool_registrations(
                 ):
                     referenced_paths.add(target_path)
     for referenced_path in referenced_paths:
-        if referenced_path not in parsed and (
-            path := selected_python_paths.get(referenced_path)
-        ):
+        if referenced_path not in parsed and (path := selected_python_paths.get(referenced_path)):
             parse_selected(path, require_registration_signal=False)
 
     definitions: dict[tuple[str, str], ast.FunctionDef | ast.AsyncFunctionDef] = {}
@@ -20111,8 +19276,7 @@ def build_python_tool_registrations(
         container: ast.FunctionDef | ast.AsyncFunctionDef,
     ) -> str | None:
         if container.decorator_list or any(
-            isinstance(candidate, (ast.Yield, ast.YieldFrom))
-            for candidate in ast.walk(container)
+            isinstance(candidate, (ast.Yield, ast.YieldFrom)) for candidate in ast.walk(container)
         ):
             return None
         wrapper = returned_nested_function(container)
@@ -20129,24 +19293,19 @@ def build_python_tool_registrations(
             for statement in direct_imports
             if isinstance(statement, ast.Import)
             for alias in statement.names
-            if alias.name == "functools"
-            and binding_counts[path][alias.asname or alias.name] == 1
+            if alias.name == "functools" and binding_counts[path][alias.asname or alias.name] == 1
         }
         wraps_names = {
             alias.asname or alias.name
             for statement in direct_imports
-            if isinstance(statement, ast.ImportFrom)
-            and statement.module == "functools"
+            if isinstance(statement, ast.ImportFrom) and statement.module == "functools"
             for alias in statement.names
-            if alias.name == "wraps"
-            and binding_counts[path][alias.asname or alias.name] == 1
+            if alias.name == "wraps" and binding_counts[path][alias.asname or alias.name] == 1
         }
         positional = [*container.args.posonlyargs, *container.args.args]
         candidates = []
         for parameter in positional:
-            expected_decorators = {
-                f"{module}.wraps" for module in functools_modules
-            } | wraps_names
+            expected_decorators = {f"{module}.wraps" for module in functools_modules} | wraps_names
             if not (
                 len(wrapper.decorator_list) == 1
                 and isinstance(wrapper.decorator_list[0], ast.Call)
@@ -20219,10 +19378,7 @@ def build_python_tool_registrations(
             for node in imports
             if isinstance(node, ast.ImportFrom)
             and node.module
-            and (
-                node.module in {"fastmcp", "mcp"}
-                or node.module.startswith(("fastmcp.", "mcp."))
-            )
+            and (node.module in {"fastmcp", "mcp"} or node.module.startswith(("fastmcp.", "mcp.")))
             for alias in node.names
             if alias.name == "FastMCP"
         }
@@ -20231,8 +19387,7 @@ def build_python_tool_registrations(
             for node in imports
             if isinstance(node, ast.Import)
             for alias in node.names
-            if alias.name in {"fastmcp", "mcp"}
-            or alias.name.startswith(("fastmcp.", "mcp."))
+            if alias.name in {"fastmcp", "mcp"} or alias.name.startswith(("fastmcp.", "mcp."))
         }
         if not constructor_aliases and not module_aliases:
             continue
@@ -20253,9 +19408,7 @@ def build_python_tool_registrations(
                     module_paths,
                 )
                 if target_path:
-                    imported_targets[local_name].append(
-                        (target_path, alias.name, node.lineno)
-                    )
+                    imported_targets[local_name].append((target_path, alias.name, node.lineno))
 
         servers: dict[str, int] = {}
         for statement in tree.body:
@@ -20264,11 +19417,7 @@ def build_python_tool_registrations(
                 and isinstance(statement.value, ast.Call)
             ):
                 continue
-            targets = (
-                statement.targets
-                if isinstance(statement, ast.Assign)
-                else [statement.target]
-            )
+            targets = statement.targets if isinstance(statement, ast.Assign) else [statement.target]
             if len(targets) != 1 or not isinstance(targets[0], ast.Name):
                 continue
             binding = targets[0].id
@@ -20276,10 +19425,7 @@ def build_python_tool_registrations(
             module_root = constructor.split(".", 1)[0]
             if not (
                 constructor in constructor_aliases
-                or (
-                    constructor.endswith(".FastMCP")
-                    and module_root in module_aliases
-                )
+                or (constructor.endswith(".FastMCP") and module_root in module_aliases)
             ):
                 continue
             if binding_counts[path][binding] == 1:
@@ -20306,9 +19452,7 @@ def build_python_tool_registrations(
 
             def resolve_name(
                 name: str,
-                imported_bindings: dict[
-                    str, list[tuple[str, str, int]]
-                ] = imported_targets,
+                imported_bindings: dict[str, list[tuple[str, str, int]]] = imported_targets,
                 current_path: str = path,
                 before_line: int = statement.lineno,
             ) -> tuple[tuple[str, str], str] | None:
@@ -20318,10 +19462,9 @@ def build_python_tool_registrations(
                         (imported[0][0], imported[0][1]),
                         "relative-import-single-definition",
                     )
-                if (
-                    (current_path, name) in definitions
-                    and definitions[(current_path, name)].lineno < before_line
-                ):
+                if (current_path, name) in definitions and definitions[
+                    (current_path, name)
+                ].lineno < before_line:
                     return (current_path, name), "same-module-single-definition"
                 return None
 
@@ -20341,9 +19484,8 @@ def build_python_tool_registrations(
                 if isinstance(expression.func, ast.Name):
                     wrapper_name = expression.func.id
                     expected_depth = 1
-                elif (
-                    isinstance(expression.func, ast.Call)
-                    and isinstance(expression.func.func, ast.Name)
+                elif isinstance(expression.func, ast.Call) and isinstance(
+                    expression.func.func, ast.Name
                 ):
                     wrapper_name = expression.func.func.id
                     expected_depth = 2
@@ -20355,9 +19497,7 @@ def build_python_tool_registrations(
                 wrapper_key = resolved_wrapper[0]
                 if transparent_wrappers.get(wrapper_key) != expected_depth:
                     return None
-                resolved_target = resolve_registered_target(
-                    expression.args[0], depth + 1
-                )
+                resolved_target = resolve_registered_target(expression.args[0], depth + 1)
                 if resolved_target is None:
                     return None
                 target, resolution, wrappers = resolved_target
@@ -20426,25 +19566,29 @@ def propagate_python_class_network_helpers(
     module_imports: dict[str, dict[str, tuple[str, str]]] = {}
     module_prefixes: dict[str, dict[str, str]] = {}
     for relative, (tree, _) in parsed.items():
-        mutations = {
-            node.name
-            for node in tree.body
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
-        } | {
-            target.id
-            for statement in tree.body
-            if isinstance(statement, (ast.Assign, ast.AnnAssign, ast.AugAssign))
-            for target in (
-                statement.targets if isinstance(statement, ast.Assign) else [statement.target]
-            )
-            if isinstance(target, ast.Name)
-        } | {
-            target.id
-            for statement in tree.body
-            if isinstance(statement, ast.Delete)
-            for target in statement.targets
-            if isinstance(target, ast.Name)
-        }
+        mutations = (
+            {
+                node.name
+                for node in tree.body
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+            }
+            | {
+                target.id
+                for statement in tree.body
+                if isinstance(statement, (ast.Assign, ast.AnnAssign, ast.AugAssign))
+                for target in (
+                    statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+                )
+                if isinstance(target, ast.Name)
+            }
+            | {
+                target.id
+                for statement in tree.body
+                if isinstance(statement, ast.Delete)
+                for target in statement.targets
+                if isinstance(target, ast.Name)
+            }
+        )
         imports: dict[str, tuple[str, str]] = {}
         for statement in tree.body:
             if not isinstance(statement, ast.ImportFrom):
@@ -20484,9 +19628,7 @@ def propagate_python_class_network_helpers(
             ):
                 prefixes[name] = prefix
         module_prefixes[relative] = prefixes
-        class_counts = Counter(
-            node.name for node in tree.body if isinstance(node, ast.ClassDef)
-        )
+        class_counts = Counter(node.name for node in tree.body if isinstance(node, ast.ClassDef))
         for node in tree.body:
             if not isinstance(node, ast.ClassDef):
                 continue
@@ -20686,9 +19828,9 @@ def propagate_python_class_network_helpers(
         }
         dynamic_network_by_location: dict[tuple[str, int], list[Component]] = defaultdict(list)
         for component in dynamic_network_components:
-            dynamic_network_by_location[
-                (component.evidence.path, component.evidence.line)
-            ].append(component)
+            dynamic_network_by_location[(component.evidence.path, component.evidence.line)].append(
+                component
+            )
         summaries: dict[tuple[str, str, str], PythonClassNetworkSummary] = {}
         for tool in ir.components:
             entrypoints = tool.attributes.get("entrypoints")
@@ -20721,8 +19863,7 @@ def propagate_python_class_network_helpers(
                     if edge.source_id == tool.symbol_id
                     and edge.target_kind == "capability"
                     and edge.target_name == "network"
-                    and (edge.evidence.path, edge.evidence.line)
-                    in dynamic_network_locations
+                    and (edge.evidence.path, edge.evidence.line) in dynamic_network_locations
                 )
             )
             if network_lines:
@@ -20749,9 +19890,7 @@ def propagate_python_class_network_helpers(
                 propagated_keys = {
                     component.attributes["callee_parameter_key"]
                     for line in network_lines
-                    for component in dynamic_network_by_location.get(
-                        (tool.evidence.path, line), []
-                    )
+                    for component in dynamic_network_by_location.get((tool.evidence.path, line), [])
                     if isinstance(component.attributes.get("callee_parameter_key"), str)
                 }
                 parameter_key = (
@@ -21832,23 +20971,17 @@ def add_typescript_activepieces_safe_http_composition(
     if not manifest_matches:
         return
     deepest_manifest = max(depth for depth, _ in manifest_matches)
-    deepest_manifests = [
-        path for depth, path in manifest_matches if depth == deepest_manifest
-    ]
+    deepest_manifests = [path for depth, path in manifest_matches if depth == deepest_manifest]
     if len(deepest_manifests) != 1:
         return
     manifest_path = deepest_manifests[0]
 
     axios_bindings = typescript_axios_default_bindings(safe_text)
-    filtering_imports = typescript_named_import_bindings(
-        safe_text, "request-filtering-agent"
-    )
+    filtering_imports = typescript_named_import_bindings(safe_text, "request-filtering-agent")
     if not (
         axios_bindings == {"axios"}
-        and filtering_imports.get("RequestFilteringHttpAgent")
-        == "RequestFilteringHttpAgent"
-        and filtering_imports.get("RequestFilteringHttpsAgent")
-        == "RequestFilteringHttpsAgent"
+        and filtering_imports.get("RequestFilteringHttpAgent") == "RequestFilteringHttpAgent"
+        and filtering_imports.get("RequestFilteringHttpsAgent") == "RequestFilteringHttpsAgent"
         and typescript_named_import_reaches_path(
             root,
             root / transport_path,
@@ -21914,9 +21047,7 @@ def add_typescript_activepieces_safe_http_composition(
         transport_code,
     )
     create_fetch_match = re.search(r"\bfunction\s+createSafeMcpFetch\b", transport_code)
-    create_transport_match = re.search(
-        r"\bfunction\s+createSafeMcpTransport\b", transport_code
-    )
+    create_transport_match = re.search(r"\bfunction\s+createSafeMcpTransport\b", transport_code)
     control_match = re.search(r"\bfunction\s+createAxios\b", safe_code)
     entry_match = re.search(r"\bvalidateAgentMcpTool\s*\(", entry_code)
     if None in {
@@ -22161,16 +21292,12 @@ def add_typescript_composio_ssrf_safe_fetch_composition(
             and dependencies.get("undici") == "^7.29.0"
             and relative_manifest.parent in node_source_path.parents
         ):
-            package_matches.append(
-                (len(relative_manifest.parent.parts), manifest_path, manifest)
-            )
+            package_matches.append((len(relative_manifest.parent.parts), manifest_path, manifest))
     if not package_matches:
         return
     deepest = max(depth for depth, _, _ in package_matches)
     selected_manifests = [
-        (path, manifest)
-        for depth, path, manifest in package_matches
-        if depth == deepest
+        (path, manifest) for depth, path, manifest in package_matches if depth == deepest
     ]
     if len(selected_manifests) != 1:
         return
@@ -22180,10 +21307,8 @@ def add_typescript_composio_ssrf_safe_fetch_composition(
     remote_imports = typescript_named_import_bindings(remote_text, "#ssrf_guard")
     if not (
         mount_imports.get("ssrfSafeFetch") == "ssrfSafeFetch"
-        and mount_imports.get("ssrfSafeFetchWhereSupported")
-        == "ssrfSafeFetchWhereSupported"
-        and remote_imports.get("ssrfSafeFetchWhereSupported")
-        == "ssrfSafeFetchWhereSupported"
+        and mount_imports.get("ssrfSafeFetchWhereSupported") == "ssrfSafeFetchWhereSupported"
+        and remote_imports.get("ssrfSafeFetchWhereSupported") == "ssrfSafeFetchWhereSupported"
     ):
         return
 
@@ -22310,9 +21435,7 @@ def add_typescript_composio_ssrf_safe_fetch_composition(
         (
             remote_path,
             remote_text,
-            re.compile(
-                r"(?<![\w$.])ssrfSafeFetchWhereSupported\s*\(\s*this\.downloadUrl\s*\)"
-            ),
+            re.compile(r"(?<![\w$.])ssrfSafeFetchWhereSupported\s*\(\s*this\.downloadUrl\s*\)"),
             False,
             "remote-api-response",
         ),
@@ -22329,8 +21452,7 @@ def add_typescript_composio_ssrf_safe_fetch_composition(
             else "ssrfSafeFetchWhereSupported"
         )
         calls.extend(
-            (call_path, call_text, match, dynamic_origin, authority, helper)
-            for match in matches
+            (call_path, call_text, match, dynamic_origin, authority, helper) for match in matches
         )
 
     control_match = re.search(r"export\s+const\s+ssrfSafeFetch\s*=", node_code)
@@ -22398,9 +21520,7 @@ def add_typescript_composio_ssrf_safe_fetch_composition(
                 },
             )
         )
-        ir.add_component(
-            Component("control", "network-ssrf-policy", control_evidence, attributes)
-        )
+        ir.add_component(Component("control", "network-ssrf-policy", control_evidence, attributes))
         ir.add_relationship(
             Relationship(
                 "capability",
@@ -22428,9 +21548,7 @@ def add_typescript_composio_cli_file_upload_flow(
             text = path.read_text(encoding="utf-8-sig", errors="ignore")
         except OSError:
             continue
-        sources.append(
-            (path.relative_to(root).as_posix(), text, typescript_code_mask(text))
-        )
+        sources.append((path.relative_to(root).as_posix(), text, typescript_code_mask(text)))
 
     upload_matches = [
         item
@@ -22496,13 +21614,9 @@ def add_typescript_composio_cli_file_upload_flow(
         )
     ):
         return
-    fetch_matches = list(
-        re.finditer(r"(?<![\w$.])fetch\s*\(\s*url\s*\)", upload_code)
-    )
+    fetch_matches = list(re.finditer(r"(?<![\w$.])fetch\s*\(\s*url\s*\)", upload_code))
     execute_match = re.search(r"\bexecute\s*:\s*\(\s*slug\s*,\s*params\s*\)\s*=>", executor_code)
-    upload_entry_match = re.search(
-        r"export\s+const\s+uploadToolInputFiles\s*=", upload_code
-    )
+    upload_entry_match = re.search(r"export\s+const\s+uploadToolInputFiles\s*=", upload_code)
     if len(fetch_matches) != 1 or execute_match is None or upload_entry_match is None:
         return
     fetch_match = fetch_matches[0]
@@ -22560,9 +21674,7 @@ def add_typescript_composio_cli_file_upload_flow(
             and item.evidence.line == fetch_line
         )
     ]
-    ir.add_component(
-        Component("capability", "network", evidence, capability_attributes)
-    )
+    ir.add_component(Component("capability", "network", evidence, capability_attributes))
     ir.add_relationship(
         Relationship(
             "tool",
@@ -22591,9 +21703,7 @@ def add_typescript_google_adk_openapi_rest_tool_flow(
             text = path.read_text(encoding="utf-8-sig", errors="ignore")
         except OSError:
             continue
-        sources.append(
-            (path.relative_to(root).as_posix(), text, typescript_code_mask(text))
-        )
+        sources.append((path.relative_to(root).as_posix(), text, typescript_code_mask(text)))
 
     def unique_source(*markers: str) -> tuple[str, str, str] | None:
         matches = [item for item in sources if all(marker in item[2] for marker in markers)]
@@ -22652,30 +21762,24 @@ def add_typescript_google_adk_openapi_rest_tool_flow(
     parser_path, parser_text, parser_code = parser_source
     toolset_path, toolset_text, toolset_code = toolset_source
     auth_path, auth_text, auth_code = auth_source
-    if (
-        not re.search(
-            r"import\s*\{[^}]*\bOperationEndpoint\b[^}]*\}\s*from\s*"
-            r"['\"]\./openapi_spec_parser/openapi_spec_parser\.js['\"]",
-            rest_text,
-        )
-        and not re.search(
-            r"import\s*\{[^}]*\bOperationEndpoint\b[^}]*\}\s*from\s*"
-            r"['\"]\./openapi_spec_parser\.js['\"]",
-            rest_text,
-        )
+    if not re.search(
+        r"import\s*\{[^}]*\bOperationEndpoint\b[^}]*\}\s*from\s*"
+        r"['\"]\./openapi_spec_parser/openapi_spec_parser\.js['\"]",
+        rest_text,
+    ) and not re.search(
+        r"import\s*\{[^}]*\bOperationEndpoint\b[^}]*\}\s*from\s*"
+        r"['\"]\./openapi_spec_parser\.js['\"]",
+        rest_text,
     ):
         return
-    if (
-        not re.search(
-            r"import\s*\{[^}]*\bapplyCredential\b[^}]*\}\s*from\s*"
-            r"['\"]\./auth/auth_helpers\.js['\"]",
-            rest_text,
-        )
-        and not re.search(
-            r"import\s*\{[^}]*\bapplyCredential\b[^}]*\}\s*from\s*"
-            r"['\"]\./auth_helpers\.js['\"]",
-            rest_text,
-        )
+    if not re.search(
+        r"import\s*\{[^}]*\bapplyCredential\b[^}]*\}\s*from\s*"
+        r"['\"]\./auth/auth_helpers\.js['\"]",
+        rest_text,
+    ) and not re.search(
+        r"import\s*\{[^}]*\bapplyCredential\b[^}]*\}\s*from\s*"
+        r"['\"]\./auth_helpers\.js['\"]",
+        rest_text,
     ):
         return
     if not (
@@ -22725,12 +21829,8 @@ def add_typescript_google_adk_openapi_rest_tool_flow(
         )
     ):
         return
-    fetch_matches = list(
-        re.finditer(r"\bglobalThis\.fetch\s*\(\s*url\b", rest_code)
-    )
-    run_match = re.search(
-        r"(?:override\s+)?async\s+runAsync\s*\(\s*request\b", rest_code
-    )
+    fetch_matches = list(re.finditer(r"\bglobalThis\.fetch\s*\(\s*url\b", rest_code))
+    run_match = re.search(r"(?:override\s+)?async\s+runAsync\s*\(\s*request\b", rest_code)
     encode_match = re.search(r"function\s+encodePathParamValue\s*\(", rest_code)
     parser_match = re.search(r"function\s+resolveServerUrl\s*\(", parser_code)
     toolset_match = re.search(r"export\s+class\s+OpenAPIToolset\b", toolset_code)
@@ -22921,9 +22021,7 @@ def add_python_openai_agents_mcp_approval_default_flow(
     ):
         return
 
-    candidates: list[
-        tuple[str, str, ast.AsyncWith, ast.Call, str, str, ast.Call, str, str]
-    ] = []
+    candidates: list[tuple[str, str, ast.AsyncWith, ast.Call, str, str, ast.Call, str, str]] = []
     for app_path, app_text, tree in sources:
         imported_stdio = False
         imported_agent = False
@@ -23228,9 +22326,8 @@ def typescript_openai_mcp_read_only_filter(
         return False, []
     factory, body, _ = call
     imports = typescript_named_import_bindings(text, "@openai/agents")
-    if (
-        imports.get(factory) != "createMCPToolStaticFilter"
-        or typescript_import_binding_is_shadowed(text, factory)
+    if imports.get(factory) != "createMCPToolStaticFilter" or typescript_import_binding_is_shadowed(
+        text, factory
     ):
         return False, []
     call_arguments = typescript_call_arguments(body)
@@ -23246,8 +22343,7 @@ def typescript_openai_mcp_read_only_filter(
         return False, []
     allowed_names = [name for name in allowed if name is not None]
     return (
-        bool(allowed_names)
-        and set(allowed_names) <= TS_OPENAI_MCP_READ_ONLY_FILESYSTEM_TOOLS,
+        bool(allowed_names) and set(allowed_names) <= TS_OPENAI_MCP_READ_ONLY_FILESYSTEM_TOOLS,
         allowed_names,
     )
 
@@ -23346,25 +22442,17 @@ def add_typescript_openai_agents_mcp_approval_default_flow(
                     rf"(?<![\w$.]){re.escape(binding)}\s*=(?!=)", code[end:]
                 ):
                     continue
-                call_arguments = typescript_call_arguments(
-                    text[opening + 1 : end - 1], opening + 1
-                )
+                call_arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
                 if not call_arguments:
                     continue
                 options, _ = call_arguments[0]
-                package = typescript_openai_mcp_filesystem_package(
-                    text, options, match.start()
-                )
+                package = typescript_openai_mcp_filesystem_package(text, options, match.start())
                 if package is None:
                     continue
                 line = line_at(text, match.start())
                 evidence = Evidence(relative, line, excerpt(lines, line))
-                display_name = (
-                    typescript_literal_object_string_property(options, "name") or binding
-                )
-                filter_proven, allowed_tools = typescript_openai_mcp_read_only_filter(
-                    text, options
-                )
+                display_name = typescript_literal_object_string_property(options, "name") or binding
+                filter_proven, allowed_tools = typescript_openai_mcp_read_only_filter(text, options)
                 server_id = source_symbol("ts", relative, "mcp-server", binding)
                 servers[binding] = (
                     display_name,
@@ -23482,9 +22570,7 @@ def add_typescript_openai_agents_mcp_approval_default_flow(
                 end = typescript_balanced_end(code, opening, "(", ")")
                 if end is None:
                     continue
-                call_arguments = typescript_call_arguments(
-                    text[opening + 1 : end - 1], opening + 1
-                )
+                call_arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
                 if not call_arguments:
                     continue
                 options, _ = call_arguments[0]
@@ -23499,12 +22585,9 @@ def add_typescript_openai_agents_mcp_approval_default_flow(
                 if server_bindings is None:
                     continue
                 agent_line = line_at(text, match.start())
-                agent_evidence = Evidence(
-                    relative, agent_line, excerpt(lines, agent_line)
-                )
+                agent_evidence = Evidence(relative, agent_line, excerpt(lines, agent_line))
                 agent_name = (
-                    typescript_literal_object_string_property(options, "name")
-                    or agent_binding
+                    typescript_literal_object_string_property(options, "name") or agent_binding
                 )
                 agent_id = source_symbol("ts", relative, "agent", agent_binding)
                 ir.add_component(
@@ -23586,9 +22669,7 @@ def python_exact_import_name(
         and isinstance(node.ctx, (ast.Store, ast.Del))
         and node.id == binding
         for node in ast.walk(tree)
-    ) or any(
-        isinstance(node, ast.arg) and node.arg == binding for node in ast.walk(tree)
-    ):
+    ) or any(isinstance(node, ast.arg) and node.arg == binding for node in ast.walk(tree)):
         return None
     return binding
 
@@ -23629,9 +22710,7 @@ def python_exact_module_scope_import_name(
         and isinstance(node.ctx, (ast.Store, ast.Del))
         and node.id == binding
         for node in ast.walk(tree)
-    ) or any(
-        isinstance(node, ast.arg) and node.arg == binding for node in ast.walk(tree)
-    ):
+    ) or any(isinstance(node, ast.arg) and node.arg == binding for node in ast.walk(tree)):
         return None
     return binding
 
@@ -23653,9 +22732,7 @@ def python_exact_module_import_name(tree: ast.Module, module: str) -> str | None
         and isinstance(node.ctx, (ast.Store, ast.Del))
         and node.id == binding
         for node in ast.walk(tree)
-    ) or any(
-        isinstance(node, ast.arg) and node.arg == binding for node in ast.walk(tree)
-    ):
+    ) or any(isinstance(node, ast.arg) and node.arg == binding for node in ast.walk(tree)):
         return None
     return binding
 
@@ -23708,7 +22785,9 @@ def python_agno_filesystem_command(expression: ast.AST | None) -> str | None:
     if not isinstance(expression, ast.JoinedStr):
         return None
     structural = "".join(
-        value.value if isinstance(value, ast.Constant) and isinstance(value.value, str) else " <root> "
+        value.value
+        if isinstance(value, ast.Constant) and isinstance(value.value, str)
+        else " <root> "
         for value in expression.values
     )
     if re.search(
@@ -23764,9 +22843,7 @@ def add_python_agno_mcp_confirmation_flow(
             continue
         stdio_parameters = python_exact_import_name(tree, "mcp", "StdioServerParameters")
         client_session = python_exact_import_name(tree, "mcp", "ClientSession")
-        stdio_client_name = python_exact_import_name(
-            tree, "mcp.client.stdio", "stdio_client"
-        )
+        stdio_client_name = python_exact_import_name(tree, "mcp.client.stdio", "stdio_client")
 
         scopes: list[tuple[str, list[ast.stmt]]] = [("module", tree.body)]
         scopes.extend(
@@ -23806,8 +22883,7 @@ def add_python_agno_mcp_confirmation_flow(
                         )
                         if (
                             package
-                            and package.get("package")
-                            == "@modelcontextprotocol/server-filesystem"
+                            and package.get("package") == "@modelcontextprotocol/server-filesystem"
                             and store_counts[node.targets[0].id] == 1
                         ):
                             server_parameters.append((node.targets[0].id, node.value))
@@ -23887,10 +22963,7 @@ def add_python_agno_mcp_confirmation_flow(
                         ):
                             binding = item.optional_vars.id
                             call = item.context_expr
-                            if (
-                                isinstance(call.func, ast.Name)
-                                and call.func.id == mcp_constructor
-                            ):
+                            if isinstance(call.func, ast.Name) and call.func.id == mcp_constructor:
                                 break
                             binding = None
                             call = None
@@ -23903,9 +22976,7 @@ def add_python_agno_mcp_confirmation_flow(
                 ):
                     continue
                 command_expression = (
-                    call.args[0]
-                    if call.args
-                    else python_call_keyword(call, "command")
+                    call.args[0] if call.args else python_call_keyword(call, "command")
                 )
                 direct_command = python_agno_filesystem_command(command_expression)
                 session_expression = python_call_keyword(call, "session")
@@ -23997,9 +23068,7 @@ def add_python_agno_mcp_confirmation_flow(
                     continue
 
                 server_line = evidence_call.lineno
-                server_evidence = Evidence(
-                    relative, server_line, excerpt(lines, server_line)
-                )
+                server_evidence = Evidence(relative, server_line, excerpt(lines, server_line))
                 server_name = f"Agno filesystem@{server_line}"
                 server_id = source_symbol("py", relative, "mcp-server", mcp_binding)
                 server_attributes = {
@@ -24276,8 +23345,7 @@ def add_python_semantic_kernel_mcp_sampling_flow(
                             (ast.List, ast.Tuple),
                         )
                         and any(
-                            isinstance(plugin, ast.Name)
-                            and plugin.id == plugin_target.id
+                            isinstance(plugin, ast.Name) and plugin.id == plugin_target.id
                             for plugin in plugins_expression.elts
                         )
                     ]
@@ -24291,9 +23359,7 @@ def add_python_semantic_kernel_mcp_sampling_flow(
                         isinstance(callback_expression, ast.Constant)
                         and callback_expression.value is None
                     )
-                    auto_expression = python_call_keyword(
-                        plugin_call, "sampling_auto_approve"
-                    )
+                    auto_expression = python_call_keyword(plugin_call, "sampling_auto_approve")
                     if callback_configured:
                         approval_policy = "callback-controlled"
                         auto_approved: bool | None = None
@@ -24303,15 +23369,13 @@ def add_python_semantic_kernel_mcp_sampling_flow(
                         auto_approved = False
                         policy_expression = plugin_call
                     elif (
-                        isinstance(auto_expression, ast.Constant)
-                        and auto_expression.value is True
+                        isinstance(auto_expression, ast.Constant) and auto_expression.value is True
                     ):
                         approval_policy = "auto-approved-explicit"
                         auto_approved = True
                         policy_expression = auto_expression
                     elif (
-                        isinstance(auto_expression, ast.Constant)
-                        and auto_expression.value is False
+                        isinstance(auto_expression, ast.Constant) and auto_expression.value is False
                     ):
                         approval_policy = "denied-explicit"
                         auto_approved = False
@@ -24350,9 +23414,7 @@ def add_python_semantic_kernel_mcp_sampling_flow(
                         policy_expression.lineno,
                         excerpt(lines, policy_expression.lineno),
                     )
-                    server_id = source_symbol(
-                        "py", relative, "mcp-server", plugin_target.id
-                    )
+                    server_id = source_symbol("py", relative, "mcp-server", plugin_target.id)
                     server_attributes = {
                         "framework": "Semantic Kernel",
                         "constructor": exported,
@@ -24379,9 +23441,7 @@ def add_python_semantic_kernel_mcp_sampling_flow(
                         "response_destination": "mcp-server",
                         "approval_policy": approval_policy,
                         "auto_approved": auto_approved,
-                        "consent_callback": (
-                            "configured" if callback_configured else "absent"
-                        ),
+                        "consent_callback": ("configured" if callback_configured else "absent"),
                         "configuration_call_line": plugin_call.lineno,
                         "sdk_source_path": sdk_path,
                         "scope": source_scope(relative),
@@ -24410,9 +23470,7 @@ def add_python_semantic_kernel_mcp_sampling_flow(
                     setting_attributes = {
                         "enabled": auto_approved,
                         "approval_policy": approval_policy,
-                        "consent_callback": (
-                            "configured" if callback_configured else "absent"
-                        ),
+                        "consent_callback": ("configured" if callback_configured else "absent"),
                         "scope": source_scope(relative),
                         "analysis": analysis,
                     }
@@ -24486,9 +23544,7 @@ def add_python_semantic_kernel_mcp_sampling_flow(
                             agent_call.lineno,
                             excerpt(lines, agent_call.lineno),
                         )
-                        agent_id = source_symbol(
-                            "py", relative, "agent", agent_binding
-                        )
+                        agent_id = source_symbol("py", relative, "agent", agent_binding)
                         ir.add_component(
                             Component(
                                 "agent",
@@ -24596,11 +23652,7 @@ def add_mcp_sampling_consent_observation(
     )
     setting_attributes = {
         "enabled": (
-            True
-            if response_created
-            else False
-            if approval_policy == "denied-handler"
-            else None
+            True if response_created else False if approval_policy == "denied-handler" else None
         ),
         "approval_policy": approval_policy,
         "scope": source_scope(relative),
@@ -24715,14 +23767,13 @@ def python_mcp_sampling_human_consent(
     for node in python_scope_nodes(function.body):
         if not isinstance(node, (ast.Assign, ast.AnnAssign)):
             continue
-        target = node.targets[0] if isinstance(node, ast.Assign) and len(node.targets) == 1 else None
+        target = (
+            node.targets[0] if isinstance(node, ast.Assign) and len(node.targets) == 1 else None
+        )
         if isinstance(node, ast.AnnAssign):
             target = node.target
         value = node.value
-        if not (
-            isinstance(target, ast.Name)
-            and isinstance(value, (ast.Call, ast.Await))
-        ):
+        if not (isinstance(target, ast.Name) and isinstance(value, (ast.Call, ast.Await))):
             continue
         call = value.value if isinstance(value, ast.Await) else value
         if not isinstance(call, ast.Call):
@@ -24770,8 +23821,7 @@ def python_mcp_sampling_human_consent(
             for node in python_scope_nodes(statement.body)
         )
         if rejected and any(
-            line > (statement.end_lineno or statement.lineno)
-            for line in successful_lines
+            line > (statement.end_lineno or statement.lineno) for line in successful_lines
         ):
             return interactive_names[test.left.id]
     return None
@@ -24811,9 +23861,7 @@ def add_python_mcp_sampling_callback_consent_flow(
         for body in scopes:
             nodes = python_scope_nodes(body)
             callbacks = {
-                node.name: node
-                for node in nodes
-                if isinstance(node, ast.AsyncFunctionDef)
+                node.name: node for node in nodes if isinstance(node, ast.AsyncFunctionDef)
             }
             for call in nodes:
                 if not (
@@ -24849,9 +23897,7 @@ def add_python_mcp_sampling_callback_consent_flow(
                     for node in python_scope_nodes(callback.body)
                     if isinstance(node, ast.Return)
                 ]
-                successful_lines = {
-                    line for line, kind in return_kinds if kind == "response"
-                }
+                successful_lines = {line for line, kind in return_kinds if kind == "response"}
                 error_lines = {line for line, kind in return_kinds if kind == "error"}
                 consent_line = python_mcp_sampling_human_consent(
                     callback,
@@ -24892,9 +23938,7 @@ def add_python_mcp_sampling_callback_consent_flow(
                     callback_line=callback.lineno,
                     consent_line=consent_line,
                     request_disclosure=(
-                        "interactive-decision"
-                        if consent_line is not None
-                        else "not-proven"
+                        "interactive-decision" if consent_line is not None else "not-proven"
                     ),
                 )
 
@@ -24983,8 +24027,7 @@ def typescript_sampling_response_offset(callback: str) -> int | None:
             return None
         body_code = code[cursor + 1 : body_end - 1]
         candidates.extend(
-            cursor + 1 + match.end() - 1
-            for match in re.finditer(r"\breturn\s*\{", body_code)
+            cursor + 1 + match.end() - 1 for match in re.finditer(r"\breturn\s*\{", body_code)
         )
     else:
         if cursor < len(code) and code[cursor] == "(":
@@ -25034,8 +24077,7 @@ def typescript_sampling_consent_proof(
         disclosed = (
             "systemPrompt" in prefix
             and ".messages" in prefix
-            and re.search(r"\.(?:attention|print|log)\s*\(", code[: match.start()])
-            is not None
+            and re.search(r"\.(?:attention|print|log)\s*\(", code[: match.start()]) is not None
         )
         return match.start(), "full-request" if disclosed else "partial-or-unresolved"
     return None, "not-proven"
@@ -25192,9 +24234,10 @@ def add_typescript_mcp_sampling_handler_consent_flow(
                 text[opening + 1 : end - 1],
                 opening + 1,
             )
-            if len(arguments) != 2 or re.fullmatch(
-                r"(['\"])sampling/createMessage\1", arguments[0][0].strip()
-            ) is None:
+            if (
+                len(arguments) != 2
+                or re.fullmatch(r"(['\"])sampling/createMessage\1", arguments[0][0].strip()) is None
+            ):
                 continue
             callback, callback_offset = arguments[1]
             response_offset = typescript_sampling_response_offset(callback)
@@ -25211,9 +24254,7 @@ def add_typescript_mcp_sampling_handler_consent_flow(
                     response_offset,
                 )
                 approval_policy = (
-                    "human-confirmed"
-                    if consent_offset is not None
-                    else "automatic-fulfilment"
+                    "human-confirmed" if consent_offset is not None else "automatic-fulfilment"
                 )
                 response_created = True
                 budget_offset = typescript_sampling_token_budget_line(
@@ -25335,11 +24376,7 @@ def add_mcp_elicitation_consent_observation(
     )
     setting_attributes = {
         "enabled": (
-            True
-            if acceptance_created
-            else False
-            if approval_policy == "declined-handler"
-            else None
+            True if acceptance_created else False if approval_policy == "declined-handler" else None
         ),
         "approval_policy": approval_policy,
         "elicitation_modes": elicitation_modes,
@@ -25504,8 +24541,7 @@ def python_elicitation_rejection_test(
         isinstance(rejected, (ast.Set, ast.List, ast.Tuple))
         and bool(rejected.elts)
         and all(
-            isinstance(item, ast.Constant) and item.value in denied_values
-            for item in rejected.elts
+            isinstance(item, ast.Constant) and item.value in denied_values for item in rejected.elts
         )
     ):
         return python_elicitation_input_name(test.left)
@@ -25558,11 +24594,7 @@ def python_mcp_elicitation_human_consent(
                 statement.test,
                 interactive_names,
                 positive=True,
-            ) and any(
-                node is returned
-                for child in statement.body
-                for node in ast.walk(child)
-            ):
+            ) and any(node is returned for child in statement.body for node in ast.walk(child)):
                 binding = (
                     python_elicitation_input_name(statement.test.left)
                     if isinstance(statement.test, ast.Compare)
@@ -25660,7 +24692,11 @@ def python_elicitation_url_is_displayed(
         if isinstance(expression, (ast.List, ast.Set, ast.Tuple)):
             return any(contains_url(item) for item in expression.elts)
         if isinstance(expression, ast.Dict):
-            return any(contains_url(item) for item in (*expression.keys, *expression.values) if item is not None)
+            return any(
+                contains_url(item)
+                for item in (*expression.keys, *expression.values)
+                if item is not None
+            )
         return False
 
     return any(
@@ -25714,9 +24750,7 @@ def add_python_mcp_elicitation_callback_consent_flow(
         for body in scopes:
             nodes = python_scope_nodes(body)
             callbacks = {
-                node.name: node
-                for node in nodes
-                if isinstance(node, ast.AsyncFunctionDef)
+                node.name: node for node in nodes if isinstance(node, ast.AsyncFunctionDef)
             }
             for call in nodes:
                 if not (
@@ -25760,9 +24794,7 @@ def add_python_mcp_elicitation_callback_consent_flow(
                     )
                     for node in returned
                 }
-                accept_returns = [
-                    node for node in returned if actions[id(node)] == "accept"
-                ]
+                accept_returns = [node for node in returned if actions[id(node)] == "accept"]
                 response_created = any(action is not None for action in actions.values())
                 consent_line = python_mcp_elicitation_human_consent(
                     callback,
@@ -25779,8 +24811,7 @@ def add_python_mcp_elicitation_callback_consent_flow(
                     approval_policy = "unresolved-handler"
                 callback_text = ast.get_source_segment(text, callback) or ""
                 callback_parameters = [
-                    argument.arg
-                    for argument in (*callback.args.posonlyargs, *callback.args.args)
+                    argument.arg for argument in (*callback.args.posonlyargs, *callback.args.args)
                 ]
                 has_message = ".message" in callback_text
                 has_details = any(
@@ -25811,9 +24842,7 @@ def add_python_mcp_elicitation_callback_consent_flow(
                         "full-url"
                         if python_elicitation_url_is_displayed(
                             callback,
-                            callback_parameters[1]
-                            if len(callback_parameters) >= 2
-                            else None,
+                            callback_parameters[1] if len(callback_parameters) >= 2 else None,
                         )
                         else "not-proven"
                     ),
@@ -25831,11 +24860,14 @@ def python_fastmcp_elicitation_return_action(
         and isinstance(node.func, ast.Name)
         and node.func.id == result_binding
     ):
-        return python_mcp_elicitation_result_action(
-            node,
-            None,
-            result_binding,
-        ) or "unresolved"
+        return (
+            python_mcp_elicitation_result_action(
+                node,
+                None,
+                result_binding,
+            )
+            or "unresolved"
+        )
     if isinstance(node, (ast.Constant, ast.Dict, ast.List, ast.Set, ast.Tuple)):
         return "accept"
     if (
@@ -25900,13 +24932,9 @@ def add_python_fastmcp_elicitation_handler_consent_flow(
         lines = text.splitlines()
         module_nodes = python_scope_nodes(tree.body)
         module_callbacks = {
-            node.name: node
-            for node in module_nodes
-            if isinstance(node, ast.AsyncFunctionDef)
+            node.name: node for node in module_nodes if isinstance(node, ast.AsyncFunctionDef)
         }
-        scopes: list[
-            tuple[list[ast.AST], dict[str, ast.AsyncFunctionDef], set[str]]
-        ] = [
+        scopes: list[tuple[list[ast.AST], dict[str, ast.AsyncFunctionDef], set[str]]] = [
             (module_nodes, module_callbacks, set())
         ]
         scopes.extend(
@@ -25996,8 +25024,7 @@ def add_python_fastmcp_elicitation_handler_consent_flow(
                     )
                     continue
                 parameters = [
-                    argument.arg
-                    for argument in (*callback.args.posonlyargs, *callback.args.args)
+                    argument.arg for argument in (*callback.args.posonlyargs, *callback.args.args)
                 ]
                 response_type_binding = parameters[1] if len(parameters) >= 2 else None
                 if response_type_binding is not None and any(
@@ -26020,9 +25047,7 @@ def add_python_fastmcp_elicitation_handler_consent_flow(
                     )
                     for node in returned
                 }
-                accept_returns = [
-                    node for node in returned if actions[id(node)] == "accept"
-                ]
+                accept_returns = [node for node in returned if actions[id(node)] == "accept"]
                 consent_line = python_mcp_elicitation_human_consent(
                     callback,
                     None,
@@ -26052,8 +25077,7 @@ def add_python_fastmcp_elicitation_handler_consent_flow(
                             isinstance(node.func, ast.Name)
                             and node.func.id in {"input", "print"}
                             or isinstance(node.func, ast.Attribute)
-                            and node.func.attr
-                            in {"ask", "confirm", "input", "print", "question"}
+                            and node.func.attr in {"ask", "confirm", "input", "print", "question"}
                         )
                         and any(
                             isinstance(candidate, ast.Name) and candidate.id == name
@@ -26333,10 +25357,14 @@ def add_typescript_mcp_elicitation_handler_consent_flow(
                 text[opening + 1 : end - 1],
                 opening + 1,
             )
-            if len(arguments) != 2 or re.fullmatch(
-                r"(['\"])elicitation/create\1",
-                arguments[0][0].strip(),
-            ) is None:
+            if (
+                len(arguments) != 2
+                or re.fullmatch(
+                    r"(['\"])elicitation/create\1",
+                    arguments[0][0].strip(),
+                )
+                is None
+            ):
                 continue
             callback, callback_offset = arguments[1]
             if "=>" not in typescript_code_mask(callback):
@@ -26600,14 +25628,14 @@ def add_python_google_adk_bigquery_audit_flow(
                     for alias in statement.names:
                         if alias.name in {"Runner", "InMemoryRunner"}:
                             runner_constructors.add(alias.asname or alias.name)
-                elif wrapper_available and statement.level and any(
-                    alias.name == "testing_utils" for alias in statement.names
+                elif (
+                    wrapper_available
+                    and statement.level
+                    and any(alias.name == "testing_utils" for alias in statement.names)
                 ):
                     for alias in statement.names:
                         if alias.name == "testing_utils":
-                            runner_constructors.add(
-                                f"{alias.asname or alias.name}.InMemoryRunner"
-                            )
+                            runner_constructors.add(f"{alias.asname or alias.name}.InMemoryRunner")
             elif isinstance(statement, ast.Import):
                 for alias in statement.names:
                     if alias.name == "google.adk.plugins.bigquery_agent_analytics_plugin":
@@ -26616,9 +25644,7 @@ def add_python_google_adk_bigquery_audit_flow(
                         config_classes.add(f"{module}.BigQueryLoggerConfig")
                     elif alias.name == "google.adk.runners":
                         module = alias.asname or alias.name
-                        runner_constructors.update(
-                            {f"{module}.Runner", f"{module}.InMemoryRunner"}
-                        )
+                        runner_constructors.update({f"{module}.Runner", f"{module}.InMemoryRunner"})
         return plugin_classes, config_classes, runner_constructors
 
     def scope_binding_counts(
@@ -26678,13 +25704,15 @@ def add_python_google_adk_bigquery_audit_flow(
         if isinstance(expression, ast.Name):
             call = configs.get(expression.id)
             return configuration_state(call, config_classes, configs) if call else "unresolved"
-        if not isinstance(expression, ast.Call) or dotted_name(expression.func) not in config_classes:
+        if (
+            not isinstance(expression, ast.Call)
+            or dotted_name(expression.func) not in config_classes
+        ):
             return "unresolved"
         if any(keyword.arg is None for keyword in expression.keywords):
             return "unresolved"
         if any(
-            keyword.arg in {"event_allowlist", "event_denylist"}
-            for keyword in expression.keywords
+            keyword.arg in {"event_allowlist", "event_denylist"} for keyword in expression.keywords
         ):
             return "unresolved"
         enabled = next(
@@ -26704,10 +25732,7 @@ def add_python_google_adk_bigquery_audit_flow(
     ) -> str:
         if any(keyword.arg is None for keyword in call.keywords):
             return "unresolved"
-        if any(
-            keyword.arg in {"event_allowlist", "event_denylist"}
-            for keyword in call.keywords
-        ):
+        if any(keyword.arg in {"event_allowlist", "event_denylist"} for keyword in call.keywords):
             return "unresolved"
         config = next((keyword.value for keyword in call.keywords if keyword.arg == "config"), None)
         state = (
@@ -26793,11 +25818,7 @@ def add_python_google_adk_bigquery_audit_flow(
                     runner_call.args[0] if runner_call.args else None,
                 )
                 plugins_expression = next(
-                    (
-                        keyword.value
-                        for keyword in runner_call.keywords
-                        if keyword.arg == "plugins"
-                    ),
+                    (keyword.value for keyword in runner_call.keywords if keyword.arg == "plugins"),
                     None,
                 )
                 if not isinstance(agent_expression, ast.Name) or not isinstance(
@@ -26808,7 +25829,9 @@ def add_python_google_adk_bigquery_audit_flow(
                 if agent is None:
                     continue
                 plugin_names = [
-                    element.id for element in plugins_expression.elts if isinstance(element, ast.Name)
+                    element.id
+                    for element in plugins_expression.elts
+                    if isinstance(element, ast.Name)
                 ]
                 if len(plugin_names) != len(plugins_expression.elts):
                     continue
@@ -26991,7 +26014,7 @@ def add_python_skyvern_action_history_flow(
         "async def run_agent_tool_loop(",
         "result = await spec.handler(args)",
         "if spec is not None and (spec.billable or spec.recordable):",
-        "round_actions.append((tool_name, args, result.status == \"ok\"))",
+        'round_actions.append((tool_name, args, result.status == "ok"))',
         "if round_actions and on_action_round is not None:",
         "await on_action_round(round_actions)",
         'LOG.warning("taskv3 on_action_round callback failed"',
@@ -27062,12 +26085,8 @@ def add_python_skyvern_action_history_flow(
     callback_line = line_at(agent_text, callback_offset)
     agent_line = line_at(agent_text, agent_offset)
     commit_line = line_at(repository_text, commit_offset)
-    handler_evidence = Evidence(
-        loop_path, handler_line, excerpt(loop_lines, handler_line)
-    )
-    callback_evidence = Evidence(
-        agent_path, callback_line, excerpt(agent_lines, callback_line)
-    )
+    handler_evidence = Evidence(loop_path, handler_line, excerpt(loop_lines, handler_line))
+    callback_evidence = Evidence(agent_path, callback_line, excerpt(agent_lines, callback_line))
     agent_evidence = Evidence(agent_path, agent_line, excerpt(agent_lines, agent_line))
     storage_evidence = Evidence(
         repository_path,
@@ -27134,9 +26153,7 @@ def add_python_skyvern_action_history_flow(
             control_attributes,
         )
     )
-    ir.add_component(
-        Component("capability", "audit-storage", storage_evidence, storage_attributes)
-    )
+    ir.add_component(Component("capability", "audit-storage", storage_evidence, storage_attributes))
     ir.add_relationship(
         Relationship(
             "agent",
@@ -27357,9 +26374,7 @@ def add_python_trae_agent_default_tool_flow(
 
     config_offset = config_text.find("tools: list[str] = field(")
     agent_offset = trae_agent_text.find("class TraeAgent(BaseAgent):")
-    local_executor_offset = base_agent_text.find(
-        "self._tool_caller = original_tool_executor"
-    )
+    local_executor_offset = base_agent_text.find("self._tool_caller = original_tool_executor")
     direct_execution_offset = executor_text.find(
         "tool_exec_result = await tool.execute(tool_call.arguments)"
     )
@@ -27369,14 +26384,17 @@ def add_python_trae_agent_default_tool_flow(
     editor_offset = editor_text.find(
         'path = str(arguments["path"]) if "path" in arguments else None'
     )
-    if min(
-        config_offset,
-        agent_offset,
-        local_executor_offset,
-        direct_execution_offset,
-        bash_offset,
-        editor_offset,
-    ) < 0:
+    if (
+        min(
+            config_offset,
+            agent_offset,
+            local_executor_offset,
+            direct_execution_offset,
+            bash_offset,
+            editor_offset,
+        )
+        < 0
+    ):
         return
 
     config_line = line_at(config_text, config_offset)
@@ -27739,12 +26757,20 @@ def add_typescript_roo_command_approval_flow(
     offsets = {
         "schema": schema_text.find('name: "execute_command",'),
         "builder": builder_text.find("const nativeTools = getNativeTools({"),
-        "task": task_text.find("export class Task extends EventEmitter<TaskEvents> implements TaskLike"),
-        "dispatch": dispatcher_text.find('await executeCommandTool.handle(cline, block as ToolUse<"execute_command">, {'),
-        "approval_call": executor_text.find('const didApprove = await askApproval("command", canonicalCommand)'),
+        "task": task_text.find(
+            "export class Task extends EventEmitter<TaskEvents> implements TaskLike"
+        ),
+        "dispatch": dispatcher_text.find(
+            'await executeCommandTool.handle(cline, block as ToolUse<"execute_command">, {'
+        ),
+        "approval_call": executor_text.find(
+            'const didApprove = await askApproval("command", canonicalCommand)'
+        ),
         "sink": executor_text.find("const process = terminal.runCommand(command, callbacks)"),
         "setting": approval_text.find("if (!state || !state.autoApprovalEnabled) {"),
-        "control": decision_text.find('if (lowerPrefix === "*" || trimmedCommand.startsWith(lowerPrefix)) {'),
+        "control": decision_text.find(
+            'if (lowerPrefix === "*" || trimmedCommand.startsWith(lowerPrefix)) {'
+        ),
     }
     if min(offsets.values()) < 0:
         return
@@ -27768,9 +26794,7 @@ def add_typescript_roo_command_approval_flow(
     agent_id = source_symbol("ts", task_path, "agent", "Task")
     tool_id = source_symbol("ts", executor_path, "tool", "ExecuteCommandTool")
     control_id = source_symbol("ts", decision_path, "control", "command-allowlist")
-    setting_id = source_symbol(
-        "ts", approval_path, "control-setting", "command-auto-approval"
-    )
+    setting_id = source_symbol("ts", approval_path, "control-setting", "command-auto-approval")
     shared = {
         "analysis": analysis,
         "framework": "Roo Code",
@@ -28036,15 +27060,13 @@ def add_typescript_continue_plan_mode_approval_flow(
     ) = selected  # type: ignore[misc]
 
     disabled_offset = checker_text.find('if (evaluatedPolicy === "disabled")')
-    base_return_offset = checker_text.find(
-        "permission: basePermission", disabled_offset
-    )
+    base_return_offset = checker_text.find("permission: basePermission", disabled_offset)
     if disabled_offset < 0 or base_return_offset <= disabled_offset:
         return
     checker_precedence = re.search(
         r'if\s*\(\s*evaluatedPolicy\s*===\s*["\']disabled["\']\s*\)\s*\{'
         r'[\s\S]{0,240}?permission\s*:\s*["\']exclude["\']'
-        r'[\s\S]{0,320}?permission\s*:\s*basePermission',
+        r"[\s\S]{0,320}?permission\s*:\s*basePermission",
         checker_text,
     )
     if checker_precedence is None:
@@ -28081,14 +27103,15 @@ def add_typescript_continue_plan_mode_approval_flow(
     )
     if any(branch is None for branch in evaluator_branches):
         return
-    if re.search(
-        r'''args\s*:\s*\[[^\]]*["']-c["']\s*,\s*command\s*\]''',
-        tool_text,
-    ) is None:
+    if (
+        re.search(
+            r"""args\s*:\s*\[[^\]]*["']-c["']\s*,\s*command\s*\]""",
+            tool_text,
+        )
+        is None
+    ):
         return
-    initialization_override = service_text.find(
-        'this.currentState.currentMode === "plan"'
-    )
+    initialization_override = service_text.find('this.currentState.currentMode === "plan"')
     mode_switch = service_text.find('if (newMode === "plan" || newMode === "auto")')
     if initialization_override < 0 or mode_switch <= initialization_override:
         return
@@ -28109,9 +27132,7 @@ def add_typescript_continue_plan_mode_approval_flow(
         return Evidence(path, line, excerpt(text.splitlines(), line))
 
     analysis = "typescript-continue-plan-mode-approval"
-    framework_evidence = evidence(
-        service_path, service_text, offsets["framework"]
-    )
+    framework_evidence = evidence(service_path, service_text, offsets["framework"])
     agent_evidence = evidence(runtime_path, runtime_text, offsets["agent"])
     setting_evidence = evidence(policy_path, policy_text, offsets["setting"])
     tool_evidence = evidence(tool_path, tool_text, offsets["tool"])
@@ -28121,20 +27142,14 @@ def add_typescript_continue_plan_mode_approval_flow(
     tool_name = "Continue Bash tool"
     agent_id = source_symbol("ts", runtime_path, "agent", "ContinueCLIPlanMode")
     tool_id = source_symbol("ts", tool_path, "tool", "Bash")
-    setting_id = source_symbol(
-        "ts", policy_path, "control-setting", "plan-mode-command-approval"
-    )
-    control_id = source_symbol(
-        "ts", checker_path, "control", "terminal-command-risk-policy"
-    )
+    setting_id = source_symbol("ts", policy_path, "control-setting", "plan-mode-command-approval")
+    control_id = source_symbol("ts", checker_path, "control", "terminal-command-risk-policy")
     shared = {
         "analysis": analysis,
         "framework": "Continue CLI",
         "scope": "production",
     }
-    ir.add_component(
-        Component("framework", "Continue CLI", framework_evidence, shared)
-    )
+    ir.add_component(Component("framework", "Continue CLI", framework_evidence, shared))
     ir.add_component(
         Component(
             "agent",
@@ -28415,23 +27430,32 @@ def add_typescript_continue_plan_mode_mcp_flow(
     if wildcard_offset < 0:
         return
     wildcard_offset += plan_start
-    if re.search(
-        r'getDefaultToolPolicies[\s\S]{0,1800}?tool\s*:\s*["\']\*["\']\s*,'
-        r'\s*permission\s*:\s*["\']ask["\']',
-        policy_text,
-    ) is None:
+    if (
+        re.search(
+            r'getDefaultToolPolicies[\s\S]{0,1800}?tool\s*:\s*["\']\*["\']\s*,'
+            r'\s*permission\s*:\s*["\']ask["\']',
+            policy_text,
+        )
+        is None
+    ):
         return
-    if re.search(
-        r"for\s*\(\s*const\s+policy\s+of[\s\S]{0,500}?"
-        r"basePermission\s*=\s*policy\.permission\s*;?[\s\S]{0,80}?break\s*;",
-        checker_text,
-    ) is None:
+    if (
+        re.search(
+            r"for\s*\(\s*const\s+policy\s+of[\s\S]{0,500}?"
+            r"basePermission\s*=\s*policy\.permission\s*;?[\s\S]{0,80}?break\s*;",
+            checker_text,
+        )
+        is None
+    ):
         return
-    if re.search(
-        r'if\s*\(\s*permissionCheck\.permission\s*===\s*["\']allow["\']\s*\)'
-        r"\s*\{[\s\S]{0,100}?return\s*\{\s*approved\s*:\s*true\s*\}",
-        runtime_text,
-    ) is None:
+    if (
+        re.search(
+            r'if\s*\(\s*permissionCheck\.permission\s*===\s*["\']allow["\']\s*\)'
+            r"\s*\{[\s\S]{0,100}?return\s*\{\s*approved\s*:\s*true\s*\}",
+            runtime_text,
+        )
+        is None
+    ):
         return
     discovery_offset = mcp_text.find(".listTools()).tools")
     call_offset = mcp_text.find(".client.callTool({")
@@ -28477,15 +27501,9 @@ def add_typescript_continue_plan_mode_mcp_flow(
     agent_id = source_symbol("ts", runtime_path, "agent", "ContinueCLIPlanModeMCP")
     tool_id = source_symbol("ts", adapter_path, "tool", "MCPToolAdapter")
     server_id = source_symbol("ts", mcp_path, "mcp-server", "ConfiguredMCPServers")
-    setting_id = source_symbol(
-        "ts", policy_path, "control-setting", "plan-mode-mcp-approval"
-    )
-    control_id = source_symbol(
-        "ts", adapter_path, "control", "mcp-tool-classification"
-    )
-    ir.add_component(
-        Component("framework", "Continue CLI", framework_evidence, shared)
-    )
+    setting_id = source_symbol("ts", policy_path, "control-setting", "plan-mode-mcp-approval")
+    control_id = source_symbol("ts", adapter_path, "control", "mcp-tool-classification")
+    ir.add_component(Component("framework", "Continue CLI", framework_evidence, shared))
     ir.add_component(
         Component(
             "agent",
@@ -28792,40 +27810,44 @@ def add_typescript_cline_subagent_approval_flow(
         policy_block,
     ):
         return
-    if re.search(
-        r"if\s*\(\s*policy\.enabled\s*===\s*false\s*\)"
-        r"[\s\S]{0,220}?else\s+if\s*\(\s*policy\.autoApprove\s*===\s*false\s*\)"
-        r"[\s\S]{0,220}?requestToolApproval",
-        runtime_text,
-    ) is None:
+    if (
+        re.search(
+            r"if\s*\(\s*policy\.enabled\s*===\s*false\s*\)"
+            r"[\s\S]{0,220}?else\s+if\s*\(\s*policy\.autoApprove\s*===\s*false\s*\)"
+            r"[\s\S]{0,220}?requestToolApproval",
+            runtime_text,
+        )
+        is None
+    ):
         return
-    if re.search(
-        r"act\s*:\s*\{[\s\S]{0,500}?enableBash\s*:\s*true"
-        r"[\s\S]{0,500}?enableEditor\s*:\s*true"
-        r"[\s\S]{0,500}?enableSpawnAgent\s*:\s*true",
-        preset_text,
-    ) is None:
+    if (
+        re.search(
+            r"act\s*:\s*\{[\s\S]{0,500}?enableBash\s*:\s*true"
+            r"[\s\S]{0,500}?enableEditor\s*:\s*true"
+            r"[\s\S]{0,500}?enableSpawnAgent\s*:\s*true",
+            preset_text,
+        )
+        is None
+    ):
         return
-    if re.search(
-        r"enableSpawnAgent\s*:\s*config\.enableSpawnAgent\s*\?\?\s*"
-        r"preset\.enableSpawnAgent\s*\?\?\s*true",
-        builder_text,
-    ) is None:
+    if (
+        re.search(
+            r"enableSpawnAgent\s*:\s*config\.enableSpawnAgent\s*\?\?\s*"
+            r"preset\.enableSpawnAgent\s*\?\?\s*true",
+            builder_text,
+        )
+        is None
+    ):
         return
     host_spawn_start = local_host_text.find("createSpawnTool: () =>")
-    host_spawn_end = local_host_text.find(
-        "createSubAgentLifecycleCallbacks", host_spawn_start
-    )
+    host_spawn_end = local_host_text.find("createSubAgentLifecycleCallbacks", host_spawn_start)
     if host_spawn_start < 0 or host_spawn_end <= host_spawn_start:
         return
     wrapper_call_start = spawn_wrapper_text.find("return createSpawnAgentTool({")
     if wrapper_call_start < 0:
         return
     wrapper_call_block = spawn_wrapper_text[wrapper_call_start:]
-    if (
-        "toolPolicies:" in wrapper_call_block
-        or "requestToolApproval:" in wrapper_call_block
-    ):
+    if "toolPolicies:" in wrapper_call_block or "requestToolApproval:" in wrapper_call_block:
         return
     if not (
         lifecycle_text.find("buildToolPolicies(autoApprovalSettings")
@@ -28871,18 +27893,14 @@ def add_typescript_cline_subagent_approval_flow(
         policy_text,
         policy_text.find("The SDK defaults unlisted tools to auto-approved"),
     )
-    control_evidence = evidence(
-        spawn_wrapper_path, spawn_wrapper_text, wrapper_call_start
-    )
+    control_evidence = evidence(spawn_wrapper_path, spawn_wrapper_text, wrapper_call_start)
     parent_name = "Cline VS Code SDK root agent"
     child_name = "Cline SDK spawned sub-agent"
     tool_name = "Cline spawn_agent tool"
     parent_id = source_symbol("ts", lifecycle_path, "agent", "ClineVSCodeSDKRoot")
     child_id = source_symbol("ts", spawn_factory_path, "agent", "SpawnedSubAgent")
     tool_id = source_symbol("ts", spawn_factory_path, "tool", "spawn_agent")
-    setting_id = source_symbol(
-        "ts", policy_path, "control-setting", "sdk-tool-approval-policy"
-    )
+    setting_id = source_symbol("ts", policy_path, "control-setting", "sdk-tool-approval-policy")
     control_id = source_symbol(
         "ts", spawn_wrapper_path, "control", "subagent-tool-approval-propagation"
     )
@@ -29019,6 +28037,439 @@ def add_typescript_cline_subagent_approval_flow(
             "configured-by",
             "control-setting",
             "Cline SDK tool approval policy",
+            setting_evidence,
+            {"analysis": analysis},
+            source_id=parent_id,
+            target_id=setting_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            tool_name,
+            "governed-by",
+            "control",
+            "subagent-tool-approval-propagation",
+            control_evidence,
+            {"analysis": analysis, "policy_effect": "approval-state-dropped"},
+            source_id=tool_id,
+            target_id=control_id,
+        )
+    )
+
+
+def add_typescript_cline_cli_subagent_approval_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve Cline CLI sandbox approval state into locally spawned sub-agents."""
+    sources: dict[str, str] = {}
+    for path in paths:
+        if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            sources[relative] = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+
+    def unique_source(markers: tuple[str, ...]) -> tuple[str, str] | None:
+        matches = [
+            (relative, text)
+            for relative, text in sources.items()
+            if all(marker in text for marker in markers)
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    main_source = unique_source(
+        (
+            "const sandboxEnabled =",
+            "const toolPolicies: Record<string, ToolPolicy> = {",
+            "autoApprove: effectiveToolAutoApprove",
+            "sandbox: sandboxEnabled",
+            "toolPolicies,",
+            "enableSpawnAgent: !isYoloMode",
+        )
+    )
+    policy_source = unique_source(
+        (
+            "const SAFE_AUTO_APPROVE_TOOL_NAMES = [",
+            "resolveInteractiveAutoApprovePolicy",
+            "SAFE_AUTO_APPROVE_TOOLS.has(input.toolName)",
+            "globalPolicy.autoApprove = input.enabled",
+        )
+    )
+    approval_source = unique_source(
+        (
+            "export async function requestToolApproval(",
+            "requestTerminalToolApproval(request)",
+            'Tool "${request.toolName}" requires approval in a TTY session',
+        )
+    )
+    run_source = unique_source(
+        (
+            "export async function runAgent(",
+            'const isYoloMode = config.mode === "yolo"',
+            "requestToolApproval,",
+            "forceLocalBackend: isYoloMode || config.sandbox === true",
+            "toolPolicies: config.toolPolicies",
+        )
+    )
+    session_source = unique_source(
+        (
+            "export async function createCliCore(",
+            "const explicitBackendMode = options?.forceLocalBackend",
+            "backendMode: explicitBackendMode",
+            "capabilities: options?.capabilities",
+            "toolPolicies: options?.toolPolicies",
+        )
+    )
+    runtime_source = unique_source(
+        (
+            "resolveToolPolicy(toolCall.toolName, this.config.toolPolicies)",
+            "policy.enabled === false",
+            "policy.autoApprove === false",
+            "await this.requestToolApproval(",
+        )
+    )
+    builder_source = unique_source(
+        (
+            "function normalizeConfig(",
+            "config.enableSpawnAgent ?? preset.enableSpawnAgent ?? true",
+            "if (normalized.enableSpawnAgent && createSpawnTool)",
+            "const spawnTool = createSpawnTool()",
+            "tools.push({",
+        )
+    )
+    local_host_source = unique_source(
+        (
+            "export class LocalRuntimeHost",
+            "createSpawnTool: () =>",
+            "createSessionSpawnTool(",
+            "bootstrap.config,",
+            "toolPolicies: bootstrap.toolPolicies",
+            "requestToolApproval: bootstrap.requestToolApproval",
+        )
+    )
+    spawn_wrapper_source = unique_source(
+        (
+            "export function createSessionSpawnTool(",
+            "const createSubAgentTools = () =>",
+            "createBuiltinTools({",
+            "...ToolPresets[resolveToolPresetName({ mode: config.mode })]",
+            "return createSpawnAgentTool({",
+            "createSubAgentTools,",
+        )
+    )
+    spawn_factory_source = unique_source(
+        (
+            "export function createSpawnAgentTool(",
+            'name: "spawn_agent"',
+            "const subAgent = createDelegatedAgent({",
+            "toolPolicies: config.toolPolicies",
+            "requestToolApproval: config.requestToolApproval",
+        )
+    )
+    selected = (
+        main_source,
+        policy_source,
+        approval_source,
+        run_source,
+        session_source,
+        runtime_source,
+        builder_source,
+        local_host_source,
+        spawn_wrapper_source,
+        spawn_factory_source,
+    )
+    if any(source is None for source in selected):
+        return
+    (
+        (main_path, main_text),
+        (policy_path, policy_text),
+        (_approval_path, _approval_text),
+        (run_path, run_text),
+        (_session_path, session_text),
+        (_runtime_path, runtime_text),
+        (_builder_path, builder_text),
+        (_local_host_path, local_host_text),
+        (spawn_wrapper_path, spawn_wrapper_text),
+        (spawn_factory_path, spawn_factory_text),
+    ) = selected  # type: ignore[misc]
+
+    policy_start = policy_text.find("const SAFE_AUTO_APPROVE_TOOL_NAMES = [")
+    policy_end = policy_text.find("const SAFE_AUTO_APPROVE_TOOLS", policy_start)
+    if policy_start < 0 or policy_end <= policy_start:
+        return
+    safe_policy_block = policy_text[policy_start:policy_end]
+    if "spawn_agent" in safe_policy_block:
+        return
+    main_config_start = main_text.find("const config: Config = {")
+    main_config_end = main_text.find("};", main_config_start)
+    if main_config_start < 0 or main_config_end <= main_config_start:
+        return
+    main_config_block = main_text[main_config_start:main_config_end]
+    if "enableSpawnAgent: !isYoloMode" not in main_config_block:
+        return
+    if (
+        re.search(
+            r"const\s+toolPolicies\s*:\s*Record<[^>]+>\s*=\s*\{"
+            r"[\s\S]{0,220}?['\"]\*['\"]\s*:\s*\{"
+            r"[\s\S]{0,120}?autoApprove\s*:\s*effectiveToolAutoApprove",
+            main_text,
+        )
+        is None
+    ):
+        return
+    if (
+        re.search(
+            r"autoApprove\s*:\s*input\.enabled\s*\?"
+            r"[\s\S]{0,220}?SAFE_AUTO_APPROVE_TOOLS\.has\(input\.toolName\)"
+            r"[\s\S]{0,220}?:\s*false",
+            policy_text,
+        )
+        is None
+    ):
+        return
+    if (
+        re.search(
+            r"if\s*\(\s*policy\.enabled\s*===\s*false\s*\)"
+            r"[\s\S]{0,220}?else\s+if\s*\(\s*policy\.autoApprove\s*===\s*false\s*\)"
+            r"[\s\S]{0,220}?requestToolApproval",
+            runtime_text,
+        )
+        is None
+    ):
+        return
+    if (
+        re.search(
+            r"enableSpawnAgent\s*:\s*config\.enableSpawnAgent\s*\?\?\s*"
+            r"preset\.enableSpawnAgent\s*\?\?\s*true",
+            builder_text,
+        )
+        is None
+    ):
+        return
+    if (
+        re.search(
+            r"const\s+explicitBackendMode\s*=\s*options\?\.forceLocalBackend"
+            r"[\s\S]{0,80}?\?\s*\"local\"",
+            session_text,
+        )
+        is None
+    ):
+        return
+    if "forceLocalBackend: isYoloMode || config.sandbox === true" not in run_text:
+        return
+    if not (
+        run_text.find("requestToolApproval,")
+        < run_text.find("forceLocalBackend: isYoloMode || config.sandbox === true")
+        < run_text.find("toolPolicies: config.toolPolicies")
+        and session_text.find("capabilities: options?.capabilities")
+        < session_text.find("toolPolicies: options?.toolPolicies")
+    ):
+        return
+    wrapper_call_start = spawn_wrapper_text.find("return createSpawnAgentTool({")
+    if wrapper_call_start < 0:
+        return
+    wrapper_call_block = spawn_wrapper_text[wrapper_call_start:]
+    if "toolPolicies:" in wrapper_call_block or "requestToolApproval:" in wrapper_call_block:
+        return
+    if not (
+        local_host_text.find("toolPolicies: bootstrap.toolPolicies")
+        < local_host_text.find("requestToolApproval: bootstrap.requestToolApproval")
+        and spawn_factory_text.find("toolPolicies: config.toolPolicies")
+        < spawn_factory_text.find("requestToolApproval: config.requestToolApproval")
+    ):
+        return
+
+    def evidence(path: str, text: str, offset: int) -> Evidence:
+        line = line_at(text, offset)
+        return Evidence(path, line, excerpt(text.splitlines(), line))
+
+    analysis = "typescript-cline-cli-subagent-approval-propagation"
+    shared = {
+        "analysis": analysis,
+        "framework": "Cline SDK",
+        "scope": "production",
+        "parent_host": "cli-sandbox",
+    }
+    framework_evidence = evidence(main_path, main_text, main_text.find("const config: Config = {"))
+    parent_evidence = evidence(run_path, run_text, run_text.find("createCliCore({"))
+    tool_evidence = evidence(
+        spawn_factory_path,
+        spawn_factory_text,
+        spawn_factory_text.find('name: "spawn_agent"'),
+    )
+    child_evidence = evidence(
+        spawn_factory_path,
+        spawn_factory_text,
+        spawn_factory_text.find("const subAgent = createDelegatedAgent({"),
+    )
+    capability_evidence = evidence(
+        spawn_wrapper_path,
+        spawn_wrapper_text,
+        spawn_wrapper_text.find("createBuiltinTools({"),
+    )
+    setting_evidence = evidence(
+        policy_path,
+        policy_text,
+        policy_text.find("SAFE_AUTO_APPROVE_TOOL_NAMES"),
+    )
+    control_evidence = evidence(spawn_wrapper_path, spawn_wrapper_text, wrapper_call_start)
+    parent_name = "Cline CLI sandbox root agent"
+    child_name = "Cline SDK spawned sub-agent"
+    tool_name = "Cline CLI spawn_agent tool"
+    parent_id = source_symbol("ts", run_path, "agent", "ClineCLISandboxRoot")
+    child_id = source_symbol("ts", spawn_factory_path, "agent", "SpawnedSubAgentCLI")
+    tool_id = source_symbol("ts", spawn_factory_path, "tool", "spawn_agent_cli")
+    capability_id = source_symbol(
+        "ts", spawn_wrapper_path, "capability", "subagent-privileged-tool-execution-cli"
+    )
+    setting_id = source_symbol("ts", policy_path, "control-setting", "cli-tool-approval-policy")
+    control_id = source_symbol(
+        "ts", spawn_wrapper_path, "control", "cli-subagent-tool-approval-propagation"
+    )
+    ir.add_component(Component("framework", "Cline SDK", framework_evidence, shared))
+    ir.add_component(
+        Component(
+            "agent",
+            parent_name,
+            parent_evidence,
+            {
+                **shared,
+                "approval_callback": "configured",
+                "backend": "local-when-sandbox",
+                "tool_policy": "interactive-approval-list",
+            },
+            parent_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "agent",
+            child_name,
+            child_evidence,
+            {
+                **shared,
+                "approval_callback": "not-forwarded",
+                "tool_policy": "not-forwarded",
+            },
+            child_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "tool",
+            tool_name,
+            tool_evidence,
+            {
+                **shared,
+                "approval_policy": "parent-approval-required",
+                "builtin_tool": True,
+                "builtin_tool_name": "spawn_agent",
+            },
+            tool_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "capability",
+            "subagent-privileged-tool-execution",
+            capability_evidence,
+            {
+                **shared,
+                "default_mode": "act",
+                "execution_environment": "local",
+                "filesystem_tool": "editor",
+                "shell_tool": "run_commands",
+            },
+            capability_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "control-setting",
+            "Cline CLI tool approval policy",
+            setting_evidence,
+            {
+                **shared,
+                "default_for_unlisted_tools": "approval-required-when-disabled",
+                "safe_tools_auto_approved_when_disabled": True,
+                "spawn_agent_listed": False,
+            },
+            setting_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "control",
+            "subagent-tool-approval-propagation",
+            control_evidence,
+            {
+                **shared,
+                "agent_reachable": True,
+                "child_approval_callback": "not-forwarded",
+                "child_tool_policies": "not-forwarded",
+                "factory_supports_propagation": True,
+                "parent_approval_callback": "configured",
+                "parent_privileged_tools_gated": True,
+                "root_backend_forced_local_by_sandbox": True,
+                "spawn_agent_default_enabled": True,
+                "spawn_agent_policy": "parent-approval-required",
+            },
+            control_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "agent",
+            parent_name,
+            "uses",
+            "tool",
+            tool_name,
+            parent_evidence,
+            {"analysis": analysis},
+            source_id=parent_id,
+            target_id=tool_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            tool_name,
+            "delegates-to",
+            "agent",
+            child_name,
+            child_evidence,
+            {"analysis": analysis},
+            source_id=tool_id,
+            target_id=child_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "agent",
+            child_name,
+            "uses",
+            "capability",
+            "subagent-privileged-tool-execution",
+            capability_evidence,
+            {"analysis": analysis},
+            source_id=child_id,
+            target_id=capability_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "agent",
+            parent_name,
+            "configured-by",
+            "control-setting",
+            "Cline CLI tool approval policy",
             setting_evidence,
             {"analysis": analysis},
             source_id=parent_id,
@@ -29233,12 +28684,8 @@ def add_typescript_letta_default_tool_flow(
     workspace_guard_offset = checker_text.find(
         "const workspaceGuardResult = evaluateWorkspaceSandboxGuard("
     )
-    cross_agent_guard_offset = checker_text.find(
-        "const guardResult = evaluateCrossAgentGuard("
-    )
-    override_offset = checker_text.find(
-        "const modeOverride = permissionMode.checkModeOverride("
-    )
+    cross_agent_guard_offset = checker_text.find("const guardResult = evaluateCrossAgentGuard(")
+    override_offset = checker_text.find("const modeOverride = permissionMode.checkModeOverride(")
     if not all(
         0 <= offset < override_offset
         for offset in (
@@ -29257,9 +28704,7 @@ def add_typescript_letta_default_tool_flow(
         "turn": turn_text.find("...autoAllowed.map("),
         "execution": execution_text.find('if (decision.type === "approve")'),
         "bash": bash_text.find("spawnCommand(command, {"),
-        "isolation": sandbox_text.find(
-            "OFF by default; set `LETTA_FS_SANDBOX=1` to opt in"
-        ),
+        "isolation": sandbox_text.find("OFF by default; set `LETTA_FS_SANDBOX=1` to opt in"),
         "write": write_text.find("await writeUtf8Text(resolvedPath, content)"),
     }
     if min(offsets.values()) < 0:
@@ -29272,12 +28717,8 @@ def add_typescript_letta_default_tool_flow(
     agent_evidence = evidence(manager_path, manager_text, offsets["agent"])
     approval_evidence = evidence(mode_path, mode_text, offsets["approval"])
     turn_evidence = evidence(turn_path, turn_text, offsets["turn"])
-    execution_evidence = evidence(
-        execution_path, execution_text, offsets["execution"]
-    )
-    isolation_evidence = evidence(
-        sandbox_path, sandbox_text, offsets["isolation"]
-    )
+    execution_evidence = evidence(execution_path, execution_text, offsets["execution"])
+    isolation_evidence = evidence(sandbox_path, sandbox_text, offsets["isolation"])
 
     analysis = "typescript-letta-default-tools"
     agent_name = "Letta Code default client toolchain"
@@ -29573,12 +29014,8 @@ def add_typescript_a2a_card_endpoint_composition(
             r"[\s\S]{0,500}?this\.client\s*=\s*await\s+factory\.createFromAgentCard\s*\(\s*this\.card\s*\)",
             caller_code,
         )
-        call_match = re.search(
-            r"factory\.createFromAgentCard\s*\(\s*this\.card\s*\)", caller_code
-        )
-        class_match = re.search(
-            r"\bclass\s+(?:A2ARemoteAgent|RemoteA2AAgent)\b", caller_code
-        )
+        call_match = re.search(r"factory\.createFromAgentCard\s*\(\s*this\.card\s*\)", caller_code)
+        class_match = re.search(r"\bclass\s+(?:A2ARemoteAgent|RemoteA2AAgent)\b", caller_code)
         resolver_proof = re.search(
             r"source\.startsWith\s*\(\s*['\"]http://['\"]\s*\)\s*\|\|\s*"
             r"source\.startsWith\s*\(\s*['\"]https://['\"]\s*\)"
@@ -29651,9 +29088,7 @@ def add_typescript_a2a_card_endpoint_composition(
             r"factory\.createFromAgentCard\s*\(\s*agentCard\s*\)",
             code,
         )
-        create_match = re.search(
-            r"factory\.createFromAgentCard\s*\(\s*agentCard\s*\)", code
-        )
+        create_match = re.search(r"factory\.createFromAgentCard\s*\(\s*agentCard\s*\)", code)
         normalized_card = re.search(
             r"const\s+agentCard\s*=\s*normalizeAgentCard\s*\(\s*rawCard\s*\)", code
         )
@@ -29744,22 +29179,19 @@ def add_python_adk_a2a_card_endpoint_policy(
         ast.parse(text, filename=relative)
     except SyntaxError:
         return
-    policy_proof = (
-        re.search(
-            r"async\s+def\s+_validate_agent_card\s*\([^)]*agent_card[^)]*\)\s*[^:]*:"
-            r"[\s\S]{0,1000}?self\._validate_card_rpc_targets\s*\(\s*agent_card\s*\)",
-            text,
-        )
-        and re.search(
-            r"def\s+_validate_card_rpc_targets\s*\([^)]*agent_card[^)]*\)\s*[^:]*:"
-            r"[\s\S]{0,1000}?source\.startswith\s*\(\s*\(\s*['\"]http://['\"]\s*,\s*['\"]https://['\"]\s*\)\s*\)"
-            r"[\s\S]{0,1000}?for\s+card_url\s+in\s+_compat\.agent_card_rpc_urls\s*\(\s*agent_card\s*\)\s*:"
-            r"[\s\S]{0,1000}?parsed_card\.scheme\.lower\s*\(\s*\)\s*!=\s*['\"]https['\"]"
-            r"[\s\S]{0,500}?not\s+_is_loopback_host\s*\(\s*parsed_card\.hostname\s*\)"
-            r"[\s\S]{0,1000}?card_origin\s*=\s*_url_origin\s*\(\s*card_url\s*\)"
-            r"[\s\S]{0,500}?card_origin\s*!=\s*source_origin",
-            text,
-        )
+    policy_proof = re.search(
+        r"async\s+def\s+_validate_agent_card\s*\([^)]*agent_card[^)]*\)\s*[^:]*:"
+        r"[\s\S]{0,1000}?self\._validate_card_rpc_targets\s*\(\s*agent_card\s*\)",
+        text,
+    ) and re.search(
+        r"def\s+_validate_card_rpc_targets\s*\([^)]*agent_card[^)]*\)\s*[^:]*:"
+        r"[\s\S]{0,1000}?source\.startswith\s*\(\s*\(\s*['\"]http://['\"]\s*,\s*['\"]https://['\"]\s*\)\s*\)"
+        r"[\s\S]{0,1000}?for\s+card_url\s+in\s+_compat\.agent_card_rpc_urls\s*\(\s*agent_card\s*\)\s*:"
+        r"[\s\S]{0,1000}?parsed_card\.scheme\.lower\s*\(\s*\)\s*!=\s*['\"]https['\"]"
+        r"[\s\S]{0,500}?not\s+_is_loopback_host\s*\(\s*parsed_card\.hostname\s*\)"
+        r"[\s\S]{0,1000}?card_origin\s*=\s*_url_origin\s*\(\s*card_url\s*\)"
+        r"[\s\S]{0,500}?card_origin\s*!=\s*source_origin",
+        text,
     )
     if not policy_proof:
         return
@@ -29822,9 +29254,7 @@ def add_python_adk_a2a_card_endpoint_policy(
         )
     )
     for match in matches:
-        create_offset = match.start() + match.group(0).rfind(
-            "self._a2a_client_factory.create"
-        )
+        create_offset = match.start() + match.group(0).rfind("self._a2a_client_factory.create")
         if create_offset < match.start():
             continue
         call_line = line_at(text, create_offset)
@@ -30046,6 +29476,7 @@ def scan_repository(
     add_typescript_continue_plan_mode_approval_flow(ir, root, registry_paths)
     add_typescript_continue_plan_mode_mcp_flow(ir, root, registry_paths)
     add_typescript_cline_subagent_approval_flow(ir, root, registry_paths)
+    add_typescript_cline_cli_subagent_approval_flow(ir, root, registry_paths)
     add_typescript_letta_default_tool_flow(ir, root, registry_paths)
     add_typescript_a2a_card_endpoint_composition(ir, root, registry_paths)
     add_typescript_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)

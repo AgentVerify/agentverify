@@ -110,8 +110,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         for item in ir.components
     )
     assert not any(
-        item.kind in {"framework", "provider"}
-        and item.evidence.path.startswith("negative.")
+        item.kind in {"framework", "provider"} and item.evidence.path.startswith("negative.")
         for item in ir.components
     )
     provider_calls = {
@@ -153,8 +152,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
     attributed_models = {
         (item.evidence.path, item.evidence.line, item.name, item.attributes["provider"])
         for item in ir.components
-        if item.kind == "model"
-        and item.evidence.path.startswith("provider_constructors")
+        if item.kind == "model" and item.evidence.path.startswith("provider_constructors")
     }
     assert attributed_models == {
         ("provider_constructors.py", 13, "command-r-plus", "Cohere"),
@@ -685,8 +683,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         (item.evidence.path, item.evidence.line, item.name, item.attributes["provider"])
         for item in ir.components
         if item.kind == "model"
-        and item.evidence.path
-        in {"provider_native_calls.ts", "provider_native_calls_commonjs.js"}
+        and item.evidence.path in {"provider_native_calls.ts", "provider_native_calls_commonjs.js"}
         and item.attributes.get("resolution") == "exact-typescript-provider-import"
     } == {
         ("provider_native_calls.ts", 10, "gpt-5-mini", "OpenAI"),
@@ -725,8 +722,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         and item.evidence.line == 5
         and item.name == "gpt-5.4"
         and item.attributes.get("provider") == "OpenAI"
-        and item.attributes.get("model_resolution_basis")
-        == "immutable-module-literal-binding"
+        and item.attributes.get("model_resolution_basis") == "immutable-module-literal-binding"
         for item in ir.components
     )
     assert not any(
@@ -742,8 +738,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             item.attributes.get("call_kind") == "provider-sdk-model"
             or (
                 item.kind == "model"
-                and item.attributes.get("resolution")
-                == "exact-typescript-provider-import"
+                and item.attributes.get("resolution") == "exact-typescript-provider-import"
             )
         )
         for item in ir.components
@@ -792,8 +787,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             item.attributes.get("call_kind") == "provider-sdk-model"
             or (
                 item.kind == "model"
-                and item.attributes.get("resolution")
-                == "exact-typescript-provider-import"
+                and item.attributes.get("resolution") == "exact-typescript-provider-import"
             )
         )
         for item in ir.components
@@ -805,8 +799,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             item.attributes.get("call_kind") == "provider-sdk-model"
             or (
                 item.kind == "model"
-                and item.attributes.get("resolution")
-                == "exact-typescript-provider-import"
+                and item.attributes.get("resolution") == "exact-typescript-provider-import"
             )
         )
         for item in ir.components
@@ -1046,8 +1039,7 @@ def test_python_dify_shell_layer_requires_default_off_runtime_composition() -> N
         if item.attributes.get("analysis") == "python-dify-agent-shell-layer"
     ]
     assert [
-        (item.kind, item.name, item.evidence.path, item.evidence.line)
-        for item in composition
+        (item.kind, item.name, item.evidence.path, item.evidence.line) for item in composition
     ] == [
         ("control", "sandbox-runtime", "app.py", 25),
         ("capability", "shell-execution", "app.py", 33),
@@ -1105,9 +1097,7 @@ def test_python_autogen_provider_wrappers_require_exact_unrebound_imports() -> N
         for item in ir.components
     )
     assert not any(
-        item.kind == "framework"
-        and item.name == "AutoGen"
-        and item.evidence.path == "near_name.py"
+        item.kind == "framework" and item.name == "AutoGen" and item.evidence.path == "near_name.py"
         for item in ir.components
     )
     provider_calls = {
@@ -1308,8 +1298,7 @@ def test_approval_callback_bypass_is_resolved_to_reachable_privileged_tools() ->
         ("approval.ts", 32, "applyPatchTool@32"),
     ]
     assert {
-        tuple(finding.analysis["approval_bypass_environment_names"])
-        for finding in findings
+        tuple(finding.analysis["approval_bypass_environment_names"]) for finding in findings
     } == {("SHELL_AUTO_APPROVE",), ("APPLY_PATCH_AUTO_APPROVE",)}
     assert all(finding.result_kind == "finding" for finding in findings)
     assert all(finding.analysis["direct_agents"] == ["operator"] for finding in findings)
@@ -1335,9 +1324,9 @@ def test_approval_callback_bypass_is_resolved_to_reachable_privileged_tools() ->
         and edge.target_name == "auto-approval"
     ]
     assert len(configured_edges) == 5
-    assert {
-        edge.attributes["resolution"] for edge in configured_edges
-    } == {"same-file-transitive-callback"}
+    assert {edge.attributes["resolution"] for edge in configured_edges} == {
+        "same-file-transitive-callback"
+    }
 
 
 def test_builtin_tool_constructor_approval_is_instance_scoped() -> None:
@@ -1448,15 +1437,11 @@ def test_local_shell_tool_requires_exact_import_and_reports_missing_sdk_approval
     }
     assert edges["assigned-shell"].target_id == "py:positive.py#tool:assigned"
     assert edges["aliased-shell"].target_id == "py:positive.py#tool:aliased"
-    assert edges["inline-shell"].target_id == (
-        "py:positive.py#tool:LocalShellTool@17"
-    )
+    assert edges["inline-shell"].target_id == ("py:positive.py#tool:LocalShellTool@17")
     assert edges["near-shell"].target_id is None
     assert edges["rebound-shell"].target_id is None
     assert {
-        finding.evidence.line
-        for finding in ir.findings
-        if finding.rule_id == "AV-APPROVAL002"
+        finding.evidence.line for finding in ir.findings if finding.rule_id == "AV-APPROVAL002"
     } == {9, 12, 17}
     assert all(
         "exposes no per-action decision hook" in finding.message
@@ -1464,8 +1449,7 @@ def test_local_shell_tool_requires_exact_import_and_reports_missing_sdk_approval
         if finding.rule_id == "AV-APPROVAL002"
     )
     assert all(
-        "inside the executor" in finding.remediation
-        and "needs_approval" not in finding.remediation
+        "inside the executor" in finding.remediation and "needs_approval" not in finding.remediation
         for finding in ir.findings
         if finding.rule_id == "AV-APPROVAL002"
     )
@@ -1476,8 +1460,7 @@ def test_code_interpreter_tool_requires_exact_import_and_records_hosted_sandbox(
     tools = {
         component.evidence.line: component
         for component in ir.components
-        if component.kind == "tool"
-        and component.name.startswith("CodeInterpreterTool@")
+        if component.kind == "tool" and component.name.startswith("CodeInterpreterTool@")
     }
     assert set(tools) == {5, 10, 18}
     assert {
@@ -1526,9 +1509,7 @@ def test_code_interpreter_tool_requires_exact_import_and_records_hosted_sandbox(
     }
     assert edges["assigned-code"].target_id == "py:positive.py#tool:assigned"
     assert edges["aliased-code"].target_id == "py:positive.py#tool:aliased"
-    assert edges["inline-code"].target_id == (
-        "py:positive.py#tool:CodeInterpreterTool@18"
-    )
+    assert edges["inline-code"].target_id == ("py:positive.py#tool:CodeInterpreterTool@18")
     assert edges["near-code"].target_id is None
     assert edges["rebound-code"].target_id is None
     assert not any(finding.rule_id == "AV-EXEC002" for finding in ir.findings)
@@ -1567,13 +1548,9 @@ def test_openai_hosted_tools_require_exact_import_and_preserve_scope() -> None:
         19: "media-generation",
     }
     assert capabilities[5].attributes["dynamic_origin"] is False
-    assert capabilities[5].attributes["network_scope"] == (
-        "provider-hosted-web-search"
-    )
+    assert capabilities[5].attributes["network_scope"] == ("provider-hosted-web-search")
     assert capabilities[11].attributes["data_scope"] == "hosted-vector-store"
-    assert capabilities[19].attributes["generation_scope"] == (
-        "provider-hosted-image"
-    )
+    assert capabilities[19].attributes["generation_scope"] == ("provider-hosted-image")
     edges = {
         edge.source_name: edge
         for edge in ir.relationships
@@ -1583,9 +1560,7 @@ def test_openai_hosted_tools_require_exact_import_and_preserve_scope() -> None:
     assert edges["aliased-web"].target_id == "py:positive.py#tool:aliased_web"
     assert edges["files"].target_id == "py:positive.py#tool:files"
     assert edges["dynamic-files"].target_id == "py:positive.py#tool:dynamic_files"
-    assert edges["images"].target_id == (
-        "py:positive.py#tool:ImageGenerationTool@19"
-    )
+    assert edges["images"].target_id == ("py:positive.py#tool:ImageGenerationTool@19")
     assert all(
         edges[name].target_id is None
         for name in (
@@ -1626,13 +1601,9 @@ def test_python_computer_tool_has_exact_agent_and_capability_identity() -> None:
         if edge.source_kind == "agent" and edge.target_kind == "tool"
     }
     assert agent_edges["first"].target_id == "py:agent.py#tool:tool@5"
-    assert agent_edges["first"].attributes == {
-        "target_identity": "lexical-single-definition"
-    }
+    assert agent_edges["first"].attributes == {"target_identity": "lexical-single-definition"}
     assert agent_edges["second"].target_id == "py:agent.py#tool:tool@10"
-    assert agent_edges["second"].attributes == {
-        "target_identity": "lexical-single-definition"
-    }
+    assert agent_edges["second"].attributes == {"target_identity": "lexical-single-definition"}
     assert agent_edges["inline"].target_id == "py:agent.py#tool:ComputerTool@14"
     assert agent_edges["inline"].attributes == {}
 
@@ -1643,9 +1614,7 @@ def test_python_computer_tool_has_exact_agent_and_capability_identity() -> None:
         and edge.relation == "uses"
         and edge.target_name == "computer-control"
     ]
-    assert {edge.source_id for edge in capability_edges} == {
-        tool.symbol_id for tool in tools
-    }
+    assert {edge.source_id for edge in capability_edges} == {tool.symbol_id for tool in tools}
     capabilities = [
         component
         for component in ir.components
@@ -1653,8 +1622,7 @@ def test_python_computer_tool_has_exact_agent_and_capability_identity() -> None:
     ]
     assert len(capabilities) == 3
     assert all(
-        component.attributes["execution_environment"] == "local"
-        for component in capabilities
+        component.attributes["execution_environment"] == "local" for component in capabilities
     )
     assert not any(edge.evidence.path == "unrelated.py" for edge in capability_edges)
 
@@ -2238,9 +2206,7 @@ def test_parameter_controlled_http_origin_is_reported_but_fixed_host_is_not() ->
     network = {
         item.evidence.line: item.attributes
         for item in ir.components
-        if item.kind == "capability"
-        and item.name == "network"
-        and item.evidence.path == "agent.py"
+        if item.kind == "capability" and item.name == "network" and item.evidence.path == "agent.py"
     }
     assert network[7]["dynamic_origin"] is True
     assert network[12]["dynamic_origin"] is False
@@ -2309,9 +2275,7 @@ def test_python_imported_literal_http_origins_require_exact_immutable_proof() ->
     network = {
         item.evidence.line: item.attributes
         for item in ir.components
-        if item.kind == "capability"
-        and item.name == "network"
-        and item.evidence.path == "agent.py"
+        if item.kind == "capability" and item.name == "network" and item.evidence.path == "agent.py"
     }
     assert sorted(network) == [23, 28, 33, 38, 43, 48, 53, 58, 63, 68, 75]
     for line, source_line in ((23, 4), (28, 5), (33, 4)):
@@ -2324,9 +2288,7 @@ def test_python_imported_literal_http_origins_require_exact_immutable_proof() ->
             "origin_line": source_line,
         }
     assert {
-        line: attributes["dynamic_origin"]
-        for line, attributes in network.items()
-        if line >= 38
+        line: attributes["dynamic_origin"] for line, attributes in network.items() if line >= 38
     } == {
         38: True,
         43: True,
@@ -2340,8 +2302,7 @@ def test_python_imported_literal_http_origins_require_exact_immutable_proof() ->
     assert [
         finding.evidence.line
         for finding in ir.findings
-        if finding.rule_id == "AV-NET001"
-        and finding.evidence.path == "agent.py"
+        if finding.rule_id == "AV-NET001" and finding.evidence.path == "agent.py"
     ] == [38, 43, 48, 53, 58, 63, 68, 75]
     derived = next(
         item
@@ -2409,9 +2370,7 @@ def test_python_network_origin_guards_require_fail_closed_scheme_and_host_checks
         and finding.evidence.line == 13
     )
     assert guarded_finding.result_kind == "review"
-    assert guarded_finding.analysis["governing_controls"] == [
-        "network-origin-allowlist"
-    ]
+    assert guarded_finding.analysis["governing_controls"] == ["network-origin-allowlist"]
 
 
 def test_dynamic_http_origin_tracks_aliases_and_keyword_url(tmp_path: Path) -> None:
@@ -2728,10 +2687,7 @@ def test_typescript_network_origin_policy_preserves_optional_open_hostname_scope
     assert network[35]["network_origin_policy"] is True
     assert network[35]["scheme_scope"] == "allowlisted"
     assert network[35]["hostname_scope"] == "configured-optional"
-    assert all(
-        "network_origin_policy" not in network[line]
-        for line in (41, 51, 57, 72, 82)
-    )
+    assert all("network_origin_policy" not in network[line] for line in (41, 51, 57, 72, 82))
     controls = [
         item
         for item in ir.components
@@ -2759,9 +2715,7 @@ def test_typescript_network_origin_policy_preserves_optional_open_hostname_scope
         for edge in ir.relationships
         if edge.target_kind == "control" and edge.target_name == "network-origin-policy"
     ]
-    assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [
-        ("policy.ts", 35)
-    ]
+    assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [("policy.ts", 35)]
     guarded_finding = next(
         finding
         for finding in ir.findings
@@ -2887,8 +2841,7 @@ def test_python_proxy_conditional_network_helper_preserves_proxy_residual(
     assert controls["safe_get"].evidence.line == 69
     assert controls["safe_request"].evidence.line == 73
     assert all(
-        item.attributes["policy_effect"]
-        == "restricts-http-origin-and-conditionally-pins-peer"
+        item.attributes["policy_effect"] == "restricts-http-origin-and-conditionally-pins-peer"
         and item.attributes["escape_hatch"] == "none"
         and "bypass_environment" not in item.attributes
         and "force_safe_environment" not in item.attributes
@@ -3018,8 +2971,7 @@ def test_typescript_configurable_ssrf_composition_preserves_disabled_default(
     edges = [
         edge
         for edge in ir.relationships
-        if edge.attributes.get("analysis")
-        == "typescript-configurable-ssrf-composition"
+        if edge.attributes.get("analysis") == "typescript-configurable-ssrf-composition"
     ]
     assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [
         ("web-fetch.tool.ts", 18)
@@ -3054,8 +3006,7 @@ def test_typescript_configurable_ssrf_composition_preserves_disabled_default(
         if finding.rule_id == "AV-NET001"
     ] == [("AV-NET001", "web-fetch.tool.ts", 18)]
     assert not any(
-        finding.rule_id == "AV-NET001"
-        and finding.evidence.path == "raw.ts"
+        finding.rule_id == "AV-NET001" and finding.evidence.path == "raw.ts"
         for finding in ir.findings
     )
 
@@ -3071,8 +3022,7 @@ def test_typescript_configurable_ssrf_composition_preserves_disabled_default(
     enabled_edges = [
         edge
         for edge in enabled_ir.relationships
-        if edge.attributes.get("analysis")
-        == "typescript-configurable-ssrf-composition"
+        if edge.attributes.get("analysis") == "typescript-configurable-ssrf-composition"
     ]
     assert len(enabled_edges) == 1
     assert enabled_edges[0].attributes["enforcement_default"] == "enabled"
@@ -3107,8 +3057,7 @@ def test_typescript_configurable_ssrf_composition_preserves_disabled_default(
         source_path.write_text(source.replace(before, after), encoding="utf-8")
         incomplete_ir = scan_repository(incomplete)
         assert not any(
-            edge.attributes.get("analysis")
-            == "typescript-configurable-ssrf-composition"
+            edge.attributes.get("analysis") == "typescript-configurable-ssrf-composition"
             for edge in incomplete_ir.relationships
         )
 
@@ -3121,12 +3070,9 @@ def test_typescript_flowise_secure_request_composition_preserves_proxy_residual(
     edges = [
         edge
         for edge in ir.relationships
-        if edge.attributes.get("analysis")
-        == "typescript-flowise-secure-request-composition"
+        if edge.attributes.get("analysis") == "typescript-flowise-secure-request-composition"
     ]
-    assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [
-        ("HTTP.ts", 31)
-    ]
+    assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [("HTTP.ts", 31)]
     assert edges[0].attributes == {
         "scope": "production",
         "policy_effect": "validates-and-pins-addresses-unless-proxied",
@@ -3149,8 +3095,7 @@ def test_typescript_flowise_secure_request_composition_preserves_proxy_residual(
     assert [
         (finding.rule_id, finding.evidence.path, finding.evidence.line)
         for finding in ir.findings
-        if finding.rule_id == "AV-NET001"
-        and finding.evidence.path == "HTTP.ts"
+        if finding.rule_id == "AV-NET001" and finding.evidence.path == "HTTP.ts"
     ] == [("AV-NET001", "HTTP.ts", 31)]
     assert not any(
         finding.rule_id == "AV-NET001" and finding.evidence.path == "raw.ts"
@@ -3203,8 +3148,7 @@ def test_typescript_flowise_secure_request_composition_preserves_proxy_residual(
         source_path.write_text(source.replace(before, after), encoding="utf-8")
         incomplete_ir = scan_repository(incomplete)
         assert not any(
-            edge.attributes.get("analysis")
-            == "typescript-flowise-secure-request-composition"
+            edge.attributes.get("analysis") == "typescript-flowise-secure-request-composition"
             for edge in incomplete_ir.relationships
         )
 
@@ -3217,8 +3161,7 @@ def test_typescript_flowise_secure_fetch_composition_overrides_caller_agent(
     edges = [
         edge
         for edge in ir.relationships
-        if edge.attributes.get("analysis")
-        == "typescript-flowise-secure-fetch-composition"
+        if edge.attributes.get("analysis") == "typescript-flowise-secure-fetch-composition"
     ]
     assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [
         ("WebScraperTool.ts", 9)
@@ -3245,8 +3188,7 @@ def test_typescript_flowise_secure_fetch_composition_overrides_caller_agent(
     assert [
         (finding.rule_id, finding.evidence.path, finding.evidence.line)
         for finding in ir.findings
-        if finding.rule_id == "AV-NET001"
-        and finding.evidence.path == "WebScraperTool.ts"
+        if finding.rule_id == "AV-NET001" and finding.evidence.path == "WebScraperTool.ts"
     ] == [("AV-NET001", "WebScraperTool.ts", 9)]
     assert not any(
         finding.rule_id == "AV-NET001" and finding.evidence.path == "raw-fetch.ts"
@@ -3257,8 +3199,7 @@ def test_typescript_flowise_secure_fetch_composition_overrides_caller_agent(
         selected_paths=["WebScraperTool.ts", "httpSecurity.ts"],
     )
     assert not any(
-        edge.attributes.get("analysis")
-        == "typescript-flowise-secure-fetch-composition"
+        edge.attributes.get("analysis") == "typescript-flowise-secure-fetch-composition"
         for edge in without_barrel.relationships
     )
 
@@ -3314,8 +3255,7 @@ def test_typescript_flowise_secure_fetch_composition_overrides_caller_agent(
         source_path.write_text(source.replace(before, after), encoding="utf-8")
         incomplete_ir = scan_repository(incomplete)
         assert not any(
-            edge.attributes.get("analysis")
-            == "typescript-flowise-secure-fetch-composition"
+            edge.attributes.get("analysis") == "typescript-flowise-secure-fetch-composition"
             for edge in incomplete_ir.relationships
         )
 
@@ -3328,8 +3268,7 @@ def test_typescript_google_adk_fetch_preserves_preflight_dns_residual(
     edges = [
         edge
         for edge in ir.relationships
-        if edge.attributes.get("analysis")
-        == "typescript-google-adk-load-web-page-composition"
+        if edge.attributes.get("analysis") == "typescript-google-adk-load-web-page-composition"
     ]
     assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [
         ("load_web_page.ts", 69)
@@ -3365,8 +3304,7 @@ def test_typescript_google_adk_fetch_preserves_preflight_dns_residual(
         selected_paths=["load_web_page.ts"],
     )
     assert not any(
-        edge.attributes.get("analysis")
-        == "typescript-google-adk-load-web-page-composition"
+        edge.attributes.get("analysis") == "typescript-google-adk-load-web-page-composition"
         for edge in without_tool_class.relationships
     )
 
@@ -3416,8 +3354,7 @@ def test_typescript_google_adk_fetch_preserves_preflight_dns_residual(
         source_path.write_text(source.replace(before, after), encoding="utf-8")
         incomplete_ir = scan_repository(incomplete)
         assert not any(
-            edge.attributes.get("analysis")
-            == "typescript-google-adk-load-web-page-composition"
+            edge.attributes.get("analysis") == "typescript-google-adk-load-web-page-composition"
             for edge in incomplete_ir.relationships
         )
 
@@ -3457,8 +3394,7 @@ def test_typescript_axios_instances_preserve_absolute_url_override_semantics(
         if finding.rule_id == "AV-NET001" and finding.evidence.path == "direct.ts"
     ] == [12, 16, 20, 33]
     assert not any(
-        item.kind == "capability" and item.evidence.path == "shadowed.ts"
-        for item in ir.components
+        item.kind == "capability" and item.evidence.path == "shadowed.ts" for item in ir.components
     )
 
     locked = tmp_path / "locked-override-enabled"
@@ -3500,12 +3436,9 @@ def test_typescript_activepieces_imported_axios_control_preserves_proxy_residual
     edges = [
         edge
         for edge in ir.relationships
-        if edge.attributes.get("analysis")
-        == "typescript-imported-filtering-axios-instance"
+        if edge.attributes.get("analysis") == "typescript-imported-filtering-axios-instance"
     ]
-    assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [
-        ("mcp-transport.ts", 8)
-    ]
+    assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [("mcp-transport.ts", 8)]
     assert edges[0].attributes == {
         "scope": "production",
         "policy_effect": "filters-connected-addresses-unless-proxied",
@@ -3541,8 +3474,7 @@ def test_typescript_activepieces_imported_axios_control_preserves_proxy_residual
     assert capability.attributes["origin_authority"] == "configured-mcp-server"
     assert capability.attributes["dynamic_origin"] is False
     assert not any(
-        finding.rule_id == "AV-NET001"
-        and finding.evidence.path == "mcp-transport.ts"
+        finding.rule_id == "AV-NET001" and finding.evidence.path == "mcp-transport.ts"
         for finding in ir.findings
     )
     protocol_edges = [
@@ -3562,8 +3494,7 @@ def test_typescript_activepieces_imported_axios_control_preserves_proxy_residual
         selected_paths=["safe-http.ts", "mcp-transport.ts", "mcp-tool-validator.ts"],
     )
     assert not any(
-        edge.attributes.get("analysis")
-        == "typescript-imported-filtering-axios-instance"
+        edge.attributes.get("analysis") == "typescript-imported-filtering-axios-instance"
         for edge in without_manifest.relationships
     )
 
@@ -3601,8 +3532,7 @@ def test_typescript_activepieces_imported_axios_control_preserves_proxy_residual
         source_path.write_text(source.replace(before, after), encoding="utf-8")
         incomplete_ir = scan_repository(incomplete)
         assert not any(
-            edge.attributes.get("analysis")
-            == "typescript-imported-filtering-axios-instance"
+            edge.attributes.get("analysis") == "typescript-imported-filtering-axios-instance"
             for edge in incomplete_ir.relationships
         )
 
@@ -3615,8 +3545,7 @@ def test_typescript_composio_safe_fetch_preserves_runtime_and_route_residuals(
     edges = [
         edge
         for edge in ir.relationships
-        if edge.attributes.get("analysis")
-        == "typescript-imported-undici-ssrf-safe-fetch"
+        if edge.attributes.get("analysis") == "typescript-imported-undici-ssrf-safe-fetch"
     ]
     assert [
         (
@@ -3663,9 +3592,7 @@ def test_typescript_composio_safe_fetch_preserves_runtime_and_route_residuals(
     assert {edge.attributes["proxy_scope"] for edge in edges} == {
         "caller-global-or-environment-dependent"
     }
-    assert {edge.attributes["filter_library_version"] for edge in edges} == {
-        "^7.29.0"
-    }
+    assert {edge.attributes["filter_library_version"] for edge in edges} == {"^7.29.0"}
     capabilities = [
         item
         for item in ir.components
@@ -3693,8 +3620,7 @@ def test_typescript_composio_safe_fetch_preserves_runtime_and_route_residuals(
         ],
     )
     assert not any(
-        edge.attributes.get("analysis")
-        == "typescript-imported-undici-ssrf-safe-fetch"
+        edge.attributes.get("analysis") == "typescript-imported-undici-ssrf-safe-fetch"
         for edge in without_manifest.relationships
     )
 
@@ -3744,8 +3670,7 @@ def test_typescript_composio_safe_fetch_preserves_runtime_and_route_residuals(
         source_path.write_text(source.replace(before, after), encoding="utf-8")
         incomplete_ir = scan_repository(incomplete)
         assert not any(
-            edge.attributes.get("analysis")
-            == "typescript-imported-undici-ssrf-safe-fetch"
+            edge.attributes.get("analysis") == "typescript-imported-undici-ssrf-safe-fetch"
             for edge in incomplete_ir.relationships
         )
 
@@ -3829,8 +3754,7 @@ def test_typescript_google_adk_openapi_tool_keeps_model_input_off_origin(
         if edge.attributes.get("analysis") == "typescript-google-adk-openapi-rest-tool"
     ]
     assert {
-        (edge.source_kind, edge.relation, edge.target_kind, edge.target_name)
-        for edge in edges
+        (edge.source_kind, edge.relation, edge.target_kind, edge.target_name) for edge in edges
     } == {
         ("tool", "uses", "capability", "network"),
         ("capability", "governed-by", "control", "network-origin-policy"),
@@ -3915,20 +3839,16 @@ def test_openai_agents_python_mcp_tools_inherit_disabled_approval_default(
     edges = [
         edge
         for edge in ir.relationships
-        if edge.attributes.get("analysis")
-        == "python-openai-agents-mcp-approval-default"
+        if edge.attributes.get("analysis") == "python-openai-agents-mcp-approval-default"
     ]
     assert {
-        (edge.source_kind, edge.relation, edge.target_kind, edge.target_name)
-        for edge in edges
+        (edge.source_kind, edge.relation, edge.target_kind, edge.target_name) for edge in edges
     } == {
         ("agent", "uses", "mcp-server", "Reference Policy Server"),
         ("mcp-server", "configured-by", "control-setting", "mcp-tool-approval"),
     }
     agent_server_edge = next(
-        edge
-        for edge in edges
-        if edge.source_kind == "agent" and edge.target_kind == "mcp-server"
+        edge for edge in edges if edge.source_kind == "agent" and edge.target_kind == "mcp-server"
     )
     assert agent_server_edge.source_id == "py:app.py#agent:agent"
     assert agent_server_edge.target_id == "py:app.py#mcp-server:server"
@@ -3947,8 +3867,7 @@ def test_openai_agents_python_mcp_tools_inherit_disabled_approval_default(
         for item in ir.components
         if item.kind == "control-setting"
         and item.name == "mcp-tool-approval"
-        and item.attributes.get("analysis")
-        == "python-openai-agents-mcp-approval-default"
+        and item.attributes.get("analysis") == "python-openai-agents-mcp-approval-default"
     )
     assert setting.attributes["enabled"] is False
     assert setting.attributes["approval_policy"] == "disabled-default"
@@ -4002,8 +3921,7 @@ def test_openai_agents_python_mcp_tools_inherit_disabled_approval_default(
         source_path.write_text(source.replace(before, after), encoding="utf-8")
         incomplete_ir = scan_repository(incomplete)
         assert not any(
-            edge.attributes.get("analysis")
-            == "python-openai-agents-mcp-approval-default"
+            edge.attributes.get("analysis") == "python-openai-agents-mcp-approval-default"
             for edge in incomplete_ir.relationships
         )
 
@@ -4015,8 +3933,7 @@ def test_openai_agents_typescript_writable_mcp_tools_inherit_disabled_approval_d
     ir = scan_repository(root)
     findings = [finding for finding in ir.findings if finding.rule_id == "AV-APPROVAL004"]
     assert [
-        (finding.evidence.path, finding.evidence.line, finding.ir_path)
-        for finding in findings
+        (finding.evidence.path, finding.evidence.line, finding.ir_path) for finding in findings
     ] == [
         (
             "app.ts",
@@ -4055,8 +3972,7 @@ def test_openai_agents_typescript_writable_mcp_tools_inherit_disabled_approval_d
         if component.kind == "capability"
         and component.evidence.path == "app.ts"
         and component.evidence.line == 20
-        and component.attributes.get("analysis")
-        == "typescript-openai-agents-mcp-approval-default"
+        and component.attributes.get("analysis") == "typescript-openai-agents-mcp-approval-default"
     )
     assert read_only.attributes["write_access"] is False
     assert read_only.attributes["tool_filter"] == "read-only-static"
@@ -4071,8 +3987,7 @@ def test_openai_agents_typescript_writable_mcp_tools_inherit_disabled_approval_d
     )
     assert not any(finding.evidence.line in {20, 40} for finding in findings)
     assert not any(
-        component.attributes.get("analysis")
-        == "typescript-openai-agents-mcp-approval-default"
+        component.attributes.get("analysis") == "typescript-openai-agents-mcp-approval-default"
         and component.evidence.path == "near_misses.ts"
         for component in ir.components
     )
@@ -4082,8 +3997,7 @@ def test_openai_agents_typescript_writable_mcp_tools_inherit_disabled_approval_d
     (incomplete / "packages/agents-core/src/tool.ts").unlink()
     incomplete_ir = scan_repository(incomplete)
     assert not any(
-        edge.attributes.get("analysis")
-        == "typescript-openai-agents-mcp-approval-default"
+        edge.attributes.get("analysis") == "typescript-openai-agents-mcp-approval-default"
         for edge in incomplete_ir.relationships
     )
 
@@ -4095,8 +4009,7 @@ def test_agno_filesystem_mcp_confirmation_policy_is_resolved_per_mutating_tool(
     ir = scan_repository(root)
     findings = [finding for finding in ir.findings if finding.rule_id == "AV-APPROVAL005"]
     assert [
-        (finding.evidence.path, finding.evidence.line, finding.ir_path)
-        for finding in findings
+        (finding.evidence.path, finding.evidence.line, finding.ir_path) for finding in findings
     ] == [
         (
             "direct.py",
@@ -4128,8 +4041,7 @@ def test_agno_filesystem_mcp_confirmation_policy_is_resolved_per_mutating_tool(
     ]
     assert all(finding.result_kind == "review" for finding in findings)
     assert all(
-        finding.analysis["control_settings"] == ["mcp-tool-confirmation"]
-        for finding in findings
+        finding.analysis["control_settings"] == ["mcp-tool-confirmation"] for finding in findings
     )
 
     read_only = next(
@@ -4137,8 +4049,7 @@ def test_agno_filesystem_mcp_confirmation_policy_is_resolved_per_mutating_tool(
         for component in ir.components
         if component.kind == "capability"
         and component.evidence.path == "read_only.py"
-        and component.attributes.get("analysis")
-        == "python-agno-mcp-confirmation-default"
+        and component.attributes.get("analysis") == "python-agno-mcp-confirmation-default"
     )
     assert read_only.attributes["write_access"] is False
     assert read_only.attributes["unprotected_mutations"] == []
@@ -4156,8 +4067,7 @@ def test_agno_filesystem_mcp_confirmation_policy_is_resolved_per_mutating_tool(
         for component in ir.components
         if component.kind == "capability"
         and component.evidence.path == "confirmed.py"
-        and component.attributes.get("analysis")
-        == "python-agno-mcp-confirmation-default"
+        and component.attributes.get("analysis") == "python-agno-mcp-confirmation-default"
     )
     assert confirmed.attributes["approval_policy"] == "enabled-static-mutations"
     assert confirmed.attributes["unprotected_mutations"] == []
@@ -4183,8 +4093,7 @@ def test_agno_filesystem_mcp_confirmation_policy_is_resolved_per_mutating_tool(
     )
     assert not any(
         component.attributes.get("analysis") == "python-agno-mcp-confirmation-default"
-        and component.evidence.path
-        in {"disconnected_session.py", "unbound.py", "wrong_import.py"}
+        and component.evidence.path in {"disconnected_session.py", "unbound.py", "wrong_import.py"}
         for component in ir.components
     )
 
@@ -4213,8 +4122,7 @@ def test_openhands_builtin_tools_require_analyzer_and_confirmation_policy() -> N
 
     findings = [finding for finding in ir.findings if finding.rule_id == "AV-APPROVAL006"]
     assert [
-        (finding.evidence.path, finding.evidence.line, finding.ir_path)
-        for finding in findings
+        (finding.evidence.path, finding.evidence.line, finding.ir_path) for finding in findings
     ] == [
         (
             "positive.py",
@@ -4236,9 +4144,7 @@ def test_openhands_builtin_tools_require_analyzer_and_confirmation_policy() -> N
         if component.kind == "tool" and component.evidence.path == "positive.py"
     }
     assert set(positive_tools) == {"TerminalTool@8", "FileEditorTool@9"}
-    assert positive_tools["TerminalTool@8"].attributes["approval_policy"] == (
-        "disabled-default"
-    )
+    assert positive_tools["TerminalTool@8"].attributes["approval_policy"] == ("disabled-default")
     assert {
         (edge.source_name, edge.target_name, edge.target_id)
         for edge in ir.relationships
@@ -4276,12 +4182,10 @@ def test_openhands_builtin_tools_require_analyzer_and_confirmation_policy() -> N
         for edge in approval_edges
     )
     assert not any(
-        finding.evidence.path in {"dynamic_policy.py", "guarded.py"}
-        for finding in findings
+        finding.evidence.path in {"dynamic_policy.py", "guarded.py"} for finding in findings
     )
     assert not any(
-        component.attributes.get("analysis")
-        == "python-openhands-conversation-security"
+        component.attributes.get("analysis") == "python-openhands-conversation-security"
         and component.evidence.path
         in {
             "lookalike.py",
@@ -4389,18 +4293,21 @@ def test_trae_agent_default_tools_require_the_exact_cross_file_composition(
     assert shell.attributes["sandbox_boundary_scope"] == "disabled-default"
     assert filesystem.attributes["path_requirement"] == "absolute-only"
     assert filesystem.attributes["path_boundary_scope"] == "unconstrained"
-    assert sum(
-        edge.attributes.get("analysis") == "python-trae-agent-default-tools"
-        and edge.source_kind == "agent"
-        and edge.relation == "uses"
-        and edge.target_kind == "tool"
-        for edge in ir.relationships
-    ) == 2
+    assert (
+        sum(
+            edge.attributes.get("analysis") == "python-trae-agent-default-tools"
+            and edge.source_kind == "agent"
+            and edge.relation == "uses"
+            and edge.target_kind == "tool"
+            for edge in ir.relationships
+        )
+        == 2
+    )
 
     near = scan_repository(root / "near")
     assert not any(
-        component.name == "Trae Agent" or component.attributes.get("analysis")
-        == "python-trae-agent-default-tools"
+        component.name == "Trae Agent"
+        or component.attributes.get("analysis") == "python-trae-agent-default-tools"
         for component in near.components
     )
 
@@ -4454,8 +4361,7 @@ def test_roo_command_auto_approval_requires_the_exact_cross_file_composition(
     specialized = [
         component
         for component in ir.components
-        if component.attributes.get("analysis")
-        == "typescript-roo-command-auto-approval"
+        if component.attributes.get("analysis") == "typescript-roo-command-auto-approval"
     ]
     assert {(component.kind, component.name) for component in specialized} == {
         ("agent", "Roo Code native tool runtime"),
@@ -4465,18 +4371,18 @@ def test_roo_command_auto_approval_requires_the_exact_cross_file_composition(
         ("control-setting", "command-auto-approval"),
     }
     control = next(component for component in specialized if component.kind == "control")
-    setting = next(
-        component for component in specialized if component.kind == "control-setting"
-    )
+    setting = next(component for component in specialized if component.kind == "control-setting")
     assert control.attributes["match_semantics"] == "raw-string-prefix"
     assert control.attributes["token_boundary"] is False
     assert control.attributes["dangerous_substitution_guard"] is True
     assert setting.attributes["enabled"] is False
-    assert sum(
-        edge.attributes.get("analysis")
-        == "typescript-roo-command-auto-approval"
-        for edge in ir.relationships
-    ) == 4
+    assert (
+        sum(
+            edge.attributes.get("analysis") == "typescript-roo-command-auto-approval"
+            for edge in ir.relationships
+        )
+        == 4
+    )
     assert any(
         component.kind == "framework" and component.name == "Roo Code"
         for component in ir.components
@@ -4485,8 +4391,7 @@ def test_roo_command_auto_approval_requires_the_exact_cross_file_composition(
     near = scan_repository(root / "near")
     assert not any(
         component.name == "Roo Code"
-        or component.attributes.get("analysis")
-        == "typescript-roo-command-auto-approval"
+        or component.attributes.get("analysis") == "typescript-roo-command-auto-approval"
         for component in near.components
     )
 
@@ -4495,20 +4400,17 @@ def test_roo_command_auto_approval_requires_the_exact_cross_file_composition(
     commands_path = bounded / "src/core/auto-approval/commands.ts"
     commands_path.write_text(
         commands_path.read_text(encoding="utf-8").replace(
-            'trimmedCommand.startsWith(lowerPrefix)',
-            'trimmedCommand === lowerPrefix || trimmedCommand.startsWith(`${lowerPrefix} `)',
+            "trimmedCommand.startsWith(lowerPrefix)",
+            "trimmedCommand === lowerPrefix || trimmedCommand.startsWith(`${lowerPrefix} `)",
         ),
         encoding="utf-8",
     )
     bounded_ir = scan_repository(bounded)
     assert not any(
-        component.attributes.get("analysis")
-        == "typescript-roo-command-auto-approval"
+        component.attributes.get("analysis") == "typescript-roo-command-auto-approval"
         for component in bounded_ir.components
     )
-    assert not any(
-        finding.rule_id == "AV-APPROVAL007" for finding in bounded_ir.findings
-    )
+    assert not any(finding.rule_id == "AV-APPROVAL007" for finding in bounded_ir.findings)
 
 
 def test_continue_plan_mode_approval_requires_the_exact_cross_file_composition(
@@ -4547,8 +4449,7 @@ def test_continue_plan_mode_approval_requires_the_exact_cross_file_composition(
     specialized = [
         component
         for component in ir.components
-        if component.attributes.get("analysis")
-        == "typescript-continue-plan-mode-approval"
+        if component.attributes.get("analysis") == "typescript-continue-plan-mode-approval"
     ]
     assert {(component.kind, component.name) for component in specialized} == {
         ("framework", "Continue CLI"),
@@ -4559,9 +4460,7 @@ def test_continue_plan_mode_approval_requires_the_exact_cross_file_composition(
         ("control", "terminal-command-risk-policy"),
     }
     control = next(component for component in specialized if component.kind == "control")
-    setting = next(
-        component for component in specialized if component.kind == "control-setting"
-    )
+    setting = next(component for component in specialized if component.kind == "control-setting")
     assert control.attributes["high_risk_evaluation"] == "allowedWithPermission"
     assert control.attributes["high_risk_effective_permission"] == "allow"
     assert control.attributes["critical_evaluation"] == "disabled"
@@ -4569,22 +4468,21 @@ def test_continue_plan_mode_approval_requires_the_exact_cross_file_composition(
     assert setting.attributes["mode_default"] is False
     assert setting.attributes["normal_mode_shell_permission"] == "ask"
     assert setting.attributes["user_configuration_precedence"] == "ignored-in-plan-mode"
-    assert sum(
-        edge.attributes.get("analysis")
-        == "typescript-continue-plan-mode-approval"
-        for edge in ir.relationships
-    ) == 4
+    assert (
+        sum(
+            edge.attributes.get("analysis") == "typescript-continue-plan-mode-approval"
+            for edge in ir.relationships
+        )
+        == 4
+    )
 
     for directory in ("near", "safe"):
         negative = scan_repository(root / directory)
         assert not any(
-            component.attributes.get("analysis")
-            == "typescript-continue-plan-mode-approval"
+            component.attributes.get("analysis") == "typescript-continue-plan-mode-approval"
             for component in negative.components
         )
-        assert not any(
-            finding.rule_id == "AV-APPROVAL008" for finding in negative.findings
-        )
+        assert not any(finding.rule_id == "AV-APPROVAL008" for finding in negative.findings)
 
     mutations = {
         "plan-bash-asks": (
@@ -4638,13 +4536,10 @@ def test_continue_plan_mode_approval_requires_the_exact_cross_file_composition(
         path.write_text(original.replace(before, after, 1), encoding="utf-8")
         changed_ir = scan_repository(changed)
         assert not any(
-            component.attributes.get("analysis")
-            == "typescript-continue-plan-mode-approval"
+            component.attributes.get("analysis") == "typescript-continue-plan-mode-approval"
             for component in changed_ir.components
         )
-        assert not any(
-            finding.rule_id == "AV-APPROVAL008" for finding in changed_ir.findings
-        )
+        assert not any(finding.rule_id == "AV-APPROVAL008" for finding in changed_ir.findings)
 
 
 def test_continue_plan_mode_mcp_approval_requires_the_exact_cross_file_composition(
@@ -4673,8 +4568,7 @@ def test_continue_plan_mode_mcp_approval_requires_the_exact_cross_file_compositi
     specialized = [
         component
         for component in ir.components
-        if component.attributes.get("analysis")
-        == "typescript-continue-plan-mode-mcp-approval"
+        if component.attributes.get("analysis") == "typescript-continue-plan-mode-mcp-approval"
     ]
     assert {(component.kind, component.name) for component in specialized} == {
         ("agent", "Continue CLI plan-mode MCP runtime"),
@@ -4685,31 +4579,28 @@ def test_continue_plan_mode_mcp_approval_requires_the_exact_cross_file_compositi
         ("control", "mcp-tool-classification"),
     }
     control = next(component for component in specialized if component.kind == "control")
-    setting = next(
-        component for component in specialized if component.kind == "control-setting"
-    )
+    setting = next(component for component in specialized if component.kind == "control-setting")
     assert control.attributes["readonly_metadata"] == "discarded"
     assert control.attributes["risk_classification"] == "absent-on-proven-path"
     assert control.attributes["approval_prompt_on_allow"] is False
     assert setting.attributes["mode_default"] is False
     assert setting.attributes["normal_mode_external_tool_permission"] == "ask"
     assert setting.attributes["plan_mode_external_tool_permission"] == "allow"
-    assert sum(
-        edge.attributes.get("analysis")
-        == "typescript-continue-plan-mode-mcp-approval"
-        for edge in ir.relationships
-    ) == 5
+    assert (
+        sum(
+            edge.attributes.get("analysis") == "typescript-continue-plan-mode-mcp-approval"
+            for edge in ir.relationships
+        )
+        == 5
+    )
 
     for directory in ("near", "safe"):
         negative = scan_repository(root / directory)
         assert not any(
-            component.attributes.get("analysis")
-            == "typescript-continue-plan-mode-mcp-approval"
+            component.attributes.get("analysis") == "typescript-continue-plan-mode-mcp-approval"
             for component in negative.components
         )
-        assert not any(
-            finding.rule_id == "AV-APPROVAL009" for finding in negative.findings
-        )
+        assert not any(finding.rule_id == "AV-APPROVAL009" for finding in negative.findings)
 
     mutations = {
         "plan-wildcard-asks": (
@@ -4767,13 +4658,10 @@ def test_continue_plan_mode_mcp_approval_requires_the_exact_cross_file_compositi
         path.write_text(original.replace(before, after, 1), encoding="utf-8")
         changed_ir = scan_repository(changed)
         assert not any(
-            component.attributes.get("analysis")
-            == "typescript-continue-plan-mode-mcp-approval"
+            component.attributes.get("analysis") == "typescript-continue-plan-mode-mcp-approval"
             for component in changed_ir.components
         )
-        assert not any(
-            finding.rule_id == "AV-APPROVAL009" for finding in changed_ir.findings
-        )
+        assert not any(finding.rule_id == "AV-APPROVAL009" for finding in changed_ir.findings)
 
 
 def test_cline_subagent_approval_requires_the_exact_cross_file_composition(
@@ -4802,8 +4690,7 @@ def test_cline_subagent_approval_requires_the_exact_cross_file_composition(
     specialized = [
         component
         for component in ir.components
-        if component.attributes.get("analysis")
-        == "typescript-cline-subagent-approval-propagation"
+        if component.attributes.get("analysis") == "typescript-cline-subagent-approval-propagation"
     ]
     assert {(component.kind, component.name) for component in specialized} == {
         ("framework", "Cline SDK"),
@@ -4815,30 +4702,27 @@ def test_cline_subagent_approval_requires_the_exact_cross_file_composition(
         ("control", "subagent-tool-approval-propagation"),
     }
     control = next(component for component in specialized if component.kind == "control")
-    setting = next(
-        component for component in specialized if component.kind == "control-setting"
-    )
+    setting = next(component for component in specialized if component.kind == "control-setting")
     assert control.attributes["parent_approval_callback"] == "configured"
     assert control.attributes["child_approval_callback"] == "not-forwarded"
     assert control.attributes["child_tool_policies"] == "not-forwarded"
     assert control.attributes["factory_supports_propagation"] is True
     assert setting.attributes["default_for_unlisted_tools"] == "auto-approved"
     assert setting.attributes["spawn_agent_listed"] is False
-    assert sum(
-        edge.attributes.get("analysis")
-        == "typescript-cline-subagent-approval-propagation"
-        for edge in ir.relationships
-    ) == 5
+    assert (
+        sum(
+            edge.attributes.get("analysis") == "typescript-cline-subagent-approval-propagation"
+            for edge in ir.relationships
+        )
+        == 5
+    )
 
     near = scan_repository(root / "near")
     assert not any(
-        component.attributes.get("analysis")
-        == "typescript-cline-subagent-approval-propagation"
+        component.attributes.get("analysis") == "typescript-cline-subagent-approval-propagation"
         for component in near.components
     )
-    assert not any(
-        finding.rule_id == "AV-APPROVAL010" for finding in near.findings
-    )
+    assert not any(finding.rule_id == "AV-APPROVAL010" for finding in near.findings)
 
     mutations = {
         "spawn-policy-gated": (
@@ -4891,21 +4775,14 @@ def test_cline_subagent_approval_requires_the_exact_cross_file_composition(
         path.write_text(original.replace(before, after, 1), encoding="utf-8")
         changed_ir = scan_repository(changed)
         assert not any(
-            component.attributes.get("analysis")
-            == "typescript-cline-subagent-approval-propagation"
+            component.attributes.get("analysis") == "typescript-cline-subagent-approval-propagation"
             for component in changed_ir.components
         )
-        assert not any(
-            finding.rule_id == "AV-APPROVAL010"
-            for finding in changed_ir.findings
-        )
+        assert not any(finding.rule_id == "AV-APPROVAL010" for finding in changed_ir.findings)
 
     ignored_host_arguments = tmp_path / "ignored-host-arguments"
     shutil.copytree(root / "positive", ignored_host_arguments)
-    host_path = (
-        ignored_host_arguments
-        / "sdk/packages/core/src/runtime/host/local-runtime-host.ts"
-    )
+    host_path = ignored_host_arguments / "sdk/packages/core/src/runtime/host/local-runtime-host.ts"
     host_text = host_path.read_text(encoding="utf-8")
     before = "          sessionToolExecutors,\n"
     assert before in host_text
@@ -4920,9 +4797,136 @@ def test_cline_subagent_approval_requires_the_exact_cross_file_composition(
         encoding="utf-8",
     )
     ignored_ir = scan_repository(ignored_host_arguments)
-    assert any(
-        finding.rule_id == "AV-APPROVAL010" for finding in ignored_ir.findings
+    assert any(finding.rule_id == "AV-APPROVAL010" for finding in ignored_ir.findings)
+
+
+def test_cline_cli_subagent_approval_requires_the_exact_cross_file_composition(
+    tmp_path: Path,
+) -> None:
+    root = ROOT / "cases/typescript_cline_subagent_approval_cli"
+    ir = scan_repository(root / "positive")
+
+    findings = [
+        (finding.rule_id, finding.evidence.path, finding.evidence.line, finding.ir_path)
+        for finding in ir.findings
+        if finding.rule_id == "AV-APPROVAL010"
+    ]
+    assert findings == [
+        (
+            "AV-APPROVAL010",
+            "sdk/packages/core/src/runtime/host/local/spawn-tool.ts",
+            10,
+            (
+                "agent:Cline CLI sandbox root agent",
+                "tool:Cline CLI spawn_agent tool",
+                "control:subagent-tool-approval-propagation",
+            ),
+        )
+    ]
+    specialized = [
+        component
+        for component in ir.components
+        if component.attributes.get("analysis")
+        == "typescript-cline-cli-subagent-approval-propagation"
+    ]
+    assert {(component.kind, component.name) for component in specialized} == {
+        ("framework", "Cline SDK"),
+        ("agent", "Cline CLI sandbox root agent"),
+        ("agent", "Cline SDK spawned sub-agent"),
+        ("tool", "Cline CLI spawn_agent tool"),
+        ("capability", "subagent-privileged-tool-execution"),
+        ("control-setting", "Cline CLI tool approval policy"),
+        ("control", "subagent-tool-approval-propagation"),
+    }
+    control = next(component for component in specialized if component.kind == "control")
+    setting = next(component for component in specialized if component.kind == "control-setting")
+    assert control.attributes["parent_host"] == "cli-sandbox"
+    assert control.attributes["root_backend_forced_local_by_sandbox"] is True
+    assert control.attributes["parent_approval_callback"] == "configured"
+    assert control.attributes["child_approval_callback"] == "not-forwarded"
+    assert control.attributes["child_tool_policies"] == "not-forwarded"
+    assert control.attributes["factory_supports_propagation"] is True
+    assert control.attributes["spawn_agent_policy"] == "parent-approval-required"
+    assert setting.attributes["default_for_unlisted_tools"] == ("approval-required-when-disabled")
+    assert setting.attributes["spawn_agent_listed"] is False
+    assert (
+        sum(
+            edge.attributes.get("analysis") == "typescript-cline-cli-subagent-approval-propagation"
+            for edge in ir.relationships
+        )
+        == 5
     )
+
+    for directory in ("near", "safe"):
+        negative = scan_repository(root / directory)
+        assert not any(
+            component.attributes.get("analysis")
+            == "typescript-cline-cli-subagent-approval-propagation"
+            for component in negative.components
+        )
+        assert not any(finding.rule_id == "AV-APPROVAL010" for finding in negative.findings)
+
+    mutations = {
+        "spawn-safe-listed": (
+            "apps/cli/src/runtime/tool-policies.ts",
+            '  "search_codebase",\n',
+            '  "search_codebase",\n  "spawn_agent",\n',
+        ),
+        "unlisted-tools-auto-approved": (
+            "apps/cli/src/runtime/tool-policies.ts",
+            "        : false,",
+            "        : true,",
+        ),
+        "cli-spawn-disabled": (
+            "apps/cli/src/main.ts",
+            "  enableSpawnAgent: !isYoloMode,",
+            "  enableSpawnAgent: false,",
+        ),
+        "cli-not-local-for-sandbox": (
+            "apps/cli/src/runtime/run-agent.ts",
+            "forceLocalBackend: isYoloMode || config.sandbox === true",
+            "forceLocalBackend: isYoloMode",
+        ),
+        "cli-callback-not-wired": (
+            "apps/cli/src/runtime/run-agent.ts",
+            "      requestToolApproval,\n",
+            "      requestToolApproval: undefined,\n",
+        ),
+        "cli-policies-not-wired": (
+            "apps/cli/src/runtime/run-agent.ts",
+            "    toolPolicies: config.toolPolicies,",
+            "    toolPolicies: undefined,",
+        ),
+        "cli-core-not-local": (
+            "apps/cli/src/session/session.ts",
+            'options?.forceLocalBackend ? "local" : undefined',
+            'options?.forceLocalBackend ? "managed" : undefined',
+        ),
+        "wrapper-forwards-approval-state": (
+            "sdk/packages/core/src/runtime/host/local/spawn-tool.ts",
+            "    createSubAgentTools,\n",
+            "    createSubAgentTools,\n    toolPolicies: config.toolPolicies,\n    requestToolApproval: config.requestToolApproval,\n",
+        ),
+        "factory-does-not-propagate-policy": (
+            "sdk/packages/core/src/extensions/tools/team/spawn-agent-tool.ts",
+            "toolPolicies: config.toolPolicies,",
+            "toolPolicies: undefined,",
+        ),
+    }
+    for name, (relative, before, after) in mutations.items():
+        changed = tmp_path / name
+        shutil.copytree(root / "positive", changed)
+        path = changed / relative
+        original = path.read_text(encoding="utf-8")
+        assert before in original
+        path.write_text(original.replace(before, after, 1), encoding="utf-8")
+        changed_ir = scan_repository(changed)
+        assert not any(
+            component.attributes.get("analysis")
+            == "typescript-cline-cli-subagent-approval-propagation"
+            for component in changed_ir.components
+        )
+        assert not any(finding.rule_id == "AV-APPROVAL010" for finding in changed_ir.findings)
 
 
 def test_letta_default_tools_require_the_exact_cross_file_composition(
@@ -4985,14 +4989,12 @@ def test_letta_default_tools_require_the_exact_cross_file_composition(
     approval = next(
         component
         for component in specialized
-        if component.kind == "control-setting"
-        and component.name == "agent-action-confirmation"
+        if component.kind == "control-setting" and component.name == "agent-action-confirmation"
     )
     isolation = next(
         component
         for component in specialized
-        if component.kind == "control-setting"
-        and component.name == "tool-execution-isolation"
+        if component.kind == "control-setting" and component.name == "tool-execution-isolation"
     )
     filesystem = next(
         component
@@ -5012,10 +5014,13 @@ def test_letta_default_tools_require_the_exact_cross_file_composition(
         "cross-agent-memory-guard",
     ]
     assert filesystem.attributes["path_boundary_scope"] == "cross-agent-only-default"
-    assert sum(
-        edge.attributes.get("analysis") == "typescript-letta-default-tools"
-        for edge in ir.relationships
-    ) == 8
+    assert (
+        sum(
+            edge.attributes.get("analysis") == "typescript-letta-default-tools"
+            for edge in ir.relationships
+        )
+        == 8
+    )
     assert any(
         component.kind == "framework" and component.name == "Letta Code"
         for component in ir.components
@@ -5053,8 +5058,7 @@ def test_semantic_kernel_mcp_sampling_auto_approval_resolves_server_model_author
     ir = scan_repository(root)
     findings = [finding for finding in ir.findings if finding.rule_id == "AV-MCP004"]
     assert [
-        (finding.evidence.path, finding.evidence.line, finding.ir_path)
-        for finding in findings
+        (finding.evidence.path, finding.evidence.line, finding.ir_path) for finding in findings
     ] == [
         (
             "auto.py",
@@ -5075,8 +5079,7 @@ def test_semantic_kernel_mcp_sampling_auto_approval_resolves_server_model_author
         for component in ir.components
         if component.kind == "capability"
         and component.name == "model-sampling"
-        and component.attributes.get("analysis")
-        == "python-semantic-kernel-mcp-sampling-approval"
+        and component.attributes.get("analysis") == "python-semantic-kernel-mcp-sampling-approval"
     }
     assert set(capabilities) == {
         "auto.py",
@@ -5117,13 +5120,11 @@ def test_semantic_kernel_mcp_sampling_auto_approval_resolves_server_model_author
         and edge.relation == "governed-by"
         and edge.target_kind == "control"
         and edge.target_name == "mcp-sampling-consent"
-        and edge.attributes.get("policy_effect")
-        == "denies-model-sampling-without-consent"
+        and edge.attributes.get("policy_effect") == "denies-model-sampling-without-consent"
     }
     assert deny_controls == {"default_deny.py", "explicit_deny.py"}
     assert not any(
-        finding.rule_id == "AV-APPROVAL001"
-        and finding.evidence.path in {"auto.py", "callback.py"}
+        finding.rule_id == "AV-APPROVAL001" and finding.evidence.path in {"auto.py", "callback.py"}
         for finding in ir.findings
     )
     assert not any(
@@ -5133,8 +5134,7 @@ def test_semantic_kernel_mcp_sampling_auto_approval_resolves_server_model_author
         for component in ir.components
     )
     assert not any(
-        component.attributes.get("analysis")
-        == "python-semantic-kernel-mcp-sampling-approval"
+        component.attributes.get("analysis") == "python-semantic-kernel-mcp-sampling-approval"
         and component.evidence.path in {"disconnected.py", "unbound.py", "wrong_import.py"}
         for component in ir.components
     )
@@ -5151,8 +5151,7 @@ def test_semantic_kernel_mcp_sampling_auto_approval_resolves_server_model_author
     )
     changed_ir = scan_repository(changed_sdk)
     assert not any(
-        edge.attributes.get("analysis")
-        == "python-semantic-kernel-mcp-sampling-approval"
+        edge.attributes.get("analysis") == "python-semantic-kernel-mcp-sampling-approval"
         for edge in changed_ir.relationships
     )
 
@@ -5214,8 +5213,13 @@ def test_mcp_sampling_callbacks_require_a_proven_user_decision() -> None:
     assert capabilities["python_denied.py"].attributes["approval_policy"] == "denied-handler"
     assert capabilities["python_denied.py"].attributes["fulfilment_target"] == "denial"
     assert capabilities["python_human.py"].attributes["approval_policy"] == "human-confirmed"
-    assert capabilities["python_unresolved.py"].attributes["approval_policy"] == "unresolved-handler"
-    assert capabilities["typescript_automatic.ts"].attributes["approval_policy"] == "automatic-fulfilment"
+    assert (
+        capabilities["python_unresolved.py"].attributes["approval_policy"] == "unresolved-handler"
+    )
+    assert (
+        capabilities["typescript_automatic.ts"].attributes["approval_policy"]
+        == "automatic-fulfilment"
+    )
     assert capabilities["typescript_human.ts"].attributes == {
         "frontend": "typescript",
         "input_authority": "mcp-server",
@@ -5231,13 +5235,15 @@ def test_mcp_sampling_callbacks_require_a_proven_user_decision() -> None:
     assert capabilities["typescript_late_confirm.ts"].attributes["approval_policy"] == (
         "automatic-fulfilment"
     )
-    assert capabilities["typescript_unresolved.ts"].attributes["approval_policy"] == "unresolved-handler"
+    assert (
+        capabilities["typescript_unresolved.ts"].attributes["approval_policy"]
+        == "unresolved-handler"
+    )
 
     controls = {
         (component.name, component.evidence.path, component.evidence.line)
         for component in ir.components
-        if component.kind == "control"
-        and component.attributes.get("analysis") in analyses
+        if component.kind == "control" and component.attributes.get("analysis") in analyses
     }
     assert controls == {
         ("mcp-sampling-consent", "python_human.py", 7),
@@ -5246,8 +5252,7 @@ def test_mcp_sampling_callbacks_require_a_proven_user_decision() -> None:
     }
     findings = [finding for finding in ir.findings if finding.rule_id == "AV-MCP005"]
     assert [
-        (finding.evidence.path, finding.evidence.line, finding.ir_path)
-        for finding in findings
+        (finding.evidence.path, finding.evidence.line, finding.ir_path) for finding in findings
     ] == [
         (
             "pydantic_automatic.py",
@@ -5272,8 +5277,7 @@ def test_mcp_sampling_callbacks_require_a_proven_user_decision() -> None:
     ]
     assert all(finding.result_kind == "review" for finding in findings)
     assert all(
-        finding.analysis["approval_coverage"] == "automatic-fulfilment"
-        for finding in findings
+        finding.analysis["approval_coverage"] == "automatic-fulfilment" for finding in findings
     )
     assert not any(
         component.attributes.get("analysis") in analyses
@@ -5339,12 +5343,8 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
     assert capabilities["fastmcp_message_only.py"].attributes["approval_policy"] == (
         "human-confirmed"
     )
-    assert capabilities["fastmcp_message_only.py"].attributes["url_disclosure"] == (
-        "not-proven"
-    )
-    assert capabilities["fastmcp_declined.py"].attributes["approval_policy"] == (
-        "declined-handler"
-    )
+    assert capabilities["fastmcp_message_only.py"].attributes["url_disclosure"] == ("not-proven")
+    assert capabilities["fastmcp_declined.py"].attributes["approval_policy"] == ("declined-handler")
     assert capabilities["fastmcp_unknown_return.py"].attributes["approval_policy"] == (
         "unresolved-handler"
     )
@@ -5354,9 +5354,10 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
     assert capabilities["fastmcp_reassigned.py"].attributes["approval_policy"] == (
         "unresolved-handler"
     )
-    assert capabilities["fastmcp_rebound_response_type.py"].attributes[
-        "approval_policy"
-    ] == "unresolved-handler"
+    assert (
+        capabilities["fastmcp_rebound_response_type.py"].attributes["approval_policy"]
+        == "unresolved-handler"
+    )
     assert capabilities["fastmcp_shadowed_callback.py"].attributes["approval_policy"] == (
         "unresolved-handler"
     )
@@ -5390,12 +5391,8 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
         "scope": "production",
         "analysis": "python-mcp-elicitation-callback-consent",
     }
-    assert capabilities["python_declined.py"].attributes["approval_policy"] == (
-        "declined-handler"
-    )
-    assert capabilities["python_human.py"].attributes["approval_policy"] == (
-        "human-confirmed"
-    )
+    assert capabilities["python_declined.py"].attributes["approval_policy"] == ("declined-handler")
+    assert capabilities["python_human.py"].attributes["approval_policy"] == ("human-confirmed")
     assert capabilities["python_human.py"].attributes["request_disclosure"] == (
         "message-and-request-details"
     )
@@ -5405,9 +5402,10 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
     assert capabilities["typescript_automatic.ts"].attributes["approval_policy"] == (
         "automatic-accept"
     )
-    assert capabilities["typescript_automatic.ts"].attributes[
-        "elicitation_modes"
-    ] == ("form", "url")
+    assert capabilities["typescript_automatic.ts"].attributes["elicitation_modes"] == (
+        "form",
+        "url",
+    )
     assert capabilities["typescript_declined.ts"].attributes["approval_policy"] == (
         "declined-handler"
     )
@@ -5448,19 +5446,21 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
         ("python_human.py", 9),
         ("typescript_human.ts", 10),
     }
-    assert sum(
-        relationship.source_kind == "protocol"
-        and relationship.source_name == "MCP"
-        and relationship.relation == "uses"
-        and relationship.target_kind == "capability"
-        and relationship.target_name == "user-elicitation"
-        and relationship.attributes.get("analysis") in analyses
-        for relationship in ir.relationships
-    ) == 20
+    assert (
+        sum(
+            relationship.source_kind == "protocol"
+            and relationship.source_name == "MCP"
+            and relationship.relation == "uses"
+            and relationship.target_kind == "capability"
+            and relationship.target_name == "user-elicitation"
+            and relationship.attributes.get("analysis") in analyses
+            for relationship in ir.relationships
+        )
+        == 20
+    )
     findings = [finding for finding in ir.findings if finding.rule_id == "AV-MCP006"]
     assert [
-        (finding.evidence.path, finding.evidence.line, finding.ir_path)
-        for finding in findings
+        (finding.evidence.path, finding.evidence.line, finding.ir_path) for finding in findings
     ] == [
         (
             "fastmcp_automatic.py",
@@ -5484,14 +5484,10 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
         ),
     ]
     assert all(finding.result_kind == "review" for finding in findings)
-    assert all(
-        finding.analysis["approval_coverage"] == "automatic-accept"
-        for finding in findings
-    )
+    assert all(finding.analysis["approval_coverage"] == "automatic-accept" for finding in findings)
     url_findings = [finding for finding in ir.findings if finding.rule_id == "AV-MCP007"]
     assert [
-        (finding.evidence.path, finding.evidence.line, finding.ir_path)
-        for finding in url_findings
+        (finding.evidence.path, finding.evidence.line, finding.ir_path) for finding in url_findings
     ] == [
         (
             "fastmcp_message_only.py",
@@ -5506,8 +5502,7 @@ def test_mcp_elicitation_acceptance_requires_a_proven_user_decision() -> None:
     ]
     assert all(finding.result_kind == "review" for finding in url_findings)
     assert all(
-        finding.analysis["approval_coverage"] == "human-confirmed"
-        for finding in url_findings
+        finding.analysis["approval_coverage"] == "human-confirmed" for finding in url_findings
     )
     assert not any(
         component.attributes.get("analysis") in analyses
@@ -5530,9 +5525,7 @@ def test_typescript_a2a_remote_cards_preserve_endpoint_authority_and_transport(
     root = ROOT / "cases/typescript_a2a_card_endpoint"
     ir = scan_repository(root)
     capabilities = [
-        item
-        for item in ir.components
-        if item.kind == "capability" and item.name == "a2a-rpc"
+        item for item in ir.components if item.kind == "capability" and item.name == "a2a-rpc"
     ]
     assert [
         (item.evidence.path, item.evidence.line, item.attributes["analysis"])
@@ -5613,8 +5606,7 @@ def test_typescript_a2a_remote_cards_preserve_endpoint_authority_and_transport(
         selected_paths=["a2a_remote_agent.ts"],
     )
     assert not any(
-        item.attributes.get("analysis")
-        == "typescript-adk-a2a-card-endpoint-composition"
+        item.attributes.get("analysis") == "typescript-adk-a2a-card-endpoint-composition"
         for item in without_resolver.components
     )
 
@@ -5677,8 +5669,7 @@ def test_typescript_a2a_remote_cards_preserve_endpoint_authority_and_transport(
         source_path.write_text(source.replace(before, after), encoding="utf-8")
         incomplete_ir = scan_repository(incomplete)
         assert not any(
-            item.attributes.get("analysis") == analysis
-            for item in incomplete_ir.components
+            item.attributes.get("analysis") == analysis for item in incomplete_ir.components
         )
 
 
@@ -5690,16 +5681,14 @@ def test_python_a2a_card_policy_requires_all_interfaces_and_dominating_validatio
     edges = [
         edge
         for edge in ir.relationships
-        if edge.target_kind == "control"
-        and edge.target_name == "a2a-card-rpc-origin-policy"
+        if edge.target_kind == "control" and edge.target_name == "a2a-card-rpc-origin-policy"
     ]
     assert [(edge.evidence.path, edge.evidence.line) for edge in edges] == [
         ("remote_a2a_agent.py", 41),
         ("remote_a2a_agent.py", 48),
     ]
     assert all(
-        edge.attributes["analysis"]
-        == "python-google-adk-a2a-card-endpoint-policy"
+        edge.attributes["analysis"] == "python-google-adk-a2a-card-endpoint-policy"
         and edge.attributes["rpc_origin_scope"] == "same-origin-with-card-source"
         and edge.attributes["rpc_scheme_scope"] == "https-or-loopback-http"
         and edge.attributes["advertised_interface_scope"] == "all-rpc-urls"
@@ -5734,8 +5723,7 @@ def test_python_a2a_card_policy_requires_all_interfaces_and_dominating_validatio
         source_path.write_text(source.replace(before, after), encoding="utf-8")
         incomplete_ir = scan_repository(incomplete)
         assert not any(
-            edge.target_kind == "control"
-            and edge.target_name == "a2a-card-rpc-origin-policy"
+            edge.target_kind == "control" and edge.target_name == "a2a-card-rpc-origin-policy"
             for edge in incomplete_ir.relationships
         )
 
@@ -5970,10 +5958,7 @@ def test_python_hex_digest_sanitizes_only_joined_path_segments() -> None:
         and item.evidence.path == "agent.py"
     }
     assert filesystem[13]["tool_input_path_sanitized"] is True
-    assert all(
-        "tool_input_path_sanitized" not in filesystem[line]
-        for line in (19, 25, 31, 38, 45)
-    )
+    assert all("tool_input_path_sanitized" not in filesystem[line] for line in (19, 25, 31, 38, 45))
     assert [
         (
             edge.evidence.line,
@@ -6007,14 +5992,10 @@ def test_python_hex_digest_sanitizes_only_joined_path_segments() -> None:
     ]
 
     shadowed = scan_repository(ROOT / "cases/python_path_segment_shadowed_hashlib")
-    assert not any(
-        edge.target_name == "path-segment-sanitizer"
-        for edge in shadowed.relationships
-    )
-    assert [
-        (finding.rule_id, finding.analysis["tool"])
-        for finding in shadowed.findings
-    ] == [("AV-FS001", "shadowed_hashlib")]
+    assert not any(edge.target_name == "path-segment-sanitizer" for edge in shadowed.relationships)
+    assert [(finding.rule_id, finding.analysis["tool"]) for finding in shadowed.findings] == [
+        ("AV-FS001", "shadowed_hashlib")
+    ]
 
 
 def test_python_path_helper_summary_is_return_exact_and_class_local() -> None:
@@ -6053,10 +6034,7 @@ def test_python_path_helper_summary_is_return_exact_and_class_local() -> None:
         and edge.relation == "governed-by"
         and edge.target_name == "path-boundary"
     ] == [(23, 15, "Path.relative_to", "same-class-return", "unresolved")]
-    assert [
-        (finding.rule_id, finding.evidence.line)
-        for finding in ir.findings
-    ] == [
+    assert [(finding.rule_id, finding.evidence.line) for finding in ir.findings] == [
         ("AV-FS001", 23),
         ("AV-FS001", 24),
         ("AV-FS001", 30),
@@ -6091,9 +6069,7 @@ def test_python_post_definition_tool_registration_is_exact_and_cross_file() -> N
         "resolution": "relative-import-single-definition",
     }
     assert tools["imported_write"].symbol_id == "py:app/tools.py#tool:imported_write"
-    assert tools["local_write"].attributes["resolution"] == (
-        "same-module-single-definition"
-    )
+    assert tools["local_write"].attributes["resolution"] == ("same-module-single-definition")
     assert tools["direct_wrapped_write"].attributes["wrappers"] == ["transparent"]
     assert tools["factory_wrapped_write"].attributes["wrappers"] == ["configured"]
     assert tools["nested_wrapped_write"].attributes["wrappers"] == [
@@ -6101,8 +6077,7 @@ def test_python_post_definition_tool_registration_is_exact_and_cross_file() -> N
         "transparent",
     ]
     assert all(
-        tools[name].attributes["wrapper_summary"]
-        == "metadata-preserving-forwarder"
+        tools[name].attributes["wrapper_summary"] == "metadata-preserving-forwarder"
         for name in (
             "direct_wrapped_write",
             "factory_wrapped_write",
@@ -6648,8 +6623,7 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
         ("evaluate_script", 17),
     ]
     assert [
-        (finding.rule_id, finding.evidence.path, finding.evidence.line)
-        for finding in ir.findings
+        (finding.rule_id, finding.evidence.path, finding.evidence.line) for finding in ir.findings
     ] == [
         ("AV-EXEC002", "agent.py", 9),
         ("AV-EXEC002", "agent.py", 20),
@@ -6695,9 +6669,7 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
         and item.evidence.path == "wrapper_scope.py"
         and item.evidence.line == 14
     )
-    assert shadowed_exact.attributes["receiver_proof"] == (
-        "unresolved-browser-import-context"
-    )
+    assert shadowed_exact.attributes["receiver_proof"] == ("unresolved-browser-import-context")
 
     rebound_class = tmp_path / "rebound-imported-browser-class"
     shutil.copytree(ROOT / "cases/python_browser_evaluate", rebound_class)
@@ -6721,9 +6693,7 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
         and item.evidence.path == "imported_field.py"
         and item.evidence.line == 13
     )
-    assert rebound_exact.attributes["receiver_proof"] == (
-        "unresolved-browser-import-context"
-    )
+    assert rebound_exact.attributes["receiver_proof"] == ("unresolved-browser-import-context")
 
     near_type = tmp_path / "near-browser-field-type"
     shutil.copytree(ROOT / "cases/python_browser_evaluate", near_type)
@@ -6744,9 +6714,7 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
         and item.evidence.path == "imported_field.py"
         and item.evidence.line == 12
     )
-    assert near_exact.attributes["receiver_proof"] == (
-        "unresolved-browser-import-context"
-    )
+    assert near_exact.attributes["receiver_proof"] == ("unresolved-browser-import-context")
 
     rebound_export = tmp_path / "rebound-browser-class-export"
     shutil.copytree(ROOT / "cases/python_browser_evaluate", rebound_export)
@@ -6768,6 +6736,7 @@ def test_python_browser_evaluate_requires_browser_import_and_tracks_dynamic_inpu
     assert rebound_export_exact.attributes["receiver_proof"] == (
         "unresolved-browser-import-context"
     )
+
 
 def test_python_imported_browser_method_returns_require_exact_closure_proof(
     tmp_path: Path,
@@ -6823,9 +6792,7 @@ def test_python_imported_browser_method_returns_require_exact_closure_proof(
         and item.evidence.path == "consumer.py"
         and item.evidence.line == 19
     )
-    assert near_exact.attributes["receiver_proof"] == (
-        "unresolved-browser-import-context"
-    )
+    assert near_exact.attributes["receiver_proof"] == ("unresolved-browser-import-context")
 
     rebound_import = tmp_path / "rebound-browser-method-import"
     shutil.copytree(case, rebound_import)
@@ -6892,9 +6859,7 @@ def test_python_imported_browser_method_returns_require_exact_closure_proof(
         and item.evidence.path == "consumer.py"
         and item.evidence.line == 19
     )
-    assert conditional_exact.attributes["receiver_proof"] == (
-        "unresolved-browser-import-context"
-    )
+    assert conditional_exact.attributes["receiver_proof"] == ("unresolved-browser-import-context")
 
     required_argument = tmp_path / "required-browser-method-argument"
     shutil.copytree(case, required_argument)
@@ -6918,9 +6883,7 @@ def test_python_imported_browser_method_returns_require_exact_closure_proof(
         and item.evidence.path == "consumer.py"
         and item.evidence.line == 19
     )
-    assert required_exact.attributes["receiver_proof"] == (
-        "unresolved-browser-import-context"
-    )
+    assert required_exact.attributes["receiver_proof"] == ("unresolved-browser-import-context")
 
 
 def test_python_registry_decorators_are_import_proven_and_entrypoint_scoped() -> None:
@@ -6970,8 +6933,7 @@ def test_python_registry_decorators_are_import_proven_and_entrypoint_scoped() ->
         if edge.target_name == "network"
     ] == [("fixed_search", 32), ("fixed_search", 33)]
     assert [
-        (finding.rule_id, finding.evidence.path, finding.evidence.line)
-        for finding in ir.findings
+        (finding.rule_id, finding.evidence.path, finding.evidence.line) for finding in ir.findings
     ] == [
         ("AV-EXEC002", "meta.py", 8),
         ("AV-EXEC002", "meta.py", 14),
@@ -7212,8 +7174,7 @@ def import_rebind(source: str, destination: str) -> None:
     ir = scan_repository(tmp_path)
 
     assert not any(
-        item.kind == "capability" and item.name == "filesystem"
-        for item in ir.components
+        item.kind == "capability" and item.name == "filesystem" for item in ir.components
     )
     assert not ir.findings
 
@@ -7265,8 +7226,7 @@ def test_container_host_boundaries_but_not_safe_compose_are_reviewed() -> None:
     credential_mounts = [
         component
         for component in ir.components
-        if component.kind == "sandbox-boundary"
-        and component.name == "host-credential-mount"
+        if component.kind == "sandbox-boundary" and component.name == "host-credential-mount"
     ]
     assert {component.attributes["credential_kind"] for component in credential_mounts} == {
         "aws",
@@ -7456,10 +7416,7 @@ def test_google_adk_audit_control_withholds_mutable_or_filtered_compositions(
         ),
         (
             'project_id="project", dataset_id="audit")',
-            (
-                'project_id="project", dataset_id="audit", '
-                + 'event_allowlist=["TOOL_STARTING"])'
-            ),
+            ('project_id="project", dataset_id="audit", ' + 'event_allowlist=["TOOL_STARTING"])'),
             "",
         ),
     )
@@ -7491,8 +7448,7 @@ def test_skyvern_taskv3_proves_durable_execution_record_with_actor_gap() -> None
         for component in ir.components
         if component.kind == "capability"
         and component.name == "external-action"
-        and component.attributes.get("analysis")
-        == "python-skyvern-taskv3-action-history"
+        and component.attributes.get("analysis") == "python-skyvern-taskv3-action-history"
     )
     path, analysis = component_context(ir, action)
     assert path == (
@@ -7511,9 +7467,7 @@ def test_skyvern_taskv3_proves_durable_execution_record_with_actor_gap() -> None
     )
     assert control.attributes["deployment_state"] == "enabled"
     assert control.attributes["scope"] == "production"
-    assert control.attributes["actor_attribution"] == (
-        "unresolved-created-by-nullable-and-unset"
-    )
+    assert control.attributes["actor_attribution"] == ("unresolved-created-by-nullable-and-unset")
     assert control.attributes["failure_behavior"] == "persistence-errors-contained"
     storage = next(
         component
@@ -7528,9 +7482,7 @@ def test_skyvern_taskv3_proves_durable_execution_record_with_actor_gap() -> None
         "table": "actions",
         "durability": "durable-relational-database",
     }
-    audit_findings = [
-        finding for finding in ir.findings if finding.rule_id == "AV-AUDIT001"
-    ]
+    audit_findings = [finding for finding in ir.findings if finding.rule_id == "AV-AUDIT001"]
     assert len(audit_findings) == 1
     finding = audit_findings[0]
     assert finding.evidence.path == "skyvern/forge/taskv3/loop.py"
@@ -7542,8 +7494,7 @@ def test_skyvern_taskv3_proves_durable_execution_record_with_actor_gap() -> None
         "durable execution record; actor attribution unresolved; delivery best-effort"
     )
     assert not any(
-        candidate.rule_id == "AV-AUDIT001"
-        and candidate.evidence.path == "untracked.py"
+        candidate.rule_id == "AV-AUDIT001" and candidate.evidence.path == "untracked.py"
         for candidate in ir.findings
     )
 
@@ -7595,8 +7546,7 @@ def test_skyvern_action_record_requires_dispatch_callback_and_commit_path(
         ir = scan_repository(incomplete)
 
         assert not any(
-            component.attributes.get("analysis")
-            == "python-skyvern-taskv3-action-history"
+            component.attributes.get("analysis") == "python-skyvern-taskv3-action-history"
             for component in ir.components
         )
 
@@ -7679,9 +7629,7 @@ def test_contextual_absolute_class_tool_import_requires_one_path_and_exact_expor
         "target_path": "project_a/tools/browser.py",
         "target_identity": "contextual-absolute-import-single-export",
     }
-    assert positive.target_id == (
-        "py:project_a/tools/browser.py#tool:BrowserTools.browse"
-    )
+    assert positive.target_id == ("py:project_a/tools/browser.py#tool:BrowserTools.browse")
     assert any(
         finding.rule_id == "AV-NET001"
         and finding.ir_path
@@ -7816,8 +7764,7 @@ def test_python_direct_callable_tools_require_same_block_definition() -> None:
     shell_edge = next(
         edge
         for edge in ir.relationships
-        if edge.source_id == "py:app.py#tool:run_command"
-        and edge.target_name == "shell-execution"
+        if edge.source_id == "py:app.py#tool:run_command" and edge.target_name == "shell-execution"
     )
     assert shell_edge.evidence.line == 8
     finding = next(
@@ -7867,9 +7814,7 @@ def test_python_function_tool_wrappers_require_import_and_same_block_proof() -> 
     multiple_edges = [
         edge
         for edge in ir.relationships
-        if edge.source_kind == "agent"
-        and edge.target_kind == "tool"
-        and edge.evidence.line == 78
+        if edge.source_kind == "agent" and edge.target_kind == "tool" and edge.evidence.line == 78
     ]
     assert len(multiple_edges) == 2
     assert all(edge.target_id is None for edge in multiple_edges)
@@ -7877,15 +7822,13 @@ def test_python_function_tool_wrappers_require_import_and_same_block_proof() -> 
     capability = next(
         edge
         for edge in ir.relationships
-        if edge.source_id == "py:app.py#tool:wrapped@12"
-        and edge.target_name == "shell-execution"
+        if edge.source_id == "py:app.py#tool:wrapped@12" and edge.target_name == "shell-execution"
     )
     assert capability.evidence.line == 10
     approval = next(
         edge
         for edge in ir.relationships
-        if edge.source_id == "py:app.py#tool:wrapped@12"
-        and edge.target_name == "human-approval"
+        if edge.source_id == "py:app.py#tool:wrapped@12" and edge.target_name == "human-approval"
     )
     assert approval.evidence.line == 12
     finding = next(
@@ -7911,9 +7854,7 @@ def test_literal_tool_bindings_require_role_and_exact_local_identity() -> None:
     assert edges[("module-bindings", "module_callable")].target_id == (
         "py:positive.py#tool:module_callable"
     )
-    assert edges[("local-binding", "local_tools")].target_id == (
-        "py:positive.py#tool:local_tools"
-    )
+    assert edges[("local-binding", "local_tools")].target_id == ("py:positive.py#tool:local_tools")
     assert edges[("inline-binding", "InlineTools@31")].target_id == (
         "py:positive.py#tool:InlineTools@31"
     )
@@ -7943,16 +7884,15 @@ def test_literal_tool_bindings_require_role_and_exact_local_identity() -> None:
         "callable-rebound",
     }
     assert all(
-        edges[(agent_name, "rebound_callable" if agent_name == "callable-rebound" else "tools")]
-        .target_id
+        edges[
+            (agent_name, "rebound_callable" if agent_name == "callable-rebound" else "tools")
+        ].target_id
         is None
         for agent_name in unresolved_agents
     )
 
     components = {
-        component.symbol_id: component
-        for component in ir.components
-        if component.kind == "tool"
+        component.symbol_id: component for component in ir.components if component.kind == "tool"
     }
     assert components["py:positive.py#tool:module_tools"].attributes == {
         "binding": "literal-tools-list-constructor",
@@ -7962,9 +7902,10 @@ def test_literal_tool_bindings_require_role_and_exact_local_identity() -> None:
         "resolution": "module-single-definition",
         "scope": "production",
     }
-    assert components["py:positive.py#tool:module_callable"].attributes[
-        "resolution"
-    ] == "module-single-definition"
+    assert (
+        components["py:positive.py#tool:module_callable"].attributes["resolution"]
+        == "module-single-definition"
+    )
 
 
 def test_imported_literal_tools_require_immutable_binding_or_exact_export() -> None:
@@ -7983,9 +7924,7 @@ def test_imported_literal_tools_require_immutable_binding_or_exact_export() -> N
     }
     external = edges[("imported-operator", "sdk_tool")]
     assert external.target_id == "py:positive.py#tool:sdk_tool"
-    assert external.attributes == {
-        "target_identity": "literal-tools-list-import-binding"
-    }
+    assert external.attributes == {"target_identity": "literal-tools-list-import-binding"}
 
     for agent_name, tool_name in {
         ("parameter-shadow", "parameter_tool"),
@@ -7998,9 +7937,7 @@ def test_imported_literal_tools_require_immutable_binding_or_exact_export() -> N
         assert edges[(agent_name, tool_name)].target_id is None
 
     components = {
-        component.symbol_id: component
-        for component in ir.components
-        if component.kind == "tool"
+        component.symbol_id: component for component in ir.components if component.kind == "tool"
     }
     assert components["py:pkg/tools.py#tool:imported_writer"].attributes == {
         "decorators": [],
@@ -8069,19 +8006,16 @@ def test_tool_factory_and_agent_adapters_require_exact_local_proof() -> None:
     )
 
     components = {
-        component.symbol_id: component
-        for component in ir.components
-        if component.kind == "tool"
+        component.symbol_id: component for component in ir.components if component.kind == "tool"
     }
     assert components["py:positive.py#tool:graph_tool"].attributes["constructor"] == (
         "GlobalSearchTool.from_settings"
     )
-    assert components["py:positive.py#tool:mcp_tool"].attributes["constructor"] == (
-        "HostedMCPTool"
+    assert components["py:positive.py#tool:mcp_tool"].attributes["constructor"] == ("HostedMCPTool")
+    assert (
+        components["py:positive.py#tool:langchain_tool"].attributes["constructor"]
+        == "LangchainTool"
     )
-    assert components["py:positive.py#tool:langchain_tool"].attributes[
-        "constructor"
-    ] == "LangchainTool"
     assert components["py:positive.py#tool:worker_tool"].attributes == {
         "binding": "agent-as-tool-adapter",
         "adapter": "worker.as_tool",
@@ -8106,18 +8040,12 @@ def test_python_agent_helper_returns_require_exact_same_class_flow() -> None:
     }
 
     assert edges[11].target_id == "py:app.py#agent:Agent@7"
-    assert edges[11].attributes == {
-        "target_identity": "same-class-helper-return"
-    }
+    assert edges[11].attributes == {"target_identity": "same-class-helper-return"}
     assert edges[20].target_id == "py:app.py#agent:agent@14"
-    assert edges[20].attributes == {
-        "target_identity": "same-class-helper-return"
-    }
+    assert edges[20].attributes == {"target_identity": "same-class-helper-return"}
     for line in (29, 38, 46, 51, 56, 67, 82):
         assert edges[line].target_id is None
-        assert edges[line].attributes == {
-            "target_identity": "ambiguous-repeated-binding"
-        }
+        assert edges[line].attributes == {"target_identity": "ambiguous-repeated-binding"}
 
     function_edges = {
         edge.evidence.line: edge
@@ -8129,21 +8057,22 @@ def test_python_agent_helper_returns_require_exact_same_class_flow() -> None:
     }
     for edge in (function_edges[10],):
         assert edge.target_id == "py:local_function.py#agent:Agent@6"
-        assert edge.attributes == {
-            "target_identity": "same-block-function-factory-return"
-        }
-    assert len(
-        [
-            edge
-            for edge in ir.relationships
-            if edge.evidence.path == "local_function.py"
-            and edge.evidence.line == 10
-            and edge.source_kind == "agent"
-            and edge.source_name == "Crew"
-            and edge.target_kind == "agent"
-            and edge.target_id == "py:local_function.py#agent:Agent@6"
-        ]
-    ) == 2
+        assert edge.attributes == {"target_identity": "same-block-function-factory-return"}
+    assert (
+        len(
+            [
+                edge
+                for edge in ir.relationships
+                if edge.evidence.path == "local_function.py"
+                and edge.evidence.line == 10
+                and edge.source_kind == "agent"
+                and edge.source_name == "Crew"
+                and edge.target_kind == "agent"
+                and edge.target_id == "py:local_function.py#agent:Agent@6"
+            ]
+        )
+        == 2
+    )
     negative_function_edges = {
         edge.evidence.line: edge
         for edge in ir.relationships
@@ -8168,9 +8097,7 @@ def test_imported_agent_factory_requires_exact_class_and_same_block_flow() -> No
     }
 
     positive = edges[("project_a/main.py", 8)]
-    assert positive.target_id == (
-        "py:project_a/factory.py#agent:imported-worker@6"
-    )
+    assert positive.target_id == ("py:project_a/factory.py#agent:imported-worker@6")
     assert positive.attributes == {
         "target_identity": "contextual-imported-class-factory-return",
         "target_path": "project_a/factory.py",
@@ -8207,19 +8134,13 @@ def test_python_typed_tool_parameters_require_callsite_constructor_consensus() -
     }
 
     assert edges[5].target_id == "py:app.py#tool:tool@4"
-    assert edges[5].attributes == {
-        "target_identity": "typed-parameter-callsite-consensus"
-    }
+    assert edges[5].attributes == {"target_identity": "typed-parameter-callsite-consensus"}
     for line in (23, 33, 42, 50, 62, 72, 81, 90, 99, 112, 121, 131, 145):
         assert edges[line].target_id is None
-        assert edges[line].attributes == {
-            "target_identity": "ambiguous-repeated-binding"
-        }
+        assert edges[line].attributes == {"target_identity": "ambiguous-repeated-binding"}
 
     parameter = next(
-        component
-        for component in ir.components
-        if component.symbol_id == "py:app.py#tool:tool@4"
+        component for component in ir.components if component.symbol_id == "py:app.py#tool:tool@4"
     )
     assert parameter.name == "ApplyPatchTool parameter tool@4"
     assert parameter.evidence.line == 4
@@ -8244,9 +8165,7 @@ def test_python_typed_tool_parameters_require_callsite_constructor_consensus() -
         and edge.target_name == "patch"
     )
     assert inline_edge.target_id == "py:inline_only.py#tool:patch@4"
-    assert inline_edge.attributes == {
-        "target_identity": "typed-parameter-callsite-consensus"
-    }
+    assert inline_edge.attributes == {"target_identity": "typed-parameter-callsite-consensus"}
 
 
 def test_relative_typescript_import_resolves_cross_file_tool_path() -> None:
@@ -8490,12 +8409,10 @@ def test_python_agent_mcp_servers_require_exact_direct_literal_bindings() -> Non
     servers = [
         component
         for component in ir.components
-        if component.kind == "mcp-server"
-        and component.evidence.path == "positive.py"
+        if component.kind == "mcp-server" and component.evidence.path == "positive.py"
     ]
     assert {
-        (component.evidence.line, component.name, component.symbol_id)
-        for component in servers
+        (component.evidence.line, component.name, component.symbol_id) for component in servers
     } == {
         (
             5,
@@ -8505,20 +8422,18 @@ def test_python_agent_mcp_servers_require_exact_direct_literal_bindings() -> Non
         (9, "MCPServerStdio@9", "py:positive.py#mcp-server:git_server"),
     }
     assert "package" not in next(
-        component.attributes
-        for component in servers
-        if component.evidence.line == 5
+        component.attributes for component in servers if component.evidence.line == 5
     )
-    assert next(
-        component.attributes["package"]
-        for component in servers
-        if component.evidence.line == 9
-    ) == "mcp-server-git"
+    assert (
+        next(
+            component.attributes["package"] for component in servers if component.evidence.line == 9
+        )
+        == "mcp-server-git"
+    )
     assert {
         finding.evidence.line
         for finding in ir.findings
-        if finding.rule_id == "AV-MCP003"
-        and finding.evidence.path == "positive.py"
+        if finding.rule_id == "AV-MCP003" and finding.evidence.path == "positive.py"
     } == {9}
 
     edges = {
@@ -8529,13 +8444,9 @@ def test_python_agent_mcp_servers_require_exact_direct_literal_bindings() -> Non
         and edge.evidence.path == "positive.py"
     }
     assert set(edges) == {"MCPServerStdio@5", "MCPServerStdio@9"}
-    assert edges["MCPServerStdio@5"].target_id == (
-        "py:positive.py#mcp-server:python_server"
-    )
+    assert edges["MCPServerStdio@5"].target_id == ("py:positive.py#mcp-server:python_server")
     assert edges["MCPServerStdio@9"].target_id == "py:positive.py#mcp-server:git_server"
-    assert {edge.source_id for edge in edges.values()} == {
-        "py:positive.py#agent:agent"
-    }
+    assert {edge.source_id for edge in edges.values()} == {"py:positive.py#agent:agent"}
     assert {tuple(sorted(edge.attributes.items())) for edge in edges.values()} == {
         (
             ("binding", "git_server"),
@@ -8549,25 +8460,19 @@ def test_python_agent_mcp_servers_require_exact_direct_literal_bindings() -> Non
     assert not any(
         edge.source_kind == "agent"
         and edge.target_kind == "mcp-server"
-        and edge.evidence.path
-        in {"negative.py", "module_negative.py", "context_negative.py"}
+        and edge.evidence.path in {"negative.py", "module_negative.py", "context_negative.py"}
         for edge in ir.relationships
     )
 
     managed_server = next(
         component
         for component in ir.components
-        if component.kind == "mcp-server"
-        and component.evidence.path == "context_positive.py"
+        if component.kind == "mcp-server" and component.evidence.path == "context_positive.py"
     )
     assert managed_server.evidence.line == 6
     assert managed_server.name == "MCPServerStdio@6"
-    assert managed_server.symbol_id == (
-        "py:context_positive.py#mcp-server:managed_server"
-    )
-    assert managed_server.attributes["binding_resolution"] == (
-        "context-manager-binding"
-    )
+    assert managed_server.symbol_id == ("py:context_positive.py#mcp-server:managed_server")
+    assert managed_server.attributes["binding_resolution"] == ("context-manager-binding")
     managed_edge = next(
         edge
         for edge in ir.relationships
@@ -8577,9 +8482,7 @@ def test_python_agent_mcp_servers_require_exact_direct_literal_bindings() -> Non
     )
     assert managed_edge.evidence.line == 10
     assert managed_edge.source_id == "py:context_positive.py#agent:managed_agent"
-    assert managed_edge.target_id == (
-        "py:context_positive.py#mcp-server:managed_server"
-    )
+    assert managed_edge.target_id == ("py:context_positive.py#mcp-server:managed_server")
     assert managed_edge.attributes == {
         "binding": "managed_server",
         "target_identity": "literal-mcp-servers-list-context-manager",
@@ -8600,30 +8503,20 @@ def test_python_agent_mcp_servers_require_exact_direct_literal_bindings() -> Non
     adapter_server = next(
         component
         for component in ir.components
-        if component.attributes.get("analysis")
-        == "python-imported-mcp-server-subclass"
+        if component.attributes.get("analysis") == "python-imported-mcp-server-subclass"
         and component.evidence.path == "subclass_positive.py"
     )
     assert adapter_server.name == "ProjectMCPServer@7"
-    assert adapter_server.symbol_id == (
-        "py:subclass_positive.py#mcp-server:project_server"
-    )
-    assert adapter_server.attributes["adapter_definition_path"] == (
-        "subclass_adapter.py"
-    )
+    assert adapter_server.symbol_id == ("py:subclass_positive.py#mcp-server:project_server")
+    assert adapter_server.attributes["adapter_definition_path"] == ("subclass_adapter.py")
     assert adapter_server.attributes["adapter_base_module"] == "agents.mcp.server"
     adapter_edge = next(
         edge
         for edge in ir.relationships
-        if edge.source_name == "subclass-agent"
-        and edge.target_kind == "mcp-server"
+        if edge.source_name == "subclass-agent" and edge.target_kind == "mcp-server"
     )
-    assert adapter_edge.source_id == (
-        "py:subclass_positive.py#agent:subclass-agent@8"
-    )
-    assert adapter_edge.target_id == (
-        "py:subclass_positive.py#mcp-server:project_server"
-    )
+    assert adapter_edge.source_id == ("py:subclass_positive.py#agent:subclass-agent@8")
+    assert adapter_edge.target_id == ("py:subclass_positive.py#mcp-server:project_server")
     assert not any(
         edge.source_kind == "agent"
         and edge.source_name
@@ -8635,17 +8528,12 @@ def test_python_agent_mcp_servers_require_exact_direct_literal_bindings() -> Non
     module_servers = {
         component.evidence.line: component
         for component in ir.components
-        if component.kind == "mcp-server"
-        and component.evidence.path == "module_positive.py"
+        if component.kind == "mcp-server" and component.evidence.path == "module_positive.py"
     }
     assert set(module_servers) == {6, 7}
-    assert module_servers[6].symbol_id == (
-        "py:module_positive.py#mcp-server:module_stdio_server"
-    )
+    assert module_servers[6].symbol_id == ("py:module_positive.py#mcp-server:module_stdio_server")
     assert module_servers[6].attributes["transport"] == "stdio"
-    assert module_servers[7].symbol_id == (
-        "py:module_positive.py#mcp-server:module_fastmcp_server"
-    )
+    assert module_servers[7].symbol_id == ("py:module_positive.py#mcp-server:module_fastmcp_server")
     assert module_servers[7].attributes["transport"] == "in-process"
     assert module_servers[7].attributes["constructor"] == "FastMCP"
     assert module_servers[7].attributes["analysis"] == (
@@ -8660,12 +8548,8 @@ def test_python_agent_mcp_servers_require_exact_direct_literal_bindings() -> Non
         and edge.evidence.path == "module_positive.py"
     }
     assert set(module_edges) == {11, 15}
-    assert module_edges[11].target_id == (
-        "py:module_positive.py#mcp-server:module_stdio_server"
-    )
-    assert module_edges[15].target_id == (
-        "py:module_positive.py#mcp-server:module_fastmcp_server"
-    )
+    assert module_edges[11].target_id == ("py:module_positive.py#mcp-server:module_stdio_server")
+    assert module_edges[15].target_id == ("py:module_positive.py#mcp-server:module_fastmcp_server")
     assert {edge.attributes["target_identity"] for edge in module_edges.values()} == {
         "literal-mcp-servers-list-module-binding"
     }
@@ -8684,12 +8568,8 @@ def test_python_agent_mcp_servers_require_exact_direct_literal_bindings() -> Non
         and edge.evidence.path == "fastmcp_chain_positive.py"
     )
     assert fastmcp_registration.evidence.line == 10
-    assert fastmcp_registration.source_id == (
-        "py:fastmcp_chain_positive.py#mcp-server:server"
-    )
-    assert fastmcp_registration.target_id == (
-        "py:fastmcp_chain_positive.py#tool:write_file"
-    )
+    assert fastmcp_registration.source_id == ("py:fastmcp_chain_positive.py#mcp-server:server")
+    assert fastmcp_registration.target_id == ("py:fastmcp_chain_positive.py#tool:write_file")
     assert fastmcp_registration.attributes == {
         "registrar": "server.tool",
         "target_identity": "exact-fastmcp-registrar",
@@ -8713,8 +8593,7 @@ def test_python_agent_mcp_servers_require_exact_direct_literal_bindings() -> Non
     assert not any(
         edge.source_kind == "mcp-server"
         and edge.target_kind == "tool"
-        and edge.evidence.path
-        in {"fastmcp_chain_negative.py", "module_negative.py"}
+        and edge.evidence.path in {"fastmcp_chain_negative.py", "module_negative.py"}
         for edge in ir.relationships
     )
     optional_server = next(
@@ -8764,8 +8643,7 @@ def test_mcp_package_launchers_require_literal_mcp_structure_and_auto_install() 
         ("@scope/server@2.3.4", "exact", True),
     }
     assert {
-        (finding.rule_id, finding.evidence.path, finding.evidence.line)
-        for finding in ir.findings
+        (finding.rule_id, finding.evidence.path, finding.evidence.line) for finding in ir.findings
     } == {
         ("AV-MCP003", ".mcp.json", 1),
         ("AV-MCP003", "launchers.py", 11),

@@ -9,6 +9,12 @@
       "libs/agno/agno/tools/mcp/mcp.py"
     ],
     "cline/cline": [
+      "apps/cli/src/main.ts",
+      "apps/cli/src/runtime/interactive/approvals.ts",
+      "apps/cli/src/runtime/run-agent.ts",
+      "apps/cli/src/runtime/tool-policies.ts",
+      "apps/cli/src/session/session.ts",
+      "apps/cli/src/utils/approval.ts",
       "apps/vscode/src/sdk/sdk-session-lifecycle.ts",
       "apps/vscode/src/sdk/vscode-session-host.ts",
       "sdk/packages/core/src/extensions/tools/presets.ts",

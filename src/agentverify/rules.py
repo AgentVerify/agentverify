@@ -284,8 +284,7 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
         for component in ir.components
         if component.kind == "capability"
         and component.name == "model-sampling"
-        and component.attributes.get("analysis")
-        == "python-semantic-kernel-mcp-sampling-approval"
+        and component.attributes.get("analysis") == "python-semantic-kernel-mcp-sampling-approval"
     }
     for component in ir.components:
         if component.attributes.get("scope") == "test" and not include_tests:
@@ -522,8 +521,7 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
         if (
             component.kind == "capability"
             and component.name == "filesystem"
-            and component.attributes.get("analysis")
-            == "python-agno-mcp-confirmation-default"
+            and component.attributes.get("analysis") == "python-agno-mcp-confirmation-default"
             and component.attributes.get("write_access") is True
             and component.attributes.get("unprotected_mutations")
             and component.attributes.get("approval_policy")
@@ -545,8 +543,7 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                 )
         if (
             component.kind == "capability"
-            and component.attributes.get("analysis")
-            == "python-openhands-conversation-security"
+            and component.attributes.get("analysis") == "python-openhands-conversation-security"
             and component.attributes.get("approval_gap_anchor") is True
             and component.attributes.get("security_analyzer") != "none"
             and component.attributes.get("approval_policy") == "disabled-default"
@@ -666,8 +663,7 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
             ) or (
                 component.name == "filesystem"
                 and component.attributes.get("write_access")
-                and constructor.rsplit(".", 1)[-1]
-                in {"ApplyPatchTool", "applyPatchTool"}
+                and constructor.rsplit(".", 1)[-1] in {"ApplyPatchTool", "applyPatchTool"}
             )
             environment_names = (
                 tool.attributes.get("approval_bypass_environment_names", []) if tool else []
@@ -712,9 +708,7 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                 and edge.attributes.get("scope") == "production"
                 and edge.attributes.get("durability")
                 in {"durable-relational-database", "durable-remote-database"}
-                and str(edge.attributes.get("actor_attribution", "")).startswith(
-                    "unresolved-"
-                )
+                and str(edge.attributes.get("actor_attribution", "")).startswith("unresolved-")
             ]
             if actor_gap_edges:
                 ir.findings.append(
@@ -756,11 +750,9 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
             and component.attributes.get("mode") == "plan"
             and component.attributes.get("mode_default") is False
             and component.attributes.get("static_shell_permission") == "allow"
-            and component.attributes.get("high_risk_evaluation")
-            == "allowedWithPermission"
+            and component.attributes.get("high_risk_evaluation") == "allowedWithPermission"
             and component.attributes.get("high_risk_effective_permission") == "allow"
-            and component.attributes.get("unknown_evaluation")
-            == "allowedWithPermission"
+            and component.attributes.get("unknown_evaluation") == "allowedWithPermission"
             and component.attributes.get("unknown_effective_permission") == "allow"
             and component.attributes.get("critical_evaluation") == "disabled"
             and component.attributes.get("critical_effective_permission") == "exclude"
@@ -783,16 +775,12 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
             and component.attributes.get("agent_reachable") is True
             and component.attributes.get("mode") == "plan"
             and component.attributes.get("mode_default") is False
-            and component.attributes.get("normal_mode_external_tool_permission")
-            == "ask"
-            and component.attributes.get("plan_mode_external_tool_permission")
-            == "allow"
+            and component.attributes.get("normal_mode_external_tool_permission") == "ask"
+            and component.attributes.get("plan_mode_external_tool_permission") == "allow"
             and component.attributes.get("approval_prompt_on_allow") is False
             and component.attributes.get("readonly_metadata") == "discarded"
-            and component.attributes.get("risk_classification")
-            == "absent-on-proven-path"
-            and component.attributes.get("tool_schema_source")
-            == "mcp-server-discovery"
+            and component.attributes.get("risk_classification") == "absent-on-proven-path"
+            and component.attributes.get("tool_schema_source") == "mcp-server-discovery"
         ):
             ir.findings.append(
                 make_finding(
@@ -806,6 +794,7 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                     "review",
                 )
             )
+        spawn_agent_policy = component.attributes.get("spawn_agent_policy")
         if (
             component.kind == "control"
             and component.name == "subagent-tool-approval-propagation"
@@ -813,12 +802,16 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
             and component.attributes.get("parent_approval_callback") == "configured"
             and component.attributes.get("parent_privileged_tools_gated") is True
             and component.attributes.get("spawn_agent_default_enabled") is True
-            and component.attributes.get("spawn_agent_policy")
-            == "unlisted-auto-approved"
+            and spawn_agent_policy in {"unlisted-auto-approved", "parent-approval-required"}
             and component.attributes.get("child_tool_policies") == "not-forwarded"
             and component.attributes.get("child_approval_callback") == "not-forwarded"
             and component.attributes.get("factory_supports_propagation") is True
         ):
+            message = (
+                "Cline VS Code auto-approves spawn_agent, then drops its tool policy and approval callback before the child receives local shell and editing tools"
+                if spawn_agent_policy == "unlisted-auto-approved"
+                else "Cline CLI can approve spawn_agent in sandbox-local mode, then drops its tool policy and approval callback before the child receives local shell and editing tools"
+            )
             ir.findings.append(
                 make_finding(
                     ir,
@@ -826,7 +819,7 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                     "AV-APPROVAL010",
                     "high",
                     "high",
-                    "Cline VS Code auto-approves spawn_agent, then drops its tool policy and approval callback before the child receives local shell and editing tools",
+                    message,
                     "Add spawn_agent to the parent approval policy and forward the effective toolPolicies plus requestToolApproval callback through createSessionSpawnTool into createSpawnAgentTool; fail closed if propagation is unavailable.",
                     "review",
                 )
