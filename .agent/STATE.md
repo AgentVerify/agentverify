@@ -100,6 +100,9 @@ catalog workflows.
 - Extended installed-wheel smoke verification to install runtime dependencies and exercise a full
   ephemeral detached-policy-signature verification path through the installed `agentverify`
   executable.
+- Added a reusable ephemeral signed-policy verification helper and wired default CI plus installed
+  wheel smoke checks through that same helper, proving detached Ed25519 policy verification without
+  committing durable private-key material.
 - Extended distribution verification so release checks can require a source distribution containing
   README-linked examples, policy docs, benchmark contracts, and public truth sets.
 - Extended source-distribution verification to require the checked public benchmark result outputs
@@ -134,5 +137,5 @@ catalog workflows.
 ## Next action
 
 Continue toward the highest-value local P1/P2 work: additional real-world framework coverage
-without broad name matching, CI/editor adoption polish, or release-artifact checks that attach
+without broad name matching, editor adoption polish, or release-artifact checks that attach
 benchmark verifier logs once release publishing is explicit.

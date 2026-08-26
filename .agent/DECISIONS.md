@@ -84,3 +84,17 @@
   contracts installable while benchmark-result contracts remain source-tree-only.
 - Revisit when: benchmark schemas move into a versioned package namespace or release automation
   publishes schema artifacts independently.
+
+## Signed policy CI fixtures must use ephemeral keys
+
+- Decision: Prove signed-policy verification in CI with a generated in-memory Ed25519 key and
+  throwaway public artifacts, not a checked-in private key or a pretend organizational trust root.
+- Evidence: The detached signature verifier only needs the exported signing payload bytes, a
+  signature bundle, and a public-key trust root. A reusable helper can generate those public
+  artifacts in a temporary directory, require `agentverify policy --signature --trust-root
+  --require-trusted`, and report that private-key material was ephemeral-only. The default CI
+  workflow and installed-wheel distribution smoke now both exercise that path.
+- Alternative: Commit a sample private key or leave the walkthrough as prose only. Rejected because
+  durable sample keys invite misuse, while prose-only examples can drift from the CLI behavior.
+- Revisit when: real release automation has an explicit organization trust-root and detached
+  signature publishing process.

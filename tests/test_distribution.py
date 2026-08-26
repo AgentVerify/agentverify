@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import io
 import os
+import sys
 import tarfile
 import zipfile
 from pathlib import Path
@@ -18,6 +19,13 @@ assert SPEC is not None
 verify_distribution = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
 SPEC.loader.exec_module(verify_distribution)
+SIGNED_POLICY_SPEC = importlib.util.spec_from_file_location(
+    "verify_signed_policy_example", ROOT / "scripts/verify_signed_policy_example.py"
+)
+assert SIGNED_POLICY_SPEC is not None
+verify_signed_policy_example = importlib.util.module_from_spec(SIGNED_POLICY_SPEC)
+assert SIGNED_POLICY_SPEC.loader is not None
+SIGNED_POLICY_SPEC.loader.exec_module(verify_signed_policy_example)
 
 REQUIRED_SCHEMA_FILES = verify_distribution.REQUIRED_SCHEMA_FILES
 REQUIRED_BENCHMARK_RESULT_FILES = verify_distribution.REQUIRED_BENCHMARK_RESULT_FILES
@@ -109,6 +117,32 @@ def test_ci_workflow_verifies_checked_in_benchmark_results() -> None:
         "agentverify benchmark verify --require-evaluation-kind public-regression "
         "--require-all-passed"
     ) in workflow
+
+
+def test_ci_workflow_verifies_ephemeral_signed_policy_example() -> None:
+    workflow = CI_WORKFLOW.read_text(encoding="utf-8")
+
+    assert "python scripts/verify_signed_policy_example.py" in workflow
+
+
+def test_signed_policy_example_uses_ephemeral_key(tmp_path: Path) -> None:
+    payload = verify_signed_policy_example.run_signed_policy_example(
+        ROOT / "examples/repository-policy.json",
+        agentverify_command=[sys.executable, "-m", "agentverify.cli"],
+        work_dir=tmp_path,
+        key_id="pytest-ephemeral",
+    )
+
+    assert payload["signature_verified"] is True
+    assert payload["signature_trusted"] is True
+    assert payload["verified_key_ids"] == ["pytest-ephemeral"]
+    assert payload["private_key_material"] == "ephemeral-memory-only"
+    assert sorted(path.name for path in tmp_path.iterdir()) == [
+        "policy-key-trust-root.json",
+        "policy-signature.json",
+        "policy-signing-payload.json",
+    ]
+    assert not any("private" in path.name or "secret" in path.name for path in tmp_path.iterdir())
 
 
 def test_distribution_verifier_rejects_missing_schema(tmp_path: Path) -> None:

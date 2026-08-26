@@ -68,6 +68,10 @@
 - Detached Ed25519 policy signatures now verify against local key trust roots over the exact
   exported source-digest signing payload bytes. Digest allowlists remain a separate content
   approval workflow and still report `signature_verified: false`.
+- The signed-policy CI path can be tested without durable secrets: the reusable smoke helper exports
+  the signing payload, signs the exact bytes with an in-memory ephemeral Ed25519 key, writes only the
+  detached signature bundle and public-key trust root, and then requires `agentverify policy
+  --signature --trust-root --require-trusted` to pass.
 - Python provider-wrapper attribution now follows exact selected local package reexport chains for
   AgentScope/PydanticAI symbols when every alias hop is unrebound; star imports from proven local
   reexport modules respect literal `__all__`/non-underscore visibility; simple imported local wrapper

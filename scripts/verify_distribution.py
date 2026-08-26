@@ -38,6 +38,7 @@ REQUIRED_SOURCE_FILES = frozenset(
         "examples/policy-trust-root.json",
         "examples/repository-policy.json",
         "examples/safe_agent/agent.py",
+        "scripts/verify_signed_policy_example.py",
     }
 )
 REQUIRED_SCHEMA_FILES = frozenset(
@@ -139,9 +140,6 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
     with tempfile.TemporaryDirectory(prefix="agentverify-wheel-") as raw_dir:
         venv_dir = Path(raw_dir) / "venv"
         generated_trust_root = Path(raw_dir) / "generated-policy-trust-root.json"
-        signature_bundle = Path(raw_dir) / "policy-signature.json"
-        key_trust_root = Path(raw_dir) / "policy-key-trust-root.json"
-        signing_payload = Path(raw_dir) / "policy-signing-payload.json"
         venv.EnvBuilder(with_pip=True).create(venv_dir)
         python = script_path(venv_dir, "python")
         command([str(python), "-m", "pip", "install", str(path)])
@@ -190,89 +188,17 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
                 ]
             )
         )
-        command(
-            [
-                str(agentverify),
-                "policy",
-                str(source_root / "examples/repository-policy.json"),
-                "--export-signing-payload",
-                "--output",
-                str(signing_payload),
-            ]
-        )
-        command(
-            [
-                str(python),
-                "-c",
-                """
-import base64
-import json
-import sys
-
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
-
-payload_path, signature_path, trust_root_path = sys.argv[1:]
-payload_bytes = open(payload_path, "rb").read()
-payload = json.loads(payload_bytes)
-private_key = Ed25519PrivateKey.generate()
-signature = private_key.sign(payload_bytes)
-public_key = private_key.public_key().public_bytes(
-    encoding=serialization.Encoding.Raw,
-    format=serialization.PublicFormat.Raw,
-)
-json.dump(
-    {
-        "schema_version": 1,
-        "signature_format": "agentverify-policy-signature",
-        "signed_at": "2026-08-26T00:00:00Z",
-        "payload": payload,
-        "signatures": [
-            {
-                "key_id": "installed-wheel-smoke",
-                "algorithm": "ed25519",
-                "signature": base64.b64encode(signature).decode("ascii"),
-            }
-        ],
-    },
-    open(signature_path, "w", encoding="utf-8"),
-)
-json.dump(
-    {
-        "schema_version": 1,
-        "trust_model": "local-key-signature",
-        "keys": [
-            {
-                "key_id": "installed-wheel-smoke",
-                "algorithm": "ed25519",
-                "public_key": base64.b64encode(public_key).decode("ascii"),
-                "trusted_for": ["policy-signing"],
-                "not_before": "2026-01-01T00:00:00Z",
-                "not_after": "2027-01-01T00:00:00Z",
-            }
-        ],
-    },
-    open(trust_root_path, "w", encoding="utf-8"),
-)
-""",
-                str(signing_payload),
-                str(signature_bundle),
-                str(key_trust_root),
-            ]
-        )
-        signed_policy_summary = json.loads(
+        signed_policy_example = json.loads(
             command(
                 [
+                    str(python),
+                    str(source_root / "scripts/verify_signed_policy_example.py"),
+                    "--agentverify",
                     str(agentverify),
-                    "policy",
+                    "--policy",
                     str(source_root / "examples/repository-policy.json"),
-                    "--signature",
-                    str(signature_bundle),
-                    "--trust-root",
-                    str(key_trust_root),
-                    "--require-trusted",
-                    "--format",
-                    "json",
+                    "--key-id",
+                    "installed-wheel-smoke",
                 ]
             )
         )
@@ -357,12 +283,9 @@ json.dump(
         "benchmark_verification_labels": [
             item.get("labels") for item in benchmark_verification.get("results", [])
         ],
-        "signed_policy_signature_verified": signed_policy_summary.get("trust", {}).get(
-            "signature_verified"
-        ),
-        "signed_policy_signature_trusted": signed_policy_summary.get("trust", {})
-        .get("signature", {})
-        .get("trusted"),
+        "signed_policy_signature_verified": signed_policy_example.get("signature_verified"),
+        "signed_policy_signature_trusted": signed_policy_example.get("signature_trusted"),
+        "signed_policy_private_key_material": signed_policy_example.get("private_key_material"),
         "generated_policy_trust_root_trusted": generated_trusted_policy_summary.get("trust", {})
         .get("trust_root", {})
         .get("trusted"),
@@ -423,6 +346,8 @@ json.dump(
         failed.append("signed_policy_signature_verified")
     if checks["signed_policy_signature_trusted"] is not True:
         failed.append("signed_policy_signature_trusted")
+    if checks["signed_policy_private_key_material"] != "ephemeral-memory-only":
+        failed.append("signed_policy_private_key_material")
     if checks["generated_policy_trust_root_trusted"] is not True:
         failed.append("generated_policy_trust_root_trusted")
     if checks["policy_trust_root_trusted"] is not True:
