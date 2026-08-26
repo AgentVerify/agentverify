@@ -8,8 +8,8 @@
 
 ## P1
 
-- Extend package/distribution checks to cover source examples or documented sample bundles when the
-  packaging strategy is explicit.
+- Extend release-artifact checks to attach or verify benchmark verification outputs once release
+  publishing is explicit.
 - Expand selected real-world framework coverage where current docs record unresolved wildcard
   imports, wrapper factories, type-driven symbols, or generic same-named provider wrappers.
 

@@ -23,6 +23,9 @@
 - Distribution verification now proves the wheel declares `agentverify = agentverify.cli:main`; the
   optional smoke mode installs the wheel and exercises version, bundled schema, policy summary, and
   safe-example scan commands through the installed executable.
+- Distribution verification can now also require source distributions to contain the README-linked
+  example policies, safe-agent sample, policy/code-scanning docs, benchmark schema/templates, and
+  public truth sets.
 - Benchmark verification now recomputes `labels_sha256` and optional `manifest_sha256`, preventing
   result files from drifting away from their declared inputs.
 - Benchmark verification can now fail release workflows unless result files declare the required

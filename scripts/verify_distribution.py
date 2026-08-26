@@ -1,4 +1,4 @@
-"""Verify release wheel contents that AgentVerify depends on at runtime."""
+"""Verify release distribution artifacts that AgentVerify depends on."""
 
 from __future__ import annotations
 
@@ -6,12 +6,31 @@ import argparse
 import json
 import subprocess
 import sys
+import tarfile
 import tempfile
 import venv
 import zipfile
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 REQUIRED_ENTRY_POINTS = {"agentverify": "agentverify.cli:main"}
+REQUIRED_SOURCE_FILES = frozenset(
+    {
+        "README.md",
+        "benchmarks/benchmark-results-v1.schema.json",
+        "benchmarks/holdout-design.md",
+        "benchmarks/holdout-manifest.template.json",
+        "benchmarks/ir-truthset.json",
+        "benchmarks/release-checklist.md",
+        "benchmarks/truthset.json",
+        "docs/code-scanning.md",
+        "docs/policy.md",
+        "examples/ci-policy.json",
+        "examples/org-policy.json",
+        "examples/policy-trust-root.json",
+        "examples/repository-policy.json",
+        "examples/safe_agent/agent.py",
+    }
+)
 REQUIRED_SCHEMA_FILES = frozenset(
     {
         "agentverify/schemas/agentverify-benchmark-result-v1.schema.json",
@@ -32,9 +51,29 @@ def latest_wheel(dist_dir: Path) -> Path:
     return wheels[-1]
 
 
+def latest_sdist(dist_dir: Path) -> Path:
+    sdists = sorted(dist_dir.glob("agentverify-*.tar.gz"), key=lambda path: path.stat().st_mtime)
+    if not sdists:
+        raise FileNotFoundError(f"no agentverify source distribution found in {dist_dir}")
+    return sdists[-1]
+
+
 def wheel_names(path: Path) -> set[str]:
     with zipfile.ZipFile(path) as archive:
         return set(archive.namelist())
+
+
+def sdist_source_names(path: Path) -> set[str]:
+    with tarfile.open(path, "r:gz") as archive:
+        raw_names = [member.name for member in archive.getmembers() if member.isfile()]
+    names: set[str] = set()
+    for raw_name in raw_names:
+        parts = PurePosixPath(raw_name).parts
+        if len(parts) > 1:
+            names.add(PurePosixPath(*parts[1:]).as_posix())
+        else:
+            names.add(raw_name)
+    return names
 
 
 def entry_points(path: Path) -> dict[str, str]:
@@ -236,9 +275,25 @@ def verify_wheel(
     return payload
 
 
+def verify_sdist(path: Path) -> dict[str, object]:
+    names = sdist_source_names(path)
+    missing = sorted(REQUIRED_SOURCE_FILES - names)
+    present = sorted(REQUIRED_SOURCE_FILES & names)
+    payload: dict[str, object] = {
+        "sdist": str(path),
+        "required_source_files": len(REQUIRED_SOURCE_FILES),
+        "present_source_files": present,
+        "missing_source_files": missing,
+        "passed": not missing,
+    }
+    if missing:
+        raise RuntimeError(json.dumps(payload, indent=2))
+    return payload
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Verify that an AgentVerify wheel contains required runtime schemas."
+        description="Verify that AgentVerify distribution artifacts contain required contracts."
     )
     parser.add_argument(
         "wheel",
@@ -258,6 +313,16 @@ def parse_args() -> argparse.Namespace:
         default=Path("."),
         help="source checkout root used by --smoke-install for example scans",
     )
+    parser.add_argument(
+        "--require-sdist",
+        action="store_true",
+        help="also verify that a source distribution contains documented examples and benchmarks",
+    )
+    parser.add_argument(
+        "--sdist",
+        type=Path,
+        help="source distribution to inspect when --require-sdist is set; defaults to newest in --dist-dir",
+    )
     return parser.parse_args()
 
 
@@ -266,10 +331,14 @@ def main() -> int:
     try:
         wheel = args.wheel if args.wheel is not None else latest_wheel(args.dist_dir)
         payload = verify_wheel(wheel, smoke=args.smoke_install, source_root=args.source_root)
+        if args.require_sdist:
+            sdist = args.sdist if args.sdist is not None else latest_sdist(args.dist_dir)
+            payload["source_distribution"] = verify_sdist(sdist)
     except (
         FileNotFoundError,
         RuntimeError,
         subprocess.CalledProcessError,
+        tarfile.TarError,
         zipfile.BadZipFile,
     ) as error:
         print(f"agentverify distribution verification failed: {error}", file=sys.stderr)

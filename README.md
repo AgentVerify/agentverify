@@ -166,8 +166,8 @@ python3 -m venv .venv
 .venv/bin/pip install -e '.[dev]'
 .venv/bin/pytest
 .venv/bin/ruff check src tests scripts
-uv build --wheel
-python3 scripts/verify_distribution.py
-python3 scripts/verify_distribution.py --smoke-install
+uv build --wheel --sdist
+python3 scripts/verify_distribution.py --require-sdist
+python3 scripts/verify_distribution.py --require-sdist --smoke-install
 uv run python scripts/verify_benchmark_results.py
 ```

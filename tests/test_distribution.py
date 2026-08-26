@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import os
+import tarfile
 import zipfile
 from pathlib import Path
 
@@ -17,8 +19,11 @@ assert SPEC.loader is not None
 SPEC.loader.exec_module(verify_distribution)
 
 REQUIRED_SCHEMA_FILES = verify_distribution.REQUIRED_SCHEMA_FILES
+REQUIRED_SOURCE_FILES = verify_distribution.REQUIRED_SOURCE_FILES
 REQUIRED_ENTRY_POINTS = verify_distribution.REQUIRED_ENTRY_POINTS
+latest_sdist = verify_distribution.latest_sdist
 latest_wheel = verify_distribution.latest_wheel
+verify_sdist = verify_distribution.verify_sdist
 verify_wheel = verify_distribution.verify_wheel
 
 
@@ -31,6 +36,15 @@ def write_wheel(path: Path, names: set[str], *, entry_points: bool = True) -> No
                 "agentverify-0.1.0.dist-info/entry_points.txt",
                 "[console_scripts]\nagentverify = agentverify.cli:main\n",
             )
+
+
+def write_sdist(path: Path, names: set[str], *, root: str = "agentverify-0.1.0") -> None:
+    with tarfile.open(path, "w:gz") as archive:
+        for name in sorted(names):
+            content = b"{}\n" if name.endswith(".json") else b"placeholder\n"
+            info = tarfile.TarInfo(f"{root}/{name}")
+            info.size = len(content)
+            archive.addfile(info, io.BytesIO(content))
 
 
 def test_distribution_verifier_accepts_all_required_schemas(tmp_path: Path) -> None:
@@ -47,6 +61,18 @@ def test_distribution_verifier_accepts_all_required_schemas(tmp_path: Path) -> N
     assert payload["missing_entry_points"] == {}
 
 
+def test_distribution_verifier_accepts_required_source_artifacts(tmp_path: Path) -> None:
+    sdist = tmp_path / "agentverify-0.1.0.tar.gz"
+    write_sdist(sdist, set(REQUIRED_SOURCE_FILES) | {"src/agentverify/__init__.py"})
+
+    payload = verify_sdist(sdist)
+
+    assert payload["passed"] is True
+    assert payload["required_source_files"] == len(REQUIRED_SOURCE_FILES)
+    assert payload["missing_source_files"] == []
+    assert payload["present_source_files"] == sorted(REQUIRED_SOURCE_FILES)
+
+
 def test_distribution_verifier_rejects_missing_schema(tmp_path: Path) -> None:
     wheel = tmp_path / "agentverify-0.1.0-py3-none-any.whl"
     missing = {"agentverify/schemas/agentverify-rules-v1.schema.json"}
@@ -54,6 +80,15 @@ def test_distribution_verifier_rejects_missing_schema(tmp_path: Path) -> None:
 
     with pytest.raises(RuntimeError, match="agentverify-rules-v1.schema.json"):
         verify_wheel(wheel)
+
+
+def test_distribution_verifier_rejects_missing_source_artifact(tmp_path: Path) -> None:
+    sdist = tmp_path / "agentverify-0.1.0.tar.gz"
+    missing = {"examples/repository-policy.json"}
+    write_sdist(sdist, set(REQUIRED_SOURCE_FILES) - missing)
+
+    with pytest.raises(RuntimeError, match="examples/repository-policy.json"):
+        verify_sdist(sdist)
 
 
 def test_distribution_verifier_rejects_missing_console_script(tmp_path: Path) -> None:
@@ -73,3 +108,14 @@ def test_distribution_verifier_selects_newest_wheel(tmp_path: Path) -> None:
     os.utime(newer, (2, 2))
 
     assert latest_wheel(tmp_path) == newer
+
+
+def test_distribution_verifier_selects_newest_sdist(tmp_path: Path) -> None:
+    older = tmp_path / "agentverify-0.0.9.tar.gz"
+    newer = tmp_path / "agentverify-0.1.0.tar.gz"
+    write_sdist(older, set(REQUIRED_SOURCE_FILES))
+    write_sdist(newer, set(REQUIRED_SOURCE_FILES))
+    os.utime(older, (1, 1))
+    os.utime(newer, (2, 2))
+
+    assert latest_sdist(tmp_path) == newer

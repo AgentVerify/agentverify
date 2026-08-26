@@ -46,6 +46,8 @@ catalog workflows.
 - Added exact local package reexport-chain attribution for AgentScope/PydanticAI provider-wrapper
   symbols, with direct/transitive provider-model positives, rebound negatives, and regenerated IR
   truth-set results now covering 1,455 labels.
+- Extended distribution verification so release checks can require a source distribution containing
+  README-linked examples, policy docs, benchmark contracts, and public truth sets.
 
 ## Current findings
 
@@ -64,4 +66,4 @@ catalog workflows.
 
 Continue toward the highest-value local P1/P2 work: additional real-world framework coverage
 without broad name matching, cryptographic signed policy provenance design, or release artifact
-checks once release packaging is explicit.
+checks that attach benchmark verification outputs once release packaging is explicit.
