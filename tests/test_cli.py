@@ -12,7 +12,7 @@ from jsonschema import Draft202012Validator
 from agentverify import cli
 from agentverify.benchmark import file_sha256
 from agentverify.policy import load_policy, render_policy_signing_payload
-from agentverify.report import render_bom, render_json, render_sarif
+from agentverify.report import render_bom, render_json, render_sarif, render_schema
 from agentverify.rules import RULE_CATALOG
 from agentverify.scanner import scan_repository
 
@@ -439,6 +439,7 @@ def test_cli_lists_bundled_schemas(capsys) -> None:
 
     assert capsys.readouterr().out.splitlines() == [
         "benchmark-result",
+        "benchmark-verification",
         "bom",
         "editor-contract-manifest",
         "editor-contract-verification",
@@ -489,6 +490,14 @@ def test_cli_prints_bundled_benchmark_result_schema(capsys) -> None:
     )
 
 
+def test_cli_prints_bundled_benchmark_verification_schema(capsys) -> None:
+    assert cli.main(["schema", "benchmark-verification"]) == 0
+
+    schema = __import__("json").loads(capsys.readouterr().out)
+    Draft202012Validator.check_schema(schema)
+    assert schema["title"] == "AgentVerify Benchmark Verification 1"
+
+
 def test_cli_verifies_checked_in_benchmark_results(capsys) -> None:
     assert (
         cli.main(
@@ -512,6 +521,8 @@ def test_cli_verifies_checked_in_benchmark_results(capsys) -> None:
         ("reporting-rules", 719, True),
         ("agent-ir", 1567, True),
     ]
+    schema = __import__("json").loads(render_schema("benchmark-verification"))
+    Draft202012Validator(schema).validate(payload)
 
 
 def test_cli_benchmark_verify_writes_output_file(tmp_path: Path, capsys) -> None:
@@ -539,6 +550,8 @@ def test_cli_benchmark_verify_writes_output_file(tmp_path: Path, capsys) -> None
     payload = __import__("json").loads(output.read_text(encoding="utf-8"))
     assert payload["results"][0]["labels"] == 719
     assert payload["results"][0]["digest_ok"] is True
+    schema = __import__("json").loads(render_schema("benchmark-verification"))
+    Draft202012Validator(schema).validate(payload)
 
 
 def test_cli_benchmark_verify_rejects_public_results_as_sealed_claim(capsys) -> None:

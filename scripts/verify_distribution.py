@@ -54,6 +54,7 @@ REQUIRED_SOURCE_FILES = frozenset(
 REQUIRED_SCHEMA_FILES = frozenset(
     {
         "agentverify/schemas/agentverify-benchmark-result-v1.schema.json",
+        "agentverify/schemas/agentverify-benchmark-verification-v1.schema.json",
         "agentverify/schemas/agentverify-ai-bom-v1.schema.json",
         "agentverify/schemas/agentverify-editor-contract-manifest-v1.schema.json",
         "agentverify/schemas/agentverify-editor-contract-verification-v1.schema.json",
@@ -160,6 +161,9 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         version = command([str(agentverify), "--version"]).strip()
         schema_list = command([str(agentverify), "schema"]).splitlines()
         benchmark_schema = json.loads(command([str(agentverify), "schema", "benchmark-result"]))
+        benchmark_verification_schema = json.loads(
+            command([str(agentverify), "schema", "benchmark-verification"])
+        )
         editor_contract_manifest_schema = json.loads(
             command([str(agentverify), "schema", "editor-contract-manifest"])
         )
@@ -301,6 +305,7 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         "version": version,
         "schema_list": schema_list,
         "benchmark_schema_title": benchmark_schema.get("title"),
+        "benchmark_verification_schema_title": benchmark_verification_schema.get("title"),
         "editor_contract_manifest_schema_title": editor_contract_manifest_schema.get("title"),
         "editor_contract_verification_schema_title": editor_contract_verification_schema.get(
             "title"
@@ -353,6 +358,7 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         failed.append("version")
     expected_schema_names = [
         "benchmark-result",
+        "benchmark-verification",
         "bom",
         "editor-contract-manifest",
         "editor-contract-verification",
@@ -369,6 +375,8 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         failed.append("schema_list")
     if benchmark_schema.get("title") != "AgentVerify Benchmark Results 1":
         failed.append("benchmark_schema_title")
+    if benchmark_verification_schema.get("title") != "AgentVerify Benchmark Verification 1":
+        failed.append("benchmark_verification_schema_title")
     if (
         checks["editor_contract_manifest_schema_title"]
         != "AgentVerify Editor Contract Manifest 1"

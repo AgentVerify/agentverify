@@ -23,6 +23,7 @@ agentverify scan ./project --format sarif
 agentverify scan ./project --format sarif --output agentverify.sarif
 agentverify schema
 agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
+agentverify schema benchmark-verification --output agentverify-benchmark-verification.schema.json
 agentverify schema editor-contract-manifest --output agentverify-editor-contract-manifest.schema.json
 agentverify schema editor-contract-verification --output agentverify-editor-contract-verification.schema.json
 agentverify schema report --output agentverify-report.schema.json
@@ -81,6 +82,8 @@ to write them directly to a file. Output write failures return exit code 2; succ
 still preserve policy and `--fail-on` exit decisions.
 `agentverify schema` lists every bundled machine-readable schema.
 `agentverify schema benchmark-result` prints the bundled schema for benchmark result files.
+`agentverify schema benchmark-verification` validates the JSON emitted by
+`agentverify benchmark verify`.
 `agentverify schema editor-contract-manifest` validates the manifest emitted by
 `agentverify contracts`; `agentverify schema editor-contract-verification` validates the JSON emitted
 by `agentverify contracts --verify-dir`.
@@ -158,6 +161,8 @@ HIGH AV-EXEC001 [high; finding]
 - [`benchmarks/holdout-manifest.template.json`](benchmarks/holdout-manifest.template.json) — public sample manifest shape
 - [`benchmarks/benchmark-results-v1.schema.json`](benchmarks/benchmark-results-v1.schema.json) — benchmark result contract
   (also available from an installed CLI with `agentverify schema benchmark-result`)
+- `agentverify schema benchmark-verification` — installed verifier-output contract for
+  `agentverify benchmark verify` JSON artifacts
 
 SARIF output includes stable fingerprints, source locations, severity, remediation, Agent IR paths,
 and resolved/unresolved control context for code-scanning integrations.
@@ -188,10 +193,12 @@ PYTHONPATH=src python3 scripts/evaluate_truthset.py --evaluation-kind sealed-hol
 uv run python scripts/verify_benchmark_results.py --require-evaluation-kind public-regression --require-all-passed
 agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed
 agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
+agentverify schema benchmark-verification --output agentverify-benchmark-verification.schema.json
 ```
 
 The default CI workflow runs the installed CLI benchmark gate against the checked-in public
-regression results, so benchmark-result drift fails during pull requests before release packaging.
+regression results and validates the verifier JSON against the bundled benchmark-verification schema,
+so benchmark-result drift fails during pull requests before release packaging.
 For editor or custom CI integrations, `agentverify contracts --sample-root examples/safe_agent`
 exports the report schema, rules schema, current rules catalog, and optional sample report into a
 local artifact directory with a schema-backed digest manifest. `agentverify contracts --verify-dir`

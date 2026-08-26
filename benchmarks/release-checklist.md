@@ -23,12 +23,13 @@ uv run python scripts/verify_benchmark_results.py \
   --require-all-passed
 agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed
 agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
+agentverify schema benchmark-verification --output agentverify-benchmark-verification.schema.json
 ```
 
 For GitHub Actions, start from the copyable
 [`examples/github-benchmark-verify.yml`](../examples/github-benchmark-verify.yml) workflow. It runs
 the installed CLI verifier with the public-regression/all-labels-passed gates and uploads the
-machine-readable verifier JSON as a workflow artifact for release-note review.
+schema-validated machine-readable verifier JSON as a workflow artifact for release-note review.
 
 Before publishing public regression numbers:
 
@@ -40,8 +41,9 @@ Before publishing public regression numbers:
    to the same verifier.
 3. Confirm CI also ran the installed CLI benchmark gate on the checked-in result files for the
    release commit.
-4. Export `agentverify schema benchmark-result` from the built or installed CLI when downstream
-   release tooling needs the exact result contract without a source checkout.
+4. Export `agentverify schema benchmark-result` and `agentverify schema benchmark-verification` from
+   the built or installed CLI when downstream release tooling needs the exact result and verifier
+   contracts without a source checkout.
 5. State the claim boundary explicitly: curated public regression metrics, not an unbiased ecosystem
    accuracy estimate.
 6. If a result file changes, review the per-label outcomes rather than relying only on aggregate
@@ -64,6 +66,7 @@ agentverify benchmark verify path/to/holdout-results.json \
   --require-sealed \
   --require-manifest
 agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
+agentverify schema benchmark-verification --output agentverify-benchmark-verification.schema.json
 ```
 
 Before publishing sealed holdout numbers:

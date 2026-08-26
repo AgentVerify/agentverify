@@ -6,7 +6,7 @@
   outputs.
 - The runtime catalog currently contains 24 enabled reporting rules.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
-- A freshly rebuilt wheel includes all twelve runtime schemas; a verifier script now guards that
+- A freshly rebuilt wheel includes all thirteen runtime schemas; a verifier script now guards that
   package artifact expectation.
 - Policy evaluation occurs after baseline filtering and preserves matched findings in all report
   formats.
@@ -34,8 +34,10 @@
   evaluation kind, label scope, sealed status, and manifest provenance, reducing the chance of
   accidentally publishing public regression metrics as unbiased accuracy claims.
 - Benchmark result verification is now an installed CLI behavior (`agentverify benchmark verify`)
-  using the bundled benchmark-result schema; the source-checkout script delegates to the same package
-  code, and distribution smoke tests prove the command works from a built wheel.
+  using the bundled benchmark-result schema; its own verifier JSON is also validated by a bundled
+  benchmark-verification schema exposed through `agentverify schema`. The source-checkout script
+  delegates to the same package code, and distribution smoke tests prove the command works from a
+  built wheel.
 - Benchmark verification distinguishes artifact validity from benchmark success: verification JSON
   now reports `all_labels_passed`, and release workflows can require `--require-all-passed` when
   claiming that public regression labels all pass.

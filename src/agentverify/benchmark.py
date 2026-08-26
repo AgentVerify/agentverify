@@ -220,6 +220,8 @@ def verify_benchmark_results(
     require_all_passed: bool = False,
 ) -> dict[str, object]:
     schema = load_benchmark_result_schema(schema_path)
+    verification_schema = json.loads(render_schema("benchmark-verification"))
+    Draft202012Validator.check_schema(verification_schema)
     verified = [
         verify_result_for_release(
             path,
@@ -233,11 +235,13 @@ def verify_benchmark_results(
         )
         for path in results
     ]
-    return {
+    payload: dict[str, object] = {
         "results": verified,
         "passed": True,
         "all_labels_passed": all(item["passed"] == item["labels"] for item in verified),
     }
+    Draft202012Validator(verification_schema).validate(payload)
+    return payload
 
 
 def render_benchmark_verification(payload: dict[str, object]) -> str:

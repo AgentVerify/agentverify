@@ -180,6 +180,9 @@ catalog workflows.
   `agentverify contracts --verify-dir`, with CLI discovery and installed-wheel smoke coverage.
 - Added a malformed-manifest regression proving verifier failure output stays schema-valid and
   normalizes invalid artifact metadata instead of leaking unexpected JSON types.
+- Added a bundled `benchmark-verification` schema and runtime validation for
+  `agentverify benchmark verify` JSON output, and upgraded the copyable GitHub benchmark workflow to
+  validate its uploaded verifier artifact against that schema.
 
 ## Current findings
 
@@ -208,7 +211,7 @@ catalog workflows.
   confidence, analysis details, and Agent IR paths.
 - Benchmark release-claim guardrails now have a copyable CI artifact, not just prose and this
   repository's internal CI: `examples/github-benchmark-verify.yml` uses only read permission and
-  archives the installed CLI verifier JSON for release review.
+  archives schema-validated installed CLI verifier JSON for release review.
 - Editor/CI contract manifests now identify each artifact's role directly through `kind`,
   `contract`, and `required` fields while retaining SHA-256 digests for reproducibility.
 - The editor/CI contract manifest is now itself schema-backed via `agentverify schema
@@ -223,6 +226,9 @@ catalog workflows.
   the same way they validate exported manifests.
 - Verifier failure output should stay consumable even when manifest metadata fields are malformed;
   invalid `kind`, `contract`, and `required` values are normalized to `null` in artifact results.
+- Benchmark release evidence now has two installable contracts: `benchmark-result` for measured
+  result files and `benchmark-verification` for the release-gate artifact emitted after digest,
+  outcome, and claim-boundary checks.
 - Python filesystem callable aliasing is deliberately narrow: local alias chains may copy already
   proven same-function callable bindings, but aliases before source proof, rebound alias targets,
   incompatible operation families, and imported wrapper helpers remain unresolved.

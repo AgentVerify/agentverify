@@ -13,6 +13,7 @@ from .rules import RULE_CATALOG, RULE_DEFINITIONS
 
 SCHEMA_FILES = {
     "benchmark-result": "agentverify-benchmark-result-v1.schema.json",
+    "benchmark-verification": "agentverify-benchmark-verification-v1.schema.json",
     "bom": "agentverify-ai-bom-v1.schema.json",
     "editor-contract-manifest": "agentverify-editor-contract-manifest-v1.schema.json",
     "editor-contract-verification": "agentverify-editor-contract-verification-v1.schema.json",
