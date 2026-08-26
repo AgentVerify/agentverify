@@ -121,4 +121,7 @@ The evaluator accepts an alternate label file through `--labels` plus
 label path without checking private labels into the public regression corpus. Result JSON conforms to
 [`benchmark-results-v1.schema.json`](benchmark-results-v1.schema.json) and records the evaluation
 kind, label scope, input hashes, manifest hash, and claim scope. The actual sealed labels should wait
-for approved storage and reviewer workflow.
+for approved storage and reviewer workflow. Before publishing benchmark numbers, use
+[`release-checklist.md`](release-checklist.md); release workflows can require sealed-holdout metadata
+with `uv run python scripts/verify_benchmark_results.py path/to/holdout-results.json
+--require-evaluation-kind sealed-holdout --require-sealed --require-manifest`.

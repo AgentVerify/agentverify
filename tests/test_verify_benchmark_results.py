@@ -37,24 +37,37 @@ def write_labels(path: Path) -> None:
     )
 
 
-def write_result(path: Path, labels: Path, *, labels_sha256: str | None = None) -> None:
+def write_result(
+    path: Path,
+    labels: Path,
+    *,
+    labels_sha256: str | None = None,
+    evaluation_kind: str = "public-regression",
+    manifest: Path | None = None,
+) -> None:
     digest = labels_sha256 or verify_benchmark_results.file_sha256(labels)
+    benchmark = {
+        "evaluation_kind": evaluation_kind,
+        "label_scope": "reporting-rules",
+        "labels_source": str(labels),
+        "labels_sha256": digest,
+        "sealed": evaluation_kind == "sealed-holdout",
+        "claim_scope": (
+            "sealed holdout evaluation; suitable for unbiased accuracy claims if labels remained sealed"
+            if evaluation_kind == "sealed-holdout"
+            else "curated public regression metrics only; "
+            "not an unbiased ecosystem accuracy estimate"
+        ),
+    }
+    if manifest is not None:
+        benchmark["manifest_source"] = str(manifest)
+        benchmark["manifest_sha256"] = verify_benchmark_results.file_sha256(manifest)
     path.write_text(
         json.dumps(
             {
                 "schema_version": 1,
                 "generated_at": "2026-08-26T00:00:00+00:00",
-                "benchmark": {
-                    "evaluation_kind": "public-regression",
-                    "label_scope": "reporting-rules",
-                    "labels_source": str(labels),
-                    "labels_sha256": digest,
-                    "sealed": False,
-                    "claim_scope": (
-                        "curated public regression metrics only; "
-                        "not an unbiased ecosystem accuracy estimate"
-                    ),
-                },
+                "benchmark": benchmark,
                 "labels": 1,
                 "passed": 1,
                 "metrics": {
@@ -101,6 +114,87 @@ def test_benchmark_result_verifier_checks_label_digest(tmp_path: Path) -> None:
         )
         == 0
     )
+
+
+def test_benchmark_result_verifier_accepts_sealed_release_requirements(tmp_path: Path) -> None:
+    labels = tmp_path / "labels.json"
+    manifest = tmp_path / "manifest.json"
+    result = tmp_path / "results.json"
+    write_labels(labels)
+    manifest.write_text('{"schema_version":1,"samples":[]}', encoding="utf-8")
+    write_result(result, labels, evaluation_kind="sealed-holdout", manifest=manifest)
+    schema = ROOT / "benchmarks/benchmark-results-v1.schema.json"
+
+    assert (
+        verify_benchmark_results.main(
+            [
+                str(result),
+                "--schema",
+                str(schema),
+                "--root",
+                str(tmp_path),
+                "--require-evaluation-kind",
+                "sealed-holdout",
+                "--require-label-scope",
+                "reporting-rules",
+                "--require-sealed",
+                "--require-manifest",
+            ]
+        )
+        == 0
+    )
+
+
+def test_benchmark_result_verifier_rejects_public_results_as_sealed_release_claim(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    labels = tmp_path / "labels.json"
+    result = tmp_path / "results.json"
+    write_labels(labels)
+    write_result(result, labels)
+    schema = ROOT / "benchmarks/benchmark-results-v1.schema.json"
+
+    assert (
+        verify_benchmark_results.main(
+            [
+                str(result),
+                "--schema",
+                str(schema),
+                "--root",
+                str(tmp_path),
+                "--require-evaluation-kind",
+                "sealed-holdout",
+                "--require-sealed",
+            ]
+        )
+        == 1
+    )
+    captured = capsys.readouterr()
+    assert "expected evaluation_kind sealed-holdout" in captured.err
+
+
+def test_benchmark_result_verifier_can_require_manifest(tmp_path: Path, capsys) -> None:
+    labels = tmp_path / "labels.json"
+    result = tmp_path / "results.json"
+    write_labels(labels)
+    write_result(result, labels, evaluation_kind="sealed-holdout")
+    schema = ROOT / "benchmarks/benchmark-results-v1.schema.json"
+
+    assert (
+        verify_benchmark_results.main(
+            [
+                str(result),
+                "--schema",
+                str(schema),
+                "--root",
+                str(tmp_path),
+                "--require-manifest",
+            ]
+        )
+        == 1
+    )
+    captured = capsys.readouterr()
+    assert "expected manifest_source" in captured.err
 
     write_result(result, labels, labels_sha256="0" * 64)
     with pytest.raises(RuntimeError, match="labels_sha256"):

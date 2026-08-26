@@ -31,6 +31,9 @@ catalog workflows.
 - Added a bundled policy-summary schema and included it in wheel/content and installed CLI checks.
 - Added local policy digest trust roots for `agentverify policy`, including `--require-trusted`
   gating while still reporting `signature_verified: false`.
+- Added benchmark-result release guardrails: verifier flags can require public-regression or
+  sealed-holdout metadata, sealed status, manifests, and label scopes; docs now spell out claim
+  boundaries before publishing benchmark numbers.
 
 ## Current findings
 
@@ -48,5 +51,5 @@ catalog workflows.
 ## Next action
 
 Continue toward the highest-value local P1/P2 work: cryptographic signed policy provenance design,
-benchmark-result release documentation, additional installed-artifact checks, or additional
+additional installed-artifact checks, stronger benchmark release artifact validation, or additional
 real-world framework coverage.

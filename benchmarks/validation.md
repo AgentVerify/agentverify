@@ -1500,7 +1500,9 @@ reporting process for that future benchmark. Evaluator outputs now include bench
 distinguishes public regression runs from sealed-holdout runs and records label/manifest hashes; the
 shape is validated by [`benchmark-results-v1.schema.json`](benchmark-results-v1.schema.json). Run
 `uv run python scripts/verify_benchmark_results.py` to validate the checked-in result files and
-recompute their embedded label or manifest digests.
+recompute their embedded label or manifest digests. Use
+[`release-checklist.md`](release-checklist.md) before publishing benchmark numbers; the verifier can
+fail release workflows that require `public-regression` or `sealed-holdout` metadata.
 
 ## Agent IR control-edge checks
 

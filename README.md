@@ -115,6 +115,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`benchmarks/truthset-results.json`](benchmarks/truthset-results.json) — per-rule seed precision and recall
 - [`benchmarks/ir-truthset.json`](benchmarks/ir-truthset.json) — 1,449 separately scored component and relationship labels
 - [`benchmarks/holdout-design.md`](benchmarks/holdout-design.md) — sealed benchmark plan for unbiased evaluation
+- [`benchmarks/release-checklist.md`](benchmarks/release-checklist.md) — claim boundaries and verifier gates for benchmark releases
 - [`benchmarks/holdout-manifest.template.json`](benchmarks/holdout-manifest.template.json) — public sample manifest shape
 - [`benchmarks/benchmark-results-v1.schema.json`](benchmarks/benchmark-results-v1.schema.json) — benchmark result contract
 
@@ -141,6 +142,7 @@ PYTHONPATH=src python3 scripts/evaluate_truthset.py --evaluation-kind sealed-hol
   --manifest path/to/holdout-manifest.json --labels path/to/sealed-labels.json \
   --output path/to/holdout-results.json
 uv run python scripts/verify_benchmark_results.py
+uv run python scripts/verify_benchmark_results.py --require-evaluation-kind public-regression
 ```
 
 The collector reuses commits from `research/repository-data.json` by default and samples up to 220

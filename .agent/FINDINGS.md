@@ -22,6 +22,9 @@
   safe-example scan commands through the installed executable.
 - Benchmark verification now recomputes `labels_sha256` and optional `manifest_sha256`, preventing
   result files from drifting away from their declared inputs.
+- Benchmark verification can now fail release workflows unless result files declare the required
+  evaluation kind, label scope, sealed status, and manifest provenance, reducing the chance of
+  accidentally publishing public regression metrics as unbiased accuracy claims.
 - Policy composition can now be inspected without scanning. The policy summary intentionally reports
   `signature_verified: false`, preserving the distinction between content integrity and author trust.
 - Policy summary JSON is now schema-backed and included in distribution verification, matching the
