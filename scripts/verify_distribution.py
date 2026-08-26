@@ -27,6 +27,7 @@ REQUIRED_SOURCE_FILES = frozenset(
         "pyproject.toml",
         "benchmarks/benchmark-results-v1.schema.json",
         "benchmarks/holdout-design.md",
+        "benchmarks/holdout-labels.template.json",
         "benchmarks/holdout-manifest.template.json",
         "benchmarks/ir-truthset.json",
         "benchmarks/release-checklist.md",

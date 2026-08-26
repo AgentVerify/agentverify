@@ -244,6 +244,17 @@ def test_distribution_verifier_rejects_missing_source_artifact(tmp_path: Path) -
         verify_sdist(sdist)
 
 
+def test_distribution_verifier_requires_holdout_label_template(tmp_path: Path) -> None:
+    sdist = tmp_path / "agentverify-0.1.0.tar.gz"
+    missing = {"benchmarks/holdout-labels.template.json"}
+    write_sdist(
+        sdist, (set(REQUIRED_SOURCE_FILES) | set(REQUIRED_BENCHMARK_RESULT_FILES)) - missing
+    )
+
+    with pytest.raises(RuntimeError, match="benchmarks/holdout-labels.template.json"):
+        verify_sdist(sdist)
+
+
 def test_distribution_verifier_rejects_missing_benchmark_result_artifact(
     tmp_path: Path,
 ) -> None:

@@ -160,6 +160,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`examples/github-benchmark-verify.yml`](examples/github-benchmark-verify.yml) — copyable benchmark verifier workflow
 - [`examples/benchmark-verification.json`](examples/benchmark-verification.json) — checked verifier-output example for public-regression release gates
 - [`benchmarks/holdout-manifest.template.json`](benchmarks/holdout-manifest.template.json) — public sample manifest shape
+- [`benchmarks/holdout-labels.template.json`](benchmarks/holdout-labels.template.json) — public sealed-label template shape
 - [`benchmarks/benchmark-results-v1.schema.json`](benchmarks/benchmark-results-v1.schema.json) — benchmark result contract
   (also available from an installed CLI with `agentverify schema benchmark-result`)
 - `agentverify schema benchmark-verification` — installed verifier-output contract for
