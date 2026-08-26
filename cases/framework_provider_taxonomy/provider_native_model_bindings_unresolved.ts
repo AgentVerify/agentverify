@@ -23,3 +23,7 @@ REBOUND_MODEL = 'gpt-rebound';
 await client.responses.create({ model: REBOUND_MODEL });
 
 void shadowed;
+
+const runtimeSuffix = process.env.MODEL_SUFFIX ?? 'runtime';
+const UNKNOWN_TEMPLATE_MODEL = `${MODEL_PREFIX}-${runtimeSuffix}`;
+await client.responses.create({ model: UNKNOWN_TEMPLATE_MODEL });

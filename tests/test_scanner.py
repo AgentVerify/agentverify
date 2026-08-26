@@ -293,7 +293,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
                 "ai-sdk-provider-model",
                 None,
             )
-            for line in (5, 9, 13, 18, 20)
+            for line in (5, 9, 13, 18, 20, 31)
         ),
         (
             "provider_native_calls.ts",
@@ -627,7 +627,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
                 "provider-sdk-model",
                 "OpenAI",
             )
-            for line in (7, 9, 14, 18, 23)
+            for line in (7, 9, 14, 18, 23, 29)
         ),
         (
             "provider_native_calls_commonjs.js",

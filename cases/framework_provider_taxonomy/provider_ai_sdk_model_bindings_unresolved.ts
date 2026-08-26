@@ -25,3 +25,9 @@ void composedModel;
 void shadowed;
 void reboundModel;
 void forwardModel;
+
+const runtimeSuffix = process.env.MODEL_SUFFIX ?? 'runtime';
+const unknownTemplateModelId = `${composedPrefix}-${runtimeSuffix}`;
+const unknownTemplateModel = openai(unknownTemplateModelId);
+
+void unknownTemplateModel;

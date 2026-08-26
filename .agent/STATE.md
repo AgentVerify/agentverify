@@ -145,11 +145,13 @@ catalog workflows.
 - Extended TypeScript model literal binding so module-level template strings composed only from
   earlier immutable literal constants resolve as exact model ids for native OpenAI/Anthropic calls
   and official AI SDK provider calls; runtime, mutable, forward, shadowed, rebound, and unknown
-  template expressions remain unresolved. The public IR truth set still covers 1,552 passing labels,
-  now split across 1,135 positives and 417 negatives.
+  template expressions remain unresolved. The public IR truth set now covers 1,554 passing labels,
+  split across 1,135 positives and 419 negatives.
 - Added a checked copyable GitHub SARIF upload workflow in `examples/github-code-scanning.yml`,
   documented it separately from policy enforcement, and made it a required source-distribution
   artifact so SARIF adoption guidance survives release packaging.
+- Added two explicit TypeScript unknown-template negative model-binding labels so runtime-derived
+  template interpolations remain guarded in the public IR regression set.
 
 ## Current findings
 
