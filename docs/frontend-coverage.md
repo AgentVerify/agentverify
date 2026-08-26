@@ -266,11 +266,11 @@ call counts stay at 70 and literal models rise from 28 to 29; three model compon
 immutable-module-literal basis. Runtime parameters in Activepieces and Mastra, plus mutable,
 forward, composed, shadowed, and rebound fixture arguments, remain withheld.
 The same immutable-module-literal basis now also covers exact module-level literal object maps such
-as `MODEL_IDS.chat` for native request objects and official AI SDK first model arguments. The object
-must be a single top-level `const` with direct literal string properties and no object/member
-reassignment; mutable object properties, nonliteral object values, bracket reads, and unknown
-template values remain withheld. Local regressions add three positive object-map model labels and
-four guarded negatives, bringing the public IR truth set to 1,595 labels.
+as `MODEL_IDS.chat` or `MODEL_IDS["chat"]` for native request objects and official AI SDK first
+model arguments. The object must be a single top-level `const` with direct literal string properties
+and no object/member reassignment; mutable object properties, nonliteral object values, dynamic
+bracket keys, and unknown template values remain withheld. Local regressions now pin six positive
+object-map model labels and six guarded negatives, bringing the public IR truth set to 1,600 labels.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
 Agent→MCP-server identities. Import-proven literal stdio constructor calls are inventoried for any
@@ -969,7 +969,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 719-label rule truth set and 1,595-label IR component/relationship set are curated regression
+The 719-label rule truth set and 1,600-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

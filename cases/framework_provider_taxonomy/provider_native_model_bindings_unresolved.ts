@@ -38,3 +38,6 @@ const UNKNOWN_MODEL_IDS = {
   chat: `${MODEL_PREFIX}-${runtimeSuffix}`,
 };
 await client.responses.create({ model: UNKNOWN_MODEL_IDS.chat });
+
+const dynamicKey = 'chat';
+await client.responses.create({ model: UNKNOWN_MODEL_IDS[dynamicKey] });

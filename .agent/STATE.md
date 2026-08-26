@@ -236,7 +236,10 @@ catalog workflows.
 - Extended TypeScript exact model attribution to immutable module-level literal object maps, so
   native SDK and official AI SDK calls can resolve `MODEL_IDS.chat`-style model IDs while mutable
   object properties and nonliteral object values remain unresolved; regenerated public IR truth-set
-  results now cover 1,595 passing labels.
+  results then covered 1,595 passing labels.
+- Extended that TypeScript object-map proof to exact literal bracket reads such as
+  `MODEL_IDS["chat"]` while keeping dynamic bracket keys unresolved; regenerated public IR truth-set
+  results now cover 1,600 passing labels.
 
 ## Current findings
 

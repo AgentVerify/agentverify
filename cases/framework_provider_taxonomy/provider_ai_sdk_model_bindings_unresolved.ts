@@ -41,6 +41,10 @@ const unknownModelIds = {
 };
 const unknownObjectModel = openai(unknownModelIds.language);
 
+const dynamicKey = 'language';
+const dynamicBracketModel = openai(unknownModelIds[dynamicKey]);
+
 void unknownTemplateModel;
 void mutableObjectModel;
 void unknownObjectModel;
+void dynamicBracketModel;

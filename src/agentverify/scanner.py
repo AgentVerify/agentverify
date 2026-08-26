@@ -13395,9 +13395,15 @@ def typescript_literal_string_binding_for_expression(
     if re.fullmatch(r"[A-Za-z_$][\w$]*", expression):
         return literal_bindings.get(expression)
     member = re.fullmatch(r"([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*)", expression)
-    if member is None:
+    if member is not None:
+        return literal_bindings.get(f"{member.group(1)}.{member.group(2)}")
+    bracket_member = re.fullmatch(
+        r"([A-Za-z_$][\w$]*)\[\s*(['\"])([A-Za-z_$][\w$]*)\2\s*\]",
+        expression,
+    )
+    if bracket_member is None:
         return None
-    return literal_bindings.get(f"{member.group(1)}.{member.group(2)}")
+    return literal_bindings.get(f"{bracket_member.group(1)}.{bracket_member.group(3)}")
 
 
 def typescript_provider_request_model(

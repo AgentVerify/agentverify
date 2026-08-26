@@ -199,9 +199,9 @@
 - TypeScript exact model attribution now accepts immutable module-level literal object maps such as
   `MODEL_IDS.chat` for native SDK request objects and official AI SDK first-argument calls. The proof
   is deliberately limited to top-level `const` objects with direct literal string properties, exact
-  dot-member reads, and no object or member reassignment; mutable object properties, nonliteral
-  object values, bracket reads, and unknown template values remain unresolved. The public IR truth
-  set now covers 1,595 passing labels.
+  dot-member or literal bracket reads, and no object or member reassignment; mutable object
+  properties, nonliteral object values, dynamic bracket keys, and unknown template values remain
+  unresolved. The public IR truth set now covers 1,600 passing labels.
 
 ## Hypotheses
 
