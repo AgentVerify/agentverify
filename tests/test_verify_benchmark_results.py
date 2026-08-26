@@ -98,6 +98,10 @@ def write_result(
     )
 
 
+def rewrite_result(path: Path, payload: dict) -> None:
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+
 def test_checked_in_benchmark_results_verify() -> None:
     assert verify_benchmark_results.main([]) == 0
 
@@ -162,6 +166,77 @@ def test_benchmark_result_verifier_can_require_all_labels_passed(
     )
     captured = capsys.readouterr()
     assert "expected all benchmark labels to pass" in captured.err
+
+
+def test_benchmark_result_verifier_rejects_outcome_count_drift(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    labels = tmp_path / "labels.json"
+    result = tmp_path / "results.json"
+    write_labels(labels)
+    write_result(result, labels)
+    schema = ROOT / "benchmarks/benchmark-results-v1.schema.json"
+    payload = json.loads(result.read_text(encoding="utf-8"))
+    payload["outcomes"] = []
+    payload["passed"] = 0
+    payload["metrics"] = {}
+    rewrite_result(result, payload)
+
+    assert (
+        verify_benchmark_results.main(
+            [str(result), "--schema", str(schema), "--root", str(tmp_path)]
+        )
+        == 1
+    )
+    captured = capsys.readouterr()
+    assert "outcomes count does not match labels" in captured.err
+
+
+def test_benchmark_result_verifier_rejects_passed_count_drift(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    labels = tmp_path / "labels.json"
+    result = tmp_path / "results.json"
+    write_labels(labels)
+    write_result(result, labels, passed=False)
+    schema = ROOT / "benchmarks/benchmark-results-v1.schema.json"
+    payload = json.loads(result.read_text(encoding="utf-8"))
+    payload["passed"] = 1
+    rewrite_result(result, payload)
+
+    assert (
+        verify_benchmark_results.main(
+            [str(result), "--schema", str(schema), "--root", str(tmp_path)]
+        )
+        == 1
+    )
+    captured = capsys.readouterr()
+    assert "passed count does not match outcomes" in captured.err
+
+
+def test_benchmark_result_verifier_rejects_metric_drift(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    labels = tmp_path / "labels.json"
+    result = tmp_path / "results.json"
+    write_labels(labels)
+    write_result(result, labels)
+    schema = ROOT / "benchmarks/benchmark-results-v1.schema.json"
+    payload = json.loads(result.read_text(encoding="utf-8"))
+    payload["metrics"]["AV-EXEC001"]["tp"] = 0
+    payload["metrics"]["AV-EXEC001"]["fn"] = 1
+    payload["metrics"]["AV-EXEC001"]["precision"] = None
+    payload["metrics"]["AV-EXEC001"]["recall"] = 0.0
+    rewrite_result(result, payload)
+
+    assert (
+        verify_benchmark_results.main(
+            [str(result), "--schema", str(schema), "--root", str(tmp_path)]
+        )
+        == 1
+    )
+    captured = capsys.readouterr()
+    assert "metrics do not match outcomes" in captured.err
 
 
 def test_benchmark_result_verifier_accepts_sealed_release_requirements(tmp_path: Path) -> None:

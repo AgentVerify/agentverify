@@ -86,7 +86,8 @@ trust roots, and `agentverify schema policy-trust-root` validates local digest a
 summaries.
 `agentverify schema rules` validates the machine-readable rule catalog.
 `agentverify benchmark verify` validates benchmark result JSON against the bundled schema, recomputes
-label and manifest digests, and can fail closed on release-claim requirements such as
+label and manifest digests plus outcome-derived passed/metrics totals, and can fail closed on
+release-claim requirements such as
 `--require-evaluation-kind sealed-holdout`, `--require-sealed`, `--require-manifest`, and
 `--require-all-passed`.
 Use `--format summary` for compact CI logs: it reports scan totals, baseline/policy status, counts by

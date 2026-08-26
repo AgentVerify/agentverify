@@ -39,6 +39,9 @@
 - Benchmark verification distinguishes artifact validity from benchmark success: verification JSON
   now reports `all_labels_passed`, and release workflows can require `--require-all-passed` when
   claiming that public regression labels all pass.
+- Benchmark verification now treats benchmark result aggregates as derived evidence: it rejects
+  mismatches between `labels` and outcome count, `passed` and per-outcome pass status, or `metrics`
+  and the expected/observed outcome matrix.
 - Policy composition can now be inspected without scanning. The policy summary intentionally reports
   `signature_verified: false`, preserving the distinction between content integrity and author trust.
 - Policy summary JSON is now schema-backed and included in distribution verification, matching the

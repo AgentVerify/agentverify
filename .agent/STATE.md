@@ -103,6 +103,9 @@ catalog workflows.
 - Added explicit all-labels-passed benchmark verification output and a `--require-all-passed` gate,
   so public regression release checks can fail closed on honest failing-label result files while
   still allowing failed sealed-holdout metrics to be validated when intentionally published.
+- Hardened benchmark result verification to reject cross-field drift between labels, outcomes,
+  passed totals, and outcome-derived metrics, so release gates cannot be satisfied by editing
+  aggregate result fields without matching per-label evidence.
 
 ## Current findings
 

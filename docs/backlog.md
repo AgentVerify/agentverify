@@ -550,10 +550,11 @@ leakage controls, reporting metrics, and public manifest/label templates for tha
 discovery sampling metrics separate from detection-quality metrics. Evaluator outputs now identify
 public-regression versus sealed-holdout runs, include label/manifest digests for reproducibility, and
 are covered by a benchmark result JSON schema. A benchmark verifier validates checked-in result files
-against that schema and recomputes embedded input digests. The same verifier is now available from
-the installed CLI as `agentverify benchmark verify`, while the source-checkout script delegates to
-the packaged implementation; installed-wheel smoke tests prove the command validates the checked
-public benchmark results. Verifier output separately reports whether all labels passed, and
+against that schema, recomputes embedded input digests, and cross-checks outcome-derived label,
+passed, and metric totals. The same verifier is now available from the installed CLI as
+`agentverify benchmark verify`, while the source-checkout script delegates to the packaged
+implementation; installed-wheel smoke tests prove the command validates the checked public benchmark
+results. Verifier output separately reports whether all labels passed, and
 `--require-all-passed` lets public-regression release checks fail closed on honest failing-label
 artifacts without making failed sealed-holdout metrics invalid by default.
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections import Counter, defaultdict
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
@@ -42,6 +43,46 @@ def load_benchmark_result_schema(path: Path | None = None) -> dict:
     return schema
 
 
+def outcome_metric_id(outcome: dict) -> str:
+    return outcome.get("rule_id") or outcome["check_id"]
+
+
+def metrics_from_outcomes(outcomes: list[dict]) -> dict[str, dict[str, object]]:
+    matrices: dict[str, Counter] = defaultdict(Counter)
+    for outcome in outcomes:
+        metric_id = outcome_metric_id(outcome)
+        expected = outcome["expected"]
+        observed = outcome["observed"]
+        bucket = "tp" if expected and observed else "fn" if expected else "fp" if observed else "tn"
+        matrices[metric_id][bucket] += 1
+
+    metrics: dict[str, dict[str, object]] = {}
+    for metric_id, matrix in sorted(matrices.items()):
+        tp = matrix["tp"]
+        fp = matrix["fp"]
+        fn = matrix["fn"]
+        metrics[metric_id] = {
+            **{name: matrix[name] for name in ("tp", "fp", "tn", "fn")},
+            "precision": round(tp / (tp + fp), 4) if tp + fp else None,
+            "recall": round(tp / (tp + fn), 4) if tp + fn else None,
+        }
+    return metrics
+
+
+def verify_result_invariants(path: Path, payload: dict) -> None:
+    outcomes = payload["outcomes"]
+    if len(outcomes) != payload["labels"]:
+        raise RuntimeError(f"{path}: outcomes count does not match labels")
+
+    passed = sum(1 for outcome in outcomes if outcome["passed"])
+    if passed != payload["passed"]:
+        raise RuntimeError(f"{path}: passed count does not match outcomes")
+
+    metrics = metrics_from_outcomes(outcomes)
+    if metrics != payload["metrics"]:
+        raise RuntimeError(f"{path}: metrics do not match outcomes")
+
+
 def verify_result(path: Path, *, schema: dict, root: Path) -> dict[str, object]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     Draft202012Validator(schema).validate(payload)
@@ -53,6 +94,7 @@ def verify_result(path: Path, *, schema: dict, root: Path) -> dict[str, object]:
         raise RuntimeError(f"{path}: labels_sha256 does not match {labels_path}")
     if len(labels) != payload["labels"]:
         raise RuntimeError(f"{path}: labels count does not match {labels_path}")
+    verify_result_invariants(path, payload)
     manifest_source = benchmark.get("manifest_source")
     if manifest_source:
         manifest_path = resolve_source(root, manifest_source)
