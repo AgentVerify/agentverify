@@ -9,7 +9,7 @@ agents, MCP servers, workflow platforms, tool integrations, sandboxes, and obser
 The first engine supports Python AST analysis, structure-aware TypeScript/JavaScript discovery, MCP
 configuration, framework/provider/tool inventory, deterministic JSON, and initial
 agent-security review rules. Its curated cross-rule regression set contains 714 pinned positive and
-negative labels, plus 1,514 separately scored Agent IR component and relationship labels.
+negative labels, plus 1,525 separately scored Agent IR component and relationship labels.
 
 ## Install and scan
 
@@ -141,7 +141,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`benchmarks/engine-results.json`](benchmarks/engine-results.json) — full-corpus engine metrics
 - [`benchmarks/truthset.json`](benchmarks/truthset.json) — exact hand-labeled positives and negatives
 - [`benchmarks/truthset-results.json`](benchmarks/truthset-results.json) — per-rule seed precision and recall
-- [`benchmarks/ir-truthset.json`](benchmarks/ir-truthset.json) — 1,514 separately scored component and relationship labels
+- [`benchmarks/ir-truthset.json`](benchmarks/ir-truthset.json) — 1,525 separately scored component and relationship labels
 - [`benchmarks/holdout-design.md`](benchmarks/holdout-design.md) — sealed benchmark plan for unbiased evaluation
 - [`benchmarks/release-checklist.md`](benchmarks/release-checklist.md) — claim boundaries and verifier gates for benchmark releases
 - [`benchmarks/holdout-manifest.template.json`](benchmarks/holdout-manifest.template.json) — public sample manifest shape

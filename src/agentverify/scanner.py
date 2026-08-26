@@ -1607,6 +1607,16 @@ def python_framework_agent_constructor(module: str, symbol: str) -> bool:
     )
 
 
+def python_framework_agent_constructor_symbols(module: str) -> tuple[str, ...]:
+    symbols = set(PYTHON_FRAMEWORK_AGENT_CONSTRUCTORS.get(module, ()))
+    if any(
+        module == prefix or module.startswith(f"{prefix}.")
+        for prefix in python_framework_module_prefixes()
+    ):
+        symbols.update(AGENT_CALLS)
+    return tuple(sorted(symbols))
+
+
 def provider_for_model(model: str) -> str:
     lowered = model.lower()
     if lowered.startswith(("gpt-", "o1", "o3", "o4")):
@@ -10458,9 +10468,14 @@ def scan_python(
         )
 
     nonimport_binding_counts: Counter[str] = Counter()
+    attribute_binding_counts: Counter[str] = Counter()
     for candidate in nodes:
         if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
             nonimport_binding_counts[candidate.id] += 1
+        elif isinstance(candidate, ast.Attribute) and isinstance(
+            candidate.ctx, (ast.Store, ast.Del)
+        ):
+            attribute_binding_counts[dotted_name(candidate)] += 1
         elif isinstance(candidate, ast.arg):
             nonimport_binding_counts[candidate.arg] += 1
         elif isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
@@ -10513,6 +10528,27 @@ def scan_python(
                     statement.module,
                     alias.name,
                     "exact-framework-agent-import",
+                )
+    for statement in tree.body:
+        if not isinstance(statement, ast.Import):
+            continue
+        for alias in statement.names:
+            module = alias.name
+            if module.startswith("."):
+                continue
+            imported_root = module.split(".", 1)[0]
+            binding = alias.asname or imported_root
+            if import_binding_counts[binding] != 1 or nonimport_binding_counts[binding] != 0:
+                continue
+            module_reference = alias.asname or module
+            for constructor in python_framework_agent_constructor_symbols(module):
+                call_name = f"{module_reference}.{constructor}"
+                if attribute_binding_counts[call_name] != 0:
+                    continue
+                local_agent_constructor_origins[call_name] = PythonAgentConstructorOrigin(
+                    module,
+                    constructor,
+                    "exact-framework-agent-module-import",
                 )
     local_agent_factory_constructors = set(local_agent_constructor_origins)
     for statement in (

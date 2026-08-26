@@ -244,7 +244,10 @@ require one immutable import from a module whose path establishes a tool namespa
 eligible only with an exact imported tool base. Inline constructors receive occurrence-qualified tool
 IDs. A direct `with`/`async with` binding is accepted only when the Agent statement is directly in
 that body and no preceding mutation intervenes. AgentVerify does not infer capabilities from the
-constructor spelling. An exact imported class may also create a tool through the known
+constructor spelling. Exact framework Agent constructors may carry provenance through top-level
+absolute module imports only when the imported root is unique/unrebound and the constructor attribute
+is not reassigned; the resulting Agent records the origin module, imported symbol, and
+`exact-framework-agent-module-import` resolution. An exact imported class may also create a tool through the known
 `from_settings` factory method, provided the class import is immutable and already establishes tool
 role. `agents.HostedMCPTool` and `google.adk.integrations.langchain.LangchainTool` are explicit
 integration adapters; the hosted MCP adapter records MCP access but does not invent approval state.

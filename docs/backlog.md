@@ -146,7 +146,11 @@ framework-prefix path, bringing the group to fifteen labels. Three additional la
 Semantic Kernel `semantic_kernel.agents.ChatCompletionAgent` aliases/reexports, bringing the group
 to eighteen labels. Nine further labels pin the remaining exact constructor-table families
 Qwen-Agent, Lagent, and MetaGPT across direct aliases, named reexports, and star reexports, bringing
-the group to twenty-seven labels. Ordinary same-named local constructors still stay unresolved.
+the group to twenty-seven labels. Eleven more labels pin exact top-level module imports such as
+`import agentscope.agent as agentscope_agents`, `import agents as openai_agents`, and
+`import qwen_agent.agents`, including root rebinding, constructor-attribute rebinding, and near-package
+negatives; proven calls record `exact-framework-agent-module-import`. Ordinary same-named local
+constructors still stay unresolved.
 
 ## P0 — module-qualified symbols and graph identities
 
@@ -541,7 +545,7 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 714 pinned positive/negative locations, with 1,514 separately
+The curated regression set has reached 714 pinned positive/negative locations, with 1,525 separately
 scored IR component/relationship labels. Schema-v123 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule

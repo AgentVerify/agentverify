@@ -1334,6 +1334,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         and item.evidence.path
         in {
             "framework_agent_alias_calls.py",
+            "framework_agent_module_calls.py",
             "framework_agent_reexport_calls.py",
         }
     }
@@ -1418,6 +1419,69 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
             "metagpt.roles",
             "Role",
             "exact-framework-agent-import",
+        ),
+        (
+            "framework_agent_module_calls.py",
+            10,
+            "module-react",
+            "agentscope_agents.ReActAgent",
+            "agentscope.agent",
+            "ReActAgent",
+            "exact-framework-agent-module-import",
+        ),
+        (
+            "framework_agent_module_calls.py",
+            11,
+            "module-openai",
+            "openai_agents.Agent",
+            "agents",
+            "Agent",
+            "exact-framework-agent-module-import",
+        ),
+        (
+            "framework_agent_module_calls.py",
+            12,
+            "module-google-adk",
+            "adk_agents.Agent",
+            "google.adk.agents",
+            "Agent",
+            "exact-framework-agent-module-import",
+        ),
+        (
+            "framework_agent_module_calls.py",
+            13,
+            "module-semantic-kernel",
+            "sk_agents.ChatCompletionAgent",
+            "semantic_kernel.agents",
+            "ChatCompletionAgent",
+            "exact-framework-agent-module-import",
+        ),
+        (
+            "framework_agent_module_calls.py",
+            14,
+            "module-qwen",
+            "qwen_agent.agents.Assistant",
+            "qwen_agent.agents",
+            "Assistant",
+            "exact-framework-agent-module-import",
+        ),
+        (
+            "framework_agent_module_calls.py",
+            15,
+            "module-lagent",
+            "lagent.agents.AgentForInternLM",
+            "lagent.agents",
+            "AgentForInternLM",
+            "exact-framework-agent-module-import",
+        ),
+        (
+            "framework_agent_module_calls.py",
+            16,
+            "module-metagpt",
+            "metagpt_roles.Role",
+            "metagpt.roles",
+            "Role",
+            "exact-framework-agent-module-import",
         ),
         (
             "framework_agent_reexport_calls.py",
@@ -1564,6 +1628,12 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
                 and item.evidence.line == 9
             )
         )
+        for item in ir.components
+    )
+    assert not any(
+        item.kind == "agent"
+        and item.evidence.path == "framework_agent_module_rebound.py"
+        and item.attributes.get("constructor_resolution") == "exact-framework-agent-module-import"
         for item in ir.components
     )
 

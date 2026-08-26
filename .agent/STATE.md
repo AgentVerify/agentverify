@@ -74,6 +74,10 @@ catalog workflows.
 - Added direct, named-reexport, and star-reexport provenance coverage for the remaining exact Python
   framework constructor table entries: Qwen-Agent `Assistant`, Lagent `AgentForInternLM`, and MetaGPT
   `Role`, bringing the public IR truth set to 1,514 passing labels.
+- Added exact module-qualified Python framework constructor provenance for top-level absolute imports
+  such as AgentScope, OpenAI Agents SDK, Google ADK, Semantic Kernel, Qwen-Agent, Lagent, and MetaGPT,
+  with root-rebound, constructor-attribute-rebound, and near-package negatives, bringing the public IR
+  truth set to 1,525 passing labels.
 - Added a concrete signed policy provenance design that keeps digest allowlists separate from author
   authenticity and specifies detached source-digest payloads plus local key trust roots.
 - Added `agentverify policy --export-signing-payload` and a bundled policy-signing-payload schema so

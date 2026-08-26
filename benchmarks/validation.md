@@ -1654,8 +1654,8 @@ Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,514 IR labels pass (1,110 positives and 404 negatives):
-371 component-taxonomy positives/140 negatives, three approval positives/four negatives,
+negatives. All 1,525 IR labels pass (1,117 positives and 408 negatives):
+378 component-taxonomy positives/144 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
 contextual network-import positives, three imported-literal-origin positives/seven negatives,
