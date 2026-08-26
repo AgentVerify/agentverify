@@ -4837,13 +4837,21 @@ def python_filesystem_write_spec(
 
 
 def python_filesystem_callable_reference(
-    expression: ast.AST, aliases: dict[str, str]
+    expression: ast.AST,
+    aliases: dict[str, str],
+    local_callables: dict[str, str] | None = None,
 ) -> str | None:
+    if (
+        local_callables is not None
+        and isinstance(expression, ast.Name)
+        and expression.id in local_callables
+    ):
+        return local_callables[expression.id]
     if isinstance(expression, (ast.Name, ast.Attribute)):
         return canonical_python_filesystem_api(dotted_name(expression), aliases)
     if isinstance(expression, ast.IfExp):
-        body = python_filesystem_callable_reference(expression.body, aliases)
-        alternate = python_filesystem_callable_reference(expression.orelse, aliases)
+        body = python_filesystem_callable_reference(expression.body, aliases, local_callables)
+        alternate = python_filesystem_callable_reference(expression.orelse, aliases, local_callables)
         if body is None or alternate is None:
             return None
         family = "|".join(sorted(set(body.split("|") + alternate.split("|"))))
@@ -4872,7 +4880,9 @@ def python_filesystem_callable_calls(
                 collect(candidate.value)
                 invalidate(candidate.target, state)
                 if isinstance(candidate.target, ast.Name) and (
-                    canonical := python_filesystem_callable_reference(candidate.value, aliases)
+                    canonical := python_filesystem_callable_reference(
+                        candidate.value, aliases, state
+                    )
                 ):
                     state[candidate.target.id] = canonical
                 return
@@ -4920,7 +4930,11 @@ def python_filesystem_callable_calls(
             if (
                 len(statement.targets) == 1
                 and isinstance(statement.targets[0], ast.Name)
-                and (canonical := python_filesystem_callable_reference(statement.value, aliases))
+                and (
+                    canonical := python_filesystem_callable_reference(
+                        statement.value, aliases, state
+                    )
+                )
             ):
                 state[statement.targets[0].id] = canonical
             return
@@ -4930,7 +4944,11 @@ def python_filesystem_callable_calls(
             if (
                 isinstance(statement.target, ast.Name)
                 and statement.value is not None
-                and (canonical := python_filesystem_callable_reference(statement.value, aliases))
+                and (
+                    canonical := python_filesystem_callable_reference(
+                        statement.value, aliases, state
+                    )
+                )
             ):
                 state[statement.target.id] = canonical
             return

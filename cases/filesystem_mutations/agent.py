@@ -168,3 +168,25 @@ def shadowed_path_constructor(
     source: str, destination: str, Path: object
 ) -> None:
     Path(source).replace(destination)
+
+
+@tool
+def chained_copy_alias(source: str, destination: str) -> None:
+    copy_fn = shutil.copy2
+    selected_copy = copy_fn
+    selected_copy(source, destination)
+
+
+@tool
+def chained_alias_before_source(source: str, destination: str) -> None:
+    selected_copy = copy_fn
+    copy_fn = shutil.copy2
+    selected_copy(source, destination)
+
+
+@tool
+def chained_alias_rebound_target(source: str, destination: str) -> None:
+    copy_fn = shutil.copy2
+    selected_copy = copy_fn
+    selected_copy = wrapper
+    selected_copy(source, destination)

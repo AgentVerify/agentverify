@@ -145,8 +145,8 @@ catalog workflows.
 - Extended TypeScript model literal binding so module-level template strings composed only from
   earlier immutable literal constants resolve as exact model ids for native OpenAI/Anthropic calls
   and official AI SDK provider calls; runtime, mutable, forward, shadowed, rebound, and unknown
-  template expressions remain unresolved. The public IR truth set now covers 1,554 passing labels,
-  split across 1,135 positives and 419 negatives.
+  template expressions remain unresolved. The public IR truth set now covers 1,557 passing labels,
+  split across 1,136 positives and 421 negatives.
 - Added a checked copyable GitHub SARIF upload workflow in `examples/github-code-scanning.yml`,
   documented it separately from policy enforcement, and made it a required source-distribution
   artifact so SARIF adoption guidance survives release packaging.
@@ -158,6 +158,10 @@ catalog workflows.
 - Added a checked copyable GitHub benchmark-verification workflow that runs the installed
   `agentverify benchmark verify` public-regression/all-labels-passed gate, validates the JSON output,
   uploads it as a workflow artifact, and is now required in source distributions.
+- Extended Python filesystem mutation detection to follow one same-function, statement-ordered
+  callable alias-of-alias hop when the source alias is already proven to be a compatible `os`/`shutil`
+  mutator. Added positive and negative rule/IR labels; public benchmarks now pass 717 reporting-rule
+  labels and 1,557 IR labels.
 
 ## Current findings
 
@@ -187,6 +191,9 @@ catalog workflows.
 - Benchmark release-claim guardrails now have a copyable CI artifact, not just prose and this
   repository's internal CI: `examples/github-benchmark-verify.yml` uses only read permission and
   archives the installed CLI verifier JSON for release review.
+- Python filesystem callable aliasing is deliberately narrow: a local alias may copy an already
+  proven same-function callable binding, but aliases before source proof, rebound alias targets,
+  incompatible operation families, and imported wrapper helpers remain unresolved.
 
 ## Blockers
 

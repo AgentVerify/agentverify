@@ -7925,6 +7925,7 @@ def test_python_filesystem_mutations_resolve_destinations_aliases_and_guards() -
             True,
             "constrained",
         ),
+        177: ("shutil.copy2", "copy", "destination", True, "unresolved"),
     }
     callable_aliases = {
         item.evidence.line: item.attributes["possible_apis"]
@@ -7937,6 +7938,7 @@ def test_python_filesystem_mutations_resolve_destinations_aliases_and_guards() -
         74: ["shutil.copy", "shutil.copy2"],
         85: ["shutil.copy", "shutil.copy2"],
         97: ["shutil.copy", "shutil.copy2"],
+        177: ["shutil.copy2"],
     }
     path_receivers = {
         item.evidence.line: item.attributes["receiver_proof"]
@@ -7978,6 +7980,7 @@ def test_python_filesystem_mutations_resolve_destinations_aliases_and_guards() -
         ("AV-FS001", 85, "branch_copy_choice"),
         ("AV-FS001", 132, "direct_path_replace"),
         ("AV-FS001", 138, "immutable_path_rename"),
+        ("AV-FS001", 177, "chained_copy_alias"),
     ]
 
 

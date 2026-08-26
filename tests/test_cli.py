@@ -491,8 +491,8 @@ def test_cli_verifies_checked_in_benchmark_results(capsys) -> None:
     assert [
         (item["label_scope"], item["labels"], item["digest_ok"]) for item in payload["results"]
     ] == [
-        ("reporting-rules", 714, True),
-        ("agent-ir", 1554, True),
+        ("reporting-rules", 717, True),
+        ("agent-ir", 1557, True),
     ]
 
 
@@ -519,7 +519,7 @@ def test_cli_benchmark_verify_writes_output_file(tmp_path: Path, capsys) -> None
     assert captured.out == ""
     assert captured.err == ""
     payload = __import__("json").loads(output.read_text(encoding="utf-8"))
-    assert payload["results"][0]["labels"] == 714
+    assert payload["results"][0]["labels"] == 717
     assert payload["results"][0]["digest_ok"] is True
 
 

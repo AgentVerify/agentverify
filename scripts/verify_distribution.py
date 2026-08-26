@@ -370,7 +370,7 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         failed.append("policy_signature_verified")
     if checks["benchmark_verification_passed"] is not True:
         failed.append("benchmark_verification_passed")
-    if checks["benchmark_verification_labels"] != [714, 1554]:
+    if checks["benchmark_verification_labels"] != [717, 1557]:
         failed.append("benchmark_verification_labels")
     expected_editor_contract_files = [
         "agentverify-report-v1.schema.json",

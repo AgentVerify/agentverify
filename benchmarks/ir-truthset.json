@@ -1808,6 +1808,53 @@
       }
     },
     {
+      "id": "python-filesystem-chained-callable-alias-local",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-FILESYSTEM-MUTATION",
+      "path": "agent.py",
+      "line": 177,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "chained_copy_alias",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-filesystem-chained-alias-before-source-local-negative",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-FILESYSTEM-MUTATION",
+      "path": "agent.py",
+      "line": 184,
+      "expected": false,
+      "source_contains": "selected_copy(source, destination)",
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "chained_alias_before_source",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-filesystem-chained-alias-rebound-target-local-negative",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-FILESYSTEM-MUTATION",
+      "path": "agent.py",
+      "line": 192,
+      "expected": false,
+      "source_contains": "selected_copy(source, destination)",
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "chained_alias_rebound_target",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
       "id": "python-filesystem-guarded-path-rename-path-boundary-local",
       "target": {"kind": "local", "path": "cases/filesystem_mutations"},
       "check_id": "IR-PY-PATH-BOUNDARY",
