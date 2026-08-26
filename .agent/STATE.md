@@ -65,6 +65,9 @@ catalog workflows.
 - Added OpenAI Agents SDK `agents.Agent` alias, named-reexport, and star-reexport regression labels
   for the same constructor-provenance contract, bringing the public IR truth set to 1,499 passing
   labels.
+- Added Google ADK `google.adk.agents.Agent` alias, named-reexport, and star-reexport regression
+  labels for generic framework-prefix constructor provenance, bringing the public IR truth set to
+  1,502 passing labels.
 - Added a concrete signed policy provenance design that keeps digest allowlists separate from author
   authenticity and specifies detached source-digest payloads plus local key trust roots.
 - Added `agentverify policy --export-signing-payload` and a bundled policy-signing-payload schema so

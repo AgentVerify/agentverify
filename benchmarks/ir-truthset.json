@@ -5061,6 +5061,12 @@
       "component":{"kind":"agent","name":"openai-facade","attributes":{"constructor":"OpenAIAgent","constructor_module":"agents","imported_symbol":"Agent","constructor_resolution":"exact-framework-agent-import"}}
     },
     {
+      "id":"taxonomy-local-framework-agent-alias-google-adk",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_alias_calls.py","line":18,"expected":true,
+      "component":{"kind":"agent","name":"google-adk-facade","attributes":{"constructor":"GoogleADKAgent","constructor_module":"google.adk.agents","imported_symbol":"Agent","constructor_resolution":"exact-framework-agent-import"}}
+    },
+    {
       "id":"taxonomy-local-framework-agent-reexport-agentscope",
       "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
       "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":6,"expected":true,
@@ -5089,6 +5095,18 @@
       "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
       "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":15,"expected":true,
       "component":{"kind":"agent","name":"star-openai","attributes":{"constructor":"ProjectStarOpenAIAgent","constructor_module":"agents","imported_symbol":"Agent","constructor_resolution":"exact-framework-agent-star-reexport"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-reexport-google-adk",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":20,"expected":true,
+      "component":{"kind":"agent","name":"reexport-google-adk","attributes":{"constructor":"ProjectGoogleADKAgent","constructor_module":"google.adk.agents","imported_symbol":"Agent","constructor_resolution":"exact-framework-agent-reexport"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-star-reexport-google-adk",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":21,"expected":true,
+      "component":{"kind":"agent","name":"star-google-adk","attributes":{"constructor":"ProjectStarGoogleADKAgent","constructor_module":"google.adk.agents","imported_symbol":"Agent","constructor_resolution":"exact-framework-agent-star-reexport"}}
     },
     {
       "id":"taxonomy-local-framework-agent-hidden-reexport-negative",

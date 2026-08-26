@@ -11,3 +11,8 @@ from agents import Agent as OpenAIAgent
 
 
 openai = OpenAIAgent(name="openai-facade")
+
+from google.adk.agents import Agent as GoogleADKAgent
+
+
+google = GoogleADKAgent(name="google-adk-facade")

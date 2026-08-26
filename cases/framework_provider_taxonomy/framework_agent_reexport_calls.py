@@ -13,3 +13,9 @@ from framework_agent_reexports import ProjectOpenAIAgent
 
 openai = ProjectOpenAIAgent(name="reexport-openai")
 openai_star = ProjectStarOpenAIAgent(name="star-openai")
+
+from framework_agent_reexports import ProjectGoogleADKAgent
+
+
+google = ProjectGoogleADKAgent(name="reexport-google-adk")
+google_star = ProjectStarGoogleADKAgent(name="star-google-adk")
