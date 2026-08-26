@@ -123,6 +123,7 @@ label path without checking private labels into the public regression corpus. Re
 kind, label scope, input hashes, manifest hash, and claim scope. The actual sealed labels should wait
 for approved storage and reviewer workflow. Before publishing benchmark numbers, use
 [`release-checklist.md`](release-checklist.md); release workflows can require sealed-holdout metadata
-with `uv run python scripts/verify_benchmark_results.py path/to/holdout-results.json
---require-evaluation-kind sealed-holdout --require-sealed --require-manifest`. Installed CLIs expose
-the same result contract with `agentverify schema benchmark-result`.
+with `agentverify benchmark verify path/to/holdout-results.json --require-evaluation-kind
+sealed-holdout --require-sealed --require-manifest`. Add `--require-all-passed` only when making an
+"all labels passed" claim. Installed CLIs expose the result contract with
+`agentverify schema benchmark-result`.

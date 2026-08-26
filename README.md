@@ -140,7 +140,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`benchmarks/engine-results.json`](benchmarks/engine-results.json) — full-corpus engine metrics
 - [`benchmarks/truthset.json`](benchmarks/truthset.json) — exact hand-labeled positives and negatives
 - [`benchmarks/truthset-results.json`](benchmarks/truthset-results.json) — per-rule seed precision and recall
-- [`benchmarks/ir-truthset.json`](benchmarks/ir-truthset.json) — 1,487 separately scored component and relationship labels
+- [`benchmarks/ir-truthset.json`](benchmarks/ir-truthset.json) — 1,514 separately scored component and relationship labels
 - [`benchmarks/holdout-design.md`](benchmarks/holdout-design.md) — sealed benchmark plan for unbiased evaluation
 - [`benchmarks/release-checklist.md`](benchmarks/release-checklist.md) — claim boundaries and verifier gates for benchmark releases
 - [`benchmarks/holdout-manifest.template.json`](benchmarks/holdout-manifest.template.json) — public sample manifest shape
@@ -169,8 +169,8 @@ PYTHONPATH=src python3 scripts/evaluate_truthset.py --labels benchmarks/ir-truth
 PYTHONPATH=src python3 scripts/evaluate_truthset.py --evaluation-kind sealed-holdout \
   --manifest path/to/holdout-manifest.json --labels path/to/sealed-labels.json \
   --output path/to/holdout-results.json
-uv run python scripts/verify_benchmark_results.py
-uv run python scripts/verify_benchmark_results.py --require-evaluation-kind public-regression
+uv run python scripts/verify_benchmark_results.py --require-evaluation-kind public-regression --require-all-passed
+agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed
 agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
 ```
 
@@ -189,5 +189,5 @@ python3 -m venv .venv
 uv build --wheel --sdist
 python3 scripts/verify_distribution.py --require-sdist
 python3 scripts/verify_distribution.py --require-sdist --smoke-install
-uv run python scripts/verify_benchmark_results.py
+uv run python scripts/verify_benchmark_results.py --require-evaluation-kind public-regression --require-all-passed
 ```
