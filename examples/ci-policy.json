@@ -10,7 +10,17 @@
     },
     {
       "id": "no-approval-bypass-reviews",
-      "rules": ["AV-APPROVAL001", "AV-APPROVAL002"],
+      "rules": [
+        "AV-APPROVAL001",
+        "AV-APPROVAL002",
+        "AV-APPROVAL004",
+        "AV-APPROVAL005",
+        "AV-APPROVAL006",
+        "AV-APPROVAL007",
+        "AV-APPROVAL008",
+        "AV-APPROVAL009",
+        "AV-APPROVAL010"
+      ],
       "result_kinds": ["review"],
       "min_severity": "high",
       "max_count": 0

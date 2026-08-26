@@ -16,7 +16,8 @@ agentverify scan . --policy agentverify-policy.json
 ```
 
 The checked-in [`ci-policy.json`](../examples/ci-policy.json) rejects new high-severity findings and
-approval-bypass reviews. A policy contains one or more independent count budgets:
+all current high-severity approval-review rules. A policy contains one or more independent count
+budgets:
 
 ```json
 {

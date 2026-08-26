@@ -47,6 +47,8 @@ IDs, findings/reviews, and minimum severity while retaining every matched result
 repository policy may extend checked-in local organization policies; reports retain every source and
 gate digest. The legacy `--fail-on high --fail-on-kind finding` threshold remains available for
 simple gates.
+The checked-in example policies gate all current high-severity approval-review rules; high-severity
+approval findings remain covered by the broad high-finding gate.
 
 Keep policy enforcement separate from SARIF generation: a failing scan step otherwise prevents the
 upload step unless it uses `if: always()`. For an existing repository, `--baseline` can hide known

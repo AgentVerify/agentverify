@@ -6,6 +6,7 @@ import pytest
 from jsonschema import Draft202012Validator
 
 from agentverify import cli
+from agentverify.policy import load_policy
 from agentverify.report import render_bom, render_json, render_sarif
 from agentverify.rules import RULE_CATALOG
 from agentverify.scanner import scan_repository
@@ -343,6 +344,21 @@ def test_cli_prints_bundled_policy_schema(capsys) -> None:
     )
     assert schema["title"] == "AgentVerify Policy 1"
     assert schema["$defs"]["gate"]["properties"]["rules"]["items"]["enum"] == list(RULE_CATALOG)
+
+
+def test_example_policies_gate_every_high_approval_review() -> None:
+    expected = sorted(
+        rule_id
+        for rule_id, definition in RULE_CATALOG.items()
+        if rule_id.startswith("AV-APPROVAL")
+        and definition.result_kind == "review"
+        and definition.severity == "high"
+    )
+
+    for path in (ROOT / "examples/ci-policy.json", ROOT / "examples/repository-policy.json"):
+        policy, _ = load_policy(path)
+        gate = next(item for item in policy["gates"] if item["id"] == "no-approval-bypass-reviews")
+        assert gate["rules"] == expected
 
 
 def test_cli_prints_bundled_report_schema(capsys) -> None:
