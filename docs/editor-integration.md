@@ -51,6 +51,12 @@ and validates the rules catalog and sample report against the schemas in the bun
 status `1` when the bundle is present but fails verification, and `2` when the manifest or output
 path cannot be read or written.
 
+The verifier JSON is also schema-backed for CI logs and editor bootstrap code:
+
+```console
+agentverify schema editor-contract-verification
+```
+
 From a source checkout, `python scripts/export_editor_contracts.py` is a thin wrapper around the
 same installed package exporter.
 

@@ -24,6 +24,7 @@ agentverify scan ./project --format sarif --output agentverify.sarif
 agentverify schema
 agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
 agentverify schema editor-contract-manifest --output agentverify-editor-contract-manifest.schema.json
+agentverify schema editor-contract-verification --output agentverify-editor-contract-verification.schema.json
 agentverify schema report --output agentverify-report.schema.json
 agentverify schema bom --output agentverify-ai-bom.schema.json
 agentverify schema policy --output agentverify-policy.schema.json
@@ -81,7 +82,8 @@ still preserve policy and `--fail-on` exit decisions.
 `agentverify schema` lists every bundled machine-readable schema.
 `agentverify schema benchmark-result` prints the bundled schema for benchmark result files.
 `agentverify schema editor-contract-manifest` validates the manifest emitted by
-`agentverify contracts`.
+`agentverify contracts`; `agentverify schema editor-contract-verification` validates the JSON emitted
+by `agentverify contracts --verify-dir`.
 `agentverify schema report` prints the bundled schema for validating normal `--format json` reports;
 `agentverify schema policy-summary` validates `agentverify policy --format json`,
 `agentverify schema policy-signing-payload` validates deterministic source-digest manifests for
@@ -193,7 +195,8 @@ regression results, so benchmark-result drift fails during pull requests before 
 For editor or custom CI integrations, `agentverify contracts --sample-root examples/safe_agent`
 exports the report schema, rules schema, current rules catalog, and optional sample report into a
 local artifact directory with a schema-backed digest manifest. `agentverify contracts --verify-dir`
-rechecks copied bundles before consumers load them. The editor guide also includes a checked
+rechecks copied bundles before consumers load them, and its JSON result validates against
+`agentverify schema editor-contract-verification`. The editor guide also includes a checked
 [`examples/editor-diagnostics.json`](examples/editor-diagnostics.json) mapping from AgentVerify
 findings to Language Server Protocol-style diagnostics.
 

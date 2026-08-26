@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentverify.dev/schemas/agentverify-editor-contract-verification-v1.schema.json",
+  "title": "AgentVerify Editor Contract Verification 1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "verification",
+    "directory",
+    "manifest_schema_valid",
+    "required_artifacts_present",
+    "artifacts",
+    "passed",
+    "errors"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "verification": {
+      "const": "AgentVerify Editor Contract Bundle Verification"
+    },
+    "directory": {
+      "type": "string"
+    },
+    "manifest_schema_valid": {
+      "type": "boolean"
+    },
+    "required_artifacts_present": {
+      "type": "boolean"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "kind",
+          "contract",
+          "required",
+          "path_valid",
+          "present",
+          "digest_ok",
+          "bytes_ok",
+          "content_valid"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "kind": {
+            "type": ["string", "null"]
+          },
+          "contract": {
+            "type": ["string", "null"]
+          },
+          "required": {
+            "type": ["boolean", "null"]
+          },
+          "path_valid": {
+            "type": "boolean"
+          },
+          "present": {
+            "type": "boolean"
+          },
+          "digest_ok": {
+            "type": "boolean"
+          },
+          "bytes_ok": {
+            "type": "boolean"
+          },
+          "content_valid": {
+            "type": ["boolean", "null"]
+          }
+        }
+      }
+    },
+    "passed": {
+      "type": "boolean"
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

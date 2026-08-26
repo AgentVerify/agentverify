@@ -8,11 +8,17 @@ from jsonschema import Draft202012Validator
 
 from agentverify import cli
 from agentverify.contracts import export_editor_contracts, verify_editor_contracts
-from agentverify.report import render_json, render_sarif
+from agentverify.report import render_json, render_sarif, render_schema
 from agentverify.scanner import scan_repository
 
 ROOT = Path(__file__).resolve().parents[1]
 LSP_SEVERITY = {"high": 1, "medium": 2, "low": 3, "info": 3}
+
+
+def _verify_against_verification_schema(payload: dict[str, object]) -> None:
+    schema = json.loads(render_schema("editor-contract-verification"))
+    Draft202012Validator.check_schema(schema)
+    Draft202012Validator(schema).validate(payload)
 
 
 def _editor_diagnostic(finding: dict[str, object]) -> dict[str, object]:
@@ -128,6 +134,7 @@ def test_editor_contract_verifier_accepts_exported_bundle(tmp_path: Path) -> Non
 
     verification = verify_editor_contracts(tmp_path)
 
+    _verify_against_verification_schema(verification)
     assert verification["passed"] is True
     assert verification["manifest_schema_valid"] is True
     assert verification["required_artifacts_present"] is True
@@ -152,6 +159,7 @@ def test_editor_contract_verifier_rejects_digest_drift(tmp_path: Path) -> None:
 
     verification = verify_editor_contracts(tmp_path)
 
+    _verify_against_verification_schema(verification)
     assert verification["passed"] is False
     rules_result = next(
         item for item in verification["artifacts"] if item["path"] == "agentverify-rules.json"
@@ -184,6 +192,7 @@ def test_editor_contract_verifier_rejects_manifest_path_traversal(tmp_path: Path
 
     verification = verify_editor_contracts(bundle)
 
+    _verify_against_verification_schema(verification)
     assert verification["passed"] is False
     traversal_result = next(
         item for item in verification["artifacts"] if item["path"] == "../outside.json"
@@ -217,6 +226,7 @@ def test_cli_contract_verifier_rejects_missing_required_artifact(
 
     assert capsys.readouterr().out == ""
     verification = json.loads(manifest_path.read_text(encoding="utf-8"))
+    _verify_against_verification_schema(verification)
     assert verification["passed"] is False
     assert any("missing artifact file: agentverify-report-v1.schema.json" in error for error in verification["errors"])
 
@@ -233,6 +243,7 @@ def test_editor_integration_docs_reference_exported_artifacts() -> None:
     assert "agentverify-report-v1.schema.json" in docs
     assert "agentverify rules --format json --output agentverify-rules.json" in docs
     assert "agentverify schema editor-contract-manifest" in docs
+    assert "agentverify schema editor-contract-verification" in docs
     assert "agentverify contracts --verify-dir agentverify-editor-contracts" in docs
     assert "agentverify contracts --verify-dir" in readme
     assert "`kind`" in docs
@@ -241,6 +252,7 @@ def test_editor_integration_docs_reference_exported_artifacts() -> None:
     assert "[`examples/editor-diagnostics.json`](examples/editor-diagnostics.json)" in readme
     assert "[`docs/editor-integration.md`](docs/editor-integration.md)" in readme
     assert "agentverify schema editor-contract-manifest" in readme
+    assert "agentverify schema editor-contract-verification" in readme
 
 
 def test_editor_diagnostics_example_matches_real_report() -> None:

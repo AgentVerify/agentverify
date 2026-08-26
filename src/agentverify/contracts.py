@@ -131,7 +131,9 @@ def verify_editor_contracts(bundle_dir: Path) -> dict[str, object]:
     manifest_path = bundle_dir / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     manifest_schema = json.loads(render_schema("editor-contract-manifest"))
+    verification_schema = json.loads(render_schema("editor-contract-verification"))
     Draft202012Validator.check_schema(manifest_schema)
+    Draft202012Validator.check_schema(verification_schema)
 
     errors: list[str] = []
     try:
@@ -162,11 +164,14 @@ def verify_editor_contracts(bundle_dir: Path) -> dict[str, object]:
         if not isinstance(artifact, dict) or not isinstance(artifact.get("path"), str):
             continue
         relative_path = artifact["path"]
+        kind = artifact.get("kind")
+        contract = artifact.get("contract")
+        required = artifact.get("required")
         result: dict[str, object] = {
             "path": relative_path,
-            "kind": artifact.get("kind"),
-            "contract": artifact.get("contract"),
-            "required": artifact.get("required"),
+            "kind": kind if isinstance(kind, str) else None,
+            "contract": contract if isinstance(contract, str) else None,
+            "required": required if isinstance(required, bool) else None,
             "path_valid": True,
             "present": False,
             "digest_ok": False,
@@ -238,7 +243,7 @@ def verify_editor_contracts(bundle_dir: Path) -> dict[str, object]:
             errors.append(f"artifact content validation failed for {relative_path}: {error}")
 
     passed = manifest_schema_valid and not errors
-    return {
+    payload: dict[str, object] = {
         "schema_version": 1,
         "verification": "AgentVerify Editor Contract Bundle Verification",
         "directory": str(bundle_dir),
@@ -248,6 +253,8 @@ def verify_editor_contracts(bundle_dir: Path) -> dict[str, object]:
         "passed": passed,
         "errors": errors,
     }
+    Draft202012Validator(verification_schema).validate(payload)
+    return payload
 
 
 def render_editor_contract_verification(payload: dict[str, object]) -> str:

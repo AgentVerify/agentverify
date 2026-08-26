@@ -176,6 +176,8 @@ catalog workflows.
   bundled rules/sample-report schemas. Installed-wheel smoke now exports and verifies a bundle.
 - Hardened contract-bundle verification so malformed manifests cannot cause verification to read
   parent-relative, nested, absolute, or otherwise non-basename artifact paths.
+- Added a bundled `editor-contract-verification` schema and runtime validation for
+  `agentverify contracts --verify-dir`, with CLI discovery and installed-wheel smoke coverage.
 
 ## Current findings
 
@@ -214,6 +216,9 @@ catalog workflows.
   catalogs.
 - Contract-bundle artifact paths are intentionally basename-only; invalid manifest paths are reported
   as verification failures before any artifact file is read.
+- Contract-bundle verification output is now itself schema-backed via `agentverify schema
+  editor-contract-verification`, so editor bootstrap and CI logging code can validate verifier JSON
+  the same way they validate exported manifests.
 - Python filesystem callable aliasing is deliberately narrow: local alias chains may copy already
   proven same-function callable bindings, but aliases before source proof, rebound alias targets,
   incompatible operation families, and imported wrapper helpers remain unresolved.

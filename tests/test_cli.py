@@ -441,6 +441,7 @@ def test_cli_lists_bundled_schemas(capsys) -> None:
         "benchmark-result",
         "bom",
         "editor-contract-manifest",
+        "editor-contract-verification",
         "policy",
         "policy-key-trust-root",
         "policy-signature",
@@ -458,6 +459,14 @@ def test_cli_prints_bundled_editor_contract_manifest_schema(capsys) -> None:
     schema = __import__("json").loads(capsys.readouterr().out)
     Draft202012Validator.check_schema(schema)
     assert schema["title"] == "AgentVerify Editor Contract Manifest 1"
+
+
+def test_cli_prints_bundled_editor_contract_verification_schema(capsys) -> None:
+    assert cli.main(["schema", "editor-contract-verification"]) == 0
+
+    schema = __import__("json").loads(capsys.readouterr().out)
+    Draft202012Validator.check_schema(schema)
+    assert schema["title"] == "AgentVerify Editor Contract Verification 1"
 
 
 def test_cli_prints_bundled_benchmark_result_schema(capsys) -> None:
