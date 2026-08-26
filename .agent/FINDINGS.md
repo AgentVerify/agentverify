@@ -249,7 +249,14 @@
 - Exact TypeScript OpenAI Agents sandbox skill-loading inventory now covers unshadowed `skills()`
   factories in literal `capabilities` lists, without expanding aggregate `Capabilities.default()`
   contents. Rebounded skill aliases remain unresolved, and real OpenAI Agents JS coding/docs examples
-  pin `skill-loading` edges. The public IR truth set now covers 1,729 passing labels.
+  pin `skill-loading` edges. The public IR truth set then covered 1,729 passing labels.
+- Exact TypeScript OpenAI Agents sandbox runtime-client inventory now records SDK sandbox runtime
+  selection without reclassifying it as host-local execution. Exact
+  `@openai/agents/sandbox/local` `UnixLocalSandboxClient` and `DockerSandboxClient` constructors
+  become `sandbox-runtime` controls when wired through direct run client config, inline client
+  construction, or one exact `client.create(...)` session binding, including `{ session }`
+  shorthand. Rebounded local-client imports, unknown sessions, and ternary client selection remain
+  unresolved. The public IR truth set now covers 1,747 passing labels.
 - Source-release verification now treats packaged GitHub workflow examples as content contracts, not
   only required filenames. The sdist verifier checks that the benchmark workflow emits, validates,
   and uploads verifier JSON while staying read-only; the policy gate keeps its policy/summary/expiry

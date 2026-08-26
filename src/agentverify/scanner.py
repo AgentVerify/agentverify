@@ -12442,6 +12442,13 @@ TS_SANDBOX_AGENT_ASSIGNMENT_TEMPLATE = (
     r"\b(?:const|let)\s+(\w+)\s*=\s*new\s+{constructor}\s*\("
 )
 TS_SANDBOX_AGENT_RETURN_TEMPLATE = r"\breturn\s+new\s+{constructor}\s*\("
+TS_SANDBOX_CLIENT_ASSIGNMENT = re.compile(
+    r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*new\s+([A-Za-z_$][\w$]*)\s*\("
+)
+TS_SANDBOX_SESSION_ASSIGNMENT = re.compile(
+    r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:await\s+)?"
+    r"([A-Za-z_$][\w$]*)\.create\s*\("
+)
 TS_LITERAL_APPROVAL = re.compile(r"\bneedsApproval\s*:\s*true\b")
 TS_AUTO_APPROVAL_ENABLED = re.compile(
     r"\b(?:autoApprove|auto_approve|skipConfirmation|skip_confirmation|"
@@ -12495,6 +12502,10 @@ TS_OPENAI_BUILTIN_TOOL_CAPABILITIES = {
     "codexTool": ("code-execution",),
 }
 TS_OPENAI_SANDBOX_CAPABILITY_FACTORIES = {"filesystem", "memory", "shell", "skills"}
+TS_OPENAI_SANDBOX_LOCAL_CLIENTS = {
+    "DockerSandboxClient": "docker-local",
+    "UnixLocalSandboxClient": "unix-local",
+}
 TS_OPENAI_APPROVAL_BUILTINS = {"applyPatchTool", "computerTool", "shellTool"}
 CONTAINER_CONFIG_SUFFIXES = {".yml", ".yaml"}
 INLINE_SUPPRESSION = re.compile(
@@ -12928,6 +12939,16 @@ def typescript_object_property_expression(body: str, name: str) -> str | None:
         if match:
             values.append(property_text[match.end() :].strip())
     return values[0] if len(values) == 1 else None
+
+
+def typescript_object_has_shorthand_property(body: str, name: str) -> bool:
+    """Return true when a literal object contains one direct `{ name }` shorthand property."""
+    matches = [
+        property_text
+        for property_text, _ in typescript_object_items(body)
+        if typescript_code_mask(property_text).strip() == name
+    ]
+    return len(matches) == 1
 
 
 def typescript_literal_object_property_expression(body: str, name: str) -> str | None:
@@ -15608,6 +15629,57 @@ def typescript_call_parts(expression: str) -> tuple[str, str, int] | None:
     return match.group(1), expression[opening + 1 : end - 1], opening + 1
 
 
+def typescript_new_expression_parts(expression: str) -> tuple[str, str, int] | None:
+    """Return a simple `new Constructor(...)` expression's constructor and argument body."""
+    code = typescript_code_mask(expression)
+    match = re.match(r"new\s+([A-Za-z_$][\w$]*)\s*\(", code)
+    if not match:
+        return None
+    opening = code.find("(", match.start(), match.end())
+    end = typescript_balanced_end(code, opening, "(", ")")
+    if end is None or code[end:].strip():
+        return None
+    return match.group(1), expression[opening + 1 : end - 1], opening + 1
+
+
+def add_typescript_openai_sandbox_runtime_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    constructor: str,
+    local_constructor: str,
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add an exact OpenAI Agents JS local sandbox runtime control."""
+    runtime = TS_OPENAI_SANDBOX_LOCAL_CLIENTS[constructor]
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    attributes = {
+        "analysis": "typescript-openai-sandbox-local-client",
+        "module": "@openai/agents/sandbox/local",
+        "constructor": constructor,
+        "imported_symbol": constructor,
+        "resolution": "exact-openai-sandbox-local-import",
+        "sandbox_runtime": runtime,
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": source_scope(relative),
+    }
+    if local_constructor != constructor:
+        attributes["local_constructor"] = local_constructor
+    ir.add_component(
+        Component(
+            "control",
+            "sandbox-runtime",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    return "sandbox-runtime", control_id
+
+
 def add_typescript_tool_observation(
     ir: RepositoryIR,
     *,
@@ -15863,8 +15935,9 @@ def typescript_graph(
     tool_input_names: dict[str, set[str]] = {}
     local_tool_ids: dict[str, str] = {}
     code = typescript_code_mask(text)
+    openai_agents_imports = typescript_named_import_bindings(text, "@openai/agents")
     openai_imports = {
-        **typescript_named_import_bindings(text, "@openai/agents"),
+        **openai_agents_imports,
         **typescript_named_import_bindings(text, "@openai/agents-extensions"),
         **typescript_named_import_bindings(text, "@openai/agents/sandbox"),
     }
@@ -16038,6 +16111,33 @@ def typescript_graph(
         )
 
     sandbox_imports = typescript_named_import_bindings(text, "@openai/agents/sandbox")
+    sandbox_local_imports = typescript_named_import_bindings(text, "@openai/agents/sandbox/local")
+    sandbox_client_bindings: dict[str, tuple[str, str]] = {}
+    sandbox_session_bindings: dict[str, tuple[str, str]] = {}
+    for match in TS_SANDBOX_CLIENT_ASSIGNMENT.finditer(code):
+        variable_name = match.group(1)
+        local_constructor = match.group(2)
+        constructor = sandbox_local_imports.get(local_constructor)
+        if (
+            constructor not in TS_OPENAI_SANDBOX_LOCAL_CLIENTS
+            or typescript_import_binding_is_shadowed(text, local_constructor)
+        ):
+            continue
+        start_line = line_at(text, match.start())
+        sandbox_client_bindings[variable_name] = add_typescript_openai_sandbox_runtime_control(
+            ir,
+            relative=relative,
+            lines=lines,
+            line=start_line,
+            constructor=constructor,
+            local_constructor=local_constructor,
+            symbol_identity=f"{variable_name}@{start_line}",
+        )
+    for match in TS_SANDBOX_SESSION_ASSIGNMENT.finditer(code):
+        session_name = match.group(1)
+        client_name = match.group(2)
+        if client_binding := sandbox_client_bindings.get(client_name):
+            sandbox_session_bindings[session_name] = client_binding
     agent_matches: list[tuple[re.Match[str], str, str | None, str, str]] = [
         (match, "Agent", None, match.group(1), "assignment")
         for match in TS_AGENT_ASSIGNMENT.finditer(code)
@@ -16253,6 +16353,94 @@ def typescript_graph(
                     target_id=target_id,
                 )
             )
+    run_bindings = {
+        local_name
+        for local_name, imported_name in openai_agents_imports.items()
+        if imported_name == "run" and not typescript_import_binding_is_shadowed(text, local_name)
+    }
+    for match in re.finditer(r"\b([A-Za-z_$][\w$]*)\s*\(", code):
+        if match.group(1) not in run_bindings:
+            continue
+        opening = code.find("(", match.start(), match.end())
+        end = typescript_balanced_end(code, opening, "(", ")")
+        if end is None:
+            continue
+        arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
+        if len(arguments) < 3:
+            continue
+        agent_argument = typescript_code_mask(arguments[0][0]).strip()
+        agent_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", agent_argument)
+        if not agent_identifier:
+            continue
+        agent_target = local_agents.get(agent_identifier.group(0))
+        if not agent_target:
+            continue
+        sandbox_expression = typescript_object_property_expression(arguments[2][0], "sandbox")
+        if sandbox_expression is None:
+            continue
+        runtime_control = None
+        binding = None
+        client_expression = typescript_object_property_expression(sandbox_expression, "client")
+        if client_expression is not None:
+            client_code = typescript_code_mask(client_expression).strip()
+            if client_identifier := re.fullmatch(r"[A-Za-z_$][\w$]*", client_code):
+                runtime_control = sandbox_client_bindings.get(client_identifier.group(0))
+                binding = "client"
+            elif new_expression := typescript_new_expression_parts(client_expression):
+                local_constructor, _, _ = new_expression
+                constructor = sandbox_local_imports.get(local_constructor)
+                if (
+                    constructor in TS_OPENAI_SANDBOX_LOCAL_CLIENTS
+                    and not typescript_import_binding_is_shadowed(text, local_constructor)
+                ):
+                    client_offset = arguments[2][1] + arguments[2][0].find(client_expression)
+                    client_line = line_at(text, client_offset)
+                    runtime_control = add_typescript_openai_sandbox_runtime_control(
+                        ir,
+                        relative=relative,
+                        lines=lines,
+                        line=client_line,
+                        constructor=constructor,
+                        local_constructor=local_constructor,
+                        symbol_identity=f"sandbox-runtime@{client_line}",
+                    )
+                    binding = "inline-client"
+        elif typescript_object_has_shorthand_property(sandbox_expression, "client"):
+            runtime_control = sandbox_client_bindings.get("client")
+            binding = "client-shorthand"
+        session_expression = typescript_object_property_expression(sandbox_expression, "session")
+        if runtime_control is None and session_expression is not None:
+            session_code = typescript_code_mask(session_expression).strip()
+            if session_identifier := re.fullmatch(r"[A-Za-z_$][\w$]*", session_code):
+                runtime_control = sandbox_session_bindings.get(session_identifier.group(0))
+                binding = "session"
+        elif runtime_control is None and typescript_object_has_shorthand_property(
+            sandbox_expression, "session"
+        ):
+            runtime_control = sandbox_session_bindings.get("session")
+            binding = "session-shorthand"
+        if runtime_control is None:
+            continue
+        runtime_name, runtime_id = runtime_control
+        agent_name, agent_id = agent_target
+        run_line = line_at(text, match.start())
+        ir.add_relationship(
+            Relationship(
+                "agent",
+                agent_name,
+                "configured-by",
+                "control",
+                runtime_name,
+                Evidence(relative, run_line, excerpt(lines, run_line)),
+                {
+                    "analysis": "typescript-openai-sandbox-local-client",
+                    "configuration": "run-sandbox",
+                    "binding": binding,
+                },
+                source_id=agent_id,
+                target_id=runtime_id,
+            )
+        )
     return tool_by_line, tool_input_names
 
 

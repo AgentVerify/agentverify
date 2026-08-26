@@ -284,8 +284,15 @@ catalog workflows.
 - Extended exact TypeScript OpenAI Agents sandbox capability inventory to unshadowed `skills()`
   factories in literal capability lists, recording `skill-loading` as SDK-sandbox reachability while
   leaving aggregate `Capabilities.default()` and rebounded skill aliases unresolved. Local fixtures
-  plus OpenAI Agents JS sandbox coding/capability/docs examples raise regenerated public IR
+  plus OpenAI Agents JS sandbox coding/capability/docs examples raised regenerated public IR
   truth-set results to 1,729 passing labels.
+- Added exact TypeScript OpenAI Agents sandbox runtime-client inventory for
+  `@openai/agents/sandbox/local` `UnixLocalSandboxClient` and `DockerSandboxClient` constructors
+  wired into `run(..., { sandbox: { client/session } })`. Direct client bindings, inline client
+  construction, one exact `client.create(...)` session binding, and object-shorthand `{ session }`
+  now produce agent `configured-by` `sandbox-runtime` control edges. Rebounded local-client imports,
+  unknown sessions, and ternary client selection stay unresolved. Local fixtures plus four OpenAI
+  Agents JS examples raise regenerated public IR truth-set results to 1,747 passing labels.
 - Strengthened source-release verification for the packaged GitHub workflow examples:
   `verify_sdist()` now checks benchmark verifier output/schema/upload, policy-gate
   permission/policy/summary/expiry arguments, and code-scanning SARIF permission/upload contracts.

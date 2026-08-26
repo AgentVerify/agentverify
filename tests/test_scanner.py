@@ -3949,6 +3949,91 @@ def test_typescript_openai_sandbox_agent_capabilities_require_exact_import() -> 
         and component.kind in {"tool", "capability"}
         for component in ir.components
     )
+
+
+def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_openai_sandbox_runtime")
+
+    controls = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control" and component.name == "sandbox-runtime"
+    }
+    assert set(controls) == {
+        ("positive.ts", 10, "ts:positive.ts#control:directClient@10"),
+        ("positive.ts", 19, "ts:positive.ts#control:dockerClient@19"),
+        ("positive.ts", 34, "ts:positive.ts#control:sandbox-runtime@34"),
+        ("positive.ts", 37, "ts:positive.ts#control:client@37"),
+    }
+    assert controls[
+        ("positive.ts", 10, "ts:positive.ts#control:directClient@10")
+    ].attributes["sandbox_runtime"] == "unix-local"
+    assert controls[
+        ("positive.ts", 19, "ts:positive.ts#control:dockerClient@19")
+    ].attributes["sandbox_runtime"] == "docker-local"
+    assert controls[
+        ("positive.ts", 34, "ts:positive.ts#control:sandbox-runtime@34")
+    ].attributes["sandbox_runtime"] == "unix-local"
+    assert controls[
+        ("positive.ts", 37, "ts:positive.ts#control:client@37")
+    ].attributes["sandbox_runtime"] == "unix-local"
+    assert all(
+        component.attributes["analysis"] == "typescript-openai-sandbox-local-client"
+        and component.attributes["module"] == "@openai/agents/sandbox/local"
+        and component.attributes["resolution"] == "exact-openai-sandbox-local-import"
+        and component.attributes["execution_environment"] == "sdk-sandbox"
+        and component.attributes["sandbox_policy"] == "openai-agents-sdk-sandbox"
+        for component in controls.values()
+    )
+
+    runtime_edges = {
+        (
+            edge.source_name,
+            edge.evidence.path,
+            edge.evidence.line,
+            edge.target_id,
+            edge.attributes.get("binding"),
+        )
+        for edge in ir.relationships
+        if edge.source_kind == "agent"
+        and edge.relation == "configured-by"
+        and edge.target_kind == "control"
+        and edge.target_name == "sandbox-runtime"
+    }
+    assert runtime_edges == {
+        (
+            "Direct Client Sandbox",
+            "positive.ts",
+            15,
+            "ts:positive.ts#control:directClient@10",
+            "client",
+        ),
+        (
+            "Docker Session Sandbox",
+            "positive.ts",
+            25,
+            "ts:positive.ts#control:dockerClient@19",
+            "session",
+        ),
+        (
+            "Inline Client Sandbox",
+            "positive.ts",
+            33,
+            "ts:positive.ts#control:sandbox-runtime@34",
+            "inline-client",
+        ),
+        (
+            "Session Shorthand Sandbox",
+            "positive.ts",
+            43,
+            "ts:positive.ts#control:client@37",
+            "session-shorthand",
+        ),
+    }
+    assert not any(
+        component.evidence.path == "negative.ts" and component.kind == "control"
+        for component in ir.components
+    )
     assert not ir.findings
 
 
