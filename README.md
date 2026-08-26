@@ -23,6 +23,7 @@ agentverify scan ./project --format sarif
 agentverify scan ./project --format sarif --output agentverify.sarif
 agentverify schema
 agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
+agentverify schema editor-contract-manifest --output agentverify-editor-contract-manifest.schema.json
 agentverify schema report --output agentverify-report.schema.json
 agentverify schema bom --output agentverify-ai-bom.schema.json
 agentverify schema policy --output agentverify-policy.schema.json
@@ -78,6 +79,8 @@ to write them directly to a file. Output write failures return exit code 2; succ
 still preserve policy and `--fail-on` exit decisions.
 `agentverify schema` lists every bundled machine-readable schema.
 `agentverify schema benchmark-result` prints the bundled schema for benchmark result files.
+`agentverify schema editor-contract-manifest` validates the manifest emitted by
+`agentverify contracts`.
 `agentverify schema report` prints the bundled schema for validating normal `--format json` reports;
 `agentverify schema policy-summary` validates `agentverify policy --format json`,
 `agentverify schema policy-signing-payload` validates deterministic source-digest manifests for
@@ -188,7 +191,7 @@ The default CI workflow runs the installed CLI benchmark gate against the checke
 regression results, so benchmark-result drift fails during pull requests before release packaging.
 For editor or custom CI integrations, `agentverify contracts --sample-root examples/safe_agent`
 exports the report schema, rules schema, current rules catalog, and optional sample report into a
-local artifact directory. The editor guide also includes a checked
+local artifact directory with a schema-backed digest manifest. The editor guide also includes a checked
 [`examples/editor-diagnostics.json`](examples/editor-diagnostics.json) mapping from AgentVerify
 findings to Language Server Protocol-style diagnostics.
 

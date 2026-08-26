@@ -18,7 +18,7 @@ The exporter writes:
 - `agentverify-rules.json` — the current enabled reporting-rule catalog.
 - `agentverify-sample-report.json` — optional sample report when `--sample-root` is provided.
 - `manifest.json` — artifact names, `kind`, `contract`, `required`, byte counts, SHA-256 digests,
-  and generator version.
+  and generator version; validates against `agentverify schema editor-contract-manifest`.
 
 Each manifest artifact keeps the original filename-oriented fields and adds `kind`, `contract`, and
 `required` so integrations can distinguish required report/rules schemas, the required rules catalog,
@@ -31,6 +31,12 @@ agentverify schema report --output agentverify-report-v1.schema.json
 agentverify schema rules --output agentverify-rules-v1.schema.json
 agentverify rules --format json --output agentverify-rules.json
 agentverify scan examples/safe_agent --format json --output agentverify-sample-report.json
+```
+
+The manifest schema is bundled with installed wheels:
+
+```console
+agentverify schema editor-contract-manifest
 ```
 
 From a source checkout, `python scripts/export_editor_contracts.py` is a thin wrapper around the

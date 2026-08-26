@@ -14,6 +14,7 @@ from .rules import RULE_CATALOG, RULE_DEFINITIONS
 SCHEMA_FILES = {
     "benchmark-result": "agentverify-benchmark-result-v1.schema.json",
     "bom": "agentverify-ai-bom-v1.schema.json",
+    "editor-contract-manifest": "agentverify-editor-contract-manifest-v1.schema.json",
     "policy": "agentverify-policy-v1.schema.json",
     "policy-key-trust-root": "agentverify-policy-key-trust-root-v1.schema.json",
     "policy-signature": "agentverify-policy-signature-v1.schema.json",

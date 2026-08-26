@@ -6,7 +6,7 @@
   outputs.
 - The runtime catalog currently contains 24 enabled reporting rules.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
-- A freshly rebuilt wheel includes all ten runtime schemas; a verifier script now guards that
+- A freshly rebuilt wheel includes all eleven runtime schemas; a verifier script now guards that
   package artifact expectation.
 - Policy evaluation occurs after baseline filtering and preserves matched findings in all report
   formats.
@@ -57,9 +57,11 @@
   `agentverify contracts` validates and exports report/rules schemas, the current `agentverify rules
   --format json` payload, an optional sample report, and a digest manifest. Manifest artifact entries
   now include `kind`, `contract`, and `required` metadata in addition to path/byte/SHA-256 fields, so
-  integrations can consume the bundle without inferring semantics from filenames. The source script
-  is a compatibility wrapper, the guide remains a required source-distribution artifact, and
-  distribution smoke tests prove the built wheel exports the bundle.
+  integrations can consume the bundle without inferring semantics from filenames. The manifest is
+  itself validated by a bundled `editor-contract-manifest` schema exposed through `agentverify
+  schema`; the source script is a compatibility wrapper, the guide remains a required
+  source-distribution artifact, and distribution smoke tests prove the built wheel exports the bundle
+  and its schema.
 - The editor integration guide now includes a checked LSP-style diagnostic mapping example derived
   from `cases/approval_callback_bypass`. Tests regenerate the example from `agentverify scan
   --format json`, proving the documented mapping preserves evidence paths, zero-based ranges,

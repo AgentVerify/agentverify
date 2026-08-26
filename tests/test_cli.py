@@ -440,6 +440,7 @@ def test_cli_lists_bundled_schemas(capsys) -> None:
     assert capsys.readouterr().out.splitlines() == [
         "benchmark-result",
         "bom",
+        "editor-contract-manifest",
         "policy",
         "policy-key-trust-root",
         "policy-signature",
@@ -449,6 +450,14 @@ def test_cli_lists_bundled_schemas(capsys) -> None:
         "report",
         "rules",
     ]
+
+
+def test_cli_prints_bundled_editor_contract_manifest_schema(capsys) -> None:
+    assert cli.main(["schema", "editor-contract-manifest"]) == 0
+
+    schema = __import__("json").loads(capsys.readouterr().out)
+    Draft202012Validator.check_schema(schema)
+    assert schema["title"] == "AgentVerify Editor Contract Manifest 1"
 
 
 def test_cli_prints_bundled_benchmark_result_schema(capsys) -> None:

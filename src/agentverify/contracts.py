@@ -50,8 +50,10 @@ def export_editor_contracts(
     output_dir.mkdir(parents=True, exist_ok=True)
     rules_schema = json.loads(render_schema("rules"))
     report_schema = json.loads(render_schema("report"))
+    manifest_schema = json.loads(render_schema("editor-contract-manifest"))
     Draft202012Validator.check_schema(rules_schema)
     Draft202012Validator.check_schema(report_schema)
+    Draft202012Validator.check_schema(manifest_schema)
 
     artifacts = []
     for filename, metadata in CONTRACT_FILES.items():
@@ -82,6 +84,7 @@ def export_editor_contracts(
         "purpose": "editor-ci-contract-export",
         "artifacts": artifacts,
     }
+    Draft202012Validator(manifest_schema).validate(manifest)
     manifest_content = json.dumps(manifest, indent=2, sort_keys=True) + "\n"
     _write(output_dir / "manifest.json", manifest_content)
     return manifest

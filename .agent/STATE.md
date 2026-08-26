@@ -168,6 +168,9 @@ catalog workflows.
   `required` metadata while preserving path/byte/digest fields, so editor and CI integrations can
   distinguish report schemas, rules schemas, rules catalogs, and optional sample reports without
   hard-coding filenames.
+- Added a bundled `editor-contract-manifest` schema and runtime validation for `agentverify
+  contracts`, with CLI schema discovery and installed-wheel smoke checks proving the schema ships
+  with release artifacts.
 
 ## Current findings
 
@@ -199,6 +202,8 @@ catalog workflows.
   archives the installed CLI verifier JSON for release review.
 - Editor/CI contract manifests now identify each artifact's role directly through `kind`,
   `contract`, and `required` fields while retaining SHA-256 digests for reproducibility.
+- The editor/CI contract manifest is now itself schema-backed via `agentverify schema
+  editor-contract-manifest`, matching the broader installed machine-contract pattern.
 - Python filesystem callable aliasing is deliberately narrow: local alias chains may copy already
   proven same-function callable bindings, but aliases before source proof, rebound alias targets,
   incompatible operation families, and imported wrapper helpers remain unresolved.

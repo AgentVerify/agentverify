@@ -620,6 +620,9 @@ for that catalog, including the enabled rule-ID enum, so generated policy/editor
 rule metadata without scraping documentation. Every emission site is checked against the catalog's
 result kind, severity, and confidence, preventing policy-facing metadata drift while keeping
 context-specific finding messages and remediation details in reports.
+`agentverify contracts` now emits a role-bearing digest manifest that validates against the bundled
+`agentverify schema editor-contract-manifest` contract, so editor/CI integrations can verify the
+contract bundle without inferring artifact semantics from filenames.
 The distribution verifier now checks release wheels for every runtime schema file, so schema-backed
 commands cannot pass in editable mode while shipping an incomplete wheel.
 Policy rule filters are now fail-closed against the same catalog in both runtime normalization and

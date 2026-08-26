@@ -69,8 +69,14 @@ def test_editor_contract_export_writes_valid_rules_and_sample_report(tmp_path: P
 
     rules_schema = json.loads((tmp_path / "agentverify-rules-v1.schema.json").read_text())
     report_schema = json.loads((tmp_path / "agentverify-report-v1.schema.json").read_text())
+    manifest_schema = json.loads(
+        (ROOT / "src/agentverify/schemas/agentverify-editor-contract-manifest-v1.schema.json")
+        .read_text(encoding="utf-8")
+    )
     Draft202012Validator.check_schema(rules_schema)
     Draft202012Validator.check_schema(report_schema)
+    Draft202012Validator.check_schema(manifest_schema)
+    Draft202012Validator(manifest_schema).validate(manifest)
     rules = json.loads((tmp_path / "agentverify-rules.json").read_text(encoding="utf-8"))
     report = json.loads((tmp_path / "agentverify-sample-report.json").read_text(encoding="utf-8"))
     Draft202012Validator(rules_schema).validate(rules)
@@ -124,11 +130,13 @@ def test_editor_integration_docs_reference_exported_artifacts() -> None:
     assert "agentverify-rules.json" in docs
     assert "agentverify-report-v1.schema.json" in docs
     assert "agentverify rules --format json --output agentverify-rules.json" in docs
+    assert "agentverify schema editor-contract-manifest" in docs
     assert "`kind`" in docs
     assert "`contract`" in docs
     assert "`required`" in docs
     assert "[`examples/editor-diagnostics.json`](examples/editor-diagnostics.json)" in readme
     assert "[`docs/editor-integration.md`](docs/editor-integration.md)" in readme
+    assert "agentverify schema editor-contract-manifest" in readme
 
 
 def test_editor_diagnostics_example_matches_real_report() -> None:
