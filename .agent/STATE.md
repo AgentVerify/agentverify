@@ -25,6 +25,7 @@ catalog workflows.
 - Added a benchmark result JSON schema and tests for checked-in and synthetic sealed outputs.
 - Extended distribution verification to cover the wheel console-script entry point and optional
   installed-CLI smoke tests.
+- Added a benchmark result verifier that validates result JSON and recomputes label/manifest digests.
 
 ## Current findings
 
@@ -42,5 +43,5 @@ catalog workflows.
 ## Next action
 
 Continue toward the highest-value local P1/P2 work: signed policy provenance design, additional
-installed-artifact checks, benchmark-result documentation refinements, or additional real-world
-framework coverage.
+installed-artifact checks, benchmark-result release documentation, or additional real-world framework
+coverage.

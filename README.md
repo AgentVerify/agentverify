@@ -128,6 +128,7 @@ PYTHONPATH=src python3 scripts/evaluate_truthset.py --labels benchmarks/ir-truth
 PYTHONPATH=src python3 scripts/evaluate_truthset.py --evaluation-kind sealed-holdout \
   --manifest path/to/holdout-manifest.json --labels path/to/sealed-labels.json \
   --output path/to/holdout-results.json
+uv run python scripts/verify_benchmark_results.py
 ```
 
 The collector reuses commits from `research/repository-data.json` by default and samples up to 220
@@ -145,4 +146,5 @@ python3 -m venv .venv
 uv build --wheel
 python3 scripts/verify_distribution.py
 python3 scripts/verify_distribution.py --smoke-install
+uv run python scripts/verify_benchmark_results.py
 ```

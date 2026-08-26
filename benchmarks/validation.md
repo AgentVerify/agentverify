@@ -1498,7 +1498,9 @@ coverage; its labels must not drive rule implementation before evaluation.
 [`holdout-design.md`](holdout-design.md) defines the sampling, labeling, leakage-control, and
 reporting process for that future benchmark. Evaluator outputs now include benchmark metadata that
 distinguishes public regression runs from sealed-holdout runs and records label/manifest hashes; the
-shape is validated by [`benchmark-results-v1.schema.json`](benchmark-results-v1.schema.json).
+shape is validated by [`benchmark-results-v1.schema.json`](benchmark-results-v1.schema.json). Run
+`uv run python scripts/verify_benchmark_results.py` to validate the checked-in result files and
+recompute their embedded label or manifest digests.
 
 ## Agent IR control-edge checks
 

@@ -530,7 +530,8 @@ changes are complete. The checked-in holdout design now defines the sampling str
 leakage controls, reporting metrics, and public manifest/label templates for that process. Keep
 discovery sampling metrics separate from detection-quality metrics. Evaluator outputs now identify
 public-regression versus sealed-holdout runs, include label/manifest digests for reproducibility, and
-are covered by a benchmark result JSON schema.
+are covered by a benchmark result JSON schema. A benchmark verifier validates checked-in result files
+against that schema and recomputes embedded input digests.
 
 ## P2 — CI adoption workflow
 

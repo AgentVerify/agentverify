@@ -20,6 +20,8 @@
 - Distribution verification now proves the wheel declares `agentverify = agentverify.cli:main`; the
   optional smoke mode installs the wheel and exercises version, bundled schema, and safe-example scan
   commands through the installed executable.
+- Benchmark verification now recomputes `labels_sha256` and optional `manifest_sha256`, preventing
+  result files from drifting away from their declared inputs.
 
 ## Hypotheses
 
