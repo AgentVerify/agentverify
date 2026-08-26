@@ -337,7 +337,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "provider_native_calls_commonjs.js",
-            7,
+            9,
             "OpenAI",
             "openaiClient.responses.create",
             "provider-sdk-model",
@@ -345,7 +345,7 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "provider_native_calls_commonjs.js",
-            8,
+            10,
             "Anthropic",
             "anthropicClient.messages.create",
             "provider-sdk-model",
@@ -353,7 +353,15 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "provider_native_calls_commonjs.js",
-            4,
+            11,
+            "Google",
+            "googleClient.models.generateContent",
+            "provider-sdk-model",
+            "GoogleGenAI",
+        ),
+        (
+            "provider_native_calls_commonjs.js",
+            5,
             "OpenAI",
             "OpenAIClient",
             "provider-sdk-constructor",
@@ -631,9 +639,17 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ),
         (
             "provider_native_calls_commonjs.js",
-            5,
+            6,
             "Anthropic",
             "AnthropicClient",
+            "provider-sdk-constructor",
+            None,
+        ),
+        (
+            "provider_native_calls_commonjs.js",
+            7,
+            "Google",
+            "GoogleGenAI",
             "provider-sdk-constructor",
             None,
         ),
@@ -733,12 +749,18 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         ("provider_native_calls.ts", 11, "gpt-5.4", "OpenAI"),
         ("provider_native_calls.ts", 12, "claude-sonnet-4-6", "Anthropic"),
         ("provider_native_calls.ts", 13, "gemini-2.5-flash", "Google"),
-        ("provider_native_calls_commonjs.js", 7, "gpt-5-mini", "OpenAI"),
+        ("provider_native_calls_commonjs.js", 9, "gpt-5-mini", "OpenAI"),
         (
             "provider_native_calls_commonjs.js",
-            8,
+            10,
             "claude-sonnet-4-6",
             "Anthropic",
+        ),
+        (
+            "provider_native_calls_commonjs.js",
+            11,
+            "gemini-2.5-flash",
+            "Google",
         ),
     }
     assert any(

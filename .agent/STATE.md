@@ -162,8 +162,7 @@ catalog workflows.
   positive and negative rule/IR labels.
 - Added explicit CAMEL and Marvin regression coverage for exact module-qualified and absolute
   star-import Python framework agent constructors, plus matching module-attribute-rebound and
-  star-shadowed negative guards. The public IR truth set now covers 1,567 passing labels, split
-  across 1,141 positives and 426 negatives.
+  star-shadowed negative guards, bringing that slice of the public IR truth set to 1,567 labels.
 - Extended `agentverify contracts` manifest artifacts with explicit `kind`, `contract`, and
   `required` metadata while preserving path/byte/digest fields, so editor and CI integrations can
   distinguish report schemas, rules schemas, rules catalogs, and optional sample reports without
@@ -184,8 +183,12 @@ catalog workflows.
   `agentverify benchmark verify` JSON output, and upgraded the copyable GitHub benchmark workflow to
   validate its uploaded verifier artifact against that schema.
 - Extended Python registered-class network propagation to exact local module-qualified constructors,
-  while preserving local module-alias shadowing as an unresolved counterexample; regenerated IR
-  truth-set results still cover 1,567 passing labels.
+  while preserving local module-alias shadowing as an unresolved counterexample; the current
+  regenerated IR truth-set results now cover 1,571 passing labels after the later TypeScript
+  CommonJS Google coverage.
+- Extended native TypeScript provider SDK CommonJS proof to exact top-level
+  `const { GoogleGenAI } = require("@google/genai")` named destructuring, with a scoped-require
+  negative guard; regenerated IR truth-set results now cover 1,571 passing labels.
 
 ## Current findings
 

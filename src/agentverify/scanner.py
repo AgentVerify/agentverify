@@ -12405,6 +12405,10 @@ TS_DEFAULT_IMPORT = re.compile(
 TS_COMMONJS_DEFAULT_IMPORT = re.compile(
     r"\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*require\(\s*['\"]([^'\"]+)['\"]\s*\)"
 )
+TS_COMMONJS_NAMED_IMPORT = re.compile(
+    r"\bconst\s*\{([^}]+)\}\s*=\s*require\(\s*['\"]([^'\"]+)['\"]\s*\)",
+    re.DOTALL,
+)
 TS_DYNAMIC_NAMED_IMPORT = re.compile(
     r"\bconst\s*\{([^}]+)\}\s*=\s*(?:await\s*)?"
     r"import\s*\(\s*['\"]([^'\"]+)['\"]\s*\)",
@@ -13130,6 +13134,22 @@ def typescript_provider_sdk_imports(
             continue
         add(local, str(exports["default"]), module)
         commonjs_bindings.add(local)
+    for match in TS_COMMONJS_NAMED_IMPORT.finditer(text):
+        prefix = code[: match.start()]
+        if prefix.count("{") != prefix.count("}"):
+            continue
+        imports, module = match.groups()
+        exports = TYPESCRIPT_PROVIDER_SDK_EXPORTS.get(module)
+        if exports is None:
+            continue
+        supported = set(exports["named"])
+        for imported in imports.split(","):
+            parts = imported.strip().split(":")
+            original = parts[0].strip()
+            local = parts[1].strip() if len(parts) == 2 else original
+            if original in supported:
+                add(local, original, module)
+                commonjs_bindings.add(local)
     return {
         local: values[0]
         for local, values in candidates.items()
@@ -13146,11 +13166,16 @@ def typescript_commonjs_binding_is_stable(text: str, name: str) -> bool:
     """Accept one module const-require binding with no shadow or later assignment."""
     code = typescript_code_mask(text)
     escaped = re.escape(name)
-    declarations = re.findall(rf"\b(?:const|let|var|function|class)\s+{escaped}\b", code)
+    direct_declarations = re.findall(rf"\b(?:const|let|var|function|class)\s+{escaped}\b", code)
+    destructured_declarations = re.findall(
+        rf"\bconst\s*\{{[^}}]*\b{escaped}\b[^}}]*\}}\s*=\s*require\s*\(",
+        code,
+    )
     assignments = re.findall(rf"(?<![\w$.]){escaped}\s*=(?!=)", code)
+    total_declarations = len(direct_declarations) + len(destructured_declarations)
     return bool(
-        len(declarations) == 1
-        and len(assignments) == 1
+        total_declarations == 1
+        and len(assignments) == (1 if direct_declarations else 0)
         and not re.search(rf"\bfunction\s+\w*\s*\([^)]*\b{escaped}\b", code)
         and not re.search(rf"\([^)]*\b{escaped}\b[^)]*\)\s*=>", code)
     )

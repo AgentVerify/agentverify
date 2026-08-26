@@ -193,16 +193,18 @@ Schema v104 adds native TypeScript SDK constructor proof for exact ESM imports f
 five repositories: ten OpenAI, four Anthropic, and three Google. Combined with schema v103's 32
 official AI SDK calls, TypeScript has 49 exact production calls across eight repositories. Native
 constructors require no arguments or a literal, spread-free configuration without `baseURL` or
-`baseUrl`; unknown configs, nested custom endpoints, rebindings, and CommonJS imports are withheld.
+`baseUrl`; unknown configs, nested custom endpoints, rebindings, and broad CommonJS imports are withheld.
 Anthropic presence rises from 21 to 24 repositories; OpenAI remains 43 and Google remains 20.
 
 Schema v105 adds the exact CommonJS default-export form used by two GPT Pilot templates. Four
 additional production constructors—two OpenAI and two Anthropic—raise TypeScript attribution to 53
 calls across nine repositories: 21 native SDK constructors and 32 official AI SDK calls. The proof
 requires one immutable module-level `const Client = require('openai' | '@anthropic-ai/sdk')` binding; reassignment,
-shadowing, unknown/custom configs, non-default require shapes, and Google CommonJS calls remain
-unresolved. Provider-presence counts do not change because GPT Pilot already had exact import
-evidence for both providers.
+shadowing, unknown/custom configs, non-default require shapes, and scoped requires remain
+unresolved. A local regression now additionally accepts the exact named destructure
+`const { GoogleGenAI } = require('@google/genai')`; broader Google CommonJS forms remain withheld.
+Provider-presence counts do not change because GPT Pilot already had exact import evidence for both
+providers.
 
 Schema v106 follows immutable native SDK constructor bindings into exact downstream model methods.
 The selected corpus adds three production OpenAI calls and literal models: `gpt-4o` and
@@ -717,11 +719,12 @@ and `network-ssrf-policy` edge.
   generic compatible packages, and community Ollama providers are not conflated. Native OpenAI,
   Anthropic, and Google GenAI TypeScript SDK constructors are supported through exact
   ESM default/named imports when their endpoint configuration is statically default; unknown/spread
-  configs and custom endpoints remain unresolved. General CommonJS remains unresolved; the one
-  supported form is an immutable direct module-level `const` require of the OpenAI or Anthropic
-  package default constructor. Immutable native instances expose exact OpenAI chat/response,
-  Anthropic message, and Google content-generation model calls only when the direct request object
-  contains a literal `model` or a proven immutable module literal/template binding. Exact imported
+  configs and custom endpoints remain unresolved. General CommonJS remains unresolved; the supported
+  forms are an immutable direct module-level `const` require of the OpenAI or Anthropic package
+  default constructor, plus exact top-level named `GoogleGenAI` destructuring. Immutable native
+  instances expose exact OpenAI chat/response, Anthropic message, and Google content-generation
+  model calls only when the direct request object contains a literal `model` or a proven immutable
+  module literal/template binding. Exact imported
   type annotations can carry provider identity through unique non-exported same-file helpers when
   every direct call site agrees; other require shapes, exported/ambiguous helper graphs, and
   instance/method flows remain unresolved.
@@ -956,7 +959,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 719-label rule truth set and 1,567-label IR component/relationship set are curated regression
+The 719-label rule truth set and 1,571-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed
