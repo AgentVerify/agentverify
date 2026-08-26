@@ -179,7 +179,11 @@ constructor, producing a `conditional-local` runtime control with Docker/Unix op
 constructors, rebound constructor/capability/client aliases, aggregate capability helpers,
 half-known ternaries, and nested, indirect, or ambiguous helper forms remain unresolved. A local
 `client as ...` alias can carry the same proven runtime into a `.resume(...)` session assignment, but
-unknown resumable aliases remain disconnected.
+unknown resumable aliases remain disconnected. Exact
+`@openai/agents-extensions/sandbox/blaxel` and
+`@openai/agents-extensions/sandbox/cloudflare` clients are also inventoried as SDK-sandbox runtime
+controls when they configure an exact `@openai/agents` `Runner`; `runner.run(agent, ...)` then
+records the agent's `configured-by` edge to the Runner-level sandbox runtime.
 Schema v81 extends that identity proof to a project-local adapter class only when it directly
 subclasses an exact imported `MCPServer`, has one immutable module export, and directly defines both
 `list_tools` and `call_tool`. A unique local import and an earlier same-scope instance can then feed

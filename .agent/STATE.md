@@ -307,6 +307,13 @@ catalog workflows.
   unknown resumable aliases remain unresolved. Local positive/negative fixtures plus OpenAI Agents JS
   `examples/sandbox/resume.ts` and `examples/sandbox/memory.ts` raised regenerated public IR
   truth-set results to 1,759 passing labels.
+- Added exact OpenAI Agents JS extension sandbox runtime inventory for
+  `@openai/agents-extensions/sandbox/blaxel` `BlaxelSandboxClient` and
+  `@openai/agents-extensions/sandbox/cloudflare` `CloudflareSandboxClient`, including
+  `new Runner({ sandbox: { client } })` bindings and `runner.run(agent, ...)` agent
+  `configured-by` edges. Unknown Runner sandbox clients remain unresolved. Local fixtures plus
+  Blaxel/Cloudflare OpenAI Agents JS examples raised regenerated public IR truth-set results to
+  1,768 passing labels.
 - Strengthened source-release verification for the packaged GitHub workflow examples:
   `verify_sdist()` now checks benchmark verifier output/schema/upload, policy-gate
   permission/policy/summary/expiry arguments, and code-scanning SARIF permission/upload contracts.

@@ -1,5 +1,6 @@
-import { run } from '@openai/agents';
+import { Runner, run } from '@openai/agents';
 import { SandboxAgent, shell } from '@openai/agents/sandbox';
+import { BlaxelSandboxClient } from '@openai/agents-extensions/sandbox/blaxel';
 import {
   DockerSandboxClient,
   UnixLocalSandboxClient,
@@ -71,3 +72,14 @@ const resumedAgent = new SandboxAgent({
 await run(resumedAgent, 'inspect the workspace', {
   sandbox: { session: resumedSession },
 });
+
+const extensionClient = new BlaxelSandboxClient({ image: 'node:22-bookworm-slim' });
+const runnerAgent = new SandboxAgent({
+  name: 'Runner Extension Sandbox',
+  capabilities: [shell()],
+});
+const runner = new Runner({
+  workflowName: 'extension sandbox example',
+  sandbox: { client: extensionClient },
+});
+await runner.run(runnerAgent, 'inspect the cloud sandbox');

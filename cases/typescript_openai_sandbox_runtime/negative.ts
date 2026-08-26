@@ -1,4 +1,4 @@
-import { run } from '@openai/agents';
+import { Runner, run } from '@openai/agents';
 import { SandboxAgent } from '@openai/agents/sandbox';
 import {
   UnixLocalSandboxClient,
@@ -49,3 +49,11 @@ const unknownResumedAgent = new SandboxAgent({
 await run(unknownResumedAgent, 'inspect the workspace', {
   sandbox: { session: unknownResumedSession },
 });
+
+const unknownRunnerAgent = new SandboxAgent({
+  name: 'Unknown Runner Sandbox',
+});
+const unknownRunner = new Runner({
+  sandbox: { client: unknownClient },
+});
+await unknownRunner.run(unknownRunnerAgent, 'inspect the workspace');
