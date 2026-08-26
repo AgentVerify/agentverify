@@ -15,8 +15,8 @@
 
 ## P2
 
-- Design signed policy provenance with explicit local trust-root configuration. Do not present
-  content hashes as author authenticity.
+- Design signed policy provenance with explicit local trust-root configuration, building on
+  `agentverify policy` provenance summaries. Do not present content hashes as author authenticity.
 - Explore CycloneDX/SPDX adapters only when a mapping preserves links back to the native AgentVerify
   evidence graph.
 - Improve editor and CI integration examples using schema-backed report, policy, and rule-catalog

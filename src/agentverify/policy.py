@@ -250,3 +250,55 @@ def evaluate_policy(ir: RepositoryIR, policy: dict[str, Any], *, source: str, di
         "gates": gate_results,
     }
     return passed
+
+
+def policy_summary(policy: dict[str, Any], *, source: str, digest: str) -> dict[str, Any]:
+    """Return scan-independent policy composition and provenance metadata."""
+    gates = [
+        {
+            **{key: value for key, value in gate.items() if not key.startswith("_")},
+            "policy_source": gate.get("_policy_source", source),
+            "policy_sha256": gate.get("_policy_sha256", digest),
+        }
+        for gate in policy["gates"]
+    ]
+    return {
+        "policy_format": "AgentVerify Policy Summary",
+        "schema_version": 1,
+        "name": policy["name"],
+        "source": source,
+        "sha256": digest,
+        "sources": policy.get("_sources", [{"source": source, "sha256": digest}]),
+        "gates": gates,
+        "trust": {
+            "content_hashes": True,
+            "signature_verified": False,
+            "note": "SHA-256 digests identify local policy content; they do not prove author authenticity.",
+        },
+    }
+
+
+def render_policy_summary(
+    policy: dict[str, Any], *, source: str, digest: str, output_format: str = "text"
+) -> str:
+    """Render a scan-independent policy validation/explanation report."""
+    summary = policy_summary(policy, source=source, digest=digest)
+    if output_format == "json":
+        return json.dumps(summary, indent=2, sort_keys=True) + "\n"
+    lines = [
+        "AgentVerify Policy",
+        f"Name: {summary['name']}",
+        f"Source: {summary['source']}",
+        f"SHA-256: {summary['sha256']}",
+        f"Policy sources: {len(summary['sources'])}",
+        f"Gates: {len(summary['gates'])}",
+    ]
+    for gate in summary["gates"]:
+        rules = ", ".join(gate["rules"]) if gate["rules"] else "all reporting rules"
+        lines.append(
+            f"  {gate['id']} ({gate['policy_source']}): "
+            f"rules={rules}; result_kinds={','.join(gate['result_kinds'])}; "
+            f"min_severity={gate['min_severity']}; max_count={gate['max_count']}"
+        )
+    lines.append("Trust: content hashes only; no author signature verified")
+    return "\n".join(lines) + "\n"

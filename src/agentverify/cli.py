@@ -8,7 +8,13 @@ import sys
 from pathlib import Path
 
 from . import __version__
-from .policy import SEVERITY_RANK, PolicyError, evaluate_policy, load_policy
+from .policy import (
+    SEVERITY_RANK,
+    PolicyError,
+    evaluate_policy,
+    load_policy,
+    render_policy_summary,
+)
 from .report import (
     render_bom,
     render_json,
@@ -107,6 +113,16 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="PATH",
         help="write rule metadata to PATH instead of standard output",
     )
+    policy = subparsers.add_parser("policy", help="validate and explain a schema-v1 policy")
+    policy.add_argument("path", type=Path)
+    policy.add_argument("--format", choices=("text", "json"), default="text")
+    policy.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        metavar="PATH",
+        help="write policy metadata to PATH instead of standard output",
+    )
     return parser
 
 
@@ -187,6 +203,24 @@ def main(argv: list[str] | None = None) -> int:
         return emit_output(render_schema(args.name), args.output) or 0
     if args.command == "rules":
         return emit_output(render_rules(args.rule_id, output_format=args.format), args.output) or 0
+    if args.command == "policy":
+        try:
+            loaded_policy, policy_digest = load_policy(args.path)
+        except (OSError, PolicyError) as error:
+            print(f"agentverify: invalid policy: {error}", file=sys.stderr)
+            return 2
+        return (
+            emit_output(
+                render_policy_summary(
+                    loaded_policy,
+                    source=args.path.name,
+                    digest=policy_digest,
+                    output_format=args.format,
+                ),
+                args.output,
+            )
+            or 0
+        )
     if not args.path.is_dir():
         print(f"agentverify: not a directory: {args.path}", file=sys.stderr)
         return 2

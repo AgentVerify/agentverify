@@ -26,6 +26,8 @@ catalog workflows.
 - Extended distribution verification to cover the wheel console-script entry point and optional
   installed-CLI smoke tests.
 - Added a benchmark result verifier that validates result JSON and recomputes label/manifest digests.
+- Added `agentverify policy PATH` to validate/explain composed policy provenance without scanning a
+  repository and without treating content hashes as signatures.
 
 ## Current findings
 
@@ -42,6 +44,6 @@ catalog workflows.
 
 ## Next action
 
-Continue toward the highest-value local P1/P2 work: signed policy provenance design, additional
-installed-artifact checks, benchmark-result release documentation, or additional real-world framework
-coverage.
+Continue toward the highest-value local P1/P2 work: explicit signed policy trust-root design,
+additional installed-artifact checks, benchmark-result release documentation, or additional
+real-world framework coverage.

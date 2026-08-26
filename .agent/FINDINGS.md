@@ -18,10 +18,12 @@
 - Benchmark result JSON has a checked-in schema that validates both public rule/IR result files and
   synthetic sealed-holdout outputs.
 - Distribution verification now proves the wheel declares `agentverify = agentverify.cli:main`; the
-  optional smoke mode installs the wheel and exercises version, bundled schema, and safe-example scan
-  commands through the installed executable.
+  optional smoke mode installs the wheel and exercises version, bundled schema, policy summary, and
+  safe-example scan commands through the installed executable.
 - Benchmark verification now recomputes `labels_sha256` and optional `manifest_sha256`, preventing
   result files from drifting away from their declared inputs.
+- Policy composition can now be inspected without scanning. The policy summary intentionally reports
+  `signature_verified: false`, preserving the distinction between content integrity and author trust.
 
 ## Hypotheses
 

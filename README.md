@@ -27,6 +27,8 @@ agentverify schema policy --output agentverify-policy.schema.json
 agentverify schema rules --output agentverify-rules.schema.json
 agentverify scan ./project --policy agentverify-policy.json
 agentverify scan ./project --policy repository-policy.json  # may extend local organization policy
+agentverify policy repository-policy.json
+agentverify policy repository-policy.json --format json
 agentverify scan ./project --fail-on high
 agentverify scan ./project --fail-on high --fail-on-kind any
 agentverify scan ./project --include-tests
@@ -71,6 +73,9 @@ confidence, summary, and baseline remediation. Pass a rule ID for a focused expl
 contract for generated configuration and editor metadata. Policy rule filters reject unknown or
 inventory-only IDs before scanning. They also reject selected rules excluded by the gate's result
 kind or severity threshold, so a typo or dead filter cannot silently turn a gate into an empty match.
+`agentverify policy PATH` validates a policy without scanning a repository and explains composed
+gate sources and SHA-256 content digests. These digests make local inputs auditable; they are not
+author signatures.
 
 Example finding:
 

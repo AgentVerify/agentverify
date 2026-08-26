@@ -78,6 +78,17 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         version = command([str(agentverify), "--version"]).strip()
         report_schema = json.loads(command([str(agentverify), "schema", "report"]))
         rules_schema = json.loads(command([str(agentverify), "schema", "rules"]))
+        policy_summary = json.loads(
+            command(
+                [
+                    str(agentverify),
+                    "policy",
+                    str(source_root / "examples/repository-policy.json"),
+                    "--format",
+                    "json",
+                ]
+            )
+        )
         summary = command(
             [
                 str(agentverify),
@@ -91,6 +102,8 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         "version": version,
         "report_schema_title": report_schema.get("title"),
         "rules_schema_title": rules_schema.get("title"),
+        "policy_summary_format": policy_summary.get("policy_format"),
+        "policy_signature_verified": policy_summary.get("trust", {}).get("signature_verified"),
         "safe_agent_summary": "AgentVerify Summary" in summary and "No findings" in summary,
     }
     failed = []
@@ -100,6 +113,10 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         failed.append("report_schema_title")
     if rules_schema.get("title") != "AgentVerify Rules Catalog 1":
         failed.append("rules_schema_title")
+    if policy_summary.get("policy_format") != "AgentVerify Policy Summary":
+        failed.append("policy_summary_format")
+    if policy_summary.get("trust", {}).get("signature_verified") is not False:
+        failed.append("policy_signature_verified")
     if not checks["safe_agent_summary"]:
         failed.append("safe_agent_summary")
     if failed:

@@ -555,8 +555,10 @@ risks, or SARIF results do not become partial empty baselines.
 Schema-backed JSON policies now provide per-rule/result-kind/severity count budgets with decision
 evidence in every report. Local organization policy composition resolves relative files depth first,
 rejects cycles and duplicate gate IDs, and preserves file and gate SHA-256 provenance without
-weakening strict unknown-field validation. Next add signed policy provenance with explicit trust-root
-configuration; a content hash alone must not be presented as author authenticity.
+weakening strict unknown-field validation. `agentverify policy PATH` now validates and explains
+composed policy sources without a repository scan, including a machine-readable trust block that
+keeps SHA-256 content digests separate from author signatures. Next add signed policy provenance with
+explicit trust-root configuration; a content hash alone must not be presented as author authenticity.
 The JSON report now carries a deterministic post-suppression/post-baseline `risk_summary`, matching
 the native AI BOM's by-rule, by-result-kind, and by-severity governance counts without requiring
 external CI parsers to reimplement report aggregation.

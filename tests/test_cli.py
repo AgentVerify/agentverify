@@ -573,6 +573,87 @@ def test_composed_policy_retains_each_gate_source_and_digest(tmp_path: Path, cap
     assert "org-high (org.json): 0 matched / 0 allowed [passed]" in text
 
 
+def test_cli_policy_explains_composed_policy_without_scanning(
+    tmp_path: Path, capsys, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    org = tmp_path / "org.json"
+    org.write_text(
+        '{"schema_version":1,"name":"org","gates":['
+        '{"id":"org-high","result_kinds":["finding"],"max_count":0}]}',
+        encoding="utf-8",
+    )
+    repository = tmp_path / "repository.json"
+    repository.write_text(
+        '{"schema_version":1,"name":"repository","extends":["org.json"],"gates":['
+        '{"id":"repository-reviews","result_kinds":["review"],"max_count":5}]}',
+        encoding="utf-8",
+    )
+
+    def unexpected_scan(*args: object, **kwargs: object) -> None:
+        raise AssertionError("policy explanation must not scan a repository")
+
+    monkeypatch.setattr(cli, "scan_repository", unexpected_scan)
+
+    assert cli.main(["policy", str(repository), "--format", "json"]) == 0
+    payload = __import__("json").loads(capsys.readouterr().out)
+    assert payload["policy_format"] == "AgentVerify Policy Summary"
+    assert payload["schema_version"] == 1
+    assert payload["name"] == "repository"
+    assert payload["source"] == "repository.json"
+    assert len(payload["sha256"]) == 64
+    assert [source["source"] for source in payload["sources"]] == ["org.json", "repository.json"]
+    assert [gate["policy_source"] for gate in payload["gates"]] == [
+        "org.json",
+        "repository.json",
+    ]
+    assert payload["trust"] == {
+        "content_hashes": True,
+        "note": (
+            "SHA-256 digests identify local policy content; they do not prove author authenticity."
+        ),
+        "signature_verified": False,
+    }
+
+
+def test_cli_policy_writes_text_explanation(tmp_path: Path, capsys) -> None:
+    policy = tmp_path / "policy.json"
+    policy.write_text(
+        '{"schema_version":1,"name":"release","gates":['
+        '{"id":"no-high","rules":["AV-EXEC001"],"max_count":0}]}',
+        encoding="utf-8",
+    )
+    output = tmp_path / "policy.txt"
+
+    assert cli.main(["policy", str(policy), "--output", str(output)]) == 0
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    text = output.read_text(encoding="utf-8")
+    assert text.startswith("AgentVerify Policy\nName: release\n")
+    assert "no-high (policy.json): rules=AV-EXEC001" in text
+    assert "Trust: content hashes only; no author signature verified" in text
+
+
+def test_cli_policy_rejects_invalid_policy_without_scanning(
+    tmp_path: Path, capsys, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    policy = tmp_path / "invalid.json"
+    policy.write_text(
+        '{"schema_version":1,"gates":[],"disable_rules":["AV-EXEC001"]}',
+        encoding="utf-8",
+    )
+
+    def unexpected_scan(*args: object, **kwargs: object) -> None:
+        raise AssertionError("policy validation must not scan a repository")
+
+    monkeypatch.setattr(cli, "scan_repository", unexpected_scan)
+
+    assert cli.main(["policy", str(policy)]) == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "agentverify: invalid policy:" in captured.err
+    assert "unknown policy fields: disable_rules" in captured.err
+
+
 def test_invalid_policy_is_rejected_before_scanning(
     tmp_path: Path, capsys, monkeypatch: pytest.MonkeyPatch
 ) -> None:
