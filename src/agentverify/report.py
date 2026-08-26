@@ -68,6 +68,24 @@ def render_rules(rule_id: str | None = None, *, output_format: str = "text") -> 
     return "\n".join(lines)
 
 
+def _policy_gate_line(gate: dict[str, object], *, composed: bool) -> str:
+    gate_status = "passed" if gate["passed"] else "failed"
+    provenance = f" ({gate['policy_source']})" if composed else ""
+    line = (
+        f"  {gate['id']}{provenance}: {gate['matched_count']} matched / "
+        f"{gate['max_count']} allowed [{gate_status}]"
+    )
+    matched_summary = gate.get("matched_summary")
+    if isinstance(matched_summary, dict):
+        by_rule = matched_summary.get("by_rule")
+        if isinstance(by_rule, dict) and by_rule:
+            breakdown = ", ".join(
+                f"{rule_id}={count}" for rule_id, count in sorted(by_rule.items())
+            )
+            line += f" ({breakdown})"
+    return line
+
+
 def render_bom_schema() -> str:
     return render_schema("bom")
 
@@ -421,12 +439,7 @@ def render_summary(ir: RepositoryIR) -> str:
         if composed:
             lines.append(f"Policy sources: {len(ir.policy_summary['sources'])}")
         for gate in ir.policy_summary["gates"]:
-            gate_status = "passed" if gate["passed"] else "failed"
-            provenance = f" ({gate['policy_source']})" if composed else ""
-            lines.append(
-                f"  {gate['id']}{provenance}: {gate['matched_count']} matched / "
-                f"{gate['max_count']} allowed [{gate_status}]"
-            )
+            lines.append(_policy_gate_line(gate, composed=composed))
     if ir.findings:
         lines.append("")
         lines.append("Finding counts:")
@@ -501,12 +514,7 @@ def render_text(ir: RepositoryIR) -> str:
         if composed:
             lines.append(f"Policy sources: {len(ir.policy_summary['sources'])}")
         for gate in ir.policy_summary["gates"]:
-            gate_status = "passed" if gate["passed"] else "failed"
-            provenance = f" ({gate['policy_source']})" if composed else ""
-            lines.append(
-                f"  {gate['id']}{provenance}: {gate['matched_count']} matched / "
-                f"{gate['max_count']} allowed [{gate_status}]"
-            )
+            lines.append(_policy_gate_line(gate, composed=composed))
     lines += ["", "AI Components:"]
     if not ir.components:
         lines.append("  None detected")

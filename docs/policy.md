@@ -59,9 +59,10 @@ All gates must pass. Exit status is `1` when a policy gate or an explicit `--fai
 
 Policies are deliberately non-hiding. Matching findings remain in text, JSON, AI BOM, and SARIF
 output. Each report includes the policy name, source filename, SHA-256 digest, overall status, gate
-filters, matched counts, and matching fingerprints. Unknown fields or rules, duplicate gate IDs,
-kind/severity-incompatible rule filters, invalid enumerations, and negative budgets are rejected
-rather than ignored.
+filters, matched counts, matched summaries by rule/result kind/severity, and matching fingerprints.
+Text and summary reports include the by-rule breakdown beside each matching gate for quick CI triage.
+Unknown fields or rules, duplicate gate IDs, kind/severity-incompatible rule filters, invalid
+enumerations, and negative budgets are rejected rather than ignored.
 
 ## Organization policy composition
 

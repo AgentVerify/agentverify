@@ -8820,6 +8820,11 @@ def test_policy_decision_evidence_is_retained_by_all_reporters() -> None:
     sarif = json.loads(render_sarif(ir))
     text_report = render_text(ir)
     assert json_report["policy_summary"]["gates"][0]["matched_count"] == 1
+    assert json_report["policy_summary"]["gates"][0]["matched_summary"] == {
+        "by_result_kind": {"finding": 1},
+        "by_rule": {"AV-EXEC001": 1},
+        "by_severity": {"high": 1},
+    }
     bom_schema = json.loads(
         (ROOT / "src/agentverify/schemas/agentverify-ai-bom-v1.schema.json").read_text(
             encoding="utf-8"
@@ -8829,3 +8834,4 @@ def test_policy_decision_evidence_is_retained_by_all_reporters() -> None:
     assert bom["metadata"]["policy_summary"] == json_report["policy_summary"]
     assert sarif["runs"][0]["properties"]["policySummary"] == json_report["policy_summary"]
     assert "Policy: release [failed; 1 gates]" in text_report
+    assert "high: 1 matched / 0 allowed [failed] (AV-EXEC001=1)" in text_report

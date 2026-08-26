@@ -281,6 +281,7 @@
         "policy_source",
         "policy_sha256",
         "matched_count",
+        "matched_summary",
         "matched_fingerprints",
         "passed"
       ],
@@ -296,6 +297,16 @@
         "policy_source": {"type": "string"},
         "policy_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         "matched_count": {"type": "integer", "minimum": 0},
+        "matched_summary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["by_rule", "by_result_kind", "by_severity"],
+          "properties": {
+            "by_rule": {"$ref": "#/$defs/countMap"},
+            "by_result_kind": {"$ref": "#/$defs/countMap"},
+            "by_severity": {"$ref": "#/$defs/countMap"}
+          }
+        },
         "matched_fingerprints": {
           "type": "array",
           "uniqueItems": true,

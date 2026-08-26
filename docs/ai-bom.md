@@ -13,9 +13,9 @@ It is native to AgentVerify and does not claim CycloneDX or SPDX conformance.
 The `schema` command reads the copy bundled in the installed wheel, so validators do not need a
 source checkout.
 
-The current format version is 1.2. Version 1.2 adds composed-policy source and per-gate provenance;
-version 1.1 added evidence-local relationship endpoint resolution. The filename remains `v1`
-because the major schema contract is unchanged.
+The current format version is 1.2. Version 1.2 adds composed-policy source, per-gate provenance, and
+per-gate matched summaries; version 1.1 added evidence-local relationship endpoint resolution. The
+filename remains `v1` because the major schema contract is unchanged.
 
 ## Why a native format
 
@@ -36,8 +36,8 @@ The top-level document contains:
 
 - `metadata`: generator version, full or selected-path scope, scanned-file counts, parse warnings,
   suppressions, baseline summary, and policy decision summary with hashes for every composed policy
-  source and gate. `root` is always `.` and evidence paths are relative to it, so local checkout paths
-  are not disclosed.
+  source and gate plus each gate's matched counts by rule, result kind, and severity. `root` is always
+  `.` and evidence paths are relative to it, so local checkout paths are not disclosed.
 - `assets`: every Agent IR component with a stable `avc-*` ID, kind, display name, attributes, and
   exact path/line/excerpt evidence. Source-defined agents and tools, plus exact assigned Python MCP
   stdio servers, also retain their Agent IR `symbol_id`.

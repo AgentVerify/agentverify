@@ -5,10 +5,11 @@ from __future__ import annotations
 import hashlib
 import json
 import posixpath
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from .ir import RepositoryIR
+from .ir import Finding, RepositoryIR
 from .rules import REPORTING_RULE_IDS, RULE_CATALOG
 
 SEVERITY_RANK = {"info": 0, "low": 1, "medium": 2, "high": 3}
@@ -18,6 +19,14 @@ MAX_POLICY_DEPTH = 32
 
 class PolicyError(ValueError):
     """Raised when a policy document does not satisfy the supported contract."""
+
+
+def _matched_summary(matches: list[Finding]) -> dict[str, dict[str, int]]:
+    return {
+        "by_result_kind": dict(sorted(Counter(finding.result_kind for finding in matches).items())),
+        "by_rule": dict(sorted(Counter(finding.rule_id for finding in matches).items())),
+        "by_severity": dict(sorted(Counter(finding.severity for finding in matches).items())),
+    }
 
 
 def _string_list(value: object, field: str, *, allowed: set[str] | None = None) -> list[str]:
@@ -96,23 +105,18 @@ def normalize_policy(payload: object) -> dict[str, Any]:
             else ["finding"]
         )
         excluded_by_kind = [
-            rule_id
-            for rule_id in rules
-            if RULE_CATALOG[rule_id].result_kind not in result_kinds
+            rule_id for rule_id in rules if RULE_CATALOG[rule_id].result_kind not in result_kinds
         ]
         if excluded_by_kind:
             details = ", ".join(
                 f"{rule_id} emits {RULE_CATALOG[rule_id].result_kind}"
                 for rule_id in excluded_by_kind
             )
-            raise PolicyError(
-                f"{field}.rules cannot match {field}.result_kinds: {details}"
-            )
+            raise PolicyError(f"{field}.rules cannot match {field}.result_kinds: {details}")
         excluded_by_severity = [
             rule_id
             for rule_id in rules
-            if SEVERITY_RANK[RULE_CATALOG[rule_id].severity]
-            < SEVERITY_RANK[minimum]
+            if SEVERITY_RANK[RULE_CATALOG[rule_id].severity] < SEVERITY_RANK[minimum]
         ]
         if excluded_by_severity:
             details = ", ".join(
@@ -230,6 +234,7 @@ def evaluate_policy(ir: RepositoryIR, policy: dict[str, Any], *, source: str, di
                 "policy_source": gate.get("_policy_source", source),
                 "policy_sha256": gate.get("_policy_sha256", digest),
                 "matched_count": len(matches),
+                "matched_summary": _matched_summary(matches),
                 "matched_fingerprints": sorted(finding.fingerprint for finding in matches),
                 "passed": passed,
             }
