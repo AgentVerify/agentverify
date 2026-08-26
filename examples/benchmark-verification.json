@@ -16,8 +16,8 @@
       "evaluation_kind": "public-regression",
       "label_scope": "agent-ir",
       "sealed": false,
-      "labels": 1582,
-      "passed": 1582,
+      "labels": 1584,
+      "passed": 1584,
       "labels_source": "benchmarks/ir-truthset.json",
       "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate",
       "digest_ok": true

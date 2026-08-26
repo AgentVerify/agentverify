@@ -961,7 +961,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 719-label rule truth set and 1,582-label IR component/relationship set are curated regression
+The 719-label rule truth set and 1,584-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

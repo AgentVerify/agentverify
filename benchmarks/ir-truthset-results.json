@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-26T18:07:34.626171+00:00",
+  "generated_at": "2026-08-26T18:15:53.980084+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "f0c7af726a525ec91a4cb1bd5700cfadbe31103ca56c837dd1618205d7561675",
+    "labels_sha256": "f34473ba1f60e45e3e260ffe78ad62823387c023ce0b182ce5db69aadfbb6148",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 1582,
-  "passed": 1582,
+  "labels": 1584,
+  "passed": 1584,
   "metrics": {
     "IR-A2A-CARD-ENDPOINT-PROVENANCE": {
       "tp": 8,
@@ -47,7 +47,7 @@
     "IR-COMPONENT-TAXONOMY": {
       "tp": 409,
       "fp": 0,
-      "tn": 159,
+      "tn": 161,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -12072,6 +12072,24 @@
     },
     {
       "id": "provider-typescript-native-typed-mixed-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-native-type-only-openai-local-negative",
+      "check_id": "IR-COMPONENT-TAXONOMY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "provider-typescript-native-type-only-anthropic-local-negative",
       "check_id": "IR-COMPONENT-TAXONOMY",
       "expected": false,
       "observed": false,

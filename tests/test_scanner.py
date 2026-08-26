@@ -900,6 +900,12 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         and item.attributes.get("resolution") == "exact-typescript-provider-import"
         for item in ir.components
     )
+    assert not any(
+        item.kind in {"provider", "model"}
+        and item.evidence.path == "provider_native_type_only_unresolved.ts"
+        and item.attributes.get("resolution") == "exact-typescript-provider-import"
+        for item in ir.components
+    )
     assert {
         (
             item.evidence.line,
