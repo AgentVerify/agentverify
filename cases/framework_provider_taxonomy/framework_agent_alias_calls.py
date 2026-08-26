@@ -21,3 +21,12 @@ from semantic_kernel.agents import ChatCompletionAgent as SemanticKernelAgent
 
 
 semantic = SemanticKernelAgent(name="semantic-kernel-facade")
+
+from qwen_agent.agents import Assistant as QwenAssistant
+from lagent.agents import AgentForInternLM as LagentAgent
+from metagpt.roles import Role as MetaGPTRole
+
+
+qwen = QwenAssistant(name="qwen-facade")
+lagent = LagentAgent(name="lagent-facade")
+metagpt = MetaGPTRole(name="metagpt-facade")

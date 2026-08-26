@@ -71,6 +71,9 @@ catalog workflows.
 - Added exact Semantic Kernel `semantic_kernel.agents.ChatCompletionAgent` constructor provenance
   through direct aliases plus local named/star reexports, bringing the public IR truth set to 1,505
   passing labels.
+- Added direct, named-reexport, and star-reexport provenance coverage for the remaining exact Python
+  framework constructor table entries: Qwen-Agent `Assistant`, Lagent `AgentForInternLM`, and MetaGPT
+  `Role`, bringing the public IR truth set to 1,514 passing labels.
 - Added a concrete signed policy provenance design that keeps digest allowlists separate from author
   authenticity and specifies detached source-digest payloads plus local key trust roots.
 - Added `agentverify policy --export-signing-payload` and a bundled policy-signing-payload schema so

@@ -144,7 +144,9 @@ for OpenAI Agents SDK `agents.Agent` aliases/reexports, bringing this local cons
 twelve labels. Three more labels pin Google ADK `google.adk.agents.Agent` through the same generic
 framework-prefix path, bringing the group to fifteen labels. Three additional labels pin exact
 Semantic Kernel `semantic_kernel.agents.ChatCompletionAgent` aliases/reexports, bringing the group
-to eighteen labels. Ordinary same-named local constructors still stay unresolved.
+to eighteen labels. Nine further labels pin the remaining exact constructor-table families
+Qwen-Agent, Lagent, and MetaGPT across direct aliases, named reexports, and star reexports, bringing
+the group to twenty-seven labels. Ordinary same-named local constructors still stay unresolved.
 
 ## P0 — module-qualified symbols and graph identities
 

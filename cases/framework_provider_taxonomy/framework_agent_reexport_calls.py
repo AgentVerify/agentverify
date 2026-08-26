@@ -25,3 +25,15 @@ from framework_agent_reexports import ProjectSemanticKernelAgent
 
 semantic = ProjectSemanticKernelAgent(name="reexport-semantic-kernel")
 semantic_star = ProjectStarSemanticKernelAgent(name="star-semantic-kernel")
+
+from framework_agent_reexports import ProjectQwenAssistant
+from framework_agent_reexports import ProjectLagentAgent
+from framework_agent_reexports import ProjectMetaGPTRole
+
+
+qwen = ProjectQwenAssistant(name="reexport-qwen")
+lagent = ProjectLagentAgent(name="reexport-lagent")
+metagpt = ProjectMetaGPTRole(name="reexport-metagpt")
+qwen_star = ProjectStarQwenAssistant(name="star-qwen")
+lagent_star = ProjectStarLagentAgent(name="star-lagent")
+metagpt_star = ProjectStarMetaGPTRole(name="star-metagpt")

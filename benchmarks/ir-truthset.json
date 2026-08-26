@@ -5073,6 +5073,24 @@
       "component":{"kind":"agent","name":"semantic-kernel-facade","attributes":{"constructor":"SemanticKernelAgent","constructor_module":"semantic_kernel.agents","imported_symbol":"ChatCompletionAgent","constructor_resolution":"exact-framework-agent-import"}}
     },
     {
+      "id":"taxonomy-local-framework-agent-alias-qwen",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_alias_calls.py","line":30,"expected":true,
+      "component":{"kind":"agent","name":"qwen-facade","attributes":{"constructor":"QwenAssistant","constructor_module":"qwen_agent.agents","imported_symbol":"Assistant","constructor_resolution":"exact-framework-agent-import"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-alias-lagent",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_alias_calls.py","line":31,"expected":true,
+      "component":{"kind":"agent","name":"lagent-facade","attributes":{"constructor":"LagentAgent","constructor_module":"lagent.agents","imported_symbol":"AgentForInternLM","constructor_resolution":"exact-framework-agent-import"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-alias-metagpt",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_alias_calls.py","line":32,"expected":true,
+      "component":{"kind":"agent","name":"metagpt-facade","attributes":{"constructor":"MetaGPTRole","constructor_module":"metagpt.roles","imported_symbol":"Role","constructor_resolution":"exact-framework-agent-import"}}
+    },
+    {
       "id":"taxonomy-local-framework-agent-reexport-agentscope",
       "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
       "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":6,"expected":true,
@@ -5125,6 +5143,42 @@
       "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
       "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":27,"expected":true,
       "component":{"kind":"agent","name":"star-semantic-kernel","attributes":{"constructor":"ProjectStarSemanticKernelAgent","constructor_module":"semantic_kernel.agents","imported_symbol":"ChatCompletionAgent","constructor_resolution":"exact-framework-agent-star-reexport"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-reexport-qwen",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":34,"expected":true,
+      "component":{"kind":"agent","name":"reexport-qwen","attributes":{"constructor":"ProjectQwenAssistant","constructor_module":"qwen_agent.agents","imported_symbol":"Assistant","constructor_resolution":"exact-framework-agent-reexport"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-reexport-lagent",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":35,"expected":true,
+      "component":{"kind":"agent","name":"reexport-lagent","attributes":{"constructor":"ProjectLagentAgent","constructor_module":"lagent.agents","imported_symbol":"AgentForInternLM","constructor_resolution":"exact-framework-agent-reexport"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-reexport-metagpt",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":36,"expected":true,
+      "component":{"kind":"agent","name":"reexport-metagpt","attributes":{"constructor":"ProjectMetaGPTRole","constructor_module":"metagpt.roles","imported_symbol":"Role","constructor_resolution":"exact-framework-agent-reexport"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-star-reexport-qwen",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":37,"expected":true,
+      "component":{"kind":"agent","name":"star-qwen","attributes":{"constructor":"ProjectStarQwenAssistant","constructor_module":"qwen_agent.agents","imported_symbol":"Assistant","constructor_resolution":"exact-framework-agent-star-reexport"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-star-reexport-lagent",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":38,"expected":true,
+      "component":{"kind":"agent","name":"star-lagent","attributes":{"constructor":"ProjectStarLagentAgent","constructor_module":"lagent.agents","imported_symbol":"AgentForInternLM","constructor_resolution":"exact-framework-agent-star-reexport"}}
+    },
+    {
+      "id":"taxonomy-local-framework-agent-star-reexport-metagpt",
+      "target":{"kind":"local","path":"cases/framework_provider_taxonomy"},
+      "check_id":"IR-COMPONENT-TAXONOMY","path":"framework_agent_reexport_calls.py","line":39,"expected":true,
+      "component":{"kind":"agent","name":"star-metagpt","attributes":{"constructor":"ProjectStarMetaGPTRole","constructor_module":"metagpt.roles","imported_symbol":"Role","constructor_resolution":"exact-framework-agent-star-reexport"}}
     },
     {
       "id":"taxonomy-local-framework-agent-hidden-reexport-negative",
