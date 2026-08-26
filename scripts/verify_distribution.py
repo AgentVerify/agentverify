@@ -32,6 +32,7 @@ REQUIRED_SOURCE_FILES = frozenset(
         "benchmarks/release-checklist.md",
         "benchmarks/truthset.json",
         "docs/code-scanning.md",
+        "docs/editor-integration.md",
         "docs/pre-commit.md",
         "docs/policy.md",
         "docs/policy-signatures.md",
@@ -41,6 +42,7 @@ REQUIRED_SOURCE_FILES = frozenset(
         "examples/pre-commit-config.yaml",
         "examples/repository-policy.json",
         "examples/safe_agent/agent.py",
+        "scripts/export_editor_contracts.py",
         "scripts/verify_signed_policy_example.py",
     }
 )

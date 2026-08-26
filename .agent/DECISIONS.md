@@ -112,3 +112,18 @@
   adoption path and can silently drift from the CLI threshold or repository-wide scan requirement.
 - Revisit when: a public remote/tag exists and the docs switch from local-hook-first to
   tagged-release-first instructions.
+
+## Editor integrations get generated contract bundles
+
+- Decision: Provide a reproducible exporter for editor/CI contract artifacts instead of relying only
+  on scattered CLI examples.
+- Evidence: Editor extensions and review bots need the report schema, rules schema, current rule
+  catalog, and representative report shape together. `agentverify schema ...` and `agentverify rules
+  --format json` already expose the primitives, but a generated bundle with a digest manifest makes
+  local integration and release verification easier to automate. Tests validate the exported rule
+  catalog and sample report against the bundled schemas.
+- Alternative: Check in generated copies of the rule catalog and schemas. Rejected because generated
+  copies would drift whenever rules or schemas change unless every catalog update also regenerated
+  secondary artifacts.
+- Revisit when: a published package or website hosts versioned schema URLs and editor plugins can
+  fetch those directly.

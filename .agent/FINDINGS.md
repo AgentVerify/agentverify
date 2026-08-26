@@ -52,6 +52,11 @@
   `docs/pre-commit.md`, and `examples/pre-commit-config.yaml` are required source-distribution
   files, while tests assert that the bundled release hook uses `language: python` and the local
   copyable config uses `language: system` with repository-wide `pass_filenames: false` scanning.
+- Editor/CI integrations can now consume a generated local contract bundle instead of copying
+  commands from prose: `scripts/export_editor_contracts.py` validates and exports report/rules
+  schemas, the current `agentverify rules --format json` payload, an optional sample report, and a
+  digest manifest. The exporter and `docs/editor-integration.md` are required source-distribution
+  artifacts.
 - Policy composition can now be inspected without scanning. The policy summary intentionally reports
   `signature_verified: false`, preserving the distinction between content integrity and author trust.
 - Policy summary JSON is now schema-backed and included in distribution verification, matching the

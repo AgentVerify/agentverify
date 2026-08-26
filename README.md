@@ -136,6 +136,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`docs/ai-bom.md`](docs/ai-bom.md) — native machine-readable asset and governance inventory
 - [`docs/policy.md`](docs/policy.md) — schema-backed, non-hiding CI gate policies
 - [`docs/code-scanning.md`](docs/code-scanning.md) — copy-ready GitHub SARIF integration
+- [`docs/editor-integration.md`](docs/editor-integration.md) — exportable schemas and rule catalog for editor/CI tooling
 - [`docs/pre-commit.md`](docs/pre-commit.md) — local and tagged-release hook setup
 - [`docs/backlog.md`](docs/backlog.md) — prioritized issue-ready future work
 - [`benchmarks/engine-results.json`](benchmarks/engine-results.json) — full-corpus engine metrics
@@ -178,6 +179,9 @@ agentverify schema benchmark-result --output agentverify-benchmark-result.schema
 
 The default CI workflow runs the installed CLI benchmark gate against the checked-in public
 regression results, so benchmark-result drift fails during pull requests before release packaging.
+For editor or custom CI integrations, `python scripts/export_editor_contracts.py --sample-root
+examples/safe_agent` exports the report schema, rules schema, current rules catalog, and optional
+sample report into a local artifact directory.
 
 The collector reuses commits from `research/repository-data.json` by default and samples up to 220
 source/manifest roots plus at most 20 bounded local source dependencies reached from MCP

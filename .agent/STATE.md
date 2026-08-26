@@ -116,6 +116,9 @@ catalog workflows.
 - Added a copyable local pre-commit config and tests for both the future release hook manifest and
   current local setup, and extended source-distribution verification to require those pre-commit
   adoption artifacts.
+- Added an editor/CI contract exporter that writes the report schema, rules schema, current rules
+  catalog, optional sample report, and digest manifest, with tests and source-distribution coverage
+  for the exporter and integration guide.
 - Added explicit all-labels-passed benchmark verification output and a `--require-all-passed` gate,
   so public regression release checks can fail closed on honest failing-label result files while
   still allowing failed sealed-holdout metrics to be validated when intentionally published.
