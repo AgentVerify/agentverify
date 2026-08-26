@@ -65,8 +65,10 @@ now preserve attribution when every hop imports a known symbol/proven alias and 
 exported alias. Star imports from proven local reexport modules are supported when the exported name
 is visible through literal `__all__` or the normal non-underscore wildcard rule. Simple imported
 local wrapper factories are supported when they have one return path to a proven provider-wrapper
-constructor and the model comes from a literal or factory parameter. Rebound aliases, ambiguous
-factory returns, shadowed constructors, and generic same-named classes remain unresolved.
+constructor and the model comes from a literal or factory parameter; factory summaries also survive
+star imports when visible through literal `__all__` or the normal non-underscore wildcard rule.
+Rebound aliases, ambiguous factory returns, shadowed constructors, and generic same-named classes
+remain unresolved.
 Schema v102 adds Agno's exact public and direct OpenAI, Google, Anthropic, Azure OpenAI, and Groq
 model modules. Literal model identity may come from Agno's `id=` field or first positional argument;
 the proof is invalidated by import rebinding or a custom OpenAI/Groq `base_url` and is not generalized
@@ -262,9 +264,8 @@ same-named module definition. Cross-branch definitions, reassignments, forward d
 unproven parameters, arbitrary factories/builtins or factory methods, ambiguous or rebound constructor imports, nested
 or reassigned context bindings, tool-helper returns, lambdas, multiply wrapped functions, wrapper
 tuple unpacking, and shadowed factories remain unresolved.
-Package re-exports, wildcard imports, dynamic lookups, conditional tool expressions, and other
-wrapper-factory forms
-remain unresolved.
+Dynamic lookups, conditional tool expressions, unresolved package exports, and other
+wrapper-factory forms remain unresolved.
 
 An immutable top-level `from module import name` binding used directly in a literal Agent tool list
 also receives an exact import identity. If the selected repository contains one resolved module path

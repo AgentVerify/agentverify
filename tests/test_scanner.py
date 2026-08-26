@@ -1176,6 +1176,52 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         and item.attributes.get("resolution") == "exact-provider-wrapper-factory"
         for item in ir.components
     )
+    star_factory_providers = {
+        (
+            item.evidence.line,
+            item.name,
+            item.attributes.get("call"),
+            item.attributes.get("module"),
+            item.attributes.get("imported_symbol"),
+        )
+        for item in ir.components
+        if item.kind == "provider"
+        and item.evidence.path == "provider_factory_star_calls.py"
+        and item.attributes.get("resolution") == "exact-provider-wrapper-factory"
+    }
+    assert star_factory_providers == {
+        (
+            3,
+            "OpenAI",
+            "make_openai_model",
+            "agentscope.model",
+            "OpenAIChatModel",
+        ),
+        (
+            4,
+            "OpenAI",
+            "make_static_openai_model",
+            "agentscope.model",
+            "OpenAIChatModel",
+        ),
+    }
+    assert {
+        (item.evidence.line, item.name, item.attributes["provider"])
+        for item in ir.components
+        if item.kind == "model"
+        and item.evidence.path == "provider_factory_star_calls.py"
+        and item.attributes.get("resolution") == "exact-provider-wrapper-factory"
+    } == {
+        (3, "gpt-4.1-star", "OpenAI"),
+        (4, "gpt-4.1-mini", "OpenAI"),
+    }
+    assert not any(
+        item.kind in {"provider", "model"}
+        and item.evidence.path == "provider_factory_star_calls.py"
+        and item.evidence.line in {5, 6, 7}
+        and item.attributes.get("resolution") == "exact-provider-wrapper-factory"
+        for item in ir.components
+    )
 
 
 def test_python_dify_shell_layer_requires_default_off_runtime_composition() -> None:

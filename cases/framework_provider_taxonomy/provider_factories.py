@@ -1,6 +1,13 @@
 from local_providers import ProjectAnthropicModel, ProjectOpenAIChatModel
 from provider_star_aliases import *
 
+__all__ = [
+    "make_openai_model",
+    "make_static_openai_model",
+    "ambiguous_model",
+    "rebound_model",
+]
+
 
 def make_openai_model(model_name):
     return ProjectOpenAIChatModel(model=model_name)

@@ -6022,6 +6022,7 @@ class PythonVisitor(ast.NodeVisitor):
         provider_reexports: dict[tuple[str, str], tuple[str, str, str]],
         provider_star_reexports: dict[str, dict[str, tuple[str, str, str]]],
         provider_factory_summaries: dict[tuple[str, str], PythonProviderFactorySummary],
+        provider_star_factory_summaries: dict[str, dict[str, PythonProviderFactorySummary]],
         network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
         path_segment_sanitizer_bindings: dict[str, PythonPathSegmentSanitizerSummary],
         registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
@@ -6137,6 +6138,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.provider_reexports = provider_reexports
         self.provider_star_reexports = provider_star_reexports
         self.provider_factory_summaries = provider_factory_summaries
+        self.provider_star_factory_summaries = provider_star_factory_summaries
         self.network_helper_summaries = network_helper_summaries
         self.registered_tool_functions = registered_tool_functions
         self.registry_function_tools = registry_function_tools
@@ -6647,6 +6649,11 @@ class PythonVisitor(ast.NodeVisitor):
                     ).items():
                         self.invalidate_imported_symbol(exported)
                         self.provider_call_bindings[exported] = reexport
+                    for exported, summary in self.provider_star_factory_summaries.get(
+                        resolution.path, {}
+                    ).items():
+                        self.invalidate_imported_symbol(exported)
+                        self.provider_factory_bindings[exported] = summary
                 continue
             if (
                 provider := PYTHON_PROVIDER_SYMBOL_PROVIDERS.get(
@@ -9649,6 +9656,7 @@ def scan_python(
     provider_reexports: dict[tuple[str, str], tuple[str, str, str]],
     provider_star_reexports: dict[str, dict[str, tuple[str, str, str]]],
     provider_factory_summaries: dict[tuple[str, str], PythonProviderFactorySummary],
+    provider_star_factory_summaries: dict[str, dict[str, PythonProviderFactorySummary]],
     network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
     path_segment_sanitizer_summaries: dict[tuple[str, str], PythonPathSegmentSanitizerSummary],
     registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
@@ -12169,6 +12177,7 @@ def scan_python(
         provider_reexports=provider_reexports,
         provider_star_reexports=provider_star_reexports,
         provider_factory_summaries=provider_factory_summaries,
+        provider_star_factory_summaries=provider_star_factory_summaries,
         network_helper_summaries=network_helper_summaries,
         path_segment_sanitizer_bindings=path_segment_sanitizer_bindings,
         registered_tool_functions=registered_tool_functions,
@@ -16647,9 +16656,13 @@ def build_python_provider_factory_summaries(
     module_paths: dict[str, str],
     provider_reexports: dict[tuple[str, str], tuple[str, str, str]],
     provider_star_reexports: dict[str, dict[str, tuple[str, str, str]]],
-) -> dict[tuple[str, str], PythonProviderFactorySummary]:
+) -> tuple[
+    dict[tuple[str, str], PythonProviderFactorySummary],
+    dict[str, dict[str, PythonProviderFactorySummary]],
+]:
     """Index simple local factories that return exact provider wrapper constructors."""
     summaries: dict[tuple[str, str], PythonProviderFactorySummary] = {}
+    module_all_exports: dict[str, set[str] | None] = {}
 
     def collect_mutations(candidate: ast.AST, target_mutations: set[str]) -> None:
         if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
@@ -16695,6 +16708,17 @@ def build_python_provider_factory_summaries(
         except (OSError, SyntaxError):
             continue
         relative = path.relative_to(root).as_posix()
+        module_all_exports[relative] = None
+        for statement in tree.body:
+            if not isinstance(statement, ast.Assign):
+                continue
+            if len(statement.targets) != 1:
+                continue
+            target = statement.targets[0]
+            if not isinstance(target, ast.Name) or target.id != "__all__":
+                continue
+            values = python_literal_string_list(statement.value)
+            module_all_exports[relative] = set(values) if values is not None else set()
         import_binding_counts = Counter(
             alias.asname or alias.name
             for statement in tree.body
@@ -16823,7 +16847,20 @@ def build_python_provider_factory_summaries(
                 model_parameter=model_parameter,
                 model_parameter_position=model_parameter_position,
             )
-    return summaries
+    star_summaries: dict[str, dict[str, PythonProviderFactorySummary]] = {}
+    for path, explicit_exports in module_all_exports.items():
+        visible: dict[str, PythonProviderFactorySummary] = {}
+        for (source_path, exported), summary in summaries.items():
+            if source_path != path:
+                continue
+            if explicit_exports is not None:
+                if exported not in explicit_exports:
+                    continue
+            elif exported.startswith("_"):
+                continue
+            visible[exported] = summary
+        star_summaries[path] = visible
+    return summaries, star_summaries
 
 
 def build_python_literal_imported_tool_references(
@@ -29875,12 +29912,14 @@ def scan_repository(
         registry_paths,
         module_paths,
     )
-    provider_factory_summaries = build_python_provider_factory_summaries(
-        root,
-        registry_paths,
-        module_paths,
-        provider_reexports,
-        provider_star_reexports,
+    provider_factory_summaries, provider_star_factory_summaries = (
+        build_python_provider_factory_summaries(
+            root,
+            registry_paths,
+            module_paths,
+            provider_reexports,
+            provider_star_reexports,
+        )
     )
     literal_http_exports = build_python_literal_http_exports(root, registry_paths)
     network_helper_summaries = build_python_network_helper_summaries(
@@ -29976,6 +30015,7 @@ def scan_repository(
                 provider_reexports,
                 provider_star_reexports,
                 provider_factory_summaries,
+                provider_star_factory_summaries,
                 network_helper_summaries,
                 path_segment_sanitizer_summaries,
                 registered_tool_functions,

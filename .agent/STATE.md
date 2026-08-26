@@ -50,6 +50,9 @@ catalog workflows.
 - Added literal-`__all__` star-import resolution for selected local callables used in Python Agent
   literal tool lists, with wildcard positive/filtered-negative IR labels and regenerated IR
   truth-set results now covering 1,469 labels.
+- Added literal-visibility star-import resolution for simple local provider wrapper factories, with
+  exported/static positives, a filtered negative, and regenerated IR truth-set results now covering
+  1,474 labels.
 - Extended distribution verification so release checks can require a source distribution containing
   README-linked examples, policy docs, benchmark contracts, and public truth sets.
 - Extended source-distribution verification to require the checked public benchmark result outputs

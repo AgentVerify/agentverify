@@ -270,8 +270,9 @@ when each reexport module imports a known AgentScope or PydanticAI symbol/proven
 rebind the exported alias. Star imports from proven local reexport modules are supported for names
 visible through literal `__all__` or non-underscore exports. Simple imported local wrapper factories
 are also supported when they have one return path to a proven provider-wrapper constructor and map
-the model from a literal or factory parameter. Seventeen local IR labels pin direct, transitive,
-wildcard, and wrapper-factory provider/model positives plus rebound, filtered, and ambiguous
+the model from a literal or factory parameter; those factory summaries also survive star imports when
+the factory name is visible. Twenty-two local IR labels pin direct, transitive, wildcard,
+wrapper-factory, and wildcard factory provider/model positives plus rebound, filtered, and ambiguous
 negatives.
 
 Schema v103 expands official TypeScript AI SDK call attribution to OpenAI, Anthropic, Google, and
@@ -1650,8 +1651,8 @@ Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,469 IR labels pass (1,072 positives and 397 negatives):
-333 component-taxonomy positives/133 negatives, three approval positives/four negatives,
+negatives. All 1,474 IR labels pass (1,076 positives and 398 negatives):
+337 component-taxonomy positives/134 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
 contextual network-import positives, three imported-literal-origin positives/seven negatives,

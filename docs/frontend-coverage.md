@@ -721,8 +721,10 @@ and `network-ssrf-policy` edge.
   alias. Star imports from proven local reexport modules are supported when the provider name is
   visible through literal `__all__` or the normal non-underscore wildcard rule. Simple imported local
   wrapper factories are supported when they have one return path to a proven provider-wrapper
-  constructor and map a literal or parameter model source. Rebound aliases, ambiguous factories,
-  shadowed constructors, and generic same-named classes remain unresolved.
+  constructor and map a literal or parameter model source; the same factory summaries survive star
+  imports when visible through literal `__all__` or the normal non-underscore wildcard rule. Rebound
+  aliases, ambiguous factories, shadowed constructors, and generic same-named classes remain
+  unresolved.
   Literal call-model arguments inherit the proven provider, and selected Mistral-owned prefixes are
   recognized; third-party model names hosted by Groq or Ollama and indirect factories remain
   unresolved.
@@ -941,7 +943,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 714-label rule truth set and 1,469-label IR component/relationship set are curated regression
+The 714-label rule truth set and 1,474-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed
