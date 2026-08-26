@@ -18,6 +18,7 @@ agentverify schema rules --output agentverify-rules.schema.json
 agentverify policy repository-policy.json
 agentverify policy repository-policy.json --format json
 agentverify policy repository-policy.json --trust-root policy-trust-root.json --require-trusted
+agentverify policy examples/repository-policy.json --trust-root examples/policy-trust-root.json --require-trusted
 agentverify scan . --policy agentverify-policy.json
 ```
 
@@ -129,7 +130,10 @@ against a local SHA-256 allowlist:
 
 Use `--require-trusted` when a mismatch or missing source should return exit status `1`. This is an
 integrity/approval check for local policy content, not a signature scheme; summaries continue to
-report `signature_verified: false`.
+report `signature_verified: false`. The checked-in
+[`examples/policy-trust-root.json`](../examples/policy-trust-root.json) is a runnable allowlist for
+the composed [`examples/repository-policy.json`](../examples/repository-policy.json) and
+[`examples/org-policy.json`](../examples/org-policy.json) pair.
 
 ## Baselines and partial scans
 

@@ -97,6 +97,20 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
                 ]
             )
         )
+        trusted_policy_summary = json.loads(
+            command(
+                [
+                    str(agentverify),
+                    "policy",
+                    str(source_root / "examples/repository-policy.json"),
+                    "--trust-root",
+                    str(source_root / "examples/policy-trust-root.json"),
+                    "--require-trusted",
+                    "--format",
+                    "json",
+                ]
+            )
+        )
         summary = command(
             [
                 str(agentverify),
@@ -115,6 +129,9 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         "policy_trust_root_schema_title": policy_trust_root_schema.get("title"),
         "policy_summary_format": policy_summary.get("policy_format"),
         "policy_signature_verified": policy_summary.get("trust", {}).get("signature_verified"),
+        "policy_trust_root_trusted": trusted_policy_summary.get("trust", {})
+        .get("trust_root", {})
+        .get("trusted"),
         "safe_agent_summary": "AgentVerify Summary" in summary and "No findings" in summary,
     }
     failed = []
@@ -134,6 +151,8 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         failed.append("policy_summary_format")
     if policy_summary.get("trust", {}).get("signature_verified") is not False:
         failed.append("policy_signature_verified")
+    if checks["policy_trust_root_trusted"] is not True:
+        failed.append("policy_trust_root_trusted")
     if not checks["safe_agent_summary"]:
         failed.append("safe_agent_summary")
     if failed:

@@ -430,6 +430,28 @@ def test_cli_prints_bundled_policy_trust_root_schema(capsys) -> None:
     assert schema["properties"]["trust_model"]["const"] == "local-content-digest-allowlist"
 
 
+def test_example_policy_trust_root_matches_composed_policy(capsys) -> None:
+    assert (
+        cli.main(
+            [
+                "policy",
+                str(ROOT / "examples/repository-policy.json"),
+                "--trust-root",
+                str(ROOT / "examples/policy-trust-root.json"),
+                "--require-trusted",
+                "--format",
+                "json",
+            ]
+        )
+        == 0
+    )
+
+    payload = __import__("json").loads(capsys.readouterr().out)
+    trust_root = payload["trust"]["trust_root"]
+    assert trust_root["trusted"] is True
+    assert trust_root["matched_sources"] == ["org-policy.json", "repository-policy.json"]
+
+
 def test_example_policies_gate_every_high_approval_review() -> None:
     expected = sorted(
         rule_id

@@ -33,6 +33,7 @@ agentverify scan ./project --policy repository-policy.json  # may extend local o
 agentverify policy repository-policy.json
 agentverify policy repository-policy.json --format json
 agentverify policy repository-policy.json --trust-root policy-trust-root.json --require-trusted
+agentverify policy examples/repository-policy.json --trust-root examples/policy-trust-root.json --require-trusted
 agentverify scan ./project --fail-on high
 agentverify scan ./project --fail-on high --fail-on-kind any
 agentverify scan ./project --include-tests

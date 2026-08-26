@@ -33,6 +33,8 @@
   existing report/BOM/policy/rules machine-contract pattern.
 - Policy digest trust roots can now make local composition approval fail closed without pretending to
   verify signatures; this is a useful precursor, not a replacement, for cryptographic provenance.
+- The checked-in example policy trust root turns the digest-allowlist workflow into a copyable,
+  installed-wheel-smoked command rather than a prose-only feature.
 
 ## Hypotheses
 
