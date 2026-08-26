@@ -52,6 +52,8 @@ catalog workflows.
   truth-set results now covering 1,469 labels.
 - Extended distribution verification so release checks can require a source distribution containing
   README-linked examples, policy docs, benchmark contracts, and public truth sets.
+- Extended source-distribution verification to require the checked public benchmark result outputs
+  alongside their labels, so release artifacts carry both benchmark contracts and verifier evidence.
 
 ## Current findings
 
@@ -70,4 +72,4 @@ catalog workflows.
 
 Continue toward the highest-value local P1/P2 work: additional real-world framework coverage
 without broad name matching, cryptographic signed policy provenance design, or release artifact
-checks that attach benchmark verification outputs once release packaging is explicit.
+checks that attach benchmark verifier logs once release packaging is explicit.

@@ -19,6 +19,7 @@ assert SPEC.loader is not None
 SPEC.loader.exec_module(verify_distribution)
 
 REQUIRED_SCHEMA_FILES = verify_distribution.REQUIRED_SCHEMA_FILES
+REQUIRED_BENCHMARK_RESULT_FILES = verify_distribution.REQUIRED_BENCHMARK_RESULT_FILES
 REQUIRED_SOURCE_FILES = verify_distribution.REQUIRED_SOURCE_FILES
 REQUIRED_ENTRY_POINTS = verify_distribution.REQUIRED_ENTRY_POINTS
 latest_sdist = verify_distribution.latest_sdist
@@ -63,14 +64,26 @@ def test_distribution_verifier_accepts_all_required_schemas(tmp_path: Path) -> N
 
 def test_distribution_verifier_accepts_required_source_artifacts(tmp_path: Path) -> None:
     sdist = tmp_path / "agentverify-0.1.0.tar.gz"
-    write_sdist(sdist, set(REQUIRED_SOURCE_FILES) | {"src/agentverify/__init__.py"})
+    write_sdist(
+        sdist,
+        set(REQUIRED_SOURCE_FILES)
+        | set(REQUIRED_BENCHMARK_RESULT_FILES)
+        | {"src/agentverify/__init__.py"},
+    )
 
     payload = verify_sdist(sdist)
 
     assert payload["passed"] is True
-    assert payload["required_source_files"] == len(REQUIRED_SOURCE_FILES)
+    assert payload["required_source_files"] == len(
+        REQUIRED_SOURCE_FILES | REQUIRED_BENCHMARK_RESULT_FILES
+    )
     assert payload["missing_source_files"] == []
-    assert payload["present_source_files"] == sorted(REQUIRED_SOURCE_FILES)
+    assert payload["present_source_files"] == sorted(
+        REQUIRED_SOURCE_FILES | REQUIRED_BENCHMARK_RESULT_FILES
+    )
+    assert payload["required_benchmark_result_files"] == len(REQUIRED_BENCHMARK_RESULT_FILES)
+    assert payload["missing_benchmark_result_files"] == []
+    assert payload["present_benchmark_result_files"] == sorted(REQUIRED_BENCHMARK_RESULT_FILES)
 
 
 def test_distribution_verifier_rejects_missing_schema(tmp_path: Path) -> None:
@@ -85,9 +98,24 @@ def test_distribution_verifier_rejects_missing_schema(tmp_path: Path) -> None:
 def test_distribution_verifier_rejects_missing_source_artifact(tmp_path: Path) -> None:
     sdist = tmp_path / "agentverify-0.1.0.tar.gz"
     missing = {"examples/repository-policy.json"}
-    write_sdist(sdist, set(REQUIRED_SOURCE_FILES) - missing)
+    write_sdist(
+        sdist, (set(REQUIRED_SOURCE_FILES) | set(REQUIRED_BENCHMARK_RESULT_FILES)) - missing
+    )
 
     with pytest.raises(RuntimeError, match="examples/repository-policy.json"):
+        verify_sdist(sdist)
+
+
+def test_distribution_verifier_rejects_missing_benchmark_result_artifact(
+    tmp_path: Path,
+) -> None:
+    sdist = tmp_path / "agentverify-0.1.0.tar.gz"
+    missing = {"benchmarks/ir-truthset-results.json"}
+    write_sdist(
+        sdist, (set(REQUIRED_SOURCE_FILES) | set(REQUIRED_BENCHMARK_RESULT_FILES)) - missing
+    )
+
+    with pytest.raises(RuntimeError, match="missing_benchmark_result_files"):
         verify_sdist(sdist)
 
 
@@ -113,8 +141,8 @@ def test_distribution_verifier_selects_newest_wheel(tmp_path: Path) -> None:
 def test_distribution_verifier_selects_newest_sdist(tmp_path: Path) -> None:
     older = tmp_path / "agentverify-0.0.9.tar.gz"
     newer = tmp_path / "agentverify-0.1.0.tar.gz"
-    write_sdist(older, set(REQUIRED_SOURCE_FILES))
-    write_sdist(newer, set(REQUIRED_SOURCE_FILES))
+    write_sdist(older, set(REQUIRED_SOURCE_FILES) | set(REQUIRED_BENCHMARK_RESULT_FILES))
+    write_sdist(newer, set(REQUIRED_SOURCE_FILES) | set(REQUIRED_BENCHMARK_RESULT_FILES))
     os.utime(older, (1, 1))
     os.utime(newer, (2, 2))
 

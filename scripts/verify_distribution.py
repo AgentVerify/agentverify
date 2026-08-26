@@ -13,6 +13,12 @@ import zipfile
 from pathlib import Path, PurePosixPath
 
 REQUIRED_ENTRY_POINTS = {"agentverify": "agentverify.cli:main"}
+REQUIRED_BENCHMARK_RESULT_FILES = frozenset(
+    {
+        "benchmarks/ir-truthset-results.json",
+        "benchmarks/truthset-results.json",
+    }
+)
 REQUIRED_SOURCE_FILES = frozenset(
     {
         "README.md",
@@ -277,13 +283,19 @@ def verify_wheel(
 
 def verify_sdist(path: Path) -> dict[str, object]:
     names = sdist_source_names(path)
-    missing = sorted(REQUIRED_SOURCE_FILES - names)
-    present = sorted(REQUIRED_SOURCE_FILES & names)
+    required = REQUIRED_SOURCE_FILES | REQUIRED_BENCHMARK_RESULT_FILES
+    missing = sorted(required - names)
+    present = sorted(required & names)
+    missing_benchmark_results = sorted(REQUIRED_BENCHMARK_RESULT_FILES - names)
+    present_benchmark_results = sorted(REQUIRED_BENCHMARK_RESULT_FILES & names)
     payload: dict[str, object] = {
         "sdist": str(path),
-        "required_source_files": len(REQUIRED_SOURCE_FILES),
+        "required_source_files": len(required),
         "present_source_files": present,
         "missing_source_files": missing,
+        "required_benchmark_result_files": len(REQUIRED_BENCHMARK_RESULT_FILES),
+        "present_benchmark_result_files": present_benchmark_results,
+        "missing_benchmark_result_files": missing_benchmark_results,
         "passed": not missing,
     }
     if missing:

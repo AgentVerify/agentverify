@@ -549,10 +549,10 @@ errors while policy and severity gate exits remain intact. Inline suppressions n
 expiry status, and CI can require an active ISO date. A distributable pre-commit manifest and local
 setup are included; publishing its remote form waits for an approved repository URL and release tag.
 The distribution verifier now checks wheel contents, the console-script entry point, and optional
-source distributions for the README-linked examples, policy docs, benchmark contracts, and source
-truth sets. `--smoke-install` installs the wheel in a temporary virtualenv before running version,
-schema, policy, trust-root export, and safe-example scan commands through the installed
-`agentverify` executable.
+source distributions for the README-linked examples, policy docs, benchmark contracts, public truth
+sets, and checked benchmark result outputs. `--smoke-install` installs the wheel in a temporary
+virtualenv before running version, schema, policy, trust-root export, and safe-example scan commands
+through the installed `agentverify` executable.
 The scan command also provides a compact `--format summary` mode for CI logs and quick local triage:
 it keeps threshold and policy exit semantics while showing scan totals, baseline/policy status,
 severity/result-kind/rule counts, and top evidence locations without printing the full Agent IR graph.

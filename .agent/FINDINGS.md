@@ -26,6 +26,8 @@
 - Distribution verification can now also require source distributions to contain the README-linked
   example policies, safe-agent sample, policy/code-scanning docs, benchmark schema/templates, and
   public truth sets.
+- Source-distribution verification now treats the public benchmark result JSON files as named release
+  artifacts, so a release archive cannot include labels without their checked verifier outputs.
 - Benchmark verification now recomputes `labels_sha256` and optional `manifest_sha256`, preventing
   result files from drifting away from their declared inputs.
 - Benchmark verification can now fail release workflows unless result files declare the required
