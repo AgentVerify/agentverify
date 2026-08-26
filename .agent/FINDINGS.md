@@ -170,7 +170,8 @@
 - Native TypeScript provider SDK CommonJS named destructuring is now pinned for OpenAI and Anthropic
   aliases as well as Google GenAI: exact top-level `const { OpenAI: Alias } = require("openai")` and
   `const { Anthropic: Alias } = require("@anthropic-ai/sdk")` carry constructor and model attribution
-  only while the binding remains stable; the public IR truth set now covers 1,580 passing labels.
+  only while the binding remains top-level and stable, with scoped named requires kept unresolved;
+  the public IR truth set now covers 1,582 passing labels.
 
 ## Hypotheses
 
