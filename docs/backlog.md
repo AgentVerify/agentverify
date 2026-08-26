@@ -562,6 +562,8 @@ for that catalog, including the enabled rule-ID enum, so generated policy/editor
 rule metadata without scraping documentation. Every emission site is checked against the catalog's
 result kind, severity, and confidence, preventing policy-facing metadata drift while keeping
 context-specific finding messages and remediation details in reports.
+The distribution verifier now checks release wheels for every runtime schema file, so schema-backed
+commands cannot pass in editable mode while shipping an incomplete wheel.
 Policy rule filters are now fail-closed against the same catalog in both runtime normalization and
 the bundled JSON schema. Unknown, misspelled, or inventory-only IDs are rejected before scanning;
 a consistency test requires schema and catalog updates to land together.

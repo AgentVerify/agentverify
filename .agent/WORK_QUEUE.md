@@ -9,8 +9,8 @@
 ## P1
 
 - Design the sealed holdout benchmark process separately from the public regression corpus.
-- Add package/distribution checks that verify bundled schemas and examples are present in installed
-  artifacts.
+- Extend package/distribution checks beyond runtime schemas to examples and CLI entrypoint smoke
+  tests in installed artifacts.
 - Expand selected real-world framework coverage where current docs record unresolved package
   reexports, wildcard imports, wrapper factories, or type-driven symbols.
 

@@ -5,6 +5,8 @@
 - The repository contains a 71-repository pinned research corpus and schema-v123 benchmark outputs.
 - The runtime catalog currently contains 24 enabled reporting rules.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
+- A freshly rebuilt wheel includes all four runtime schemas; a verifier script now guards that
+  package artifact expectation.
 - Policy evaluation occurs after baseline filtering and preserves matched findings in all report
   formats.
 

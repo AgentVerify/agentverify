@@ -136,4 +136,6 @@ python3 -m venv .venv
 .venv/bin/pip install -e '.[dev]'
 .venv/bin/pytest
 .venv/bin/ruff check src tests scripts
+uv build --wheel
+python3 scripts/verify_distribution.py
 ```

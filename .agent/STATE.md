@@ -17,6 +17,7 @@ catalog workflows.
 - Aligned example policies with all current high-severity approval-review rules.
 - Added and validated a bundled rules-catalog schema so `agentverify rules --format json` has a
   first-class machine contract.
+- Added a reusable distribution verifier that checks built wheels for every runtime schema file.
 
 ## Current findings
 
@@ -33,6 +34,5 @@ catalog workflows.
 
 ## Next action
 
-Commit the validated rules-schema/resume-state slice, then continue toward the highest-value local
-P1/P2 work: package/distribution verification, holdout benchmark design, or signed policy
-provenance design.
+Continue toward the highest-value local P1/P2 work: holdout benchmark design, signed policy
+provenance design, installed-artifact CLI smoke tests, or additional real-world framework coverage.
