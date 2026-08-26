@@ -232,6 +232,51 @@ def test_unknown_json_baseline_object_is_rejected(tmp_path: Path, capsys) -> Non
     assert "AgentVerify JSON report, AI BOM, SARIF report, or fingerprint list" in captured.err
 
 
+def test_malformed_fingerprint_list_baseline_is_rejected(tmp_path: Path, capsys) -> None:
+    baseline = tmp_path / "baseline.json"
+    baseline.write_text('["a41f9bb99818a0005c7d", {"fingerprint":"not-allowed"}]', encoding="utf-8")
+
+    assert (
+        cli.main(["scan", str(ROOT / "cases/python_dangerous"), "--baseline", str(baseline)]) == 2
+    )
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "fingerprint list baseline must contain only non-empty strings" in captured.err
+
+
+def test_malformed_agentverify_json_baseline_is_rejected(tmp_path: Path, capsys) -> None:
+    baseline = tmp_path / "baseline.json"
+    baseline.write_text(
+        '{"report_format":"AgentVerify JSON Report","schema_version":1,"findings":[{}]}',
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(["scan", str(ROOT / "cases/python_dangerous"), "--baseline", str(baseline)]) == 2
+    )
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "AgentVerify JSON baseline findings[0] must contain a fingerprint string" in captured.err
+
+
+def test_sarif_baseline_without_agentverify_fingerprints_is_rejected(
+    tmp_path: Path, capsys
+) -> None:
+    baseline = tmp_path / "baseline.sarif"
+    baseline.write_text(
+        '{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"OtherTool"}},'
+        '"results":[{"ruleId":"OTHER"}]}]}',
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(["scan", str(ROOT / "cases/python_dangerous"), "--baseline", str(baseline)]) == 2
+    )
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "SARIF baseline does not contain AgentVerify fingerprints" in captured.err
+
+
 def test_partial_baseline_does_not_claim_resolved_findings(tmp_path: Path, capsys) -> None:
     baseline = tmp_path / "baseline.json"
     baseline.write_text('["old-fingerprint"]', encoding="utf-8")

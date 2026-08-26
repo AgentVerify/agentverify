@@ -22,6 +22,24 @@ from .rules import RULE_CATALOG
 from .scanner import scan_repository
 
 
+def _fingerprints_from_objects(items: object, *, field: str, baseline_kind: str) -> set[str]:
+    if not isinstance(items, list):
+        raise TypeError(f"{baseline_kind} baseline must contain a {field} array")
+    fingerprints = set()
+    fingerprint_key = "fingerprint" if field == "findings" else "id"
+    for index, item in enumerate(items):
+        if not isinstance(item, dict) or not item.get(fingerprint_key):
+            raise TypeError(
+                f"{baseline_kind} baseline {field}[{index}] must contain a {fingerprint_key} string"
+            )
+        if not isinstance(item[fingerprint_key], str):
+            raise TypeError(
+                f"{baseline_kind} baseline {field}[{index}].{fingerprint_key} must be a string"
+            )
+        fingerprints.add(item[fingerprint_key])
+    return fingerprints
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="agentverify", description="Analyze AI agent applications"
@@ -95,25 +113,19 @@ def build_parser() -> argparse.ArgumentParser:
 def baseline_fingerprints(path: Path) -> set[str]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     if isinstance(payload, list):
-        return {str(item) for item in payload}
+        if not all(isinstance(item, str) and item for item in payload):
+            raise TypeError("fingerprint list baseline must contain only non-empty strings")
+        return set(payload)
     if not isinstance(payload, dict):
         raise TypeError("baseline must be a JSON object or fingerprint list")
     if payload.get("report_format") == "AgentVerify JSON Report" or "findings" in payload:
-        if not isinstance(payload.get("findings"), list):
-            raise TypeError("AgentVerify JSON baseline must contain a findings array")
-        return {
-            str(item["fingerprint"])
-            for item in payload["findings"]
-            if isinstance(item, dict) and item.get("fingerprint")
-        }
+        return _fingerprints_from_objects(
+            payload.get("findings"), field="findings", baseline_kind="AgentVerify JSON"
+        )
     if payload.get("bom_format") == "AgentVerify AI BOM":
-        if not isinstance(payload.get("risks"), list):
-            raise TypeError("AgentVerify AI BOM baseline must contain a risks array")
-        return {
-            str(item["id"])
-            for item in payload["risks"]
-            if isinstance(item, dict) and item.get("id")
-        }
+        return _fingerprints_from_objects(
+            payload.get("risks"), field="risks", baseline_kind="AgentVerify AI BOM"
+        )
     if "runs" not in payload:
         raise TypeError(
             "baseline must be an AgentVerify JSON report, AI BOM, SARIF report, or fingerprint list"
@@ -121,15 +133,35 @@ def baseline_fingerprints(path: Path) -> set[str]:
     if not isinstance(payload.get("runs"), list):
         raise TypeError("SARIF baseline must contain a runs array")
     fingerprints = set()
+    other_results = 0
     for run in payload["runs"]:
         if not isinstance(run, dict):
             continue
-        for result in run.get("results", []):
+        tool = run.get("tool", {})
+        driver = tool.get("driver", {}) if isinstance(tool, dict) else {}
+        is_agentverify_run = isinstance(driver, dict) and driver.get("name") == "AgentVerify"
+        results = run.get("results", [])
+        if not isinstance(results, list):
+            raise TypeError("SARIF baseline runs[].results must be an array")
+        for result in results:
             if not isinstance(result, dict):
                 continue
+            if not is_agentverify_run:
+                other_results += 1
             values = result.get("partialFingerprints", {})
             if isinstance(values, dict) and values.get("agentverify/v1"):
+                if not isinstance(values["agentverify/v1"], str):
+                    raise TypeError(
+                        "SARIF baseline partialFingerprints.agentverify/v1 must be a string"
+                    )
                 fingerprints.add(str(values["agentverify/v1"]))
+            elif is_agentverify_run:
+                raise TypeError(
+                    "AgentVerify SARIF baseline results must contain "
+                    "partialFingerprints.agentverify/v1"
+                )
+    if not fingerprints and other_results:
+        raise TypeError("SARIF baseline does not contain AgentVerify fingerprints")
     return fingerprints
 
 

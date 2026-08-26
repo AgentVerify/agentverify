@@ -542,7 +542,8 @@ it keeps threshold and policy exit semantics while showing scan totals, baseline
 severity/result-kind/rule counts, and top evidence locations without printing the full Agent IR graph.
 Baseline parsing is now fail-closed for unknown JSON objects while still accepting explicit
 fingerprint lists, AgentVerify JSON reports, native AI BOMs, and SARIF files with `agentverify/v1`
-partial fingerprints.
+partial fingerprints. Recognized baseline arrays are validated entry-by-entry so malformed findings,
+risks, or SARIF results do not become partial empty baselines.
 Schema-backed JSON policies now provide per-rule/result-kind/severity count budgets with decision
 evidence in every report. Local organization policy composition resolves relative files depth first,
 rejects cycles and duplicate gate IDs, and preserves file and gate SHA-256 provenance without

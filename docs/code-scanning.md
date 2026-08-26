@@ -57,7 +57,8 @@ text, and SARIF include counts for new, unchanged, and no-longer-reported finger
 is deliberately unavailable for selected-path scans because unscanned findings are not proven fixed.
 Baseline input is fail-closed: AgentVerify accepts only a raw fingerprint list, an AgentVerify JSON
 report, a native AI BOM, or SARIF with `agentverify/v1` partial fingerprints. Other JSON objects are
-usage errors rather than empty baselines.
+usage errors rather than empty baselines, and malformed entries inside otherwise recognized reports
+must still carry the expected fingerprint field.
 
 The workflow deliberately grants `security-events: write` only to the scanning job. Do not pass a
 personal token to the upload action; its default is the job-scoped GitHub token.
