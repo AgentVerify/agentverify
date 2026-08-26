@@ -156,6 +156,8 @@ and resolved/unresolved control context for code-scanning integrations.
 The included [GitHub code-scanning workflow](.github/workflows/code-scanning.yml) uploads results on
 pushes, pull requests, and a weekly schedule. It uses a job-scoped token and a stable SARIF category;
 see the integration guide before adding an enforcement threshold.
+For policy-only GitHub Actions gates, start from the checked
+[`examples/github-policy-gate.yml`](examples/github-policy-gate.yml) workflow.
 
 The bundled [pre-commit hook manifest](.pre-commit-hooks.yaml) supports repository-wide local scans;
 the setup guide and [copyable local config](examples/pre-commit-config.yaml) avoid assuming a public

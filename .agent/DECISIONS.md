@@ -132,3 +132,16 @@
   secondary artifacts.
 - Revisit when: a published package or website hosts versioned schema URLs and editor plugins can
   fetch those directly.
+
+## Policy-gate workflows are checked adoption artifacts
+
+- Decision: Keep a copyable GitHub Actions policy-gate workflow under `examples/` and require it in
+  source distributions.
+- Evidence: Policy enforcement should be separate from SARIF upload so deliberate gate failures do
+  not prevent diagnostic ingestion. A minimal workflow can use only `contents: read`, validate policy
+  composition before scanning, emit compact summary output, and require expiry dates on inline
+  suppressions. Tests now assert those properties and docs link to the workflow.
+- Alternative: Leave the workflow as prose snippets in policy/code-scanning docs. Rejected because
+  snippets are easy to copy incompletely and are not caught by release artifact verification.
+- Revisit when: a hosted GitHub Action, reusable workflow, or release-pinned installation path
+  replaces manual workflow copying.

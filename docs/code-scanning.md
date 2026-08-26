@@ -49,6 +49,8 @@ gate digest. The legacy `--fail-on high --fail-on-kind finding` threshold remain
 simple gates.
 The checked-in example policies gate all current high-severity approval-review rules; high-severity
 approval findings remain covered by the broad high-finding gate.
+For a copyable policy-only workflow that keeps enforcement separate from SARIF upload, start from
+[`examples/github-policy-gate.yml`](../examples/github-policy-gate.yml).
 
 Keep policy enforcement separate from SARIF generation: a failing scan step otherwise prevents the
 upload step unless it uses `if: always()`. For an existing repository, `--baseline` can hide known

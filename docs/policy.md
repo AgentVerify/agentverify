@@ -188,3 +188,23 @@ full-repository policy scan as the authoritative gate.
 
 Policy budgets are not exceptions. A reviewed, time-bounded exception belongs in an inline
 suppression with a rule ID, reason, and expiry date; a baseline records accepted existing debt.
+
+## GitHub Actions policy gate
+
+[`examples/github-policy-gate.yml`](../examples/github-policy-gate.yml) is a copyable policy-only
+workflow. It uses only `contents: read`, validates the policy before scanning, emits compact summary
+output for CI logs, and requires expiry dates on inline suppressions:
+
+```yaml
+- name: Validate policy composition
+  run: agentverify policy agentverify-policy.json
+- name: Enforce policy
+  run: >
+    agentverify scan .
+    --format summary
+    --policy agentverify-policy.json
+    --require-suppression-expiry
+```
+
+Keep this policy gate separate from SARIF upload jobs so a deliberate policy failure does not prevent
+GitHub from ingesting diagnostic results.

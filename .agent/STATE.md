@@ -129,6 +129,9 @@ catalog workflows.
 - Added a checked Language Server Protocol-style editor diagnostics example derived from the
   `cases/approval_callback_bypass` report, including tests that regenerate the mapping from a real
   scan and source-distribution coverage for the linked example artifact.
+- Added a copyable GitHub Actions policy-gate workflow that uses read-only repository permissions,
+  validates policy composition before scanning, emits compact summary output, requires suppression
+  expiry, and is now required in source-distribution verification.
 - Added explicit all-labels-passed benchmark verification output and a `--require-all-passed` gate,
   so public regression release checks can fail closed on honest failing-label result files while
   still allowing failed sealed-holdout metrics to be validated when intentionally published.
@@ -151,6 +154,8 @@ catalog workflows.
 - Editor diagnostic integrations should preserve `result_kind`, `confidence`, `fingerprint`, and
   `ir_path` in diagnostic metadata; otherwise they lose the distinction between review signals,
   policy-gated findings, and rerun correlation.
+- CI policy-gate examples should stay separate from SARIF upload workflows so deliberate policy
+  failures do not prevent diagnostic ingestion.
 - Baseline handling is intentionally conservative: malformed recognized artifacts are usage errors;
   partial selected-path scans do not claim no-longer-reported counts.
 

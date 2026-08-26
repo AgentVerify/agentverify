@@ -62,6 +62,10 @@
   from `cases/approval_callback_bypass`. Tests regenerate the example from `agentverify scan
   --format json`, proving the documented mapping preserves evidence paths, zero-based ranges,
   severity mapping, fingerprints, result kinds, confidence, and IR paths.
+- GitHub Actions policy gates now have a checked, source-distribution-required workflow example:
+  `examples/github-policy-gate.yml` uses only `contents: read`, validates policy composition before
+  scanning, emits summary output, and requires suppression expiry. Tests assert those guardrails and
+  docs link to the workflow from both policy and code-scanning guidance.
 - Policy composition can now be inspected without scanning. The policy summary intentionally reports
   `signature_verified: false`, preserving the distinction between content integrity and author trust.
 - Policy summary JSON is now schema-backed and included in distribution verification, matching the

@@ -24,8 +24,8 @@
 - Improve editor and CI integration examples beyond the installed `agentverify contracts` bundle:
   add SARIF/editor examples, policy-aware diagnostic grouping, or sample extension fixtures when
   they can be validated locally.
-- Improve installed CLI examples for benchmark verification, schema exports, and policy gates in
-  CI/editor workflows.
+- Improve installed CLI examples for benchmark verification and schema exports in CI/editor
+  workflows; policy-gate GitHub Actions now has a checked workflow example.
 
 ## Deferred until access/authorization
 
