@@ -16369,9 +16369,11 @@ def build_python_decorated_tool_exports(
 def build_python_provider_reexports(
     root: Path,
     paths: list[Path],
+    module_paths: dict[str, str],
 ) -> dict[tuple[str, str], tuple[str, str, str]]:
-    """Index direct local reexports of exact provider wrapper symbols."""
+    """Index local reexports rooted in exact provider wrapper symbols."""
     exports: dict[tuple[str, str], tuple[str, str, str]] = {}
+    parsed_modules: list[tuple[str, ast.Module, Counter[str], set[str]]] = []
     for path in paths:
         if (
             path.is_symlink()
@@ -16425,6 +16427,7 @@ def build_python_provider_reexports(
             if not isinstance(statement, (ast.Import, ast.ImportFrom)):
                 collect_mutations(statement, mutations)
         rebound_names = imported_bindings & mutations
+        parsed_modules.append((relative, tree, import_binding_counts, rebound_names))
         for statement in tree.body:
             if not isinstance(statement, ast.ImportFrom) or not statement.module:
                 continue
@@ -16445,6 +16448,35 @@ def build_python_provider_reexports(
                     (module, alias.name), PYTHON_PROVIDER_MODULES[module]
                 )
                 exports[(relative, exported)] = (provider, module, alias.name)
+    changed = True
+    while changed:
+        changed = False
+        for relative, tree, import_binding_counts, rebound_names in parsed_modules:
+            for statement in tree.body:
+                if not isinstance(statement, ast.ImportFrom) or not statement.module:
+                    continue
+                if statement.module in PYTHON_PROVIDER_SDK_CALLS:
+                    continue
+                for alias in statement.names:
+                    if alias.name == "*":
+                        continue
+                    exported = alias.asname or alias.name
+                    if (
+                        import_binding_counts[exported] != 1
+                        or exported in rebound_names
+                        or (relative, exported) in exports
+                    ):
+                        continue
+                    resolution = resolve_python_import(
+                        root,
+                        relative,
+                        statement,
+                        alias.name,
+                        module_paths,
+                    )
+                    if resolution and (reexport := exports.get((resolution.path, alias.name))):
+                        exports[(relative, exported)] = reexport
+                        changed = True
     return exports
 
 
@@ -29463,7 +29495,7 @@ def scan_repository(
         registry_paths,
         module_paths,
     )
-    provider_reexports = build_python_provider_reexports(root, registry_paths)
+    provider_reexports = build_python_provider_reexports(root, registry_paths, module_paths)
     literal_http_exports = build_python_literal_http_exports(root, registry_paths)
     network_helper_summaries = build_python_network_helper_summaries(
         root,

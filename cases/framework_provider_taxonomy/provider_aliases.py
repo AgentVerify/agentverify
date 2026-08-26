@@ -1,0 +1,5 @@
+from local_providers import ProjectAnthropicModel as TransitiveReboundAnthropicModel
+from local_providers import ProjectOpenAIChatModel as TransitiveOpenAIChatModel
+
+
+TransitiveReboundAnthropicModel = factory

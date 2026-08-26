@@ -43,9 +43,9 @@ catalog workflows.
 - Added `agentverify policy --export-trust-root` so teams can generate a schema-v1 local digest
   allowlist directly from composed policy inputs, with installed-wheel smoke coverage that exports
   and then requires the generated trust root.
-- Added exact one-hop local package reexport attribution for AgentScope/PydanticAI provider-wrapper
-  symbols, with local provider/model positives, a rebound negative, and regenerated IR truth-set
-  results now covering 1,452 labels.
+- Added exact local package reexport-chain attribution for AgentScope/PydanticAI provider-wrapper
+  symbols, with direct/transitive provider-model positives, rebound negatives, and regenerated IR
+  truth-set results now covering 1,455 labels.
 
 ## Current findings
 

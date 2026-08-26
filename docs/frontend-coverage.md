@@ -716,10 +716,10 @@ and `network-ssrf-policy` edge.
   unique non-exported same-file helpers when every direct call site agrees; other require shapes,
   exported/ambiguous helper graphs, and instance/method flows remain unresolved.
   AgentScope's exact public model reexports and direct PydanticAI provider/model/embedding modules
-  are supported. One-hop local package reexports of these exact provider-wrapper symbols are also
-  supported when the selected local module directly imports a known symbol and does not rebind the
-  exported alias. Wildcard imports, rebound aliases, transitive package reexports, and generic
-  same-named classes remain unresolved.
+  are supported. Selected local package reexport chains of these exact provider-wrapper symbols are
+  also supported when every hop imports a known symbol/proven alias and does not rebind the exported
+  alias. Wildcard imports, rebound aliases, wrapper factories, and generic same-named classes remain
+  unresolved.
   Literal call-model arguments inherit the proven provider, and selected Mistral-owned prefixes are
   recognized; third-party model names hosted by Groq or Ollama and indirect factories remain
   unresolved.
@@ -938,7 +938,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 714-label rule truth set and 1,452-label IR component/relationship set are curated regression
+The 714-label rule truth set and 1,455-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

@@ -1068,6 +1068,33 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         and item.attributes.get("resolution") == "exact-provider-sdk-import"
         for item in ir.components
     )
+    assert any(
+        item.kind == "provider"
+        and item.evidence.path == "provider_transitive_reexports.py"
+        and item.evidence.line == 6
+        and item.name == "OpenAI"
+        and item.attributes.get("call") == "TransitiveOpenAIChatModel"
+        and item.attributes.get("module") == "agentscope.model"
+        and item.attributes.get("imported_symbol") == "OpenAIChatModel"
+        and item.attributes.get("resolution") == "exact-provider-sdk-import"
+        for item in ir.components
+    )
+    assert any(
+        item.kind == "model"
+        and item.evidence.path == "provider_transitive_reexports.py"
+        and item.evidence.line == 6
+        and item.name == "gpt-4.1-mini"
+        and item.attributes.get("provider") == "OpenAI"
+        and item.attributes.get("resolution") == "exact-provider-sdk-import"
+        for item in ir.components
+    )
+    assert not any(
+        item.kind in {"provider", "model"}
+        and item.evidence.path == "provider_transitive_reexports.py"
+        and item.evidence.line == 7
+        and item.attributes.get("resolution") == "exact-provider-sdk-import"
+        for item in ir.components
+    )
 
 
 def test_python_dify_shell_layer_requires_default_off_runtime_composition() -> None:
