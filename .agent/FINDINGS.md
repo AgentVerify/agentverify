@@ -267,7 +267,13 @@
   `@openai/agents-extensions/sandbox/cloudflare` and wired into an exact `Runner` sandbox config.
   The scanner records `blaxel-cloud` and `cloudflare-workers` runtime controls and links
   `runner.run(agent, ...)` calls back to those controls; unknown Runner sandbox clients remain
-  unresolved. The public IR truth set now covers 1,768 passing labels.
+  unresolved. The public IR truth set then covered 1,768 passing labels.
+- Inline-created OpenAI Agents JS local sandbox sessions are now exact runtime evidence when the
+  session assignment immediately calls `.create(...)` on an unshadowed
+  `@openai/agents/sandbox/local` constructor, e.g. `await new UnixLocalSandboxClient(...).create(...)`.
+  The resulting session variable links later `run(..., { sandbox: { session } })` calls back to the
+  `sandbox-runtime` control. Unknown same-named constructors remain unresolved, and the public IR
+  truth set now covers 1,774 passing labels.
 - Source-release verification now treats packaged GitHub workflow examples as content contracts, not
   only required filenames. The sdist verifier checks that the benchmark workflow emits, validates,
   and uploads verifier JSON while staying read-only; the policy gate keeps its policy/summary/expiry

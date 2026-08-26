@@ -3966,6 +3966,7 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         ("positive.ts", 39, "ts:positive.ts#control:client@39"),
         ("positive.ts", 49, "ts:positive.ts#control:conditionalClient@49"),
         ("positive.ts", 76, "ts:positive.ts#control:extensionClient@76"),
+        ("positive.ts", 87, "ts:positive.ts#control:inlineCreatedSession@87"),
     }
     assert controls[
         ("positive.ts", 12, "ts:positive.ts#control:directClient@12")
@@ -3984,6 +3985,9 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     ]
     extension = controls[
         ("positive.ts", 76, "ts:positive.ts#control:extensionClient@76")
+    ]
+    inline_created = controls[
+        ("positive.ts", 87, "ts:positive.ts#control:inlineCreatedSession@87")
     ]
     assert conditional.attributes["sandbox_runtime"] == "conditional-local"
     assert conditional.attributes["sandbox_runtime_options"] == ["docker-local", "unix-local"]
@@ -4021,6 +4025,9 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     assert extension.attributes["constructor"] == "BlaxelSandboxClient"
     assert extension.attributes["resolution"] == "exact-openai-sandbox-extension-import"
     assert extension.attributes["sandbox_runtime"] == "blaxel-cloud"
+    assert inline_created.attributes["constructor"] == "DockerSandboxClient"
+    assert inline_created.attributes["resolution"] == "exact-openai-sandbox-local-import"
+    assert inline_created.attributes["sandbox_runtime"] == "docker-local"
 
     runtime_edges = {
         (
@@ -4085,6 +4092,13 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
             85,
             "ts:positive.ts#control:extensionClient@76",
             "runner-client",
+        ),
+        (
+            "Inline Created Session Sandbox",
+            "positive.ts",
+            94,
+            "ts:positive.ts#control:inlineCreatedSession@87",
+            "session",
         ),
     }
     assert not any(

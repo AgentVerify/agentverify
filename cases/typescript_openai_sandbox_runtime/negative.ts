@@ -57,3 +57,11 @@ const unknownRunner = new Runner({
   sandbox: { client: unknownClient },
 });
 await unknownRunner.run(unknownRunnerAgent, 'inspect the workspace');
+
+const inlineUnknownSession = await new UnknownSandboxClient().create(manifest);
+const inlineUnknownAgent = new SandboxAgent({
+  name: 'Unknown Inline Created Session Sandbox',
+});
+await run(inlineUnknownAgent, 'inspect the workspace', {
+  sandbox: { session: inlineUnknownSession },
+});

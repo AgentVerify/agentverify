@@ -12449,6 +12449,10 @@ TS_SANDBOX_SESSION_ASSIGNMENT = re.compile(
     r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:await\s+)?"
     r"([A-Za-z_$][\w$]*)\.create\s*\("
 )
+TS_SANDBOX_INLINE_SESSION_ASSIGNMENT = re.compile(
+    r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:await\s+)?"
+    r"new\s+([A-Za-z_$][\w$]*)\s*\("
+)
 TS_SANDBOX_CLIENT_CAST_ASSIGNMENT = re.compile(
     r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*"
     r"([A-Za-z_$][\w$]*)\s+as\b"
@@ -16407,6 +16411,33 @@ def typescript_graph(
         client_name = match.group(2)
         if client_binding := sandbox_client_bindings.get(client_name):
             sandbox_session_bindings[session_name] = client_binding
+    for match in TS_SANDBOX_INLINE_SESSION_ASSIGNMENT.finditer(code):
+        session_name = match.group(1)
+        local_constructor = match.group(2)
+        constructor = sandbox_local_imports.get(local_constructor)
+        if (
+            constructor not in TS_OPENAI_SANDBOX_LOCAL_CLIENTS
+            or typescript_import_binding_is_shadowed(text, local_constructor)
+        ):
+            continue
+        opening = code.find("(", match.start(), match.end())
+        constructor_end = typescript_balanced_end(code, opening, "(", ")")
+        if constructor_end is None or not re.match(r"\s*\.create\s*\(", code[constructor_end:]):
+            continue
+        start_line = line_at(text, match.start())
+        runtime_control = add_typescript_openai_sandbox_runtime_control(
+            ir,
+            relative=relative,
+            lines=lines,
+            line=start_line,
+            constructor=constructor,
+            local_constructor=local_constructor,
+            symbol_identity=f"{session_name}@{start_line}",
+        )
+        sandbox_session_bindings[session_name] = runtime_control
+        sandbox_runtime_edge_analysis[runtime_control[1]] = (
+            "typescript-openai-sandbox-local-client"
+        )
     for match in TS_SANDBOX_RESUME_SESSION_ASSIGNMENT.finditer(code):
         session_name = match.group(1)
         client_name = match.group(2)

@@ -83,3 +83,14 @@ const runner = new Runner({
   sandbox: { client: extensionClient },
 });
 await runner.run(runnerAgent, 'inspect the cloud sandbox');
+
+const inlineCreatedSession = await new DockerSandboxClient({
+  image: 'python:3.14-slim',
+}).create(manifest);
+const inlineCreatedAgent = new SandboxAgent({
+  name: 'Inline Created Session Sandbox',
+  capabilities: [shell()],
+});
+await run(inlineCreatedAgent, 'inspect the workspace', {
+  sandbox: { session: inlineCreatedSession },
+});

@@ -314,6 +314,14 @@ catalog workflows.
   `configured-by` edges. Unknown Runner sandbox clients remain unresolved. Local fixtures plus
   Blaxel/Cloudflare OpenAI Agents JS examples raised regenerated public IR truth-set results to
   1,768 passing labels.
+- Extended exact local OpenAI Agents JS sandbox session binding to inline
+  `await new DockerSandboxClient(...).create(...)` and
+  `await new UnixLocalSandboxClient(...).create(...)` assignments when the constructor import is
+  exact and unshadowed. The created session now links `run(..., { sandbox: { session } })` back to a
+  `sandbox-runtime` control, while unknown inline constructors remain unresolved. Local
+  positive/negative fixtures plus OpenAI Agents JS
+  `examples/docs/sandbox-agents/conversation-identity.ts` raised regenerated public IR truth-set
+  results to 1,774 passing labels.
 - Strengthened source-release verification for the packaged GitHub workflow examples:
   `verify_sdist()` now checks benchmark verifier output/schema/upload, policy-gate
   permission/policy/summary/expiry arguments, and code-scanning SARIF permission/upload contracts.
