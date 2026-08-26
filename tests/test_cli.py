@@ -391,6 +391,16 @@ def test_cli_prints_bundled_policy_schema(capsys) -> None:
     assert schema["$defs"]["gate"]["properties"]["rules"]["items"]["enum"] == list(RULE_CATALOG)
 
 
+def test_cli_prints_bundled_policy_summary_schema(capsys) -> None:
+    assert cli.main(["schema", "policy-summary"]) == 0
+
+    schema = __import__("json").loads(capsys.readouterr().out)
+    Draft202012Validator.check_schema(schema)
+    assert schema["title"] == "AgentVerify Policy Summary 1"
+    assert schema["properties"]["policy_format"]["const"] == "AgentVerify Policy Summary"
+    assert schema["$defs"]["trust"]["properties"]["signature_verified"]["const"] is False
+
+
 def test_example_policies_gate_every_high_approval_review() -> None:
     expected = sorted(
         rule_id
@@ -613,6 +623,12 @@ def test_cli_policy_explains_composed_policy_without_scanning(
         ),
         "signature_verified": False,
     }
+    schema = __import__("json").loads(
+        (ROOT / "src/agentverify/schemas/agentverify-policy-summary-v1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    Draft202012Validator(schema).validate(payload)
 
 
 def test_cli_policy_writes_text_explanation(tmp_path: Path, capsys) -> None:

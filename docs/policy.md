@@ -12,6 +12,7 @@ results and allowing a gate to pass silently.
 ```console
 agentverify schema report --output agentverify-report.schema.json
 agentverify schema policy --output agentverify-policy.schema.json
+agentverify schema policy-summary --output agentverify-policy-summary.schema.json
 agentverify schema rules --output agentverify-rules.schema.json
 agentverify policy repository-policy.json
 agentverify policy repository-policy.json --format json
@@ -105,7 +106,8 @@ and the source/digest that contributed each gate. These hashes make the evaluate
 auditable; they are not signatures and do not prove who authored a policy.
 Use `agentverify policy PATH` to validate and explain this composition without scanning a repository.
 The JSON form includes the same sources, gate provenance, and a trust block that explicitly records
-`signature_verified: false` until explicit trust-root support exists.
+`signature_verified: false` until explicit trust-root support exists. Use
+`agentverify schema policy-summary` to validate that machine-readable summary.
 
 ## Baselines and partial scans
 

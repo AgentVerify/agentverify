@@ -28,6 +28,7 @@ catalog workflows.
 - Added a benchmark result verifier that validates result JSON and recomputes label/manifest digests.
 - Added `agentverify policy PATH` to validate/explain composed policy provenance without scanning a
   repository and without treating content hashes as signatures.
+- Added a bundled policy-summary schema and included it in wheel/content and installed CLI checks.
 
 ## Current findings
 
@@ -45,5 +46,5 @@ catalog workflows.
 ## Next action
 
 Continue toward the highest-value local P1/P2 work: explicit signed policy trust-root design,
-additional installed-artifact checks, benchmark-result release documentation, or additional
+benchmark-result release documentation, additional installed-artifact checks, or additional
 real-world framework coverage.

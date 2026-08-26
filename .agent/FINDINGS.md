@@ -24,6 +24,8 @@
   result files from drifting away from their declared inputs.
 - Policy composition can now be inspected without scanning. The policy summary intentionally reports
   `signature_verified: false`, preserving the distinction between content integrity and author trust.
+- Policy summary JSON is now schema-backed and included in distribution verification, matching the
+  existing report/BOM/policy/rules machine-contract pattern.
 
 ## Hypotheses
 
