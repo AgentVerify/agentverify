@@ -60,6 +60,10 @@ Schema v101 extends exact-module attribution to PydanticAI's dedicated Anthropic
 Cloud, AWS Bedrock, xAI, and DeepSeek provider surfaces. Dedicated model and embedding constructors
 may contribute a positional literal model ID; provider constructors may not. The generic
 OpenAI-compatible model/provider modules remain unresolved without endpoint/provider provenance.
+One-hop selected local package reexports of exact AgentScope and PydanticAI provider-wrapper symbols
+now preserve attribution when the reexport module directly imports a known symbol and does not rebind
+the exported alias. Wildcard imports, rebound aliases, transitive package reexports, and generic
+same-named classes remain unresolved.
 Schema v102 adds Agno's exact public and direct OpenAI, Google, Anthropic, Azure OpenAI, and Groq
 model modules. Literal model identity may come from Agno's `id=` field or first positional argument;
 the proof is invalidated by import rebinding or a custom OpenAI/Groq `base_url` and is not generalized

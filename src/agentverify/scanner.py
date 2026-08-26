@@ -6009,6 +6009,7 @@ class PythonVisitor(ast.NodeVisitor):
         imported_tool_promoted_exports: set[tuple[str, str]],
         imported_agent_factory_target_paths: dict[str, str],
         registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
+        provider_reexports: dict[tuple[str, str], tuple[str, str, str]],
         network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
         path_segment_sanitizer_bindings: dict[str, PythonPathSegmentSanitizerSummary],
         registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
@@ -6116,6 +6117,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.imported_tool_promoted_exports = imported_tool_promoted_exports
         self.imported_agent_factory_target_paths = imported_agent_factory_target_paths
         self.registry_class_exports = registry_class_exports
+        self.provider_reexports = provider_reexports
         self.network_helper_summaries = network_helper_summaries
         self.registered_tool_functions = registered_tool_functions
         self.registry_function_tools = registry_function_tools
@@ -6621,6 +6623,18 @@ class PythonVisitor(ast.NodeVisitor):
                     module,
                     alias.name,
                 )
+            elif alias.name != "*":
+                resolution = resolve_python_import(
+                    self.root,
+                    self.path,
+                    node,
+                    alias.name,
+                    self.module_paths,
+                )
+                if resolution and (
+                    reexport := self.provider_reexports.get((resolution.path, alias.name))
+                ):
+                    self.provider_call_bindings[local_name] = reexport
             if (
                 self.function_depth == 0
                 and not self.class_stack
@@ -9524,6 +9538,7 @@ def scan_python(
     agent_factory_class_exports: dict[tuple[str, str], PythonAgentFactoryClassTarget],
     mcp_server_subclass_exports: dict[tuple[str, str], PythonMCPServerSubclassTarget],
     registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
+    provider_reexports: dict[tuple[str, str], tuple[str, str, str]],
     network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
     path_segment_sanitizer_summaries: dict[tuple[str, str], PythonPathSegmentSanitizerSummary],
     registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
@@ -12041,6 +12056,7 @@ def scan_python(
         imported_tool_promoted_exports=set(imported_tool_export_references),
         imported_agent_factory_target_paths=imported_agent_factory_target_paths,
         registry_class_exports=registry_class_exports,
+        provider_reexports=provider_reexports,
         network_helper_summaries=network_helper_summaries,
         path_segment_sanitizer_bindings=path_segment_sanitizer_bindings,
         registered_tool_functions=registered_tool_functions,
@@ -16348,6 +16364,88 @@ def build_python_decorated_tool_exports(
         for key, definitions in exports.items()
         if len(definitions) == 1
     }
+
+
+def build_python_provider_reexports(
+    root: Path,
+    paths: list[Path],
+) -> dict[tuple[str, str], tuple[str, str, str]]:
+    """Index direct local reexports of exact provider wrapper symbols."""
+    exports: dict[tuple[str, str], tuple[str, str, str]] = {}
+    for path in paths:
+        if (
+            path.is_symlink()
+            or not path.is_file()
+            or path.suffix.lower() != ".py"
+            or set(path.relative_to(root).parts) & SKIP_DIRECTORIES
+        ):
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            tree = ast.parse(
+                path.read_text(encoding="utf-8-sig", errors="ignore"),
+                filename=path.relative_to(root).as_posix(),
+            )
+        except (OSError, SyntaxError):
+            continue
+        relative = path.relative_to(root).as_posix()
+        imported_bindings = {
+            alias.asname or alias.name
+            for statement in tree.body
+            if isinstance(statement, ast.ImportFrom)
+            for alias in statement.names
+        }
+        import_binding_counts = Counter(
+            alias.asname or alias.name
+            for statement in tree.body
+            if isinstance(statement, ast.ImportFrom)
+            for alias in statement.names
+        )
+        mutations: set[str] = set()
+
+        def collect_mutations(candidate: ast.AST, target_mutations: set[str]) -> None:
+            if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                target_mutations.add(candidate.name)
+                return
+            if isinstance(candidate, (ast.Import, ast.ImportFrom, ast.Lambda)):
+                return
+            if isinstance(candidate, ast.ExceptHandler) and candidate.name:
+                target_mutations.add(candidate.name)
+            if isinstance(candidate, (ast.MatchAs, ast.MatchStar)) and candidate.name:
+                target_mutations.add(candidate.name)
+            if isinstance(candidate, ast.MatchMapping) and candidate.rest:
+                target_mutations.add(candidate.rest)
+            if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
+                target_mutations.add(candidate.id)
+            for child in ast.iter_child_nodes(candidate):
+                collect_mutations(child, target_mutations)
+
+        for statement in tree.body:
+            if not isinstance(statement, (ast.Import, ast.ImportFrom)):
+                collect_mutations(statement, mutations)
+        rebound_names = imported_bindings & mutations
+        for statement in tree.body:
+            if not isinstance(statement, ast.ImportFrom) or not statement.module:
+                continue
+            module = statement.module
+            if module not in PYTHON_PROVIDER_SDK_CALLS:
+                continue
+            for alias in statement.names:
+                if alias.name == "*":
+                    continue
+                exported = alias.asname or alias.name
+                if (
+                    alias.name not in PYTHON_PROVIDER_SDK_CALLS[module]
+                    or import_binding_counts[exported] != 1
+                    or exported in rebound_names
+                ):
+                    continue
+                provider = PYTHON_PROVIDER_SYMBOL_PROVIDERS.get(
+                    (module, alias.name), PYTHON_PROVIDER_MODULES[module]
+                )
+                exports[(relative, exported)] = (provider, module, alias.name)
+    return exports
 
 
 def build_python_literal_imported_tool_references(
@@ -29365,6 +29463,7 @@ def scan_repository(
         registry_paths,
         module_paths,
     )
+    provider_reexports = build_python_provider_reexports(root, registry_paths)
     literal_http_exports = build_python_literal_http_exports(root, registry_paths)
     network_helper_summaries = build_python_network_helper_summaries(
         root,
@@ -29456,6 +29555,7 @@ def scan_repository(
                 agent_factory_class_exports,
                 mcp_server_subclass_exports,
                 registry_class_exports,
+                provider_reexports,
                 network_helper_summaries,
                 path_segment_sanitizer_summaries,
                 registered_tool_functions,

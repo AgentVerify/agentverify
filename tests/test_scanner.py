@@ -1015,6 +1015,59 @@ def test_framework_and_provider_taxonomy_requires_exact_import_or_service_proof(
         and item.attributes.get("resolution") == "exact-provider-sdk-import"
         for item in ir.components
     )
+    local_reexport_providers = {
+        (
+            item.evidence.line,
+            item.name,
+            item.attributes.get("call"),
+            item.attributes.get("module"),
+            item.attributes.get("imported_symbol"),
+        )
+        for item in ir.components
+        if item.kind == "provider"
+        and item.evidence.path == "provider_local_reexports.py"
+        and item.attributes.get("resolution") == "exact-provider-sdk-import"
+    }
+    assert local_reexport_providers == {
+        (
+            9,
+            "Anthropic",
+            "ProjectAnthropicProvider",
+            "pydantic_ai.providers.anthropic",
+            "AnthropicProvider",
+        ),
+        (
+            10,
+            "Anthropic",
+            "ProjectAnthropicModel",
+            "pydantic_ai.models.anthropic",
+            "AnthropicModel",
+        ),
+        (
+            11,
+            "OpenAI",
+            "ProjectOpenAIChatModel",
+            "agentscope.model",
+            "OpenAIChatModel",
+        ),
+    }
+    assert {
+        (item.evidence.line, item.name, item.attributes["provider"])
+        for item in ir.components
+        if item.kind == "model"
+        and item.evidence.path == "provider_local_reexports.py"
+        and item.attributes.get("resolution") == "exact-provider-sdk-import"
+    } == {
+        (10, "claude-sonnet-4-5", "Anthropic"),
+        (11, "gpt-4.1", "OpenAI"),
+    }
+    assert not any(
+        item.kind in {"provider", "model"}
+        and item.evidence.path == "provider_local_reexports.py"
+        and item.evidence.line == 12
+        and item.attributes.get("resolution") == "exact-provider-sdk-import"
+        for item in ir.components
+    )
 
 
 def test_python_dify_shell_layer_requires_default_off_runtime_composition() -> None:

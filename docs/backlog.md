@@ -126,8 +126,11 @@ Schema v121 resolves a separate six-source MCP path in the same host without cha
 coverage. It contributes one Agent, MCP adapter, invocation capability, configured-server boundary,
 setting, classification control, and five relationships. Twenty-four focused labels add 22 exact
 component/edge positives plus incomplete-composition negatives.
-Next generalize additional selected package reexports without trusting generic `Client` names or
-framework-adjacent packages.
+Provider-wrapper attribution now follows one-hop selected local package reexports when the reexport
+is a direct, unrebound import of an exact known AgentScope or PydanticAI provider-wrapper symbol.
+Three IR labels pin the positive provider/model cases plus a rebound negative. Next generalize
+additional selected package reexports without trusting generic `Client` names or framework-adjacent
+packages.
 
 ## P0 — module-qualified symbols and graph identities
 
@@ -522,7 +525,7 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 714 pinned positive/negative locations, with 1,449 separately
+The curated regression set has reached 714 pinned positive/negative locations, with 1,452 separately
 scored IR component/relationship labels. Schema-v123 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
