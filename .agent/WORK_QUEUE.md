@@ -8,7 +8,6 @@
 
 ## P1
 
-- Add a documented/schema-backed contract for benchmark result JSON outputs.
 - Extend package/distribution checks beyond runtime schemas to examples and CLI entrypoint smoke
   tests in installed artifacts.
 - Expand selected real-world framework coverage where current docs record unresolved package

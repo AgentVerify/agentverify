@@ -15,6 +15,8 @@
   a trusted maintainer without committing them publicly.
 - Benchmark result JSON now records evaluation kind, label scope, input digests, sealed status, and
   claim scope, reducing the risk that public regression metrics are reused as holdout claims.
+- Benchmark result JSON has a checked-in schema that validates both public rule/IR result files and
+  synthetic sealed-holdout outputs.
 
 ## Hypotheses
 

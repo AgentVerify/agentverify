@@ -1497,7 +1497,8 @@ benchmark milestone is a separately sampled, externally reviewed holdout set wit
 coverage; its labels must not drive rule implementation before evaluation.
 [`holdout-design.md`](holdout-design.md) defines the sampling, labeling, leakage-control, and
 reporting process for that future benchmark. Evaluator outputs now include benchmark metadata that
-distinguishes public regression runs from sealed-holdout runs and records label/manifest hashes.
+distinguishes public regression runs from sealed-holdout runs and records label/manifest hashes; the
+shape is validated by [`benchmark-results-v1.schema.json`](benchmark-results-v1.schema.json).
 
 ## Agent IR control-edge checks
 

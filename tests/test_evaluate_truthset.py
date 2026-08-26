@@ -4,6 +4,8 @@ import importlib.util
 import json
 from pathlib import Path
 
+from jsonschema import Draft202012Validator
+
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location(
     "evaluate_truthset", ROOT / "scripts/evaluate_truthset.py"
@@ -12,6 +14,14 @@ assert SPEC is not None
 evaluate_truthset = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
 SPEC.loader.exec_module(evaluate_truthset)
+
+
+def benchmark_results_schema() -> dict:
+    schema = json.loads(
+        (ROOT / "benchmarks/benchmark-results-v1.schema.json").read_text(encoding="utf-8")
+    )
+    Draft202012Validator.check_schema(schema)
+    return schema
 
 
 def test_evaluator_marks_public_regression_metrics(tmp_path: Path, capsys) -> None:
@@ -55,6 +65,7 @@ def test_evaluator_marks_public_regression_metrics(tmp_path: Path, capsys) -> No
     assert result["passed"] == 1
     assert result["metrics"]["AV-EXEC001"]["tp"] == 1
     assert "public-regression" in capsys.readouterr().out
+    Draft202012Validator(benchmark_results_schema()).validate(result)
 
 
 def test_evaluator_marks_sealed_holdout_metadata(tmp_path: Path) -> None:
@@ -109,3 +120,19 @@ def test_evaluator_marks_sealed_holdout_metadata(tmp_path: Path) -> None:
     assert result["benchmark"]["sealed"] is True
     assert result["benchmark"]["manifest_source"] == str(manifest)
     assert len(result["benchmark"]["manifest_sha256"]) == 64
+    Draft202012Validator(benchmark_results_schema()).validate(result)
+
+
+def test_checked_in_benchmark_results_match_schema() -> None:
+    schema = benchmark_results_schema()
+
+    for path, expected_scope in (
+        (ROOT / "benchmarks/truthset-results.json", "reporting-rules"),
+        (ROOT / "benchmarks/ir-truthset-results.json", "agent-ir"),
+    ):
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        Draft202012Validator(schema).validate(payload)
+        assert payload["benchmark"]["evaluation_kind"] == "public-regression"
+        assert payload["benchmark"]["label_scope"] == expected_scope
+        assert payload["benchmark"]["sealed"] is False
+        assert payload["labels"] == payload["passed"]

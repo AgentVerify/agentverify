@@ -118,6 +118,7 @@ the sample manifest and label shape:
 
 The evaluator accepts an alternate label file through `--labels` plus
 `--evaluation-kind sealed-holdout` and `--manifest`, so CI or a trusted maintainer can supply a sealed
-label path without checking private labels into the public regression corpus. Result JSON records the
-evaluation kind, label scope, input hashes, manifest hash, and claim scope. The actual sealed labels
-should wait for approved storage and reviewer workflow.
+label path without checking private labels into the public regression corpus. Result JSON conforms to
+[`benchmark-results-v1.schema.json`](benchmark-results-v1.schema.json) and records the evaluation
+kind, label scope, input hashes, manifest hash, and claim scope. The actual sealed labels should wait
+for approved storage and reviewer workflow.
