@@ -4100,10 +4100,22 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
             "ts:positive.ts#control:inlineCreatedSession@87",
             "session",
         ),
+        (
+            "Helper Runtime Sandbox",
+            "positive.ts",
+            106,
+            "ts:positive.ts#control:client@39",
+            "session-shorthand",
+        ),
     }
     assert not any(
         component.evidence.path == "negative.ts" and component.kind == "control"
         for component in ir.components
+    )
+    assert not any(
+        relationship.evidence.path == "negative.ts"
+        and relationship.target_name == "sandbox-runtime"
+        for relationship in ir.relationships
     )
     assert not ir.findings
 

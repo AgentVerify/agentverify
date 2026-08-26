@@ -16513,6 +16513,7 @@ def typescript_graph(
         match.group(1): match.group(2) for match in TS_AGENT_TOOL_ASSIGNMENT.finditer(code)
     }
     local_agents: dict[str, tuple[str, str]] = {}
+    helper_return_agents: dict[str, tuple[str, str, int]] = {}
     agent_bodies: list[tuple[re.Match[str], int, str, str, str, str]] = []
     for match, constructor, constructor_local, variable_name, binding_kind in agent_matches:
         start_line = line_at(text, match.start())
@@ -16544,7 +16545,23 @@ def typescript_graph(
         ir.add_component(Component("agent", agent_name, ev, attributes, agent_id))
         if binding_kind == "assignment" and agent_assignment_counts[variable_name] == 1:
             local_agents[variable_name] = (agent_name, agent_id)
+        elif binding_kind == "return-new":
+            helper_return_agents[variable_name] = (agent_name, agent_id, match.start())
         agent_bodies.append((match, opening + 1, body, agent_name, agent_id, constructor))
+    for variable_name, initializer, initializer_offset in typescript_variable_initializers(text):
+        if variable_name in local_agents:
+            continue
+        call = typescript_call_parts(typescript_code_mask(initializer).strip())
+        if call is None:
+            continue
+        helper_name, _, _ = call
+        helper_agent = helper_return_agents.get(helper_name)
+        if helper_agent is None:
+            continue
+        agent_name, agent_id, helper_offset = helper_agent
+        if initializer_offset <= helper_offset:
+            continue
+        local_agents[variable_name] = (agent_name, agent_id)
 
     for match, body_offset, body, agent_name, agent_id, agent_constructor in agent_bodies:
         ev = Evidence(

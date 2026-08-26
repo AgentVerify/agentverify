@@ -312,10 +312,10 @@ nonliteral object values, dynamic bracket keys, and dynamic bracket member write
 `@ai-sdk/azure` factory/configured embedding labels plus real Activepieces Azure embedding provider,
 Azure reexport, exact single-symbol star-barrel, and exact top-level CommonJS-destructuring boundary
 labels, followed by exact TypeScript OpenAI Agents sandbox inventory labels, raise the public IR
-truth set to 1,774 passing labels without broadening provider identity inference or conflating
+truth set to 1,781 passing labels without broadening provider identity inference or conflating
 SDK-sandbox shell/filesystem/memory/skill-loading capability reachability, or exact/conditional SDK
-sandbox runtime selection, including inline-created session bindings and extension Runner backends,
-with host-local execution risk.
+sandbox runtime selection, including inline-created session bindings, helper-returned agent session
+edges, and extension Runner backends, with host-local execution risk.
 
 Schema v105 adds the immutable direct CommonJS default-export form for the OpenAI and Anthropic
 packages. Two GPT Pilot templates contribute four production constructors, bringing TypeScript to

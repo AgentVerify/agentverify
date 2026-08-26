@@ -180,7 +180,9 @@ ternary is accepted only when each branch contains exactly one unshadowed sandbo
 constructor, producing a `conditional-local` runtime control with Docker/Unix options. Near-package
 constructors, rebound constructor/capability/client aliases, aggregate capability helpers,
 half-known ternaries, unknown inline session constructors, and nested, indirect, or ambiguous helper
-forms remain unresolved. A local
+forms remain unresolved. Variables initialized by direct calls to already-proven same-file
+`return new SandboxAgent(...)` helpers can use the helper's agent identity for sandbox session edges;
+generic helper factories remain unresolved. A local
 `client as ...` alias can carry the same proven runtime into a `.resume(...)` session assignment, but
 unknown resumable aliases remain disconnected. Exact
 `@openai/agents-extensions/sandbox/blaxel` and

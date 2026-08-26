@@ -94,3 +94,15 @@ const inlineCreatedAgent = new SandboxAgent({
 await run(inlineCreatedAgent, 'inspect the workspace', {
   sandbox: { session: inlineCreatedSession },
 });
+
+function buildHelperRuntimeAgent() {
+  return new SandboxAgent({
+    name: 'Helper Runtime Sandbox',
+    capabilities: [shell()],
+  });
+}
+
+const helperRuntimeAgent = buildHelperRuntimeAgent();
+await run(helperRuntimeAgent, 'inspect the helper workspace', {
+  sandbox: { session },
+});

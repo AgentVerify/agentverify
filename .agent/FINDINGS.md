@@ -273,7 +273,13 @@
   `@openai/agents/sandbox/local` constructor, e.g. `await new UnixLocalSandboxClient(...).create(...)`.
   The resulting session variable links later `run(..., { sandbox: { session } })` calls back to the
   `sandbox-runtime` control. Unknown same-named constructors remain unresolved, and the public IR
-  truth set now covers 1,774 passing labels.
+  truth set then covered 1,774 passing labels.
+- Variables initialized by direct calls to already-proven same-file
+  `return new SandboxAgent(...)` helpers now inherit the helper agent identity for sandbox session
+  edge attribution. This recovers shared-session OpenAI Agents JS examples where helper-returned
+  agents are stored in local variables before `run(..., { sandbox: { session } })`; generic or
+  unknown helper factories remain unresolved. The public IR truth set now covers 1,781 passing
+  labels.
 - Source-release verification now treats packaged GitHub workflow examples as content contracts, not
   only required filenames. The sdist verifier checks that the benchmark workflow emits, validates,
   and uploads verifier JSON while staying read-only; the policy gate keeps its policy/summary/expiry

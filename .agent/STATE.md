@@ -322,6 +322,12 @@ catalog workflows.
   positive/negative fixtures plus OpenAI Agents JS
   `examples/docs/sandbox-agents/conversation-identity.ts` raised regenerated public IR truth-set
   results to 1,774 passing labels.
+- Extended sandbox runtime edge attribution through variables initialized by direct calls to
+  already-proven same-file `return new SandboxAgent(...)` helpers. This recovers shared-session
+  `run(..., { sandbox: { session } })` edges in OpenAI Agents JS
+  `examples/sandbox/shared-session-workdirs.ts` and
+  `examples/sandbox/memory-multi-agent-multiturn.ts`, while unknown helper factories remain
+  unresolved. Regenerated public IR truth-set results now cover 1,781 passing labels.
 - Strengthened source-release verification for the packaged GitHub workflow examples:
   `verify_sdist()` now checks benchmark verifier output/schema/upload, policy-gate
   permission/policy/summary/expiry arguments, and code-scanning SARIF permission/upload contracts.

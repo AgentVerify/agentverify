@@ -65,3 +65,14 @@ const inlineUnknownAgent = new SandboxAgent({
 await run(inlineUnknownAgent, 'inspect the workspace', {
   sandbox: { session: inlineUnknownSession },
 });
+
+function buildUnknownHelperAgent() {
+  return new UnknownSandboxAgent({
+    name: 'Unknown Helper Runtime Sandbox',
+  });
+}
+
+const unknownHelperRuntimeAgent = buildUnknownHelperAgent();
+await run(unknownHelperRuntimeAgent, 'inspect the helper workspace', {
+  sandbox: { session: inlineUnknownSession },
+});
