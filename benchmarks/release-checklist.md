@@ -46,7 +46,9 @@ Before publishing public regression numbers:
    notes. The source-checkout script `uv run python scripts/verify_benchmark_results.py` delegates
    to the same verifier.
 3. Confirm CI also ran the installed CLI benchmark gate on the checked-in result files for the
-   release commit.
+   release commit. Source-release verification also checks that the packaged
+   `examples/github-benchmark-verify.yml` generates, schema-validates, and uploads
+   `agentverify-benchmark-verification.json`.
 4. Validate the checked public holdout templates with `agentverify holdout validate --manifest
    benchmarks/holdout-manifest.template.json --labels benchmarks/holdout-labels.template.json`.
 5. Export `agentverify schema benchmark-result`, `agentverify schema benchmark-verification`,

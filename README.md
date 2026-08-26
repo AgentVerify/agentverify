@@ -215,7 +215,9 @@ The default CI workflow runs the installed CLI benchmark gate against the checke
 regression results and validates the verifier JSON against the bundled benchmark-verification schema,
 so benchmark-result drift fails during pull requests before release packaging. The verifier artifact
 also carries per-result `failed` counts and mismatch summaries so release tooling can distinguish
-scanner false positives/negatives from stale source anchors or expected snippets.
+scanner false positives/negatives from stale source anchors or expected snippets. Source-distribution
+verification keeps the copyable benchmark workflow tied to that contract by checking that it emits,
+validates, and uploads `agentverify-benchmark-verification.json`.
 For editor or custom CI integrations, `agentverify contracts --sample-root examples/safe_agent`
 exports the report schema, rules schema, current rules catalog, and optional sample report into a
 local artifact directory with a schema-backed digest manifest. `agentverify contracts --verify-dir`

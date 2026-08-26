@@ -33,6 +33,7 @@ SIGNED_POLICY_SPEC.loader.exec_module(verify_signed_policy_example)
 
 REQUIRED_SCHEMA_FILES = verify_distribution.REQUIRED_SCHEMA_FILES
 REQUIRED_BENCHMARK_RESULT_FILES = verify_distribution.REQUIRED_BENCHMARK_RESULT_FILES
+REQUIRED_BENCHMARK_WORKFLOW_FILE = verify_distribution.REQUIRED_BENCHMARK_WORKFLOW_FILE
 REQUIRED_SOURCE_FILES = verify_distribution.REQUIRED_SOURCE_FILES
 REQUIRED_ENTRY_POINTS = verify_distribution.REQUIRED_ENTRY_POINTS
 REQUIRED_RUNTIME_DEPENDENCIES = verify_distribution.REQUIRED_RUNTIME_DEPENDENCIES
@@ -65,10 +66,22 @@ def write_wheel(
             archive.writestr("agentverify-0.1.0.dist-info/METADATA", dependencies)
 
 
-def write_sdist(path: Path, names: set[str], *, root: str = "agentverify-0.1.0") -> None:
+def write_sdist(
+    path: Path,
+    names: set[str],
+    *,
+    root: str = "agentverify-0.1.0",
+    file_contents: dict[str, str] | None = None,
+) -> None:
+    file_contents = file_contents or {}
     with tarfile.open(path, "w:gz") as archive:
         for name in sorted(names):
-            content = b"{}\n" if name.endswith(".json") else b"placeholder\n"
+            if name in file_contents:
+                content = file_contents[name].encode("utf-8")
+            elif name == REQUIRED_BENCHMARK_WORKFLOW_FILE:
+                content = GITHUB_BENCHMARK_VERIFY.read_bytes()
+            else:
+                content = b"{}\n" if name.endswith(".json") else b"placeholder\n"
             info = tarfile.TarInfo(f"{root}/{name}")
             info.size = len(content)
             archive.addfile(info, io.BytesIO(content))
@@ -112,6 +125,8 @@ def test_distribution_verifier_accepts_required_source_artifacts(tmp_path: Path)
     assert payload["required_benchmark_result_files"] == len(REQUIRED_BENCHMARK_RESULT_FILES)
     assert payload["missing_benchmark_result_files"] == []
     assert payload["present_benchmark_result_files"] == sorted(REQUIRED_BENCHMARK_RESULT_FILES)
+    assert payload["missing_benchmark_workflow_fragments"] == []
+    assert payload["forbidden_benchmark_workflow_fragments"] == []
 
 
 def test_ci_workflow_verifies_checked_in_benchmark_results() -> None:
@@ -296,6 +311,24 @@ def test_distribution_verifier_rejects_missing_benchmark_result_artifact(
     )
 
     with pytest.raises(RuntimeError, match="missing_benchmark_result_files"):
+        verify_sdist(sdist)
+
+
+def test_distribution_verifier_rejects_benchmark_workflow_without_verifier_upload(
+    tmp_path: Path,
+) -> None:
+    sdist = tmp_path / "agentverify-0.1.0.tar.gz"
+    workflow = GITHUB_BENCHMARK_VERIFY.read_text(encoding="utf-8").replace(
+        "actions/upload-artifact@v5",
+        "actions/download-artifact@v5",
+    )
+    write_sdist(
+        sdist,
+        set(REQUIRED_SOURCE_FILES) | set(REQUIRED_BENCHMARK_RESULT_FILES),
+        file_contents={REQUIRED_BENCHMARK_WORKFLOW_FILE: workflow},
+    )
+
+    with pytest.raises(RuntimeError, match="actions/upload-artifact@v5"):
         verify_sdist(sdist)
 
 

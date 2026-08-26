@@ -20,6 +20,22 @@ REQUIRED_BENCHMARK_RESULT_FILES = frozenset(
         "benchmarks/truthset-results.json",
     }
 )
+REQUIRED_BENCHMARK_WORKFLOW_FILE = "examples/github-benchmark-verify.yml"
+REQUIRED_BENCHMARK_WORKFLOW_FRAGMENTS = frozenset(
+    {
+        "permissions:\n  contents: read",
+        "agentverify benchmark verify",
+        "--require-evaluation-kind public-regression",
+        "--require-all-passed",
+        "--output agentverify-benchmark-verification.json",
+        "agentverify schema benchmark-verification",
+        "Draft202012Validator(schema).validate(payload)",
+        "actions/upload-artifact@v5",
+        "name: agentverify-benchmark-verification",
+        "path: agentverify-benchmark-verification.json",
+    }
+)
+FORBIDDEN_BENCHMARK_WORKFLOW_FRAGMENTS = frozenset({"security-events: write"})
 REQUIRED_SOURCE_FILES = frozenset(
     {
         ".pre-commit-hooks.yaml",
@@ -104,6 +120,24 @@ def sdist_source_names(path: Path) -> set[str]:
         else:
             names.add(raw_name)
     return names
+
+
+def sdist_file_text(path: Path, target_name: str) -> str:
+    with tarfile.open(path, "r:gz") as archive:
+        for member in archive.getmembers():
+            if not member.isfile():
+                continue
+            parts = PurePosixPath(member.name).parts
+            normalized = (
+                PurePosixPath(*parts[1:]).as_posix() if len(parts) > 1 else member.name
+            )
+            if normalized != target_name:
+                continue
+            extracted = archive.extractfile(member)
+            if extracted is None:
+                return ""
+            return extracted.read().decode("utf-8", errors="replace")
+    return ""
 
 
 def entry_points(path: Path) -> dict[str, str]:
@@ -576,6 +610,17 @@ def verify_sdist(path: Path) -> dict[str, object]:
     present = sorted(required & names)
     missing_benchmark_results = sorted(REQUIRED_BENCHMARK_RESULT_FILES - names)
     present_benchmark_results = sorted(REQUIRED_BENCHMARK_RESULT_FILES & names)
+    benchmark_workflow = sdist_file_text(path, REQUIRED_BENCHMARK_WORKFLOW_FILE)
+    missing_benchmark_workflow_fragments = sorted(
+        fragment
+        for fragment in REQUIRED_BENCHMARK_WORKFLOW_FRAGMENTS
+        if fragment not in benchmark_workflow
+    )
+    forbidden_benchmark_workflow_fragments = sorted(
+        fragment
+        for fragment in FORBIDDEN_BENCHMARK_WORKFLOW_FRAGMENTS
+        if fragment in benchmark_workflow
+    )
     payload: dict[str, object] = {
         "sdist": str(path),
         "required_source_files": len(required),
@@ -584,9 +629,15 @@ def verify_sdist(path: Path) -> dict[str, object]:
         "required_benchmark_result_files": len(REQUIRED_BENCHMARK_RESULT_FILES),
         "present_benchmark_result_files": present_benchmark_results,
         "missing_benchmark_result_files": missing_benchmark_results,
-        "passed": not missing,
+        "missing_benchmark_workflow_fragments": missing_benchmark_workflow_fragments,
+        "forbidden_benchmark_workflow_fragments": forbidden_benchmark_workflow_fragments,
+        "passed": not (
+            missing
+            or missing_benchmark_workflow_fragments
+            or forbidden_benchmark_workflow_fragments
+        ),
     }
-    if missing:
+    if not payload["passed"]:
         raise RuntimeError(json.dumps(payload, indent=2))
     return payload
 
