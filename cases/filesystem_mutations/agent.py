@@ -190,3 +190,20 @@ def chained_alias_rebound_target(source: str, destination: str) -> None:
     selected_copy = copy_fn
     selected_copy = wrapper
     selected_copy(source, destination)
+
+
+@tool
+def deeper_chained_copy_alias(source: str, destination: str) -> None:
+    copy_fn = shutil.copy2
+    selected_copy = copy_fn
+    final_copy = selected_copy
+    final_copy(source, destination)
+
+
+@tool
+def deeper_chained_alias_rebound_middle(source: str, destination: str) -> None:
+    copy_fn = shutil.copy2
+    selected_copy = copy_fn
+    selected_copy = wrapper
+    final_copy = selected_copy
+    final_copy(source, destination)

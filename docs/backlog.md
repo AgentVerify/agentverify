@@ -332,13 +332,13 @@ sink justifies them.
 Python filesystem inventory now models canonical and import-aliased `os`/`shutil` create, copy,
 move, replace, and delete calls, using the destination rather than the source for two-path APIs.
 Statement-ordered local callable aliases now cover direct assignments, conditional expressions, and
-compatible branch-local `copy`/`copy2` choices. A bounded alias-of-alias hop is now accepted only
-when the source name is already proven in the same function; calls before source assignment,
-rebound alias targets, conditionally rebound wrappers, and incompatible operation choices remain
-negative. Proven `Path.rename`/`Path.replace`
+compatible branch-local `copy`/`copy2` choices. Statement-ordered local alias chains are accepted
+only while each hop copies an already proven compatible callable in the same function; calls before
+source assignment, rebound alias targets, conditionally rebound wrappers, and incompatible operation
+choices remain negative. Proven `Path.rename`/`Path.replace`
 receivers now cover explicit constructors, exact Path annotations, and single immutable derived
-locals while rejecting conditional, reassigned, and shadowed bindings. Next resolve deeper chained
-callable aliases and imported filesystem wrappers without matching arbitrary same-named methods.
+locals while rejecting conditional, reassigned, and shadowed bindings. Next resolve imported
+filesystem wrappers without matching arbitrary same-named methods.
 Constructor-only MCP wrapper fields, pure accessors, and unchanged parameters captured by
 returned/registered callbacks now produce fixed-binding edges. Mutable fields, rebound parameters,
 and same-operation retry closures remain unresolved. Same-class methods and immutable
@@ -550,7 +550,7 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 717 pinned positive/negative locations, with 1,557 separately
+The curated regression set has reached 719 pinned positive/negative locations, with 1,559 separately
 scored IR component/relationship labels. Schema-v123 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule

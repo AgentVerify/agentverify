@@ -991,7 +991,7 @@ Two default-scope clients qualify: the Microsoft tutorial and FastMCP CLI both a
 do not show the target URL. The TypeScript SDK host is the negative control: it displays the full URL,
 rejects unsafe non-HTTPS/non-loopback destinations, and asks before proceeding. The rule matrix is 4
 TP, 3 TN, 0 FP, and 0 FN; seven additional positive IR labels pin full versus missing disclosure.
-All 717 cross-rule labels pass (327 positives and 390 negatives).
+All 719 cross-rule labels pass (328 positives and 391 negatives).
 
 During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
 to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
@@ -1490,14 +1490,14 @@ and surfacing failed writes through metrics or alerts.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 717 exact labels across all 24 enabled rules: 327 positives and 390
+`benchmarks/truthset.json` contains 719 exact labels across all 24 enabled rules: 328 positives and 391
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
 Compose/Kubernetes/Docker SDK settings, host credential bind near misses, and exact/prompt-only MCP
-package launchers. All 717 currently pass;
+package launchers. All 719 currently pass;
 each rule's seed precision and recall are 1.0. Negative labels must retain either an observed Agent IR
 component anchor or verified source text at the exact pinned line, preventing a missing or drifting
 location from passing silently.
@@ -1654,11 +1654,11 @@ Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,557 IR labels pass (1,136 positives and 421 negatives):
+negatives. All 1,559 IR labels pass (1,137 positives and 422 negatives):
 393 component-taxonomy positives/152 negatives, three approval positives/four negatives,
 six approval-callback positives/two negatives,
 nine audit/action-record positives/four negatives, five import positives/three negatives, three
-contextual network-import positives, 13 filesystem-mutation positives/nine negatives,
+contextual network-import positives, 14 filesystem-mutation positives/ten negatives,
 three imported-literal-origin positives/seven negatives,
 four import-shadow positives/one negative, eight block-dominance positives/three negatives, 20
 Agent-helper-return positives/ten negatives, seven imported-Agent-factory proof labels,

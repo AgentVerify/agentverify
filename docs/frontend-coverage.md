@@ -864,10 +864,10 @@ and `network-ssrf-policy` edge.
   create a control edge but do not suppress `AV-FS001` until their narrow scope is proven.
 - Python filesystem mutation resolution covers direct module calls, top-level import aliases, and
   statement-ordered direct/conditional local callable aliases with compatible branch merging.
-  One statement-ordered local alias-of-alias hop is supported when the source name is already a
-  proven compatible filesystem callable in the same function. Deeper alias chains, aliases assigned
-  before their source is proven, rebound alias targets, and imported wrapper helpers remain
-  unresolved. `Path.rename`/`replace`
+  Statement-ordered local alias chains are supported while every hop copies an already proven
+  compatible filesystem callable in the same function. Aliases assigned before their source is
+  proven, rebound alias targets, incompatible operation families, and imported wrapper helpers
+  remain unresolved. `Path.rename`/`replace`
   require explicit or immutable receiver proof; conditional, reassigned, union-typed, and helper-
   returned receivers remain unresolved rather than matching string/container methods by name.
   Arbitrary attribute `.open()` calls are deliberately excluded unless the receiver is proven to be
@@ -954,7 +954,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 717-label rule truth set and 1,557-label IR component/relationship set are curated regression
+The 719-label rule truth set and 1,559-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

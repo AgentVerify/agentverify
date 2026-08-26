@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-26T15:59:18.788451+00:00",
+  "generated_at": "2026-08-26T16:14:27.511200+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "reporting-rules",
     "labels_source": "benchmarks/truthset.json",
-    "labels_sha256": "39d4bc66ab1525179557ab5fca84db9574fff49781b7aa71a64d5282e04383d0",
+    "labels_sha256": "5c47674bdd0fe912da8bc668c0d81f0f1540073993fd4a08847b8f5a662f9eea",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 717,
-  "passed": 717,
+  "labels": 719,
+  "passed": 719,
   "metrics": {
     "AV-A2A001": {
       "tp": 4,
@@ -125,9 +125,9 @@
       "recall": 1.0
     },
     "AV-FS001": {
-      "tp": 61,
+      "tp": 62,
       "fp": 0,
-      "tn": 48,
+      "tn": 49,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -2935,6 +2935,24 @@
     },
     {
       "id": "filesystem-python-chained-alias-rebound-target-negative",
+      "rule_id": "AV-FS001",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-deeper-chained-callable-alias-positive",
+      "rule_id": "AV-FS001",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "filesystem-python-deeper-chained-alias-rebound-middle-negative",
       "rule_id": "AV-FS001",
       "expected": false,
       "observed": false,

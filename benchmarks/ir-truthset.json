@@ -1855,6 +1855,37 @@
       }
     },
     {
+      "id": "python-filesystem-deeper-chained-callable-alias-local",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-FILESYSTEM-MUTATION",
+      "path": "agent.py",
+      "line": 200,
+      "expected": true,
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "deeper_chained_copy_alias",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
+      "id": "python-filesystem-deeper-chained-alias-rebound-middle-local-negative",
+      "target": {"kind": "local", "path": "cases/filesystem_mutations"},
+      "check_id": "IR-PY-FILESYSTEM-MUTATION",
+      "path": "agent.py",
+      "line": 209,
+      "expected": false,
+      "source_contains": "final_copy(source, destination)",
+      "relationship": {
+        "source_kind": "tool",
+        "source_name": "deeper_chained_alias_rebound_middle",
+        "relation": "uses",
+        "target_kind": "capability",
+        "target_name": "filesystem"
+      }
+    },
+    {
       "id": "python-filesystem-guarded-path-rename-path-boundary-local",
       "target": {"kind": "local", "path": "cases/filesystem_mutations"},
       "check_id": "IR-PY-PATH-BOUNDARY",
