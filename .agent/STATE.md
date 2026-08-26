@@ -202,6 +202,9 @@ catalog workflows.
   manifest/label setup files directly against the bundled schemas, with text/JSON output, fail-closed
   exit code 2 on malformed inputs, README/checklist guidance, tests, and installed-wheel smoke
   coverage.
+- Wired the default CI workflow and copyable GitHub benchmark verification workflow to run
+  `agentverify holdout validate` on the checked public setup templates, with regression tests so the
+  benchmark release recipe keeps validating setup files as well as result files.
 
 ## Current findings
 
@@ -261,6 +264,9 @@ catalog workflows.
 - Holdout setup validation is now an installed CLI behavior: `agentverify holdout validate` validates
   manifest and/or labels files with the bundled schemas and reports per-file schema/parse/read errors
   without claiming sealed benchmark success or trust authenticity.
+- Benchmark release workflows should validate setup artifacts and result artifacts separately:
+  `agentverify holdout validate` catches manifest/label shape drift, while `agentverify benchmark
+  verify` checks generated result JSON, digests, outcomes, and claim-boundary gates.
 - Python registered-class network propagation now accepts exact `module_alias.ClassName()` calls only
   when `module_alias` resolves to one local imported module and is unrebound in the method; locally
   shadowed module aliases, mutable fields, duplicate classes, and rebound constructors remain

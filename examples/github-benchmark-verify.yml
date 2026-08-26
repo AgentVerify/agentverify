@@ -26,6 +26,11 @@ jobs:
           --require-evaluation-kind public-regression
           --require-all-passed
           --output agentverify-benchmark-verification.json
+      - name: Validate holdout setup templates
+        run: >
+          agentverify holdout validate
+          --manifest benchmarks/holdout-manifest.template.json
+          --labels benchmarks/holdout-labels.template.json
       - name: Validate verifier JSON
         run: |
           agentverify schema benchmark-verification --output agentverify-benchmark-verification.schema.json

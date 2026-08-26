@@ -120,6 +120,10 @@ def test_ci_workflow_verifies_checked_in_benchmark_results() -> None:
         "agentverify benchmark verify --require-evaluation-kind public-regression "
         "--require-all-passed"
     ) in workflow
+    assert (
+        "agentverify holdout validate --manifest benchmarks/holdout-manifest.template.json "
+        "--labels benchmarks/holdout-labels.template.json"
+    ) in workflow
 
 
 def test_ci_workflow_verifies_ephemeral_signed_policy_example() -> None:
@@ -177,6 +181,9 @@ def test_github_benchmark_verify_example_is_read_only_and_exports_verifier_json(
     assert "--require-evaluation-kind public-regression" in workflow
     assert "--require-all-passed" in workflow
     assert "--output agentverify-benchmark-verification.json" in workflow
+    assert "agentverify holdout validate" in workflow
+    assert "--manifest benchmarks/holdout-manifest.template.json" in workflow
+    assert "--labels benchmarks/holdout-labels.template.json" in workflow
     assert "agentverify schema benchmark-verification" in workflow
     assert "Draft202012Validator(schema).validate(payload)" in workflow
     assert "actions/upload-artifact@v5" in workflow

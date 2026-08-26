@@ -23,6 +23,7 @@ jobs:
       - run: pytest -q
       - run: ruff check src tests scripts
       - run: agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed
+      - run: agentverify holdout validate --manifest benchmarks/holdout-manifest.template.json --labels benchmarks/holdout-labels.template.json
       - run: python scripts/verify_signed_policy_example.py
       - run: agentverify scan examples/safe_agent --fail-on high
       - run: agentverify scan cases/python_dangerous --format sarif --output /tmp/agentverify.sarif
