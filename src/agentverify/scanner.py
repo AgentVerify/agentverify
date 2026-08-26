@@ -1812,6 +1812,16 @@ class PythonImportResolution:
 
 
 @dataclass(frozen=True)
+class PythonProviderFactorySummary:
+    provider: str
+    module: str
+    imported_symbol: str
+    model_value: str | None = None
+    model_parameter: str | None = None
+    model_parameter_position: int | None = None
+
+
+@dataclass(frozen=True)
 class PythonToolRoleReference:
     registration_path: str
     registration_line: int
@@ -6011,6 +6021,7 @@ class PythonVisitor(ast.NodeVisitor):
         registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
         provider_reexports: dict[tuple[str, str], tuple[str, str, str]],
         provider_star_reexports: dict[str, dict[str, tuple[str, str, str]]],
+        provider_factory_summaries: dict[tuple[str, str], PythonProviderFactorySummary],
         network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
         path_segment_sanitizer_bindings: dict[str, PythonPathSegmentSanitizerSummary],
         registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
@@ -6095,6 +6106,11 @@ class PythonVisitor(ast.NodeVisitor):
         self.observed_mcp_server_ids = set(observed_mcp_server_ids)
         self.provider_call_bindings: dict[str, tuple[str, str, str]] = {}
         self.provider_module_bindings: dict[str, tuple[str, str]] = {}
+        self.provider_factory_bindings: dict[str, PythonProviderFactorySummary] = {
+            name: summary
+            for (path, name), summary in provider_factory_summaries.items()
+            if path == self.path
+        }
         self.network_helper_bindings: dict[str, PythonNetworkHelperSummary] = {}
         self.module_paths = module_paths
         self.local_symbol_ids = local_symbol_ids
@@ -6120,6 +6136,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.registry_class_exports = registry_class_exports
         self.provider_reexports = provider_reexports
         self.provider_star_reexports = provider_star_reexports
+        self.provider_factory_summaries = provider_factory_summaries
         self.network_helper_summaries = network_helper_summaries
         self.registered_tool_functions = registered_tool_functions
         self.registry_function_tools = registry_function_tools
@@ -6599,6 +6616,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.mcp_server_constructors.pop(name, None)
         self.provider_call_bindings.pop(name, None)
         self.provider_module_bindings.pop(name, None)
+        self.provider_factory_bindings.pop(name, None)
 
     def visit_Import(self, node: ast.Import) -> None:
         for alias in node.names:
@@ -6652,6 +6670,10 @@ class PythonVisitor(ast.NodeVisitor):
                     reexport := self.provider_reexports.get((resolution.path, alias.name))
                 ):
                     self.provider_call_bindings[local_name] = reexport
+                if resolution and (
+                    summary := self.provider_factory_summaries.get((resolution.path, alias.name))
+                ):
+                    self.provider_factory_bindings[local_name] = summary
             if (
                 self.function_depth == 0
                 and not self.class_stack
@@ -6972,6 +6994,7 @@ class PythonVisitor(ast.NodeVisitor):
         previous_mcp_server_constructors = self.mcp_server_constructors
         previous_provider_call_bindings = self.provider_call_bindings
         previous_provider_module_bindings = self.provider_module_bindings
+        previous_provider_factory_bindings = self.provider_factory_bindings
         self.imported_symbol_paths = {
             name: target
             for name, target in self.imported_symbol_paths.items()
@@ -7000,6 +7023,11 @@ class PythonVisitor(ast.NodeVisitor):
         self.provider_module_bindings = {
             name: binding
             for name, binding in self.provider_module_bindings.items()
+            if name not in local_bindings
+        }
+        self.provider_factory_bindings = {
+            name: binding
+            for name, binding in self.provider_factory_bindings.items()
             if name not in local_bindings
         }
         previous_urllib_openers = self.urllib_openers
@@ -7379,6 +7407,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.mcp_server_constructors = previous_mcp_server_constructors
         self.provider_call_bindings = previous_provider_call_bindings
         self.provider_module_bindings = previous_provider_module_bindings
+        self.provider_factory_bindings = previous_provider_factory_bindings
         self.urllib_openers = previous_urllib_openers
         self.urllib_request_constructors = previous_urllib_request_constructors
 
@@ -8659,6 +8688,62 @@ class PythonVisitor(ast.NodeVisitor):
                         },
                     )
                 )
+        if factory_summary := self.provider_factory_bindings.get(call_name):
+            self.ir.add_component(
+                Component(
+                    "provider",
+                    factory_summary.provider,
+                    self.ev(node),
+                    {
+                        "call": call_name,
+                        "call_kind": "wrapper-factory",
+                        "module": factory_summary.module,
+                        "imported_symbol": factory_summary.imported_symbol,
+                        "resolution": "exact-provider-wrapper-factory",
+                    },
+                )
+            )
+            model_value = factory_summary.model_value
+            if model_value is None and factory_summary.model_parameter is not None:
+                model_value = next(
+                    (
+                        keyword.value.value
+                        for keyword in node.keywords
+                        if keyword.arg == factory_summary.model_parameter
+                        and isinstance(keyword.value, ast.Constant)
+                        and isinstance(keyword.value.value, str)
+                    ),
+                    None,
+                )
+                if (
+                    model_value is None
+                    and factory_summary.model_parameter_position is not None
+                    and len(node.args) > factory_summary.model_parameter_position
+                    and isinstance(
+                        node.args[factory_summary.model_parameter_position],
+                        ast.Constant,
+                    )
+                    and isinstance(
+                        node.args[factory_summary.model_parameter_position].value,
+                        str,
+                    )
+                ):
+                    model_value = node.args[factory_summary.model_parameter_position].value
+            if model_value is not None:
+                self.ir.add_component(
+                    Component(
+                        "model",
+                        model_value,
+                        self.ev(node),
+                        {
+                            "provider": factory_summary.provider,
+                            "configured_on": call_name,
+                            "call_kind": "wrapper-factory",
+                            "module": factory_summary.module,
+                            "resolution": "exact-provider-wrapper-factory",
+                        },
+                    )
+                )
         constructor_provider = next(
             (
                 provider
@@ -9557,6 +9642,7 @@ def scan_python(
     registry_class_exports: dict[tuple[str, str], RegistryClassTarget],
     provider_reexports: dict[tuple[str, str], tuple[str, str, str]],
     provider_star_reexports: dict[str, dict[str, tuple[str, str, str]]],
+    provider_factory_summaries: dict[tuple[str, str], PythonProviderFactorySummary],
     network_helper_summaries: dict[tuple[str, str], PythonNetworkHelperSummary],
     path_segment_sanitizer_summaries: dict[tuple[str, str], PythonPathSegmentSanitizerSummary],
     registered_tool_functions: dict[tuple[str, str], PythonToolRegistration],
@@ -12076,6 +12162,7 @@ def scan_python(
         registry_class_exports=registry_class_exports,
         provider_reexports=provider_reexports,
         provider_star_reexports=provider_star_reexports,
+        provider_factory_summaries=provider_factory_summaries,
         network_helper_summaries=network_helper_summaries,
         path_segment_sanitizer_bindings=path_segment_sanitizer_bindings,
         registered_tool_functions=registered_tool_functions,
@@ -16546,6 +16633,191 @@ def build_python_provider_reexports(
                         changed = True
     star_exports = {path: star_visible_exports(path) for path in module_all_exports}
     return exports, star_exports
+
+
+def build_python_provider_factory_summaries(
+    root: Path,
+    paths: list[Path],
+    module_paths: dict[str, str],
+    provider_reexports: dict[tuple[str, str], tuple[str, str, str]],
+    provider_star_reexports: dict[str, dict[str, tuple[str, str, str]]],
+) -> dict[tuple[str, str], PythonProviderFactorySummary]:
+    """Index simple local factories that return exact provider wrapper constructors."""
+    summaries: dict[tuple[str, str], PythonProviderFactorySummary] = {}
+
+    def collect_mutations(candidate: ast.AST, target_mutations: set[str]) -> None:
+        if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            target_mutations.add(candidate.name)
+            return
+        if isinstance(candidate, (ast.Import, ast.ImportFrom, ast.Lambda)):
+            return
+        if isinstance(candidate, ast.ExceptHandler) and candidate.name:
+            target_mutations.add(candidate.name)
+        if isinstance(candidate, (ast.MatchAs, ast.MatchStar)) and candidate.name:
+            target_mutations.add(candidate.name)
+        if isinstance(candidate, ast.MatchMapping) and candidate.rest:
+            target_mutations.add(candidate.rest)
+        if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
+            target_mutations.add(candidate.id)
+        for child in ast.iter_child_nodes(candidate):
+            collect_mutations(child, target_mutations)
+
+    def collect_function_returns(candidate: ast.AST, returns: list[ast.Return]) -> None:
+        if isinstance(candidate, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
+            return
+        if isinstance(candidate, ast.Return):
+            returns.append(candidate)
+            return
+        for child in ast.iter_child_nodes(candidate):
+            collect_function_returns(child, returns)
+
+    for path in paths:
+        if (
+            path.is_symlink()
+            or not path.is_file()
+            or path.suffix.lower() != ".py"
+            or set(path.relative_to(root).parts) & SKIP_DIRECTORIES
+        ):
+            continue
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            tree = ast.parse(
+                path.read_text(encoding="utf-8-sig", errors="ignore"),
+                filename=path.relative_to(root).as_posix(),
+            )
+        except (OSError, SyntaxError):
+            continue
+        relative = path.relative_to(root).as_posix()
+        import_binding_counts = Counter(
+            alias.asname or alias.name
+            for statement in tree.body
+            if isinstance(statement, ast.ImportFrom)
+            for alias in statement.names
+            if alias.name != "*"
+        )
+        imported_bindings = set(import_binding_counts)
+        mutations: set[str] = set()
+        for statement in tree.body:
+            if not isinstance(statement, (ast.Import, ast.ImportFrom)):
+                collect_mutations(statement, mutations)
+        rebound_names = imported_bindings & mutations
+        provider_bindings: dict[str, tuple[str, str, str]] = {}
+        for statement in tree.body:
+            if not isinstance(statement, ast.ImportFrom) or not statement.module:
+                continue
+            module = statement.module
+            for alias in statement.names:
+                if alias.name == "*":
+                    resolution = resolve_python_import(
+                        root,
+                        relative,
+                        statement,
+                        alias.name,
+                        module_paths,
+                    )
+                    if not resolution:
+                        continue
+                    for exported, reexport in provider_star_reexports.get(
+                        resolution.path,
+                        {},
+                    ).items():
+                        if exported not in rebound_names:
+                            provider_bindings[exported] = reexport
+                    continue
+                exported = alias.asname or alias.name
+                if import_binding_counts[exported] != 1 or exported in rebound_names:
+                    continue
+                if (
+                    provider := PYTHON_PROVIDER_SYMBOL_PROVIDERS.get(
+                        (module, alias.name), PYTHON_PROVIDER_MODULES.get(module)
+                    )
+                ) and alias.name in PYTHON_PROVIDER_SDK_CALLS[module]:
+                    provider_bindings[exported] = (provider, module, alias.name)
+                    continue
+                resolution = resolve_python_import(
+                    root,
+                    relative,
+                    statement,
+                    alias.name,
+                    module_paths,
+                )
+                if resolution and (
+                    reexport := provider_reexports.get((resolution.path, alias.name))
+                ):
+                    provider_bindings[exported] = reexport
+        for statement in tree.body:
+            if not isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                continue
+            returns: list[ast.Return] = []
+            for body_statement in statement.body:
+                collect_function_returns(body_statement, returns)
+            if len(returns) != 1:
+                continue
+            returned = returns[0].value
+            if isinstance(returned, ast.Await):
+                returned = returned.value
+            if not isinstance(returned, ast.Call):
+                continue
+            call_name = dotted_name(returned.func)
+            root_name = call_name.split(".", 1)[0]
+            if root_name in python_function_local_bindings(statement):
+                continue
+            provider_binding = provider_bindings.get(call_name)
+            if not provider_binding:
+                continue
+            provider, module, imported_symbol = provider_binding
+            if (module, imported_symbol) in PYTHON_PROVIDER_CONFIGURABLE_ENDPOINT_CALLS and any(
+                keyword.arg == "base_url" for keyword in returned.keywords
+            ):
+                continue
+            parameter_positions = {
+                argument.arg: index for index, argument in enumerate(statement.args.args)
+            }
+            parameter_positions.update(
+                {
+                    argument.arg: None
+                    for argument in statement.args.kwonlyargs
+                    if argument.arg not in parameter_positions
+                }
+            )
+            model_keywords = {"model", "model_id", "model_name"}
+            if (module, imported_symbol) in PYTHON_PROVIDER_ID_MODEL_CALLS:
+                model_keywords.add("id")
+            model_value: str | None = None
+            model_parameter: str | None = None
+            model_parameter_position: int | None = None
+            for keyword in returned.keywords:
+                if keyword.arg not in model_keywords:
+                    continue
+                if isinstance(keyword.value, ast.Constant) and isinstance(keyword.value.value, str):
+                    model_value = keyword.value.value
+                    break
+                if isinstance(keyword.value, ast.Name) and keyword.value.id in parameter_positions:
+                    model_parameter = keyword.value.id
+                    model_parameter_position = parameter_positions[keyword.value.id]
+                    break
+            if (
+                model_value is None
+                and model_parameter is None
+                and (module, imported_symbol) in PYTHON_PROVIDER_POSITIONAL_MODEL_CALLS
+                and returned.args
+            ):
+                first_arg = returned.args[0]
+                if isinstance(first_arg, ast.Constant) and isinstance(first_arg.value, str):
+                    model_value = first_arg.value
+                elif isinstance(first_arg, ast.Name) and first_arg.id in parameter_positions:
+                    model_parameter = first_arg.id
+                    model_parameter_position = parameter_positions[first_arg.id]
+            summaries[(relative, statement.name)] = PythonProviderFactorySummary(
+                provider=provider,
+                module=module,
+                imported_symbol=imported_symbol,
+                model_value=model_value,
+                model_parameter=model_parameter,
+                model_parameter_position=model_parameter_position,
+            )
+    return summaries
 
 
 def build_python_literal_imported_tool_references(
@@ -29568,6 +29840,13 @@ def scan_repository(
         registry_paths,
         module_paths,
     )
+    provider_factory_summaries = build_python_provider_factory_summaries(
+        root,
+        registry_paths,
+        module_paths,
+        provider_reexports,
+        provider_star_reexports,
+    )
     literal_http_exports = build_python_literal_http_exports(root, registry_paths)
     network_helper_summaries = build_python_network_helper_summaries(
         root,
@@ -29661,6 +29940,7 @@ def scan_repository(
                 registry_class_exports,
                 provider_reexports,
                 provider_star_reexports,
+                provider_factory_summaries,
                 network_helper_summaries,
                 path_segment_sanitizer_summaries,
                 registered_tool_functions,

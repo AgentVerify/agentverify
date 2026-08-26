@@ -129,9 +129,11 @@ component/edge positives plus incomplete-composition negatives.
 Provider-wrapper attribution now follows selected local package reexport chains when every hop is an
 unrebound import of an exact known AgentScope/PydanticAI provider-wrapper symbol or a proven local
 alias. Star imports from those proven local modules respect literal `__all__` and non-underscore
-visibility. Nine IR labels pin direct/transitive/wildcard provider-model positives plus rebound and
-filtered negatives. Next generalize additional selected package reexports without trusting generic
-`Client` names or framework-adjacent packages.
+visibility. Simple imported local wrapper factories are supported when they have one return path to
+a proven provider-wrapper constructor and a literal/parameter model source. Seventeen IR labels pin
+direct/transitive/wildcard/factory provider-model positives plus rebound, filtered, and ambiguous
+negatives. Next generalize additional selected package reexports without trusting generic `Client`
+names or framework-adjacent packages.
 
 ## P0 — module-qualified symbols and graph identities
 
@@ -526,7 +528,7 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 714 pinned positive/negative locations, with 1,458 separately
+The curated regression set has reached 714 pinned positive/negative locations, with 1,466 separately
 scored IR component/relationship labels. Schema-v123 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule

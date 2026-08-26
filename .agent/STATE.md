@@ -45,7 +45,8 @@ catalog workflows.
   and then requires the generated trust root.
 - Added exact local package reexport-chain attribution for AgentScope/PydanticAI provider-wrapper
   symbols, including direct/transitive/wildcard provider-model positives, rebound and filtered
-  negatives, and regenerated IR truth-set results now covering 1,458 labels.
+  negatives, imported simple wrapper-factory positives with ambiguous/rebound negatives, and
+  regenerated IR truth-set results now covering 1,466 labels.
 - Extended distribution verification so release checks can require a source distribution containing
   README-linked examples, policy docs, benchmark contracts, and public truth sets.
 

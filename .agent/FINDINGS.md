@@ -46,8 +46,9 @@
   trust model.
 - Python provider-wrapper attribution now follows exact selected local package reexport chains for
   AgentScope/PydanticAI symbols when every alias hop is unrebound; star imports from proven local
-  reexport modules respect literal `__all__`/non-underscore visibility, while rebound, factory, and
-  generic same-named wrapper forms remain unresolved.
+  reexport modules respect literal `__all__`/non-underscore visibility; simple imported local wrapper
+  factories can carry literal/parameter model attribution when they have one proven return path,
+  while rebound, ambiguous, and generic same-named wrapper forms remain unresolved.
 
 ## Hypotheses
 
