@@ -106,6 +106,13 @@ const unknownExposedPortClient = new UnknownSandboxClient({
   exposedPorts: [3000],
 });
 
+declare const dynamicSnapshotBaseDir: string;
+const unknownSnapshotClient = new UnknownSandboxClient({
+  snapshot: {
+    type: 'local',
+    baseDir: '/tmp/agentverify-sandbox-snapshots',
+  },
+});
 const unknownGrantManifest = new UnknownManifest({
   entries: {
     'task.md': file({ content: 'untrusted' }),

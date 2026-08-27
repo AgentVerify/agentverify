@@ -288,7 +288,7 @@ remain withheld. Local regressions now pin nine positive object-map model labels
 negatives. Exact `@ai-sdk/azure` factory/configured embedding calls are now covered with a matching
 custom-endpoint spread negative and a real Activepieces Azure embedding provider label. Together with
 the expanded local-reexport, real Activepieces boundary, and TypeScript sandbox-helper labels, the
-public IR truth set now covers 1,819 labels.
+public IR truth set now covers 1,825 labels.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
 Agent→MCP-server identities. Import-proven literal stdio constructor calls are inventoried for any
@@ -378,6 +378,11 @@ contents are deliberately not copied into IR.
 Literal `root` Manifest workspace paths are recorded as `sandbox-workspace-root` controls for direct
 or earlier immutable module-level string bindings; dynamic roots and unknown Manifest constructors
 remain unresolved.
+
+Literal local sandbox `snapshot` options are recorded as `sandbox-state-persistence` controls when
+an exact `@openai/agents/sandbox/local` client provides `type: "local"` and a direct or earlier
+immutable module-level `baseDir`; unknown constructors and dynamic snapshot directories remain
+unresolved.
 Literal `sandbox.concurrencyLimits` runtime options are recorded as
 `sandbox-concurrency-limit` controls when every limit value is a direct integer literal and the same
 option object has an exact sandbox runtime client/session.
@@ -1028,7 +1033,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 719-label rule truth set and 1,819-label IR component/relationship set are curated regression
+The 719-label rule truth set and 1,825-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

@@ -3968,6 +3968,7 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         ("positive.ts", 76, "ts:positive.ts#control:extensionClient@76"),
         ("positive.ts", 87, "ts:positive.ts#control:inlineCreatedSession@87"),
         ("positive.ts", 150, "ts:positive.ts#control:exposedPortClient@150"),
+        ("positive.ts", 156, "ts:positive.ts#control:snapshotClient@156"),
     }
     assert controls[
         ("positive.ts", 12, "ts:positive.ts#control:directClient@12")
@@ -3992,6 +3993,9 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     ]
     exposed_port_runtime = controls[
         ("positive.ts", 150, "ts:positive.ts#control:exposedPortClient@150")
+    ]
+    snapshot_runtime = controls[
+        ("positive.ts", 156, "ts:positive.ts#control:snapshotClient@156")
     ]
     assert conditional.attributes["sandbox_runtime"] == "conditional-local"
     assert conditional.attributes["sandbox_runtime_options"] == ["docker-local", "unix-local"]
@@ -4034,6 +4038,7 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     assert inline_created.attributes["sandbox_runtime"] == "docker-local"
     assert exposed_port_runtime.attributes["constructor"] == "DockerSandboxClient"
     assert exposed_port_runtime.attributes["sandbox_runtime"] == "docker-local"
+    assert snapshot_runtime.attributes["sandbox_runtime"] == "unix-local"
 
     network_exposures = {
         (component.evidence.path, component.evidence.line, component.symbol_id): component
@@ -4101,15 +4106,15 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     assert set(concurrency_limits) == {
         (
             "positive.ts",
-            184,
-            "ts:positive.ts#control:limitedConcurrencyAgent.concurrencyLimits@184",
+            192,
+            "ts:positive.ts#control:limitedConcurrencyAgent.concurrencyLimits@192",
         ),
     }
     assert concurrency_limits[
         (
             "positive.ts",
-            184,
-            "ts:positive.ts#control:limitedConcurrencyAgent.concurrencyLimits@184",
+            192,
+            "ts:positive.ts#control:limitedConcurrencyAgent.concurrencyLimits@192",
         )
     ].attributes == {
         "analysis": "typescript-openai-sandbox-concurrency-limits",
@@ -4136,12 +4141,72 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     ] == [
         (
             "ts:positive.ts#control:directClient@12",
-            "ts:positive.ts#control:limitedConcurrencyAgent.concurrencyLimits@184",
+            "ts:positive.ts#control:limitedConcurrencyAgent.concurrencyLimits@192",
             "positive.ts",
-            184,
+            192,
             {
                 "analysis": "typescript-openai-sandbox-concurrency-limits",
                 "configuration": "sandbox.concurrencyLimits",
+            },
+        )
+    ]
+
+    snapshot_controls = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control" and component.name == "sandbox-state-persistence"
+    }
+    assert set(snapshot_controls) == {
+        (
+            "positive.ts",
+            157,
+            "ts:positive.ts#control:snapshotClient.snapshot@157",
+        ),
+    }
+    assert snapshot_controls[
+        (
+            "positive.ts",
+            157,
+            "ts:positive.ts#control:snapshotClient.snapshot@157",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-snapshot-storage",
+        "module": "@openai/agents/sandbox/local",
+        "constructor": "UnixLocalSandboxClient",
+        "imported_symbol": "UnixLocalSandboxClient",
+        "resolution": "exact-openai-sandbox-local-import",
+        "configuration": "snapshot",
+        "snapshot_type": "local",
+        "snapshot_type_resolution": "literal",
+        "base_dir": "/tmp/agentverify-sandbox-snapshots",
+        "base_dir_resolution": "immutable-module-literal-binding",
+        "state_persistence": "local-filesystem-snapshot",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": "production",
+    }
+    assert [
+        (
+            relationship.source_id,
+            relationship.target_id,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            relationship.attributes,
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "control"
+        and relationship.source_name == "sandbox-runtime"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "sandbox-state-persistence"
+    ] == [
+        (
+            "ts:positive.ts#control:snapshotClient@156",
+            "ts:positive.ts#control:snapshotClient.snapshot@157",
+            "positive.ts",
+            157,
+            {
+                "analysis": "typescript-openai-sandbox-snapshot-storage",
+                "configuration": "snapshot",
             },
         )
     ]
@@ -4154,15 +4219,15 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     assert set(path_grants) == {
         (
             "positive.ts",
-            166,
-            "ts:positive.ts#control:grantManifest.extraPathGrant0@166",
+            174,
+            "ts:positive.ts#control:grantManifest.extraPathGrant0@174",
         ),
     }
     grant = path_grants[
         (
             "positive.ts",
-            166,
-            "ts:positive.ts#control:grantManifest.extraPathGrant0@166",
+            174,
+            "ts:positive.ts#control:grantManifest.extraPathGrant0@174",
         )
     ]
     assert grant.attributes == {
@@ -4189,25 +4254,25 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     assert set(manifest_entries) == {
         (
             "positive.ts",
-            160,
-            "ts:positive.ts#control:grantManifest.entry0.task.md@160",
+            168,
+            "ts:positive.ts#control:grantManifest.entry0.task.md@168",
         ),
         (
             "positive.ts",
-            161,
-            "ts:positive.ts#control:grantManifest.entry1.repo@161",
+            169,
+            "ts:positive.ts#control:grantManifest.entry1.repo@169",
         ),
         (
             "positive.ts",
-            162,
-            "ts:positive.ts#control:grantManifest.entry2.localRepo@162",
+            170,
+            "ts:positive.ts#control:grantManifest.entry2.localRepo@170",
         ),
     }
     assert manifest_entries[
         (
             "positive.ts",
-            160,
-            "ts:positive.ts#control:grantManifest.entry0.task.md@160",
+            168,
+            "ts:positive.ts#control:grantManifest.entry0.task.md@168",
         )
     ].attributes == {
         "analysis": "typescript-openai-sandbox-manifest-entry",
@@ -4227,8 +4292,8 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     assert manifest_entries[
         (
             "positive.ts",
-            161,
-            "ts:positive.ts#control:grantManifest.entry1.repo@161",
+            169,
+            "ts:positive.ts#control:grantManifest.entry1.repo@169",
         )
     ].attributes == {
         "analysis": "typescript-openai-sandbox-manifest-entry",
@@ -4251,8 +4316,8 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     assert manifest_entries[
         (
             "positive.ts",
-            162,
-            "ts:positive.ts#control:grantManifest.entry2.localRepo@162",
+            170,
+            "ts:positive.ts#control:grantManifest.entry2.localRepo@170",
         )
     ].attributes == {
         "analysis": "typescript-openai-sandbox-manifest-entry",
@@ -4279,20 +4344,20 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     assert set(manifest_environment) == {
         (
             "positive.ts",
-            172,
-            "ts:positive.ts#control:grantManifest.environment.NODE_ENV@172",
+            180,
+            "ts:positive.ts#control:grantManifest.environment.NODE_ENV@180",
         ),
         (
             "positive.ts",
-            173,
-            "ts:positive.ts#control:grantManifest.environment.SANDBOX_TOKEN@173",
+            181,
+            "ts:positive.ts#control:grantManifest.environment.SANDBOX_TOKEN@181",
         ),
     }
     assert manifest_environment[
         (
             "positive.ts",
-            172,
-            "ts:positive.ts#control:grantManifest.environment.NODE_ENV@172",
+            180,
+            "ts:positive.ts#control:grantManifest.environment.NODE_ENV@180",
         )
     ].attributes == {
         "analysis": "typescript-openai-sandbox-manifest-environment",
@@ -4311,8 +4376,8 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     assert manifest_environment[
         (
             "positive.ts",
-            173,
-            "ts:positive.ts#control:grantManifest.environment.SANDBOX_TOKEN@173",
+            181,
+            "ts:positive.ts#control:grantManifest.environment.SANDBOX_TOKEN@181",
         )
     ].attributes == {
         "analysis": "typescript-openai-sandbox-manifest-environment",
@@ -4337,15 +4402,15 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     assert set(workspace_roots) == {
         (
             "positive.ts",
-            193,
-            "ts:positive.ts#control:rootedManifest.root@193",
+            201,
+            "ts:positive.ts#control:rootedManifest.root@201",
         ),
     }
     assert workspace_roots[
         (
             "positive.ts",
-            193,
-            "ts:positive.ts#control:rootedManifest.root@193",
+            201,
+            "ts:positive.ts#control:rootedManifest.root@201",
         )
     ].attributes == {
         "analysis": "typescript-openai-sandbox-manifest-root",
@@ -4460,13 +4525,13 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
             "ts:positive.ts#control:client@39",
             "session-shorthand",
         ),
-        (
-            "Limited Concurrency Sandbox",
-            "positive.ts",
-            181,
-            "ts:positive.ts#control:directClient@12",
-            "client",
-        ),
+            (
+                "Limited Concurrency Sandbox",
+                "positive.ts",
+                189,
+                "ts:positive.ts#control:directClient@12",
+                "client",
+            ),
     }
     as_tool_edges = [
         edge

@@ -325,6 +325,11 @@
   Manifest proof. Direct literal strings and earlier immutable module-level literal string bindings
   become `sandbox-workspace-root` controls; dynamic root expressions and unknown Manifest
   constructors remain unresolved. The public IR truth set now covers 1,819 passing labels.
+- Local sandbox `snapshot` options in OpenAI Agents JS are sandbox state-persistence evidence when
+  attached to exact unshadowed `@openai/agents/sandbox/local` clients. Literal `type: "local"` plus
+  direct or earlier immutable module-level literal `baseDir` become `sandbox-state-persistence`
+  controls linked from the corresponding `sandbox-runtime`; unknown constructors and dynamic
+  snapshot directories remain unresolved. The public IR truth set now covers 1,825 passing labels.
 - Source-release verification now treats packaged GitHub workflow examples as content contracts, not
   only required filenames. The sdist verifier checks that the benchmark workflow emits, validates,
   and uploads verifier JSON while staying read-only; the policy gate keeps its policy/summary/expiry

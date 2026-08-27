@@ -15955,6 +15955,140 @@ def add_typescript_openai_sandbox_exposed_ports_from_arguments(
     )
 
 
+def add_typescript_openai_sandbox_snapshot_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    constructor: str,
+    local_constructor: str,
+    snapshot_type: str,
+    snapshot_type_resolution: str,
+    base_dir: str,
+    base_dir_resolution: str,
+    symbol_identity: str,
+    runtime_control: tuple[str, str],
+) -> tuple[str, str]:
+    """Add an exact OpenAI Agents JS sandbox snapshot persistence control."""
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    attributes = {
+        "analysis": "typescript-openai-sandbox-snapshot-storage",
+        "module": "@openai/agents/sandbox/local",
+        "constructor": constructor,
+        "imported_symbol": constructor,
+        "resolution": "exact-openai-sandbox-local-import",
+        "configuration": "snapshot",
+        "snapshot_type": snapshot_type,
+        "snapshot_type_resolution": snapshot_type_resolution,
+        "base_dir": base_dir,
+        "base_dir_resolution": base_dir_resolution,
+        "state_persistence": "local-filesystem-snapshot",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": source_scope(relative),
+    }
+    if local_constructor != constructor:
+        attributes["local_constructor"] = local_constructor
+    ir.add_component(
+        Component(
+            "control",
+            "sandbox-state-persistence",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    runtime_name, runtime_id = runtime_control
+    ir.add_relationship(
+        Relationship(
+            "control",
+            runtime_name,
+            "configured-by",
+            "control",
+            "sandbox-state-persistence",
+            Evidence(relative, line, excerpt(lines, line)),
+            {
+                "analysis": "typescript-openai-sandbox-snapshot-storage",
+                "configuration": "snapshot",
+            },
+            source_id=runtime_id,
+            target_id=control_id,
+        )
+    )
+    return "sandbox-state-persistence", control_id
+
+
+def add_typescript_openai_sandbox_snapshot_from_arguments(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    text: str,
+    argument_body: str,
+    argument_body_offset: int,
+    constructor: str,
+    local_constructor: str,
+    symbol_base: str,
+    runtime_control: tuple[str, str] | None,
+    immutable_literal_bindings: dict[str, TypeScriptLiteralStringBinding],
+) -> tuple[str, str] | None:
+    """Add local snapshot persistence controls from literal sandbox-client arguments."""
+    if runtime_control is None:
+        return None
+    arguments = typescript_call_arguments(argument_body, argument_body_offset)
+    if len(arguments) != 1:
+        return None
+    config_expression, config_offset = arguments[0]
+    snapshot_property = typescript_object_property_expression_location(
+        config_expression,
+        "snapshot",
+        config_offset,
+    )
+    if snapshot_property is None:
+        return None
+    snapshot_expression, property_offset, snapshot_offset = snapshot_property
+    type_property = typescript_object_property_expression_location(
+        snapshot_expression,
+        "type",
+        snapshot_offset,
+    )
+    base_dir_property = typescript_object_property_expression_location(
+        snapshot_expression,
+        "baseDir",
+        snapshot_offset,
+    )
+    if type_property is None or base_dir_property is None:
+        return None
+    snapshot_type = typescript_static_string_value(
+        type_property[0],
+        expression_offset=type_property[2],
+        immutable_literal_bindings=immutable_literal_bindings,
+    )
+    base_dir = typescript_static_string_value(
+        base_dir_property[0],
+        expression_offset=base_dir_property[2],
+        immutable_literal_bindings=immutable_literal_bindings,
+    )
+    if snapshot_type is None or snapshot_type[0] != "local" or base_dir is None:
+        return None
+    line = line_at(text, property_offset)
+    return add_typescript_openai_sandbox_snapshot_control(
+        ir,
+        relative=relative,
+        lines=lines,
+        line=line,
+        constructor=constructor,
+        local_constructor=local_constructor,
+        snapshot_type=snapshot_type[0],
+        snapshot_type_resolution=snapshot_type[1],
+        base_dir=base_dir[0],
+        base_dir_resolution=base_dir[1],
+        symbol_identity=f"{symbol_base}.snapshot@{line}",
+        runtime_control=runtime_control,
+    )
+
+
 def typescript_literal_number_object_properties(expression: str) -> dict[str, int] | None:
     """Return a literal object of integer properties, or None when any value is dynamic."""
     properties: dict[str, int] = {}
@@ -16966,12 +17100,13 @@ def typescript_graph(
     )
     immutable_literal_bindings = (
         typescript_immutable_module_literal_string_bindings(text)
-        if "Manifest" in text
+        if ("Manifest" in text or "snapshot" in text)
         and (
             "extraPathGrants" in text
             or "environment" in text
             or "entries" in text
             or "root" in text
+            or "snapshot" in text
         )
         else {}
     )
@@ -17292,6 +17427,19 @@ def typescript_graph(
                     symbol_base=variable_name,
                     runtime_control=runtime_control,
                 )
+                add_typescript_openai_sandbox_snapshot_from_arguments(
+                    ir,
+                    relative=relative,
+                    lines=lines,
+                    text=text,
+                    argument_body=text[opening + 1 : end - 1],
+                    argument_body_offset=opening + 1,
+                    constructor=constructor,
+                    local_constructor=local_constructor,
+                    symbol_base=variable_name,
+                    runtime_control=runtime_control,
+                    immutable_literal_bindings=immutable_literal_bindings,
+                )
             sandbox_client_bindings[variable_name] = runtime_control
             sandbox_runtime_edge_analysis[runtime_control[1]] = (
                 "typescript-openai-sandbox-local-client"
@@ -17398,6 +17546,19 @@ def typescript_graph(
             local_constructor=local_constructor,
             symbol_base=session_name,
             runtime_control=runtime_control,
+        )
+        add_typescript_openai_sandbox_snapshot_from_arguments(
+            ir,
+            relative=relative,
+            lines=lines,
+            text=text,
+            argument_body=text[opening + 1 : constructor_end - 1],
+            argument_body_offset=opening + 1,
+            constructor=constructor,
+            local_constructor=local_constructor,
+            symbol_base=session_name,
+            runtime_control=runtime_control,
+            immutable_literal_bindings=immutable_literal_bindings,
         )
         sandbox_session_bindings[session_name] = runtime_control
         sandbox_runtime_edge_analysis[runtime_control[1]] = (
@@ -17848,6 +18009,19 @@ def typescript_graph(
                         symbol_base="sandbox-runtime",
                         runtime_control=runtime_control,
                     )
+                    add_typescript_openai_sandbox_snapshot_from_arguments(
+                        ir,
+                        relative=relative,
+                        lines=lines,
+                        text=text,
+                        argument_body=constructor_body,
+                        argument_body_offset=client_offset + constructor_body_offset,
+                        constructor=constructor,
+                        local_constructor=local_constructor,
+                        symbol_base="sandbox-runtime",
+                        runtime_control=runtime_control,
+                        immutable_literal_bindings=immutable_literal_bindings,
+                    )
                     binding = "inline-client"
         elif typescript_object_has_shorthand_property(sandbox_expression, "client"):
             runtime_control = sandbox_client_bindings.get("client")
@@ -17970,6 +18144,19 @@ def typescript_graph(
                                 local_constructor=local_constructor,
                                 symbol_base="sandbox-runtime",
                                 runtime_control=runtime_control,
+                            )
+                            add_typescript_openai_sandbox_snapshot_from_arguments(
+                                ir,
+                                relative=relative,
+                                lines=lines,
+                                text=text,
+                                argument_body=constructor_body,
+                                argument_body_offset=client_offset + constructor_body_offset,
+                                constructor=constructor,
+                                local_constructor=local_constructor,
+                                symbol_base="sandbox-runtime",
+                                runtime_control=runtime_control,
+                                immutable_literal_bindings=immutable_literal_bindings,
                             )
                             binding = "inline-client"
                 elif typescript_object_has_shorthand_property(sandbox_expression, "client"):

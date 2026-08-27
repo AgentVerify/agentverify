@@ -152,6 +152,14 @@ const exposedPortClient = new DockerSandboxClient({
   exposedPorts: [3000, 8080],
 });
 
+const snapshotBaseDir = '/tmp/agentverify-sandbox-snapshots';
+const snapshotClient = new UnixLocalSandboxClient({
+  snapshot: {
+    type: 'local',
+    baseDir: snapshotBaseDir,
+  },
+});
+
 const sharedSkillsDir = '/opt/company/agent-skills';
 const sandboxNodeEnv = 'integration';
 const localRepoDir = '/opt/company/repo-template';

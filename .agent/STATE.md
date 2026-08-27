@@ -371,6 +371,12 @@ catalog workflows.
   `sandbox-workspace-root` controls while unknown Manifest constructors and dynamic root values
   remain unresolved. Local fixtures plus real docs and Blaxel extension examples raised regenerated
   public IR truth-set results to 1,819 passing labels.
+- Added exact OpenAI Agents JS local sandbox `snapshot` inventory for `type: "local"` plus direct or
+  earlier immutable module-level literal `baseDir` values on proven sandbox-local clients. The
+  scanner now records `sandbox-state-persistence` controls linked back to the corresponding
+  `sandbox-runtime`, while unknown clients and dynamic snapshot directories remain unresolved. Local
+  fixtures plus the real `examples/docs/sandbox-agents/resume-session-state.ts` example raised
+  regenerated public IR truth-set results to 1,825 passing labels.
 - Strengthened source-release verification for the packaged GitHub workflow examples:
   `verify_sdist()` now checks benchmark verifier output/schema/upload, policy-gate
   permission/policy/summary/expiry arguments, and code-scanning SARIF permission/upload contracts.
