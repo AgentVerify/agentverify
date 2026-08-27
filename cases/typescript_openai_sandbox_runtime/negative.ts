@@ -134,3 +134,11 @@ await run(unknownLimitedConcurrencyAgent, 'inspect with unknown limits', {
     },
   },
 });
+
+declare const dynamicRoot: string;
+const unknownRootManifest = new UnknownManifest({
+  root: '/workspace',
+});
+const dynamicRootManifest = new Manifest({
+  root: dynamicRoot,
+});

@@ -4329,6 +4329,38 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         "value_redacted": True,
     }
 
+    workspace_roots = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control" and component.name == "sandbox-workspace-root"
+    }
+    assert set(workspace_roots) == {
+        (
+            "positive.ts",
+            193,
+            "ts:positive.ts#control:rootedManifest.root@193",
+        ),
+    }
+    assert workspace_roots[
+        (
+            "positive.ts",
+            193,
+            "ts:positive.ts#control:rootedManifest.root@193",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-manifest-root",
+        "module": "@openai/agents/sandbox",
+        "constructor": "Manifest",
+        "imported_symbol": "Manifest",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "root",
+        "root_path": "/workspace",
+        "root_path_resolution": "immutable-module-literal-binding",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": "production",
+    }
+
     runtime_edges = {
         (
             edge.source_name,

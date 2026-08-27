@@ -366,6 +366,11 @@ catalog workflows.
   unknown clients and nonliteral limit values remain unresolved. Local fixtures plus the real
   `examples/docs/sandbox-agents/manifest-concurrency.ts` example raised regenerated public IR
   truth-set results to 1,815 passing labels.
+- Added exact OpenAI Agents JS Manifest `root` workspace-path inventory for direct literal strings
+  or earlier immutable module-level literal string bindings. The scanner now records
+  `sandbox-workspace-root` controls while unknown Manifest constructors and dynamic root values
+  remain unresolved. Local fixtures plus real docs and Blaxel extension examples raised regenerated
+  public IR truth-set results to 1,819 passing labels.
 - Strengthened source-release verification for the packaged GitHub workflow examples:
   `verify_sdist()` now checks benchmark verifier output/schema/upload, policy-gate
   permission/policy/summary/expiry arguments, and code-scanning SARIF permission/upload contracts.

@@ -187,3 +187,8 @@ await run(limitedConcurrencyAgent, 'inspect with bounded manifest work', {
     },
   },
 });
+
+const workspaceRoot = '/workspace';
+const rootedManifest = new Manifest({
+  root: workspaceRoot,
+});

@@ -16226,6 +16226,91 @@ def typescript_static_string_value(
     return binding.value, "immutable-module-literal-binding"
 
 
+def add_typescript_openai_sandbox_workspace_root_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    local_constructor: str,
+    root_path: str,
+    root_path_resolution: str,
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add an exact OpenAI Agents JS Manifest workspace-root control."""
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    attributes = {
+        "analysis": "typescript-openai-sandbox-manifest-root",
+        "module": "@openai/agents/sandbox",
+        "constructor": "Manifest",
+        "imported_symbol": "Manifest",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "root",
+        "root_path": root_path,
+        "root_path_resolution": root_path_resolution,
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": source_scope(relative),
+    }
+    if local_constructor != "Manifest":
+        attributes["local_constructor"] = local_constructor
+    ir.add_component(
+        Component(
+            "control",
+            "sandbox-workspace-root",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    return "sandbox-workspace-root", control_id
+
+
+def add_typescript_openai_sandbox_workspace_root_from_arguments(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    text: str,
+    argument_body: str,
+    argument_body_offset: int,
+    local_constructor: str,
+    manifest_name: str,
+    immutable_literal_bindings: dict[str, TypeScriptLiteralStringBinding],
+) -> None:
+    """Add exact Manifest root controls from direct or immutable literal strings."""
+    arguments = typescript_call_arguments(argument_body, argument_body_offset)
+    if len(arguments) != 1:
+        return
+    config_expression, config_offset = arguments[0]
+    root_property = typescript_object_property_expression_location(
+        config_expression,
+        "root",
+        config_offset,
+    )
+    if root_property is None:
+        return
+    root_expression, property_offset, value_offset = root_property
+    root_value = typescript_static_string_value(
+        root_expression,
+        expression_offset=value_offset,
+        immutable_literal_bindings=immutable_literal_bindings,
+    )
+    if root_value is None:
+        return
+    line = line_at(text, property_offset)
+    add_typescript_openai_sandbox_workspace_root_control(
+        ir,
+        relative=relative,
+        lines=lines,
+        line=line,
+        local_constructor=local_constructor,
+        root_path=root_value[0],
+        root_path_resolution=root_value[1],
+        symbol_identity=f"{manifest_name}.root@{line}",
+    )
+
+
 def add_typescript_openai_sandbox_environment_control(
     ir: RepositoryIR,
     *,
@@ -16882,7 +16967,12 @@ def typescript_graph(
     immutable_literal_bindings = (
         typescript_immutable_module_literal_string_bindings(text)
         if "Manifest" in text
-        and ("extraPathGrants" in text or "environment" in text or "entries" in text)
+        and (
+            "extraPathGrants" in text
+            or "environment" in text
+            or "entries" in text
+            or "root" in text
+        )
         else {}
     )
     tool_matches = list(TS_TOOL_ASSIGNMENT.finditer(code))
@@ -17067,6 +17157,17 @@ def typescript_graph(
         end = typescript_balanced_end(code, opening, "(", ")")
         if end is None:
             continue
+        add_typescript_openai_sandbox_workspace_root_from_arguments(
+            ir,
+            relative=relative,
+            lines=lines,
+            text=text,
+            argument_body=text[opening + 1 : end - 1],
+            argument_body_offset=opening + 1,
+            local_constructor=local_constructor,
+            manifest_name=manifest_name,
+            immutable_literal_bindings=immutable_literal_bindings,
+        )
         add_typescript_openai_sandbox_entries_from_arguments(
             ir,
             relative=relative,
@@ -17110,6 +17211,17 @@ def typescript_graph(
                 continue
             start_line = line_at(text, match.start())
             manifest_name = f"manifestReturn@{start_line}"
+            add_typescript_openai_sandbox_workspace_root_from_arguments(
+                ir,
+                relative=relative,
+                lines=lines,
+                text=text,
+                argument_body=text[opening + 1 : end - 1],
+                argument_body_offset=opening + 1,
+                local_constructor=local_constructor,
+                manifest_name=manifest_name,
+                immutable_literal_bindings=immutable_literal_bindings,
+            )
             add_typescript_openai_sandbox_entries_from_arguments(
                 ir,
                 relative=relative,
