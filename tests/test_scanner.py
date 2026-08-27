@@ -4101,15 +4101,15 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     assert set(path_grants) == {
         (
             "positive.ts",
-            160,
-            "ts:positive.ts#control:grantManifest.extraPathGrant0@160",
+            166,
+            "ts:positive.ts#control:grantManifest.extraPathGrant0@166",
         ),
     }
     grant = path_grants[
         (
             "positive.ts",
-            160,
-            "ts:positive.ts#control:grantManifest.extraPathGrant0@160",
+            166,
+            "ts:positive.ts#control:grantManifest.extraPathGrant0@166",
         )
     ]
     assert grant.attributes == {
@@ -4128,6 +4128,96 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         "description": "Shared skill bundle.",
     }
 
+    manifest_entries = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control" and component.name == "sandbox-manifest-entry"
+    }
+    assert set(manifest_entries) == {
+        (
+            "positive.ts",
+            160,
+            "ts:positive.ts#control:grantManifest.entry0.task.md@160",
+        ),
+        (
+            "positive.ts",
+            161,
+            "ts:positive.ts#control:grantManifest.entry1.repo@161",
+        ),
+        (
+            "positive.ts",
+            162,
+            "ts:positive.ts#control:grantManifest.entry2.localRepo@162",
+        ),
+    }
+    assert manifest_entries[
+        (
+            "positive.ts",
+            160,
+            "ts:positive.ts#control:grantManifest.entry0.task.md@160",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-manifest-entry",
+        "module": "@openai/agents/sandbox",
+        "constructor": "Manifest",
+        "imported_symbol": "Manifest",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "entries",
+        "entry_name": "task.md",
+        "entry_source": "literal-file",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": "production",
+        "entry_factory": "file",
+        "content_present": True,
+    }
+    assert manifest_entries[
+        (
+            "positive.ts",
+            161,
+            "ts:positive.ts#control:grantManifest.entry1.repo@161",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-manifest-entry",
+        "module": "@openai/agents/sandbox",
+        "constructor": "Manifest",
+        "imported_symbol": "Manifest",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "entries",
+        "entry_name": "repo",
+        "entry_source": "git-repository",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": "production",
+        "entry_factory": "gitRepo",
+        "repository": "openai/openai-agents-js",
+        "repository_resolution": "literal",
+        "ref": "main",
+        "ref_resolution": "literal",
+    }
+    assert manifest_entries[
+        (
+            "positive.ts",
+            162,
+            "ts:positive.ts#control:grantManifest.entry2.localRepo@162",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-manifest-entry",
+        "module": "@openai/agents/sandbox",
+        "constructor": "Manifest",
+        "imported_symbol": "Manifest",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "entries",
+        "entry_name": "localRepo",
+        "entry_source": "local-directory",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": "production",
+        "entry_factory": "localDir",
+        "source_path": "/opt/company/repo-template",
+        "source_path_resolution": "immutable-module-literal-binding",
+    }
+
     manifest_environment = {
         (component.evidence.path, component.evidence.line, component.symbol_id): component
         for component in ir.components
@@ -4136,20 +4226,20 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     assert set(manifest_environment) == {
         (
             "positive.ts",
-            166,
-            "ts:positive.ts#control:grantManifest.environment.NODE_ENV@166",
+            172,
+            "ts:positive.ts#control:grantManifest.environment.NODE_ENV@172",
         ),
         (
             "positive.ts",
-            167,
-            "ts:positive.ts#control:grantManifest.environment.SANDBOX_TOKEN@167",
+            173,
+            "ts:positive.ts#control:grantManifest.environment.SANDBOX_TOKEN@173",
         ),
     }
     assert manifest_environment[
         (
             "positive.ts",
-            166,
-            "ts:positive.ts#control:grantManifest.environment.NODE_ENV@166",
+            172,
+            "ts:positive.ts#control:grantManifest.environment.NODE_ENV@172",
         )
     ].attributes == {
         "analysis": "typescript-openai-sandbox-manifest-environment",
@@ -4168,8 +4258,8 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     assert manifest_environment[
         (
             "positive.ts",
-            167,
-            "ts:positive.ts#control:grantManifest.environment.SANDBOX_TOKEN@167",
+            173,
+            "ts:positive.ts#control:grantManifest.environment.SANDBOX_TOKEN@173",
         )
     ].attributes == {
         "analysis": "typescript-openai-sandbox-manifest-environment",
@@ -4318,6 +4408,12 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         component.evidence.path == "negative.ts"
         and component.kind == "control"
         and component.name == "sandbox-environment-variable"
+        for component in ir.components
+    )
+    assert not any(
+        component.evidence.path == "negative.ts"
+        and component.kind == "control"
+        and component.name == "sandbox-manifest-entry"
         for component in ir.components
     )
     assert not ir.findings

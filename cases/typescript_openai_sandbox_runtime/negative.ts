@@ -107,6 +107,9 @@ const unknownExposedPortClient = new UnknownSandboxClient({
 });
 
 const unknownGrantManifest = new UnknownManifest({
+  entries: {
+    'task.md': file({ content: 'untrusted' }),
+  },
   extraPathGrants: [
     {
       path: '/tmp/agentverify-skills',

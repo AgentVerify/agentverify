@@ -1,5 +1,5 @@
 import { Agent, Runner, run } from '@openai/agents';
-import { Manifest, SandboxAgent, shell } from '@openai/agents/sandbox';
+import { file, gitRepo, localDir, Manifest, SandboxAgent, shell } from '@openai/agents/sandbox';
 import { BlaxelSandboxClient } from '@openai/agents-extensions/sandbox/blaxel';
 import {
   DockerSandboxClient,
@@ -154,7 +154,13 @@ const exposedPortClient = new DockerSandboxClient({
 
 const sharedSkillsDir = '/opt/company/agent-skills';
 const sandboxNodeEnv = 'integration';
+const localRepoDir = '/opt/company/repo-template';
 const grantManifest = new Manifest({
+  entries: {
+    'task.md': file({ content: 'Fix the failing test.' }),
+    repo: gitRepo({ repo: 'openai/openai-agents-js', ref: 'main' }),
+    localRepo: localDir({ src: localRepoDir }),
+  },
   extraPathGrants: [
     {
       path: sharedSkillsDir,

@@ -354,6 +354,12 @@ catalog workflows.
   unknown Manifest constructors unresolved. Local fixtures plus the real
   `examples/docs/sandbox-agents/manifest.ts` and `examples/sandbox/extensions/blaxel-runner.ts`
   examples raised regenerated public IR truth-set results to 1,803 passing labels.
+- Added exact OpenAI Agents JS Manifest `entries` inventory for supported literal source forms:
+  `file(...)`, `gitRepo(...)`, direct `{ type: "file" }`, and `localDir(...)` with direct or earlier
+  immutable module-level literal `src`. The scanner now records `sandbox-manifest-entry` controls
+  without copying file contents into IR, and unknown Manifest constructors remain unresolved. Local
+  fixtures plus real docs examples raised regenerated public IR truth-set results to 1,810 passing
+  labels.
 - Strengthened source-release verification for the packaged GitHub workflow examples:
   `verify_sdist()` now checks benchmark verifier output/schema/upload, policy-gate
   permission/policy/summary/expiry arguments, and code-scanning SARIF permission/upload contracts.

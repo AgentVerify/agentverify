@@ -16099,6 +16099,28 @@ def typescript_environment_value_attributes(
     return attributes
 
 
+def typescript_static_string_value(
+    expression: str,
+    *,
+    expression_offset: int,
+    immutable_literal_bindings: dict[str, TypeScriptLiteralStringBinding],
+) -> tuple[str, str] | None:
+    """Resolve a direct string literal or earlier immutable module-level literal binding."""
+    value = typescript_string_literal_value(expression)
+    if value is not None:
+        return value, "literal"
+    identifier = re.fullmatch(
+        r"\s*([A-Za-z_$][\w$]*)\s*",
+        typescript_code_mask(expression),
+    )
+    if identifier is None:
+        return None
+    binding = immutable_literal_bindings.get(identifier.group(1))
+    if binding is None or binding.declaration_end > expression_offset:
+        return None
+    return binding.value, "immutable-module-literal-binding"
+
+
 def add_typescript_openai_sandbox_environment_control(
     ir: RepositoryIR,
     *,
@@ -16144,6 +16166,201 @@ def add_typescript_openai_sandbox_environment_control(
     return "sandbox-environment-variable", control_id
 
 
+def add_typescript_openai_sandbox_manifest_entry_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    local_constructor: str,
+    entry_name: str,
+    entry_source: str,
+    symbol_identity: str,
+    attributes: dict[str, object] | None = None,
+) -> tuple[str, str]:
+    """Add an exact OpenAI Agents JS Manifest entries control."""
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    component_attributes = {
+        "analysis": "typescript-openai-sandbox-manifest-entry",
+        "module": "@openai/agents/sandbox",
+        "constructor": "Manifest",
+        "imported_symbol": "Manifest",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "entries",
+        "entry_name": entry_name,
+        "entry_source": entry_source,
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": source_scope(relative),
+    }
+    if attributes:
+        component_attributes.update(attributes)
+    if local_constructor != "Manifest":
+        component_attributes["local_constructor"] = local_constructor
+    ir.add_component(
+        Component(
+            "control",
+            "sandbox-manifest-entry",
+            Evidence(relative, line, excerpt(lines, line)),
+            component_attributes,
+            control_id,
+        )
+    )
+    return "sandbox-manifest-entry", control_id
+
+
+def typescript_openai_sandbox_manifest_entry_attributes(
+    *,
+    entry_expression: str,
+    entry_offset: int,
+    sandbox_factory_imports: dict[str, str],
+    immutable_literal_bindings: dict[str, TypeScriptLiteralStringBinding],
+) -> tuple[str, dict[str, object]] | None:
+    """Return source metadata for one exact Manifest entry expression."""
+    call = typescript_call_parts(entry_expression)
+    if call is not None:
+        local_factory, argument_body, argument_body_offset = call
+        factory = sandbox_factory_imports.get(local_factory)
+        if factory == "file":
+            arguments = typescript_call_arguments(argument_body, entry_offset + argument_body_offset)
+            if len(arguments) != 1:
+                return None
+            content_present = (
+                typescript_object_property_expression(arguments[0][0], "content") is not None
+            )
+            return "literal-file", {
+                "entry_factory": "file",
+                "content_present": content_present,
+            }
+        if factory == "gitRepo":
+            arguments = typescript_call_arguments(argument_body, entry_offset + argument_body_offset)
+            if len(arguments) != 1:
+                return None
+            repo_property = typescript_object_property_expression_location(
+                arguments[0][0],
+                "repo",
+                arguments[0][1],
+            )
+            if repo_property is None:
+                return None
+            repository = typescript_static_string_value(
+                repo_property[0],
+                expression_offset=repo_property[2],
+                immutable_literal_bindings=immutable_literal_bindings,
+            )
+            if repository is None:
+                return None
+            attributes: dict[str, object] = {
+                "entry_factory": "gitRepo",
+                "repository": repository[0],
+                "repository_resolution": repository[1],
+            }
+            ref_property = typescript_object_property_expression_location(
+                arguments[0][0],
+                "ref",
+                arguments[0][1],
+            )
+            if ref_property is not None:
+                ref = typescript_static_string_value(
+                    ref_property[0],
+                    expression_offset=ref_property[2],
+                    immutable_literal_bindings=immutable_literal_bindings,
+                )
+                if ref is not None:
+                    attributes["ref"] = ref[0]
+                    attributes["ref_resolution"] = ref[1]
+            return "git-repository", attributes
+        if factory == "localDir":
+            arguments = typescript_call_arguments(argument_body, entry_offset + argument_body_offset)
+            if len(arguments) != 1:
+                return None
+            src_property = typescript_object_property_expression_location(
+                arguments[0][0],
+                "src",
+                arguments[0][1],
+            )
+            if src_property is None:
+                return None
+            source_path = typescript_static_string_value(
+                src_property[0],
+                expression_offset=src_property[2],
+                immutable_literal_bindings=immutable_literal_bindings,
+            )
+            if source_path is None:
+                return None
+            return "local-directory", {
+                "entry_factory": "localDir",
+                "source_path": source_path[0],
+                "source_path_resolution": source_path[1],
+            }
+    entry_type = typescript_literal_object_string_property(entry_expression, "type")
+    if entry_type == "file":
+        return "literal-file", {
+            "entry_type": "file",
+            "content_present": (
+                typescript_literal_object_property_expression(entry_expression, "content")
+                is not None
+            ),
+        }
+    return None
+
+
+def add_typescript_openai_sandbox_entries_from_arguments(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    text: str,
+    argument_body: str,
+    argument_body_offset: int,
+    local_constructor: str,
+    manifest_name: str,
+    sandbox_factory_imports: dict[str, str],
+    immutable_literal_bindings: dict[str, TypeScriptLiteralStringBinding],
+) -> None:
+    """Add exact Manifest entries controls from supported literal entry sources."""
+    arguments = typescript_call_arguments(argument_body, argument_body_offset)
+    if len(arguments) != 1:
+        return
+    config_expression, config_offset = arguments[0]
+    entries_property = typescript_object_property_expression_location(
+        config_expression,
+        "entries",
+        config_offset,
+    )
+    if entries_property is None:
+        return
+    entries_expression, _, entries_value_offset = entries_property
+    for entry_index, (entry_text, entry_offset) in enumerate(
+        typescript_literal_object_items(entries_expression, entries_value_offset)
+    ):
+        entry_property = typescript_named_object_property(entry_text)
+        if entry_property is None:
+            continue
+        entry_name, entry_expression = entry_property
+        attributes = typescript_openai_sandbox_manifest_entry_attributes(
+            entry_expression=entry_expression,
+            entry_offset=entry_offset + entry_text.find(entry_expression),
+            sandbox_factory_imports=sandbox_factory_imports,
+            immutable_literal_bindings=immutable_literal_bindings,
+        )
+        if attributes is None:
+            continue
+        entry_source, entry_attributes = attributes
+        line = line_at(text, entry_offset)
+        add_typescript_openai_sandbox_manifest_entry_control(
+            ir,
+            relative=relative,
+            lines=lines,
+            line=line,
+            local_constructor=local_constructor,
+            entry_name=entry_name,
+            entry_source=entry_source,
+            symbol_identity=f"{manifest_name}.entry{entry_index}.{entry_name}@{line}",
+            attributes=entry_attributes,
+        )
+
+
 def add_typescript_openai_sandbox_environment_from_arguments(
     ir: RepositoryIR,
     *,
@@ -16181,17 +16398,14 @@ def add_typescript_openai_sandbox_environment_from_arguments(
         value = typescript_string_literal_value(value_expression)
         value_resolution = "literal"
         if value is None:
-            identifier = re.fullmatch(
-                r"\s*([A-Za-z_$][\w$]*)\s*",
-                typescript_code_mask(value_expression),
+            resolved_value = typescript_static_string_value(
+                value_expression,
+                expression_offset=property_offset + property_text.find(value_expression),
+                immutable_literal_bindings=immutable_literal_bindings,
             )
-            if identifier is None:
+            if resolved_value is None:
                 continue
-            binding = immutable_literal_bindings.get(identifier.group(1))
-            if binding is None or binding.declaration_end > property_offset:
-                continue
-            value = binding.value
-            value_resolution = "immutable-module-literal-binding"
+            value, value_resolution = resolved_value
         line = line_at(text, property_offset)
         add_typescript_openai_sandbox_environment_control(
             ir,
@@ -16562,7 +16776,8 @@ def typescript_graph(
     )
     immutable_literal_bindings = (
         typescript_immutable_module_literal_string_bindings(text)
-        if "Manifest" in text and ("extraPathGrants" in text or "environment" in text)
+        if "Manifest" in text
+        and ("extraPathGrants" in text or "environment" in text or "entries" in text)
         else {}
     )
     tool_matches = list(TS_TOOL_ASSIGNMENT.finditer(code))
@@ -16732,6 +16947,12 @@ def typescript_graph(
         if imported_name == "Manifest"
         and not typescript_import_binding_is_shadowed(text, local_name)
     }
+    sandbox_entry_factory_imports = {
+        local_name: imported_name
+        for local_name, imported_name in sandbox_imports.items()
+        if imported_name in {"file", "gitRepo", "localDir"}
+        and not typescript_import_binding_is_shadowed(text, local_name)
+    }
     for match in TS_SANDBOX_CLIENT_ASSIGNMENT.finditer(code):
         manifest_name = match.group(1)
         local_constructor = match.group(2)
@@ -16741,6 +16962,18 @@ def typescript_graph(
         end = typescript_balanced_end(code, opening, "(", ")")
         if end is None:
             continue
+        add_typescript_openai_sandbox_entries_from_arguments(
+            ir,
+            relative=relative,
+            lines=lines,
+            text=text,
+            argument_body=text[opening + 1 : end - 1],
+            argument_body_offset=opening + 1,
+            local_constructor=local_constructor,
+            manifest_name=manifest_name,
+            sandbox_factory_imports=sandbox_entry_factory_imports,
+            immutable_literal_bindings=immutable_literal_bindings,
+        )
         add_typescript_openai_sandbox_path_grants_from_arguments(
             ir,
             relative=relative,
@@ -16772,6 +17005,18 @@ def typescript_graph(
                 continue
             start_line = line_at(text, match.start())
             manifest_name = f"manifestReturn@{start_line}"
+            add_typescript_openai_sandbox_entries_from_arguments(
+                ir,
+                relative=relative,
+                lines=lines,
+                text=text,
+                argument_body=text[opening + 1 : end - 1],
+                argument_body_offset=opening + 1,
+                local_constructor=local_constructor,
+                manifest_name=manifest_name,
+                sandbox_factory_imports=sandbox_entry_factory_imports,
+                immutable_literal_bindings=immutable_literal_bindings,
+            )
             add_typescript_openai_sandbox_path_grants_from_arguments(
                 ir,
                 relative=relative,

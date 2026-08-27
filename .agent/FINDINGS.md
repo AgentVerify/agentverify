@@ -309,6 +309,13 @@
   variable names such as `*_TOKEN` retain the variable name but redact the literal value in IR
   attributes; unknown Manifest constructors and dynamic values remain unresolved. The public IR truth
   set now covers 1,803 passing labels.
+- Manifest `entries` in OpenAI Agents JS are sandbox workspace-seed/source evidence under the same
+  exact unshadowed Manifest proof. Exact imported `file(...)` and direct `{ type: "file" }` entries
+  become literal-file `sandbox-manifest-entry` controls that record only content presence, not file
+  contents; exact `gitRepo(...)` entries record literal repository/ref metadata; exact `localDir(...)`
+  entries record direct or earlier immutable module-level literal source paths. Unknown Manifest
+  constructors and dynamic local directory expressions remain unresolved. The public IR truth set now
+  covers 1,810 passing labels.
 - Source-release verification now treats packaged GitHub workflow examples as content contracts, not
   only required filenames. The sdist verifier checks that the benchmark workflow emits, validates,
   and uploads verifier JSON while staying read-only; the policy gate keeps its policy/summary/expiry
