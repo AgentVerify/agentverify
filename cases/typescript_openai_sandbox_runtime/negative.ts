@@ -105,3 +105,12 @@ const unknownAsToolOrchestrator = new Agent({
 const unknownExposedPortClient = new UnknownSandboxClient({
   exposedPorts: [3000],
 });
+
+const unknownGrantManifest = new UnknownManifest({
+  extraPathGrants: [
+    {
+      path: '/tmp/agentverify-skills',
+      readOnly: true,
+    },
+  ],
+});

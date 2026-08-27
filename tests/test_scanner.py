@@ -4093,6 +4093,41 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         )
     ]
 
+    path_grants = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control" and component.name == "sandbox-path-grant"
+    }
+    assert set(path_grants) == {
+        (
+            "positive.ts",
+            159,
+            "ts:positive.ts#control:grantManifest.extraPathGrant0@159",
+        ),
+    }
+    grant = path_grants[
+        (
+            "positive.ts",
+            159,
+            "ts:positive.ts#control:grantManifest.extraPathGrant0@159",
+        )
+    ]
+    assert grant.attributes == {
+        "analysis": "typescript-openai-sandbox-path-grant",
+        "module": "@openai/agents/sandbox",
+        "constructor": "Manifest",
+        "imported_symbol": "Manifest",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "extraPathGrants",
+        "path": "/opt/company/agent-skills",
+        "path_resolution": "immutable-module-literal-binding",
+        "read_only": True,
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": "production",
+        "description": "Shared skill bundle.",
+    }
+
     runtime_edges = {
         (
             edge.source_name,
@@ -4214,6 +4249,12 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         relationship.evidence.path == "negative.ts"
         and relationship.target_name == "sandbox-network-exposure"
         for relationship in ir.relationships
+    )
+    assert not any(
+        component.evidence.path == "negative.ts"
+        and component.kind == "control"
+        and component.name == "sandbox-path-grant"
+        for component in ir.components
     )
     assert not ir.findings
 

@@ -288,7 +288,7 @@ remain withheld. Local regressions now pin nine positive object-map model labels
 negatives. Exact `@ai-sdk/azure` factory/configured embedding calls are now covered with a matching
 custom-endpoint spread negative and a real Activepieces Azure embedding provider label. Together with
 the expanded local-reexport, real Activepieces boundary, and TypeScript sandbox-helper labels, the
-public IR truth set now covers 1,795 labels.
+public IR truth set now covers 1,798 labels.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
 Agent→MCP-server identities. Import-proven literal stdio constructor calls are inventoried for any
@@ -366,6 +366,9 @@ Literal numeric `exposedPorts` arrays on exact `DockerSandboxClient`/`UnixLocalS
 constructor configs are recorded as `sandbox-network-exposure` controls linked back to the
 corresponding `sandbox-runtime`, preserving reviewer visibility into deliberate sandbox port
 exposure without treating it as host-local network execution.
+Literal `extraPathGrants` Manifest entries are also recorded as `sandbox-path-grant` controls when
+their `path` is a direct string or earlier immutable module-level string binding and `readOnly` is a
+literal boolean; dynamic path construction and unknown Manifest constructors remain unresolved.
 Rebounded local-client imports, unknown session factories, half-known ternary client selection, and
 aggregate helper contents remain unresolved.
 
@@ -1013,7 +1016,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 719-label rule truth set and 1,795-label IR component/relationship set are curated regression
+The 719-label rule truth set and 1,798-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

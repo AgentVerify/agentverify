@@ -13066,8 +13066,10 @@ def typescript_literal_identifier_arguments(expression: str) -> list[str] | None
     return identifiers
 
 
-def typescript_literal_number_arguments(expression: str) -> list[int] | None:
-    """Return a literal TypeScript numeric array only when every item is an integer."""
+def typescript_array_items(
+    expression: str, expression_offset: int = 0
+) -> list[tuple[str, int]] | None:
+    """Return top-level array items with offsets when expression is exactly an array."""
     code = typescript_code_mask(expression)
     opening = len(code) - len(code.lstrip())
     if opening >= len(code) or code[opening] != "[":
@@ -13078,8 +13080,19 @@ def typescript_literal_number_arguments(expression: str) -> list[int] | None:
     suffix = code[end:].strip()
     if suffix and not re.fullmatch(r"as\s+const", suffix):
         return None
+    return typescript_call_arguments(
+        expression[opening + 1 : end - 1],
+        expression_offset + opening + 1,
+    )
+
+
+def typescript_literal_number_arguments(expression: str) -> list[int] | None:
+    """Return a literal TypeScript numeric array only when every item is an integer."""
+    items = typescript_array_items(expression)
+    if items is None:
+        return None
     numbers: list[int] = []
-    for item, _ in typescript_call_arguments(expression[opening + 1 : end - 1]):
+    for item, _ in items:
         item = item.strip()
         if re.fullmatch(r"\d+", item) is None:
             return None
@@ -15942,6 +15955,136 @@ def add_typescript_openai_sandbox_exposed_ports_from_arguments(
     )
 
 
+def typescript_string_literal_value(expression: str) -> str | None:
+    """Resolve a direct single- or double-quoted TypeScript string literal."""
+    match = re.fullmatch(r"\s*(['\"])([^\\\r\n]*?)\1\s*", expression, re.DOTALL)
+    return match.group(2) if match else None
+
+
+def add_typescript_openai_sandbox_path_grant_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    local_constructor: str,
+    path_value: str,
+    path_resolution: str,
+    read_only: bool,
+    symbol_identity: str,
+    description: str | None = None,
+) -> tuple[str, str]:
+    """Add an exact OpenAI Agents JS Manifest extraPathGrants control."""
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    attributes = {
+        "analysis": "typescript-openai-sandbox-path-grant",
+        "module": "@openai/agents/sandbox",
+        "constructor": "Manifest",
+        "imported_symbol": "Manifest",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "extraPathGrants",
+        "path": path_value,
+        "path_resolution": path_resolution,
+        "read_only": read_only,
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": source_scope(relative),
+    }
+    if local_constructor != "Manifest":
+        attributes["local_constructor"] = local_constructor
+    if description is not None:
+        attributes["description"] = description
+    ir.add_component(
+        Component(
+            "control",
+            "sandbox-path-grant",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    return "sandbox-path-grant", control_id
+
+
+def add_typescript_openai_sandbox_path_grants_from_arguments(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    text: str,
+    argument_body: str,
+    argument_body_offset: int,
+    local_constructor: str,
+    manifest_name: str,
+    immutable_literal_bindings: dict[str, TypeScriptLiteralStringBinding],
+) -> None:
+    """Add exact Manifest extraPathGrants controls from literal grant arrays."""
+    arguments = typescript_call_arguments(argument_body, argument_body_offset)
+    if len(arguments) != 1:
+        return
+    config_expression, config_offset = arguments[0]
+    grants_property = typescript_object_property_expression_location(
+        config_expression,
+        "extraPathGrants",
+        config_offset,
+    )
+    if grants_property is None:
+        return
+    grants_expression, _, grants_value_offset = grants_property
+    grant_items = typescript_array_items(grants_expression, grants_value_offset)
+    if grant_items is None:
+        return
+    for index, (grant_expression, grant_offset) in enumerate(grant_items):
+        path_property = typescript_object_property_expression_location(
+            grant_expression,
+            "path",
+            grant_offset,
+        )
+        read_only_expression = typescript_object_property_expression(
+            grant_expression,
+            "readOnly",
+        )
+        if path_property is None or read_only_expression is None:
+            continue
+        path_expression, path_offset, _ = path_property
+        path_value = typescript_string_literal_value(path_expression)
+        path_resolution = "literal"
+        if path_value is None:
+            identifier = re.fullmatch(
+                r"\s*([A-Za-z_$][\w$]*)\s*",
+                typescript_code_mask(path_expression),
+            )
+            if identifier is None:
+                continue
+            binding = immutable_literal_bindings.get(identifier.group(1))
+            if binding is None or binding.declaration_end > path_offset:
+                continue
+            path_value = binding.value
+            path_resolution = "immutable-module-literal-binding"
+        read_only_code = typescript_code_mask(read_only_expression).strip()
+        if read_only_code not in {"true", "false"}:
+            continue
+        description = None
+        if description_expression := typescript_object_property_expression(
+            grant_expression,
+            "description",
+        ):
+            description = typescript_string_literal_value(description_expression)
+        line = line_at(text, path_offset)
+        add_typescript_openai_sandbox_path_grant_control(
+            ir,
+            relative=relative,
+            lines=lines,
+            line=line,
+            local_constructor=local_constructor,
+            path_value=path_value,
+            path_resolution=path_resolution,
+            read_only=read_only_code == "true",
+            symbol_identity=f"{manifest_name}.extraPathGrant{index}@{line}",
+            description=description,
+        )
+
+
 def add_typescript_openai_sandbox_extension_runtime_control(
     ir: RepositoryIR,
     *,
@@ -16296,6 +16439,11 @@ def typescript_graph(
     has_mcp_import = "@modelcontextprotocol/" in text or bool(
         re.search(r"from\s+['\"][^'\"]*mcp[^'\"]*['\"]", text, re.IGNORECASE)
     )
+    immutable_literal_bindings = (
+        typescript_immutable_module_literal_string_bindings(text)
+        if "Manifest" in text and "extraPathGrants" in text
+        else {}
+    )
     tool_matches = list(TS_TOOL_ASSIGNMENT.finditer(code))
     tool_assignment_counts = Counter(match.group(1) for match in tool_matches)
     property_matches = []
@@ -16457,6 +16605,32 @@ def typescript_graph(
     sandbox_imports = typescript_named_import_bindings(text, "@openai/agents/sandbox")
     sandbox_local_imports = typescript_named_import_bindings(text, "@openai/agents/sandbox/local")
     sandbox_extension_imports = typescript_openai_sandbox_extension_imports(text)
+    manifest_imports = {
+        local_name
+        for local_name, imported_name in sandbox_imports.items()
+        if imported_name == "Manifest"
+        and not typescript_import_binding_is_shadowed(text, local_name)
+    }
+    for match in TS_SANDBOX_CLIENT_ASSIGNMENT.finditer(code):
+        manifest_name = match.group(1)
+        local_constructor = match.group(2)
+        if local_constructor not in manifest_imports:
+            continue
+        opening = code.find("(", match.start(), match.end())
+        end = typescript_balanced_end(code, opening, "(", ")")
+        if end is None:
+            continue
+        add_typescript_openai_sandbox_path_grants_from_arguments(
+            ir,
+            relative=relative,
+            lines=lines,
+            text=text,
+            argument_body=text[opening + 1 : end - 1],
+            argument_body_offset=opening + 1,
+            local_constructor=local_constructor,
+            manifest_name=manifest_name,
+            immutable_literal_bindings=immutable_literal_bindings,
+        )
     sandbox_client_bindings: dict[str, tuple[str, str]] = {}
     sandbox_runtime_edge_analysis: dict[str, str] = {}
     sandbox_session_bindings: dict[str, tuple[str, str]] = {}

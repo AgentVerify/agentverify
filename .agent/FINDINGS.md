@@ -297,6 +297,12 @@
   can see deliberate sandbox port publication without conflating it with host-local network
   execution. Unknown same-named constructors and nonliteral port arrays remain unresolved, and the
   public IR truth set now covers 1,795 passing labels.
+- `Manifest({ extraPathGrants: [...] })` entries in OpenAI Agents JS are sandbox filesystem-sharing
+  policy evidence when parsed from exact unshadowed `@openai/agents/sandbox` `Manifest`
+  constructors. The current proof accepts direct string paths or earlier immutable module-level
+  literal string bindings plus literal boolean `readOnly`, and records `sandbox-path-grant`
+  controls. Unknown Manifest constructors, dynamic path construction, and nonliteral `readOnly`
+  remain unresolved; the public IR truth set now covers 1,798 passing labels.
 - Source-release verification now treats packaged GitHub workflow examples as content contracts, not
   only required filenames. The sdist verifier checks that the benchmark workflow emits, validates,
   and uploads verifier JSON while staying read-only; the policy gate keeps its policy/summary/expiry

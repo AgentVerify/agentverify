@@ -1,5 +1,5 @@
 import { Agent, Runner, run } from '@openai/agents';
-import { SandboxAgent, shell } from '@openai/agents/sandbox';
+import { Manifest, SandboxAgent, shell } from '@openai/agents/sandbox';
 import { BlaxelSandboxClient } from '@openai/agents-extensions/sandbox/blaxel';
 import {
   DockerSandboxClient,
@@ -150,4 +150,15 @@ const asToolOrchestrator = new Agent({
 const exposedPortClient = new DockerSandboxClient({
   image: 'node:22-bookworm-slim',
   exposedPorts: [3000, 8080],
+});
+
+const sharedSkillsDir = '/opt/company/agent-skills';
+const grantManifest = new Manifest({
+  extraPathGrants: [
+    {
+      path: sharedSkillsDir,
+      readOnly: true,
+      description: 'Shared skill bundle.',
+    },
+  ],
 });

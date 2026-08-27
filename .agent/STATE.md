@@ -343,6 +343,11 @@ catalog workflows.
   unknown same-named clients remain unresolved. Local fixtures plus the real
   `examples/docs/sandbox-agents/exposed-ports.ts` example raised regenerated public IR truth-set
   results to 1,795 passing labels.
+- Added exact OpenAI Agents JS `Manifest({ extraPathGrants: [...] })` inventory for direct literal
+  or earlier immutable module-level literal paths with literal boolean `readOnly`. The scanner now
+  records `sandbox-path-grant` controls while unknown Manifest constructors remain unresolved. Local
+  fixtures plus the real `examples/docs/sandbox-agents/path-grants.ts` example raised regenerated
+  public IR truth-set results to 1,798 passing labels.
 - Strengthened source-release verification for the packaged GitHub workflow examples:
   `verify_sdist()` now checks benchmark verifier output/schema/upload, policy-gate
   permission/policy/summary/expiry arguments, and code-scanning SARIF permission/upload contracts.
