@@ -153,6 +153,7 @@ const exposedPortClient = new DockerSandboxClient({
 });
 
 const sharedSkillsDir = '/opt/company/agent-skills';
+const sandboxNodeEnv = 'integration';
 const grantManifest = new Manifest({
   extraPathGrants: [
     {
@@ -161,4 +162,8 @@ const grantManifest = new Manifest({
       description: 'Shared skill bundle.',
     },
   ],
+  environment: {
+    NODE_ENV: sandboxNodeEnv,
+    SANDBOX_TOKEN: 'do-not-copy',
+  },
 });

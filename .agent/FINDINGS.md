@@ -303,6 +303,12 @@
   literal string bindings plus literal boolean `readOnly`, and records `sandbox-path-grant`
   controls. Unknown Manifest constructors, dynamic path construction, and nonliteral `readOnly`
   remain unresolved; the public IR truth set now covers 1,798 passing labels.
+- Manifest `environment` entries in OpenAI Agents JS are sandbox runtime-configuration evidence
+  under the same exact unshadowed Manifest proof. Direct literal string values and earlier immutable
+  module-level literal string bindings become `sandbox-environment-variable` controls. Secret-like
+  variable names such as `*_TOKEN` retain the variable name but redact the literal value in IR
+  attributes; unknown Manifest constructors and dynamic values remain unresolved. The public IR truth
+  set now covers 1,803 passing labels.
 - Source-release verification now treats packaged GitHub workflow examples as content contracts, not
   only required filenames. The sdist verifier checks that the benchmark workflow emits, validates,
   and uploads verifier JSON while staying read-only; the policy gate keeps its policy/summary/expiry

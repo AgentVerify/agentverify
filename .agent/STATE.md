@@ -348,6 +348,12 @@ catalog workflows.
   records `sandbox-path-grant` controls while unknown Manifest constructors remain unresolved. Local
   fixtures plus the real `examples/docs/sandbox-agents/path-grants.ts` example raised regenerated
   public IR truth-set results to 1,798 passing labels.
+- Added exact OpenAI Agents JS Manifest `environment` inventory for direct literal string values or
+  earlier immutable module-level literal string bindings. The scanner now records
+  `sandbox-environment-variable` controls, redacts values for secret-like variable names, and leaves
+  unknown Manifest constructors unresolved. Local fixtures plus the real
+  `examples/docs/sandbox-agents/manifest.ts` and `examples/sandbox/extensions/blaxel-runner.ts`
+  examples raised regenerated public IR truth-set results to 1,803 passing labels.
 - Strengthened source-release verification for the packaged GitHub workflow examples:
   `verify_sdist()` now checks benchmark verifier output/schema/upload, policy-gate
   permission/policy/summary/expiry arguments, and code-scanning SARIF permission/upload contracts.

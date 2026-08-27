@@ -16085,6 +16085,127 @@ def add_typescript_openai_sandbox_path_grants_from_arguments(
         )
 
 
+def typescript_environment_value_attributes(
+    environment_variable: str,
+    value: str,
+    value_resolution: str,
+) -> dict[str, object]:
+    """Return literal environment value metadata without copying likely secrets."""
+    attributes: dict[str, object] = {"value_resolution": value_resolution}
+    if re.search(r"(?:KEY|TOKEN|SECRET|PASSWORD|PASSWD|CREDENTIAL)", environment_variable):
+        attributes["value_redacted"] = True
+    else:
+        attributes["value"] = value
+    return attributes
+
+
+def add_typescript_openai_sandbox_environment_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    local_constructor: str,
+    environment_variable: str,
+    value: str,
+    value_resolution: str,
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add an exact OpenAI Agents JS Manifest environment-variable control."""
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    attributes = {
+        "analysis": "typescript-openai-sandbox-manifest-environment",
+        "module": "@openai/agents/sandbox",
+        "constructor": "Manifest",
+        "imported_symbol": "Manifest",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "environment",
+        "environment_variable": environment_variable,
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": source_scope(relative),
+        **typescript_environment_value_attributes(
+            environment_variable,
+            value,
+            value_resolution,
+        ),
+    }
+    if local_constructor != "Manifest":
+        attributes["local_constructor"] = local_constructor
+    ir.add_component(
+        Component(
+            "control",
+            "sandbox-environment-variable",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    return "sandbox-environment-variable", control_id
+
+
+def add_typescript_openai_sandbox_environment_from_arguments(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    text: str,
+    argument_body: str,
+    argument_body_offset: int,
+    local_constructor: str,
+    manifest_name: str,
+    immutable_literal_bindings: dict[str, TypeScriptLiteralStringBinding],
+) -> None:
+    """Add exact Manifest environment controls from literal environment objects."""
+    arguments = typescript_call_arguments(argument_body, argument_body_offset)
+    if len(arguments) != 1:
+        return
+    config_expression, config_offset = arguments[0]
+    environment_property = typescript_object_property_expression_location(
+        config_expression,
+        "environment",
+        config_offset,
+    )
+    if environment_property is None:
+        return
+    environment_expression, _, environment_value_offset = environment_property
+    environment_items = typescript_literal_object_items(
+        environment_expression,
+        environment_value_offset,
+    )
+    for property_text, property_offset in environment_items:
+        property_value = typescript_named_object_property(property_text)
+        if property_value is None:
+            continue
+        environment_variable, value_expression = property_value
+        value = typescript_string_literal_value(value_expression)
+        value_resolution = "literal"
+        if value is None:
+            identifier = re.fullmatch(
+                r"\s*([A-Za-z_$][\w$]*)\s*",
+                typescript_code_mask(value_expression),
+            )
+            if identifier is None:
+                continue
+            binding = immutable_literal_bindings.get(identifier.group(1))
+            if binding is None or binding.declaration_end > property_offset:
+                continue
+            value = binding.value
+            value_resolution = "immutable-module-literal-binding"
+        line = line_at(text, property_offset)
+        add_typescript_openai_sandbox_environment_control(
+            ir,
+            relative=relative,
+            lines=lines,
+            line=line,
+            local_constructor=local_constructor,
+            environment_variable=environment_variable,
+            value=value,
+            value_resolution=value_resolution,
+            symbol_identity=f"{manifest_name}.environment.{environment_variable}@{line}",
+        )
+
+
 def add_typescript_openai_sandbox_extension_runtime_control(
     ir: RepositoryIR,
     *,
@@ -16441,7 +16562,7 @@ def typescript_graph(
     )
     immutable_literal_bindings = (
         typescript_immutable_module_literal_string_bindings(text)
-        if "Manifest" in text and "extraPathGrants" in text
+        if "Manifest" in text and ("extraPathGrants" in text or "environment" in text)
         else {}
     )
     tool_matches = list(TS_TOOL_ASSIGNMENT.finditer(code))
@@ -16631,6 +16752,48 @@ def typescript_graph(
             manifest_name=manifest_name,
             immutable_literal_bindings=immutable_literal_bindings,
         )
+        add_typescript_openai_sandbox_environment_from_arguments(
+            ir,
+            relative=relative,
+            lines=lines,
+            text=text,
+            argument_body=text[opening + 1 : end - 1],
+            argument_body_offset=opening + 1,
+            local_constructor=local_constructor,
+            manifest_name=manifest_name,
+            immutable_literal_bindings=immutable_literal_bindings,
+        )
+    for local_constructor in sorted(manifest_imports):
+        return_manifest = re.compile(rf"\breturn\s+new\s+{re.escape(local_constructor)}\s*\(")
+        for match in return_manifest.finditer(code):
+            opening = code.find("(", match.start(), match.end())
+            end = typescript_balanced_end(code, opening, "(", ")")
+            if end is None:
+                continue
+            start_line = line_at(text, match.start())
+            manifest_name = f"manifestReturn@{start_line}"
+            add_typescript_openai_sandbox_path_grants_from_arguments(
+                ir,
+                relative=relative,
+                lines=lines,
+                text=text,
+                argument_body=text[opening + 1 : end - 1],
+                argument_body_offset=opening + 1,
+                local_constructor=local_constructor,
+                manifest_name=manifest_name,
+                immutable_literal_bindings=immutable_literal_bindings,
+            )
+            add_typescript_openai_sandbox_environment_from_arguments(
+                ir,
+                relative=relative,
+                lines=lines,
+                text=text,
+                argument_body=text[opening + 1 : end - 1],
+                argument_body_offset=opening + 1,
+                local_constructor=local_constructor,
+                manifest_name=manifest_name,
+                immutable_literal_bindings=immutable_literal_bindings,
+            )
     sandbox_client_bindings: dict[str, tuple[str, str]] = {}
     sandbox_runtime_edge_analysis: dict[str, str] = {}
     sandbox_session_bindings: dict[str, tuple[str, str]] = {}

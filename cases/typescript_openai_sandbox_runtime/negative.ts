@@ -113,4 +113,7 @@ const unknownGrantManifest = new UnknownManifest({
       readOnly: true,
     },
   ],
+  environment: {
+    NODE_ENV: 'unknown',
+  },
 });

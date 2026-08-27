@@ -4101,15 +4101,15 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     assert set(path_grants) == {
         (
             "positive.ts",
-            159,
-            "ts:positive.ts#control:grantManifest.extraPathGrant0@159",
+            160,
+            "ts:positive.ts#control:grantManifest.extraPathGrant0@160",
         ),
     }
     grant = path_grants[
         (
             "positive.ts",
-            159,
-            "ts:positive.ts#control:grantManifest.extraPathGrant0@159",
+            160,
+            "ts:positive.ts#control:grantManifest.extraPathGrant0@160",
         )
     ]
     assert grant.attributes == {
@@ -4126,6 +4126,64 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         "sandbox_policy": "openai-agents-sdk-sandbox",
         "scope": "production",
         "description": "Shared skill bundle.",
+    }
+
+    manifest_environment = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control" and component.name == "sandbox-environment-variable"
+    }
+    assert set(manifest_environment) == {
+        (
+            "positive.ts",
+            166,
+            "ts:positive.ts#control:grantManifest.environment.NODE_ENV@166",
+        ),
+        (
+            "positive.ts",
+            167,
+            "ts:positive.ts#control:grantManifest.environment.SANDBOX_TOKEN@167",
+        ),
+    }
+    assert manifest_environment[
+        (
+            "positive.ts",
+            166,
+            "ts:positive.ts#control:grantManifest.environment.NODE_ENV@166",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-manifest-environment",
+        "module": "@openai/agents/sandbox",
+        "constructor": "Manifest",
+        "imported_symbol": "Manifest",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "environment",
+        "environment_variable": "NODE_ENV",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": "production",
+        "value_resolution": "immutable-module-literal-binding",
+        "value": "integration",
+    }
+    assert manifest_environment[
+        (
+            "positive.ts",
+            167,
+            "ts:positive.ts#control:grantManifest.environment.SANDBOX_TOKEN@167",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-manifest-environment",
+        "module": "@openai/agents/sandbox",
+        "constructor": "Manifest",
+        "imported_symbol": "Manifest",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "environment",
+        "environment_variable": "SANDBOX_TOKEN",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": "production",
+        "value_resolution": "literal",
+        "value_redacted": True,
     }
 
     runtime_edges = {
@@ -4254,6 +4312,12 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         component.evidence.path == "negative.ts"
         and component.kind == "control"
         and component.name == "sandbox-path-grant"
+        for component in ir.components
+    )
+    assert not any(
+        component.evidence.path == "negative.ts"
+        and component.kind == "control"
+        and component.name == "sandbox-environment-variable"
         for component in ir.components
     )
     assert not ir.findings
