@@ -3967,6 +3967,7 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         ("positive.ts", 49, "ts:positive.ts#control:conditionalClient@49"),
         ("positive.ts", 76, "ts:positive.ts#control:extensionClient@76"),
         ("positive.ts", 87, "ts:positive.ts#control:inlineCreatedSession@87"),
+        ("positive.ts", 150, "ts:positive.ts#control:exposedPortClient@150"),
     }
     assert controls[
         ("positive.ts", 12, "ts:positive.ts#control:directClient@12")
@@ -3988,6 +3989,9 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     ]
     inline_created = controls[
         ("positive.ts", 87, "ts:positive.ts#control:inlineCreatedSession@87")
+    ]
+    exposed_port_runtime = controls[
+        ("positive.ts", 150, "ts:positive.ts#control:exposedPortClient@150")
     ]
     assert conditional.attributes["sandbox_runtime"] == "conditional-local"
     assert conditional.attributes["sandbox_runtime_options"] == ["docker-local", "unix-local"]
@@ -4028,6 +4032,66 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     assert inline_created.attributes["constructor"] == "DockerSandboxClient"
     assert inline_created.attributes["resolution"] == "exact-openai-sandbox-local-import"
     assert inline_created.attributes["sandbox_runtime"] == "docker-local"
+    assert exposed_port_runtime.attributes["constructor"] == "DockerSandboxClient"
+    assert exposed_port_runtime.attributes["sandbox_runtime"] == "docker-local"
+
+    network_exposures = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control" and component.name == "sandbox-network-exposure"
+    }
+    assert set(network_exposures) == {
+        (
+            "positive.ts",
+            152,
+            "ts:positive.ts#control:exposedPortClient.exposedPorts@152",
+        ),
+    }
+    exposed_ports = network_exposures[
+        (
+            "positive.ts",
+            152,
+            "ts:positive.ts#control:exposedPortClient.exposedPorts@152",
+        )
+    ]
+    assert exposed_ports.attributes == {
+        "analysis": "typescript-openai-sandbox-exposed-ports",
+        "module": "@openai/agents/sandbox/local",
+        "constructor": "DockerSandboxClient",
+        "imported_symbol": "DockerSandboxClient",
+        "resolution": "exact-openai-sandbox-local-import",
+        "configuration": "exposedPorts",
+        "network_exposure": "explicit-exposed-ports",
+        "ports": [3000, 8080],
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": "production",
+    }
+    assert [
+        (
+            relationship.source_id,
+            relationship.target_id,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            relationship.attributes,
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "control"
+        and relationship.source_name == "sandbox-runtime"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "sandbox-network-exposure"
+    ] == [
+        (
+            "ts:positive.ts#control:exposedPortClient@150",
+            "ts:positive.ts#control:exposedPortClient.exposedPorts@152",
+            "positive.ts",
+            152,
+            {
+                "analysis": "typescript-openai-sandbox-exposed-ports",
+                "configuration": "exposedPorts",
+            },
+        )
+    ]
 
     runtime_edges = {
         (
@@ -4144,6 +4208,11 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     assert not any(
         relationship.evidence.path == "negative.ts"
         and relationship.target_name == "sandbox-runtime"
+        for relationship in ir.relationships
+    )
+    assert not any(
+        relationship.evidence.path == "negative.ts"
+        and relationship.target_name == "sandbox-network-exposure"
         for relationship in ir.relationships
     )
     assert not ir.findings

@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-26T23:48:18.856063+00:00",
+  "generated_at": "2026-08-27T00:02:24.530376+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "5505f80efe20c69badcc5bf4164d5481fedadb96d824e70b7f1c969bb23f6c72",
+    "labels_sha256": "7e628c3bc243ebfa697933656fb9fbb92187f9d62e3ddc27cf30caa32a63b208",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 1789,
-  "passed": 1789,
+  "labels": 1795,
+  "passed": 1795,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -579,9 +579,9 @@
       "recall": 1.0
     },
     "IR-TS-OPENAI-SANDBOX": {
-      "tp": 135,
+      "tp": 140,
       "fp": 0,
-      "tn": 17,
+      "tn": 18,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -16369,6 +16369,33 @@
       "passed": true
     },
     {
+      "id": "typescript-openai-sandbox-exposed-port-runtime-control-local",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-exposed-port-control-local",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-exposed-port-runtime-edge-local",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
       "id": "typescript-openai-sandbox-rebound-client-control-local-negative",
       "check_id": "IR-TS-OPENAI-SANDBOX",
       "expected": false,
@@ -16459,6 +16486,15 @@
       "passed": true
     },
     {
+      "id": "typescript-openai-sandbox-unknown-exposed-port-control-local-negative",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
       "id": "typescript-openai-sandbox-unix-inline-control-docs-basic-real",
       "check_id": "IR-TS-OPENAI-SANDBOX",
       "expected": true,
@@ -16487,6 +16523,24 @@
     },
     {
       "id": "typescript-openai-sandbox-agent-unix-inline-edge-toppage-real",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-exposed-port-control-docs-real",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-exposed-port-runtime-edge-docs-real",
       "check_id": "IR-TS-OPENAI-SANDBOX",
       "expected": true,
       "observed": true,

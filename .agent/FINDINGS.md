@@ -291,6 +291,12 @@
   delegation edge. This recovers OpenAI Agents JS nested sandbox-agent-as-tool examples while
   unknown runConfig sessions remain unresolved. The public IR truth set now covers 1,789 passing
   labels.
+- Literal numeric `exposedPorts` arrays on exact unshadowed OpenAI Agents JS local sandbox-client
+  constructors are sandbox network-exposure evidence. They are represented as
+  `sandbox-network-exposure` controls linked from the corresponding `sandbox-runtime`, so reviewers
+  can see deliberate sandbox port publication without conflating it with host-local network
+  execution. Unknown same-named constructors and nonliteral port arrays remain unresolved, and the
+  public IR truth set now covers 1,795 passing labels.
 - Source-release verification now treats packaged GitHub workflow examples as content contracts, not
   only required filenames. The sdist verifier checks that the benchmark workflow emits, validates,
   and uploads verifier JSON while staying read-only; the policy gate keeps its policy/summary/expiry

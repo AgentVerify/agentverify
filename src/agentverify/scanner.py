@@ -12953,11 +12953,27 @@ def typescript_named_object_property(property_text: str) -> tuple[str, str] | No
 
 def typescript_object_property_expression(body: str, name: str) -> str | None:
     """Return one unambiguous direct property expression from a literal object."""
-    values = []
-    for property_text, _ in typescript_object_items(body):
+    found = typescript_object_property_expression_location(body, name)
+    return found[0] if found is not None else None
+
+
+def typescript_object_property_expression_location(
+    body: str, name: str, body_offset: int = 0
+) -> tuple[str, int, int] | None:
+    """Return one direct property expression plus property/value offsets."""
+    values: list[tuple[str, int, int]] = []
+    for property_text, property_offset in typescript_object_items(body, body_offset):
         match = re.match(rf"\s*{re.escape(name)}\s*:", typescript_code_mask(property_text))
         if match:
-            values.append(property_text[match.end() :].strip())
+            value = property_text[match.end() :]
+            leading = len(value) - len(value.lstrip())
+            values.append(
+                (
+                    value.strip(),
+                    property_offset,
+                    property_offset + match.end() + leading,
+                )
+            )
     return values[0] if len(values) == 1 else None
 
 
@@ -13048,6 +13064,27 @@ def typescript_literal_identifier_arguments(expression: str) -> list[str] | None
     if any(re.fullmatch(r"[A-Za-z_$][\w$]*", item) is None for item in identifiers):
         return None
     return identifiers
+
+
+def typescript_literal_number_arguments(expression: str) -> list[int] | None:
+    """Return a literal TypeScript numeric array only when every item is an integer."""
+    code = typescript_code_mask(expression)
+    opening = len(code) - len(code.lstrip())
+    if opening >= len(code) or code[opening] != "[":
+        return None
+    end = typescript_balanced_end(code, opening, "[", "]")
+    if end is None:
+        return None
+    suffix = code[end:].strip()
+    if suffix and not re.fullmatch(r"as\s+const", suffix):
+        return None
+    numbers: list[int] = []
+    for item, _ in typescript_call_arguments(expression[opening + 1 : end - 1]):
+        item = item.strip()
+        if re.fullmatch(r"\d+", item) is None:
+            return None
+        numbers.append(int(item))
+    return numbers
 
 
 def typescript_parameter_binding_is_declared(text: str, name: str) -> bool:
@@ -15803,6 +15840,108 @@ def add_typescript_openai_sandbox_runtime_control(
     return "sandbox-runtime", control_id
 
 
+def add_typescript_openai_sandbox_exposed_ports_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    constructor: str,
+    local_constructor: str,
+    ports: list[int],
+    symbol_identity: str,
+    runtime_control: tuple[str, str] | None = None,
+) -> tuple[str, str]:
+    """Add an exact OpenAI Agents JS sandbox exposed-port control."""
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    attributes = {
+        "analysis": "typescript-openai-sandbox-exposed-ports",
+        "module": "@openai/agents/sandbox/local",
+        "constructor": constructor,
+        "imported_symbol": constructor,
+        "resolution": "exact-openai-sandbox-local-import",
+        "configuration": "exposedPorts",
+        "network_exposure": "explicit-exposed-ports",
+        "ports": ports,
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": source_scope(relative),
+    }
+    if local_constructor != constructor:
+        attributes["local_constructor"] = local_constructor
+    ir.add_component(
+        Component(
+            "control",
+            "sandbox-network-exposure",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    if runtime_control is not None:
+        runtime_name, runtime_id = runtime_control
+        ir.add_relationship(
+            Relationship(
+                "control",
+                runtime_name,
+                "configured-by",
+                "control",
+                "sandbox-network-exposure",
+                Evidence(relative, line, excerpt(lines, line)),
+                {
+                    "analysis": "typescript-openai-sandbox-exposed-ports",
+                    "configuration": "exposedPorts",
+                },
+                source_id=runtime_id,
+                target_id=control_id,
+            )
+        )
+    return "sandbox-network-exposure", control_id
+
+
+def add_typescript_openai_sandbox_exposed_ports_from_arguments(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    text: str,
+    argument_body: str,
+    argument_body_offset: int,
+    constructor: str,
+    local_constructor: str,
+    symbol_base: str,
+    runtime_control: tuple[str, str] | None = None,
+) -> tuple[str, str] | None:
+    """Add an exposedPorts control from literal sandbox-client constructor arguments."""
+    arguments = typescript_call_arguments(argument_body, argument_body_offset)
+    if len(arguments) != 1:
+        return None
+    config_expression, config_offset = arguments[0]
+    exposed_ports = typescript_object_property_expression_location(
+        config_expression,
+        "exposedPorts",
+        config_offset,
+    )
+    if exposed_ports is None:
+        return None
+    ports_expression, property_offset, _ = exposed_ports
+    ports = typescript_literal_number_arguments(ports_expression)
+    if ports is None or not ports:
+        return None
+    line = line_at(text, property_offset)
+    return add_typescript_openai_sandbox_exposed_ports_control(
+        ir,
+        relative=relative,
+        lines=lines,
+        line=line,
+        constructor=constructor,
+        local_constructor=local_constructor,
+        ports=ports,
+        symbol_identity=f"{symbol_base}.exposedPorts@{line}",
+        runtime_control=runtime_control,
+    )
+
+
 def add_typescript_openai_sandbox_extension_runtime_control(
     ir: RepositoryIR,
     *,
@@ -16339,6 +16478,21 @@ def typescript_graph(
                 local_constructor=local_constructor,
                 symbol_identity=f"{variable_name}@{start_line}",
             )
+            opening = code.find("(", match.start(), match.end())
+            end = typescript_balanced_end(code, opening, "(", ")")
+            if end is not None:
+                add_typescript_openai_sandbox_exposed_ports_from_arguments(
+                    ir,
+                    relative=relative,
+                    lines=lines,
+                    text=text,
+                    argument_body=text[opening + 1 : end - 1],
+                    argument_body_offset=opening + 1,
+                    constructor=constructor,
+                    local_constructor=local_constructor,
+                    symbol_base=variable_name,
+                    runtime_control=runtime_control,
+                )
             sandbox_client_bindings[variable_name] = runtime_control
             sandbox_runtime_edge_analysis[runtime_control[1]] = (
                 "typescript-openai-sandbox-local-client"
@@ -16433,6 +16587,18 @@ def typescript_graph(
             constructor=constructor,
             local_constructor=local_constructor,
             symbol_identity=f"{session_name}@{start_line}",
+        )
+        add_typescript_openai_sandbox_exposed_ports_from_arguments(
+            ir,
+            relative=relative,
+            lines=lines,
+            text=text,
+            argument_body=text[opening + 1 : constructor_end - 1],
+            argument_body_offset=opening + 1,
+            constructor=constructor,
+            local_constructor=local_constructor,
+            symbol_base=session_name,
+            runtime_control=runtime_control,
         )
         sandbox_session_bindings[session_name] = runtime_control
         sandbox_runtime_edge_analysis[runtime_control[1]] = (
@@ -16850,6 +17016,19 @@ def typescript_graph(
                         local_constructor=local_constructor,
                         symbol_identity=f"sandbox-runtime@{client_line}",
                     )
+                    _, constructor_body, constructor_body_offset = new_expression
+                    add_typescript_openai_sandbox_exposed_ports_from_arguments(
+                        ir,
+                        relative=relative,
+                        lines=lines,
+                        text=text,
+                        argument_body=constructor_body,
+                        argument_body_offset=client_offset + constructor_body_offset,
+                        constructor=constructor,
+                        local_constructor=local_constructor,
+                        symbol_base="sandbox-runtime",
+                        runtime_control=runtime_control,
+                    )
                     binding = "inline-client"
         elif typescript_object_has_shorthand_property(sandbox_expression, "client"):
             runtime_control = sandbox_client_bindings.get("client")
@@ -16942,6 +17121,19 @@ def typescript_graph(
                                 constructor=constructor,
                                 local_constructor=local_constructor,
                                 symbol_identity=f"sandbox-runtime@{client_line}",
+                            )
+                            _, constructor_body, constructor_body_offset = new_expression
+                            add_typescript_openai_sandbox_exposed_ports_from_arguments(
+                                ir,
+                                relative=relative,
+                                lines=lines,
+                                text=text,
+                                argument_body=constructor_body,
+                                argument_body_offset=client_offset + constructor_body_offset,
+                                constructor=constructor,
+                                local_constructor=local_constructor,
+                                symbol_base="sandbox-runtime",
+                                runtime_control=runtime_control,
                             )
                             binding = "inline-client"
                 elif typescript_object_has_shorthand_property(sandbox_expression, "client"):

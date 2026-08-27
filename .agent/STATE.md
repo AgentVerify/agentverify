@@ -337,6 +337,12 @@ catalog workflows.
   delegated sandbox agents. Local positive/negative fixtures plus the real OpenAI Agents JS
   `examples/sandbox/sandbox-agents-as-tools.ts` pricing and rollout agent runConfig sessions raised
   regenerated public IR truth-set results to 1,789 passing labels.
+- Added exact OpenAI Agents JS sandbox `exposedPorts` inventory for literal numeric arrays on
+  unshadowed `@openai/agents/sandbox/local` client constructors. The scanner now records a
+  `sandbox-network-exposure` control linked back to the corresponding `sandbox-runtime`, while
+  unknown same-named clients remain unresolved. Local fixtures plus the real
+  `examples/docs/sandbox-agents/exposed-ports.ts` example raised regenerated public IR truth-set
+  results to 1,795 passing labels.
 - Strengthened source-release verification for the packaged GitHub workflow examples:
   `verify_sdist()` now checks benchmark verifier output/schema/upload, policy-gate
   permission/policy/summary/expiry arguments, and code-scanning SARIF permission/upload contracts.

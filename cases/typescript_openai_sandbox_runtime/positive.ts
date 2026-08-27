@@ -146,3 +146,8 @@ const asToolOrchestrator = new Agent({
     }),
   ],
 });
+
+const exposedPortClient = new DockerSandboxClient({
+  image: 'node:22-bookworm-slim',
+  exposedPorts: [3000, 8080],
+});

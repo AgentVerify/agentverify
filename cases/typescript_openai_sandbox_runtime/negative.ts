@@ -101,3 +101,7 @@ const unknownAsToolOrchestrator = new Agent({
     }),
   ],
 });
+
+const unknownExposedPortClient = new UnknownSandboxClient({
+  exposedPorts: [3000],
+});

@@ -14,6 +14,9 @@
   wrapper factories, type-driven symbols, generic same-named provider wrappers, or additional
   non-provider wildcard/reexport forms beyond the current exact framework-constructor,
   provider-factory, and literal-callable cases.
+- Continue OpenAI Agents JS sandbox policy extraction from pinned examples, especially exact
+  `Manifest` entries/environment/path-grant forms, only where source evidence can be anchored and
+  ambiguous helper/config composition remains unresolved.
 
 ## P2
 
