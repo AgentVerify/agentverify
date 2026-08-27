@@ -360,6 +360,12 @@ catalog workflows.
   without copying file contents into IR, and unknown Manifest constructors remain unresolved. Local
   fixtures plus real docs examples raised regenerated public IR truth-set results to 1,810 passing
   labels.
+- Added exact OpenAI Agents JS `sandbox.concurrencyLimits` runtime-option inventory for direct
+  integer literal limit objects attached to proven sandbox runtime client/session options. The
+  scanner now records `sandbox-concurrency-limit` controls linked back to the runtime control while
+  unknown clients and nonliteral limit values remain unresolved. Local fixtures plus the real
+  `examples/docs/sandbox-agents/manifest-concurrency.ts` example raised regenerated public IR
+  truth-set results to 1,815 passing labels.
 - Strengthened source-release verification for the packaged GitHub workflow examples:
   `verify_sdist()` now checks benchmark verifier output/schema/upload, policy-gate
   permission/policy/summary/expiry arguments, and code-scanning SARIF permission/upload contracts.

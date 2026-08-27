@@ -4093,6 +4093,59 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         )
     ]
 
+    concurrency_limits = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control" and component.name == "sandbox-concurrency-limit"
+    }
+    assert set(concurrency_limits) == {
+        (
+            "positive.ts",
+            184,
+            "ts:positive.ts#control:limitedConcurrencyAgent.concurrencyLimits@184",
+        ),
+    }
+    assert concurrency_limits[
+        (
+            "positive.ts",
+            184,
+            "ts:positive.ts#control:limitedConcurrencyAgent.concurrencyLimits@184",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-concurrency-limits",
+        "module": "@openai/agents",
+        "configuration": "sandbox.concurrencyLimits",
+        "limits": {"manifestEntries": 4, "localDirFiles": 16},
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": "production",
+    }
+    assert [
+        (
+            relationship.source_id,
+            relationship.target_id,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            relationship.attributes,
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "control"
+        and relationship.source_name == "sandbox-runtime"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "sandbox-concurrency-limit"
+    ] == [
+        (
+            "ts:positive.ts#control:directClient@12",
+            "ts:positive.ts#control:limitedConcurrencyAgent.concurrencyLimits@184",
+            "positive.ts",
+            184,
+            {
+                "analysis": "typescript-openai-sandbox-concurrency-limits",
+                "configuration": "sandbox.concurrencyLimits",
+            },
+        )
+    ]
+
     path_grants = {
         (component.evidence.path, component.evidence.line, component.symbol_id): component
         for component in ir.components
@@ -4375,6 +4428,13 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
             "ts:positive.ts#control:client@39",
             "session-shorthand",
         ),
+        (
+            "Limited Concurrency Sandbox",
+            "positive.ts",
+            181,
+            "ts:positive.ts#control:directClient@12",
+            "client",
+        ),
     }
     as_tool_edges = [
         edge
@@ -4414,6 +4474,12 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         component.evidence.path == "negative.ts"
         and component.kind == "control"
         and component.name == "sandbox-manifest-entry"
+        for component in ir.components
+    )
+    assert not any(
+        component.evidence.path == "negative.ts"
+        and component.kind == "control"
+        and component.name == "sandbox-concurrency-limit"
         for component in ir.components
     )
     assert not ir.findings

@@ -663,7 +663,7 @@ def test_cli_verifies_checked_in_benchmark_results(capsys) -> None:
         ),
         (
             "agent-ir",
-            1810,
+            1815,
             0,
             {
                 "observation_mismatch": 0,

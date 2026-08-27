@@ -316,6 +316,11 @@
   entries record direct or earlier immutable module-level literal source paths. Unknown Manifest
   constructors and dynamic local directory expressions remain unresolved. The public IR truth set now
   covers 1,810 passing labels.
+- Literal `sandbox.concurrencyLimits` in OpenAI Agents JS runtime options is sandbox manifest/source
+  materialization policy evidence when attached to an already proven exact sandbox runtime option.
+  Direct integer literal limit objects become `sandbox-concurrency-limit` controls linked from the
+  corresponding `sandbox-runtime`; unknown clients and nonliteral limit values remain unresolved.
+  The public IR truth set now covers 1,815 passing labels.
 - Source-release verification now treats packaged GitHub workflow examples as content contracts, not
   only required filenames. The sdist verifier checks that the benchmark workflow emits, validates,
   and uploads verifier JSON while staying read-only; the policy gate keeps its policy/summary/expiry

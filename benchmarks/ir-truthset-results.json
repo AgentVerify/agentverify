@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-27T00:38:55.615379+00:00",
+  "generated_at": "2026-08-27T01:00:49.259627+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "e1c9ccaabce0ae04888cb3144d0316b825cf12e9d853b68e85ac11851d90920d",
+    "labels_sha256": "25c394bb16211fc36b841a9ac77dd003165b3b035caff174250f54fa95c91eb7",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 1810,
-  "passed": 1810,
+  "labels": 1815,
+  "passed": 1815,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -579,9 +579,9 @@
       "recall": 1.0
     },
     "IR-TS-OPENAI-SANDBOX": {
-      "tp": 152,
+      "tp": 156,
       "fp": 0,
-      "tn": 21,
+      "tn": 22,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -16450,6 +16450,24 @@
       "passed": true
     },
     {
+      "id": "typescript-openai-sandbox-concurrency-limit-control-local",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-concurrency-limit-runtime-edge-local",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
       "id": "typescript-openai-sandbox-rebound-client-control-local-negative",
       "check_id": "IR-TS-OPENAI-SANDBOX",
       "expected": false,
@@ -16576,6 +16594,15 @@
       "passed": true
     },
     {
+      "id": "typescript-openai-sandbox-unknown-concurrency-limit-control-local-negative",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
       "id": "typescript-openai-sandbox-unix-inline-control-docs-basic-real",
       "check_id": "IR-TS-OPENAI-SANDBOX",
       "expected": true,
@@ -16613,6 +16640,24 @@
     },
     {
       "id": "typescript-openai-sandbox-exposed-port-control-docs-real",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-concurrency-limit-control-docs-real",
+      "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-sandbox-concurrency-limit-runtime-edge-docs-real",
       "check_id": "IR-TS-OPENAI-SANDBOX",
       "expected": true,
       "observed": true,

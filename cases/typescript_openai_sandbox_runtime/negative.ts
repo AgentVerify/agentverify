@@ -120,3 +120,17 @@ const unknownGrantManifest = new UnknownManifest({
     NODE_ENV: 'unknown',
   },
 });
+
+declare const runtimeLimit: number;
+const unknownLimitedConcurrencyAgent = new SandboxAgent({
+  name: 'Unknown Limited Concurrency Sandbox',
+});
+await run(unknownLimitedConcurrencyAgent, 'inspect with unknown limits', {
+  sandbox: {
+    client: unknownClient,
+    concurrencyLimits: {
+      manifestEntries: 4,
+      localDirFiles: runtimeLimit,
+    },
+  },
+});

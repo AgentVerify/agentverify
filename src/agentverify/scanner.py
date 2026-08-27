@@ -15955,6 +15955,111 @@ def add_typescript_openai_sandbox_exposed_ports_from_arguments(
     )
 
 
+def typescript_literal_number_object_properties(expression: str) -> dict[str, int] | None:
+    """Return a literal object of integer properties, or None when any value is dynamic."""
+    properties: dict[str, int] = {}
+    items = typescript_literal_object_items(expression)
+    if not items:
+        return None
+    for property_text, _ in items:
+        property_value = typescript_named_object_property(property_text)
+        if property_value is None:
+            return None
+        name, value_expression = property_value
+        value = typescript_code_mask(value_expression).strip()
+        if re.fullmatch(r"\d+", value) is None:
+            return None
+        properties[name] = int(value)
+    return properties or None
+
+
+def add_typescript_openai_sandbox_concurrency_limits_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    limits: dict[str, int],
+    symbol_identity: str,
+    runtime_control: tuple[str, str],
+) -> tuple[str, str]:
+    """Add an exact OpenAI Agents JS sandbox concurrency-limits control."""
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    attributes = {
+        "analysis": "typescript-openai-sandbox-concurrency-limits",
+        "module": "@openai/agents",
+        "configuration": "sandbox.concurrencyLimits",
+        "limits": limits,
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": source_scope(relative),
+    }
+    ir.add_component(
+        Component(
+            "control",
+            "sandbox-concurrency-limit",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    runtime_name, runtime_id = runtime_control
+    ir.add_relationship(
+        Relationship(
+            "control",
+            runtime_name,
+            "configured-by",
+            "control",
+            "sandbox-concurrency-limit",
+            Evidence(relative, line, excerpt(lines, line)),
+            {
+                "analysis": "typescript-openai-sandbox-concurrency-limits",
+                "configuration": "sandbox.concurrencyLimits",
+            },
+            source_id=runtime_id,
+            target_id=control_id,
+        )
+    )
+    return "sandbox-concurrency-limit", control_id
+
+
+def add_typescript_openai_sandbox_concurrency_limits_from_sandbox(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    text: str,
+    sandbox_expression: str,
+    sandbox_expression_offset: int,
+    symbol_base: str,
+    runtime_control: tuple[str, str] | None,
+) -> tuple[str, str] | None:
+    """Add literal sandbox.concurrencyLimits controls from exact sandbox runtime options."""
+    if runtime_control is None:
+        return None
+    limits_property = typescript_object_property_expression_location(
+        sandbox_expression,
+        "concurrencyLimits",
+        sandbox_expression_offset,
+    )
+    if limits_property is None:
+        return None
+    limits_expression, property_offset, _ = limits_property
+    limits = typescript_literal_number_object_properties(limits_expression)
+    if limits is None:
+        return None
+    line = line_at(text, property_offset)
+    return add_typescript_openai_sandbox_concurrency_limits_control(
+        ir,
+        relative=relative,
+        lines=lines,
+        line=line,
+        limits=limits,
+        symbol_identity=f"{symbol_base}.concurrencyLimits@{line}",
+        runtime_control=runtime_control,
+    )
+
+
 def typescript_string_literal_value(expression: str) -> str | None:
     """Resolve a direct single- or double-quoted TypeScript string literal."""
     match = re.fullmatch(r"\s*(['\"])([^\\\r\n]*?)\1\s*", expression, re.DOTALL)
@@ -17209,9 +17314,14 @@ def typescript_graph(
         if end is None:
             continue
         body = text[opening + 1 : end - 1]
-        sandbox_expression = typescript_object_property_expression(body, "sandbox")
-        if sandbox_expression is None:
+        sandbox_location = typescript_object_property_expression_location(
+            body,
+            "sandbox",
+            opening + 1,
+        )
+        if sandbox_location is None:
             continue
+        sandbox_expression, _, sandbox_expression_offset = sandbox_location
         runtime_control = None
         binding = None
         client_expression = typescript_object_property_expression(sandbox_expression, "client")
@@ -17224,6 +17334,16 @@ def typescript_graph(
             runtime_control = sandbox_client_bindings.get("client")
             binding = "runner-client-shorthand"
         if runtime_control is not None and binding is not None:
+            add_typescript_openai_sandbox_concurrency_limits_from_sandbox(
+                ir,
+                relative=relative,
+                lines=lines,
+                text=text,
+                sandbox_expression=sandbox_expression,
+                sandbox_expression_offset=sandbox_expression_offset,
+                symbol_base=runner_name,
+                runtime_control=runtime_control,
+            )
             sandbox_runner_bindings[runner_name] = (runtime_control, binding)
     agent_matches: list[tuple[re.Match[str], str, str | None, str, str]] = [
         (match, "Agent", None, match.group(1), "assignment")
@@ -17569,9 +17689,14 @@ def typescript_graph(
         agent_target = local_agents.get(agent_identifier.group(0))
         if not agent_target:
             continue
-        sandbox_expression = typescript_object_property_expression(arguments[2][0], "sandbox")
-        if sandbox_expression is None:
+        sandbox_location = typescript_object_property_expression_location(
+            arguments[2][0],
+            "sandbox",
+            arguments[2][1],
+        )
+        if sandbox_location is None:
             continue
+        sandbox_expression, _, sandbox_expression_offset = sandbox_location
         runtime_control = None
         binding = None
         client_expression = typescript_object_property_expression(sandbox_expression, "client")
@@ -17628,6 +17753,16 @@ def typescript_graph(
             binding = "session-shorthand"
         if runtime_control is None:
             continue
+        add_typescript_openai_sandbox_concurrency_limits_from_sandbox(
+            ir,
+            relative=relative,
+            lines=lines,
+            text=text,
+            sandbox_expression=sandbox_expression,
+            sandbox_expression_offset=sandbox_expression_offset,
+            symbol_base=agent_identifier.group(0),
+            runtime_control=runtime_control,
+        )
         runtime_name, runtime_id = runtime_control
         agent_name, agent_id = agent_target
         run_line = line_at(text, match.start())
@@ -17673,9 +17808,16 @@ def typescript_graph(
         runtime_control = None
         binding = None
         configuration = "runner-sandbox"
+        sandbox_expression = None
+        sandbox_expression_offset = None
         if runner_name in sandbox_runner_instances and len(arguments) >= 3:
-            sandbox_expression = typescript_object_property_expression(arguments[2][0], "sandbox")
-            if sandbox_expression is not None:
+            sandbox_location = typescript_object_property_expression_location(
+                arguments[2][0],
+                "sandbox",
+                arguments[2][1],
+            )
+            if sandbox_location is not None:
+                sandbox_expression, _, sandbox_expression_offset = sandbox_location
                 client_expression = typescript_object_property_expression(
                     sandbox_expression, "client"
                 )
@@ -17740,6 +17882,17 @@ def typescript_graph(
             if runner_binding is None:
                 continue
             runtime_control, binding = runner_binding
+        if sandbox_expression is not None and sandbox_expression_offset is not None:
+            add_typescript_openai_sandbox_concurrency_limits_from_sandbox(
+                ir,
+                relative=relative,
+                lines=lines,
+                text=text,
+                sandbox_expression=sandbox_expression,
+                sandbox_expression_offset=sandbox_expression_offset,
+                symbol_base=agent_identifier.group(0),
+                runtime_control=runtime_control,
+            )
         runtime_name, runtime_id = runtime_control
         agent_name, agent_id = agent_target
         run_line = line_at(text, match.start())

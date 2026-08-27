@@ -173,3 +173,17 @@ const grantManifest = new Manifest({
     SANDBOX_TOKEN: 'do-not-copy',
   },
 });
+
+const limitedConcurrencyAgent = new SandboxAgent({
+  name: 'Limited Concurrency Sandbox',
+  capabilities: [shell()],
+});
+await run(limitedConcurrencyAgent, 'inspect with bounded manifest work', {
+  sandbox: {
+    client: directClient,
+    concurrencyLimits: {
+      manifestEntries: 4,
+      localDirFiles: 16,
+    },
+  },
+});
