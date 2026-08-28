@@ -673,13 +673,14 @@ catalog workflows.
   labels pass 2,182/2,182, and the full schema-v147 engine benchmark refresh passes 71/71
   repositories with 2,846 relationships and 10,611 symbolized components.
 - Added exact OpenAI Agents JS hosted web-search policy inventory. Literal
-  `webSearchTool({ filters.allowedDomains, searchContextSize })` settings now emit
+  `webSearchTool({ filters.allowedDomains, searchContextSize, userLocation })` settings now emit
   `web-search-policy` controls on the source tool and matching `external-action` capability
   metadata; literal `Agent.modelSettings.providerData.include` arrays emit `provider-data-policy`
   controls and mark source inclusion for `web_search_call.action.sources`. Dynamic domain/context
-  and provider-data include bindings stay unresolved. Focused web-search policy labels pass 11/11,
-  full public IR labels pass 2,193/2,193, and the full schema-v148 engine benchmark refresh passes
-  71/71 repositories with 2,849 relationships and 10,614 symbolized components.
+  user-location and provider-data include bindings stay unresolved. Focused web-search policy
+  labels pass 19/19, full public IR labels pass 2,201/2,201, and the full schema-v149 engine
+  benchmark refresh passes 71/71 repositories with 2,850 relationships and 10,615 symbolized
+  components.
 
 ## Current findings
 

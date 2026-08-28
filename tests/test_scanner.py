@@ -4182,6 +4182,25 @@ def test_typescript_openai_web_search_tool_policy_is_exact() -> None:
         "execution_environment": "unresolved",
         "scope": "production",
     }
+    assert tools["webSearchTool@8"].attributes == {
+        "constructor": "webSearchTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "web_search_user_location_policy": "configured",
+        "web_search_user_location_type": "approximate",
+        "web_search_user_location_city": "New York",
+        "web_search_user_location_country": "US",
+        "web_search_policy": "configured",
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
+    assert tools["webSearchTool@17"].attributes == {
+        "constructor": "webSearchTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
 
     web_search_controls = [
         component
@@ -4191,11 +4210,16 @@ def test_typescript_openai_web_search_tool_policy_is_exact() -> None:
         and component.attributes.get("analysis")
         == "typescript-openai-agents-web-search-policy"
     ]
-    assert len(web_search_controls) == 1
-    assert web_search_controls[0].symbol_id == (
-        "ts:agent.ts#control:webSearchTool@10.webSearchPolicy@10"
+    assert {control.symbol_id for control in web_search_controls} == {
+        "ts:agent.ts#control:webSearchTool@10.webSearchPolicy@10",
+        "ts:location.ts#control:webSearchTool@8.webSearchPolicy@8",
+    }
+    domain_control = next(
+        control
+        for control in web_search_controls
+        if control.symbol_id == "ts:agent.ts#control:webSearchTool@10.webSearchPolicy@10"
     )
-    assert web_search_controls[0].attributes == {
+    assert domain_control.attributes == {
         "analysis": "typescript-openai-agents-web-search-policy",
         "module": "@openai/agents",
         "constructor": "webSearchTool",
@@ -4209,6 +4233,27 @@ def test_typescript_openai_web_search_tool_policy_is_exact() -> None:
         "web_search_allowed_domains": ["openai.com", "platform.openai.com"],
         "web_search_allowed_domain_count": 2,
         "web_search_context_size": "medium",
+        "web_search_policy": "configured",
+    }
+    location_control = next(
+        control
+        for control in web_search_controls
+        if control.symbol_id == "ts:location.ts#control:webSearchTool@8.webSearchPolicy@8"
+    )
+    assert location_control.attributes == {
+        "analysis": "typescript-openai-agents-web-search-policy",
+        "module": "@openai/agents",
+        "constructor": "webSearchTool",
+        "imported_symbol": "webSearchTool",
+        "configuration": "webSearchTool",
+        "search_scope": "web-search-tool",
+        "source_tool": "webSearchTool@8",
+        "source_tool_id": "ts:location.ts#tool:webSearchTool@8",
+        "scope": "production",
+        "web_search_user_location_policy": "configured",
+        "web_search_user_location_type": "approximate",
+        "web_search_user_location_city": "New York",
+        "web_search_user_location_country": "US",
         "web_search_policy": "configured",
     }
 
@@ -4275,6 +4320,17 @@ def test_typescript_openai_web_search_tool_policy_is_exact() -> None:
             "ts:agent.ts#control:docsSearcher.providerDataInclude@19",
             "agent.ts",
             19,
+        ),
+        (
+            "tool",
+            "webSearchTool@8",
+            "ts:location.ts#tool:webSearchTool@8",
+            "configured-by",
+            "control",
+            "web-search-policy",
+            "ts:location.ts#control:webSearchTool@8.webSearchPolicy@8",
+            "location.ts",
+            8,
         ),
     }
 

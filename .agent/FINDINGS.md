@@ -612,13 +612,14 @@
   values remain unresolved. The pinned web-search filters and apply-patch examples contribute real
   low-reasoning/verbosity evidence, bringing the public IR truth set to 2,182 passing labels.
 - OpenAI Agents JS hosted web-search scope is now reviewable when it is literal. Exact
-  `webSearchTool({ filters: { allowedDomains }, searchContextSize })` values emit
+  `webSearchTool({ filters: { allowedDomains }, searchContextSize, userLocation })` values emit
   `web-search-policy` controls on the source tool and copy the same allowlist/context metadata onto
   the `external-action` capability. Exact literal `Agent.modelSettings.providerData.include` arrays
   emit `provider-data-policy` controls and mark `web_search_sources_included` when source URLs are
   requested. Mutable domain arrays, mutable context sizes, and dynamic provider-data include arrays
-  remain unresolved. The local fixture plus pinned OpenAI Agents JS `web-search-filters.ts` example
-  bring the public IR truth set to 2,193 passing labels.
+  remain unresolved; dynamic `userLocation` bindings remain unresolved as well. The local fixture
+  plus pinned OpenAI Agents JS `web-search-filters.ts`, `web-search.ts`, and hosted-tools examples
+  bring the public IR truth set to 2,201 passing labels.
 
 ## Hypotheses
 

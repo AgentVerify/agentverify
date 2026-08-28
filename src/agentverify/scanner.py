@@ -19788,6 +19788,16 @@ def typescript_openai_web_search_attributes(body: str, constructor: str) -> dict
         context_size = typescript_string_literal_value(context_location[0])
         if context_size is not None:
             attributes["web_search_context_size"] = context_size
+    user_location_expression = typescript_object_property_expression(body, "userLocation")
+    if user_location_expression is not None:
+        user_location_attributes: dict[str, object] = {}
+        for field in ("type", "city", "region", "country", "timezone"):
+            value = typescript_literal_object_string_property(user_location_expression, field)
+            if value is not None:
+                user_location_attributes[f"web_search_user_location_{field}"] = value
+        if user_location_attributes:
+            attributes["web_search_user_location_policy"] = "configured"
+            attributes.update(user_location_attributes)
     if attributes:
         attributes["web_search_policy"] = "configured"
     return attributes

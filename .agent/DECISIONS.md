@@ -791,19 +791,21 @@
 ## OpenAI Agents JS web-search scope is tool/provider policy metadata
 
 - Decision: Record exact TypeScript OpenAI Agents SDK `webSearchTool` literal
-  `filters.allowedDomains` and `searchContextSize` values as `web-search-policy` controls on the
-  source tool and as metadata on its `external-action` capability. Separately record exact literal
-  `Agent.modelSettings.providerData.include` arrays as `provider-data-policy` controls on the
-  source agent, marking web-search source inclusion only when
+  `filters.allowedDomains`, `searchContextSize`, and `userLocation` values as `web-search-policy`
+  controls on the source tool and as metadata on its `external-action` capability. Separately
+  record exact literal `Agent.modelSettings.providerData.include` arrays as `provider-data-policy`
+  controls on the source agent, marking web-search source inclusion only when
   `web_search_call.action.sources` is explicitly requested.
 - Evidence: The local `typescript_openai_web_search_policy` fixture covers literal policy evidence
-  and dynamic-domain/dynamic-provider-data negatives. The pinned OpenAI Agents JS
+  and dynamic-domain/dynamic-user-location/dynamic-provider-data negatives. The pinned OpenAI
+  Agents JS
   `examples/tools/web-search-filters.ts` example sets an OpenAI-domain allowlist, medium search
-  context size, and `web_search_call.action.sources` inclusion.
+  context size, and `web_search_call.action.sources` inclusion; `examples/tools/web-search.ts`
+  sets an approximate New York user location; and `examples/docs/tools/hostedTools.ts` sets a
+  medium context size.
 - Alternative: Treat all `webSearchTool()` use as equally governed external access. Rejected
   because unfiltered hosted web search and domain-constrained search have materially different
-  review semantics, and source inclusion is an Agent provider-data setting rather than a tool
-  constructor setting.
-- Revisit when user-location policy, imported literal option objects, or OpenAI-compatible
-  provider-defined web search factories can be tied to exact source-tool/source-agent identity
-  without broad config matching.
+  review semantics, approximate user location has separate privacy/scope meaning, and source
+  inclusion is an Agent provider-data setting rather than a tool constructor setting.
+- Revisit when imported literal option objects or OpenAI-compatible provider-defined web search
+  factories can be tied to exact source-tool/source-agent identity without broad config matching.
