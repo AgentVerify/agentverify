@@ -3813,6 +3813,7 @@ def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> Non
             },
         ),
     ]
+
     tool_choice_controls = {
         (
             component.evidence.path,
@@ -4152,6 +4153,130 @@ def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> Non
     )
     assert [finding.rule_id for finding in ir.findings] == ["AV-APPROVAL002"]
     assert ir.findings[0].ir_path[:2] == ("agent:operator", "tool:assignedShell")
+
+
+def test_typescript_openai_web_search_tool_policy_is_exact() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_openai_web_search_policy")
+
+    tools = {
+        component.name: component
+        for component in ir.components
+        if component.kind == "tool" and component.attributes.get("constructor") == "webSearchTool"
+    }
+    assert tools["webSearchTool@10"].attributes == {
+        "constructor": "webSearchTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "web_search_filter_policy": "allowed-domains",
+        "web_search_allowed_domains": ["openai.com", "platform.openai.com"],
+        "web_search_allowed_domain_count": 2,
+        "web_search_context_size": "medium",
+        "web_search_policy": "configured",
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
+    assert tools["webSearchTool@27"].attributes == {
+        "constructor": "webSearchTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
+
+    web_search_controls = [
+        component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "web-search-policy"
+        and component.attributes.get("analysis")
+        == "typescript-openai-agents-web-search-policy"
+    ]
+    assert len(web_search_controls) == 1
+    assert web_search_controls[0].symbol_id == (
+        "ts:agent.ts#control:webSearchTool@10.webSearchPolicy@10"
+    )
+    assert web_search_controls[0].attributes == {
+        "analysis": "typescript-openai-agents-web-search-policy",
+        "module": "@openai/agents",
+        "constructor": "webSearchTool",
+        "imported_symbol": "webSearchTool",
+        "configuration": "webSearchTool",
+        "search_scope": "web-search-tool",
+        "source_tool": "webSearchTool@10",
+        "source_tool_id": "ts:agent.ts#tool:webSearchTool@10",
+        "scope": "production",
+        "web_search_filter_policy": "allowed-domains",
+        "web_search_allowed_domains": ["openai.com", "platform.openai.com"],
+        "web_search_allowed_domain_count": 2,
+        "web_search_context_size": "medium",
+        "web_search_policy": "configured",
+    }
+
+    provider_controls = [
+        component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "provider-data-policy"
+        and component.attributes.get("analysis")
+        == "typescript-openai-agents-provider-data-policy"
+    ]
+    assert len(provider_controls) == 1
+    assert provider_controls[0].symbol_id == (
+        "ts:agent.ts#control:docsSearcher.providerDataInclude@19"
+    )
+    assert provider_controls[0].attributes == {
+        "analysis": "typescript-openai-agents-provider-data-policy",
+        "module": "@openai/agents",
+        "constructor": "Agent",
+        "imported_symbol": "Agent",
+        "configuration": "Agent.modelSettings.providerData.include",
+        "settings_scope": "agent-provider-data",
+        "source_agent": "Docs searcher",
+        "source_agent_id": "ts:agent.ts#agent:docsSearcher",
+        "provider_data_include": ["web_search_call.action.sources"],
+        "scope": "production",
+        "web_search_sources_included": True,
+    }
+
+    policy_edges = {
+        (
+            relationship.source_kind,
+            relationship.source_name,
+            relationship.source_id,
+            relationship.relation,
+            relationship.target_kind,
+            relationship.target_name,
+            relationship.target_id,
+            relationship.evidence.path,
+            relationship.evidence.line,
+        )
+        for relationship in ir.relationships
+        if relationship.target_name in {"web-search-policy", "provider-data-policy"}
+    }
+    assert policy_edges == {
+        (
+            "tool",
+            "webSearchTool@10",
+            "ts:agent.ts#tool:webSearchTool@10",
+            "configured-by",
+            "control",
+            "web-search-policy",
+            "ts:agent.ts#control:webSearchTool@10.webSearchPolicy@10",
+            "agent.ts",
+            10,
+        ),
+        (
+            "agent",
+            "Docs searcher",
+            "ts:agent.ts#agent:docsSearcher",
+            "configured-by",
+            "control",
+            "provider-data-policy",
+            "ts:agent.ts#control:docsSearcher.providerDataInclude@19",
+            "agent.ts",
+            19,
+        ),
+    }
 
 
 def test_typescript_openai_computer_safety_check_auto_acknowledgement() -> None:

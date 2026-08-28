@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T21:02:35.430386+00:00",
+  "generated_at": "2026-08-28T21:32:26.689541+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "d66e0a1aca65cd24c971bc7b80b63877e597f3cec15696291e650d91f3416d56",
+    "labels_sha256": "6f37904d013ca604005158fe31b4423a70a42b53f690a33f72a95d4e252394f5",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 2182,
-  "passed": 2182,
+  "labels": 2193,
+  "passed": 2193,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -678,6 +678,14 @@
       "tp": 12,
       "fp": 0,
       "tn": 3,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-OPENAI-WEB-SEARCH-POLICY": {
+      "tp": 9,
+      "fp": 0,
+      "tn": 2,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -19734,6 +19742,105 @@
     {
       "id": "typescript-openai-agent-model-settings-apply-patch-edge-real",
       "check_id": "IR-TS-OPENAI-AGENT-MODEL-SETTINGS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-web-search-tool-policy-local",
+      "check_id": "IR-TS-OPENAI-WEB-SEARCH-POLICY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-web-search-capability-policy-local",
+      "check_id": "IR-TS-OPENAI-WEB-SEARCH-POLICY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-web-search-control-local",
+      "check_id": "IR-TS-OPENAI-WEB-SEARCH-POLICY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-web-search-edge-local",
+      "check_id": "IR-TS-OPENAI-WEB-SEARCH-POLICY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-provider-data-include-local",
+      "check_id": "IR-TS-OPENAI-WEB-SEARCH-POLICY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-provider-data-include-edge-local",
+      "check_id": "IR-TS-OPENAI-WEB-SEARCH-POLICY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-web-search-mutable-policy-local-negative",
+      "check_id": "IR-TS-OPENAI-WEB-SEARCH-POLICY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-provider-data-dynamic-include-local-negative",
+      "check_id": "IR-TS-OPENAI-WEB-SEARCH-POLICY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-web-search-tool-policy-real",
+      "check_id": "IR-TS-OPENAI-WEB-SEARCH-POLICY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-web-search-control-real",
+      "check_id": "IR-TS-OPENAI-WEB-SEARCH-POLICY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-provider-data-include-real",
+      "check_id": "IR-TS-OPENAI-WEB-SEARCH-POLICY",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

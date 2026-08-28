@@ -513,10 +513,13 @@ controls, schema v145 adds exact stable Runner-level `modelSettings.toolChoice` 
 controls, schema v146 adds exact OpenAI Agents JS `computerTool({ computer })` backend
 lifecycle metadata for external bindings, inline static objects, create/dispose per-run factories,
 and create-only factories, and schema v147 adds exact Agent-level
-`modelSettings.reasoning.effort` / `modelSettings.text.verbosity` controls. AgentVerify emits
+`modelSettings.reasoning.effort` / `modelSettings.text.verbosity` controls. Schema v148 adds exact
+OpenAI Agents JS `webSearchTool({ filters.allowedDomains, searchContextSize })` policy metadata
+plus literal `Agent.modelSettings.providerData.include` source-inclusion controls. AgentVerify emits
 distinct `trace-group`, `trace-id`, `tracing-disabled`, `agent-turn-limit`,
-`agent-model-override`, `trace-workflow`, `tool-choice-policy`, and `model-settings-policy` controls and
-configured-by edges without treating any trace identifier as conversation memory. The real
+`agent-model-override`, `trace-workflow`, `tool-choice-policy`, `model-settings-policy`,
+`web-search-policy`, and `provider-data-policy` controls and configured-by edges without treating
+any trace identifier as conversation memory. The real
 `routing.ts` example links the triage agent to
 its dynamic `conversationId` trace group, the real Codex tool example links two runs to a generated
 trace ID with a logged OpenAI platform trace URL, the real sandbox memory-generation example links
@@ -532,7 +535,9 @@ agents. The forcing-tool-use and programmatic tool-calling examples show Agent-l
 hosted MCP human-in-the-loop example shows Runner-level `required` initial-run and `auto`
 resume-run tool-choice policy. The computer-use HITL and basic computer-use examples distinguish
 singleton external computer bindings from per-request create/dispose browser factories, and the
-web-search filters and apply-patch examples expose low reasoning/verbosity model settings.
+web-search filters and apply-patch examples expose low reasoning/verbosity model settings. The
+web-search filters example also exposes a literal OpenAI-domain search allowlist, medium search
+context size, and explicit source-return inclusion.
 
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,

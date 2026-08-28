@@ -753,6 +753,12 @@ create-only factories are called out as missing disposal evidence.
 OpenAI Agents JS Agent-level model settings are also captured for exact literal nested values:
 `modelSettings.reasoning.effort` and `modelSettings.text.verbosity` emit source-agent
 `model-settings-policy` controls, while mutable or imported settings objects remain unresolved.
+For hosted web search, exact `webSearchTool({ filters: { allowedDomains }, searchContextSize })`
+objects emit `web-search-policy` controls on the tool and copy the same scope metadata onto the
+`external-action` capability. Exact literal `Agent.modelSettings.providerData.include` arrays emit
+`provider-data-policy` controls, including explicit `web_search_sources_included` evidence when the
+agent requests `web_search_call.action.sources`. Dynamic domain/context/include bindings remain
+unresolved.
 OpenAI Agents Python run-state approval decisions are now inventoried separately from approval-policy
 declaration: exact `Runner.run(...)` or `Runner.run_streamed(...)` results that produce a stable
 `result.to_state()` binding, plus exact `RunState.from_json/from_string(...)` restored states, emit

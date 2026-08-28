@@ -787,3 +787,23 @@
   provider choice and from whether tools are forced/auto-selected.
 - Revisit when: run-level model settings, Runner-level defaults, or imported model-settings objects
   can be tied to exact source-agent identity without broad config/name matching.
+
+## OpenAI Agents JS web-search scope is tool/provider policy metadata
+
+- Decision: Record exact TypeScript OpenAI Agents SDK `webSearchTool` literal
+  `filters.allowedDomains` and `searchContextSize` values as `web-search-policy` controls on the
+  source tool and as metadata on its `external-action` capability. Separately record exact literal
+  `Agent.modelSettings.providerData.include` arrays as `provider-data-policy` controls on the
+  source agent, marking web-search source inclusion only when
+  `web_search_call.action.sources` is explicitly requested.
+- Evidence: The local `typescript_openai_web_search_policy` fixture covers literal policy evidence
+  and dynamic-domain/dynamic-provider-data negatives. The pinned OpenAI Agents JS
+  `examples/tools/web-search-filters.ts` example sets an OpenAI-domain allowlist, medium search
+  context size, and `web_search_call.action.sources` inclusion.
+- Alternative: Treat all `webSearchTool()` use as equally governed external access. Rejected
+  because unfiltered hosted web search and domain-constrained search have materially different
+  review semantics, and source inclusion is an Agent provider-data setting rather than a tool
+  constructor setting.
+- Revisit when user-location policy, imported literal option objects, or OpenAI-compatible
+  provider-defined web search factories can be tied to exact source-tool/source-agent identity
+  without broad config matching.

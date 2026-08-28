@@ -17265,6 +17265,45 @@ def add_typescript_openai_agent_model_settings_control(
     return "model-settings-policy", control_id
 
 
+def add_typescript_openai_agent_provider_data_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    source_agent: tuple[str, str],
+    provider_data_include: list[str],
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS Agent modelSettings.providerData governance evidence."""
+    source_agent_name, source_agent_id = source_agent
+    attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-provider-data-policy",
+        "module": "@openai/agents",
+        "constructor": "Agent",
+        "imported_symbol": "Agent",
+        "configuration": "Agent.modelSettings.providerData.include",
+        "settings_scope": "agent-provider-data",
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "provider_data_include": provider_data_include,
+        "scope": source_scope(relative),
+    }
+    if "web_search_call.action.sources" in provider_data_include:
+        attributes["web_search_sources_included"] = True
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "provider-data-policy",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    return "provider-data-policy", control_id
+
+
 def add_typescript_openai_as_tool_model_override_control(
     ir: RepositoryIR,
     *,
@@ -17377,6 +17416,27 @@ def typescript_literal_nested_object_string_property(
             return None
         expression, _, offset = location
     return typescript_string_literal_value(expression)
+
+
+def typescript_literal_nested_object_string_array_property_location(
+    body: str,
+    *,
+    body_offset: int,
+    path: tuple[str, ...],
+) -> tuple[list[str], int, int] | None:
+    """Resolve a nested direct string-array property from literal TypeScript objects."""
+    expression = body
+    offset = body_offset
+    property_offset = body_offset
+    for name in path:
+        location = typescript_object_property_expression_location(expression, name, offset)
+        if location is None:
+            return None
+        expression, property_offset, offset = location
+    values = typescript_literal_string_arguments(expression)
+    if values is None or any(value is None for value in values):
+        return None
+    return [value for value in values if value is not None], property_offset, offset
 
 
 def add_typescript_openai_trace_id_control(
@@ -19159,6 +19219,7 @@ def add_typescript_tool_observation(
     computer_provider_attributes = typescript_openai_computer_provider_attributes(
         call_body, constructor
     )
+    web_search_attributes = typescript_openai_web_search_attributes(call_body, constructor)
     execution_environment = "unresolved"
     if constructor in TS_OPENAI_SANDBOX_CAPABILITY_FACTORIES:
         execution_environment = "sdk-sandbox"
@@ -19198,6 +19259,7 @@ def add_typescript_tool_observation(
         **approval_predicate_attributes,
         **safety_check_attributes,
         **computer_provider_attributes,
+        **web_search_attributes,
         "execution_environment": execution_environment,
         "scope": source_scope(relative),
         **(
@@ -19229,6 +19291,8 @@ def add_typescript_tool_observation(
     if constructor == "computerTool":
         capability_attributes.update(safety_check_attributes)
         capability_attributes.update(computer_provider_attributes)
+    if constructor == "webSearchTool":
+        capability_attributes.update(web_search_attributes)
     if constructor == "applyPatchTool":
         capability_attributes["write_access"] = True
     for capability in TS_OPENAI_BUILTIN_TOOL_CAPABILITIES.get(constructor, ()):
@@ -19280,6 +19344,51 @@ def add_typescript_tool_observation(
                 "human-approval",
                 approval_evidence,
                 source_id=tool_id,
+            )
+        )
+    if web_search_attributes:
+        policy_id = source_symbol(
+            "ts",
+            relative,
+            "control",
+            f"{tool_name}.webSearchPolicy@{line}",
+        )
+        policy_attributes = {
+            "analysis": "typescript-openai-agents-web-search-policy",
+            "module": "@openai/agents",
+            "constructor": "webSearchTool",
+            "imported_symbol": "webSearchTool",
+            "configuration": "webSearchTool",
+            "search_scope": "web-search-tool",
+            "source_tool": tool_name,
+            "source_tool_id": tool_id,
+            "scope": source_scope(relative),
+            **web_search_attributes,
+        }
+        ir.add_component(
+            Component(
+                "control",
+                "web-search-policy",
+                evidence,
+                policy_attributes,
+                policy_id,
+            )
+        )
+        ir.add_relationship(
+            Relationship(
+                "tool",
+                tool_name,
+                "configured-by",
+                "control",
+                "web-search-policy",
+                evidence,
+                {
+                    "analysis": "typescript-openai-agents-web-search-policy",
+                    "configuration": "webSearchTool",
+                    **web_search_attributes,
+                },
+                source_id=tool_id,
+                target_id=policy_id,
             )
         )
     if approval_bypass_environment_names:
@@ -19656,6 +19765,31 @@ def typescript_openai_computer_provider_attributes(
                 attributes["computer_dispose_receives_run_context"] = True
             if "computer" in dispose_names:
                 attributes["computer_dispose_receives_computer"] = True
+    return attributes
+
+
+def typescript_openai_web_search_attributes(body: str, constructor: str) -> dict[str, object]:
+    """Resolve exact OpenAI Agents JS webSearchTool policy metadata."""
+    if constructor != "webSearchTool":
+        return {}
+    attributes: dict[str, object] = {}
+    domains_location = typescript_literal_nested_object_string_array_property_location(
+        body,
+        body_offset=0,
+        path=("filters", "allowedDomains"),
+    )
+    if domains_location is not None:
+        domains, _, _ = domains_location
+        attributes["web_search_filter_policy"] = "allowed-domains"
+        attributes["web_search_allowed_domains"] = domains
+        attributes["web_search_allowed_domain_count"] = len(domains)
+    context_location = typescript_object_property_expression_location(body, "searchContextSize")
+    if context_location is not None:
+        context_size = typescript_string_literal_value(context_location[0])
+        if context_size is not None:
+            attributes["web_search_context_size"] = context_size
+    if attributes:
+        attributes["web_search_policy"] = "configured"
     return attributes
 
 
@@ -20692,6 +20826,57 @@ def typescript_graph(
                             target_id=model_settings_id,
                         )
                     )
+                provider_data_include_location = (
+                    typescript_literal_nested_object_string_array_property_location(
+                        model_settings_expression,
+                        body_offset=model_settings_expression_offset,
+                        path=("providerData", "include"),
+                    )
+                )
+                if provider_data_include_location is not None:
+                    provider_data_include, include_property_offset, _ = (
+                        provider_data_include_location
+                    )
+                    if provider_data_include:
+                        provider_data_line = line_at(text, include_property_offset)
+                        provider_data_name, provider_data_id = (
+                            add_typescript_openai_agent_provider_data_control(
+                                ir,
+                                relative=relative,
+                                lines=lines,
+                                line=provider_data_line,
+                                source_agent=(agent_name, agent_id),
+                                provider_data_include=provider_data_include,
+                                symbol_identity=(
+                                    f"{agent_identity}.providerDataInclude@{provider_data_line}"
+                                ),
+                            )
+                        )
+                        provider_data_attributes: dict[str, object] = {
+                            "analysis": "typescript-openai-agents-provider-data-policy",
+                            "configuration": "Agent-modelSettings-providerData.include",
+                            "binding": "providerData.include",
+                            "provider_data_include": provider_data_include,
+                        }
+                        if "web_search_call.action.sources" in provider_data_include:
+                            provider_data_attributes["web_search_sources_included"] = True
+                        ir.add_relationship(
+                            Relationship(
+                                "agent",
+                                agent_name,
+                                "configured-by",
+                                "control",
+                                provider_data_name,
+                                Evidence(
+                                    relative,
+                                    provider_data_line,
+                                    excerpt(lines, provider_data_line),
+                                ),
+                                provider_data_attributes,
+                                source_id=agent_id,
+                                target_id=provider_data_id,
+                            )
+                        )
         if binding_kind == "assignment":
             assigned_agents[variable_name].append(
                 (match.start(), match.end(), agent_name, agent_id)
