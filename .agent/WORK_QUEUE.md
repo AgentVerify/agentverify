@@ -18,8 +18,8 @@
   where evidence remains exact, especially additional Manifest/sandbox policy fields, additional
   `MemorySession`/server-managed conversation implementation semantics, or agent/session
   composition edges beyond the now-covered `client.create(...)`, `defaultManifest`, top-level
-  `session`, exact `conversationId`, and exact `previousResponseId` bindings, without broadening
-  into ambiguous helper/config composition.
+  `session`, exact `conversationId`, exact `previousResponseId`, and same-block `result.history`
+  bindings, without broadening into ambiguous helper/config composition.
 
 ## P2
 
@@ -38,6 +38,10 @@
   regeneration still spends minutes in broad repository scans. A full selected-path experiment
   failed cross-file-dependent labels, so the next credible acceleration needs dependency-aware path
   expansion or scan-result reuse rather than label files only.
+- Explore exact interprocedural OpenAI Agents JS history-state continuation only if it can remain
+  source-proven. The real `examples/docs/running-agents/chatLoop.ts` pattern stores `result.history`
+  in a caller-owned variable across repeated helper calls, but the current same-block scanner should
+  not infer that without a narrowly validated function/call-state model.
 
 ## Deferred until access/authorization
 

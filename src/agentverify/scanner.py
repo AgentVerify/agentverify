@@ -16399,6 +16399,42 @@ def add_typescript_openai_previous_response_control(
     return "conversation-continuity", control_id
 
 
+def add_typescript_openai_history_continuity_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    result_binding: str,
+    history_binding: str,
+    source_agent: tuple[str, str],
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS run-history continuity evidence."""
+    source_agent_name, source_agent_id = source_agent
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "conversation-continuity",
+            Evidence(relative, line, excerpt(lines, line)),
+            {
+                "analysis": "typescript-openai-agents-history-continuity",
+                "module": "@openai/agents",
+                "configuration": "run.history",
+                "result_binding": result_binding,
+                "history_binding": history_binding,
+                "source_agent": source_agent_name,
+                "source_agent_id": source_agent_id,
+                "state_scope": "openai-run-history-continuity",
+                "scope": source_scope(relative),
+            },
+            control_id,
+        )
+    )
+    return "conversation-continuity", control_id
+
+
 def typescript_string_literal_value(expression: str) -> str | None:
     """Resolve a direct single- or double-quoted TypeScript string literal."""
     match = re.fullmatch(r"\s*(['\"])([^\\\r\n]*?)\1\s*", expression, re.DOTALL)
@@ -18945,6 +18981,62 @@ def typescript_graph(
                 symbol_identity=f"{previous_response_id_name}@{line}",
             )
         )
+    history_continuity_bindings: dict[str, list[tuple[tuple[str, str], int]]] = defaultdict(list)
+    history_binding_patterns = (
+        re.compile(
+            r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*(?::\s*[^=;\n]+)?=\s*"
+            r"([A-Za-z_$][\w$]*)\s*\.\s*history\b"
+        ),
+        re.compile(r"(?<![\w$.])([A-Za-z_$][\w$]*)\s*=\s*([A-Za-z_$][\w$]*)\s*\.\s*history\b"),
+    )
+    seen_history_bindings: set[tuple[str, int]] = set()
+    for pattern_index, pattern in enumerate(history_binding_patterns):
+        for match in pattern.finditer(code):
+            history_name = match.group(1)
+            result_name = match.group(2)
+            if pattern_index == 1 and re.search(
+                r"\b(?:const|let|var)\s+$",
+                code[max(0, match.start() - 24) : match.start()],
+            ):
+                continue
+            if (history_name, match.start()) in seen_history_bindings:
+                continue
+            source = openai_agents_run_result_bindings.get(result_name)
+            if source is None:
+                continue
+            if re.search(
+                rf"(?<![\w$.]){re.escape(history_name)}\s*=(?!=)",
+                code[match.end() :],
+            ):
+                next_use = re.search(
+                    rf"\b[A-Za-z_$][\w$]*\s*\(\s*[^,]+,\s*{re.escape(history_name)}\s*(?:,|\))",
+                    code[match.end() :],
+                )
+                next_assignment = re.search(
+                    rf"(?<![\w$.]){re.escape(history_name)}\s*=(?!=)",
+                    code[match.end() :],
+                )
+                if next_assignment is not None and (
+                    next_use is None or next_assignment.start() < next_use.start()
+                ):
+                    continue
+            line = line_at(text, match.start())
+            seen_history_bindings.add((history_name, match.start()))
+            history_continuity_bindings[history_name].append(
+                (
+                    add_typescript_openai_history_continuity_control(
+                        ir,
+                        relative=relative,
+                        lines=lines,
+                        line=line,
+                        result_binding=result_name,
+                        history_binding=history_name,
+                        source_agent=source,
+                        symbol_identity=f"{history_name}.history@{line}",
+                    ),
+                    match.end(),
+                )
+            )
 
     def add_conversation_session_relationship(
         *,
@@ -19041,6 +19133,30 @@ def typescript_graph(
                 )
         return None
 
+    def conversation_continuity_from_input(
+        argument: str,
+        argument_offset: int,
+    ) -> tuple[tuple[str, str], str, str] | None:
+        input_code = typescript_code_mask(argument).strip()
+        input_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", input_code)
+        if input_identifier is None:
+            return None
+        input_name = input_identifier.group(0)
+        for continuity_control, assignment_end in reversed(
+            history_continuity_bindings.get(input_name, [])
+        ):
+            if assignment_end > argument_offset:
+                continue
+            if re.search(
+                rf"(?<![\w$.]){re.escape(input_name)}\s*=(?!=)",
+                code[assignment_end:argument_offset],
+            ):
+                continue
+            return continuity_control, "history-input", (
+                "typescript-openai-agents-history-continuity"
+            )
+        return None
+
     for match in re.finditer(r"\b([A-Za-z_$][\w$]*)\s*\(", code):
         if match.start() > 0 and code[match.start() - 1] == ".":
             continue
@@ -19051,7 +19167,7 @@ def typescript_graph(
         if end is None:
             continue
         arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
-        if len(arguments) < 3:
+        if len(arguments) < 2:
             continue
         agent_argument = typescript_code_mask(arguments[0][0]).strip()
         agent_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", agent_argument)
@@ -19061,6 +19177,21 @@ def typescript_graph(
         if not agent_target:
             continue
         run_line = line_at(text, match.start())
+        if conversation_continuity := conversation_continuity_from_input(
+            arguments[1][0],
+            arguments[1][1],
+        ):
+            continuity_control, binding, analysis = conversation_continuity
+            add_conversation_session_relationship(
+                agent_target=agent_target,
+                run_line=run_line,
+                session_control=continuity_control,
+                configuration="run-history-input",
+                binding=binding,
+                analysis=analysis,
+            )
+        if len(arguments) < 3:
+            continue
         if conversation_session := conversation_session_from_options(arguments[2][0]):
             session_control, binding, analysis = conversation_session
             add_conversation_session_relationship(
@@ -19211,6 +19342,21 @@ def typescript_graph(
         if not agent_target:
             continue
         run_line = line_at(text, match.start())
+        if len(arguments) >= 2 and (
+            conversation_continuity := conversation_continuity_from_input(
+                arguments[1][0],
+                arguments[1][1],
+            )
+        ):
+            continuity_control, binding, analysis = conversation_continuity
+            add_conversation_session_relationship(
+                agent_target=agent_target,
+                run_line=run_line,
+                session_control=continuity_control,
+                configuration="runner-run-history-input",
+                binding=binding,
+                analysis=analysis,
+            )
         if len(arguments) >= 3 and (
             conversation_session := conversation_session_from_options(arguments[2][0])
         ):

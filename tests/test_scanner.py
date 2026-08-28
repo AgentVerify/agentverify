@@ -5310,6 +5310,8 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
     }
     assert set(continuity_controls) == {
         ("positive.ts", 23, "ts:positive.ts#control:previousResponseId@23"),
+        ("positive.ts", 29, "ts:positive.ts#control:messages.history@29"),
+        ("positive.ts", 35, "ts:positive.ts#control:carriedItems.history@35"),
     }
     assert continuity_controls[
         ("positive.ts", 23, "ts:positive.ts#control:previousResponseId@23")
@@ -5320,6 +5322,30 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         "result_binding": "first",
         "previous_response_id_binding": "previousResponseId",
         "state_scope": "openai-previous-response-continuity",
+        "scope": "production",
+    }
+    assert continuity_controls[("positive.ts", 29, "ts:positive.ts#control:messages.history@29")].attributes == {
+        "analysis": "typescript-openai-agents-history-continuity",
+        "module": "@openai/agents",
+        "configuration": "run.history",
+        "result_binding": "historyFirst",
+        "history_binding": "messages",
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "state_scope": "openai-run-history-continuity",
+        "scope": "production",
+    }
+    assert continuity_controls[
+        ("positive.ts", 35, "ts:positive.ts#control:carriedItems.history@35")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-history-continuity",
+        "module": "@openai/agents",
+        "configuration": "run.history",
+        "result_binding": "carriedFirst",
+        "history_binding": "carriedItems",
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "state_scope": "openai-run-history-continuity",
         "scope": "production",
     }
 
@@ -5369,6 +5395,28 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
                 ("analysis", "typescript-openai-agents-previous-response"),
                 ("binding", "previousResponseId-shorthand"),
                 ("configuration", "run-session"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            31,
+            "ts:positive.ts#control:messages.history@29",
+            (
+                ("analysis", "typescript-openai-agents-history-continuity"),
+                ("binding", "history-input"),
+                ("configuration", "run-history-input"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            36,
+            "ts:positive.ts#control:carriedItems.history@35",
+            (
+                ("analysis", "typescript-openai-agents-history-continuity"),
+                ("binding", "history-input"),
+                ("configuration", "runner-run-history-input"),
             ),
         ),
     }

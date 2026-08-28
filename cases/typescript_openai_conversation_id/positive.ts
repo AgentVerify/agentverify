@@ -24,3 +24,13 @@ const previousResponseId = first.lastResponseId;
 await run(agent, 'continue with the previous response id', {
   previousResponseId,
 });
+
+const historyFirst = await run(agent, 'start with history continuity');
+const messages = historyFirst.history;
+messages.push({ role: 'user', content: 'continue from history' });
+await run(agent, messages);
+
+let carriedItems = [{ role: 'user', content: 'start carried history' }];
+const carriedFirst = await run(agent, carriedItems);
+carriedItems = carriedFirst.history;
+await runner.run(agent, carriedItems);

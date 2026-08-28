@@ -48,3 +48,15 @@ const reassignedPreviousResponseId = first.lastResponseId;
 await run(agent, 'continue reassigned first run state', {
   previousResponseId: reassignedPreviousResponseId,
 });
+
+const looseMessages = [{ role: 'user', content: 'not from a run result' }];
+await run(agent, looseMessages);
+
+const unknownHistoryResult = await unknownRun(agent, 'unknown history run');
+const unknownMessages = unknownHistoryResult.history;
+await run(agent, unknownMessages);
+
+const historyFirst = await run(agent, 'history before reassigned input');
+let reassignedMessages = historyFirst.history;
+reassignedMessages = [];
+await run(agent, reassignedMessages);

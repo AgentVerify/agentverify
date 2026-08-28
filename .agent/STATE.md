@@ -446,6 +446,14 @@ catalog workflows.
   reassigned run-result bindings remain unresolved. Local fixtures plus the real
   `examples/docs/running-agents/previousResponseId.ts` example raised regenerated public IR
   truth-set results to 1,904 passing labels.
+- Added exact OpenAI Agents JS `result.history` conversation-continuity inventory. A local input
+  array binding can become a `conversation-continuity` control only when it is assigned from
+  `.history` on a stable result binding returned by an exact imported `run(agent, ...)` call, and a
+  later direct `run(agent, historyInput)` or `runner.run(agent, historyInput)` links the consuming
+  agent back to that control if the binding has not been reassigned. Loose arrays, unknown run
+  functions, and reassigned history inputs remain unresolved. Local fixtures plus the real
+  `examples/tools/web-search.ts` and `examples/agent-patterns/llm-as-a-judge.ts` examples raised
+  regenerated public IR truth-set results to 1,916 passing labels.
 
 ## Current findings
 
@@ -531,7 +539,7 @@ Continue toward the highest-value local P1/P2 work: additional exact OpenAI Agen
 session-governance policy fields, real-world framework coverage without broad name matching,
 concrete CI/editor integration fixtures, or release-artifact checks that stay local until release
 publishing is explicit. For OpenAI session work, keep local `MemorySession`, server-managed
-`conversationId`, and previous-response continuity semantics distinct. For performance work, use
-`--progress` plus focused `--scan-label-paths` only when the target labels are self-contained;
-broader benchmark acceleration likely needs dependency-aware path expansion or scan-result reuse to
-preserve cross-file evidence.
+`conversationId`, `previousResponseId`, and same-block `result.history` continuity semantics
+distinct. For performance work, use `--progress` plus focused `--scan-label-paths` only when the
+target labels are self-contained; broader benchmark acceleration likely needs dependency-aware path
+expansion or scan-result reuse to preserve cross-file evidence.

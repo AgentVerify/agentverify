@@ -408,6 +408,14 @@
   and reassigned result bindings remain unresolved. The real pinned
   `examples/docs/running-agents/previousResponseId.ts` example validates 1 control and 1
   composition edge; the public IR truth set now covers 1,904 passing labels.
+- OpenAI Agents JS `result.history` can prove conversation continuity when a stable history input
+  binding is assigned from a stable exact `run(agent, ...)` result and then consumed by a later
+  direct `run(agent, input)` or `runner.run(agent, input)` before reassignment. AgentVerify records a
+  `conversation-continuity` control and a `configured-by` edge from the consuming agent to that
+  control. Loose arrays, unknown run functions, and reassigned history inputs remain unresolved.
+  Real pinned `openai/openai-agents-js` examples `examples/tools/web-search.ts` and
+  `examples/agent-patterns/llm-as-a-judge.ts` validate 2 controls and 2 composition edges; the
+  public IR truth set now covers 1,916 passing labels.
 
 ## Hypotheses
 
