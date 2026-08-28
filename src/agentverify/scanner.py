@@ -16475,6 +16475,64 @@ def add_typescript_openai_run_state_continuity_control(
     return "conversation-continuity", control_id
 
 
+def add_typescript_openai_run_state_approval_decision_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    result_binding: str,
+    state_binding: str | None,
+    source_agent: tuple[str, str],
+    decision: str,
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS run-state approval/rejection handling evidence."""
+    source_agent_name, source_agent_id = source_agent
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    binding = state_binding if state_binding is not None else "inline-result-state"
+    attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-run-state-approval-decision",
+        "module": "@openai/agents",
+        "configuration": f"run.state.{decision}",
+        "result_binding": result_binding,
+        "state_binding": binding,
+        "decision": decision,
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "state_scope": "openai-run-state-approval-decision",
+        "scope": source_scope(relative),
+    }
+    ir.add_component(
+        Component(
+            "control",
+            "approval-decision",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "agent",
+            source_agent_name,
+            "governed-by",
+            "control",
+            "approval-decision",
+            Evidence(relative, line, excerpt(lines, line)),
+            {
+                "analysis": "typescript-openai-agents-run-state-approval-decision",
+                "configuration": f"run.state.{decision}",
+                "binding": binding,
+                "decision": decision,
+            },
+            source_id=source_agent_id,
+            target_id=control_id,
+        )
+    )
+    return "approval-decision", control_id
+
+
 def typescript_string_literal_value(expression: str) -> str | None:
     """Resolve a direct single- or double-quoted TypeScript string literal."""
     match = re.fullmatch(r"\s*(['\"])([^\\\r\n]*?)\1\s*", expression, re.DOTALL)
@@ -19176,6 +19234,7 @@ def typescript_graph(
                 )
             )
     state_continuity_bindings: dict[str, list[tuple[tuple[str, str], int]]] = defaultdict(list)
+    run_state_binding_sources: dict[str, list[tuple[str, tuple[str, str], int]]] = defaultdict(list)
 
     def latest_openai_agents_run_result_source(
         result_name: str,
@@ -19260,6 +19319,57 @@ def typescript_graph(
                     match.end(),
                 )
             )
+            run_state_binding_sources[state_name].append((result_name, source, match.end()))
+
+    approval_decision_pattern = re.compile(
+        r"\b([A-Za-z_$][\w$]*)(?:\s*\.\s*state)?\s*\.\s*(approve|reject)\s*\("
+    )
+    seen_approval_decisions: set[tuple[int, str, str]] = set()
+    for match in approval_decision_pattern.finditer(code):
+        receiver_name = match.group(1)
+        decision = match.group(2)
+        has_inline_state = ".state" in code[match.start() : match.start(2)]
+        line = line_at(text, match.start())
+        if has_inline_state:
+            source = latest_openai_agents_run_result_source(receiver_name, match.start())
+            if source is None:
+                continue
+            result_name = receiver_name
+            state_binding = None
+        else:
+            source_record = None
+            for candidate_result, candidate_source, assignment_end in reversed(
+                run_state_binding_sources.get(receiver_name, [])
+            ):
+                if assignment_end > match.start():
+                    continue
+                if re.search(
+                    rf"(?<![\w$.]){re.escape(receiver_name)}\s*=(?!=)",
+                    code[assignment_end : match.start()],
+                ):
+                    continue
+                source_record = (candidate_result, candidate_source)
+                break
+            if source_record is None:
+                continue
+            result_name, source = source_record
+            state_binding = receiver_name
+        decision_key = (match.start(), receiver_name, decision)
+        if decision_key in seen_approval_decisions:
+            continue
+        seen_approval_decisions.add(decision_key)
+        symbol_receiver = f"{result_name}.state" if state_binding is None else state_binding
+        add_typescript_openai_run_state_approval_decision_control(
+            ir,
+            relative=relative,
+            lines=lines,
+            line=line,
+            result_binding=result_name,
+            state_binding=state_binding,
+            source_agent=source,
+            decision=decision,
+            symbol_identity=f"{symbol_receiver}.{decision}@{line}",
+        )
 
     def add_conversation_session_relationship(
         *,

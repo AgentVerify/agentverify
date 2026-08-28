@@ -75,3 +75,23 @@ const namedStateResult = await run(agent, 'state before reassigned input');
 let reassignedState = namedStateResult.state;
 reassignedState = { opaque: true };
 await run(agent, reassignedState);
+
+const looseApprovalState = {
+  approve() {},
+  reject() {},
+};
+looseApprovalState.approve(interruption);
+looseApprovalState.reject(interruption);
+
+const unknownApprovalResult = await unknownRun(agent, 'unknown approval state');
+unknownApprovalResult.state.approve(interruption);
+unknownApprovalResult.state.reject(interruption);
+
+let staleApprovalResult = await run(agent, 'approval source before result reassignment');
+staleApprovalResult = await unknownRun(agent, 'reassigned approval state source');
+staleApprovalResult.state.approve(interruption);
+
+const reboundApprovalResult = await run(agent, 'approval state before reassigned input');
+let reboundApprovalState = reboundApprovalResult.state;
+reboundApprovalState = looseApprovalState;
+reboundApprovalState.approve(interruption);

@@ -286,3 +286,22 @@
 - Revisit when: predicate-aware approval-quality analysis needs a first-class delegated-tool node,
   or reporting rules need to reason about delegated-agent tools independently of the source/target
   agent relationship.
+
+## OpenAI run-state approval decisions require proven SDK state receivers
+
+- Decision: Record OpenAI Agents JS manual approval/rejection handling as `approval-decision`
+  controls only when `state.approve(...)`, `state.reject(...)`, `result.state.approve(...)`, or
+  `result.state.reject(...)` can be tied to a proven exact OpenAI Agents `run(...)` or
+  `Runner.run(...)` result state. Link the source agent to each decision control with
+  `governed-by`, and keep approval decisions separate from conversation-continuity resume controls.
+- Evidence: Local fixtures cover bound state, inline result state, loose approval-shaped objects,
+  unknown run results, stale result bindings, and rebound state bindings. Pinned OpenAI Agents JS
+  examples prove both bound-state decisions in
+  `examples/agent-patterns/human-in-the-loop-stream.ts` and inline `result.state` decisions in
+  `examples/mcp/hosted-mcp-human-in-the-loop.ts`.
+- Alternative: Treat every `.approve(...)`/`.reject(...)` receiver or every variable named `state`
+  as approval evidence. Rejected because ordinary application state and same-named helper objects
+  can have unrelated methods.
+- Revisit when: `RunState.fromString(agent, storedState)` can be linked back to serialized
+  `result.state` without broad string/dataflow inference, or when approval predicate analysis can
+  classify whether decisions cover specific risky tool calls.

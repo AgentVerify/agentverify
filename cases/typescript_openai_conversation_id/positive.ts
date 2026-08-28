@@ -44,3 +44,17 @@ interrupted = await run(agent, interrupted.state);
 let streamed = await run(agent, 'start named state resume', { stream: true });
 const resumeState = streamed.state;
 await runner.run(agent, resumeState, { stream: true });
+
+let interruptedApproval = await run(agent, 'start approval-state handling');
+const approvalState = interruptedApproval.state;
+for (const interruption of interruptedApproval.interruptions ?? []) {
+  approvalState.approve(interruption);
+  approvalState.reject(interruption);
+}
+await run(agent, approvalState);
+
+let inlineApproval = await run(agent, 'start inline approval-state handling');
+for (const interruption of inlineApproval.interruptions ?? []) {
+  inlineApproval.state.approve(interruption);
+  inlineApproval.state.reject(interruption);
+}

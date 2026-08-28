@@ -5370,6 +5370,7 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         ("positive.ts", 39, "ts:positive.ts#control:directStateFirst.state@39"),
         ("positive.ts", 42, "ts:positive.ts#control:interrupted.state@42"),
         ("positive.ts", 45, "ts:positive.ts#control:resumeState.state@45"),
+        ("positive.ts", 49, "ts:positive.ts#control:approvalState.state@49"),
     }
     assert continuity_controls[
         ("positive.ts", 23, "ts:positive.ts#control:previousResponseId@23")
@@ -5443,6 +5444,54 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         "scope": "production",
         "state_binding": "resumeState",
     }
+    assert continuity_controls[
+        ("positive.ts", 49, "ts:positive.ts#control:approvalState.state@49")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-run-state-continuity",
+        "module": "@openai/agents",
+        "configuration": "run.state",
+        "result_binding": "interruptedApproval",
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "state_scope": "openai-run-state-continuity",
+        "scope": "production",
+        "state_binding": "approvalState",
+    }
+
+    approval_decision_controls = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control" and component.name == "approval-decision"
+    }
+    assert set(approval_decision_controls) == {
+        ("positive.ts", 51, "ts:positive.ts#control:approvalState.approve@51"),
+        ("positive.ts", 52, "ts:positive.ts#control:approvalState.reject@52"),
+        ("positive.ts", 58, "ts:positive.ts#control:inlineApproval.state.approve@58"),
+        ("positive.ts", 59, "ts:positive.ts#control:inlineApproval.state.reject@59"),
+    }
+    assert approval_decision_controls[
+        ("positive.ts", 51, "ts:positive.ts#control:approvalState.approve@51")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-run-state-approval-decision",
+        "module": "@openai/agents",
+        "configuration": "run.state.approve",
+        "result_binding": "interruptedApproval",
+        "state_binding": "approvalState",
+        "decision": "approve",
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "state_scope": "openai-run-state-approval-decision",
+        "scope": "production",
+    }
+    assert approval_decision_controls[
+        ("positive.ts", 52, "ts:positive.ts#control:approvalState.reject@52")
+    ].attributes["decision"] == "reject"
+    assert approval_decision_controls[
+        ("positive.ts", 58, "ts:positive.ts#control:inlineApproval.state.approve@58")
+    ].attributes["state_binding"] == "inline-result-state"
+    assert approval_decision_controls[
+        ("positive.ts", 59, "ts:positive.ts#control:inlineApproval.state.reject@59")
+    ].attributes["configuration"] == "run.state.reject"
 
     edges = {
         (
@@ -5547,16 +5596,93 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
                 ("configuration", "runner-run-state-input"),
             ),
         ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            54,
+            "ts:positive.ts#control:approvalState.state@49",
+            (
+                ("analysis", "typescript-openai-agents-run-state-continuity"),
+                ("binding", "state-input"),
+                ("configuration", "run-state-input"),
+            ),
+        ),
+    }
+    approval_edges = {
+        (
+            relationship.source_name,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            relationship.target_id,
+            tuple(sorted(relationship.attributes.items())),
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "governed-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "approval-decision"
+    }
+    assert approval_edges == {
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            51,
+            "ts:positive.ts#control:approvalState.approve@51",
+            (
+                ("analysis", "typescript-openai-agents-run-state-approval-decision"),
+                ("binding", "approvalState"),
+                ("configuration", "run.state.approve"),
+                ("decision", "approve"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            52,
+            "ts:positive.ts#control:approvalState.reject@52",
+            (
+                ("analysis", "typescript-openai-agents-run-state-approval-decision"),
+                ("binding", "approvalState"),
+                ("configuration", "run.state.reject"),
+                ("decision", "reject"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            58,
+            "ts:positive.ts#control:inlineApproval.state.approve@58",
+            (
+                ("analysis", "typescript-openai-agents-run-state-approval-decision"),
+                ("binding", "inline-result-state"),
+                ("configuration", "run.state.approve"),
+                ("decision", "approve"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            59,
+            "ts:positive.ts#control:inlineApproval.state.reject@59",
+            (
+                ("analysis", "typescript-openai-agents-run-state-approval-decision"),
+                ("binding", "inline-result-state"),
+                ("configuration", "run.state.reject"),
+                ("decision", "reject"),
+            ),
+        ),
     }
     assert not any(
         component.evidence.path == "negative.ts"
         and component.kind == "control"
-        and component.name in {"conversation-session", "conversation-continuity"}
+        and component.name
+        in {"approval-decision", "conversation-session", "conversation-continuity"}
         for component in ir.components
     )
     assert not any(
         relationship.evidence.path == "negative.ts"
-        and relationship.target_name in {"conversation-session", "conversation-continuity"}
+        and relationship.target_name
+        in {"approval-decision", "conversation-session", "conversation-continuity"}
         for relationship in ir.relationships
     )
     assert not ir.findings

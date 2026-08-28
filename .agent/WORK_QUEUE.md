@@ -43,12 +43,12 @@
   source-proven. The real `examples/docs/running-agents/chatLoop.ts` pattern stores `result.history`
   in a caller-owned variable across repeated helper calls, but the current same-block scanner should
   not infer that without a narrowly validated function/call-state model.
-- Explore OpenAI Agents JS HITL approval-state governance only if it can distinguish SDK-native
-  approval callbacks, delegated-agent `asTool` approval metadata, manual `state.approve`/
-  `state.reject`, and automatic approval bypasses from generic same-named functions. The new
-  `result.state` continuity inventory provides the resume backbone, and `asTool({ needsApproval })`
-  is now inventoried on delegated-agent edges, but AgentVerify still does not claim approval quality
-  without predicate/action evidence.
+- Explore the remaining OpenAI Agents JS HITL approval-state gaps only if they can stay exact:
+  serialized/deserialized `RunState.fromString(agent, storedState)` handling, callback predicate
+  quality, and automatic approval bypasses. Direct `result.state` and bound-state
+  `state.approve`/`state.reject` decisions are now inventoried as `approval-decision` controls, and
+  `asTool({ needsApproval })` is now inventoried on delegated-agent edges, but AgentVerify still
+  does not claim approval quality without predicate/action evidence.
 
 ## Deferred until access/authorization
 

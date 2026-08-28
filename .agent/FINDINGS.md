@@ -442,6 +442,12 @@
   callback-valued delegated-agent approval forms; real pinned OpenAI Agents JS HITL examples
   validate callback-controlled `weatherAgent.asTool` delegation in both standard and streaming
   flows. The public IR truth set now covers 1,954 passing labels.
+- OpenAI Agents JS SDK-native approval decisions are now distinct IR evidence. Direct
+  `result.state.approve/reject` and bound-state `state.approve/reject` calls become
+  `approval-decision` controls only when the receiver state is sourced from an exact OpenAI Agents
+  run result; loose, unknown, stale, and rebound state receivers remain unresolved. Real pinned
+  examples validate both streaming HITL state decisions and hosted MCP HITL result-state decisions.
+  The public IR truth set now covers 1,965 passing labels.
 
 ## Hypotheses
 
