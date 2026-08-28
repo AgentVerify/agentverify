@@ -21,8 +21,8 @@
   `session`, exact `conversationId`, exact `previousResponseId`, same-block `result.history`,
   same-call history feedback, direct same-file agent aliases, and same-file `result.state` resume
   bindings, plus separately modeled `withTrace(..., { groupId/traceId })` and stable
-  `Runner({ groupId })` trace correlation, without broadening into ambiguous helper/config
-  composition.
+  `Runner({ groupId })` trace correlation plus stable `Runner({ tracingDisabled: true })`
+  observability-disablement evidence, without broadening into ambiguous helper/config composition.
 - Continue OpenAI Agents JS HITL and safety-governance extraction where evidence remains exact:
   richer `needsApproval` predicate quality, automatic approval bypasses, and `computerTool`
   `onSafetyCheck` callbacks that distinguish explicit user/policy review from pass-through
@@ -57,9 +57,9 @@
   and `examples/agent-patterns/routing.ts` direct triage-agent alias are now covered; dynamic
   routed-agent updates such as `agent = result.currentAgent ?? agent` remain unresolved.
 - Explore richer OpenAI Agents JS tracing only if it can stay source-proven: trace processors,
-  durable trace/export sinks, exported Runner factories, or governance edges that can connect
-  `trace-group`/`trace-id` evidence to actual audit storage without treating observability IDs as
-  memory/session continuity.
+  durable trace/export sinks, exported Runner factories, delegated-agent `runConfig` trace policy,
+  or governance edges that can connect `trace-group`/`trace-id`/`tracing-disabled` evidence to
+  actual audit storage without treating observability IDs as memory/session continuity.
 - Explore the remaining OpenAI Agents JS HITL approval-state gaps only if they can stay exact:
   compound callback predicate quality, automatic approval bypasses, and any more complex serialized
   state flows beyond same-file literal

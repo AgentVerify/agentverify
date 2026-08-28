@@ -547,6 +547,13 @@
   `examples/sandbox/memory-generation.ts` example links `Sandbox Memory Generation Demo` to its
   literal `sandbox-memory-generation-example` trace group; a local reassigned Runner remains
   unresolved.
+- OpenAI Agents JS Runner-level `tracingDisabled: true` is explicit observability policy evidence.
+  Exact stable `new Runner({ tracingDisabled: true })` instances now emit `tracing-disabled`
+  controls and configured-by edges for source-proven `.run(agent, ...)` calls, while explicit false
+  values and rebound Runner variables remain unresolved. The pinned SDK testing examples disable
+  tracing for `Weather assistant` and `Workspace assistant`, demonstrating why this belongs in IR
+  policy evidence rather than as an unconditional finding. The public IR truth set now covers 2,099
+  passing labels.
 
 ## Hypotheses
 

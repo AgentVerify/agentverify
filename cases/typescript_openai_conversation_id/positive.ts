@@ -133,3 +133,6 @@ const traceGroupedRunner = new Runner({
   groupId: runnerTraceGroupId,
 });
 await traceGroupedRunner.run(agent, 'runner trace grouped turn');
+
+const tracingDisabledRunner = new Runner({ tracingDisabled: true });
+await tracingDisabledRunner.run(agent, 'runner tracing disabled turn');

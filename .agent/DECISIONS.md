@@ -590,3 +590,21 @@
   when the exact SDK constructor and stable instance identity are proven.
 - Revisit when: exported Runner factories or shared Runner instances can be resolved without
   collapsing source-agent identity across unrelated `.run(...)` receivers.
+
+## OpenAI Agents JS Runner tracing disablement is explicit observability policy
+
+- Decision: Represent exact TypeScript OpenAI Agents SDK `new Runner({ tracingDisabled: true })`
+  configuration as a `tracing-disabled` control only when the `Runner` constructor is an
+  unshadowed exact SDK import, the Runner variable is stable, and a later `.run(agent, ...)` call on
+  the same variable supplies a source-proven Agent. Do not emit for `tracingDisabled: false` or
+  rebound Runner variables.
+- Evidence: The local conversation fixture covers a direct true positive, an explicit false
+  negative, and a reassigned Runner negative. The pinned OpenAI Agents JS
+  `examples/docs/testing/toolWorkflow.ts` and `examples/docs/testing/sandboxWorkflow.ts` examples
+  both disable tracing to avoid exporter/network behavior in scripted tests; AgentVerify links the
+  `Weather assistant` and `Workspace assistant` agents to those controls.
+- Alternative: Treat disabled tracing as an audit finding by default. Rejected for now because
+  examples often disable tracing intentionally in tests; the IR should preserve the governance fact
+  and let policy decide whether disabled tracing is acceptable for the repository scope.
+- Revisit when: run-level or delegated-agent `runConfig.tracingDisabled` can be attributed to exact
+  source agents without collapsing adapter/tool semantics.

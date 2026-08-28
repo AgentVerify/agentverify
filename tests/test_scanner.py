@@ -5698,6 +5698,39 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         "trace_id_binding": "traceId",
     }
 
+    tracing_disabled_controls = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control" and component.name == "tracing-disabled"
+    }
+    assert set(tracing_disabled_controls) == {
+        (
+            "positive.ts",
+            137,
+            "ts:positive.ts#control:tracingDisabledRunner.tracingDisabled@137:run138",
+        ),
+    }
+    assert tracing_disabled_controls[
+        (
+            "positive.ts",
+            137,
+            "ts:positive.ts#control:tracingDisabledRunner.tracingDisabled@137:run138",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-agents-tracing-disabled",
+        "module": "@openai/agents",
+        "constructor": "Runner",
+        "imported_symbol": "Runner",
+        "local_constructor": "Runner",
+        "configuration": "Runner.tracingDisabled",
+        "runner_binding": "tracingDisabledRunner",
+        "tracing_disabled": True,
+        "trace_scope": "openai-tracing",
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "scope": "production",
+    }
+
     approval_decision_controls = {
         (component.evidence.path, component.evidence.line, component.symbol_id): component
         for component in ir.components
@@ -6029,6 +6062,34 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
                 ("analysis", "typescript-openai-agents-trace-id"),
                 ("binding", "traceId-binding"),
                 ("configuration", "withTrace-traceId"),
+            ),
+        ),
+    }
+    tracing_disabled_edges = {
+        (
+            relationship.source_name,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            relationship.target_id,
+            tuple(sorted(relationship.attributes.items())),
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "configured-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "tracing-disabled"
+    }
+    assert tracing_disabled_edges == {
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            138,
+            "ts:positive.ts#control:tracingDisabledRunner.tracingDisabled@137:run138",
+            (
+                ("analysis", "typescript-openai-agents-tracing-disabled"),
+                ("binding", "tracingDisabled"),
+                ("configuration", "Runner-tracingDisabled"),
+                ("runner_binding", "tracingDisabledRunner"),
             ),
         ),
     }

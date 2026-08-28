@@ -132,3 +132,10 @@ await withTrace(
 let mutableRunner = new Runner({ groupId: 'mutable-runner-trace-group' });
 mutableRunner = unknownRunner;
 await mutableRunner.run(agent, 'runner variable was rebound before use');
+
+const observableRunner = new Runner({ tracingDisabled: false });
+await observableRunner.run(agent, 'runner tracing remains enabled');
+
+let mutableTracingRunner = new Runner({ tracingDisabled: true });
+mutableTracingRunner = unknownRunner;
+await mutableTracingRunner.run(agent, 'runner tracing disablement was rebound before use');
