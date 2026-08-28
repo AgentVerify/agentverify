@@ -559,16 +559,16 @@ catalog workflows.
   labels, full 2,044/2,044 IR labels, 71/71 engine repositories, checked benchmark verification,
   full `pytest -q` (298 passed), touched-file `ruff`, JSON parsing, diff whitespace checks, and
   `uv build` plus distribution smoke/source verification.
-- Added seven real OpenAI Agents JS built-in-tool approval labels for
-  `examples/docs/tools/localBuiltInTools.ts`: approval-enabled `shellTool` and `applyPatchTool`
-  components, their `human-approval` governed-by edges, their reachable `Local tools agent`
-  tool-use edges, and the editor-backed local filesystem write capability for literal
-  `applyPatchTool({ editor, ... })` options.
-- The public IR truth set now passes 2,051/2,051 labels (1,533 positives and 518 negatives). The
-  focused OpenAI built-in shell/apply-patch label slice passes 7/7.
+- Added twelve real OpenAI Agents JS built-in-tool approval labels for
+  `examples/docs/tools/localBuiltInTools.ts` and `examples/tools/apply-patch.ts`: approval-enabled
+  `shellTool` and `applyPatchTool` components, their `human-approval` governed-by edges, their
+  reachable `Local tools agent`/`Patch Assistant` tool-use edges, and editor-backed local filesystem
+  write capability evidence for literal `applyPatchTool({ editor, ... })` options.
+- The public IR truth set now passes 2,056/2,056 labels (1,538 positives and 518 negatives). The
+  focused OpenAI built-in shell/apply-patch label slice passes 12/12.
 - Validation for the apply-patch local-filesystem slice passed touched-file `ruff`, focused scanner
-  and CLI tests (3 passed), focused OpenAI built-in shell/apply-patch IR labels (7/7), full
-  2,051/2,051 public IR labels, full 71/71 engine benchmark refresh, checked benchmark
+  and CLI tests (3 passed), focused OpenAI built-in shell/apply-patch IR labels (12/12), full
+  2,056/2,056 public IR labels, full 71/71 engine benchmark refresh, checked benchmark
   verification, full `pytest -q` (298 passed), JSON parsing, diff whitespace checks, and `uv build`
   plus distribution smoke/source verification.
 

@@ -463,8 +463,9 @@
 - OpenAI Agents JS built-in local shell and patch tools are pinned as reachable approval-governed
   tools, not only as approval-bypass examples. The docs `localBuiltInTools.ts` example contributes
   approval-enabled `shellTool` and `applyPatchTool` components, `human-approval` governed-by edges,
-  `Local tools agent` reachability edges, and an editor-backed local filesystem write capability for
-  literal `applyPatchTool({ editor, ... })` options, raising the public IR truth set to 2,051 labels.
+  `Local tools agent`/`Patch Assistant` reachability edges, and editor-backed local filesystem write
+  capability evidence for literal `applyPatchTool({ editor, ... })` options, raising the public IR
+  truth set to 2,056 labels.
 - OpenAI Agents JS approval predicates can be made visible without overclaiming full approval
   coverage when the callback body is a shallow literal field predicate. AgentVerify now records
   prefix, contains, and literal-set predicate metadata for exact `needsApproval` callbacks across

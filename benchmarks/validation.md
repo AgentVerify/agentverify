@@ -1701,11 +1701,11 @@ Twenty-one OpenAI run-state rejection-message and helper-parameter labels pin Py
 literal-binding, template, and dynamic `rejection_message` metadata, the TypeScript `{ message }`
 reject-options equivalent, exact same-file helper-call decision provenance, and helper-derived
 run-state resume continuity.
-Seven real OpenAI Agents JS built-in-tool labels pin approval-enabled `shellTool` and
-`applyPatchTool` components, their human-approval edges, the reachable agent-tool edges from the
-local built-in tools documentation example, and the local filesystem write capability implied by
-literal `applyPatchTool({ editor, ... })` options.
-All 2,051 IR labels pass (1,533 positives and 518 negatives). The checked
+Twelve real OpenAI Agents JS built-in-tool labels pin approval-enabled `shellTool` and
+`applyPatchTool` components, their human-approval edges, reachable agent-tool edges from the local
+built-in tools documentation and workspace-editor examples, and the local filesystem write
+capability implied by literal `applyPatchTool({ editor, ... })` options.
+All 2,056 IR labels pass (1,538 positives and 518 negatives). The checked
 `benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
 breakdown, including the OpenAI Agents JS and Python safety-check labels added for
 `computerTool({ onSafetyCheck })` and `ComputerTool(on_safety_check=...)`, plus OpenAI Agents JS
