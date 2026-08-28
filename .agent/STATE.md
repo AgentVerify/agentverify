@@ -623,6 +623,12 @@ catalog workflows.
   unresolved. Focused turn-limit labels pass 9/9, full public IR labels pass 2,115/2,115, and the
   full schema-v139 engine benchmark refresh passes 71/71 repositories with 2,800 relationships and
   10,565 symbolized components.
+- Added exact OpenAI Agents JS delegated `asTool({ runConfig: { model, modelSettings } })` model
+  override inventory. Literal or immutable module-level model strings now emit
+  `agent-model-override` controls on the delegated agent with parent-agent, tool-name, provider, and
+  shallow literal reasoning/verbosity settings when present. Focused model-override labels pass 5/5,
+  full public IR labels pass 2,120/2,120, and the full schema-v140 engine benchmark refresh passes
+  71/71 repositories with 2,801 relationships and 10,566 symbolized components.
 
 ## Current findings
 
@@ -724,10 +730,13 @@ catalog workflows.
   delegated `agent.asTool({ runConfig: { tracingDisabled: true } })` calls are now represented as
   separate trace/observability governance evidence, not conversation memory. Delegated
   `agent.asTool({ runOptions: { maxTurns } })` calls additionally expose bounded delegated-run
-  execution as `agent-turn-limit` controls. Exact imported `withTrace` callbacks containing
+  execution as `agent-turn-limit` controls, and delegated
+  `agent.asTool({ runConfig: { model } })` calls expose model override policy as
+  `agent-model-override` controls. Exact imported `withTrace` callbacks containing
   source-proven SDK `run(agent, ...)` calls, exact Runner instances with source-proven
   `.run(agent, ...)` calls, and exact delegated-agent `asTool` adapters emit `trace-group`,
-  `trace-id`, `tracing-disabled`, or `agent-turn-limit` controls and configured-by edges.
+  `trace-id`, `tracing-disabled`, `agent-turn-limit`, or `agent-model-override` controls and
+  configured-by edges.
 
 ## Blockers
 
@@ -746,7 +755,7 @@ semantics distinct from trace-correlation `withTrace(..., { groupId/traceId })` 
 `Runner({ groupId })` evidence, plus explicit tracing disablement through stable
 `Runner({ tracingDisabled: true })`, delegated
 `asTool({ runConfig: { tracingDisabled: true } })`, and delegated
-`asTool({ runOptions: { maxTurns } })`. For OpenAI
+`asTool({ runOptions: { maxTurns } })` / `asTool({ runConfig: { model } })`. For OpenAI
 approval work, keep literal always-approval, callback-controlled
 approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
 approval metadata, literal predicate metadata, SDK state approval decisions, helper-parameter

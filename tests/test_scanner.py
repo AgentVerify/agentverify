@@ -3879,6 +3879,79 @@ def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> Non
             ),
         )
     }
+    model_override_controls = {
+        (
+            component.evidence.path,
+            component.evidence.line,
+            component.symbol_id,
+            tuple(sorted(component.attributes.items())),
+        )
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "agent-model-override"
+        and component.attributes.get("analysis")
+        == "typescript-openai-agents-astool-model-override"
+    }
+    assert model_override_controls == {
+        (
+            "agent.ts",
+            44,
+            "ts:agent.ts#control:worker.asTool.model@44:parent42",
+            (
+                ("adapter", "asTool"),
+                ("analysis", "typescript-openai-agents-astool-model-override"),
+                ("configuration", "asTool.runConfig.model"),
+                ("model", "gpt-5.4"),
+                ("model_resolution", "literal"),
+                ("module", "@openai/agents"),
+                ("override_scope", "delegated-agent-run"),
+                ("parent_agent", "operator"),
+                ("parent_agent_id", "ts:agent.ts#agent:operator"),
+                ("provider", "OpenAI"),
+                ("reasoning_effort", "low"),
+                ("scope", "production"),
+                ("source_agent", "worker"),
+                ("source_agent_id", "ts:agent.ts#agent:worker"),
+                ("text_verbosity", "low"),
+                ("tool_name", "worker_tool"),
+            ),
+        )
+    }
+    model_override_edges = {
+        (
+            relationship.source_name,
+            relationship.source_id,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            relationship.target_id,
+            tuple(sorted(relationship.attributes.items())),
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "configured-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "agent-model-override"
+    }
+    assert model_override_edges == {
+        (
+            "worker",
+            "ts:agent.ts#agent:worker",
+            "agent.ts",
+            44,
+            "ts:agent.ts#control:worker.asTool.model@44:parent42",
+            (
+                ("adapter", "asTool"),
+                ("analysis", "typescript-openai-agents-astool-model-override"),
+                ("binding", "model"),
+                ("configuration", "asTool-runConfig-model"),
+                ("model", "gpt-5.4"),
+                ("provider", "OpenAI"),
+                ("reasoning_effort", "low"),
+                ("text_verbosity", "low"),
+                ("tool_name", "worker_tool"),
+            ),
+        )
+    }
     assert (
         next(edge for edge in operator_edges if edge.target_name == "unrelatedShellTool").target_id
         is None

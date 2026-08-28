@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T17:32:00.116784+00:00",
+  "generated_at": "2026-08-28T17:56:54.184006+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "150766255c8cabeebb028629a46bd0c1562b168f9423f33a8045f1389b317842",
+    "labels_sha256": "f85c6215d3e1a6650852b825abef93e9be65259ca635984b08d0404d28d2e87e",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 2115,
-  "passed": 2115,
+  "labels": 2120,
+  "passed": 2120,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -566,6 +566,14 @@
       "tp": 2,
       "fp": 0,
       "tn": 5,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-OPENAI-ASTOOL-MODEL-OVERRIDE": {
+      "tp": 4,
+      "fp": 0,
+      "tn": 1,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -19102,6 +19110,51 @@
     {
       "id": "typescript-openai-astool-turn-limit-rollout-edge-real",
       "check_id": "IR-TS-OPENAI-ASTOOL-TURN-LIMIT",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-astool-model-override-control-local",
+      "check_id": "IR-TS-OPENAI-ASTOOL-MODEL-OVERRIDE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-astool-model-override-edge-local",
+      "check_id": "IR-TS-OPENAI-ASTOOL-MODEL-OVERRIDE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-astool-model-override-missing-local-negative",
+      "check_id": "IR-TS-OPENAI-ASTOOL-MODEL-OVERRIDE",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-astool-model-override-spanish-control-real",
+      "check_id": "IR-TS-OPENAI-ASTOOL-MODEL-OVERRIDE",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-astool-model-override-spanish-edge-real",
+      "check_id": "IR-TS-OPENAI-ASTOOL-MODEL-OVERRIDE",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

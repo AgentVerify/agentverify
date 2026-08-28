@@ -17056,6 +17056,75 @@ def add_typescript_openai_as_tool_turn_limit_control(
     return "agent-turn-limit", control_id
 
 
+def add_typescript_openai_as_tool_model_override_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    source_agent: tuple[str, str],
+    parent_agent: tuple[str, str],
+    tool_name: str | None,
+    model: str,
+    model_resolution: str,
+    reasoning_effort: str | None,
+    text_verbosity: str | None,
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS asTool runConfig model override evidence."""
+    source_agent_name, source_agent_id = source_agent
+    parent_agent_name, parent_agent_id = parent_agent
+    attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-astool-model-override",
+        "module": "@openai/agents",
+        "adapter": "asTool",
+        "configuration": "asTool.runConfig.model",
+        "model": model,
+        "model_resolution": model_resolution,
+        "provider": provider_for_model(model),
+        "override_scope": "delegated-agent-run",
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "parent_agent": parent_agent_name,
+        "parent_agent_id": parent_agent_id,
+        "scope": source_scope(relative),
+    }
+    if tool_name is not None:
+        attributes["tool_name"] = tool_name
+    if reasoning_effort is not None:
+        attributes["reasoning_effort"] = reasoning_effort
+    if text_verbosity is not None:
+        attributes["text_verbosity"] = text_verbosity
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "agent-model-override",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    return "agent-model-override", control_id
+
+
+def typescript_literal_nested_object_string_property(
+    body: str,
+    *,
+    body_offset: int,
+    path: tuple[str, ...],
+) -> str | None:
+    """Resolve a nested direct string property from literal TypeScript objects."""
+    expression = body
+    offset = body_offset
+    for name in path:
+        location = typescript_object_property_expression_location(expression, name, offset)
+        if location is None:
+            return None
+        expression, _, offset = location
+    return typescript_string_literal_value(expression)
+
+
 def add_typescript_openai_trace_id_control(
     ir: RepositoryIR,
     *,
@@ -19305,6 +19374,7 @@ def typescript_graph(
             or "MemorySession" in text
             or "groupId" in text
             or "traceId" in text
+            or "runConfig" in text
         )
         and (
             "extraPathGrants" in text
@@ -19320,6 +19390,7 @@ def typescript_graph(
             or "sessionId" in text
             or "groupId" in text
             or "traceId" in text
+            or "model" in text
         )
         else {}
     )
@@ -20433,6 +20504,93 @@ def typescript_graph(
                     run_config_offset = None
                     if run_config_location is not None:
                         run_config_expression, _, run_config_offset = run_config_location
+                        model_location = typescript_object_property_expression_location(
+                            run_config_expression,
+                            "model",
+                            run_config_offset,
+                        )
+                        if model_location is not None:
+                            model_expression, model_property_offset, model_expression_offset = (
+                                model_location
+                            )
+                            static_model = typescript_static_string_value(
+                                model_expression,
+                                expression_offset=model_expression_offset,
+                                immutable_literal_bindings=immutable_literal_bindings,
+                            )
+                            if static_model is not None:
+                                model_value, model_resolution = static_model
+                                delegated_agent_name, delegated_agent_id = target
+                                tool_name = as_tool_attributes.get("tool_name")
+                                model_line = line_at(text, model_property_offset)
+                                reasoning_effort = (
+                                    typescript_literal_nested_object_string_property(
+                                        run_config_expression,
+                                        body_offset=run_config_offset,
+                                        path=("modelSettings", "reasoning", "effort"),
+                                    )
+                                )
+                                text_verbosity = (
+                                    typescript_literal_nested_object_string_property(
+                                        run_config_expression,
+                                        body_offset=run_config_offset,
+                                        path=("modelSettings", "text", "verbosity"),
+                                    )
+                                )
+                                model_control_name, model_control_id = (
+                                    add_typescript_openai_as_tool_model_override_control(
+                                        ir,
+                                        relative=relative,
+                                        lines=lines,
+                                        line=model_line,
+                                        source_agent=(delegated_agent_name, delegated_agent_id),
+                                        parent_agent=(agent_name, agent_id),
+                                        tool_name=(
+                                            tool_name if isinstance(tool_name, str) else None
+                                        ),
+                                        model=model_value,
+                                        model_resolution=model_resolution,
+                                        reasoning_effort=reasoning_effort,
+                                        text_verbosity=text_verbosity,
+                                        symbol_identity=(
+                                            f"{variable_name}.asTool.model@"
+                                            f"{model_line}:parent{as_tool_line}"
+                                        ),
+                                    )
+                                )
+                                model_attributes: dict[str, object] = {
+                                    "analysis": (
+                                        "typescript-openai-agents-astool-model-override"
+                                    ),
+                                    "configuration": "asTool-runConfig-model",
+                                    "binding": "model",
+                                    "adapter": "asTool",
+                                    "model": model_value,
+                                    "provider": provider_for_model(model_value),
+                                }
+                                if isinstance(tool_name, str):
+                                    model_attributes["tool_name"] = tool_name
+                                if reasoning_effort is not None:
+                                    model_attributes["reasoning_effort"] = reasoning_effort
+                                if text_verbosity is not None:
+                                    model_attributes["text_verbosity"] = text_verbosity
+                                ir.add_relationship(
+                                    Relationship(
+                                        "agent",
+                                        delegated_agent_name,
+                                        "configured-by",
+                                        "control",
+                                        model_control_name,
+                                        Evidence(
+                                            relative,
+                                            model_line,
+                                            excerpt(lines, model_line),
+                                        ),
+                                        model_attributes,
+                                        source_id=delegated_agent_id,
+                                        target_id=model_control_id,
+                                    )
+                                )
                         tracing_disabled_location = (
                             typescript_object_property_expression_location(
                                 run_config_expression,

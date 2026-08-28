@@ -565,6 +565,11 @@
   controls on the delegated agent with parent-agent, tool-name, and literal `max_turns` provenance.
   The pinned agents-as-tools translator and sandbox reviewer examples contribute three real
   delegated turn-limit controls, bringing the public IR truth set to 2,115 passing labels.
+- OpenAI Agents JS delegated `asTool` run configurations can override the delegated execution model.
+  Exact `agent.asTool({ runConfig: { model: ... } })` calls now emit `agent-model-override`
+  controls on the delegated agent with parent-agent, tool-name, provider, model, and shallow literal
+  reasoning/verbosity settings. The pinned agents-as-tools translator example contributes real
+  delegated model override evidence, bringing the public IR truth set to 2,120 passing labels.
 
 ## Hypotheses
 

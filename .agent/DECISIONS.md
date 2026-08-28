@@ -646,3 +646,23 @@
   with the delegated agent's own capabilities and sandbox/tracing controls.
 - Revisit when: direct `run(..., { maxTurns })`, Runner defaults, or exported delegated-tool
   factories can be linked to exact source-agent identity without broad receiver/name matching.
+
+## OpenAI Agents JS delegated asTool model overrides are delegated execution policy
+
+- Decision: Represent exact TypeScript OpenAI Agents SDK
+  `agent.asTool({ runConfig: { model: ... } })` configuration as an `agent-model-override` control
+  on the delegated/source agent. Accept direct literal model strings and earlier immutable
+  module-level literal bindings, preserve provider inference, parent agent, tool name, and shallow
+  literal `modelSettings.reasoning.effort` / `modelSettings.text.verbosity` when present. Do not
+  emit for missing, mutable, or nonliteral model expressions.
+- Evidence: The local structured-tools fixture proves a delegated `worker_tool` override to
+  `gpt-5.4` with low reasoning and low verbosity while a sibling delegated tool without a model
+  override remains negative. The pinned OpenAI Agents JS
+  `examples/agent-patterns/agents-as-tools.ts` translator example sets the Spanish delegated agent's
+  model and model settings in `runConfig`.
+- Alternative: Treat delegated model strings as generic model components only. Rejected because
+  policy review needs the relationship between the parent orchestrator, delegated agent, tool name,
+  and the model override that applies only to that delegated invocation.
+- Revisit when: direct `run(..., { model/modelSettings })`, Runner defaults, or exported
+  delegated-tool factories can be linked to exact source-agent identity without broad config/name
+  matching.
