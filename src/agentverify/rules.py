@@ -901,7 +901,10 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
         if (
             component.kind == "capability"
             and component.name == "computer-control"
-            and component.attributes.get("builtin_tool") == "computerTool"
+            and (
+                component.attributes.get("builtin_tool") == "computerTool"
+                or component.attributes.get("api") == "ComputerTool"
+            )
             and component.attributes.get("safety_check_policy") == "auto-acknowledge-all"
         ):
             _, context = component_context(ir, component)

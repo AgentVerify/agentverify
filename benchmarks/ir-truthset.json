@@ -4251,20 +4251,20 @@
     {
       "id":"python-computer-tool-capability-local",
       "target":{"kind":"local","path":"cases/python_computer_tool"},
-      "check_id":"IR-PY-COMPUTER-TOOL","path":"agent.py","line":5,"expected":true,
-      "relationship":{"source_kind":"tool","source_name":"ComputerTool@5","source_id":"py:agent.py#tool:tool@5","relation":"uses","target_kind":"capability","target_name":"computer-control"}
+      "check_id":"IR-PY-COMPUTER-TOOL","path":"agent.py","line":14,"expected":true,
+      "relationship":{"source_kind":"tool","source_name":"ComputerTool@14","source_id":"py:agent.py#tool:tool@14","relation":"uses","target_kind":"capability","target_name":"computer-control"}
     },
     {
       "id":"python-computer-tool-assigned-local",
       "target":{"kind":"local","path":"cases/python_computer_tool"},
-      "check_id":"IR-PY-COMPUTER-TOOL","path":"agent.py","line":6,"expected":true,
-      "relationship":{"source_kind":"agent","source_name":"first","relation":"uses","target_kind":"tool","target_name":"tool","target_id":"py:agent.py#tool:tool@5","attributes":{"target_identity":"lexical-single-definition"}}
+      "check_id":"IR-PY-COMPUTER-TOOL","path":"agent.py","line":15,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"first","relation":"uses","target_kind":"tool","target_name":"tool","target_id":"py:agent.py#tool:tool@14","attributes":{"target_identity":"lexical-single-definition"}}
     },
     {
       "id":"python-computer-tool-inline-local",
       "target":{"kind":"local","path":"cases/python_computer_tool"},
-      "check_id":"IR-PY-COMPUTER-TOOL","path":"agent.py","line":14,"expected":true,
-      "relationship":{"source_kind":"agent","source_name":"inline","relation":"uses","target_kind":"tool","target_name":"ComputerTool@14","target_id":"py:agent.py#tool:ComputerTool@14"}
+      "check_id":"IR-PY-COMPUTER-TOOL","path":"agent.py","line":33,"expected":true,
+      "relationship":{"source_kind":"agent","source_name":"inline","relation":"uses","target_kind":"tool","target_name":"ComputerTool@33","target_id":"py:agent.py#tool:ComputerTool@33"}
     },
     {
       "id":"python-computer-tool-unimported-negative",
@@ -4295,6 +4295,36 @@
       "target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},
       "check_id":"IR-PY-COMPUTER-TOOL","path":"tests/test_tool_approval_call_id_reuse.py","line":1622,"expected":true,
       "relationship":{"source_kind":"agent","source_name":"computer-agent","relation":"uses","target_kind":"tool","target_name":"tool","target_id":"py:tests/test_tool_approval_call_id_reuse.py#tool:tool@1611","attributes":{"target_identity":"lexical-single-definition"}}
+    },
+    {
+      "id":"python-openai-computer-safety-lambda-auto-ack-local",
+      "target":{"kind":"local","path":"cases/python_computer_tool"},
+      "check_id":"IR-APPROVAL-CONTROL","path":"agent.py","line":19,"expected":true,
+      "component":{"kind":"tool","name":"ComputerTool@19","symbol_id":"py:agent.py#tool:tool@19","attributes":{"constructor":"ComputerTool","safety_check_handler":"configured","safety_check_policy":"auto-acknowledge-all","safety_check_decision":"return-true","safety_check_resolution":"inline-lambda"}}
+    },
+    {
+      "id":"python-openai-computer-safety-callback-auto-ack-local",
+      "target":{"kind":"local","path":"cases/python_computer_tool"},
+      "check_id":"IR-APPROVAL-CONTROL","path":"agent.py","line":24,"expected":true,
+      "component":{"kind":"tool","name":"ComputerTool@24","symbol_id":"py:agent.py#tool:tool@24","attributes":{"constructor":"ComputerTool","safety_check_handler":"configured","safety_check_policy":"auto-acknowledge-all","safety_check_decision":"return-true","safety_check_resolution":"same-file-callback"}}
+    },
+    {
+      "id":"python-openai-computer-safety-conditional-local-negative",
+      "target":{"kind":"local","path":"cases/python_computer_tool"},
+      "check_id":"IR-APPROVAL-CONTROL","path":"agent.py","line":29,"expected":false,
+      "component":{"kind":"tool","name":"ComputerTool@29","symbol_id":"py:agent.py#tool:tool@29","attributes":{"constructor":"ComputerTool","safety_check_policy":"auto-acknowledge-all"}}
+    },
+    {
+      "id":"python-openai-computer-safety-callback-real",
+      "target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},
+      "check_id":"IR-APPROVAL-CONTROL","path":"tests/test_tool_approval_call_id_reuse.py","line":1500,"expected":true,
+      "component":{"kind":"tool","name":"ComputerTool@1500","symbol_id":"py:tests/test_tool_approval_call_id_reuse.py#tool:tool@1500","attributes":{"constructor":"ComputerTool","safety_check_handler":"configured","safety_check_policy":"auto-acknowledge-all","safety_check_decision":"return-true","safety_check_resolution":"same-file-callback","scope":"test"}}
+    },
+    {
+      "id":"python-openai-computer-safety-callback-replay-real",
+      "target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},
+      "check_id":"IR-APPROVAL-CONTROL","path":"tests/test_tool_approval_call_id_reuse.py","line":1552,"expected":true,
+      "component":{"kind":"tool","name":"ComputerTool@1552","symbol_id":"py:tests/test_tool_approval_call_id_reuse.py#tool:tool@1552","attributes":{"constructor":"ComputerTool","safety_check_handler":"configured","safety_check_policy":"auto-acknowledge-all","safety_check_decision":"return-true","safety_check_resolution":"same-file-callback","scope":"test"}}
     },
     {
       "id":"python-direct-callable-capability-local",

@@ -1795,6 +1795,59 @@ def python_approval_bypass_function_summaries(
     return {name: tuple(sorted(values)) for name, values in resolved.items()}
 
 
+def python_computer_safety_check_function_summaries(
+    tree: ast.Module, node_scopes: dict[int, tuple[str, ...]]
+) -> dict[tuple[tuple[str, ...], str], str]:
+    """Resolve same-file ComputerTool safety callbacks that always return True."""
+
+    functions = [
+        node for node in ast.walk(tree) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+    ]
+    key_counts = Counter((node_scopes.get(id(node), ()), node.name) for node in functions)
+    summaries: dict[tuple[tuple[str, ...], str], str] = {}
+
+    class ControlFlowVisitor(ast.NodeVisitor):
+        def __init__(self) -> None:
+            self.has_early_exit = False
+
+        def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+            return
+
+        def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
+            return
+
+        def visit_ClassDef(self, node: ast.ClassDef) -> None:
+            return
+
+        def visit_Lambda(self, node: ast.Lambda) -> None:
+            return
+
+        def visit_Return(self, node: ast.Return) -> None:
+            self.has_early_exit = True
+
+        def visit_Raise(self, node: ast.Raise) -> None:
+            self.has_early_exit = True
+
+    for function in functions:
+        key = (node_scopes.get(id(function), ()), function.name)
+        if key_counts[key] != 1 or not function.body:
+            continue
+        final = function.body[-1]
+        if not (
+            isinstance(final, ast.Return)
+            and isinstance(final.value, ast.Constant)
+            and final.value.value is True
+        ):
+            continue
+        visitor = ControlFlowVisitor()
+        for statement in function.body[:-1]:
+            visitor.visit(statement)
+        if visitor.has_early_exit:
+            continue
+        summaries[key] = "return-true"
+    return summaries
+
+
 RegistryLiteralRequirement = tuple[str, int | None, bool]
 RegistryMethodSummary = tuple[
     int | None,
@@ -6135,6 +6188,7 @@ class PythonVisitor(ast.NodeVisitor):
         url_parser_names: set[str],
         module_literal_string_sets: dict[str, tuple[str, ...]],
         approval_bypass_function_summaries: dict[str, tuple[str, ...]],
+        computer_safety_check_function_summaries: dict[tuple[tuple[str, ...], str], str],
     ) -> None:
         self.ir = ir
         self.root = root
@@ -6185,6 +6239,9 @@ class PythonVisitor(ast.NodeVisitor):
         self.url_parser_names = url_parser_names
         self.module_literal_string_sets = module_literal_string_sets
         self.approval_bypass_function_summaries = approval_bypass_function_summaries
+        self.computer_safety_check_function_summaries = (
+            computer_safety_check_function_summaries
+        )
         self.function_stack: list[str] = []
         self.function_depth = 0
         self.imported_symbol_paths: dict[str, str] = {}
@@ -8391,6 +8448,7 @@ class PythonVisitor(ast.NodeVisitor):
             approval_handler = "none"
             approval_bypass_environment_names: tuple[str, ...] = ()
             safety_check_handler = "none"
+            safety_check_attributes: dict[str, object] = {}
             execution_environment = (
                 "hosted-sandbox"
                 if builtin_name == "CodeInterpreterTool"
@@ -8447,6 +8505,45 @@ class PythonVisitor(ast.NodeVisitor):
                     )
                 ):
                     safety_check_handler = "configured"
+                    safety_check_attributes = {
+                        "safety_check_handler": safety_check_handler,
+                        "safety_check_policy": "unresolved",
+                    }
+                    if (
+                        isinstance(keyword.value, ast.Lambda)
+                        and isinstance(keyword.value.body, ast.Constant)
+                        and keyword.value.body.value is True
+                    ):
+                        safety_check_attributes.update(
+                            {
+                                "safety_check_policy": "auto-acknowledge-all",
+                                "safety_check_decision": "return-true",
+                                "safety_check_resolution": "inline-lambda",
+                            }
+                        )
+                    elif isinstance(keyword.value, ast.Name):
+                        callback_scope = tuple(self.function_stack)
+                        safety_decision = self.computer_safety_check_function_summaries.get(
+                            (callback_scope, keyword.value.id)
+                        )
+                        if (
+                            safety_decision is None
+                            and callback_scope
+                            and (callback_scope, keyword.value.id) not in self.scope_bound_names
+                        ):
+                            safety_decision = (
+                                self.computer_safety_check_function_summaries.get(
+                                    ((), keyword.value.id)
+                                )
+                            )
+                        if safety_decision is not None:
+                            safety_check_attributes.update(
+                                {
+                                    "safety_check_policy": "auto-acknowledge-all",
+                                    "safety_check_decision": safety_decision,
+                                    "safety_check_resolution": "same-file-callback",
+                                }
+                            )
                 elif builtin_name == "ShellTool" and keyword.arg == "executor":
                     execution_environment = "local"
                 elif (
@@ -8564,7 +8661,11 @@ class PythonVisitor(ast.NodeVisitor):
                             else {}
                         ),
                         **(
-                            {"safety_check_handler": safety_check_handler}
+                            (
+                                safety_check_attributes
+                                if safety_check_attributes
+                                else {"safety_check_handler": safety_check_handler}
+                            )
                             if builtin_name == "ComputerTool"
                             else {}
                         ),
@@ -8590,6 +8691,11 @@ class PythonVisitor(ast.NodeVisitor):
                     )
                 elif capability == "computer-control":
                     attributes["execution_environment"] = execution_environment
+                    attributes.update(
+                        safety_check_attributes
+                        if safety_check_attributes
+                        else {"safety_check_handler": safety_check_handler}
+                    )
                 elif builtin_name == "CodeInterpreterTool" and capability == "code-execution":
                     attributes.update(
                         {
@@ -12395,6 +12501,11 @@ def scan_python(
         approval_bypass_function_summaries=(
             python_approval_bypass_function_summaries(tree)
             if "on_approval" in text and re.search(r"\b(?:from|import)\s+agents\b", text)
+            else {}
+        ),
+        computer_safety_check_function_summaries=(
+            python_computer_safety_check_function_summaries(tree, node_scopes)
+            if "on_safety_check" in text and re.search(r"\b(?:from|import)\s+agents\b", text)
             else {}
         ),
     ).visit(tree)

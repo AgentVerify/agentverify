@@ -512,6 +512,11 @@ catalog workflows.
   IR truth-set coverage to 1,994 labels and cross-rule coverage to 726 labels after adding the
   SDK-supported `acknowledged_safety_checks` spelling and expression-bodied object return shape as
   local regressions.
+- Extended `AV-APPROVAL011` to exact OpenAI Agents Python `ComputerTool(on_safety_check=...)`
+  auto-acknowledgement. Inline `lambda ...: True` callbacks and scope-proven same-file callbacks
+  with a final `return True` are reported when reachable, while conditional callbacks stay
+  unresolved. Local Python fixtures plus real OpenAI Agents Python SDK tests raise the public IR
+  truth set to 1,999 labels and the reporting truth set to 729 labels.
 
 ## Current findings
 

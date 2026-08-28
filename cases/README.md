@@ -104,8 +104,9 @@ never imported or executed.
   is the sole same-block mutation before use; local block definitions override broader lexical/module
   candidates, while cross-branch and reassigned bindings stay unresolved.
 - `python_computer_tool`: import-proven OpenAI Agents `ComputerTool` constructors produce
-  computer-control inventory and exact inline/repeated-binding agent edges; an unimported lookalike
-  stays ignored.
+  computer-control inventory and exact inline/repeated-binding agent edges; inline and same-file
+  `on_safety_check` callbacks that always return `True` are surfaced as safety auto-acknowledgement,
+  while an unimported lookalike stays ignored.
 - `python_direct_callable_tool`: a sole same-block Python function passed through a literal Agent
   tools list becomes an analyzed tool asset; reassigned, cross-branch, forward, and parameter
   forms—including a parameter shadowing a unique module tool—remain unresolved.

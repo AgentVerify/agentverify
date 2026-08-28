@@ -2,7 +2,7 @@
 
 ## Durable facts
 
-- The repository contains a 71-repository pinned research corpus and schema-v124 engine benchmark
+- The repository contains a 71-repository pinned research corpus and schema-v125 engine benchmark
   outputs.
 - The runtime catalog currently contains 25 enabled reporting rules.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
@@ -475,6 +475,12 @@
   `AV-APPROVAL011`. The public IR truth set now covers 1,994 passing labels after adding the
   SDK-supported `acknowledged_safety_checks` spelling and expression-bodied object return shape as
   local regressions.
+- OpenAI Agents Python `ComputerTool(on_safety_check=...)` now participates in the same
+  `AV-APPROVAL011` safety-control vocabulary when exact auto-acknowledgement is proven. Inline
+  `lambda ...: True` callbacks and same-file callbacks with a single final `return True` are
+  recorded as `safety_check_policy: auto-acknowledge-all`; conditional callbacks remain unresolved.
+  The pinned OpenAI Agents Python SDK tests validate two same-name nested callback cases in separate
+  lexical scopes. The public IR truth set now covers 1,999 passing labels.
 
 ## Hypotheses
 

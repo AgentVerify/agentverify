@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v124
+framework, wrapper, or configuration path. Counts come from schema-v125
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -455,8 +455,11 @@ Import-proven OpenAI `function_tool(function)`
 assignments recover 12 wrappers and 12 Agent edges; all are tests, three enable approval, and their
 selected bodies add no recognized capability edges. Import-proven Python `ComputerTool`
 constructors contribute 15 computer-control assets and ten exact agent links; their optional
-`on_safety_check` callback is inventoried separately from generic approval policy. All 15 are local,
-two configure the callback, and one occurs outside test paths in the pinned SDK example.
+`on_safety_check` callback is inventoried separately from generic approval policy. Exact callbacks
+that inline-return `True` or resolve to a same-file final `return True` are now marked as
+`safety_check_policy: auto-acknowledge-all`, while conditional callbacks stay unresolved. All 15 are
+local, two configure the callback, both configured corpus callbacks resolve through same-file
+callback functions, and one tool instance occurs outside test paths in the pinned SDK example.
 Exact-import `LocalShellTool` adds five local shell assets and five capability edges, all under tests;
 four Agent edges resolve, and all five assets record that the SDK exposes no approval parameter.
 The exact provider-hosted built-ins add 13 assets and capability edges, including seven production
@@ -1046,7 +1049,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 726-label rule truth set and 1,994-label IR component/relationship set are curated regression
+The 729-label rule truth set and 1,999-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T07:24:12.339557+00:00",
+  "generated_at": "2026-08-28T07:52:57.885195+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "3269fe5679dd22ec644915a144520d38fa2837a277faaf9080c6d790a9433449",
+    "labels_sha256": "ae99e364d7cbca5a06bebe08451386b08251080fa0247eba482b9653407ded05",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 1994,
-  "passed": 1994,
+  "labels": 1999,
+  "passed": 1999,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -35,9 +35,9 @@
       "recall": 1.0
     },
     "IR-APPROVAL-CONTROL": {
-      "tp": 47,
+      "tp": 51,
       "fp": 0,
-      "tn": 11,
+      "tn": 12,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -4526,6 +4526,51 @@
     {
       "id": "python-computer-tool-real-third-binding",
       "check_id": "IR-PY-COMPUTER-TOOL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-computer-safety-lambda-auto-ack-local",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-computer-safety-callback-auto-ack-local",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-computer-safety-conditional-local-negative",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-computer-safety-callback-real",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-computer-safety-callback-replay-real",
+      "check_id": "IR-APPROVAL-CONTROL",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

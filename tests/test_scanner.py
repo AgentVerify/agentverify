@@ -2881,29 +2881,41 @@ def test_python_computer_tool_has_exact_agent_and_capability_identity() -> None:
         for component in ir.components
         if component.kind == "tool" and component.name.startswith("ComputerTool@")
     ]
-    assert {tool.evidence.line for tool in tools} == {5, 10, 14}
+    assert {tool.evidence.line for tool in tools} == {14, 19, 24, 29, 33}
     assert {tool.symbol_id for tool in tools} == {
-        "py:agent.py#tool:tool@5",
-        "py:agent.py#tool:tool@10",
-        "py:agent.py#tool:ComputerTool@14",
+        "py:agent.py#tool:tool@14",
+        "py:agent.py#tool:tool@19",
+        "py:agent.py#tool:tool@24",
+        "py:agent.py#tool:tool@29",
+        "py:agent.py#tool:ComputerTool@33",
     }
     tool_by_line = {tool.evidence.line: tool for tool in tools}
-    assert tool_by_line[5].attributes["approval_policy"] == "not-applicable"
-    assert tool_by_line[5].attributes["approval_source"] == "sdk-computer-safety-check"
-    assert tool_by_line[5].attributes["safety_check_handler"] == "none"
-    assert tool_by_line[5].attributes["execution_environment"] == "local"
-    assert tool_by_line[10].attributes["safety_check_handler"] == "configured"
+    assert tool_by_line[14].attributes["approval_policy"] == "not-applicable"
+    assert tool_by_line[14].attributes["approval_source"] == "sdk-computer-safety-check"
+    assert tool_by_line[14].attributes["safety_check_handler"] == "none"
+    assert tool_by_line[14].attributes["execution_environment"] == "local"
+    assert tool_by_line[19].attributes["safety_check_handler"] == "configured"
+    assert tool_by_line[19].attributes["safety_check_policy"] == "auto-acknowledge-all"
+    assert tool_by_line[19].attributes["safety_check_resolution"] == "inline-lambda"
+    assert tool_by_line[24].attributes["safety_check_policy"] == "auto-acknowledge-all"
+    assert tool_by_line[24].attributes["safety_check_resolution"] == "same-file-callback"
+    assert tool_by_line[29].attributes["safety_check_handler"] == "configured"
+    assert tool_by_line[29].attributes["safety_check_policy"] == "unresolved"
 
     agent_edges = {
         edge.source_name: edge
         for edge in ir.relationships
         if edge.source_kind == "agent" and edge.target_kind == "tool"
     }
-    assert agent_edges["first"].target_id == "py:agent.py#tool:tool@5"
+    assert agent_edges["first"].target_id == "py:agent.py#tool:tool@14"
     assert agent_edges["first"].attributes == {"target_identity": "lexical-single-definition"}
-    assert agent_edges["second"].target_id == "py:agent.py#tool:tool@10"
+    assert agent_edges["second"].target_id == "py:agent.py#tool:tool@19"
     assert agent_edges["second"].attributes == {"target_identity": "lexical-single-definition"}
-    assert agent_edges["inline"].target_id == "py:agent.py#tool:ComputerTool@14"
+    assert agent_edges["third"].target_id == "py:agent.py#tool:tool@24"
+    assert agent_edges["third"].attributes == {"target_identity": "lexical-single-definition"}
+    assert agent_edges["fourth"].target_id == "py:agent.py#tool:tool@29"
+    assert agent_edges["fourth"].attributes == {"target_identity": "lexical-single-definition"}
+    assert agent_edges["inline"].target_id == "py:agent.py#tool:ComputerTool@33"
     assert agent_edges["inline"].attributes == {}
 
     capability_edges = [
@@ -2919,11 +2931,18 @@ def test_python_computer_tool_has_exact_agent_and_capability_identity() -> None:
         for component in ir.components
         if component.kind == "capability" and component.name == "computer-control"
     ]
-    assert len(capabilities) == 3
+    assert len(capabilities) == 5
     assert all(
         component.attributes["execution_environment"] == "local" for component in capabilities
     )
     assert not any(edge.evidence.path == "unrelated.py" for edge in capability_edges)
+    safety_findings = [
+        finding for finding in ir.findings if finding.rule_id == "AV-APPROVAL011"
+    ]
+    assert [(finding.evidence.line, finding.analysis["tool"]) for finding in safety_findings] == [
+        (19, "ComputerTool@19"),
+        (24, "ComputerTool@24"),
+    ]
 
 
 def test_assigned_builtin_tool_uses_binding_identity_for_agent_context(tmp_path: Path) -> None:

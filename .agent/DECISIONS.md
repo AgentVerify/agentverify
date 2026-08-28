@@ -381,3 +381,21 @@
   callbacks prove auto-acknowledgement without modeling arbitrary helper logic.
 - Revisit when: richer safety-check callback semantics, safety-check type matching, or explicit
   policy/user-review handoff patterns can be source-proven and labeled.
+
+## OpenAI Agents Python computer safety auto-ack stays scope-proven
+
+- Decision: Extend `AV-APPROVAL011` to exact OpenAI Agents Python
+  `ComputerTool(on_safety_check=...)` callbacks only when auto-acknowledgement is source-proven:
+  inline `lambda ...: True`, or a callback name that resolves in the current lexical scope or safe
+  module fallback to one same-file function with no earlier return/raise and a final `return True`.
+- Evidence: The local Python fixture covers no handler, inline lambda, module-level callback,
+  conditional callback negative, and inline tool construction. The pinned OpenAI Agents Python
+  `tests/test_tool_approval_call_id_reuse.py` file has two same-named nested
+  `acknowledge_safety_check` functions in different tests; scope-keyed resolution keeps both exact
+  and avoids collapsing duplicate module names.
+- Alternative: Resolve callback names module-globally or treat any `on_safety_check` callback as a
+  review finding. Rejected because duplicate nested functions in the real SDK tests prove that
+  module-global name matching is unsafe, and callback existence does not prove pass-through or
+  explicit review behavior.
+- Revisit when: callback helpers with explicit safety-code allowlists or user-review calls can be
+  modeled without accepting arbitrary boolean expressions.

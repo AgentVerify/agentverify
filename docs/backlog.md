@@ -441,6 +441,12 @@ acknowledgement key.
 The pinned `computer-use-hitl.ts` per-request example is positive, while the singleton/no-handler
 path and callbacks that do not acknowledge the pending list remain negative.
 
+Schema v125 extends the same safety-control vocabulary to OpenAI Agents Python
+`ComputerTool(on_safety_check=...)`. Inline `lambda ...: True` callbacks and scope-proven same-file
+callbacks with one final `return True` are auto-acknowledgement evidence. Conditional callbacks stay
+unresolved, and the pinned OpenAI Agents Python SDK tests validate duplicate same-name nested
+callbacks in separate lexical scopes.
+
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
 server-controlled prompt/model hint/sampling parameters, model invocation, and response returned to
@@ -565,8 +571,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 726 pinned positive/negative locations, with 1,994 separately
-scored IR component/relationship labels. Schema-v124 engine results and
+The curated regression set has reached 729 pinned positive/negative locations, with 1,999 separately
+scored IR component/relationship labels. Schema-v125 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. The checked-in holdout design now defines the sampling strata, label protocol,

@@ -25,6 +25,9 @@
   richer `needsApproval` predicate quality, automatic approval bypasses, and `computerTool`
   `onSafetyCheck` callbacks that distinguish explicit user/policy review from pass-through
   acknowledgement.
+- Continue OpenAI Agents Python safety-governance extraction where evidence remains exact: callbacks
+  that distinguish explicit user/policy review from unconditional acknowledgement, without resolving
+  arbitrary boolean expressions or collapsing duplicate callback names across lexical scopes.
 
 ## P2
 

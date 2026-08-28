@@ -1,6 +1,6 @@
 {
-  "schema_version": 123,
-  "generated_at": "2026-08-26T09:35:12.428338+00:00",
+  "schema_version": 125,
+  "generated_at": "2026-08-28T08:16:57.442940+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -20,10 +20,10 @@
     "dependency_files_materialized": 202,
     "repositories_with_dependency_expansion": 25,
     "config_files_scanned": 155,
-    "relationships": 2383,
-    "symbolized_components": 10075,
-    "identified_symbol_endpoints": 3956,
-    "resolved_symbol_endpoints": 3956,
+    "relationships": 2658,
+    "symbolized_components": 10430,
+    "identified_symbol_endpoints": 4468,
+    "resolved_symbol_endpoints": 4468,
     "unmatched_identified_symbol_endpoints": 0,
     "ambiguous_repeated_binding_targets": 2,
     "resolved_binding_targets_by_basis": {
@@ -35,18 +35,18 @@
       "lexical-single-definition": 379,
       "literal-tools-list-context-manager": 4,
       "literal-tools-list-import-binding": 6,
-      "literal-tools-list-inline-constructor": 444,
+      "literal-tools-list-inline-constructor": 457,
       "same-block-function-factory-return": 8,
       "same-class-helper-return": 3,
       "typed-parameter-callsite-consensus": 1
     },
-    "relationship_endpoints": 4766,
+    "relationship_endpoints": 5316,
     "bom_endpoint_resolutions": {
       "ambiguous": 39,
-      "evidence-location": 700,
-      "symbol-id": 3948,
+      "evidence-location": 740,
+      "symbol-id": 4460,
       "unique-display-name": 21,
-      "unresolved": 58
+      "unresolved": 56
     },
     "bom_ambiguous_endpoints_by_side_kind": {
       "source:agent": 6,
@@ -58,8 +58,8 @@
       "target:tool": 21
     },
     "resolved_symbol_endpoints_by_frontend": {
-      "py": 3587,
-      "ts": 369
+      "py": 3625,
+      "ts": 843
     },
     "python_provider_call_attribution": {
       "calls": 583,
@@ -89,16 +89,16 @@
       "xai": 34
     },
     "typescript_provider_call_attribution": {
-      "calls": 70,
-      "production_calls": 70,
+      "calls": 71,
+      "production_calls": 71,
       "test_calls": 0,
       "repositories": 9,
       "production_repositories": 9,
       "native_sdk_calls": 38,
-      "ai_sdk_calls": 32,
+      "ai_sdk_calls": 33,
       "factory_calls": 2,
-      "model_calls": 45,
-      "configured_instance_calls": 18,
+      "model_calls": 46,
+      "configured_instance_calls": 19,
       "typed_parameter_model_calls": 1,
       "class_field_model_calls": 5,
       "class_accessor_model_calls": 2,
@@ -113,10 +113,10 @@
       "cohere": 0
     },
     "typescript_graph": {
-      "agent_edges": 110,
+      "agent_edges": 262,
       "agent_delegations": 14,
-      "agent_tool_edges": 88,
-      "resolved_agent_tool_edges": 88
+      "agent_tool_edges": 123,
+      "resolved_agent_tool_edges": 123
     },
     "typescript_tool_registrations": {
       "mastra_create_tool": 27,
@@ -149,6 +149,10 @@
       "non_test_instances": 1,
       "local_execution": 15,
       "safety_check_handlers_configured": 2,
+      "safety_check_auto_acknowledge_all": 2,
+      "safety_check_inline_lambda_auto_ack": 0,
+      "safety_check_same_file_callback_auto_ack": 2,
+      "safety_check_unresolved": 0,
       "capability_edges": 15,
       "resolved_agent_edges": 10
     },
@@ -189,25 +193,25 @@
       "repositories": 1
     },
     "python_agent_referenced_tools": {
-      "instances": 755,
+      "instances": 773,
       "callables": 181,
-      "constructor_bindings": 100,
-      "inline_constructors": 444,
+      "constructor_bindings": 105,
+      "inline_constructors": 457,
       "context_manager_bindings": 4,
       "agent_as_tool_adapters": 21,
       "agent_as_tool_delegations": 21,
       "import_bindings": 5,
       "imported_callable_exports": 4,
       "module_single_definitions": 30,
-      "non_test_instances": 526,
+      "non_test_instances": 544,
       "capability_edges": 30,
-      "resolved_agent_edges": 812
+      "resolved_agent_edges": 830
     },
     "python_agent_tool_edges": {
-      "total": 1222,
-      "resolved": 1152,
+      "total": 1241,
+      "resolved": 1171,
       "unresolved": 70,
-      "non_test": 623,
+      "non_test": 642,
       "unresolved_non_test": 0
     },
     "python_agent_mcp_server_edges": {
@@ -738,6 +742,7 @@
       "AV-APPROVAL008": 1,
       "AV-APPROVAL009": 1,
       "AV-APPROVAL010": 2,
+      "AV-APPROVAL011": 1,
       "AV-AUDIT001": 1,
       "AV-EXEC001": 25,
       "AV-EXEC002": 51,
@@ -764,6 +769,7 @@
       "AV-APPROVAL008": 1,
       "AV-APPROVAL009": 1,
       "AV-APPROVAL010": 1,
+      "AV-APPROVAL011": 1,
       "AV-AUDIT001": 1,
       "AV-EXEC001": 14,
       "AV-EXEC002": 15,
@@ -794,9 +800,11 @@
         "mcp-tool-forwarding": 24,
         "mcp-tool-invocation": 1,
         "media-generation": 2,
+        "memory": 1,
         "model-sampling": 4,
         "network": 58,
         "shell-execution": 48,
+        "skill-loading": 1,
         "subagent-privileged-tool-execution": 1,
         "user-elicitation": 3
       },
@@ -804,7 +812,10 @@
         "a2a-card-rpc-origin-policy": 1,
         "action-risk-analysis": 1,
         "action-trace": 1,
+        "approval-decision": 1,
         "command-allowlist": 1,
+        "conversation-continuity": 1,
+        "conversation-session": 1,
         "durable-action-audit": 1,
         "durable-action-record": 1,
         "fixed-tool-binding": 6,
@@ -819,7 +830,16 @@
         "path-boundary": 4,
         "path-prefix-check": 1,
         "path-segment-sanitizer": 1,
-        "sandbox-runtime": 1,
+        "sandbox-concurrency-limit": 1,
+        "sandbox-environment-variable": 1,
+        "sandbox-manifest-entry": 1,
+        "sandbox-memory-policy": 1,
+        "sandbox-network-exposure": 1,
+        "sandbox-path-grant": 1,
+        "sandbox-runtime": 2,
+        "sandbox-state-persistence": 1,
+        "sandbox-working-directory": 1,
+        "sandbox-workspace-root": 1,
         "subagent-tool-approval-propagation": 1,
         "terminal-command-risk-policy": 1,
         "tool-allowlist": 1,
@@ -877,7 +897,7 @@
         "AWS Bedrock": 6,
         "Alibaba DashScope": 1,
         "Anthropic": 25,
-        "Azure OpenAI": 12,
+        "Azure OpenAI": 13,
         "Cohere": 3,
         "DeepSeek": 2,
         "Google": 20,
@@ -1010,7 +1030,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 412.7624
+    "elapsed_seconds": 770.5514
   },
   "repositories": [
     {
@@ -1139,6 +1159,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -1658,7 +1682,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.5154
+      "elapsed_seconds": 7.2333
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -1803,6 +1827,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -2333,7 +2361,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.4255
+      "elapsed_seconds": 10.9889
     },
     {
       "repository": "langchain-ai/langchain",
@@ -2461,6 +2489,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -2978,7 +3010,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.0014
+      "elapsed_seconds": 4.8208
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -3110,6 +3142,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -3635,7 +3671,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 14.974
+      "elapsed_seconds": 15.3426
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -3772,6 +3808,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -4293,7 +4333,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6843
+      "elapsed_seconds": 0.7269
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -4435,6 +4475,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -4969,7 +5013,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 16.6073
+      "elapsed_seconds": 16.7211
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -5116,6 +5160,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -5657,7 +5705,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.6852
+      "elapsed_seconds": 10.3152
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -5799,6 +5847,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -6330,7 +6382,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0699
+      "elapsed_seconds": 1.2461
     },
     {
       "repository": "microsoft/autogen",
@@ -6473,6 +6525,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -6999,7 +7055,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6644
+      "elapsed_seconds": 2.9266
     },
     {
       "repository": "microsoft/agent-framework",
@@ -7118,6 +7174,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -7635,7 +7695,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0726
+      "elapsed_seconds": 0.0685
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -7779,6 +7839,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -8308,7 +8372,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4578
+      "elapsed_seconds": 0.4334
     },
     {
       "repository": "openai/openai-agents-python",
@@ -8467,6 +8531,10 @@
         "non_test_instances": 1,
         "local_execution": 15,
         "safety_check_handlers_configured": 2,
+        "safety_check_auto_acknowledge_all": 2,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 2,
+        "safety_check_unresolved": 0,
         "capability_edges": 15,
         "resolved_agent_edges": 10
       },
@@ -9009,7 +9077,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 16.8399
+      "elapsed_seconds": 17.4211
     },
     {
       "repository": "openai/openai-agents-js",
@@ -9019,9 +9087,9 @@
       "dependency_files_materialized": 3,
       "config_files_scanned": 0,
       "components": {
-        "agent": 136,
-        "capability": 65,
-        "control": 7,
+        "agent": 167,
+        "capability": 105,
+        "control": 139,
         "control-setting": 11,
         "framework": 141,
         "mcp": 1,
@@ -9029,7 +9097,7 @@
         "model": 60,
         "protocol": 8,
         "provider": 17,
-        "tool": 87
+        "tool": 127
       },
       "component_names": {
         "capability": [
@@ -9041,12 +9109,27 @@
           "external-action",
           "filesystem",
           "mcp-access",
+          "memory",
           "network",
-          "shell-execution"
+          "shell-execution",
+          "skill-loading"
         ],
         "control": [
+          "approval-decision",
+          "conversation-continuity",
+          "conversation-session",
           "human-approval",
-          "mcp-tool-filter"
+          "mcp-tool-filter",
+          "sandbox-concurrency-limit",
+          "sandbox-environment-variable",
+          "sandbox-manifest-entry",
+          "sandbox-memory-policy",
+          "sandbox-network-exposure",
+          "sandbox-path-grant",
+          "sandbox-runtime",
+          "sandbox-state-persistence",
+          "sandbox-working-directory",
+          "sandbox-workspace-root"
         ],
         "control-setting": [
           "auto-approval",
@@ -9113,22 +9196,22 @@
         "groq": 0,
         "cohere": 0
       },
-      "relationships": 153,
-      "symbolized_components": 228,
-      "identified_symbol_endpoints": 247,
-      "resolved_symbol_endpoints": 247,
+      "relationships": 409,
+      "symbolized_components": 431,
+      "identified_symbol_endpoints": 721,
+      "resolved_symbol_endpoints": 721,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
       "resolved_binding_targets_by_basis": {},
       "resolved_symbol_endpoints_by_frontend": {
         "py": 0,
-        "ts": 247
+        "ts": 721
       },
       "typescript_graph": {
-        "agent_edges": 97,
+        "agent_edges": 249,
         "agent_delegations": 14,
-        "agent_tool_edges": 79,
-        "resolved_agent_tool_edges": 79
+        "agent_tool_edges": 114,
+        "resolved_agent_tool_edges": 114
       },
       "typescript_tool_registrations": {
         "mastra_create_tool": 0,
@@ -9161,6 +9244,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -9674,9 +9761,8 @@
       },
       "bom_endpoint_resolutions": {
         "ambiguous": 2,
-        "evidence-location": 55,
-        "symbol-id": 247,
-        "unresolved": 2
+        "evidence-location": 95,
+        "symbol-id": 721
       },
       "bom_ambiguous_endpoints_by_side_kind": {
         "target:control-setting": 2
@@ -9684,12 +9770,13 @@
       "findings": {
         "AV-APPROVAL001": 6,
         "AV-APPROVAL003": 2,
-        "AV-APPROVAL004": 3
+        "AV-APPROVAL004": 3,
+        "AV-APPROVAL011": 1
       },
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.5447
+      "elapsed_seconds": 3.7178
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -9843,6 +9930,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -10373,7 +10464,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 35.7505
+      "elapsed_seconds": 34.5165
     },
     {
       "repository": "google/adk-python",
@@ -10523,6 +10614,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -11054,7 +11149,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 13.0445
+      "elapsed_seconds": 13.3212
     },
     {
       "repository": "google/adk-js",
@@ -11195,6 +11290,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -11719,7 +11818,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.224
+      "elapsed_seconds": 8.0902
     },
     {
       "repository": "huggingface/smolagents",
@@ -11858,6 +11957,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -12391,7 +12494,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.9356
+      "elapsed_seconds": 3.9564
     },
     {
       "repository": "agno-agi/agno",
@@ -12542,6 +12645,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -13076,7 +13183,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7476
+      "elapsed_seconds": 1.9653
     },
     {
       "repository": "camel-ai/camel",
@@ -13086,14 +13193,16 @@
       "dependency_files_materialized": 20,
       "config_files_scanned": 0,
       "components": {
+        "agent": 104,
         "capability": 314,
         "control": 1,
         "framework": 118,
         "mcp": 4,
         "mcp-server": 5,
+        "model": 2,
         "protocol": 12,
         "provider": 6,
-        "tool": 1
+        "tool": 19
       },
       "component_names": {
         "capability": [
@@ -13169,15 +13278,17 @@
         "groq": 0,
         "cohere": 0
       },
-      "relationships": 1,
-      "symbolized_components": 1,
-      "identified_symbol_endpoints": 0,
-      "resolved_symbol_endpoints": 0,
+      "relationships": 20,
+      "symbolized_components": 123,
+      "identified_symbol_endpoints": 38,
+      "resolved_symbol_endpoints": 38,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 0,
-      "resolved_binding_targets_by_basis": {},
+      "resolved_binding_targets_by_basis": {
+        "literal-tools-list-inline-constructor": 13
+      },
       "resolved_symbol_endpoints_by_frontend": {
-        "py": 0,
+        "py": 38,
         "ts": 0
       },
       "typescript_graph": {
@@ -13217,6 +13328,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -13257,25 +13372,25 @@
         "repositories": false
       },
       "python_agent_referenced_tools": {
-        "instances": 0,
+        "instances": 18,
         "callables": 0,
-        "constructor_bindings": 0,
-        "inline_constructors": 0,
+        "constructor_bindings": 5,
+        "inline_constructors": 13,
         "context_manager_bindings": 0,
         "agent_as_tool_adapters": 0,
         "agent_as_tool_delegations": 0,
         "import_bindings": 0,
         "imported_callable_exports": 0,
         "module_single_definitions": 0,
-        "non_test_instances": 0,
+        "non_test_instances": 18,
         "capability_edges": 0,
-        "resolved_agent_edges": 0
+        "resolved_agent_edges": 18
       },
       "python_agent_tool_edges": {
-        "total": 0,
-        "resolved": 0,
+        "total": 19,
+        "resolved": 19,
         "unresolved": 0,
-        "non_test": 0,
+        "non_test": 19,
         "unresolved_non_test": 0
       },
       "python_agent_mcp_server_edges": {
@@ -13746,7 +13861,8 @@
         "typescript": 0
       },
       "bom_endpoint_resolutions": {
-        "evidence-location": 2
+        "evidence-location": 2,
+        "symbol-id": 38
       },
       "bom_ambiguous_endpoints_by_side_kind": {},
       "findings": {
@@ -13757,7 +13873,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.0632
+      "elapsed_seconds": 8.5634
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -13895,6 +14011,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -14418,7 +14538,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.6322
+      "elapsed_seconds": 0.788
     },
     {
       "repository": "run-llama/llama_index",
@@ -14551,6 +14671,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -15068,7 +15192,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7362
+      "elapsed_seconds": 3.6054
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -15078,6 +15202,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 0,
       "components": {
+        "agent": 28,
         "capability": 155,
         "control": 1,
         "framework": 432,
@@ -15164,7 +15289,7 @@
         "cohere": 0
       },
       "relationships": 16,
-      "symbolized_components": 21,
+      "symbolized_components": 49,
       "identified_symbol_endpoints": 15,
       "resolved_symbol_endpoints": 15,
       "unmatched_identified_symbol_endpoints": 0,
@@ -15211,6 +15336,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -15746,7 +15875,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.3594
+      "elapsed_seconds": 5.0215
     },
     {
       "repository": "InternLM/lagent",
@@ -15886,6 +16015,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -16416,7 +16549,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0438
+      "elapsed_seconds": 2.2801
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -16426,6 +16559,7 @@
       "dependency_files_materialized": 0,
       "config_files_scanned": 0,
       "components": {
+        "agent": 2,
         "capability": 132,
         "framework": 627,
         "mcp": 7,
@@ -16502,7 +16636,7 @@
         "cohere": 0
       },
       "relationships": 11,
-      "symbolized_components": 35,
+      "symbolized_components": 37,
       "identified_symbol_endpoints": 11,
       "resolved_symbol_endpoints": 11,
       "unmatched_identified_symbol_endpoints": 0,
@@ -16549,6 +16683,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -17086,7 +17224,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.5428
+      "elapsed_seconds": 4.1881
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -17222,6 +17360,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -17757,7 +17899,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.6521
+      "elapsed_seconds": 5.5305
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -17889,6 +18031,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -18420,7 +18566,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0807
+      "elapsed_seconds": 3.489
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -18553,6 +18699,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -19080,7 +19230,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.3381
+      "elapsed_seconds": 13.0851
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -19209,6 +19359,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -19735,7 +19889,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.6591
+      "elapsed_seconds": 4.4706
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -19865,6 +20019,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -20382,7 +20540,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.192
+      "elapsed_seconds": 3.0526
     },
     {
       "repository": "letta-ai/letta-code",
@@ -20517,6 +20675,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -21041,7 +21203,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.3113
+      "elapsed_seconds": 12.9021
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -21182,6 +21344,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -21713,7 +21879,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.23
+      "elapsed_seconds": 3.699
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -21859,6 +22025,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -22391,7 +22561,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.221
+      "elapsed_seconds": 7.2876
     },
     {
       "repository": "mastra-ai/mastra",
@@ -22531,6 +22701,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -23054,7 +23228,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.7489
+      "elapsed_seconds": 6.6294
     },
     {
       "repository": "vercel/ai",
@@ -23189,6 +23363,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -23711,7 +23889,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.0789
+      "elapsed_seconds": 7.093
     },
     {
       "repository": "cline/cline",
@@ -23858,6 +24036,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -24385,7 +24567,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.0702
+      "elapsed_seconds": 25.9381
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -24529,6 +24711,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -25052,7 +25238,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.5927
+      "elapsed_seconds": 73.5099
     },
     {
       "repository": "continuedev/continue",
@@ -25195,6 +25381,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -25719,7 +25909,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.7713
+      "elapsed_seconds": 6.898
     },
     {
       "repository": "Aider-AI/aider",
@@ -25845,6 +26035,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -26381,7 +26575,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.3456
+      "elapsed_seconds": 7.7196
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -26502,6 +26696,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -27031,7 +27229,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 2.354
+      "elapsed_seconds": 2.7861
     },
     {
       "repository": "plandex-ai/plandex",
@@ -27141,6 +27339,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -27658,7 +27860,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.085
+      "elapsed_seconds": 0.0998
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -27783,6 +27985,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -28306,7 +28512,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.54
+      "elapsed_seconds": 4.0458
     },
     {
       "repository": "stitionai/devika",
@@ -28437,6 +28643,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -28964,7 +29174,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8673
+      "elapsed_seconds": 1.0441
     },
     {
       "repository": "block/goose",
@@ -29098,6 +29308,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -29625,7 +29839,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 7.9903
+      "elapsed_seconds": 9.4359
     },
     {
       "repository": "bytedance/trae-agent",
@@ -29775,6 +29989,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -30312,7 +30530,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.927
+      "elapsed_seconds": 2.2801
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -30444,6 +30662,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -30967,7 +31189,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.8805
+      "elapsed_seconds": 15.3132
     },
     {
       "repository": "openai/codex",
@@ -31084,6 +31306,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -31607,7 +31833,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.7746
+      "elapsed_seconds": 2.0404
     },
     {
       "repository": "browser-use/browser-use",
@@ -31747,6 +31973,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -32286,7 +32516,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.3928
+      "elapsed_seconds": 11.9509
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -32435,6 +32665,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -32984,7 +33218,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 22.6871
+      "elapsed_seconds": 25.1873
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -33116,6 +33350,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -33648,7 +33886,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2592
+      "elapsed_seconds": 2.8464
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -33777,6 +34015,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -34296,7 +34538,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3603
+      "elapsed_seconds": 3.3451
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -34426,6 +34668,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -34953,7 +35199,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.4408
+      "elapsed_seconds": 3.1089
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -35091,6 +35337,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -35617,7 +35867,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.4474
+      "elapsed_seconds": 8.3108
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -35763,6 +36013,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -36289,7 +36543,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.7361
+      "elapsed_seconds": 11.9025
     },
     {
       "repository": "github/github-mcp-server",
@@ -36409,6 +36663,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -36926,7 +37184,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0771
+      "elapsed_seconds": 0.0851
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -37047,6 +37305,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -37564,7 +37826,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2047
+      "elapsed_seconds": 0.2584
     },
     {
       "repository": "awslabs/mcp",
@@ -37697,6 +37959,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -38222,7 +38488,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.3389
+      "elapsed_seconds": 5.815
     },
     {
       "repository": "docker/mcp-gateway",
@@ -38343,6 +38609,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -38862,7 +39132,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.064
+      "elapsed_seconds": 0.0677
     },
     {
       "repository": "jlowin/fastmcp",
@@ -38998,6 +39268,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -39530,7 +39804,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.9121
+      "elapsed_seconds": 9.5613
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -39640,6 +39914,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -40157,7 +40435,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0533
+      "elapsed_seconds": 0.0608
     },
     {
       "repository": "langflow-ai/langflow",
@@ -40296,6 +40574,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -40822,7 +41104,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.4191
+      "elapsed_seconds": 9.5826
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -40950,6 +41232,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -41475,7 +41761,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.6124
+      "elapsed_seconds": 41.1303
     },
     {
       "repository": "langgenius/dify",
@@ -41602,6 +41888,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -42122,7 +42412,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.021
+      "elapsed_seconds": 6.8144
     },
     {
       "repository": "n8n-io/n8n",
@@ -42258,6 +42548,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -42783,7 +43077,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.0743
+      "elapsed_seconds": 6.9494
     },
     {
       "repository": "activepieces/activepieces",
@@ -42799,7 +43093,7 @@
         "mcp": 4,
         "model": 1,
         "protocol": 10,
-        "provider": 11,
+        "provider": 13,
         "sandbox-boundary": 2,
         "tool": 6
       },
@@ -42822,6 +43116,7 @@
         ],
         "provider": [
           "Anthropic",
+          "Azure OpenAI",
           "Google",
           "OpenAI"
         ],
@@ -42857,16 +43152,16 @@
         "xai": 0
       },
       "typescript_provider_call_attribution": {
-        "calls": 5,
-        "production_calls": 5,
+        "calls": 6,
+        "production_calls": 6,
         "test_calls": 0,
         "repositories": true,
         "production_repositories": true,
         "native_sdk_calls": 0,
-        "ai_sdk_calls": 5,
+        "ai_sdk_calls": 6,
         "factory_calls": 2,
-        "model_calls": 3,
-        "configured_instance_calls": 3,
+        "model_calls": 4,
+        "configured_instance_calls": 4,
         "typed_parameter_model_calls": 0,
         "class_field_model_calls": 0,
         "class_accessor_model_calls": 0,
@@ -42928,6 +43223,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -43455,7 +43754,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1439
+      "elapsed_seconds": 9.5438
     },
     {
       "repository": "simstudioai/sim",
@@ -43574,6 +43873,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -44091,7 +44394,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.6844
+      "elapsed_seconds": 178.2161
     },
     {
       "repository": "composiohq/composio",
@@ -44239,6 +44542,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -44765,7 +45072,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.0214
+      "elapsed_seconds": 5.2598
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -44906,6 +45213,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -45441,7 +45752,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.1818
+      "elapsed_seconds": 8.5834
     },
     {
       "repository": "e2b-dev/E2B",
@@ -45559,6 +45870,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -46076,7 +46391,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.5484
+      "elapsed_seconds": 12.8676
     },
     {
       "repository": "daytonaio/daytona",
@@ -46186,6 +46501,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -46703,7 +47022,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0014
+      "elapsed_seconds": 0.0011
     },
     {
       "repository": "AgentOps-AI/agentops",
@@ -46845,6 +47164,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -47367,7 +47690,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.1394
+      "elapsed_seconds": 5.0152
     },
     {
       "repository": "traceloop/openllmetry",
@@ -47519,6 +47842,10 @@
         "non_test_instances": 0,
         "local_execution": 0,
         "safety_check_handlers_configured": 0,
+        "safety_check_auto_acknowledge_all": 0,
+        "safety_check_inline_lambda_auto_ack": 0,
+        "safety_check_same_file_callback_auto_ack": 0,
+        "safety_check_unresolved": 0,
         "capability_edges": 0,
         "resolved_agent_edges": 0
       },
@@ -48044,7 +48371,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.6003
+      "elapsed_seconds": 7.4727
     }
   ]
 }

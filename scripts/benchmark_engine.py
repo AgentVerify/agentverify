@@ -1209,6 +1209,22 @@ def main() -> int:
                     item.attributes.get("safety_check_handler") == "configured"
                     for item in python_computer_tools
                 ),
+                "safety_check_auto_acknowledge_all": sum(
+                    item.attributes.get("safety_check_policy") == "auto-acknowledge-all"
+                    for item in python_computer_tools
+                ),
+                "safety_check_inline_lambda_auto_ack": sum(
+                    item.attributes.get("safety_check_resolution") == "inline-lambda"
+                    for item in python_computer_tools
+                ),
+                "safety_check_same_file_callback_auto_ack": sum(
+                    item.attributes.get("safety_check_resolution") == "same-file-callback"
+                    for item in python_computer_tools
+                ),
+                "safety_check_unresolved": sum(
+                    item.attributes.get("safety_check_policy") == "unresolved"
+                    for item in python_computer_tools
+                ),
                 "capability_edges": len(python_computer_capability_edges),
                 "resolved_agent_edges": len(python_computer_agent_edges),
             },
@@ -2946,7 +2962,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 123,
+        "schema_version": 125,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -3117,6 +3133,10 @@ def main() -> int:
                     "non_test_instances",
                     "local_execution",
                     "safety_check_handlers_configured",
+                    "safety_check_auto_acknowledge_all",
+                    "safety_check_inline_lambda_auto_ack",
+                    "safety_check_same_file_callback_auto_ack",
+                    "safety_check_unresolved",
                     "capability_edges",
                     "resolved_agent_edges",
                 )

@@ -812,6 +812,9 @@ the exact environment names and callback-resolution basis.
 Import-proven `ComputerTool` instances instead emit a local computer-control capability. Their
 optional `on_safety_check` callback is recorded as SDK safety-check state, not promoted to a generic
 human-approval control because it applies only when the model response carries safety checks.
+Python callbacks that are exactly an inline `lambda ...: True` or a scope-proven same-file callback
+ending in a single `return True` are marked as safety-check auto-acknowledgement for
+`AV-APPROVAL011`; conditional callbacks remain unresolved.
 The TypeScript OpenAI Agents `computerTool` path mirrors that distinction: `onSafetyCheck` is
 recorded separately from `needsApproval`, and `AV-APPROVAL011` reports only exact callbacks that
 auto-acknowledge every pending safety check by returning `true` or by returning the full
