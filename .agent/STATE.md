@@ -517,6 +517,11 @@ catalog workflows.
   with a final `return True` are reported when reachable, while conditional callbacks stay
   unresolved. Local Python fixtures plus real OpenAI Agents Python SDK tests raise the public IR
   truth set to 1,999 labels and the reporting truth set to 729 labels.
+- Added exact OpenAI Agents JS run-state approval-decision bypass provenance. `RunState.approve(...)`
+  controls now record when their braced approval branch is guarded by a same-file confirmation
+  helper with an environment-backed true-return path, while reject branches and reassigned boolean
+  guards remain clean. Local fixtures plus real OpenAI Agents JS HITL examples raise the public IR
+  truth set to 2,007 labels.
 
 ## Current findings
 

@@ -12901,8 +12901,9 @@ def typescript_direct_true_return(code: str, consequent_start: int) -> bool:
     return False
 
 
-def typescript_environment_approval_guards(text: str) -> list[tuple[int, list[str]]]:
-    """Locate env-backed approval flags whose immediate branch returns true."""
+def typescript_top_level_approval_env_flags(text: str) -> dict[str, str]:
+    """Return top-level boolean approval flags backed by process.env comparisons."""
+
     code = typescript_code_mask(text)
     flags: dict[str, str] = {}
     for match in TS_APPROVAL_ENV_ASSIGNMENT.finditer(text):
@@ -12916,6 +12917,19 @@ def typescript_environment_approval_guards(text: str) -> list[tuple[int, list[st
             environment_name
         ):
             flags[flag_name] = environment_name
+    return flags
+
+
+def typescript_environment_approval_guards(
+    text: str,
+    external_flags: dict[str, str] | None = None,
+    shadowed_names: set[str] | None = None,
+) -> list[tuple[int, list[str]]]:
+    """Locate env-backed approval flags whose immediate branch returns true."""
+    code = typescript_code_mask(text)
+    external_flag_names = set((external_flags or {}).keys())
+    flags = {**(external_flags or {}), **typescript_top_level_approval_env_flags(text)}
+    shadowed_names = shadowed_names or set()
 
     guards: list[tuple[int, list[str]]] = []
     for match in re.finditer(r"\bif\s*\(", code):
@@ -12935,6 +12949,13 @@ def typescript_environment_approval_guards(text: str) -> list[tuple[int, list[st
             if APPROVAL_BYPASS_ENV_NAME.search(environment_name):
                 environment_names.add(environment_name)
         for flag_name, environment_name in flags.items():
+            if flag_name in shadowed_names:
+                continue
+            if flag_name in external_flag_names and re.search(
+                rf"\b(?:const|let|var)\s+{re.escape(flag_name)}\b",
+                code[:condition_start],
+            ):
+                continue
             if re.search(rf"\b{re.escape(flag_name)}\b", condition_code):
                 environment_names.add(environment_name)
         if environment_names:
@@ -15209,14 +15230,22 @@ def typescript_approval_bypass_function_summaries(
 ) -> dict[str, tuple[str, ...]]:
     """Resolve unique same-file functions that transitively return env-backed approval."""
     definitions = typescript_function_definitions(text)
+    module_flags = typescript_top_level_approval_env_flags(text)
     name_counts = Counter(name for name, _, _, _ in definitions)
     unique_definitions = {name: body for name, _, _, body in definitions if name_counts[name] == 1}
     resolved: dict[str, set[str]] = {}
     calls: dict[str, set[str]] = {}
-    for name, body in unique_definitions.items():
+    for name, _, parameters, body in definitions:
+        if name_counts[name] != 1:
+            continue
+        shadowed_names = {parameter.local_name for parameter in parameters}
         environment_names = {
             environment_name
-            for _, names in typescript_environment_approval_guards(body)
+            for _, names in typescript_environment_approval_guards(
+                body,
+                external_flags=module_flags,
+                shadowed_names=shadowed_names,
+            )
             for environment_name in names
         }
         if environment_names:
@@ -15241,6 +15270,82 @@ def typescript_approval_bypass_function_summaries(
                 resolved.setdefault(name, set()).update(inherited)
                 changed = True
     return {name: tuple(sorted(values)) for name, values in resolved.items()}
+
+
+def typescript_direct_approval_bypass_call_names(
+    expression: str,
+    approval_bypass_function_summaries: dict[str, tuple[str, ...]],
+) -> tuple[str, ...]:
+    """Return env names when an expression is exactly a call to a proven approval helper."""
+
+    value = expression.strip()
+    while value.startswith("("):
+        end = typescript_balanced_end(value, 0, "(", ")")
+        if end is None or value[end:].strip():
+            break
+        value = value[1 : end - 1].strip()
+    value = re.sub(r"^(?:await\s+)+", "", value).strip()
+    call_match = re.match(r"^([A-Za-z_$][\w$]*)\s*\(", value)
+    if call_match is None:
+        return ()
+    function_name = call_match.group(1)
+    if function_name not in approval_bypass_function_summaries:
+        return ()
+    opening = value.find("(", call_match.start(1))
+    end = typescript_balanced_end(value, opening, "(", ")")
+    if end is None or value[end:].strip():
+        return ()
+    return approval_bypass_function_summaries[function_name]
+
+
+def typescript_enclosing_if_approval_bypass_environment_names(
+    code: str,
+    target_offset: int,
+    approval_bypass_function_summaries: dict[str, tuple[str, ...]],
+) -> tuple[str, ...]:
+    """Return env names if target is inside a braced if guarded by an approval helper."""
+
+    if not approval_bypass_function_summaries:
+        return ()
+    for if_match in reversed(list(re.finditer(r"\bif\s*\(", code[:target_offset]))):
+        opening = code.find("(", if_match.start(), if_match.end())
+        condition_end = typescript_balanced_end(code, opening, "(", ")")
+        if condition_end is None:
+            continue
+        after_condition = condition_end
+        while after_condition < len(code) and code[after_condition].isspace():
+            after_condition += 1
+        if after_condition >= len(code) or code[after_condition] != "{":
+            continue
+        block_end = typescript_balanced_end(code, after_condition, "{", "}")
+        if block_end is None or not (after_condition < target_offset < block_end):
+            continue
+        condition = code[opening + 1 : condition_end - 1].strip()
+        environment_names = typescript_direct_approval_bypass_call_names(
+            condition, approval_bypass_function_summaries
+        )
+        if environment_names:
+            return environment_names
+        condition_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", condition)
+        if condition_identifier is None:
+            continue
+        binding_name = condition_identifier.group(0)
+        binding_pattern = re.compile(
+            rf"\b(?:const|let)\s+{re.escape(binding_name)}\s*(?::\s*[^=;\n]+)?=\s*"
+            r"(?:await\s+)?([A-Za-z_$][\w$]*)\s*\("
+        )
+        for binding_match in reversed(list(binding_pattern.finditer(code[: if_match.start()]))):
+            function_name = binding_match.group(1)
+            environment_names = approval_bypass_function_summaries.get(function_name)
+            if not environment_names:
+                continue
+            if re.search(
+                rf"(?<![\w$.]){re.escape(binding_name)}\s*=(?!=)",
+                code[binding_match.end() : if_match.start()],
+            ):
+                continue
+            return environment_names
+    return ()
 
 
 def typescript_network_helper_summaries(
@@ -16636,6 +16741,7 @@ def add_typescript_openai_run_state_approval_decision_control(
     source_agent: tuple[str, str],
     decision: str,
     symbol_identity: str,
+    approval_bypass_environment_names: tuple[str, ...] = (),
 ) -> tuple[str, str]:
     """Add exact OpenAI Agents JS run-state approval/rejection handling evidence."""
     source_agent_name, source_agent_id = source_agent
@@ -16653,6 +16759,15 @@ def add_typescript_openai_run_state_approval_decision_control(
         "state_scope": "openai-run-state-approval-decision",
         "scope": source_scope(relative),
     }
+    if decision == "approve" and approval_bypass_environment_names:
+        attributes.update(
+            {
+                "approval_bypass_environment_names": list(
+                    approval_bypass_environment_names
+                ),
+                "approval_bypass_resolution": "braced-if-condition-callback",
+            }
+        )
     ir.add_component(
         Component(
             "control",
@@ -16662,6 +16777,21 @@ def add_typescript_openai_run_state_approval_decision_control(
             control_id,
         )
     )
+    relationship_attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-run-state-approval-decision",
+        "configuration": f"run.state.{decision}",
+        "binding": binding,
+        "decision": decision,
+    }
+    if decision == "approve" and approval_bypass_environment_names:
+        relationship_attributes.update(
+            {
+                "approval_bypass_environment_names": list(
+                    approval_bypass_environment_names
+                ),
+                "approval_bypass_resolution": "braced-if-condition-callback",
+            }
+        )
     ir.add_relationship(
         Relationship(
             "agent",
@@ -16670,12 +16800,7 @@ def add_typescript_openai_run_state_approval_decision_control(
             "control",
             "approval-decision",
             Evidence(relative, line, excerpt(lines, line)),
-            {
-                "analysis": "typescript-openai-agents-run-state-approval-decision",
-                "configuration": f"run.state.{decision}",
-                "binding": binding,
-                "decision": decision,
-            },
+            relationship_attributes,
             source_id=source_agent_id,
             target_id=control_id,
         )
@@ -18333,7 +18458,10 @@ def typescript_graph(
     literal_bindings = typescript_literal_string_bindings(text)
     approval_bypass_function_summaries = (
         typescript_approval_bypass_function_summaries(text)
-        if "onApproval" in text and set(openai_imports.values()) & TS_OPENAI_APPROVAL_BUILTINS
+        if (
+            ("onApproval" in text or ".approve(" in text)
+            and openai_imports
+        )
         else {}
     )
     has_mcp_import = "@modelcontextprotocol/" in text or bool(
@@ -19850,6 +19978,15 @@ def typescript_graph(
             continue
         seen_approval_decisions.add(decision_key)
         symbol_receiver = f"{result_name}.state" if state_binding is None else state_binding
+        approval_bypass_environment_names = (
+            typescript_enclosing_if_approval_bypass_environment_names(
+                code,
+                match.start(),
+                approval_bypass_function_summaries,
+            )
+            if decision == "approve"
+            else ()
+        )
         add_typescript_openai_run_state_approval_decision_control(
             ir,
             relative=relative,
@@ -19860,6 +19997,7 @@ def typescript_graph(
             source_agent=source,
             decision=decision,
             symbol_identity=f"{symbol_receiver}.{decision}@{line}",
+            approval_bypass_environment_names=approval_bypass_environment_names,
         )
 
     def add_conversation_session_relationship(

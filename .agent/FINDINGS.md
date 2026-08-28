@@ -2,7 +2,7 @@
 
 ## Durable facts
 
-- The repository contains a 71-repository pinned research corpus and schema-v125 engine benchmark
+- The repository contains a 71-repository pinned research corpus and schema-v126 engine benchmark
   outputs.
 - The runtime catalog currently contains 25 enabled reporting rules.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
@@ -480,7 +480,13 @@
   `lambda ...: True` callbacks and same-file callbacks with a single final `return True` are
   recorded as `safety_check_policy: auto-acknowledge-all`; conditional callbacks remain unresolved.
   The pinned OpenAI Agents Python SDK tests validate two same-name nested callback cases in separate
-  lexical scopes. The public IR truth set now covers 1,999 passing labels.
+  lexical scopes. The public IR truth set then covered 1,999 passing labels.
+- OpenAI Agents JS run-state approval decisions now preserve source-visible auto-approval bypass
+  provenance without converting it into a standalone rule finding. A `RunState.approve(...)` control
+  records `approval_bypass_environment_names` only when the call is inside a braced `if` whose
+  condition is a direct proven confirmation helper call or an unreassigned boolean bound to that
+  helper. The real HITL examples prove `AUTO_APPROVE_HITL` on approve branches; reject branches and
+  reassigned boolean guards stay unannotated.
 
 ## Hypotheses
 

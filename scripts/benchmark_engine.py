@@ -713,6 +713,14 @@ def main() -> int:
             and item.name == "filesystem"
             and item.attributes.get("analysis") == "typescript-openai-agents-mcp-approval-default"
         ]
+        typescript_openai_run_state_approval_decisions = [
+            item
+            for item in ir.components
+            if item.kind == "control"
+            and item.name == "approval-decision"
+            and item.attributes.get("analysis")
+            == "typescript-openai-agents-run-state-approval-decision"
+        ]
         python_agno_mcp_confirmation_servers = [
             item
             for item in ir.components
@@ -2185,6 +2193,22 @@ def main() -> int:
                 ),
                 "findings": sum(finding.rule_id == "AV-APPROVAL004" for finding in ir.findings),
             },
+            "typescript_openai_run_state_approval_decisions": {
+                "total": len(typescript_openai_run_state_approval_decisions),
+                "approvals": sum(
+                    item.attributes.get("decision") == "approve"
+                    for item in typescript_openai_run_state_approval_decisions
+                ),
+                "rejections": sum(
+                    item.attributes.get("decision") == "reject"
+                    for item in typescript_openai_run_state_approval_decisions
+                ),
+                "env_bypass_approvals": sum(
+                    bool(item.attributes.get("approval_bypass_environment_names"))
+                    for item in typescript_openai_run_state_approval_decisions
+                ),
+                "repositories": bool(typescript_openai_run_state_approval_decisions),
+            },
             "python_agno_mcp_confirmation": {
                 "servers": len(python_agno_mcp_confirmation_servers),
                 "writable_servers": sum(
@@ -2962,7 +2986,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 125,
+        "schema_version": 126,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -3593,6 +3617,19 @@ def main() -> int:
                     "agent_server_edges",
                     "configured_by_edges",
                     "findings",
+                )
+            },
+            "typescript_openai_run_state_approval_decisions": {
+                name: sum(
+                    result["typescript_openai_run_state_approval_decisions"][name]
+                    for result in successful
+                )
+                for name in (
+                    "total",
+                    "approvals",
+                    "rejections",
+                    "env_bypass_approvals",
+                    "repositories",
                 )
             },
             "python_agno_mcp_confirmation": {

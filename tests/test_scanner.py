@@ -5841,6 +5841,47 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
     assert not ir.findings
 
 
+def test_typescript_openai_approval_decision_records_env_backed_approval_branch() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_openai_approval_decision_env")
+
+    controls = {
+        component.evidence.line: component
+        for component in ir.components
+        if component.kind == "control" and component.name == "approval-decision"
+    }
+    assert set(controls) == {22, 24, 31, 40}
+    assert controls[22].attributes["approval_bypass_environment_names"] == [
+        "AUTO_APPROVE_HITL"
+    ]
+    assert controls[22].attributes["approval_bypass_resolution"] == (
+        "braced-if-condition-callback"
+    )
+    assert controls[31].attributes["approval_bypass_environment_names"] == [
+        "AUTO_APPROVE_HITL"
+    ]
+    assert controls[31].attributes["state_binding"] == "inline-result-state"
+    assert "approval_bypass_environment_names" not in controls[24].attributes
+    assert controls[24].attributes["decision"] == "reject"
+    assert "approval_bypass_environment_names" not in controls[40].attributes
+
+    governed_edges = {
+        relationship.evidence.line: relationship.attributes
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "governed-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "approval-decision"
+    }
+    assert governed_edges[22]["approval_bypass_environment_names"] == [
+        "AUTO_APPROVE_HITL"
+    ]
+    assert governed_edges[31]["approval_bypass_resolution"] == (
+        "braced-if-condition-callback"
+    )
+    assert "approval_bypass_environment_names" not in governed_edges[24]
+    assert "approval_bypass_environment_names" not in governed_edges[40]
+
+
 def test_cline_inline_tool_links_only_dynamic_bun_shell_execution() -> None:
     ir = scan_repository(ROOT / "cases/typescript_bun_shell")
 

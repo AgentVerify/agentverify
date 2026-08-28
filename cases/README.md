@@ -107,6 +107,9 @@ never imported or executed.
   computer-control inventory and exact inline/repeated-binding agent edges; inline and same-file
   `on_safety_check` callbacks that always return `True` are surfaced as safety auto-acknowledgement,
   while an unimported lookalike stays ignored.
+- `typescript_openai_approval_decision_env`: OpenAI Agents JS `RunState.approve(...)` decision
+  controls record when the approval branch is guarded by a same-file confirmation helper with an
+  environment-backed true-return path; reject branches and reassigned boolean guards stay clean.
 - `python_direct_callable_tool`: a sole same-block Python function passed through a literal Agent
   tools list becomes an analyzed tool asset; reassigned, cross-branch, forward, and parameter
   forms—including a parameter shadowing a unique module tool—remain unresolved.

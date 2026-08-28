@@ -399,3 +399,18 @@
   explicit review behavior.
 - Revisit when: callback helpers with explicit safety-code allowlists or user-review calls can be
   modeled without accepting arbitrary boolean expressions.
+
+## OpenAI Agents JS run-state approval bypass remains control metadata
+
+- Decision: Record environment-backed approval bypass provenance on exact OpenAI Agents JS
+  `RunState.approve(...)` controls, but do not introduce a new reporting rule yet.
+- Evidence: The pinned OpenAI Agents JS HITL examples call `state.approve(interruption)` only after
+  a confirmation helper. That helper has an `AUTO_APPROVE_HITL` true-return branch before the
+  readline prompt. Local fixtures prove both an unreassigned boolean guard and direct
+  `await confirm(...)` guard, while reject branches and reassigned booleans stay unannotated.
+- Alternative: Report every env-backed approval decision as an approval-bypass finding. Rejected for
+  now because these examples still contain an explicit reject path and the current evidence is best
+  treated as governance metadata until a rule can model whether the bypass is enabled in production
+  defaults or CI.
+- Revisit when: reporting policy can distinguish intentional test/demo auto-approval from
+  production approval bypasses on restored run-state decisions.

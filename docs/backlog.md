@@ -447,6 +447,12 @@ callbacks with one final `return True` are auto-acknowledgement evidence. Condit
 unresolved, and the pinned OpenAI Agents Python SDK tests validate duplicate same-name nested
 callbacks in separate lexical scopes.
 
+Schema v126 records environment-backed approval-bypass provenance on exact OpenAI Agents JS
+`RunState.approve(...)` controls. A braced approval branch guarded by a same-file confirmation
+helper with an env-backed true-return path records the environment variable on the approval decision,
+while reject branches and reassigned boolean guards stay clean. The pinned HITL examples prove this
+for `AUTO_APPROVE_HITL`; it remains control metadata rather than a new reporting rule.
+
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
 server-controlled prompt/model hint/sampling parameters, model invocation, and response returned to
@@ -571,8 +577,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 729 pinned positive/negative locations, with 1,999 separately
-scored IR component/relationship labels. Schema-v125 engine results and
+The curated regression set has reached 729 pinned positive/negative locations, with 2,007 separately
+scored IR component/relationship labels. Schema-v126 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. The checked-in holdout design now defines the sampling strata, label protocol,
