@@ -365,6 +365,11 @@
   `--label-id-prefix`; the verifier reapplies the filter before checking outcome/label invariants,
   so partial results are explicit and cannot be mistaken for full public-regression artifacts.
   A focused `IR-TS-OPENAI-SANDBOX` run covered 235 labels and passed locally in seconds.
+- Evaluator `--progress` timing is intentionally stderr-only and opt-in, preserving the
+  benchmark-result JSON schema while making scan-cost attribution visible during local development.
+  A focused `IR-TS-OPENAI-SANDBOX` run printed three target timings: the cached
+  `openai/openai-agents-js` checkout took about 3.5 seconds, while the two local sandbox fixtures
+  were below 0.3 seconds each.
 
 ## Hypotheses
 

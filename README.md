@@ -200,7 +200,7 @@ PYTHONPATH=src python3 scripts/evaluate_truthset.py
 PYTHONPATH=src python3 scripts/evaluate_truthset.py --labels benchmarks/ir-truthset.json \
   --output benchmarks/ir-truthset-results.json
 PYTHONPATH=src python3 scripts/evaluate_truthset.py --labels benchmarks/ir-truthset.json \
-  --output /tmp/agentverify-sandbox-results.json --check-id IR-TS-OPENAI-SANDBOX
+  --output /tmp/agentverify-sandbox-results.json --check-id IR-TS-OPENAI-SANDBOX --progress
 PYTHONPATH=src python3 scripts/evaluate_truthset.py --evaluation-kind sealed-holdout \
   --manifest path/to/holdout-manifest.json --labels path/to/sealed-labels.json \
   --output path/to/holdout-results.json

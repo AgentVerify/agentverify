@@ -6,6 +6,8 @@ import argparse
 import hashlib
 import json
 import subprocess
+import sys
+import time
 from collections import Counter, defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
@@ -54,6 +56,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="append",
         default=[],
         help="evaluate only labels whose id starts with this prefix; may be repeated",
+    )
+    parser.add_argument(
+        "--progress",
+        action="store_true",
+        help="print per-target scan timings to stderr without changing result JSON",
     )
     return parser.parse_args(argv)
 
@@ -131,6 +138,7 @@ def main(argv: list[str] | None = None) -> int:
     label_filter = label_filter_from_args(args)
     all_labels = json.loads(args.labels.read_text(encoding="utf-8"))["labels"]
     labels = apply_label_filter(all_labels, label_filter)
+    target_label_counts = Counter(json.dumps(label["target"], sort_keys=True) for label in labels)
     scans = {}
     outcomes = []
     matrices: dict[str, Counter] = defaultdict(Counter)
@@ -139,8 +147,16 @@ def main(argv: list[str] | None = None) -> int:
         path = target_path(target, args.cache_dir)
         key = json.dumps(target, sort_keys=True)
         if key not in scans:
+            started = time.perf_counter()
             verify_commit(path, target)
             scans[key] = scan_repository(path)
+            if args.progress:
+                elapsed = time.perf_counter() - started
+                print(
+                    "agentverify: scanned "
+                    f"{path} labels={target_label_counts[key]} seconds={elapsed:.3f}",
+                    file=sys.stderr,
+                )
         ir = scans[key]
         metric_id = label.get("rule_id") or label["check_id"]
         if relationship := label.get("relationship"):

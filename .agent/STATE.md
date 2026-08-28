@@ -410,6 +410,10 @@ catalog workflows.
   filter in schema-backed benchmark-result metadata, and `agentverify benchmark verify` applies that
   filter before checking outcome counts and label IDs. A real focused OpenAI sandbox IR run verified
   235/235 labels in a few seconds instead of scanning every public truth-set target.
+- Added optional evaluator progress timing with `scripts/evaluate_truthset.py --progress`. The flag
+  prints per-target scan timings to stderr without changing benchmark-result JSON, and a focused
+  OpenAI sandbox IR run showed the cached `openai/openai-agents-js` checkout dominating that slice
+  at roughly 3.5 seconds versus subsecond local fixtures.
 
 ## Current findings
 
@@ -494,4 +498,6 @@ catalog workflows.
 Continue toward the highest-value local P1/P2 work: additional exact OpenAI Agents JS sandbox
 policy fields, real-world framework coverage without broad name matching, concrete CI/editor
 integration fixtures, or release-artifact checks that stay local until release publishing is
-explicit.
+explicit. For performance work, run full public IR truth-set evaluation with `--progress` and use the
+per-target timings to choose between scan-result reuse, repository-scope pruning, or narrower
+dependency traversal.

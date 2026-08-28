@@ -157,6 +157,78 @@ def test_evaluator_filters_labels_for_focused_development_runs(
     ] == 1
 
 
+def test_evaluator_progress_is_opt_in_and_reports_target_timings(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
+    first = tmp_path / "first"
+    second = tmp_path / "second"
+    first.mkdir()
+    second.mkdir()
+    (first / "agent.py").write_text("# first\n", encoding="utf-8")
+    (second / "agent.py").write_text("# second\n", encoding="utf-8")
+    labels = tmp_path / "labels.json"
+    labels.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "labels": [
+                    {
+                        "id": "first-missing-agent",
+                        "target": {"kind": "local", "path": str(first)},
+                        "check_id": "IR-FIRST",
+                        "path": "agent.py",
+                        "line": 1,
+                        "expected": False,
+                        "component": {"kind": "agent", "name": "missing"},
+                    },
+                    {
+                        "id": "second-missing-agent",
+                        "target": {"kind": "local", "path": str(second)},
+                        "check_id": "IR-SECOND",
+                        "path": "agent.py",
+                        "line": 1,
+                        "expected": False,
+                        "component": {"kind": "agent", "name": "missing"},
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    def fake_scan_repository(path: Path) -> RepositoryIR:
+        return RepositoryIR(str(path))
+
+    monkeypatch.setattr(evaluate_truthset, "scan_repository", fake_scan_repository)
+    quiet_output = tmp_path / "quiet-results.json"
+
+    assert evaluate_truthset.main(["--labels", str(labels), "--output", str(quiet_output)]) == 0
+
+    quiet_result = json.loads(quiet_output.read_text(encoding="utf-8"))
+    quiet_streams = capsys.readouterr()
+    assert quiet_streams.err == ""
+    assert "seconds=" not in json.dumps(quiet_result)
+
+    progress_output = tmp_path / "progress-results.json"
+
+    assert (
+        evaluate_truthset.main(
+            ["--labels", str(labels), "--output", str(progress_output), "--progress"]
+        )
+        == 0
+    )
+
+    progress_result = json.loads(progress_output.read_text(encoding="utf-8"))
+    progress_streams = capsys.readouterr()
+    assert progress_result == {
+        **quiet_result,
+        "generated_at": progress_result["generated_at"],
+    }
+    assert progress_streams.err.count("agentverify: scanned ") == 2
+    assert f"agentverify: scanned {first} labels=1 seconds=" in progress_streams.err
+    assert f"agentverify: scanned {second} labels=1 seconds=" in progress_streams.err
+
+
 def test_evaluator_reports_source_anchor_failures_separately(tmp_path: Path) -> None:
     target = tmp_path / "repo"
     target.mkdir()
