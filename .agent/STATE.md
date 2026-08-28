@@ -483,6 +483,14 @@ catalog workflows.
   objects, unknown run results, stale result bindings, and rebound state bindings remain unresolved.
   Local fixtures plus real OpenAI Agents JS streaming HITL and hosted MCP HITL examples raised
   regenerated public IR truth-set results to 1,965 passing labels.
+- Added exact OpenAI Agents JS serialized run-state restoration via `RunState.fromString(...)`.
+  AgentVerify now follows a narrow same-file chain from `JSON.stringify(result.state, ...)` or
+  `result.state.toString()` into a stable serialized-state binding, through literal
+  `writeFile`/`readFile` persistence when present, and then into `RunState.fromString(agent,
+  serializedState)` only when the target agent matches the original SDK run result. Restored state
+  then participates in resume and approval-decision inventory. Local fixtures plus the real
+  standard OpenAI Agents JS HITL example raised regenerated public IR truth-set results to 1,974
+  passing labels.
 
 ## Current findings
 
@@ -565,6 +573,9 @@ catalog workflows.
   `approval-decision` controls prove source-visible SDK state approval/rejection handling. The
   current exact proof covers `.state` from SDK run results, not serialized/deserialized
   `RunState.fromString(...)` flows.
+- OpenAI Agents JS serialized run-state restoration can be source-proven for simple same-file
+  file-persistence flows. The scanner intentionally requires literal file names and matching agent
+  identity, so arbitrary strings passed to `RunState.fromString` remain unresolved.
 
 ## Blockers
 
@@ -574,14 +585,13 @@ catalog workflows.
 ## Next action
 
 Continue toward the highest-value local P1/P2 work: additional exact OpenAI Agents JS sandbox or
-session-governance policy fields, serialized approval-state handling such as
-`RunState.fromString(...)` when it can be source-proven, real-world framework coverage without broad
-name matching, concrete CI/editor integration fixtures, or release-artifact checks that stay local
-until release publishing is explicit. For OpenAI session work, keep local `MemorySession`,
-server-managed `conversationId`, `previousResponseId`, same-block `result.history`, and same-file
-`result.state` resume semantics distinct. For OpenAI approval work, keep literal always-approval,
-callback-controlled approval, delegated-agent adapter approval metadata, SDK state approval
-decisions, and proven human approval/resume handling separate. For performance work, use
-`--progress` plus focused `--scan-label-paths` only when the target labels are self-contained;
-broader benchmark acceleration likely needs dependency-aware path expansion or scan-result reuse to
-preserve cross-file evidence.
+session-governance policy fields, approval predicate/action quality, real-world framework coverage
+without broad name matching, concrete CI/editor integration fixtures, benchmark performance work, or
+release-artifact checks that stay local until release publishing is explicit. For OpenAI session
+work, keep local `MemorySession`, server-managed `conversationId`, `previousResponseId`,
+same-block `result.history`, same-file `result.state`, and serialized `RunState.fromString` resume
+semantics distinct. For OpenAI approval work, keep literal always-approval, callback-controlled
+approval, delegated-agent adapter approval metadata, SDK state approval decisions, and proven human
+approval/resume handling separate. For performance work, use `--progress` plus focused
+`--scan-label-paths` only when the target labels are self-contained; broader benchmark acceleration
+likely needs dependency-aware path expansion or scan-result reuse to preserve cross-file evidence.

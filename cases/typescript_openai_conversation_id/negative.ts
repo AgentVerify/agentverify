@@ -1,4 +1,4 @@
-import { Agent, run } from '@openai/agents';
+import { Agent, RunState, run } from '@openai/agents';
 import { OpenAI, OpenAI as ReboundOpenAI } from 'openai';
 
 ReboundOpenAI = ReplacementOpenAI;
@@ -95,3 +95,18 @@ const reboundApprovalResult = await run(agent, 'approval state before reassigned
 let reboundApprovalState = reboundApprovalResult.state;
 reboundApprovalState = looseApprovalState;
 reboundApprovalState.approve(interruption);
+
+const looseSerializedState = '{"not":"from an sdk result"}';
+const loosePersistedState = await RunState.fromString(agent, looseSerializedState);
+loosePersistedState.approve(interruption);
+
+const unknownSerializedResult = await unknownRun(agent, 'unknown serialized state');
+const unknownSerializedState = unknownSerializedResult.state.toString();
+const unknownPersistedState = await RunState.fromString(agent, unknownSerializedState);
+unknownPersistedState.reject(interruption);
+
+let reassignedSerializedResult = await run(agent, 'serialized source before result reassignment');
+reassignedSerializedResult = await unknownRun(agent, 'reassigned serialized source');
+const reassignedSerializedState = reassignedSerializedResult.state.toString();
+const reassignedPersistedState = await RunState.fromString(agent, reassignedSerializedState);
+reassignedPersistedState.approve(interruption);

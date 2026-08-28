@@ -1,4 +1,4 @@
-import { Agent, Runner, run } from '@openai/agents';
+import { Agent, Runner, RunState, run } from '@openai/agents';
 import { OpenAI } from 'openai';
 
 const agent = new Agent({
@@ -58,3 +58,17 @@ for (const interruption of inlineApproval.interruptions ?? []) {
   inlineApproval.state.approve(interruption);
   inlineApproval.state.reject(interruption);
 }
+
+let persistedApproval = await run(agent, 'start serialized approval-state handling');
+await fs.writeFile(
+  'agentverify-result-state.json',
+  JSON.stringify(persistedApproval.state, null, 2),
+  'utf-8',
+);
+const persistedStateText = await fs.readFile('agentverify-result-state.json', 'utf-8');
+const persistedState = await RunState.fromString(agent, persistedStateText);
+for (const interruption of persistedApproval.interruptions ?? []) {
+  persistedState.approve(interruption);
+  persistedState.reject(interruption);
+}
+await run(agent, persistedState);

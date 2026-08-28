@@ -448,6 +448,12 @@
   run result; loose, unknown, stale, and rebound state receivers remain unresolved. Real pinned
   examples validate both streaming HITL state decisions and hosted MCP HITL result-state decisions.
   The public IR truth set now covers 1,965 passing labels.
+- OpenAI Agents JS serialized run-state restoration is now covered for simple same-file persistence
+  chains. A restored `RunState.fromString(agent, storedState)` state becomes conversation-continuity
+  evidence only when `storedState` is traced back to a proven SDK `result.state` serialization and
+  the restored agent matches the original run agent; approval decisions on that restored state are
+  then inventoried normally. The real standard HITL example validates the file write/read restore
+  path, and the public IR truth set now covers 1,974 passing labels.
 
 ## Hypotheses
 

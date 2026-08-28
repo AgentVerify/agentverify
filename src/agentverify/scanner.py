@@ -16475,6 +16475,45 @@ def add_typescript_openai_run_state_continuity_control(
     return "conversation-continuity", control_id
 
 
+def add_typescript_openai_run_state_from_string_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    result_binding: str,
+    state_binding: str,
+    serialized_state_binding: str,
+    source_agent: tuple[str, str],
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS deserialized run-state continuity evidence."""
+    source_agent_name, source_agent_id = source_agent
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "conversation-continuity",
+            Evidence(relative, line, excerpt(lines, line)),
+            {
+                "analysis": "typescript-openai-agents-run-state-from-string",
+                "module": "@openai/agents",
+                "constructor": "RunState",
+                "configuration": "RunState.fromString",
+                "result_binding": result_binding,
+                "state_binding": state_binding,
+                "serialized_state_binding": serialized_state_binding,
+                "source_agent": source_agent_name,
+                "source_agent_id": source_agent_id,
+                "state_scope": "openai-run-state-continuity",
+                "scope": source_scope(relative),
+            },
+            control_id,
+        )
+    )
+    return "conversation-continuity", control_id
+
+
 def add_typescript_openai_run_state_approval_decision_control(
     ir: RepositoryIR,
     *,
@@ -19320,6 +19359,150 @@ def typescript_graph(
                 )
             )
             run_state_binding_sources[state_name].append((result_name, source, match.end()))
+
+    run_state_constructors = {
+        local_name
+        for local_name, imported_name in openai_agents_imports.items()
+        if imported_name == "RunState"
+        and not typescript_import_binding_is_shadowed(text, local_name)
+    }
+    serialized_run_state_bindings: dict[str, list[tuple[str, tuple[str, str], int]]] = defaultdict(
+        list
+    )
+    direct_serialized_state_pattern = re.compile(
+        r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*(?::\s*[^=;\n]+)?=\s*"
+        r"([A-Za-z_$][\w$]*)\s*\.\s*state\s*\.\s*toString\s*\("
+    )
+    for match in direct_serialized_state_pattern.finditer(code):
+        serialized_name = match.group(1)
+        result_name = match.group(2)
+        source = latest_openai_agents_run_result_source(result_name, match.start(2))
+        if source is None:
+            continue
+        serialized_run_state_bindings[serialized_name].append((result_name, source, match.end()))
+
+    serialized_run_state_files: dict[str, list[tuple[str, tuple[str, str], int]]] = defaultdict(
+        list
+    )
+    for match in re.finditer(r"\b(?:[A-Za-z_$][\w$]*\s*\.\s*)?writeFile\s*\(", code):
+        opening = code.find("(", match.start(), match.end())
+        end = typescript_balanced_end(code, opening, "(", ")")
+        if end is None:
+            continue
+        arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
+        if len(arguments) < 2:
+            continue
+        file_name = typescript_string_literal_value(arguments[0][0])
+        if file_name is None:
+            continue
+        payload_code = typescript_code_mask(arguments[1][0])
+        state_match = re.search(
+            r"\bJSON\s*\.\s*stringify\s*\(\s*([A-Za-z_$][\w$]*)\s*\.\s*state\b",
+            payload_code,
+        ) or re.search(
+            r"\b([A-Za-z_$][\w$]*)\s*\.\s*state\s*\.\s*toString\s*\(",
+            payload_code,
+        )
+        if state_match is None:
+            continue
+        result_name = state_match.group(1)
+        source = latest_openai_agents_run_result_source(result_name, arguments[1][1])
+        if source is None:
+            continue
+        serialized_run_state_files[file_name].append((result_name, source, end))
+
+    read_file_pattern = re.compile(
+        r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*(?::\s*[^=;\n]+)?=\s*"
+        r"(?:await\s+)?(?:[A-Za-z_$][\w$]*\s*\.\s*)?readFile\s*\("
+    )
+    for match in read_file_pattern.finditer(code):
+        serialized_name = match.group(1)
+        opening = code.find("(", match.start(), match.end())
+        end = typescript_balanced_end(code, opening, "(", ")")
+        if end is None:
+            continue
+        arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
+        if not arguments:
+            continue
+        file_name = typescript_string_literal_value(arguments[0][0])
+        if file_name is None:
+            continue
+        source_record = None
+        for candidate_result, candidate_source, write_end in reversed(
+            serialized_run_state_files.get(file_name, [])
+        ):
+            if write_end > match.start():
+                continue
+            source_record = (candidate_result, candidate_source)
+            break
+        if source_record is None:
+            continue
+        result_name, source = source_record
+        serialized_run_state_bindings[serialized_name].append((result_name, source, end))
+
+    run_state_from_string_pattern = re.compile(
+        r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*(?::\s*[^=;\n]+)?=\s*"
+        r"(?:await\s+)?([A-Za-z_$][\w$]*)\s*\.\s*fromString\s*\("
+    )
+    for match in run_state_from_string_pattern.finditer(code):
+        if match.group(2) not in run_state_constructors:
+            continue
+        state_name = match.group(1)
+        opening = code.find("(", match.start(2), match.end())
+        end = typescript_balanced_end(code, opening, "(", ")")
+        if end is None:
+            continue
+        arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
+        if len(arguments) < 2:
+            continue
+        agent_argument = typescript_code_mask(arguments[0][0]).strip()
+        agent_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", agent_argument)
+        if agent_identifier is None:
+            continue
+        agent_target = local_agents.get(agent_identifier.group(0))
+        if agent_target is None:
+            continue
+        serialized_code = typescript_code_mask(arguments[1][0]).strip()
+        serialized_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", serialized_code)
+        if serialized_identifier is None:
+            continue
+        serialized_name = serialized_identifier.group(0)
+        source_record = None
+        for candidate_result, candidate_source, assignment_end in reversed(
+            serialized_run_state_bindings.get(serialized_name, [])
+        ):
+            if assignment_end > match.start():
+                continue
+            if candidate_source != agent_target:
+                continue
+            if re.search(
+                rf"(?<![\w$.]){re.escape(serialized_name)}\s*=(?!=)",
+                code[assignment_end : match.start()],
+            ):
+                continue
+            source_record = (candidate_result, candidate_source)
+            break
+        if source_record is None:
+            continue
+        result_name, source = source_record
+        line = line_at(text, match.start())
+        state_continuity_bindings[state_name].append(
+            (
+                add_typescript_openai_run_state_from_string_control(
+                    ir,
+                    relative=relative,
+                    lines=lines,
+                    line=line,
+                    result_binding=result_name,
+                    state_binding=state_name,
+                    serialized_state_binding=serialized_name,
+                    source_agent=source,
+                    symbol_identity=f"{state_name}.fromString@{line}",
+                ),
+                end,
+            )
+        )
+        run_state_binding_sources[state_name].append((result_name, source, end))
 
     approval_decision_pattern = re.compile(
         r"\b([A-Za-z_$][\w$]*)(?:\s*\.\s*state)?\s*\.\s*(approve|reject)\s*\("

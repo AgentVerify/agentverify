@@ -305,3 +305,21 @@
 - Revisit when: `RunState.fromString(agent, storedState)` can be linked back to serialized
   `result.state` without broad string/dataflow inference, or when approval predicate analysis can
   classify whether decisions cover specific risky tool calls.
+
+## OpenAI RunState.fromString continuity requires a proven serialized SDK state chain
+
+- Decision: Treat `RunState.fromString(agent, serializedState)` as OpenAI Agents JS run-state
+  continuity only when `RunState` is an exact unshadowed import from `@openai/agents`, the first
+  argument resolves to the same local agent used by the original exact SDK `run(...)`, and the
+  serialized-state argument is sourced from a same-file `result.state.toString()` or literal
+  `writeFile`/`readFile` chain around `JSON.stringify(result.state, ...)`.
+- Evidence: The real OpenAI Agents JS `examples/agent-patterns/human-in-the-loop.ts` example writes
+  `JSON.stringify(result.state, ...)` to `result.json`, reads it back into `storedState`, restores
+  with `RunState.fromString(agent, storedState)`, then calls `state.approve/reject` before resuming
+  `run(agent, state)`. Local negatives cover loose serialized strings, unknown run results, and
+  stale result bindings before serialization.
+- Alternative: Accept any string passed to `RunState.fromString`. Rejected because a string can be
+  arbitrary application data and does not prove OpenAI SDK run-state continuity or approval
+  handling.
+- Revisit when: cross-function or nonliteral persistence flows can be modeled with source-proven
+  dataflow without accepting unrelated file/string state.

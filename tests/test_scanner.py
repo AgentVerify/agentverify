@@ -5371,6 +5371,7 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         ("positive.ts", 42, "ts:positive.ts#control:interrupted.state@42"),
         ("positive.ts", 45, "ts:positive.ts#control:resumeState.state@45"),
         ("positive.ts", 49, "ts:positive.ts#control:approvalState.state@49"),
+        ("positive.ts", 69, "ts:positive.ts#control:persistedState.fromString@69"),
     }
     assert continuity_controls[
         ("positive.ts", 23, "ts:positive.ts#control:previousResponseId@23")
@@ -5457,6 +5458,21 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         "scope": "production",
         "state_binding": "approvalState",
     }
+    assert continuity_controls[
+        ("positive.ts", 69, "ts:positive.ts#control:persistedState.fromString@69")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-run-state-from-string",
+        "module": "@openai/agents",
+        "constructor": "RunState",
+        "configuration": "RunState.fromString",
+        "result_binding": "persistedApproval",
+        "state_binding": "persistedState",
+        "serialized_state_binding": "persistedStateText",
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "state_scope": "openai-run-state-continuity",
+        "scope": "production",
+    }
 
     approval_decision_controls = {
         (component.evidence.path, component.evidence.line, component.symbol_id): component
@@ -5468,6 +5484,8 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         ("positive.ts", 52, "ts:positive.ts#control:approvalState.reject@52"),
         ("positive.ts", 58, "ts:positive.ts#control:inlineApproval.state.approve@58"),
         ("positive.ts", 59, "ts:positive.ts#control:inlineApproval.state.reject@59"),
+        ("positive.ts", 71, "ts:positive.ts#control:persistedState.approve@71"),
+        ("positive.ts", 72, "ts:positive.ts#control:persistedState.reject@72"),
     }
     assert approval_decision_controls[
         ("positive.ts", 51, "ts:positive.ts#control:approvalState.approve@51")
@@ -5492,6 +5510,12 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
     assert approval_decision_controls[
         ("positive.ts", 59, "ts:positive.ts#control:inlineApproval.state.reject@59")
     ].attributes["configuration"] == "run.state.reject"
+    assert approval_decision_controls[
+        ("positive.ts", 71, "ts:positive.ts#control:persistedState.approve@71")
+    ].attributes["result_binding"] == "persistedApproval"
+    assert approval_decision_controls[
+        ("positive.ts", 72, "ts:positive.ts#control:persistedState.reject@72")
+    ].attributes["state_binding"] == "persistedState"
 
     edges = {
         (
@@ -5607,6 +5631,17 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
                 ("configuration", "run-state-input"),
             ),
         ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            74,
+            "ts:positive.ts#control:persistedState.fromString@69",
+            (
+                ("analysis", "typescript-openai-agents-run-state-continuity"),
+                ("binding", "state-input"),
+                ("configuration", "run-state-input"),
+            ),
+        ),
     }
     approval_edges = {
         (
@@ -5667,6 +5702,30 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
             (
                 ("analysis", "typescript-openai-agents-run-state-approval-decision"),
                 ("binding", "inline-result-state"),
+                ("configuration", "run.state.reject"),
+                ("decision", "reject"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            71,
+            "ts:positive.ts#control:persistedState.approve@71",
+            (
+                ("analysis", "typescript-openai-agents-run-state-approval-decision"),
+                ("binding", "persistedState"),
+                ("configuration", "run.state.approve"),
+                ("decision", "approve"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            72,
+            "ts:positive.ts#control:persistedState.reject@72",
+            (
+                ("analysis", "typescript-openai-agents-run-state-approval-decision"),
+                ("binding", "persistedState"),
                 ("configuration", "run.state.reject"),
                 ("decision", "reject"),
             ),
