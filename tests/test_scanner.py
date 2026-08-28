@@ -6099,6 +6099,36 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         "trace_scope": "openai-workflow",
         "scope": "production",
     }
+    runner_tool_choice_controls = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "tool-choice-policy"
+        and component.attributes.get("analysis")
+        == "typescript-openai-agents-runner-tool-choice"
+    }
+    assert set(runner_tool_choice_controls) == {
+        ("positive.ts", 16, "ts:positive.ts#control:runner.toolChoice@16:run18"),
+        ("positive.ts", 16, "ts:positive.ts#control:runner.toolChoice@16:run36"),
+        ("positive.ts", 16, "ts:positive.ts#control:runner.toolChoice@16:run46"),
+    }
+    assert runner_tool_choice_controls[
+        ("positive.ts", 16, "ts:positive.ts#control:runner.toolChoice@16:run18")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-runner-tool-choice",
+        "module": "@openai/agents",
+        "constructor": "Runner",
+        "imported_symbol": "Runner",
+        "local_constructor": "Runner",
+        "configuration": "Runner.modelSettings.toolChoice",
+        "runner_binding": "runner",
+        "tool_choice": "required",
+        "tool_choice_resolution": "literal",
+        "choice_scope": "runner-model-settings",
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "scope": "production",
+    }
     turn_limit_controls = {
         (component.evidence.path, component.evidence.line, component.symbol_id): component
         for component in ir.components
@@ -6557,6 +6587,63 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
                 ("binding", "workflowName"),
                 ("configuration", "Runner-workflowName"),
                 ("runner_binding", "runner"),
+            ),
+        ),
+    }
+    runner_tool_choice_edges = {
+        (
+            relationship.source_name,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            relationship.target_id,
+            tuple(sorted(relationship.attributes.items())),
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "configured-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "tool-choice-policy"
+        and relationship.attributes.get("analysis")
+        == "typescript-openai-agents-runner-tool-choice"
+    }
+    assert runner_tool_choice_edges == {
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            18,
+            "ts:positive.ts#control:runner.toolChoice@16:run18",
+            (
+                ("analysis", "typescript-openai-agents-runner-tool-choice"),
+                ("binding", "toolChoice"),
+                ("configuration", "Runner-modelSettings-toolChoice"),
+                ("runner_binding", "runner"),
+                ("tool_choice", "required"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            36,
+            "ts:positive.ts#control:runner.toolChoice@16:run36",
+            (
+                ("analysis", "typescript-openai-agents-runner-tool-choice"),
+                ("binding", "toolChoice"),
+                ("configuration", "Runner-modelSettings-toolChoice"),
+                ("runner_binding", "runner"),
+                ("tool_choice", "required"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            46,
+            "ts:positive.ts#control:runner.toolChoice@16:run46",
+            (
+                ("analysis", "typescript-openai-agents-runner-tool-choice"),
+                ("binding", "toolChoice"),
+                ("configuration", "Runner-modelSettings-toolChoice"),
+                ("runner_binding", "runner"),
+                ("tool_choice", "required"),
             ),
         ),
     }

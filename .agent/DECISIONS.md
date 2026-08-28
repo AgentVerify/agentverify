@@ -736,3 +736,20 @@
   tool reachability, and local execution controls.
 - Revisit when: Runner-level `modelSettings.toolChoice`, run-level overrides, or exported agent
   factories can be tied to exact source-agent identity without broad constructor/name matching.
+
+## OpenAI Agents JS Runner toolChoice is per-run model-settings policy
+
+- Decision: Represent exact TypeScript OpenAI Agents SDK stable
+  `new Runner({ modelSettings: { toolChoice: <literal> } })` configuration as a
+  `tool-choice-policy` control for each later same-instance `.run(agent, ...)` call with
+  source-proven agent identity. Accept direct literal strings and earlier immutable module-level
+  literal bindings; keep reassigned Runner bindings and nonliteral choices unresolved.
+- Evidence: The local conversation fixture reuses a stable Runner with `toolChoice: 'required'`
+  across multiple source-proven run sites and keeps a rebound Runner negative. The pinned OpenAI
+  Agents JS hosted MCP human-in-the-loop example uses `initialRunner` with
+  `toolChoice: 'required'` before approval and `resumeRunner` with `toolChoice: 'auto'` afterward.
+- Alternative: Attach Runner tool-choice only to the Runner constructor. Rejected because the
+  policy applies when that Runner executes a specific source agent, and review needs the same
+  callsite-level edge used for Runner trace and workflow policy.
+- Revisit when: run-level `modelSettings.toolChoice`, exported Runner factories, or inherited
+  Runner defaults can be linked to exact source-agent identity without broad receiver/name matching.

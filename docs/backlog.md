@@ -509,6 +509,7 @@ model-override controls. Schema v141 adds exact delegated
 stable `new Runner({ workflowName })` per-run trace-workflow controls. Schema v143 adds exact
 direct `run(agent, ..., { maxTurns })` and stable `runner.run(agent, ..., { maxTurns })` per-run
 execution-bound controls. Schema v144 adds exact Agent-level `modelSettings.toolChoice` policy
+controls, and schema v145 adds exact stable Runner-level `modelSettings.toolChoice` per-run policy
 controls. AgentVerify emits distinct `trace-group`, `trace-id`, `tracing-disabled`,
 `agent-turn-limit`, `agent-model-override`, `trace-workflow`, and `tool-choice-policy` controls and
 configured-by edges without treating any trace identifier as conversation memory. The real
@@ -523,7 +524,9 @@ settings. The Blaxel and Cloudflare sandbox extension examples show stable Runne
 for both normal and streaming branches, while the sandbox capabilities and hosted MCP
 human-in-the-loop examples show direct-run and Runner-run `maxTurns` bounds on source-proven
 agents. The forcing-tool-use and programmatic tool-calling examples show Agent-level
-`modelSettings.toolChoice` values including `required` and `programmatic_tool_calling`.
+`modelSettings.toolChoice` values including `required` and `programmatic_tool_calling`, and the
+hosted MCP human-in-the-loop example shows Runner-level `required` initial-run and `auto`
+resume-run tool-choice policy.
 
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,

@@ -129,7 +129,7 @@ await withTrace(
   { metadata: 'not-a-trace-option' },
 );
 
-let mutableRunner = new Runner({ groupId: 'mutable-runner-trace-group', workflowName: 'mutable runner workflow' });
+let mutableRunner = new Runner({ groupId: 'mutable-runner-trace-group', workflowName: 'mutable runner workflow', modelSettings: { toolChoice: 'required' } });
 mutableRunner = unknownRunner;
 await mutableRunner.run(agent, 'runner variable was rebound before use');
 

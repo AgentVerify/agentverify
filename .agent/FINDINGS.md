@@ -593,6 +593,12 @@
   unresolved. The pinned forcing-tool-use and programmatic tool-calling examples contribute
   `required` and `programmatic_tool_calling` evidence, bringing the public IR truth set to 2,162
   passing labels.
+- OpenAI Agents JS Runner-level `modelSettings.toolChoice` can now be reviewed at the concrete run
+  site. Stable exact `new Runner({ modelSettings: { toolChoice: <literal> } })` instances now emit
+  per-run `tool-choice-policy` controls and configured-by edges when the later `.run(agent, ...)`
+  call supplies a source-proven agent; rebound runners remain unresolved. The pinned hosted MCP HITL
+  example contributes `required` initial-run and `auto` resume-run policy evidence, bringing the
+  public IR truth set to 2,169 passing labels.
 
 ## Hypotheses
 

@@ -17013,6 +17013,48 @@ def add_typescript_openai_runner_workflow_name_control(
     return "trace-workflow", control_id
 
 
+def add_typescript_openai_runner_tool_choice_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    local_constructor: str,
+    runner_binding: str,
+    tool_choice: str,
+    tool_choice_resolution: str,
+    source_agent: tuple[str, str],
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS Runner modelSettings.toolChoice evidence."""
+    source_agent_name, source_agent_id = source_agent
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "tool-choice-policy",
+            Evidence(relative, line, excerpt(lines, line)),
+            {
+                "analysis": "typescript-openai-agents-runner-tool-choice",
+                "module": "@openai/agents",
+                "constructor": "Runner",
+                "imported_symbol": "Runner",
+                "local_constructor": local_constructor,
+                "configuration": "Runner.modelSettings.toolChoice",
+                "runner_binding": runner_binding,
+                "tool_choice": tool_choice,
+                "tool_choice_resolution": tool_choice_resolution,
+                "choice_scope": "runner-model-settings",
+                "source_agent": source_agent_name,
+                "source_agent_id": source_agent_id,
+                "scope": source_scope(relative),
+            },
+            control_id,
+        )
+    )
+    return "tool-choice-policy", control_id
+
+
 def add_typescript_openai_as_tool_tracing_disabled_control(
     ir: RepositoryIR,
     *,
@@ -20074,6 +20116,7 @@ def typescript_graph(
     ] = {}
     runner_tracing_disabled_bindings: dict[str, tuple[int, str]] = {}
     runner_workflow_name_bindings: dict[str, tuple[int, str, str, str]] = {}
+    runner_tool_choice_bindings: dict[str, tuple[int, str, str, str]] = {}
     runner_imports = {
         local_name
         for local_name, imported_name in openai_agents_imports.items()
@@ -20279,6 +20322,39 @@ def typescript_graph(
                         workflow_name,
                         workflow_name_resolution,
                     )
+            model_settings_location = typescript_object_property_expression_location(
+                body,
+                "modelSettings",
+                opening + 1,
+            )
+            if model_settings_location is not None:
+                model_settings_expression, _, model_settings_expression_offset = (
+                    model_settings_location
+                )
+                tool_choice_location = typescript_object_property_expression_location(
+                    model_settings_expression,
+                    "toolChoice",
+                    model_settings_expression_offset,
+                )
+                if tool_choice_location is not None:
+                    (
+                        tool_choice_expression,
+                        tool_choice_property_offset,
+                        tool_choice_expression_offset,
+                    ) = tool_choice_location
+                    static_tool_choice = typescript_static_string_value(
+                        tool_choice_expression,
+                        expression_offset=tool_choice_expression_offset,
+                        immutable_literal_bindings=immutable_literal_bindings,
+                    )
+                    if static_tool_choice is not None:
+                        tool_choice, tool_choice_resolution = static_tool_choice
+                        runner_tool_choice_bindings[runner_name] = (
+                            line_at(text, tool_choice_property_offset),
+                            local_constructor,
+                            tool_choice,
+                            tool_choice_resolution,
+                        )
         sandbox_location = typescript_object_property_expression_location(
             body,
             "sandbox",
@@ -22648,6 +22724,46 @@ def typescript_graph(
                     },
                     source_id=source_agent_id,
                     target_id=workflow_control_id,
+                )
+            )
+        runner_tool_choice = runner_tool_choice_bindings.get(runner_name)
+        if runner_tool_choice is not None:
+            (
+                tool_choice_line,
+                local_constructor,
+                tool_choice,
+                tool_choice_resolution,
+            ) = runner_tool_choice
+            source_agent_name, source_agent_id = agent_target
+            tool_choice_name, tool_choice_id = add_typescript_openai_runner_tool_choice_control(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=tool_choice_line,
+                local_constructor=local_constructor,
+                runner_binding=runner_name,
+                tool_choice=tool_choice,
+                tool_choice_resolution=tool_choice_resolution,
+                source_agent=agent_target,
+                symbol_identity=f"{runner_name}.toolChoice@{tool_choice_line}:run{run_line}",
+            )
+            ir.add_relationship(
+                Relationship(
+                    "agent",
+                    source_agent_name,
+                    "configured-by",
+                    "control",
+                    tool_choice_name,
+                    Evidence(relative, run_line, excerpt(lines, run_line)),
+                    {
+                        "analysis": "typescript-openai-agents-runner-tool-choice",
+                        "configuration": "Runner-modelSettings-toolChoice",
+                        "binding": "toolChoice",
+                        "runner_binding": runner_name,
+                        "tool_choice": tool_choice,
+                    },
+                    source_id=source_agent_id,
+                    target_id=tool_choice_id,
                 )
             )
         if len(arguments) >= 2 and (

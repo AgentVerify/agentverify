@@ -13,7 +13,7 @@ await run(agent, 'remember this server-managed thread', {
 });
 
 const runner = new Runner({
-  workflowName: 'server-managed conversation example',
+  workflowName: 'server-managed conversation example', modelSettings: { toolChoice: 'required' },
 });
 await runner.run(agent, 'continue this server-managed thread', {
   conversationId, maxTurns: 7,
