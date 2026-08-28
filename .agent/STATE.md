@@ -559,6 +559,12 @@ catalog workflows.
   labels, full 2,044/2,044 IR labels, 71/71 engine repositories, checked benchmark verification,
   full `pytest -q` (298 passed), touched-file `ruff`, JSON parsing, diff whitespace checks, and
   `uv build` plus distribution smoke/source verification.
+- Added six real OpenAI Agents JS built-in-tool approval labels for
+  `examples/docs/tools/localBuiltInTools.ts`: approval-enabled `shellTool` and `applyPatchTool`
+  components, their `human-approval` governed-by edges, and their reachable `Local tools agent`
+  tool-use edges.
+- The public IR truth set now passes 2,050/2,050 labels (1,532 positives and 518 negatives). The
+  focused OpenAI built-in shell/apply-patch label slice passes 6/6.
 
 ## Current findings
 

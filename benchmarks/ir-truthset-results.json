@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T12:17:17.027722+00:00",
+  "generated_at": "2026-08-28T12:29:34.013660+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "a56eaee7cf2d6462904c9dcfab742bb117902059593dcaf2886bb760925dc2d0",
+    "labels_sha256": "20c39cee7632b4911cbd943c0651f5ae9b04a3217d74b1bc0d75200978551095",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 2044,
-  "passed": 2044,
+  "labels": 2050,
+  "passed": 2050,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -35,7 +35,7 @@
       "recall": 1.0
     },
     "IR-APPROVAL-CONTROL": {
-      "tp": 82,
+      "tp": 86,
       "fp": 0,
       "tn": 20,
       "fn": 0,
@@ -619,7 +619,7 @@
       "recall": 1.0
     },
     "IR-TS-TOOL-GRAPH": {
-      "tp": 3,
+      "tp": 5,
       "fp": 0,
       "tn": 1,
       "fn": 0,
@@ -989,6 +989,60 @@
     {
       "id": "typescript-openai-builtin-computer-tool-approval-predicate-local",
       "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-builtin-shell-tool-approval-enabled-doc-real",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-builtin-shell-tool-human-approval-edge-doc-real",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-builtin-shell-tool-agent-edge-doc-real",
+      "check_id": "IR-TS-TOOL-GRAPH",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-builtin-apply-patch-tool-approval-enabled-doc-real",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-builtin-apply-patch-tool-human-approval-edge-doc-real",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-builtin-apply-patch-tool-agent-edge-doc-real",
+      "check_id": "IR-TS-TOOL-GRAPH",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

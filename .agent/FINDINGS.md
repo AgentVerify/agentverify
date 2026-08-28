@@ -460,6 +460,10 @@
   callback-controlled approval policy evidence, not an unresolved handler; AgentVerify still withholds
   full human-approval coverage until predicate/action quality is analyzed. The public IR truth set
   now covers 1,977 passing labels.
+- OpenAI Agents JS built-in local shell and patch tools are pinned as reachable approval-governed
+  tools, not only as approval-bypass examples. The docs `localBuiltInTools.ts` example contributes
+  approval-enabled `shellTool` and `applyPatchTool` components, `human-approval` governed-by edges,
+  and `Local tools agent` reachability edges, raising the public IR truth set to 2,050 labels.
 - OpenAI Agents JS approval predicates can be made visible without overclaiming full approval
   coverage when the callback body is a shallow literal field predicate. AgentVerify now records
   prefix, contains, and literal-set predicate metadata for exact `needsApproval` callbacks across
