@@ -19796,6 +19796,26 @@ def typescript_graph(
         if initializer_offset <= helper_offset:
             continue
         local_agents[variable_name] = (agent_name, agent_id)
+        assigned_agents[variable_name].append(
+            (initializer_offset, initializer_offset + len(initializer), agent_name, agent_id)
+        )
+    agent_alias_pattern = re.compile(
+        r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)"
+        r"\s*(?::\s*(?:[^=;\n]|=(?!>))+)?"
+        r"=\s*([A-Za-z_$][\w$]*)\s*;"
+    )
+    for alias_match in agent_alias_pattern.finditer(code):
+        variable_name = alias_match.group(1)
+        if variable_name in local_agents:
+            continue
+        target = local_agents.get(alias_match.group(2))
+        if target is None:
+            continue
+        declaration_end = alias_match.end()
+        agent_name, agent_id = target
+        assigned_agents[variable_name].append(
+            (alias_match.start(), declaration_end, agent_name, agent_id)
+        )
 
     def enclosing_function_span(offset: int) -> tuple[str, int, int] | None:
         helpers = [
@@ -19838,7 +19858,23 @@ def typescript_graph(
             return agent_name, agent_id
         if call_scope is None:
             return local_agents.get(argument_name)
-        return None
+        _, scope_start, _ = call_scope
+        scoped_prefix = code[scope_start:use_offset]
+        if re.search(
+            rf"\b(?:const|let|var)\s+{re.escape(argument_name)}\b",
+            scoped_prefix,
+        ):
+            return None
+        opening_brace = scoped_prefix.find("{")
+        if opening_brace >= 0:
+            parameter_prefix = scoped_prefix[:opening_brace]
+            parameter_list = re.search(r"\((.*)\)", parameter_prefix, re.DOTALL)
+            if parameter_list and re.search(
+                rf"(?<![\w$]){re.escape(argument_name)}\s*(?:,|:|\)|=)",
+                parameter_list.group(1),
+            ):
+                return None
+        return local_agents.get(argument_name)
 
     for match, body_offset, body, agent_name, agent_id, agent_constructor in agent_bodies:
         ev = Evidence(
@@ -20203,7 +20239,11 @@ def typescript_graph(
             agent_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", agent_argument)
             if agent_identifier is None:
                 continue
-            agent_target = local_agents.get(agent_identifier.group(0))
+            agent_name = agent_identifier.group(0)
+            agent_target = resolve_lexical_openai_agent_argument(
+                agent_name,
+                arguments[0][1],
+            ) or local_agents.get(agent_name)
             if agent_target is None:
                 continue
             seen_run_result_matches.add((result_name, match.start()))
@@ -20233,7 +20273,11 @@ def typescript_graph(
         agent_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", agent_argument)
         if agent_identifier is None:
             continue
-        agent_target = local_agents.get(agent_identifier.group(0))
+        agent_name = agent_identifier.group(0)
+        agent_target = resolve_lexical_openai_agent_argument(
+            agent_name,
+            arguments[0][1],
+        ) or local_agents.get(agent_name)
         if agent_target is None:
             continue
         add_openai_agents_run_result_source(
@@ -20528,7 +20572,11 @@ def typescript_graph(
         agent_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", agent_argument)
         if agent_identifier is None:
             continue
-        agent_target = local_agents.get(agent_identifier.group(0))
+        agent_name = agent_identifier.group(0)
+        agent_target = resolve_lexical_openai_agent_argument(
+            agent_name,
+            arguments[0][1],
+        ) or local_agents.get(agent_name)
         if agent_target is None:
             continue
         serialized_code = typescript_code_mask(arguments[1][0]).strip()
@@ -21011,7 +21059,11 @@ def typescript_graph(
         agent_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", agent_argument)
         if not agent_identifier:
             continue
-        agent_target = local_agents.get(agent_identifier.group(0))
+        agent_name = agent_identifier.group(0)
+        agent_target = resolve_lexical_openai_agent_argument(
+            agent_name,
+            arguments[0][1],
+        ) or local_agents.get(agent_name)
         if not agent_target:
             continue
         run_line = line_at(text, match.start())
@@ -21177,7 +21229,11 @@ def typescript_graph(
         agent_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", agent_argument)
         if not agent_identifier:
             continue
-        agent_target = local_agents.get(agent_identifier.group(0))
+        agent_name = agent_identifier.group(0)
+        agent_target = resolve_lexical_openai_agent_argument(
+            agent_name,
+            arguments[0][1],
+        ) or local_agents.get(agent_name)
         if not agent_target:
             continue
         run_line = line_at(text, match.start())

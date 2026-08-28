@@ -585,10 +585,16 @@ catalog workflows.
   `result.history` when the same exact SDK call consumes a caller/loop-owned history binding and
   refreshes that binding from its own history result; local fixtures cover loop-owned `inputs` and
   `thread.concat(...)`, and the real `examples/docs/running-agents/chatLoop.ts` example pins the
-  caller-owned helper shape. Agent aliases in the routed `withTrace(... groupId ...)` example remain
-  unresolved rather than broadening the model. Focused history-feedback labels pass 6/6, full public
-  IR labels pass 2,068/2,068, checked benchmark verification passes, and the full 71/71 engine
-  benchmark refresh now reports 2,788 relationships.
+  caller-owned helper shape. Focused history-feedback labels pass 6/6, full public IR labels pass
+  2,068/2,068, checked benchmark verification passes, and the full 71/71 engine benchmark refresh
+  now reports 2,788 relationships.
+- Added exact same-file OpenAI Agents JS agent-alias attribution for direct identifier aliases
+  feeding run/session analysis. Alias candidates reuse lexical scope and reassignment checks, which
+  recovers the real routed `examples/agent-patterns/routing.ts` `let agent: Agent<...> =
+  triageAgent` loop without accepting rebound aliases. Focused alias labels pass 6/6, former
+  OpenAI sandbox/helper and run-state restore regressions pass focused checks, and full public IR
+  labels pass 2,074/2,074. The full schema-v133 engine benchmark refresh passes 71/71 repositories
+  and now reports 2,789 relationships with 10,554 symbolized components.
 
 ## Current findings
 

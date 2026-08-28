@@ -100,3 +100,13 @@ async function continueConcatHistory(text: string) {
   );
   concatThread = concatResult.history;
 }
+
+async function continueThroughAgentAlias() {
+  let aliasedAgent: Agent<any, any> = agent;
+  let aliasedItems = [{ role: 'user', content: 'start aliased agent history feedback' }];
+  while (shouldContinue) {
+    const aliasedResult = await run(aliasedAgent, aliasedItems);
+    aliasedItems = aliasedResult.history;
+    aliasedAgent = agent;
+  }
+}

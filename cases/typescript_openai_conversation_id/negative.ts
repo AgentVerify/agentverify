@@ -110,3 +110,13 @@ reassignedSerializedResult = await unknownRun(agent, 'reassigned serialized sour
 const reassignedSerializedState = reassignedSerializedResult.state.toString();
 const reassignedPersistedState = await RunState.fromString(agent, reassignedSerializedState);
 reassignedPersistedState.approve(interruption);
+
+async function reassignedAgentAliasDoesNotProveHistoryFeedback() {
+  let reboundAgent: Agent<any, any> = agent;
+  reboundAgent = unknownAgent;
+  let aliasItems = [{ role: 'user', content: 'not exact after alias reassignment' }];
+  while (shouldContinue) {
+    const aliasResult = await run(reboundAgent, aliasItems);
+    aliasItems = aliasResult.history;
+  }
+}

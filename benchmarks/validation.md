@@ -1707,10 +1707,10 @@ Twelve real OpenAI Agents JS built-in-tool labels pin approval-enabled `shellToo
 `applyPatchTool` components, their human-approval edges, reachable agent-tool edges from the local
 built-in tools documentation and workspace-editor examples, and the local filesystem write
 capability implied by literal `applyPatchTool({ editor, ... })` options.
-Six OpenAI Agents JS history-feedback labels pin local loop/concat feedback shapes and the real
-`examples/docs/running-agents/chatLoop.ts` caller-owned history helper, while leaving routed agent
-aliases unresolved.
-All 2,068 IR labels pass (1,549 positives and 519 negatives). The checked
+Twelve OpenAI Agents JS history-feedback labels pin local loop/concat feedback shapes, exact
+same-file agent aliases with reassignment negatives, the real `chatLoop.ts` caller-owned history
+helper, and the real routed `routing.ts` triage-agent alias.
+All 2,074 IR labels pass (1,553 positives and 521 negatives). The checked
 `benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
 breakdown, including the OpenAI Agents JS and Python safety-check labels added for
 `computerTool({ onSafetyCheck })` and `ComputerTool(on_safety_check=...)`, plus OpenAI Agents JS

@@ -19,8 +19,8 @@
   `MemorySession`/server-managed conversation implementation semantics, or agent/session
   composition edges beyond the now-covered `client.create(...)`, `defaultManifest`, top-level
   `session`, exact `conversationId`, exact `previousResponseId`, same-block `result.history`,
-  same-call history feedback, and same-file `result.state` resume bindings, without broadening into
-  ambiguous helper/config composition.
+  same-call history feedback, direct same-file agent aliases, and same-file `result.state` resume
+  bindings, without broadening into ambiguous helper/config composition.
 - Continue OpenAI Agents JS HITL and safety-governance extraction where evidence remains exact:
   richer `needsApproval` predicate quality, automatic approval bypasses, and `computerTool`
   `onSafetyCheck` callbacks that distinguish explicit user/policy review from pass-through
@@ -51,9 +51,9 @@
   failed cross-file-dependent labels, so the next credible acceleration needs dependency-aware path
   expansion or scan-result reuse rather than label files only.
 - Explore exact interprocedural OpenAI Agents JS history-state continuation only if it can remain
-  source-proven. The real `examples/docs/running-agents/chatLoop.ts` caller-owned concat feedback is
-  now covered, but routed loop examples such as `examples/agent-patterns/routing.ts` still require
-  exact same-file agent alias resolution before `inputs = result.history` can be safely attributed.
+  source-proven. The real `examples/docs/running-agents/chatLoop.ts` caller-owned concat feedback
+  and `examples/agent-patterns/routing.ts` direct triage-agent alias are now covered; dynamic
+  routed-agent updates such as `agent = result.currentAgent ?? agent` remain unresolved.
 - Explore the remaining OpenAI Agents JS HITL approval-state gaps only if they can stay exact:
   compound callback predicate quality, automatic approval bypasses, and any more complex serialized
   state flows beyond same-file literal

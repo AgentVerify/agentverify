@@ -225,15 +225,18 @@
   `examples/agent-patterns/llm-as-a-judge.ts`, where `inputItems = storyOutlineResult.history` is
   passed to an evaluator run. The pinned `examples/docs/running-agents/chatLoop.ts` helper now
   validates the weaker `run-history-feedback-input` shape, where `thread.concat(...)` is consumed
-  and `thread = result.history` refreshes the caller-owned history for subsequent helper calls.
-  Local positives cover direct imported `run`, `Runner.run`, loop feedback, and concat feedback;
-  local negatives pin loose arrays, unknown run functions, and reassigned history inputs.
+  and `thread = result.history` refreshes the caller-owned history for subsequent helper calls. The
+  pinned `examples/agent-patterns/routing.ts` example validates a direct same-file agent alias
+  (`let agent: Agent<...> = triageAgent`) feeding `run(agent, inputs)` before `inputs =
+  result.history`.
+  Local positives cover direct imported `run`, `Runner.run`, loop feedback, concat feedback, and
+  direct agent aliases; local negatives pin loose arrays, unknown run functions, reassigned history
+  inputs, and rebound aliases.
 - Alternative: Treat any array passed as the second `run` argument as conversation continuity.
   Rejected because OpenAI Agents run inputs can also be fresh user messages; continuity requires
   proof that the input was returned by SDK history.
-- Revisit when: same-file agent aliases can be resolved narrowly enough to cover routed loop
-  patterns such as `let agent = triageAgent; result = await run(agent, inputs); inputs =
-  result.history` without accepting arbitrary mutable state as continuity evidence.
+- Revisit when: dynamic routed-agent handoffs such as `agent = result.currentAgent ?? agent` can be
+  modeled without treating arbitrary mutable aliases as exact agent provenance.
 
 ## OpenAI run-state resume requires prior SDK run-state proof
 

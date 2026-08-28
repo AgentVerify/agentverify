@@ -488,9 +488,13 @@ and then resumes with `run(agentParam, state)`, each lexically resolved call sit
 Schema v132 adds exact OpenAI Agents JS history-feedback continuity for caller/loop-owned history
 bindings. When an exact SDK `run(agent, ...)` call consumes a visible history variable and then
 refreshes that same variable from its own `result.history`, AgentVerify emits a weaker
-`run-history-feedback-input` edge. The real `chatLoop.ts` example is now covered, while routed
-`let agent = triageAgent` aliases remain unresolved until same-file agent aliasing can be proven
-without broad name matching.
+`run-history-feedback-input` edge. The real `chatLoop.ts` example is now covered.
+
+Schema v133 adds narrow same-file OpenAI Agents JS agent-alias attribution for direct identifier
+aliases such as `let agent: Agent<...> = triageAgent;`. Alias candidates reuse the existing lexical
+scope and reassignment guard, so rebound aliases remain unresolved. This recovers the real
+`routing.ts` loop where `run(agent, inputs)` flows through a triage-agent alias before
+`inputs = result.history`.
 
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
@@ -616,8 +620,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 729 pinned positive/negative locations, with 2,068 separately
-scored IR component/relationship labels. Schema-v132 engine results and
+The curated regression set has reached 729 pinned positive/negative locations, with 2,074 separately
+scored IR component/relationship labels. Schema-v133 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. The checked-in holdout design now defines the sampling strata, label protocol,

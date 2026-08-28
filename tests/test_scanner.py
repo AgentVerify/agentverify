@@ -5472,6 +5472,7 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         ("positive.ts", 79, "ts:positive.ts#control:messageState.state@79"),
         ("positive.ts", 91, "ts:positive.ts#control:loopItems.history@91"),
         ("positive.ts", 101, "ts:positive.ts#control:concatThread.history@101"),
+        ("positive.ts", 109, "ts:positive.ts#control:aliasedItems.history@109"),
     }
     assert continuity_controls[
         ("positive.ts", 23, "ts:positive.ts#control:previousResponseId@23")
@@ -5604,6 +5605,19 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         "configuration": "run.history",
         "result_binding": "concatResult",
         "history_binding": "concatThread",
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "state_scope": "openai-run-history-continuity",
+        "scope": "production",
+    }
+    assert continuity_controls[
+        ("positive.ts", 109, "ts:positive.ts#control:aliasedItems.history@109")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-history-continuity",
+        "module": "@openai/agents",
+        "configuration": "run.history",
+        "result_binding": "aliasedResult",
+        "history_binding": "aliasedItems",
         "source_agent": "Server Conversation Agent",
         "source_agent_id": "ts:positive.ts#agent:agent",
         "state_scope": "openai-run-history-continuity",
@@ -5794,6 +5808,17 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
             "positive.ts",
             97,
             "ts:positive.ts#control:concatThread.history@101",
+            (
+                ("analysis", "typescript-openai-agents-history-continuity"),
+                ("binding", "history-feedback-input"),
+                ("configuration", "run-history-feedback-input"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            108,
+            "ts:positive.ts#control:aliasedItems.history@109",
             (
                 ("analysis", "typescript-openai-agents-history-continuity"),
                 ("binding", "history-feedback-input"),

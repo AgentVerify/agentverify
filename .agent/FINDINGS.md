@@ -2,7 +2,7 @@
 
 ## Durable facts
 
-- The repository contains a 71-repository pinned research corpus and schema-v132 engine benchmark
+- The repository contains a 71-repository pinned research corpus and schema-v133 engine benchmark
   outputs.
 - The runtime catalog currently contains 25 enabled reporting rules.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
@@ -414,11 +414,14 @@
   weaker feedback-loop continuity edge when the same exact call visibly consumes a caller/loop-owned
   history binding and refreshes that binding from its own `result.history`. AgentVerify records a
   `conversation-continuity` control and a `configured-by` edge from the consuming agent to that
-  control. Loose arrays, unknown run functions, reassigned history inputs, and unresolved agent
-  aliases remain unresolved. Real pinned `openai/openai-agents-js` examples
+  control. Direct same-file agent aliases are accepted only when they point to an exact local agent
+  before reassignment. Loose arrays, unknown run functions, reassigned history inputs, rebound
+  aliases, and dynamic `result.currentAgent` handoffs remain unresolved. Real pinned
+  `openai/openai-agents-js` examples
   `examples/tools/web-search.ts`, `examples/agent-patterns/llm-as-a-judge.ts`, and
-  `examples/docs/running-agents/chatLoop.ts` validate 3 controls and 3 composition edges; the public
-  IR truth set now covers 2,068 passing labels.
+  `examples/docs/running-agents/chatLoop.ts`, plus routed alias evidence in
+  `examples/agent-patterns/routing.ts`, validate 4 controls and 4 composition edges; the public IR
+  truth set now covers 2,074 passing labels.
 - OpenAI Agents JS `result.state` proves run-state resume continuity only when the state comes from
   an exact prior SDK run result. AgentVerify now records inline `run(agent, result.state)` and named
   state handoffs such as `const state = stream.state; run(agent, state, ...)` as
