@@ -10,7 +10,7 @@ from collections import Counter, defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
 
-from agentverify.benchmark import failure_summary_from_outcomes
+from agentverify.benchmark import apply_label_filter, failure_summary_from_outcomes
 from agentverify.scanner import scan_repository
 
 CLAIM_SCOPE = {
@@ -37,6 +37,24 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         type=Path,
         help="optional holdout/sample manifest used to create the label file",
     )
+    parser.add_argument(
+        "--check-id",
+        action="append",
+        default=[],
+        help="evaluate only labels with this Agent IR check id; may be repeated",
+    )
+    parser.add_argument(
+        "--rule-id",
+        action="append",
+        default=[],
+        help="evaluate only labels with this reporting rule id; may be repeated",
+    )
+    parser.add_argument(
+        "--label-id-prefix",
+        action="append",
+        default=[],
+        help="evaluate only labels whose id starts with this prefix; may be repeated",
+    )
     return parser.parse_args(argv)
 
 
@@ -54,15 +72,35 @@ def label_scope(labels: list[dict]) -> str:
     return "reporting-rules"
 
 
-def benchmark_metadata(args: argparse.Namespace, labels: list[dict]) -> dict[str, object]:
+def label_filter_from_args(args: argparse.Namespace) -> dict[str, list[str]]:
+    """Return the explicit development label filter requested on the CLI."""
+    label_filter: dict[str, list[str]] = {}
+    if args.check_id:
+        label_filter["check_ids"] = list(dict.fromkeys(args.check_id))
+    if args.rule_id:
+        label_filter["rule_ids"] = list(dict.fromkeys(args.rule_id))
+    if args.label_id_prefix:
+        label_filter["label_id_prefixes"] = list(dict.fromkeys(args.label_id_prefix))
+    return label_filter
+
+
+def benchmark_metadata(
+    args: argparse.Namespace,
+    *,
+    source_labels_path: Path,
+    label_filter: dict[str, list[str]],
+    labels: list[dict],
+) -> dict[str, object]:
     metadata: dict[str, object] = {
         "evaluation_kind": args.evaluation_kind,
         "label_scope": label_scope(labels),
-        "labels_source": str(args.labels),
-        "labels_sha256": file_sha256(args.labels),
+        "labels_source": str(source_labels_path),
+        "labels_sha256": file_sha256(source_labels_path),
         "sealed": args.evaluation_kind == "sealed-holdout",
         "claim_scope": CLAIM_SCOPE[args.evaluation_kind],
     }
+    if label_filter:
+        metadata["label_filter"] = label_filter
     if args.manifest is not None:
         metadata["manifest_source"] = str(args.manifest)
         metadata["manifest_sha256"] = file_sha256(args.manifest)
@@ -90,7 +128,9 @@ def verify_commit(path: Path, target: dict) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    labels = json.loads(args.labels.read_text(encoding="utf-8"))["labels"]
+    label_filter = label_filter_from_args(args)
+    all_labels = json.loads(args.labels.read_text(encoding="utf-8"))["labels"]
+    labels = apply_label_filter(all_labels, label_filter)
     scans = {}
     outcomes = []
     matrices: dict[str, Counter] = defaultdict(Counter)
@@ -191,7 +231,12 @@ def main(argv: list[str] | None = None) -> int:
     payload = {
         "schema_version": 1,
         "generated_at": datetime.now(UTC).isoformat(),
-        "benchmark": benchmark_metadata(args, labels),
+        "benchmark": benchmark_metadata(
+            args,
+            source_labels_path=args.labels,
+            label_filter=label_filter,
+            labels=labels,
+        ),
         "labels": len(labels),
         "passed": sum(item["passed"] for item in outcomes),
         "failed": sum(not item["passed"] for item in outcomes),

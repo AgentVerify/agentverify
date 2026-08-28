@@ -360,6 +360,11 @@
   examples without guessing through ambiguous composition. A helper with multiple Manifest returns
   still emits exact controls for each return but does not link callers to either candidate. The
   public IR truth set now covers 1,872 passing labels.
+- Focused truth-set evaluation can now produce schema-valid, verifier-checked development artifacts.
+  The evaluator records `label_filter` metadata for `--check-id`, `--rule-id`, and
+  `--label-id-prefix`; the verifier reapplies the filter before checking outcome/label invariants,
+  so partial results are explicit and cannot be mistaken for full public-regression artifacts.
+  A focused `IR-TS-OPENAI-SANDBOX` run covered 235 labels and passed locally in seconds.
 
 ## Hypotheses
 

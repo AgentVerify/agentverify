@@ -405,6 +405,11 @@ catalog workflows.
   ambiguous helpers and dynamic Manifest values remain unresolved. An ambiguous-helper regression
   pins that no-link boundary. Local fixtures plus real OpenAI Agents JS examples raised regenerated
   public IR truth-set results to 1,872 passing labels.
+- Added focused truth-set evaluation filters for development runs. `scripts/evaluate_truthset.py`
+  now accepts repeated `--check-id`, `--rule-id`, and `--label-id-prefix` filters, records the
+  filter in schema-backed benchmark-result metadata, and `agentverify benchmark verify` applies that
+  filter before checking outcome counts and label IDs. A real focused OpenAI sandbox IR run verified
+  235/235 labels in a few seconds instead of scanning every public truth-set target.
 
 ## Current findings
 

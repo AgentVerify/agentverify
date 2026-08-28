@@ -65,6 +65,32 @@ def label_scope(labels: list[dict]) -> str:
     return "reporting-rules"
 
 
+def label_matches_filter(label: dict, label_filter: dict[str, list[str]]) -> bool:
+    """Return whether a label is included by an optional benchmark label filter."""
+    check_ids = label_filter.get("check_ids", [])
+    if check_ids and label.get("check_id") not in check_ids:
+        return False
+    rule_ids = label_filter.get("rule_ids", [])
+    if rule_ids and label.get("rule_id") not in rule_ids:
+        return False
+    label_id_prefixes = label_filter.get("label_id_prefixes", [])
+    return not label_id_prefixes or any(
+        label["id"].startswith(prefix) for prefix in label_id_prefixes
+    )
+
+
+def apply_label_filter(labels: list[dict], label_filter: dict | None) -> list[dict]:
+    """Apply the benchmark-result label filter recorded in metadata."""
+    if not label_filter:
+        return labels
+    normalized = {
+        "check_ids": list(label_filter.get("check_ids", [])),
+        "rule_ids": list(label_filter.get("rule_ids", [])),
+        "label_id_prefixes": list(label_filter.get("label_id_prefixes", [])),
+    }
+    return [label for label in labels if label_matches_filter(label, normalized)]
+
+
 def metrics_from_outcomes(outcomes: list[dict]) -> dict[str, dict[str, object]]:
     matrices: dict[str, Counter] = defaultdict(Counter)
     for outcome in outcomes:
@@ -163,6 +189,7 @@ def verify_result(path: Path, *, schema: dict, root: Path) -> dict[str, object]:
     labels = labels_payload.get("labels", [])
     if file_sha256(labels_path) != benchmark["labels_sha256"]:
         raise RuntimeError(f"{path}: labels_sha256 does not match {labels_path}")
+    labels = apply_label_filter(labels, benchmark.get("label_filter"))
     if len(labels) != payload["labels"]:
         raise RuntimeError(f"{path}: labels count does not match {labels_path}")
     verify_result_invariants(path, payload, labels)

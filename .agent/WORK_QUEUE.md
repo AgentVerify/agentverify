@@ -30,6 +30,10 @@
   they can be validated locally.
 - Improve installed CLI examples for benchmark verification and schema exports in CI/editor
   workflows; policy-gate GitHub Actions now has a checked workflow example.
+- Profile and reduce the remaining full public IR truth-set runtime. Focused label filters now make
+  detector-specific iteration fast, but complete corpus regeneration still spends minutes in broad
+  repository scans and likely needs per-target timing, scan-result reuse, or narrower dependency
+  traversal.
 
 ## Deferred until access/authorization
 

@@ -48,6 +48,7 @@
         "label_scope": {"enum": ["reporting-rules", "agent-ir", "mixed"]},
         "labels_source": {"type": "string", "minLength": 1},
         "labels_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "label_filter": {"$ref": "#/$defs/label_filter"},
         "sealed": {"type": "boolean"},
         "claim_scope": {"type": "string", "minLength": 1},
         "manifest_source": {"type": "string", "minLength": 1},
@@ -64,6 +65,31 @@
           "else": {"properties": {"sealed": {"const": false}}}
         }
       ]
+    },
+    "label_filter": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "check_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "rule_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "label_id_prefixes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        }
+      }
     },
     "metric": {
       "type": "object",

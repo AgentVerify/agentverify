@@ -6,6 +6,9 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
+from agentverify.benchmark import load_benchmark_result_schema, verify_result
+from agentverify.ir import RepositoryIR
+
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location(
     "evaluate_truthset", ROOT / "scripts/evaluate_truthset.py"
@@ -72,6 +75,86 @@ def test_evaluator_marks_public_regression_metrics(tmp_path: Path, capsys) -> No
     assert result["metrics"]["AV-EXEC001"]["tp"] == 1
     assert "public-regression" in capsys.readouterr().out
     Draft202012Validator(benchmark_results_schema()).validate(result)
+
+
+def test_evaluator_filters_labels_for_focused_development_runs(
+    tmp_path: Path, monkeypatch
+) -> None:
+    first = tmp_path / "first"
+    second = tmp_path / "second"
+    first.mkdir()
+    second.mkdir()
+    (first / "agent.py").write_text("# first\n", encoding="utf-8")
+    (second / "agent.py").write_text("# second\n", encoding="utf-8")
+    labels = tmp_path / "labels.json"
+    labels.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "labels": [
+                    {
+                        "id": "keep-agent",
+                        "target": {"kind": "local", "path": str(first)},
+                        "check_id": "IR-KEEP",
+                        "path": "agent.py",
+                        "line": 1,
+                        "expected": False,
+                        "component": {"kind": "agent", "name": "missing"},
+                    },
+                    {
+                        "id": "skip-agent",
+                        "target": {"kind": "local", "path": str(second)},
+                        "check_id": "IR-SKIP",
+                        "path": "agent.py",
+                        "line": 1,
+                        "expected": True,
+                        "component": {"kind": "agent", "name": "missing"},
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    scanned: list[Path] = []
+
+    def fake_scan_repository(path: Path) -> RepositoryIR:
+        scanned.append(path)
+        return RepositoryIR(str(path))
+
+    monkeypatch.setattr(evaluate_truthset, "scan_repository", fake_scan_repository)
+    output = tmp_path / "filtered-results.json"
+
+    assert (
+        evaluate_truthset.main(
+            [
+                "--labels",
+                str(labels),
+                "--output",
+                str(output),
+                "--check-id",
+                "IR-KEEP",
+                "--label-id-prefix",
+                "keep-",
+            ]
+        )
+        == 0
+    )
+
+    result = json.loads(output.read_text(encoding="utf-8"))
+    assert scanned == [first]
+    assert result["labels"] == 1
+    assert result["passed"] == 1
+    assert result["benchmark"]["label_filter"] == {
+        "check_ids": ["IR-KEEP"],
+        "label_id_prefixes": ["keep-"],
+    }
+    assert result["metrics"] == {
+        "IR-KEEP": {"tp": 0, "fp": 0, "tn": 1, "fn": 0, "precision": None, "recall": None}
+    }
+    Draft202012Validator(benchmark_results_schema()).validate(result)
+    assert verify_result(output, schema=load_benchmark_result_schema(), root=Path("."))[
+        "labels"
+    ] == 1
 
 
 def test_evaluator_reports_source_anchor_failures_separately(tmp_path: Path) -> None:
