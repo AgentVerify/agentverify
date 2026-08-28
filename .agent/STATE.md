@@ -537,9 +537,14 @@ catalog workflows.
 - Added custom rejection-message provenance for OpenAI Agents run-state reject decisions. Python
   `rejection_message=` and TypeScript `{ message }` reject options now record custom message
   presence plus literal, literal-binding, template, or dynamic source classification without storing
-  message text. Local Python/TypeScript fixtures plus the real OpenAI Agents Python custom-rejection
-  HITL example raise the public IR truth set to 2,032 labels, and schema-v129 engine results report
-  eight custom Python rejection messages in the pinned corpus.
+  message text. Local Python/TypeScript fixtures, the real OpenAI Agents Python custom-rejection
+  HITL example, and the real OpenAI Agents JS `computer-use-hitl.ts` helper-parameter HITL example
+  raise the public IR truth set to 2,038 labels, and schema-v130 engine results report custom
+  message source counts plus TypeScript helper-parameter decision counts.
+- Validation for the helper-parameter slice passed focused scanner tests, focused 6/6 IR labels,
+  full 2,038/2,038 IR labels, 71/71 engine repositories, checked benchmark verification, full
+  `pytest -q` (298 passed), touched-file `ruff`, JSON parsing, diff whitespace checks, and
+  `uv build` plus distribution smoke/source verification.
 
 ## Current findings
 
@@ -650,7 +655,8 @@ work, keep local `MemorySession`, server-managed `conversationId`, `previousResp
 same-block `result.history`, same-file `result.state`, and serialized `RunState.fromString` resume
 semantics distinct. For OpenAI approval work, keep literal always-approval, callback-controlled
 approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
-approval metadata, literal predicate metadata, SDK state approval decisions, and proven human
-approval/resume handling separate. For performance work, use `--progress` plus focused
+approval metadata, literal predicate metadata, SDK state approval decisions, helper-parameter
+decision provenance, and proven human approval/resume handling separate. For performance work, use
+`--progress` plus focused
 `--scan-label-paths` only when the target labels are self-contained; broader benchmark acceleration
 likely needs dependency-aware path expansion or scan-result reuse to preserve cross-file evidence.

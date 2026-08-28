@@ -465,5 +465,27 @@
 - Alternative: Store full rejection strings or report custom messages as findings. Rejected because
   full message text is unnecessary for governance inventory and may expose sensitive developer
   policy text, while custom rejection messaging is not itself unsafe.
-- Revisit when: a narrow TypeScript function-parameter state model can prove helper calls from
-  exact run results without turning arbitrary helper parameters into SDK state evidence.
+- Revisit when: rejection-message provenance needs richer policy classification; the first narrow
+  TypeScript helper-parameter state model is now tracked separately below.
+
+## OpenAI Agents JS helper-parameter approval decisions require exact call-site agents
+
+- Decision: Resolve TypeScript OpenAI Agents SDK approval/rejection decisions through non-exported
+  same-file `async function` helpers only when the first helper parameter is typed as the exact SDK
+  `Agent` import, the helper body proves `run(agentParam, ...) -> result.state ->
+  state.approve/reject`, and each helper call supplies an exact Agent binding from the same lexical
+  function scope. Helper-derived control IDs include the call line so repeated scoped `const agent`
+  bindings do not collapse.
+- Evidence: The local `cases/typescript_openai_helper_hitl` fixture has two sibling functions that
+  both declare `const agent` and call the same `runWithHitl(agent, ...)` helper; AgentVerify emits
+  two separate template-message rejection controls tied to `agent@4` and `agent@9`. Near misses
+  cover a helper called with an unresolved caller parameter and an untyped helper. The pinned
+  OpenAI Agents JS `examples/tools/computer-use-hitl.ts` example now proves both `state.approve`
+  and custom template-message `state.reject` controls for the singleton and per-request browser
+  agents, preserving `AUTO_APPROVE_HITL` metadata on the approval branches.
+- Alternative: Treat any helper parameter named `agent`, any same-file helper call, or any global
+  same-named `agent` binding as source proof. Rejected because the real file already has repeated
+  scoped `const agent` bindings, and arbitrary helper parameters would turn state-like methods into
+  false approval evidence.
+- Revisit when: a similarly narrow model can add helper-derived resume/continuity relationships or
+  can prove exported helper calls without accepting mixed/unproven call sites.

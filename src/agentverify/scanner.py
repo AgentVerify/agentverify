@@ -4909,7 +4909,9 @@ def python_filesystem_callable_reference(
         return canonical_python_filesystem_api(dotted_name(expression), aliases)
     if isinstance(expression, ast.IfExp):
         body = python_filesystem_callable_reference(expression.body, aliases, local_callables)
-        alternate = python_filesystem_callable_reference(expression.orelse, aliases, local_callables)
+        alternate = python_filesystem_callable_reference(
+            expression.orelse, aliases, local_callables
+        )
         if body is None or alternate is None:
             return None
         family = "|".join(sorted(set(body.split("|") + alternate.split("|"))))
@@ -6239,9 +6241,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.url_parser_names = url_parser_names
         self.module_literal_string_sets = module_literal_string_sets
         self.approval_bypass_function_summaries = approval_bypass_function_summaries
-        self.computer_safety_check_function_summaries = (
-            computer_safety_check_function_summaries
-        )
+        self.computer_safety_check_function_summaries = computer_safety_check_function_summaries
         self.function_stack: list[str] = []
         self.function_depth = 0
         self.imported_symbol_paths: dict[str, str] = {}
@@ -8531,10 +8531,8 @@ class PythonVisitor(ast.NodeVisitor):
                             and callback_scope
                             and (callback_scope, keyword.value.id) not in self.scope_bound_names
                         ):
-                            safety_decision = (
-                                self.computer_safety_check_function_summaries.get(
-                                    ((), keyword.value.id)
-                                )
+                            safety_decision = self.computer_safety_check_function_summaries.get(
+                                ((), keyword.value.id)
                             )
                         if safety_decision is not None:
                             safety_check_attributes.update(
@@ -12513,9 +12511,7 @@ def scan_python(
 
 TS_IMPORT = re.compile(r"(?:from\s+|require\s*\(\s*)['\"]([^'\"]+)['\"]")
 TS_NAMED_IMPORT = re.compile(r"\bimport\s*\{([^}]+)\}\s*from\s*['\"]([^'\"]+)['\"]", re.DOTALL)
-TS_NAMED_EXPORT_FROM = re.compile(
-    r"\bexport\s*\{([^}]+)\}\s*from\s*['\"]([^'\"]+)['\"]", re.DOTALL
-)
+TS_NAMED_EXPORT_FROM = re.compile(r"\bexport\s*\{([^}]+)\}\s*from\s*['\"]([^'\"]+)['\"]", re.DOTALL)
 TS_STAR_EXPORT_FROM = re.compile(r"\bexport\s*\*\s*from\s*['\"]([^'\"]+)['\"]")
 TS_DEFAULT_IMPORT = re.compile(
     r"\bimport\s+(?!type\b)([A-Za-z_$][\w$]*)\s*"
@@ -12549,9 +12545,7 @@ TS_AGENT_TOOL_ASSIGNMENT = re.compile(
     r"([A-Za-z_$][\w$]*)\.asTool\s*\("
 )
 TS_AGENT_ASSIGNMENT = re.compile(r"\b(?:const|let)\s+(\w+)\s*=\s*new\s+Agent\s*\(")
-TS_SANDBOX_AGENT_ASSIGNMENT_TEMPLATE = (
-    r"\b(?:const|let)\s+(\w+)\s*=\s*new\s+{constructor}\s*\("
-)
+TS_SANDBOX_AGENT_ASSIGNMENT_TEMPLATE = r"\b(?:const|let)\s+(\w+)\s*=\s*new\s+{constructor}\s*\("
 TS_SANDBOX_AGENT_RETURN_TEMPLATE = r"\breturn\s+new\s+{constructor}\s*\("
 TS_SANDBOX_CLIENT_ASSIGNMENT = re.compile(
     r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*new\s+([A-Za-z_$][\w$]*)\s*\("
@@ -12706,6 +12700,19 @@ class TypeScriptProviderCall:
 class TypeScriptLiteralStringBinding:
     value: str
     declaration_end: int
+
+
+@dataclass(frozen=True)
+class TypeScriptOpenAIRunStateHelperDecision:
+    helper_name: str
+    result_binding: str
+    state_binding: str
+    decision: str
+    line: int
+    offset: int
+    symbol_identity: str
+    approval_bypass_environment_names: tuple[str, ...]
+    rejection_message_attributes: dict[str, object]
 
 
 TypeScriptSandboxManifestControl = tuple[str, str]
@@ -13280,8 +13287,7 @@ def typescript_named_specifier_parts(specifier: str) -> tuple[str, str] | None:
     original = parts[0]
     local = parts[2] if len(parts) >= 3 and parts[1] == "as" else original
     if not (
-        re.fullmatch(r"[A-Za-z_$][\w$]*", original)
-        and re.fullmatch(r"[A-Za-z_$][\w$]*", local)
+        re.fullmatch(r"[A-Za-z_$][\w$]*", original) and re.fullmatch(r"[A-Za-z_$][\w$]*", local)
     ):
         return None
     return original, local
@@ -13666,9 +13672,7 @@ def typescript_immutable_module_literal_string_bindings(
             continue
         template_candidates[match.group(1)].append((match.start(), match.group(2), match.end()))
     object_candidates: dict[str, list[tuple[int, str, int]]] = defaultdict(list)
-    object_pattern = re.compile(
-        r"\bconst\s+([A-Za-z_$][\w$]*)\s*(?:\:\s*[^=;\n]+)?=\s*\{"
-    )
+    object_pattern = re.compile(r"\bconst\s+([A-Za-z_$][\w$]*)\s*(?:\:\s*[^=;\n]+)?=\s*\{")
     for match in object_pattern.finditer(text):
         if depths[match.start()] != 0 or code[match.start() : match.start(1)].strip() != "const":
             continue
@@ -16743,6 +16747,7 @@ def add_typescript_openai_run_state_approval_decision_control(
     symbol_identity: str,
     approval_bypass_environment_names: tuple[str, ...] = (),
     rejection_message_attributes: dict[str, object] | None = None,
+    extra_attributes: dict[str, object] | None = None,
 ) -> tuple[str, str]:
     """Add exact OpenAI Agents JS run-state approval/rejection handling evidence."""
     source_agent_name, source_agent_id = source_agent
@@ -16763,14 +16768,14 @@ def add_typescript_openai_run_state_approval_decision_control(
     if decision == "approve" and approval_bypass_environment_names:
         attributes.update(
             {
-                "approval_bypass_environment_names": list(
-                    approval_bypass_environment_names
-                ),
+                "approval_bypass_environment_names": list(approval_bypass_environment_names),
                 "approval_bypass_resolution": "braced-if-condition-callback",
             }
         )
     if decision == "reject" and rejection_message_attributes:
         attributes.update(rejection_message_attributes)
+    if extra_attributes:
+        attributes.update(extra_attributes)
     ir.add_component(
         Component(
             "control",
@@ -16789,14 +16794,14 @@ def add_typescript_openai_run_state_approval_decision_control(
     if decision == "approve" and approval_bypass_environment_names:
         relationship_attributes.update(
             {
-                "approval_bypass_environment_names": list(
-                    approval_bypass_environment_names
-                ),
+                "approval_bypass_environment_names": list(approval_bypass_environment_names),
                 "approval_bypass_resolution": "braced-if-condition-callback",
             }
         )
     if decision == "reject" and rejection_message_attributes:
         relationship_attributes.update(rejection_message_attributes)
+    if extra_attributes:
+        relationship_attributes.update(extra_attributes)
     ir.add_relationship(
         Relationship(
             "agent",
@@ -16845,6 +16850,243 @@ def typescript_rejection_message_attributes(
     else:
         attributes["rejection_message_source"] = "dynamic"
     return attributes
+
+
+def typescript_openai_run_state_helper_decisions(
+    text: str,
+    *,
+    run_bindings: set[str],
+    agent_type_bindings: set[str],
+    approval_bypass_function_summaries: dict[str, tuple[str, ...]],
+    literal_bindings: dict[str, str],
+) -> dict[str, tuple[TypeScriptOpenAIRunStateHelperDecision, ...]]:
+    """Summarize narrow same-file OpenAI Agents run-state decisions in helper bodies.
+
+    This intentionally models only non-exported async function declarations whose first
+    parameter is typed as the exact SDK Agent import, and whose local result/state are
+    proven from imported SDK ``run(agentParam, ...)`` calls inside the same body.
+    """
+    if not run_bindings or not agent_type_bindings:
+        return {}
+    code = typescript_code_mask(text)
+    function_pattern = re.compile(
+        r"\b(?P<export>export\s+)?async\s+function\s+"
+        r"(?P<name>[A-Za-z_$][\w$]*)\s*\("
+    )
+    summaries: dict[str, tuple[TypeScriptOpenAIRunStateHelperDecision, ...]] = {}
+    helper_candidates: list[tuple[str, tuple[TypeScriptOpenAIRunStateHelperDecision, ...]]] = []
+
+    for function_match in function_pattern.finditer(code):
+        if function_match.group("export"):
+            continue
+        opening = code.find("(", function_match.start(), function_match.end())
+        parameter_end = typescript_balanced_end(code, opening, "(", ")")
+        if parameter_end is None:
+            continue
+        parameter_text = text[opening + 1 : parameter_end - 1]
+        raw_parameters = typescript_call_arguments(parameter_text)
+        if not raw_parameters:
+            continue
+        typed_agent = re.match(
+            r"\s*([A-Za-z_$][\w$]*)\s*\??\s*:\s*([A-Za-z_$][\w$]*)\b",
+            typescript_code_mask(raw_parameters[0][0]),
+        )
+        if typed_agent is None or typed_agent.group(2) not in agent_type_bindings:
+            continue
+        agent_parameter = typed_agent.group(1)
+        if any(
+            parameter.index == 0 and parameter.local_name != agent_parameter
+            for parameter in typescript_function_parameters(parameter_text)
+        ):
+            continue
+        body_opening = code.find("{", parameter_end)
+        if body_opening < 0 or body_opening - parameter_end > 500:
+            continue
+        if code.find(";", parameter_end, body_opening) >= 0:
+            continue
+        body_end = typescript_balanced_end(code, body_opening, "{", "}")
+        if body_end is None:
+            continue
+        body_start = body_opening + 1
+        body = text[body_start : body_end - 1]
+        body_code = typescript_code_mask(body)
+
+        result_sources: dict[str, list[int]] = defaultdict(list)
+        result_patterns = (
+            re.compile(
+                r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*(?::\s*[^=;\n]+)?=\s*"
+                r"(?:await\s+)?([A-Za-z_$][\w$]*)\s*\("
+            ),
+            re.compile(
+                r"(?<![\w$.])([A-Za-z_$][\w$]*)\s*=\s*"
+                r"(?:await\s+)?([A-Za-z_$][\w$]*)\s*\("
+            ),
+        )
+        seen_result_assignments: set[tuple[str, int]] = set()
+        for pattern_index, pattern in enumerate(result_patterns):
+            for match in pattern.finditer(body_code):
+                if pattern_index == 1 and re.search(
+                    r"\b(?:const|let|var)\s+$",
+                    body_code[max(0, match.start() - 24) : match.start()],
+                ):
+                    continue
+                result_name = match.group(1)
+                local_function = match.group(2)
+                if local_function not in run_bindings:
+                    continue
+                call_opening = body_code.find("(", match.start(2), match.end())
+                call_end = typescript_balanced_end(body_code, call_opening, "(", ")")
+                if call_end is None:
+                    continue
+                arguments = typescript_call_arguments(
+                    body[call_opening + 1 : call_end - 1],
+                    body_start + call_opening + 1,
+                )
+                if not arguments:
+                    continue
+                agent_argument = typescript_code_mask(arguments[0][0]).strip()
+                if agent_argument != agent_parameter:
+                    continue
+                assignment_key = (result_name, body_start + match.start())
+                if assignment_key in seen_result_assignments:
+                    continue
+                seen_result_assignments.add(assignment_key)
+                result_sources[result_name].append(body_start + call_end)
+
+        state_sources: dict[str, list[tuple[str, int]]] = defaultdict(list)
+        state_patterns = (
+            re.compile(
+                r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*(?::\s*[^=;\n]+)?=\s*"
+                r"([A-Za-z_$][\w$]*)\s*\.\s*state\b"
+            ),
+            re.compile(r"(?<![\w$.])([A-Za-z_$][\w$]*)\s*=\s*([A-Za-z_$][\w$]*)\s*\.\s*state\b"),
+        )
+        seen_state_assignments: set[tuple[str, int]] = set()
+        for pattern_index, pattern in enumerate(state_patterns):
+            for match in pattern.finditer(body_code):
+                if pattern_index == 1 and re.search(
+                    r"\b(?:const|let|var)\s+$",
+                    body_code[max(0, match.start() - 24) : match.start()],
+                ):
+                    continue
+                state_name = match.group(1)
+                result_name = match.group(2)
+                source_end = next(
+                    (
+                        candidate_end
+                        for candidate_end in reversed(result_sources.get(result_name, []))
+                        if candidate_end <= body_start + match.start(2)
+                    ),
+                    None,
+                )
+                if source_end is None:
+                    continue
+                stale = re.search(
+                    rf"(?<![\w$.]){re.escape(result_name)}\s*=(?!=)",
+                    body_code[source_end - body_start : match.start()],
+                )
+                if stale is not None:
+                    continue
+                state_key = (state_name, body_start + match.start())
+                if state_key in seen_state_assignments:
+                    continue
+                seen_state_assignments.add(state_key)
+                state_sources[state_name].append((result_name, body_start + match.end()))
+
+        helper_decisions: list[TypeScriptOpenAIRunStateHelperDecision] = []
+        approval_decision_pattern = re.compile(
+            r"\b([A-Za-z_$][\w$]*)(?:\s*\.\s*state)?\s*\.\s*(approve|reject)\s*\("
+        )
+        seen_decisions: set[tuple[int, str, str]] = set()
+        for match in approval_decision_pattern.finditer(body_code):
+            receiver_name = match.group(1)
+            decision = match.group(2)
+            call_opening = body_code.find("(", match.start(2), match.end())
+            call_end = typescript_balanced_end(body_code, call_opening, "(", ")")
+            if call_end is None:
+                continue
+            has_inline_state = ".state" in body_code[match.start() : match.start(2)]
+            if has_inline_state:
+                result_name = receiver_name
+                source_end = next(
+                    (
+                        candidate_end
+                        for candidate_end in reversed(result_sources.get(result_name, []))
+                        if candidate_end <= body_start + match.start()
+                    ),
+                    None,
+                )
+                if source_end is None:
+                    continue
+                if re.search(
+                    rf"(?<![\w$.]){re.escape(result_name)}\s*=(?!=)",
+                    body_code[source_end - body_start : match.start()],
+                ):
+                    continue
+                state_binding: str | None = None
+            else:
+                source_record = next(
+                    (
+                        (candidate_result, candidate_end)
+                        for candidate_result, candidate_end in reversed(
+                            state_sources.get(receiver_name, [])
+                        )
+                        if candidate_end <= body_start + match.start()
+                    ),
+                    None,
+                )
+                if source_record is None:
+                    continue
+                result_name, source_end = source_record
+                if re.search(
+                    rf"(?<![\w$.]){re.escape(receiver_name)}\s*=(?!=)",
+                    body_code[source_end - body_start : match.start()],
+                ):
+                    continue
+                state_binding = receiver_name
+            decision_key = (body_start + match.start(), receiver_name, decision)
+            if decision_key in seen_decisions:
+                continue
+            seen_decisions.add(decision_key)
+            line = line_at(text, body_start + match.start())
+            symbol_receiver = f"{result_name}.state" if state_binding is None else state_binding
+            rejection_message_attributes = (
+                typescript_rejection_message_attributes(
+                    body[call_opening + 1 : call_end - 1],
+                    literal_bindings,
+                )
+                if decision == "reject"
+                else {}
+            )
+            helper_decisions.append(
+                TypeScriptOpenAIRunStateHelperDecision(
+                    helper_name=function_match.group("name"),
+                    result_binding=result_name,
+                    state_binding=state_binding or "inline-result-state",
+                    decision=decision,
+                    line=line,
+                    offset=body_start + match.start(),
+                    symbol_identity=f"{symbol_receiver}.{decision}@{line}",
+                    approval_bypass_environment_names=(
+                        typescript_enclosing_if_approval_bypass_environment_names(
+                            code,
+                            body_start + match.start(),
+                            approval_bypass_function_summaries,
+                        )
+                        if decision == "approve"
+                        else ()
+                    ),
+                    rejection_message_attributes=rejection_message_attributes,
+                )
+            )
+        if helper_decisions:
+            helper_candidates.append((function_match.group("name"), tuple(helper_decisions)))
+
+    counts = Counter(name for name, _ in helper_candidates)
+    for name, decisions in helper_candidates:
+        if counts[name] == 1:
+            summaries[name] = decisions
+    return summaries
 
 
 def add_typescript_openai_sandbox_path_grant_control(
@@ -17201,7 +17443,9 @@ def typescript_openai_sandbox_manifest_entry_attributes(
         local_factory, argument_body, argument_body_offset = call
         factory = sandbox_factory_imports.get(local_factory)
         if factory == "file":
-            arguments = typescript_call_arguments(argument_body, entry_offset + argument_body_offset)
+            arguments = typescript_call_arguments(
+                argument_body, entry_offset + argument_body_offset
+            )
             if len(arguments) != 1:
                 return None
             content_present = (
@@ -17212,7 +17456,9 @@ def typescript_openai_sandbox_manifest_entry_attributes(
                 "content_present": content_present,
             }
         if factory == "gitRepo":
-            arguments = typescript_call_arguments(argument_body, entry_offset + argument_body_offset)
+            arguments = typescript_call_arguments(
+                argument_body, entry_offset + argument_body_offset
+            )
             if len(arguments) != 1:
                 return None
             repo_property = typescript_object_property_expression_location(
@@ -17250,7 +17496,9 @@ def typescript_openai_sandbox_manifest_entry_attributes(
                     attributes["ref_resolution"] = ref[1]
             return "git-repository", attributes
         if factory == "localDir":
-            arguments = typescript_call_arguments(argument_body, entry_offset + argument_body_offset)
+            arguments = typescript_call_arguments(
+                argument_body, entry_offset + argument_body_offset
+            )
             if len(arguments) != 1:
                 return None
             src_property = typescript_object_property_expression_location(
@@ -17568,11 +17816,7 @@ def typescript_enclosing_unique_function(
     offset: int,
 ) -> str | None:
     """Return the narrowest same-file function enclosing an offset."""
-    helpers = [
-        (name, start, end)
-        for name, start, end in function_spans
-        if start <= offset < end
-    ]
+    helpers = [(name, start, end) for name, start, end in function_spans if start <= offset < end]
     if not helpers:
         return None
     return min(helpers, key=lambda item: item[2] - item[1])[0]
@@ -17766,9 +18010,13 @@ def typescript_openai_sandbox_memory_policy_attributes(
             layout_attributes[f"{attribute_name}_resolution"] = value[1]
         if layout_attributes:
             attributes.update(layout_attributes)
-            policy_offset = property_offset if policy_offset is None else min(
-                policy_offset,
-                property_offset,
+            policy_offset = (
+                property_offset
+                if policy_offset is None
+                else min(
+                    policy_offset,
+                    property_offset,
+                )
             )
 
     read_property = typescript_object_property_expression_location(
@@ -17781,9 +18029,13 @@ def typescript_openai_sandbox_memory_policy_attributes(
         read_boolean = typescript_literal_boolean_value(read_expression)
         if read_boolean is not None:
             attributes["read_enabled"] = read_boolean
-            policy_offset = property_offset if policy_offset is None else min(
-                policy_offset,
-                property_offset,
+            policy_offset = (
+                property_offset
+                if policy_offset is None
+                else min(
+                    policy_offset,
+                    property_offset,
+                )
             )
         else:
             live_update_property = typescript_object_property_expression_location(
@@ -17795,9 +18047,13 @@ def typescript_openai_sandbox_memory_policy_attributes(
                 live_update = typescript_literal_boolean_value(live_update_property[0])
                 if live_update is not None:
                     attributes["read_live_update"] = live_update
-                    policy_offset = property_offset if policy_offset is None else min(
-                        policy_offset,
-                        property_offset,
+                    policy_offset = (
+                        property_offset
+                        if policy_offset is None
+                        else min(
+                            policy_offset,
+                            property_offset,
+                        )
                     )
 
     generate_property = typescript_object_property_expression_location(
@@ -17810,9 +18066,13 @@ def typescript_openai_sandbox_memory_policy_attributes(
         generate_boolean = typescript_literal_boolean_value(generate_expression)
         if generate_boolean is not None:
             attributes["generation_enabled"] = generate_boolean
-            policy_offset = property_offset if policy_offset is None else min(
-                policy_offset,
-                property_offset,
+            policy_offset = (
+                property_offset
+                if policy_offset is None
+                else min(
+                    policy_offset,
+                    property_offset,
+                )
             )
         else:
             generate_attributes: dict[str, object] = {"generation_configured": True}
@@ -17848,9 +18108,13 @@ def typescript_openai_sandbox_memory_policy_attributes(
                 generate_attributes[f"{attribute_name}_resolution"] = value[1]
             if len(generate_attributes) > 1:
                 attributes.update(generate_attributes)
-                policy_offset = property_offset if policy_offset is None else min(
-                    policy_offset,
-                    property_offset,
+                policy_offset = (
+                    property_offset
+                    if policy_offset is None
+                    else min(
+                        policy_offset,
+                        property_offset,
+                    )
                 )
 
     if policy_offset is None:
@@ -17960,8 +18224,7 @@ def add_typescript_openai_sandbox_conditional_runtime_control(
         "resolution": "exact-openai-sandbox-local-conditional-import",
         "sandbox_runtime": "conditional-local",
         "sandbox_runtime_options": [
-            TS_OPENAI_SANDBOX_LOCAL_CLIENTS[constructor]
-            for constructor in imported_constructors
+            TS_OPENAI_SANDBOX_LOCAL_CLIENTS[constructor] for constructor in imported_constructors
         ],
         "constructors": imported_constructors,
         "execution_environment": "sdk-sandbox",
@@ -18232,8 +18495,7 @@ def add_typescript_generic_tool(
     approval_expression = typescript_object_property_expression(body, "needsApproval")
     approval_match = (
         TS_LITERAL_APPROVAL.search(typescript_code_mask(body))
-        if constructor != "toolNamespace"
-        and approval_expression == "true"
+        if constructor != "toolNamespace" and approval_expression == "true"
         else None
     )
     approval_attributes = (
@@ -18286,7 +18548,9 @@ def typescript_callback_parameters(expression: str) -> list[str]:
         end = typescript_balanced_end(prefix_code, 0, "(", ")")
         if end is None:
             return []
-        return [parameter.strip() for parameter, _ in typescript_call_arguments(prefix[1 : end - 1])]
+        return [
+            parameter.strip() for parameter, _ in typescript_call_arguments(prefix[1 : end - 1])
+        ]
     first = prefix.split(":", 1)[0].strip()
     return [first] if first else []
 
@@ -18349,9 +18613,7 @@ def typescript_openai_needs_approval_predicate_attributes(
                 return {}
         return {
             "approval_predicate": (
-                "field-contains-literal"
-                if method == "includes"
-                else "field-prefix-literal"
+                "field-contains-literal" if method == "includes" else "field-prefix-literal"
             ),
             "approval_predicate_field": field,
             "approval_predicate_values": [method_match.group(5)],
@@ -18363,7 +18625,11 @@ def typescript_openai_needs_approval_predicate_attributes(
         expression_body,
         re.DOTALL,
     )
-    if includes_match and policy_input_root is not None and includes_match.group(2) == policy_input_root:
+    if (
+        includes_match
+        and policy_input_root is not None
+        and includes_match.group(2) == policy_input_root
+    ):
         values = typescript_literal_string_arguments(includes_match.group(1))
         if values is not None and all(value is not None for value in values):
             return {
@@ -18453,9 +18719,7 @@ def typescript_openai_safety_check_attributes(body: str, constructor: str) -> di
         "acknowledgedSafetyChecks",
         "acknowledged_safety_checks",
     ):
-        acknowledged = typescript_object_property_expression(
-            body_expression, acknowledgement_field
-        )
+        acknowledged = typescript_object_property_expression(body_expression, acknowledgement_field)
         if acknowledged is None:
             continue
         acknowledged_code = typescript_code_mask(acknowledged).strip()
@@ -18491,10 +18755,7 @@ def typescript_graph(
     literal_bindings = typescript_literal_string_bindings(text)
     approval_bypass_function_summaries = (
         typescript_approval_bypass_function_summaries(text)
-        if (
-            ("onApproval" in text or ".approve(" in text)
-            and openai_imports
-        )
+        if (("onApproval" in text or ".approve(" in text) and openai_imports)
         else {}
     )
     has_mcp_import = "@modelcontextprotocol/" in text or bool(
@@ -18574,7 +18835,8 @@ def typescript_graph(
             local_factory, constructor, cline_imports, mastra_imports
         )
         is_openai_builtin = (
-            local_factory in openai_imports and constructor in TS_OPENAI_BUILTIN_TOOL_CAPABILITIES
+            local_factory in openai_imports
+            and constructor in TS_OPENAI_BUILTIN_TOOL_CAPABILITIES
             and not typescript_import_binding_is_shadowed(text, local_factory)
         )
         if not is_generic and not is_openai_builtin:
@@ -18704,9 +18966,9 @@ def typescript_graph(
     }
     function_spans = typescript_function_body_spans(text)
     manifest_bindings: dict[str, TypeScriptSandboxManifestBinding] = {}
-    helper_manifest_candidates: dict[
-        str, list[TypeScriptSandboxManifestBinding]
-    ] = defaultdict(list)
+    helper_manifest_candidates: dict[str, list[TypeScriptSandboxManifestBinding]] = defaultdict(
+        list
+    )
     for match in TS_SANDBOX_CLIENT_ASSIGNMENT.finditer(code):
         manifest_name = match.group(1)
         local_constructor = match.group(2)
@@ -18973,9 +19235,7 @@ def typescript_graph(
             immutable_literal_bindings=immutable_literal_bindings,
         )
         sandbox_session_bindings[session_name] = runtime_control
-        sandbox_runtime_edge_analysis[runtime_control[1]] = (
-            "typescript-openai-sandbox-local-client"
-        )
+        sandbox_runtime_edge_analysis[runtime_control[1]] = "typescript-openai-sandbox-local-client"
         create_match = re.match(r"\s*\.create\s*\(", code[constructor_end:])
         if create_match is None:
             continue
@@ -19049,9 +19309,7 @@ def typescript_graph(
         )
         if session_id_location is None:
             continue
-        session_id_expression, property_offset, session_id_expression_offset = (
-            session_id_location
-        )
+        session_id_expression, property_offset, session_id_expression_offset = session_id_location
         session_id = typescript_static_string_value(
             session_id_expression,
             expression_offset=session_id_expression_offset,
@@ -19060,17 +19318,15 @@ def typescript_graph(
         if session_id is None:
             continue
         line = line_at(text, property_offset)
-        conversation_session_bindings[session_name] = (
-            add_typescript_openai_memory_session_control(
-                ir,
-                relative=relative,
-                lines=lines,
-                line=line,
-                local_constructor=local_constructor,
-                session_id=session_id[0],
-                session_id_resolution=session_id[1],
-                symbol_identity=f"{session_name}.sessionId@{line}",
-            )
+        conversation_session_bindings[session_name] = add_typescript_openai_memory_session_control(
+            ir,
+            relative=relative,
+            lines=lines,
+            line=line,
+            local_constructor=local_constructor,
+            session_id=session_id[0],
+            session_id_resolution=session_id[1],
+            symbol_identity=f"{session_name}.sessionId@{line}",
         )
     openai_sdk_imports = (
         typescript_provider_sdk_imports(text)
@@ -19214,15 +19470,14 @@ def typescript_graph(
             if not helpers:
                 continue
             helper_name, _, _ = min(helpers, key=lambda item: item[2] - item[1])
-            agent_matches.append(
-                (match, "SandboxAgent", local_name, helper_name, "return-new")
-            )
+            agent_matches.append((match, "SandboxAgent", local_name, helper_name, "return-new"))
     agent_assignment_counts = Counter(identity for _, _, _, identity, _ in agent_matches)
     agent_tool_bindings = {
         match.group(1): match.group(2) for match in TS_AGENT_TOOL_ASSIGNMENT.finditer(code)
     }
     local_agents: dict[str, tuple[str, str]] = {}
     helper_return_agents: dict[str, tuple[str, str, int]] = {}
+    assigned_agents: dict[str, list[tuple[int, int, str, str]]] = defaultdict(list)
     agent_bodies: list[tuple[re.Match[str], int, str, str, str, str]] = []
     for match, constructor, constructor_local, variable_name, binding_kind in agent_matches:
         start_line = line_at(text, match.start())
@@ -19252,6 +19507,10 @@ def typescript_graph(
         if binding_kind == "return-new":
             attributes.update({"binding": "return-new", "helper": variable_name})
         ir.add_component(Component("agent", agent_name, ev, attributes, agent_id))
+        if binding_kind == "assignment":
+            assigned_agents[variable_name].append(
+                (match.start(), match.end(), agent_name, agent_id)
+            )
         if binding_kind == "assignment" and agent_assignment_counts[variable_name] == 1:
             local_agents[variable_name] = (agent_name, agent_id)
         elif binding_kind == "return-new":
@@ -19271,6 +19530,49 @@ def typescript_graph(
         if initializer_offset <= helper_offset:
             continue
         local_agents[variable_name] = (agent_name, agent_id)
+
+    def enclosing_function_span(offset: int) -> tuple[str, int, int] | None:
+        helpers = [
+            (name, start, end) for name, start, end in function_spans if start <= offset < end
+        ]
+        if not helpers:
+            return None
+        return min(helpers, key=lambda item: item[2] - item[1])
+
+    def resolve_lexical_openai_agent_argument(
+        argument_name: str,
+        use_offset: int,
+    ) -> tuple[str, str] | None:
+        call_scope = enclosing_function_span(use_offset)
+        candidates: list[tuple[int, int, str, str]] = []
+        for (
+            assignment_offset,
+            declaration_end,
+            agent_name,
+            agent_id,
+        ) in assigned_agents.get(argument_name, []):
+            if assignment_offset >= use_offset:
+                continue
+            assignment_scope = enclosing_function_span(assignment_offset)
+            if call_scope is None:
+                if assignment_scope is None:
+                    candidates.append((assignment_offset, declaration_end, agent_name, agent_id))
+            elif assignment_scope == call_scope:
+                candidates.append((assignment_offset, declaration_end, agent_name, agent_id))
+        if candidates:
+            assignment_offset, declaration_end, agent_name, agent_id = max(
+                candidates,
+                key=lambda item: item[0],
+            )
+            if re.search(
+                rf"(?<![\w$.]){re.escape(argument_name)}\s*=(?!=)",
+                code[declaration_end:use_offset],
+            ):
+                return None
+            return agent_name, agent_id
+        if call_scope is None:
+            return local_agents.get(argument_name)
+        return None
 
     for match, body_offset, body, agent_name, agent_id, agent_constructor in agent_bodies:
         ev = Evidence(
@@ -19431,9 +19733,7 @@ def typescript_graph(
                         )
                         if client_expression is not None:
                             client_code = typescript_code_mask(client_expression).strip()
-                            if client_identifier := re.fullmatch(
-                                r"[A-Za-z_$][\w$]*", client_code
-                            ):
+                            if client_identifier := re.fullmatch(r"[A-Za-z_$][\w$]*", client_code):
                                 runtime_control = sandbox_client_bindings.get(
                                     client_identifier.group(0)
                                 )
@@ -19453,11 +19753,8 @@ def typescript_graph(
                                     session_identifier.group(0)
                                 )
                                 binding = "session"
-                        elif (
-                            runtime_control is None
-                            and typescript_object_has_shorthand_property(
-                                sandbox_expression, "session"
-                            )
+                        elif runtime_control is None and typescript_object_has_shorthand_property(
+                            sandbox_expression, "session"
                         ):
                             runtime_control = sandbox_session_bindings.get("session")
                             binding = "session-shorthand"
@@ -19574,7 +19871,21 @@ def typescript_graph(
         for local_name, imported_name in openai_agents_imports.items()
         if imported_name == "run" and not typescript_import_binding_is_shadowed(text, local_name)
     }
-    openai_agents_run_result_sources: dict[str, list[tuple[tuple[str, str], int]]] = defaultdict(list)
+    agent_type_bindings = {
+        local_name
+        for local_name, imported_name in openai_agents_imports.items()
+        if imported_name == "Agent" and not typescript_import_binding_is_shadowed(text, local_name)
+    }
+    openai_run_state_helper_decisions = typescript_openai_run_state_helper_decisions(
+        text,
+        run_bindings=run_bindings,
+        agent_type_bindings=agent_type_bindings,
+        approval_bypass_function_summaries=approval_bypass_function_summaries,
+        literal_bindings=literal_bindings,
+    )
+    openai_agents_run_result_sources: dict[str, list[tuple[tuple[str, str], int]]] = defaultdict(
+        list
+    )
     openai_agents_run_result_bindings: dict[str, tuple[str, str]] = {}
     direct_run_result_patterns = (
         re.compile(
@@ -19750,7 +20061,9 @@ def typescript_graph(
         *,
         current_call_start: int | None = None,
     ) -> tuple[str, str] | None:
-        for source, assignment_end in reversed(openai_agents_run_result_sources.get(result_name, [])):
+        for source, assignment_end in reversed(
+            openai_agents_run_result_sources.get(result_name, [])
+        ):
             if assignment_end > use_offset:
                 continue
             stale = False
@@ -20046,6 +20359,63 @@ def typescript_graph(
             rejection_message_attributes=rejection_message_attributes,
         )
 
+    for helper_name, helper_decisions in openai_run_state_helper_decisions.items():
+        call_pattern = re.compile(rf"(?<![\w$.]){re.escape(helper_name)}\s*\(")
+        for match in call_pattern.finditer(code):
+            if re.search(r"\bfunction\s+$", code[max(0, match.start() - 24) : match.start()]):
+                continue
+            opening = code.find("(", match.start(), match.end())
+            end = typescript_balanced_end(code, opening, "(", ")")
+            if end is None:
+                continue
+            arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
+            if not arguments:
+                continue
+            agent_argument = typescript_code_mask(arguments[0][0]).strip()
+            agent_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", agent_argument)
+            if agent_identifier is None:
+                continue
+            agent_argument_name = agent_identifier.group(0)
+            source = resolve_lexical_openai_agent_argument(
+                agent_argument_name,
+                arguments[0][1],
+            )
+            if source is None:
+                continue
+            call_line = line_at(text, match.start())
+            for helper_decision in helper_decisions:
+                state_binding = (
+                    None
+                    if helper_decision.state_binding == "inline-result-state"
+                    else f"{helper_name}.{helper_decision.state_binding}:call{call_line}"
+                )
+                add_typescript_openai_run_state_approval_decision_control(
+                    ir,
+                    relative=relative,
+                    lines=lines,
+                    line=helper_decision.line,
+                    result_binding=(
+                        f"{helper_name}.{helper_decision.result_binding}:call{call_line}"
+                    ),
+                    state_binding=state_binding,
+                    source_agent=source,
+                    decision=helper_decision.decision,
+                    symbol_identity=(
+                        f"{helper_name}.{helper_decision.symbol_identity}:call{call_line}"
+                    ),
+                    approval_bypass_environment_names=(
+                        helper_decision.approval_bypass_environment_names
+                    ),
+                    rejection_message_attributes=(helper_decision.rejection_message_attributes),
+                    extra_attributes={
+                        "resolution": "same-file-helper-parameter-run-state",
+                        "helper": helper_name,
+                        "helper_call_line": call_line,
+                        "helper_decision_line": helper_decision.line,
+                        "agent_argument": agent_argument_name,
+                    },
+                )
+
     def add_conversation_session_relationship(
         *,
         agent_target: tuple[str, str],
@@ -20088,8 +20458,10 @@ def typescript_graph(
         elif typescript_object_has_shorthand_property(options, "session"):
             session_control = conversation_session_bindings.get("session")
             if session_control is not None:
-                return session_control, "session-shorthand", (
-                    "typescript-openai-agents-memory-session"
+                return (
+                    session_control,
+                    "session-shorthand",
+                    ("typescript-openai-agents-memory-session"),
                 )
         conversation_id_expression = typescript_object_property_expression(
             options,
@@ -20105,14 +20477,18 @@ def typescript_graph(
                     conversation_id_identifier.group(0)
                 )
                 if session_control is not None:
-                    return session_control, "conversationId", (
-                        "typescript-openai-agents-server-conversation"
+                    return (
+                        session_control,
+                        "conversationId",
+                        ("typescript-openai-agents-server-conversation"),
                     )
         elif typescript_object_has_shorthand_property(options, "conversationId"):
             session_control = conversation_session_bindings.get("conversationId")
             if session_control is not None:
-                return session_control, "conversationId-shorthand", (
-                    "typescript-openai-agents-server-conversation"
+                return (
+                    session_control,
+                    "conversationId-shorthand",
+                    ("typescript-openai-agents-server-conversation"),
                 )
         previous_response_id_expression = typescript_object_property_expression(
             options,
@@ -20130,14 +20506,18 @@ def typescript_graph(
                     previous_response_id_identifier.group(0)
                 )
                 if session_control is not None:
-                    return session_control, "previousResponseId", (
-                        "typescript-openai-agents-previous-response"
+                    return (
+                        session_control,
+                        "previousResponseId",
+                        ("typescript-openai-agents-previous-response"),
                     )
         elif typescript_object_has_shorthand_property(options, "previousResponseId"):
             session_control = conversation_session_bindings.get("previousResponseId")
             if session_control is not None:
-                return session_control, "previousResponseId-shorthand", (
-                    "typescript-openai-agents-previous-response"
+                return (
+                    session_control,
+                    "previousResponseId-shorthand",
+                    ("typescript-openai-agents-previous-response"),
                 )
         return None
 
@@ -20161,9 +20541,12 @@ def typescript_graph(
                     code[assignment_end:argument_offset],
                 ):
                     continue
-                return continuity_control, "history-input", (
-                    "typescript-openai-agents-history-continuity"
-                ), "history-input"
+                return (
+                    continuity_control,
+                    "history-input",
+                    ("typescript-openai-agents-history-continuity"),
+                    "history-input",
+                )
             for continuity_control, assignment_end in reversed(
                 state_continuity_bindings.get(input_name, [])
             ):
@@ -20174,9 +20557,12 @@ def typescript_graph(
                     code[assignment_end:argument_offset],
                 ):
                     continue
-                return continuity_control, "state-input", (
-                    "typescript-openai-agents-run-state-continuity"
-                ), "state-input"
+                return (
+                    continuity_control,
+                    "state-input",
+                    ("typescript-openai-agents-run-state-continuity"),
+                    "state-input",
+                )
             return None
         state_member = re.fullmatch(r"([A-Za-z_$][\w$]*)\s*\.\s*state", input_code)
         if state_member is None:
@@ -25495,9 +25881,7 @@ def propagate_python_class_network_helpers(
             if len(observations) != 1 or observations[0][0] != "__init__":
                 continue
             value = observations[0][1]
-            if not (
-                isinstance(value, ast.Call)
-            ):
+            if not (isinstance(value, ast.Call)):
                 continue
             init_methods = [
                 method
@@ -35013,6 +35397,7 @@ def add_python_adk_a2a_card_endpoint_policy(
             )
         )
 
+
 def add_python_openai_agents_run_state_approval_decision_flow(
     ir: RepositoryIR,
     root: Path,
@@ -35201,9 +35586,7 @@ def add_python_openai_agents_run_state_approval_decision_flow(
                 if name not in assignment_targets(statement):
                     continue
                 value = (
-                    statement.value
-                    if isinstance(statement, (ast.Assign, ast.AnnAssign))
-                    else None
+                    statement.value if isinstance(statement, (ast.Assign, ast.AnnAssign)) else None
                 )
                 same_frame_mutated = any(
                     statement_mutates_name(candidate, name)
@@ -35239,9 +35622,7 @@ def add_python_openai_agents_run_state_approval_decision_flow(
                 if name not in assignment_targets(statement):
                     continue
                 value = (
-                    statement.value
-                    if isinstance(statement, (ast.Assign, ast.AnnAssign))
-                    else None
+                    statement.value if isinstance(statement, (ast.Assign, ast.AnnAssign)) else None
                 )
                 same_frame_mutated = any(
                     statement_mutates_name(candidate, name)
@@ -35349,9 +35730,7 @@ def add_python_openai_agents_run_state_approval_decision_flow(
         lines = text.splitlines()
         nodes = list(ast.walk(tree))
         parent_by_id = {
-            id(child): parent
-            for parent in nodes
-            for child in ast.iter_child_nodes(parent)
+            id(child): parent for parent in nodes for child in ast.iter_child_nodes(parent)
         }
         components_by_variable = module_agent_components(relative)
         if not components_by_variable:
@@ -35364,11 +35743,7 @@ def add_python_openai_agents_run_state_approval_decision_flow(
                 continue
             target, call = assigned
             run_configuration = exact_run_call(call, runner_names, run_names, module_names)
-            if (
-                run_configuration is not None
-                and call.args
-                and isinstance(call.args[0], ast.Name)
-            ):
+            if run_configuration is not None and call.args and isinstance(call.args[0], ast.Name):
                 agent = latest_agent(components_by_variable, call.args[0].id, call.lineno)
                 if agent is not None:
                     run_results[target].append((agent, statement.lineno, run_configuration))
@@ -35379,7 +35754,9 @@ def add_python_openai_agents_run_state_approval_decision_flow(
                 and isinstance(call.func.value, ast.Name)
             ):
                 result_name = call.func.value.id
-                for agent, result_line, _configuration in reversed(run_results.get(result_name, [])):
+                for agent, result_line, _configuration in reversed(
+                    run_results.get(result_name, [])
+                ):
                     if result_line <= statement.lineno:
                         state_bindings[target].append((result_name, agent, statement.lineno))
                         break
@@ -35427,8 +35804,7 @@ def add_python_openai_agents_run_state_approval_decision_flow(
                     if getattr(statement, "lineno", 0) > state_line
                 )
                 cross_block_mutated = any(
-                    statement is not call
-                    and statement_mutates_name(statement, state_name)
+                    statement is not call and statement_mutates_name(statement, state_name)
                     for statement in nodes
                     if isinstance(statement, ast.stmt)
                     and state_line < getattr(statement, "lineno", 0) < call.lineno

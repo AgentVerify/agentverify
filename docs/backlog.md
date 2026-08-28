@@ -471,6 +471,13 @@ classified as literal, literal-binding, template, or dynamic without storing mes
 Python custom-rejection HITL example proves real SDK usage; the current TypeScript corpus has no
 custom-message reject call whose state receiver is exact-proven, so TypeScript coverage remains local
 until a real source-proven example or a narrow helper-call model exists.
+Schema v130 adds that narrow OpenAI Agents JS helper-call model for non-exported same-file async
+helpers whose first parameter is typed as the exact SDK `Agent` import and whose body proves
+`run(agentParam, ...) -> result.state -> state.approve/reject`. Call-site emission requires a
+lexically resolved same-function Agent argument and includes the helper call line in control IDs, so
+repeated scoped `const agent` declarations stay distinct. The pinned `computer-use-hitl.ts`
+`runWithHitl(agent, ...)` example now contributes approval-bypass and template custom-rejection
+labels.
 
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
@@ -596,8 +603,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 729 pinned positive/negative locations, with 2,032 separately
-scored IR component/relationship labels. Schema-v129 engine results and
+The curated regression set has reached 729 pinned positive/negative locations, with 2,038 separately
+scored IR component/relationship labels. Schema-v130 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. The checked-in holdout design now defines the sampling strata, label protocol,

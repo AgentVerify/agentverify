@@ -1781,9 +1781,7 @@ def main() -> int:
                     for item in python_openai_run_state_approval_decisions
                 ),
                 "restored_state_decisions": sum(
-                    str(item.attributes.get("result_binding", "")).startswith(
-                        "restored-run-state:"
-                    )
+                    str(item.attributes.get("result_binding", "")).startswith("restored-run-state:")
                     for item in python_openai_run_state_approval_decisions
                 ),
                 "sticky_decisions": sum(
@@ -2260,6 +2258,10 @@ def main() -> int:
                 ),
                 "env_bypass_approvals": sum(
                     bool(item.attributes.get("approval_bypass_environment_names"))
+                    for item in typescript_openai_run_state_approval_decisions
+                ),
+                "helper_parameter_decisions": sum(
+                    item.attributes.get("resolution") == "same-file-helper-parameter-run-state"
                     for item in typescript_openai_run_state_approval_decisions
                 ),
                 "custom_rejection_messages": sum(
@@ -3061,7 +3063,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 129,
+        "schema_version": 130,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -3724,6 +3726,7 @@ def main() -> int:
                     "approvals",
                     "rejections",
                     "env_bypass_approvals",
+                    "helper_parameter_decisions",
                     "custom_rejection_messages",
                     "literal_rejection_messages",
                     "template_rejection_messages",

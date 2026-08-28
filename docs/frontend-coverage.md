@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v129
+framework, wrapper, or configuration path. Counts come from schema-v130
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -755,15 +755,17 @@ OpenAI run-state approval decisions, including 100 approvals, 17 rejections, 27 
 decisions, six sticky `always_approve`/`always_reject` decisions, and two prompt-derived dynamic
 persistence decisions. Eight Python reject decisions provide a custom `rejection_message`, with
 seven literal or literal-bound messages and one dynamic binding. TypeScript local fixtures cover the
-same `state.reject(..., { message })` metadata shape, but the current pinned TypeScript corpus has no
-custom-message reject call whose run-state receiver is source-proven.
+same `state.reject(..., { message })` metadata shape, and the pinned OpenAI Agents JS
+`computer-use-hitl.ts` example now proves template custom-message rejects through the
+`runWithHitl(agent, ...)` helper.
 OpenAI Agents JS run-state approval decisions now also retain env-backed bypass provenance: braced
 `RunState.approve(...)` branches guarded by a same-file confirmation helper with an env-backed
 true-return path record `approval_bypass_environment_names`, while corresponding reject branches
-and reassigned guard variables remain unannotated. The pinned OpenAI Agents JS corpus now has 10
-exact run-state approval or rejection decision controls overall, including two env-backed approve
-branches in the HITL examples; local regression fixtures add boolean-binding, direct-call, reject,
-and reassigned-guard coverage.
+and reassigned guard variables remain unannotated. The pinned OpenAI Agents JS corpus now has 14
+exact run-state approval or rejection decision controls overall, including four helper-parameter
+controls from the computer-use HITL example, four env-backed approve branches, and two template
+custom-rejection messages; local regression fixtures add boolean-binding, direct-call, reject,
+reassigned-guard, lexical helper-call, and unproven-helper negative coverage.
 
 The Python frontend inventories 449 canonical/import/callable-aliased and proven-`Path` mutations:
 179 creates, 191 deletes, 46 copies, and 33 moves. Of these, 434 use non-literal path expressions;
@@ -1067,7 +1069,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 729-label rule truth set and 2,032-label IR component/relationship set are curated regression
+The 729-label rule truth set and 2,038-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

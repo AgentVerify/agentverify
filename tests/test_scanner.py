@@ -2936,16 +2936,12 @@ def test_python_computer_tool_has_exact_agent_and_capability_identity() -> None:
         component.attributes["execution_environment"] == "local" for component in capabilities
     )
     assert not any(edge.evidence.path == "unrelated.py" for edge in capability_edges)
-    safety_findings = [
-        finding for finding in ir.findings if finding.rule_id == "AV-APPROVAL011"
-    ]
+    safety_findings = [finding for finding in ir.findings if finding.rule_id == "AV-APPROVAL011"]
     assert [(finding.evidence.line, finding.analysis["tool"]) for finding in safety_findings] == [
         (19, "ComputerTool@19"),
         (24, "ComputerTool@24"),
     ]
-    assert {
-        finding.analysis["safety_check_resolution"] for finding in safety_findings
-    } == {
+    assert {finding.analysis["safety_check_resolution"] for finding in safety_findings} == {
         "inline-lambda",
         "same-file-callback",
     }
@@ -3827,16 +3823,9 @@ def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> Non
 def test_typescript_openai_computer_safety_check_auto_acknowledgement() -> None:
     ir = scan_repository(ROOT / "cases/typescript_openai_computer_safety")
 
-    tools = {
-        component.name: component
-        for component in ir.components
-        if component.kind == "tool"
-    }
+    tools = {component.name: component for component in ir.components if component.kind == "tool"}
     assert tools["browser"].attributes["safety_check_policy"] == "auto-acknowledge-all"
-    assert (
-        tools["browser"].attributes["safety_check_decision"]
-        == "returns-pendingSafetyChecks"
-    )
+    assert tools["browser"].attributes["safety_check_decision"] == "returns-pendingSafetyChecks"
     assert (
         tools["browser"].attributes["safety_check_acknowledgement_field"]
         == "acknowledgedSafetyChecks"
@@ -3845,18 +3834,12 @@ def test_typescript_openai_computer_safety_check_auto_acknowledgement() -> None:
     assert tools["blindBrowser"].attributes["safety_check_decision"] == "return-true"
     assert tools["reviewedBrowser"].attributes["safety_check_handler"] == "configured"
     assert tools["reviewedBrowser"].attributes["safety_check_policy"] == "unresolved"
-    assert (
-        tools["snakeCaseBrowser"].attributes["safety_check_policy"]
-        == "auto-acknowledge-all"
-    )
+    assert tools["snakeCaseBrowser"].attributes["safety_check_policy"] == "auto-acknowledge-all"
     assert (
         tools["snakeCaseBrowser"].attributes["safety_check_acknowledgement_field"]
         == "acknowledged_safety_checks"
     )
-    assert (
-        tools["expressionBrowser"].attributes["safety_check_policy"]
-        == "auto-acknowledge-all"
-    )
+    assert tools["expressionBrowser"].attributes["safety_check_policy"] == "auto-acknowledge-all"
     assert (
         tools["expressionBrowser"].attributes["safety_check_acknowledgement_field"]
         == "acknowledgedSafetyChecks"
@@ -3873,8 +3856,7 @@ def test_typescript_openai_computer_safety_check_auto_acknowledgement() -> None:
         "auto-acknowledge-all"
     }
     assert all(
-        finding.ir_path[-2:]
-        == (f"tool:{finding.analysis['tool']}", "capability:computer-control")
+        finding.ir_path[-2:] == (f"tool:{finding.analysis['tool']}", "capability:computer-control")
         for finding in findings
     )
 
@@ -3953,21 +3935,28 @@ def test_typescript_openai_sandbox_agent_capabilities_require_exact_import() -> 
         and component.attributes["execution_environment"] == "sdk-sandbox"
         for component in agents.values()
     )
-    assert agents[("positive.ts", 15, "Aliased Sandbox Assistant")].attributes[
-        "local_constructor"
-    ] == "AliasedSandboxAgent"
-    assert agents[("positive.ts", 23, "buildReturnedSandboxAgent")].attributes[
-        "binding"
-    ] == "return-new"
-    assert agents[("positive.ts", 23, "buildReturnedSandboxAgent")].attributes[
-        "helper"
-    ] == "buildReturnedSandboxAgent"
-    assert agents[
-        ("positive.ts", 30, "Returned Named Sandbox Assistant")
-    ].attributes["local_constructor"] == "AliasedSandboxAgent"
-    assert agents[
-        ("positive.ts", 30, "Returned Named Sandbox Assistant")
-    ].attributes["binding"] == "return-new"
+    assert (
+        agents[("positive.ts", 15, "Aliased Sandbox Assistant")].attributes["local_constructor"]
+        == "AliasedSandboxAgent"
+    )
+    assert (
+        agents[("positive.ts", 23, "buildReturnedSandboxAgent")].attributes["binding"]
+        == "return-new"
+    )
+    assert (
+        agents[("positive.ts", 23, "buildReturnedSandboxAgent")].attributes["helper"]
+        == "buildReturnedSandboxAgent"
+    )
+    assert (
+        agents[("positive.ts", 30, "Returned Named Sandbox Assistant")].attributes[
+            "local_constructor"
+        ]
+        == "AliasedSandboxAgent"
+    )
+    assert (
+        agents[("positive.ts", 30, "Returned Named Sandbox Assistant")].attributes["binding"]
+        == "return-new"
+    )
 
     tools = {
         (component.evidence.path, component.evidence.line, component.name): component
@@ -3994,24 +3983,28 @@ def test_typescript_openai_sandbox_agent_capabilities_require_exact_import() -> 
         for key, component in tools.items()
         if key[2].startswith("shell@")
     )
-    assert tools[("positive.ts", 12, "filesystem@12")].attributes[
-        "execution_environment"
-    ] == "sdk-sandbox"
-    assert tools[("positive.ts", 12, "filesystem@12")].attributes[
-        "sandbox_policy"
-    ] == "openai-agents-sdk-sandbox"
-    assert tools[("positive.ts", 25, "memory@25")].attributes[
-        "execution_environment"
-    ] == "sdk-sandbox"
-    assert tools[("positive.ts", 25, "memory@25")].attributes[
-        "sandbox_policy"
-    ] == "openai-agents-sdk-sandbox"
-    assert tools[("positive.ts", 12, "skills@12")].attributes[
-        "execution_environment"
-    ] == "sdk-sandbox"
-    assert tools[("positive.ts", 12, "skills@12")].attributes[
-        "sandbox_policy"
-    ] == "openai-agents-sdk-sandbox"
+    assert (
+        tools[("positive.ts", 12, "filesystem@12")].attributes["execution_environment"]
+        == "sdk-sandbox"
+    )
+    assert (
+        tools[("positive.ts", 12, "filesystem@12")].attributes["sandbox_policy"]
+        == "openai-agents-sdk-sandbox"
+    )
+    assert (
+        tools[("positive.ts", 25, "memory@25")].attributes["execution_environment"] == "sdk-sandbox"
+    )
+    assert (
+        tools[("positive.ts", 25, "memory@25")].attributes["sandbox_policy"]
+        == "openai-agents-sdk-sandbox"
+    )
+    assert (
+        tools[("positive.ts", 12, "skills@12")].attributes["execution_environment"] == "sdk-sandbox"
+    )
+    assert (
+        tools[("positive.ts", 12, "skills@12")].attributes["sandbox_policy"]
+        == "openai-agents-sdk-sandbox"
+    )
 
     capabilities = {
         (
@@ -4298,33 +4291,37 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         ("positive.ts", 150, "ts:positive.ts#control:exposedPortClient@150"),
         ("positive.ts", 156, "ts:positive.ts#control:snapshotClient@156"),
     }
-    assert controls[
-        ("positive.ts", 12, "ts:positive.ts#control:directClient@12")
-    ].attributes["sandbox_runtime"] == "unix-local"
-    assert controls[
-        ("positive.ts", 21, "ts:positive.ts#control:dockerClient@21")
-    ].attributes["sandbox_runtime"] == "docker-local"
-    assert controls[
-        ("positive.ts", 36, "ts:positive.ts#control:sandbox-runtime@36")
-    ].attributes["sandbox_runtime"] == "unix-local"
-    assert controls[
-        ("positive.ts", 39, "ts:positive.ts#control:client@39")
-    ].attributes["sandbox_runtime"] == "unix-local"
-    conditional = controls[
-        ("positive.ts", 49, "ts:positive.ts#control:conditionalClient@49")
-    ]
-    extension = controls[
-        ("positive.ts", 76, "ts:positive.ts#control:extensionClient@76")
-    ]
-    inline_created = controls[
-        ("positive.ts", 87, "ts:positive.ts#control:inlineCreatedSession@87")
-    ]
+    assert (
+        controls[("positive.ts", 12, "ts:positive.ts#control:directClient@12")].attributes[
+            "sandbox_runtime"
+        ]
+        == "unix-local"
+    )
+    assert (
+        controls[("positive.ts", 21, "ts:positive.ts#control:dockerClient@21")].attributes[
+            "sandbox_runtime"
+        ]
+        == "docker-local"
+    )
+    assert (
+        controls[("positive.ts", 36, "ts:positive.ts#control:sandbox-runtime@36")].attributes[
+            "sandbox_runtime"
+        ]
+        == "unix-local"
+    )
+    assert (
+        controls[("positive.ts", 39, "ts:positive.ts#control:client@39")].attributes[
+            "sandbox_runtime"
+        ]
+        == "unix-local"
+    )
+    conditional = controls[("positive.ts", 49, "ts:positive.ts#control:conditionalClient@49")]
+    extension = controls[("positive.ts", 76, "ts:positive.ts#control:extensionClient@76")]
+    inline_created = controls[("positive.ts", 87, "ts:positive.ts#control:inlineCreatedSession@87")]
     exposed_port_runtime = controls[
         ("positive.ts", 150, "ts:positive.ts#control:exposedPortClient@150")
     ]
-    snapshot_runtime = controls[
-        ("positive.ts", 156, "ts:positive.ts#control:snapshotClient@156")
-    ]
+    snapshot_runtime = controls[("positive.ts", 156, "ts:positive.ts#control:snapshotClient@156")]
     assert conditional.attributes["sandbox_runtime"] == "conditional-local"
     assert conditional.attributes["sandbox_runtime_options"] == ["docker-local", "unix-local"]
     assert conditional.attributes["constructors"] == [
@@ -4351,8 +4348,7 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     assert (
         conditional.attributes["analysis"] == "typescript-openai-sandbox-local-client"
         and conditional.attributes["module"] == "@openai/agents/sandbox/local"
-        and conditional.attributes["resolution"]
-        == "exact-openai-sandbox-local-conditional-import"
+        and conditional.attributes["resolution"] == "exact-openai-sandbox-local-conditional-import"
         and conditional.attributes["execution_environment"] == "sdk-sandbox"
         and conditional.attributes["sandbox_policy"] == "openai-agents-sdk-sandbox"
     )
@@ -4835,20 +4831,26 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         "entry_factory": "file",
         "content_present": True,
     }
-    assert manifest_entries[
-        (
-            "positive.ts",
-            279,
-            "ts:positive.ts#control:manifestReturn@277.entry0.ambiguous-a.md@279",
-        )
-    ].attributes["entry_name"] == "ambiguous-a.md"
-    assert manifest_entries[
-        (
-            "positive.ts",
-            285,
-            "ts:positive.ts#control:manifestReturn@283.entry0.ambiguous-b.md@285",
-        )
-    ].attributes["entry_name"] == "ambiguous-b.md"
+    assert (
+        manifest_entries[
+            (
+                "positive.ts",
+                279,
+                "ts:positive.ts#control:manifestReturn@277.entry0.ambiguous-a.md@279",
+            )
+        ].attributes["entry_name"]
+        == "ambiguous-a.md"
+    )
+    assert (
+        manifest_entries[
+            (
+                "positive.ts",
+                285,
+                "ts:positive.ts#control:manifestReturn@283.entry0.ambiguous-b.md@285",
+            )
+        ].attributes["entry_name"]
+        == "ambiguous-b.md"
+    )
 
     manifest_environment = {
         (component.evidence.path, component.evidence.line, component.symbol_id): component
@@ -5337,13 +5339,13 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
             "ts:positive.ts#control:client@39",
             "session-shorthand",
         ),
-            (
-                "Limited Concurrency Sandbox",
-                "positive.ts",
-                189,
-                "ts:positive.ts#control:directClient@12",
-                "client",
-            ),
+        (
+            "Limited Concurrency Sandbox",
+            "positive.ts",
+            189,
+            "ts:positive.ts#control:directClient@12",
+            "client",
+        ),
         (
             "Workdir Sandbox",
             "positive.ts",
@@ -5369,8 +5371,7 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     as_tool_edges = [
         edge
         for edge in ir.relationships
-        if edge.source_name == "asTool Runtime Sandbox"
-        and edge.target_name == "sandbox-runtime"
+        if edge.source_name == "asTool Runtime Sandbox" and edge.target_name == "sandbox-runtime"
     ]
     assert len(as_tool_edges) == 1
     assert as_tool_edges[0].attributes["configuration"] == "asTool-runConfig"
@@ -5479,7 +5480,9 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         "state_scope": "openai-previous-response-continuity",
         "scope": "production",
     }
-    assert continuity_controls[("positive.ts", 29, "ts:positive.ts#control:messages.history@29")].attributes == {
+    assert continuity_controls[
+        ("positive.ts", 29, "ts:positive.ts#control:messages.history@29")
+    ].attributes == {
         "analysis": "typescript-openai-agents-history-continuity",
         "module": "@openai/agents",
         "configuration": "run.history",
@@ -5529,7 +5532,9 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         "scope": "production",
         "state_binding": "inline-result-state",
     }
-    assert continuity_controls[("positive.ts", 45, "ts:positive.ts#control:resumeState.state@45")].attributes == {
+    assert continuity_controls[
+        ("positive.ts", 45, "ts:positive.ts#control:resumeState.state@45")
+    ].attributes == {
         "analysis": "typescript-openai-agents-run-state-continuity",
         "module": "@openai/agents",
         "configuration": "run.state",
@@ -5568,9 +5573,12 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         "state_scope": "openai-run-state-continuity",
         "scope": "production",
     }
-    assert continuity_controls[
-        ("positive.ts", 79, "ts:positive.ts#control:messageState.state@79")
-    ].attributes["state_binding"] == "messageState"
+    assert (
+        continuity_controls[
+            ("positive.ts", 79, "ts:positive.ts#control:messageState.state@79")
+        ].attributes["state_binding"]
+        == "messageState"
+    )
 
     approval_decision_controls = {
         (component.evidence.path, component.evidence.line, component.symbol_id): component
@@ -5603,39 +5611,72 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         "state_scope": "openai-run-state-approval-decision",
         "scope": "production",
     }
-    assert approval_decision_controls[
-        ("positive.ts", 52, "ts:positive.ts#control:approvalState.reject@52")
-    ].attributes["decision"] == "reject"
-    assert approval_decision_controls[
-        ("positive.ts", 58, "ts:positive.ts#control:inlineApproval.state.approve@58")
-    ].attributes["state_binding"] == "inline-result-state"
-    assert approval_decision_controls[
-        ("positive.ts", 59, "ts:positive.ts#control:inlineApproval.state.reject@59")
-    ].attributes["configuration"] == "run.state.reject"
-    assert approval_decision_controls[
-        ("positive.ts", 71, "ts:positive.ts#control:persistedState.approve@71")
-    ].attributes["result_binding"] == "persistedApproval"
-    assert approval_decision_controls[
-        ("positive.ts", 72, "ts:positive.ts#control:persistedState.reject@72")
-    ].attributes["state_binding"] == "persistedState"
-    assert approval_decision_controls[
-        ("positive.ts", 81, "ts:positive.ts#control:messageState.reject@81")
-    ].attributes["rejection_message_source"] == "literal"
-    assert approval_decision_controls[
-        ("positive.ts", 82, "ts:positive.ts#control:messageState.reject@82")
-    ].attributes["rejection_message_binding"] == "rejectionText"
-    assert approval_decision_controls[
-        ("positive.ts", 82, "ts:positive.ts#control:messageState.reject@82")
-    ].attributes["rejection_message_source"] == "literal-binding"
-    assert approval_decision_controls[
-        ("positive.ts", 83, "ts:positive.ts#control:messageState.reject@83")
-    ].attributes["rejection_message_source"] == "template"
-    assert approval_decision_controls[
-        ("positive.ts", 84, "ts:positive.ts#control:messageState.reject@84")
-    ].attributes["rejection_message_binding"] == "runtimeRejectionText"
-    assert approval_decision_controls[
-        ("positive.ts", 84, "ts:positive.ts#control:messageState.reject@84")
-    ].attributes["rejection_message_source"] == "dynamic"
+    assert (
+        approval_decision_controls[
+            ("positive.ts", 52, "ts:positive.ts#control:approvalState.reject@52")
+        ].attributes["decision"]
+        == "reject"
+    )
+    assert (
+        approval_decision_controls[
+            ("positive.ts", 58, "ts:positive.ts#control:inlineApproval.state.approve@58")
+        ].attributes["state_binding"]
+        == "inline-result-state"
+    )
+    assert (
+        approval_decision_controls[
+            ("positive.ts", 59, "ts:positive.ts#control:inlineApproval.state.reject@59")
+        ].attributes["configuration"]
+        == "run.state.reject"
+    )
+    assert (
+        approval_decision_controls[
+            ("positive.ts", 71, "ts:positive.ts#control:persistedState.approve@71")
+        ].attributes["result_binding"]
+        == "persistedApproval"
+    )
+    assert (
+        approval_decision_controls[
+            ("positive.ts", 72, "ts:positive.ts#control:persistedState.reject@72")
+        ].attributes["state_binding"]
+        == "persistedState"
+    )
+    assert (
+        approval_decision_controls[
+            ("positive.ts", 81, "ts:positive.ts#control:messageState.reject@81")
+        ].attributes["rejection_message_source"]
+        == "literal"
+    )
+    assert (
+        approval_decision_controls[
+            ("positive.ts", 82, "ts:positive.ts#control:messageState.reject@82")
+        ].attributes["rejection_message_binding"]
+        == "rejectionText"
+    )
+    assert (
+        approval_decision_controls[
+            ("positive.ts", 82, "ts:positive.ts#control:messageState.reject@82")
+        ].attributes["rejection_message_source"]
+        == "literal-binding"
+    )
+    assert (
+        approval_decision_controls[
+            ("positive.ts", 83, "ts:positive.ts#control:messageState.reject@83")
+        ].attributes["rejection_message_source"]
+        == "template"
+    )
+    assert (
+        approval_decision_controls[
+            ("positive.ts", 84, "ts:positive.ts#control:messageState.reject@84")
+        ].attributes["rejection_message_binding"]
+        == "runtimeRejectionText"
+    )
+    assert (
+        approval_decision_controls[
+            ("positive.ts", 84, "ts:positive.ts#control:messageState.reject@84")
+        ].attributes["rejection_message_source"]
+        == "dynamic"
+    )
 
     edges = {
         (
@@ -5945,15 +5986,9 @@ def test_typescript_openai_approval_decision_records_env_backed_approval_branch(
         if component.kind == "control" and component.name == "approval-decision"
     }
     assert set(controls) == {22, 24, 31, 40}
-    assert controls[22].attributes["approval_bypass_environment_names"] == [
-        "AUTO_APPROVE_HITL"
-    ]
-    assert controls[22].attributes["approval_bypass_resolution"] == (
-        "braced-if-condition-callback"
-    )
-    assert controls[31].attributes["approval_bypass_environment_names"] == [
-        "AUTO_APPROVE_HITL"
-    ]
+    assert controls[22].attributes["approval_bypass_environment_names"] == ["AUTO_APPROVE_HITL"]
+    assert controls[22].attributes["approval_bypass_resolution"] == ("braced-if-condition-callback")
+    assert controls[31].attributes["approval_bypass_environment_names"] == ["AUTO_APPROVE_HITL"]
     assert controls[31].attributes["state_binding"] == "inline-result-state"
     assert "approval_bypass_environment_names" not in controls[24].attributes
     assert controls[24].attributes["decision"] == "reject"
@@ -5967,14 +6002,91 @@ def test_typescript_openai_approval_decision_records_env_backed_approval_branch(
         and relationship.target_kind == "control"
         and relationship.target_name == "approval-decision"
     }
-    assert governed_edges[22]["approval_bypass_environment_names"] == [
-        "AUTO_APPROVE_HITL"
-    ]
-    assert governed_edges[31]["approval_bypass_resolution"] == (
-        "braced-if-condition-callback"
-    )
+    assert governed_edges[22]["approval_bypass_environment_names"] == ["AUTO_APPROVE_HITL"]
+    assert governed_edges[31]["approval_bypass_resolution"] == ("braced-if-condition-callback")
     assert "approval_bypass_environment_names" not in governed_edges[24]
     assert "approval_bypass_environment_names" not in governed_edges[40]
+
+
+def test_typescript_openai_helper_hitl_resolves_lexical_agent_call_sites() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_openai_helper_hitl")
+
+    controls = {
+        (component.evidence.path, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control" and component.name == "approval-decision"
+    }
+    assert set(controls) == {
+        ("positive.ts", "ts:positive.ts#control:runWithHitl.state.reject@17:call5"),
+        ("positive.ts", "ts:positive.ts#control:runWithHitl.state.reject@17:call10"),
+    }
+    assert controls[
+        ("positive.ts", "ts:positive.ts#control:runWithHitl.state.reject@17:call5")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-run-state-approval-decision",
+        "module": "@openai/agents",
+        "configuration": "run.state.reject",
+        "result_binding": "runWithHitl.result:call5",
+        "state_binding": "runWithHitl.state:call5",
+        "decision": "reject",
+        "source_agent": "First helper agent",
+        "source_agent_id": "ts:positive.ts#agent:agent@4",
+        "state_scope": "openai-run-state-approval-decision",
+        "scope": "production",
+        "rejection_message": "custom",
+        "rejection_message_source": "template",
+        "resolution": "same-file-helper-parameter-run-state",
+        "helper": "runWithHitl",
+        "helper_call_line": 5,
+        "helper_decision_line": 17,
+        "agent_argument": "agent",
+    }
+    assert (
+        controls[
+            ("positive.ts", "ts:positive.ts#control:runWithHitl.state.reject@17:call10")
+        ].attributes["source_agent_id"]
+        == "ts:positive.ts#agent:agent@9"
+    )
+    assert (
+        controls[
+            ("positive.ts", "ts:positive.ts#control:runWithHitl.state.reject@17:call10")
+        ].attributes["helper_call_line"]
+        == 10
+    )
+
+    edges = {
+        (
+            relationship.source_name,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            relationship.target_id,
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "governed-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "approval-decision"
+    }
+    assert edges == {
+        (
+            "First helper agent",
+            "positive.ts",
+            17,
+            "ts:positive.ts#control:runWithHitl.state.reject@17:call5",
+        ),
+        (
+            "Second helper agent",
+            "positive.ts",
+            17,
+            "ts:positive.ts#control:runWithHitl.state.reject@17:call10",
+        ),
+    }
+    assert not any(
+        component.evidence.path == "negative.ts"
+        and component.kind == "control"
+        and component.name == "approval-decision"
+        for component in ir.components
+    )
 
 
 def test_cline_inline_tool_links_only_dynamic_bun_shell_execution() -> None:

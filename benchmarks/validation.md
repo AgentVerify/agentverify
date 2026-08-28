@@ -717,6 +717,12 @@ pinned [local shell example](https://github.com/openai/openai-agents-js/blob/0b9
 Literal true creates a control; false and the SDK default remain disabled, while callback results are
 unresolved. Hosted container shell factories are identified separately and do not trigger the local
 approval review.
+OpenAI Agents JS helper-parameter HITL decisions now resolve only through non-exported same-file
+async helpers whose first parameter is typed as the exact SDK `Agent` import and whose body proves
+`run(agentParam, ...) -> result.state -> state.approve/reject`. The pinned
+[`computer-use-hitl.ts` helper](https://github.com/openai/openai-agents-js/blob/0b944370c6fe019ac5b08364ca013826cd7d0668/examples/tools/computer-use-hitl.ts#L201-L220)
+now yields separate controls for its two `runWithHitl(agent, ...)` call sites, preserving
+`AUTO_APPROVE_HITL` approval-bypass metadata and template custom-rejection-message provenance.
 
 For Python, files importing the OpenAI Agents SDK now inventory `ShellTool`, `ApplyPatchTool`,
 `ComputerTool`, and `CustomTool` instances with line-scoped identities. `ComputerTool` produces a
@@ -1689,12 +1695,13 @@ pin package/version/auto-install facts across JSON, Python constructors, Python 
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
 negatives. Five Python OpenAI run-state approval-decision persistence labels pin literal sticky,
 stable boolean, per-call, and prompt-derived dynamic `always_approve`/`always_reject` metadata.
-Nine OpenAI run-state rejection-message labels pin Python literal, literal-binding, template, and
-dynamic `rejection_message` metadata plus the TypeScript `{ message }` reject-options equivalent.
-All 2,032 IR labels pass (1,518 positives and 514 negatives). The checked
+Fifteen OpenAI run-state rejection-message and helper-parameter labels pin Python literal,
+literal-binding, template, and dynamic `rejection_message` metadata, the TypeScript `{ message }`
+reject-options equivalent, and exact same-file helper-call provenance.
+All 2,038 IR labels pass (1,522 positives and 516 negatives). The checked
 `benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
 breakdown, including the OpenAI Agents JS and Python safety-check labels added for
 `computerTool({ onSafetyCheck })` and `ComputerTool(on_safety_check=...)`, plus OpenAI Agents JS
-run-state approval-decision labels for Python state approve/reject handling, persistence, and custom
-rejection messages, JS env-backed approve branches, TypeScript local reject-message metadata, and
-clean reject/reassigned near misses.
+run-state approval-decision labels for JS and Python state approve/reject handling, persistence,
+custom rejection messages, JS env-backed approve branches, TypeScript local/helper reject-message
+metadata, and clean reject/reassigned near misses.

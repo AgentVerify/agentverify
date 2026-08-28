@@ -24,10 +24,8 @@
 - Continue OpenAI Agents JS HITL and safety-governance extraction where evidence remains exact:
   richer `needsApproval` predicate quality, automatic approval bypasses, and `computerTool`
   `onSafetyCheck` callbacks that distinguish explicit user/policy review from pass-through
-  acknowledgement. A narrow helper-parameter state model may be worthwhile: the real
-  `examples/tools/computer-use-hitl.ts` custom rejection message is inside `runWithHitl(agent, ...)`,
-  but current TypeScript run-state proof intentionally does not infer SDK state from arbitrary
-  helper parameters.
+  acknowledgement, plus direct resume/continuity relationships for same-file helper state flows
+  only when they can stay call-site and source-agent exact.
 - Continue OpenAI Agents Python safety-governance extraction where evidence remains exact: callbacks
   that distinguish explicit user/policy review from unconditional acknowledgement, and production
   sticky-approval defaults that can be separated from prompt-selected `always_approve`/
@@ -56,15 +54,16 @@
   in a caller-owned variable across repeated helper calls, but the current same-block scanner should
   not infer that without a narrowly validated function/call-state model.
 - Explore the remaining OpenAI Agents JS HITL approval-state gaps only if they can stay exact:
-  compound callback predicate quality, automatic approval bypasses, and any more complex serialized
-  state flows beyond same-file literal `writeFile`/`readFile` or direct `.toString()` chains. Direct
-  `result.state`, bound-state, and narrowly restored `RunState.fromString` approval decisions are
-  now inventoried as `approval-decision` controls; generic tools, delegated-agent adapters, and
-  approval-capable builtin tools now distinguish literal approval from callback-controlled
-  `needsApproval`, and the first shallow literal predicate metadata is now recorded for
-  prefix/contains/literal-set checks. `computerTool({ onSafetyCheck })` pass-through callbacks now
-  report as `AV-APPROVAL011`, but AgentVerify still does not claim full approval or safety quality
-  without broader predicate/action evidence.
+  compound callback predicate quality, automatic approval bypasses, direct helper-derived resume
+  relationships, and any more complex serialized state flows beyond same-file literal
+  `writeFile`/`readFile` or direct `.toString()` chains. Direct `result.state`, bound-state,
+  narrowly restored `RunState.fromString`, and non-exported async helper-parameter approval
+  decisions are now inventoried as `approval-decision` controls; generic tools, delegated-agent
+  adapters, and approval-capable builtin tools now distinguish literal approval from
+  callback-controlled `needsApproval`, and the first shallow literal predicate metadata is now
+  recorded for prefix/contains/literal-set checks. `computerTool({ onSafetyCheck })` pass-through
+  callbacks now report as `AV-APPROVAL011`, but AgentVerify still does not claim full approval or
+  safety quality without broader predicate/action evidence.
 
 ## Deferred until access/authorization
 
