@@ -720,3 +720,19 @@
   run site, alongside its conversation, sandbox, tracing, and approval evidence.
 - Revisit when: Runner constructor defaults, exported Runner factories, or inherited run options
   can be linked to exact source-agent identity without broad receiver/name matching.
+
+## OpenAI Agents JS Agent toolChoice is source-agent model-settings policy
+
+- Decision: Represent exact TypeScript OpenAI Agents SDK
+  `new Agent({ modelSettings: { toolChoice: <literal> } })` configuration as a
+  `tool-choice-policy` control on that source agent. Accept direct literal strings and earlier
+  immutable module-level literal bindings; keep mutable or nonliteral values unresolved.
+- Evidence: The local structured-tools fixture proves a literal `required` tool-choice setting on
+  the worker agent and keeps a mutable `toolChoice` binding negative. The pinned OpenAI Agents JS
+  docs forcing-tool-use example sets `toolChoice: 'required'`, while the programmatic tool-calling
+  example sets `toolChoice: 'programmatic_tool_calling'`.
+- Alternative: Fold tool choice into generic model/provider metadata. Rejected because tool-choice
+  policy changes whether/how the model may invoke tools and should be reviewable next to approval,
+  tool reachability, and local execution controls.
+- Revisit when: Runner-level `modelSettings.toolChoice`, run-level overrides, or exported agent
+  factories can be tied to exact source-agent identity without broad constructor/name matching.

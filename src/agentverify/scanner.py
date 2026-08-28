@@ -17144,6 +17144,44 @@ def add_typescript_openai_run_turn_limit_control(
     return "agent-turn-limit", control_id
 
 
+def add_typescript_openai_agent_tool_choice_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    source_agent: tuple[str, str],
+    tool_choice: str,
+    tool_choice_resolution: str,
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS Agent modelSettings.toolChoice evidence."""
+    source_agent_name, source_agent_id = source_agent
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "tool-choice-policy",
+            Evidence(relative, line, excerpt(lines, line)),
+            {
+                "analysis": "typescript-openai-agents-agent-tool-choice",
+                "module": "@openai/agents",
+                "constructor": "Agent",
+                "imported_symbol": "Agent",
+                "configuration": "Agent.modelSettings.toolChoice",
+                "tool_choice": tool_choice,
+                "tool_choice_resolution": tool_choice_resolution,
+                "choice_scope": "agent-model-settings",
+                "source_agent": source_agent_name,
+                "source_agent_id": source_agent_id,
+                "scope": source_scope(relative),
+            },
+            control_id,
+        )
+    )
+    return "tool-choice-policy", control_id
+
+
 def add_typescript_openai_as_tool_model_override_control(
     ir: RepositoryIR,
     *,
@@ -20321,6 +20359,9 @@ def typescript_graph(
     helper_return_agents: dict[str, tuple[str, str, int]] = {}
     assigned_agents: dict[str, list[tuple[int, int, str, str]]] = defaultdict(list)
     agent_bodies: list[tuple[re.Match[str], int, str, str, str, str]] = []
+    exact_openai_agent_import = openai_agents_imports.get(
+        "Agent"
+    ) == "Agent" and not typescript_import_binding_is_shadowed(text, "Agent")
     for match, constructor, constructor_local, variable_name, binding_kind in agent_matches:
         start_line = line_at(text, match.start())
         opening = code.find("(", match.start(), match.end())
@@ -20349,6 +20390,71 @@ def typescript_graph(
         if binding_kind == "return-new":
             attributes.update({"binding": "return-new", "helper": variable_name})
         ir.add_component(Component("agent", agent_name, ev, attributes, agent_id))
+        if constructor == "Agent" and exact_openai_agent_import:
+            model_settings_location = typescript_object_property_expression_location(
+                body,
+                "modelSettings",
+                opening + 1,
+            )
+            if model_settings_location is not None:
+                model_settings_expression, _, model_settings_expression_offset = (
+                    model_settings_location
+                )
+                tool_choice_location = typescript_object_property_expression_location(
+                    model_settings_expression,
+                    "toolChoice",
+                    model_settings_expression_offset,
+                )
+                if tool_choice_location is not None:
+                    (
+                        tool_choice_expression,
+                        tool_choice_property_offset,
+                        tool_choice_expression_offset,
+                    ) = tool_choice_location
+                    static_tool_choice = typescript_static_string_value(
+                        tool_choice_expression,
+                        expression_offset=tool_choice_expression_offset,
+                        immutable_literal_bindings=immutable_literal_bindings,
+                    )
+                    if static_tool_choice is not None:
+                        tool_choice, tool_choice_resolution = static_tool_choice
+                        tool_choice_line = line_at(text, tool_choice_property_offset)
+                        tool_choice_name, tool_choice_id = (
+                            add_typescript_openai_agent_tool_choice_control(
+                                ir,
+                                relative=relative,
+                                lines=lines,
+                                line=tool_choice_line,
+                                source_agent=(agent_name, agent_id),
+                                tool_choice=tool_choice,
+                                tool_choice_resolution=tool_choice_resolution,
+                                symbol_identity=(
+                                    f"{agent_identity}.toolChoice@{tool_choice_line}"
+                                ),
+                            )
+                        )
+                        ir.add_relationship(
+                            Relationship(
+                                "agent",
+                                agent_name,
+                                "configured-by",
+                                "control",
+                                tool_choice_name,
+                                Evidence(
+                                    relative,
+                                    tool_choice_line,
+                                    excerpt(lines, tool_choice_line),
+                                ),
+                                {
+                                    "analysis": "typescript-openai-agents-agent-tool-choice",
+                                    "configuration": "Agent-modelSettings-toolChoice",
+                                    "binding": "toolChoice",
+                                    "tool_choice": tool_choice,
+                                },
+                                source_id=agent_id,
+                                target_id=tool_choice_id,
+                            )
+                        )
         if binding_kind == "assignment":
             assigned_agents[variable_name].append(
                 (match.start(), match.end(), agent_name, agent_id)

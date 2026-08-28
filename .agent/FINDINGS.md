@@ -587,6 +587,12 @@
   and configured-by edges on source-proven agents. The pinned sandbox capability and hosted MCP
   human-in-the-loop examples contribute real direct-run and Runner-run turn-limit evidence, bringing
   the public IR truth set to 2,155 passing labels.
+- OpenAI Agents JS Agent-level `modelSettings.toolChoice` is now source-agent governance evidence.
+  Exact `new Agent({ modelSettings: { toolChoice: <literal> } })` settings now emit
+  `tool-choice-policy` controls and configured-by edges, while mutable local choices remain
+  unresolved. The pinned forcing-tool-use and programmatic tool-calling examples contribute
+  `required` and `programmatic_tool_calling` evidence, bringing the public IR truth set to 2,162
+  passing labels.
 
 ## Hypotheses
 

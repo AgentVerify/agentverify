@@ -647,6 +647,12 @@ catalog workflows.
   source-proven agents, while missing and nonliteral values stay unresolved. Focused run-turn labels
   pass 13/13, full public IR labels pass 2,155/2,155, and the full schema-v143 engine benchmark
   refresh passes 71/71 repositories with 2,825 relationships and 10,590 symbolized components.
+- Added exact OpenAI Agents JS Agent-level `modelSettings.toolChoice` inventory. Literal or
+  immutable module-level string `toolChoice` settings on exact imported `new Agent(...)`
+  configurations now emit `tool-choice-policy` controls on the source agent, while mutable
+  bindings stay unresolved. Focused Agent tool-choice labels pass 7/7, full public IR labels pass
+  2,162/2,162, and the full schema-v144 engine benchmark refresh passes 71/71 repositories with
+  2,836 relationships and 10,601 symbolized components.
 
 ## Current findings
 
@@ -756,11 +762,13 @@ catalog workflows.
   Runner-level workflow naming for source-proven `.run(agent, ...)` calls. Exact direct
   `run(agent, ..., { maxTurns })` and stable exact `runner.run(agent, ..., { maxTurns })` calls
   expose per-run execution bounds as `agent-turn-limit` controls on source-proven agents. Exact
-  imported `withTrace` callbacks containing
+  `new Agent({ modelSettings: { toolChoice } })` settings expose source-agent tool-choice policy as
+  `tool-choice-policy` controls. Exact imported `withTrace` callbacks containing
   source-proven SDK `run(agent, ...)` calls, exact Runner instances with source-proven
   `.run(agent, ...)` calls, and exact delegated-agent `asTool` adapters emit `trace-group`,
   `trace-id`, `tracing-disabled`, `agent-turn-limit`, `agent-model-override`, or
-  `trace-workflow` controls and configured-by edges.
+  `trace-workflow` controls and configured-by edges, while exact Agent settings emit
+  `tool-choice-policy` configured-by edges.
 
 ## Blockers
 
@@ -782,7 +790,8 @@ semantics distinct from trace-correlation `withTrace(..., { groupId/traceId })` 
 `asTool({ runOptions: { maxTurns } })`, `asTool({ runConfig: { model } })`, and
 `asTool({ runConfig: { workflowName } })`, plus stable
 `Runner({ workflowName })` runner-level workflow evidence and exact direct/stable Runner
-`run(..., { maxTurns })` per-run turn-limit evidence. For OpenAI
+`run(..., { maxTurns })` per-run turn-limit evidence, plus exact Agent
+`modelSettings.toolChoice` evidence. For OpenAI
 approval work, keep literal always-approval, callback-controlled
 approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
 approval metadata, literal predicate metadata, SDK state approval decisions, helper-parameter

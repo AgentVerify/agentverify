@@ -3813,6 +3813,69 @@ def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> Non
             },
         ),
     ]
+    tool_choice_controls = {
+        (
+            component.evidence.path,
+            component.evidence.line,
+            component.symbol_id,
+            tuple(sorted(component.attributes.items())),
+        )
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "tool-choice-policy"
+        and component.attributes.get("analysis")
+        == "typescript-openai-agents-agent-tool-choice"
+    }
+    assert tool_choice_controls == {
+        (
+            "agent.ts",
+            26,
+            "ts:agent.ts#control:worker.toolChoice@26",
+            (
+                ("analysis", "typescript-openai-agents-agent-tool-choice"),
+                ("choice_scope", "agent-model-settings"),
+                ("configuration", "Agent.modelSettings.toolChoice"),
+                ("constructor", "Agent"),
+                ("imported_symbol", "Agent"),
+                ("module", "@openai/agents"),
+                ("scope", "production"),
+                ("source_agent", "worker"),
+                ("source_agent_id", "ts:agent.ts#agent:worker"),
+                ("tool_choice", "required"),
+                ("tool_choice_resolution", "literal"),
+            ),
+        )
+    }
+    tool_choice_edges = {
+        (
+            relationship.source_name,
+            relationship.source_id,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            relationship.target_id,
+            tuple(sorted(relationship.attributes.items())),
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "configured-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "tool-choice-policy"
+    }
+    assert tool_choice_edges == {
+        (
+            "worker",
+            "ts:agent.ts#agent:worker",
+            "agent.ts",
+            26,
+            "ts:agent.ts#control:worker.toolChoice@26",
+            (
+                ("analysis", "typescript-openai-agents-agent-tool-choice"),
+                ("binding", "toolChoice"),
+                ("configuration", "Agent-modelSettings-toolChoice"),
+                ("tool_choice", "required"),
+            ),
+        )
+    }
     turn_limit_controls = {
         (
             component.evidence.path,
