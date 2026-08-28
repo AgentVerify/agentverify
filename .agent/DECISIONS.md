@@ -684,3 +684,21 @@
 - Revisit when: direct `run(..., { workflowName })`, Runner defaults, exported delegated-tool
   factories, or broader trace metadata can be linked to exact source-agent identity without broad
   config/name matching.
+
+## OpenAI Agents JS Runner workflow names are per-run trace workflow provenance
+
+- Decision: Represent exact TypeScript OpenAI Agents SDK stable
+  `new Runner({ workflowName: ... })` configuration as a `trace-workflow` control for each later
+  same-instance `.run(agent, ...)` call with source-proven agent identity. Accept direct literal
+  workflow names and earlier immutable module-level literal bindings, preserve the runner binding,
+  and do not emit when the Runner binding is reassigned or the workflow expression is nonliteral.
+- Evidence: The local conversation fixture reuses a stable `runner` across conversation, history,
+  and state-resume calls, producing distinct run-site workflow edges. The negative fixture rebinding
+  keeps a mutable Runner workflow name unresolved. The pinned OpenAI Agents JS Blaxel and Cloudflare
+  sandbox extension examples declare Runner workflow names and call `runner.run(...)` in both normal
+  and streaming branches.
+- Alternative: Collapse the Runner workflow to one component per constructor. Rejected because
+  existing Runner trace-group provenance is per exact run site, and policy review benefits from the
+  same callsite-level edge for workflow names.
+- Revisit when: direct `run(..., { workflowName })`, exported Runner factories, or inherited Runner
+  defaults can be linked to exact source-agent identity without broad receiver/name matching.

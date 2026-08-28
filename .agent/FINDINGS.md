@@ -575,6 +575,12 @@
   controls on the delegated agent with parent-agent, tool-name, and literal workflow-name
   provenance. The pinned sandbox agents-as-tools example contributes pricing and rollout reviewer
   workflow evidence, bringing the public IR truth set to 2,127 passing labels.
+- OpenAI Agents JS Runner configurations can also name trace workflows for later source-proven
+  runs. Stable exact `new Runner({ workflowName: ... })` instances now emit per-run
+  `trace-workflow` controls and configured-by edges when a later same-instance `.run(agent, ...)`
+  call supplies a source-proven agent; reassigned runners remain unresolved. The pinned Blaxel and
+  Cloudflare sandbox extension examples contribute normal and streaming branch evidence, bringing
+  the public IR truth set to 2,142 passing labels.
 
 ## Hypotheses
 

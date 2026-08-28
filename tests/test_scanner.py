@@ -5651,7 +5651,10 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         )
     }
     assert not any(
-        component.evidence.path == "negative.ts" and component.kind == "control"
+        component.evidence.path == "negative.ts"
+        and component.kind == "control"
+        and component.attributes.get("analysis")
+        != "typescript-openai-agents-runner-workflow-name"
         for component in ir.components
     )
     assert not any(
@@ -6001,6 +6004,36 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         "trace_scope": "openai-tracing",
         "source_agent": "Server Conversation Agent",
         "source_agent_id": "ts:positive.ts#agent:agent",
+        "scope": "production",
+    }
+    trace_workflow_controls = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "trace-workflow"
+        and component.attributes.get("analysis")
+        == "typescript-openai-agents-runner-workflow-name"
+    }
+    assert set(trace_workflow_controls) == {
+        ("positive.ts", 16, "ts:positive.ts#control:runner.workflowName@16:run18"),
+        ("positive.ts", 16, "ts:positive.ts#control:runner.workflowName@16:run36"),
+        ("positive.ts", 16, "ts:positive.ts#control:runner.workflowName@16:run46"),
+    }
+    assert trace_workflow_controls[
+        ("positive.ts", 16, "ts:positive.ts#control:runner.workflowName@16:run18")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-runner-workflow-name",
+        "module": "@openai/agents",
+        "constructor": "Runner",
+        "imported_symbol": "Runner",
+        "local_constructor": "Runner",
+        "configuration": "Runner.workflowName",
+        "runner_binding": "runner",
+        "workflow_name": "server-managed conversation example",
+        "workflow_name_resolution": "literal",
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "trace_scope": "openai-workflow",
         "scope": "production",
     }
 
@@ -6363,6 +6396,60 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
                 ("binding", "tracingDisabled"),
                 ("configuration", "Runner-tracingDisabled"),
                 ("runner_binding", "tracingDisabledRunner"),
+            ),
+        ),
+    }
+    trace_workflow_edges = {
+        (
+            relationship.source_name,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            relationship.target_id,
+            tuple(sorted(relationship.attributes.items())),
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "configured-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "trace-workflow"
+        and relationship.attributes.get("analysis")
+        == "typescript-openai-agents-runner-workflow-name"
+    }
+    assert trace_workflow_edges == {
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            18,
+            "ts:positive.ts#control:runner.workflowName@16:run18",
+            (
+                ("analysis", "typescript-openai-agents-runner-workflow-name"),
+                ("binding", "workflowName"),
+                ("configuration", "Runner-workflowName"),
+                ("runner_binding", "runner"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            36,
+            "ts:positive.ts#control:runner.workflowName@16:run36",
+            (
+                ("analysis", "typescript-openai-agents-runner-workflow-name"),
+                ("binding", "workflowName"),
+                ("configuration", "Runner-workflowName"),
+                ("runner_binding", "runner"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            46,
+            "ts:positive.ts#control:runner.workflowName@16:run46",
+            (
+                ("analysis", "typescript-openai-agents-runner-workflow-name"),
+                ("binding", "workflowName"),
+                ("configuration", "Runner-workflowName"),
+                ("runner_binding", "runner"),
             ),
         ),
     }

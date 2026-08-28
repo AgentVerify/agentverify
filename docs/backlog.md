@@ -505,7 +505,8 @@ exact delegated `agent.asTool({ runConfig: { tracingDisabled: true } })` executi
 adds exact delegated `agent.asTool({ runOptions: { maxTurns } })` execution-bound controls, and
 schema v140 adds exact delegated `agent.asTool({ runConfig: { model, modelSettings } })`
 model-override controls. Schema v141 adds exact delegated
-`agent.asTool({ runConfig: { workflowName } })` trace-workflow controls. AgentVerify emits distinct
+`agent.asTool({ runConfig: { workflowName } })` trace-workflow controls, and schema v142 adds exact
+stable `new Runner({ workflowName })` per-run trace-workflow controls. AgentVerify emits distinct
 `trace-group`, `trace-id`, `tracing-disabled`, `agent-turn-limit`, `agent-model-override`, and
 `trace-workflow` controls and configured-by edges without treating any trace identifier as
 conversation memory. The real `routing.ts` example links the triage agent to
@@ -515,7 +516,8 @@ its Runner-level group ID to the executed agent, SDK testing examples show Runne
 disablement, the sandbox agents-as-tools example shows delegated reviewer tracing disablement and
 eight-turn limits plus delegated workflow names, and the translator agents-as-tools example shows a
 three-turn delegated limit plus a delegated `gpt-5.4` model override with low reasoning/verbosity
-settings.
+settings. The Blaxel and Cloudflare sandbox extension examples show stable Runner workflow names
+for both normal and streaming branches.
 
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,

@@ -16971,6 +16971,48 @@ def add_typescript_openai_runner_tracing_disabled_control(
     return "tracing-disabled", control_id
 
 
+def add_typescript_openai_runner_workflow_name_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    local_constructor: str,
+    runner_binding: str,
+    workflow_name: str,
+    workflow_name_resolution: str,
+    source_agent: tuple[str, str],
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS Runner-level workflow-name evidence."""
+    source_agent_name, source_agent_id = source_agent
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "trace-workflow",
+            Evidence(relative, line, excerpt(lines, line)),
+            {
+                "analysis": "typescript-openai-agents-runner-workflow-name",
+                "module": "@openai/agents",
+                "constructor": "Runner",
+                "imported_symbol": "Runner",
+                "local_constructor": local_constructor,
+                "configuration": "Runner.workflowName",
+                "runner_binding": runner_binding,
+                "workflow_name": workflow_name,
+                "workflow_name_resolution": workflow_name_resolution,
+                "source_agent": source_agent_name,
+                "source_agent_id": source_agent_id,
+                "trace_scope": "openai-workflow",
+                "scope": source_scope(relative),
+            },
+            control_id,
+        )
+    )
+    return "trace-workflow", control_id
+
+
 def add_typescript_openai_as_tool_tracing_disabled_control(
     ir: RepositoryIR,
     *,
@@ -19947,6 +19989,7 @@ def typescript_graph(
         tuple[int, str, str | None, str | None, str],
     ] = {}
     runner_tracing_disabled_bindings: dict[str, tuple[int, str]] = {}
+    runner_workflow_name_bindings: dict[str, tuple[int, str, str, str]] = {}
     runner_imports = {
         local_name
         for local_name, imported_name in openai_agents_imports.items()
@@ -20129,6 +20172,28 @@ def typescript_graph(
                     runner_tracing_disabled_bindings[runner_name] = (
                         line_at(text, tracing_disabled_property_offset),
                         local_constructor,
+                    )
+            workflow_name_location = typescript_object_property_expression_location(
+                body,
+                "workflowName",
+                opening + 1,
+            )
+            if workflow_name_location is not None:
+                workflow_name_expression, workflow_name_property_offset, workflow_name_offset = (
+                    workflow_name_location
+                )
+                static_workflow_name = typescript_static_string_value(
+                    workflow_name_expression,
+                    expression_offset=workflow_name_offset,
+                    immutable_literal_bindings=immutable_literal_bindings,
+                )
+                if static_workflow_name is not None:
+                    workflow_name, workflow_name_resolution = static_workflow_name
+                    runner_workflow_name_bindings[runner_name] = (
+                        line_at(text, workflow_name_property_offset),
+                        local_constructor,
+                        workflow_name,
+                        workflow_name_resolution,
                     )
         sandbox_location = typescript_object_property_expression_location(
             body,
@@ -22337,6 +22402,49 @@ def typescript_graph(
                     },
                     source_id=source_agent_id,
                     target_id=tracing_control_id,
+                )
+            )
+        runner_workflow_name = runner_workflow_name_bindings.get(runner_name)
+        if runner_workflow_name is not None:
+            (
+                workflow_name_line,
+                local_constructor,
+                workflow_name,
+                workflow_name_resolution,
+            ) = runner_workflow_name
+            source_agent_name, source_agent_id = agent_target
+            workflow_control_name, workflow_control_id = (
+                add_typescript_openai_runner_workflow_name_control(
+                    ir,
+                    relative=relative,
+                    lines=lines,
+                    line=workflow_name_line,
+                    local_constructor=local_constructor,
+                    runner_binding=runner_name,
+                    workflow_name=workflow_name,
+                    workflow_name_resolution=workflow_name_resolution,
+                    source_agent=agent_target,
+                    symbol_identity=(
+                        f"{runner_name}.workflowName@{workflow_name_line}:run{run_line}"
+                    ),
+                )
+            )
+            ir.add_relationship(
+                Relationship(
+                    "agent",
+                    source_agent_name,
+                    "configured-by",
+                    "control",
+                    workflow_control_name,
+                    Evidence(relative, run_line, excerpt(lines, run_line)),
+                    {
+                        "analysis": "typescript-openai-agents-runner-workflow-name",
+                        "configuration": "Runner-workflowName",
+                        "binding": "workflowName",
+                        "runner_binding": runner_name,
+                    },
+                    source_id=source_agent_id,
+                    target_id=workflow_control_id,
                 )
             )
         if len(arguments) >= 2 and (
