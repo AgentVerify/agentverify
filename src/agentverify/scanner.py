@@ -12763,6 +12763,17 @@ class TypeScriptPathBoundaryHelper:
     boundary_scope: str
 
 
+@dataclass(frozen=True)
+class TypeScriptPathPrefixCheck:
+    name: str
+    evidence: Evidence
+    predicate_path: str
+    root_scope: str
+    candidate: str
+    root: str
+    strength: str
+
+
 def line_at(text: str, offset: int) -> int:
     return text.count("\n", 0, offset) + 1
 
@@ -15918,6 +15929,168 @@ def typescript_update_guarded_path_names(
         guarded_names[target] = sources[0]
     else:
         guarded_names.pop(target, None)
+
+
+def typescript_class_method_spans(
+    text: str,
+    class_definition: TypeScriptProviderClass,
+) -> list[tuple[str, int, int, int, tuple[TypeScriptHelperParameter, ...]]]:
+    """Return balanced instance method bodies for one TypeScript class."""
+    code = typescript_code_mask(text)
+    method_pattern = re.compile(
+        r"(?m)^[ \t]*(?:public\s+|private\s+|protected\s+)?"
+        r"(?:async\s+)?([A-Za-z_$][\w$]*)\s*\("
+    )
+    methods = []
+    for match in method_pattern.finditer(
+        code, class_definition.body_start, class_definition.body_end
+    ):
+        if match.group(1) in {"if", "for", "while", "switch", "catch", "function"}:
+            continue
+        opening = code.find("(", match.start(), match.end())
+        parameter_end = typescript_balanced_end(code, opening, "(", ")")
+        if parameter_end is None or parameter_end > class_definition.body_end:
+            continue
+        body_opening = code.find("{", parameter_end, min(parameter_end + 500, len(code)))
+        if body_opening < 0 or body_opening > class_definition.body_end:
+            continue
+        if code.find(";", parameter_end, body_opening) >= 0:
+            continue
+        body_end = typescript_balanced_end(code, body_opening, "{", "}")
+        if body_end is None or body_end > class_definition.body_end:
+            continue
+        methods.append(
+            (
+                match.group(1),
+                body_opening + 1,
+                body_end - 1,
+                line_at(text, match.start()),
+                typescript_function_parameters(text[opening + 1 : parameter_end - 1]),
+            )
+        )
+    return methods
+
+
+def typescript_same_class_path_prefix_helpers(
+    relative: str,
+    text: str,
+    lines: list[str],
+) -> dict[int, TypeScriptPathPrefixCheck]:
+    """Prove same-class weak string-prefix path checks returned by helper methods."""
+    code = typescript_code_mask(text)
+    checks_by_line: dict[int, TypeScriptPathPrefixCheck] = {}
+    for class_definition in typescript_provider_class_definitions(text):
+        methods = typescript_class_method_spans(text, class_definition)
+        method_counts = Counter(name for name, *_ in methods)
+        helper_checks: dict[str, TypeScriptPathPrefixCheck] = {}
+        class_body_code = code[class_definition.body_start : class_definition.body_end]
+        for name, body_start, body_end, _, parameters in methods:
+            if method_counts[name] != 1:
+                continue
+            ordinary_parameters = [
+                parameter.local_name for parameter in parameters if parameter.property_name is None
+            ]
+            if not ordinary_parameters:
+                continue
+            body = text[body_start:body_end]
+            body_code = typescript_code_mask(body)
+            assignment = re.search(
+                r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)"
+                r"(?:\s*:[^=]+)?\s*=\s*path\.resolve\s*\(([^;\n]+)\)",
+                body_code,
+            )
+            if assignment is None:
+                continue
+            candidate = assignment.group(1)
+            arguments = [
+                argument
+                for argument, _ in typescript_call_arguments(
+                    body[assignment.start(2) : assignment.end(2)]
+                )
+            ]
+            root = next(
+                (
+                    argument.strip()
+                    for argument in arguments
+                    if re.fullmatch(r"this\s*\.\s*[A-Za-z_$][\w$]*", argument.strip())
+                ),
+                None,
+            )
+            if root is None:
+                continue
+            if not any(
+                typescript_expression_names(argument) & set(ordinary_parameters)
+                for argument in arguments
+            ):
+                continue
+            root_pattern = re.escape(root)
+            rejection = re.search(
+                rf"\bif\s*\(\s*!\s*{re.escape(candidate)}"
+                rf"\.startsWith\s*\(\s*{root_pattern}\s*\)\s*\)"
+                r"\s*(?:\{[\s\S]{0,500}?\bthrow\b|\bthrow\b)",
+                body_code[assignment.end() :],
+            )
+            if rejection is None:
+                continue
+            if not re.search(rf"\breturn\s+{re.escape(candidate)}\s*;?", body_code):
+                continue
+            if re.search(
+                rf"\bthis\s*\.\s*{re.escape(name)}\s*=(?!=)",
+                class_body_code,
+            ):
+                continue
+            evidence_line = line_at(text, body_start + assignment.end() + rejection.start())
+            helper_checks[name] = TypeScriptPathPrefixCheck(
+                f"this.{name}",
+                Evidence(relative, evidence_line, excerpt(lines, evidence_line)),
+                relative,
+                "unresolved",
+                candidate,
+                re.sub(r"\s+", "", root),
+                "weak-prefix",
+            )
+        if not helper_checks:
+            continue
+        for _, body_start, body_end, _, _ in methods:
+            guarded_names: dict[str, TypeScriptPathPrefixCheck] = {}
+            start_line = line_at(text, body_start)
+            end_line = line_at(text, body_end)
+            for line_number in range(start_line, end_line + 1):
+                line = lines[line_number - 1]
+                code_line = typescript_code_mask(line)
+                assignment = re.search(
+                    r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)"
+                    r"(?:\s*:[^=]+)?\s*=\s*(?:await\s+)?this\s*\.\s*"
+                    r"([A-Za-z_$][\w$]*)\s*\(",
+                    code_line,
+                )
+                if assignment is not None:
+                    target, helper_name = assignment.groups()
+                    if helper_name in helper_checks:
+                        guarded_names[target] = helper_checks[helper_name]
+                    else:
+                        guarded_names.pop(target, None)
+                else:
+                    assigned = re.search(
+                        r"(?:\b(?:const|let)\s+|(?<![\w$]))([A-Za-z_$][\w$]*)"
+                        r"(?:\s*:[^=]+)?\s*=(?!=|>)",
+                        code_line,
+                    )
+                    if assigned is not None:
+                        target = assigned.group(1)
+                        source_names = typescript_expression_names(line[assigned.end() :])
+                        sources = [guarded_names[name] for name in source_names if name in guarded_names]
+                        if sources:
+                            guarded_names[target] = sources[0]
+                        else:
+                            guarded_names.pop(target, None)
+                if match := TS_FILESYSTEM_WRITE.search(code_line):
+                    path_argument = line[match.start(1) : match.end(1)].strip()
+                    for name, check in guarded_names.items():
+                        if name in typescript_expression_names(path_argument):
+                            checks_by_line[line_number] = check
+                            break
+    return checks_by_line
 
 
 def typescript_call_parts(expression: str) -> tuple[str, str, int] | None:
@@ -21228,6 +21401,40 @@ def add_typescript_path_boundary_control(
     )
 
 
+def add_typescript_path_prefix_control(
+    ir: RepositoryIR,
+    capability_evidence: Evidence,
+    check: TypeScriptPathPrefixCheck,
+) -> None:
+    attributes = {
+        "scope": source_scope(check.evidence.path),
+        "policy_effect": "weak-string-prefix-validation",
+        "frontend": "typescript",
+        "helper": check.name,
+        "predicate_path": check.predicate_path,
+        "root_scope": check.root_scope,
+        "candidate": check.candidate,
+        "root": check.root,
+        "strength": check.strength,
+    }
+    ir.add_component(Component("control", "path-prefix-check", check.evidence, attributes))
+    ir.add_relationship(
+        Relationship(
+            "capability",
+            "filesystem",
+            "governed-by",
+            "control",
+            "path-prefix-check",
+            capability_evidence,
+            {
+                "control_path": check.evidence.path,
+                "control_line": check.evidence.line,
+                **attributes,
+            },
+        )
+    )
+
+
 def add_typescript_network_origin_control(
     ir: RepositoryIR,
     capability_evidence: Evidence,
@@ -21304,6 +21511,11 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
     path_boundary_helpers = (
         typescript_path_boundary_helpers(root, path, imported_symbols)
         if tool_by_line and TS_FILESYSTEM_WRITE.search(text)
+        else {}
+    )
+    same_class_path_prefix_checks = (
+        typescript_same_class_path_prefix_helpers(relative, text, lines)
+        if TS_FILESYSTEM_WRITE.search(text)
         else {}
     )
     shell_bindings = child_process_bindings(text)
@@ -21486,6 +21698,7 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                 ),
                 None,
             )
+            prefix_check = same_class_path_prefix_checks.get(line_number)
             add_typescript_capability(
                 ir,
                 relative,
@@ -21500,10 +21713,13 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
                     "path_boundary_scope": (
                         guard.boundary_scope if guard is not None else "unresolved"
                     ),
+                    **({"path_prefix_check": True} if prefix_check is not None else {}),
                 },
             )
             if guard is not None:
                 add_typescript_path_boundary_control(ir, ev, guard)
+            elif prefix_check is not None:
+                add_typescript_path_prefix_control(ir, ev, prefix_check)
         for network_call in network_calls.get(line_number, []):
             api = network_call.api
             url_expression = network_call.url_expression

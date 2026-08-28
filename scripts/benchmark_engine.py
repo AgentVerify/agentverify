@@ -943,6 +943,16 @@ def main() -> int:
             and edge.target_name == "path-prefix-check"
             and edge.evidence.path.endswith(".py")
         ]
+        typescript_path_prefix_edges = [
+            edge
+            for edge in ir.relationships
+            if edge.source_kind == "capability"
+            and edge.source_name == "filesystem"
+            and edge.relation == "governed-by"
+            and edge.target_kind == "control"
+            and edge.target_name == "path-prefix-check"
+            and edge.evidence.path.endswith((".ts", ".tsx", ".js", ".jsx"))
+        ]
         python_path_segment_sanitizer_edges = [
             edge
             for edge in ir.relationships
@@ -2996,9 +3006,10 @@ def main() -> int:
             },
             "path_prefix_checks": {
                 "python": len(python_path_prefix_edges),
+                "typescript": len(typescript_path_prefix_edges),
                 "weak_string_prefix": sum(
                     edge.attributes.get("strength") == "weak-prefix"
-                    for edge in python_path_prefix_edges
+                    for edge in [*python_path_prefix_edges, *typescript_path_prefix_edges]
                 ),
             },
             "python_path_segment_sanitizers": {
@@ -4026,7 +4037,7 @@ def main() -> int:
             },
             "path_prefix_checks": {
                 name: sum(result["path_prefix_checks"][name] for result in successful)
-                for name in ("python", "weak_string_prefix")
+                for name in ("python", "typescript", "weak_string_prefix")
             },
             "python_path_segment_sanitizers": {
                 name: sum(result["python_path_segment_sanitizers"][name] for result in successful)

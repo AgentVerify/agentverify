@@ -9560,6 +9560,45 @@ def test_typescript_imported_path_boundary_suppresses_only_proven_guard() -> Non
     assert controls[0].attributes["policy_effect"] == "restricts-filesystem-path"
     assert controls[0].attributes["predicate_path"] == "path-check.ts"
     assert controls[0].attributes["boundary_scope"] == "constrained"
+    class_filesystem = {
+        item.evidence.line: item.attributes
+        for item in ir.components
+        if item.kind == "capability"
+        and item.name == "filesystem"
+        and item.evidence.path == "class-helper.ts"
+    }
+    assert class_filesystem == {
+        9: {
+            "scope": "production",
+            "write_access": True,
+            "dynamic_path": True,
+            "path_boundary_guard": False,
+            "path_boundary_scope": "unresolved",
+            "path_prefix_check": True,
+        },
+        14: {
+            "scope": "production",
+            "write_access": True,
+            "dynamic_path": True,
+            "path_boundary_guard": False,
+            "path_boundary_scope": "unresolved",
+        },
+    }
+    assert [
+        (
+            edge.evidence.line,
+            edge.attributes["control_line"],
+            edge.attributes["policy_effect"],
+            edge.attributes["frontend"],
+            edge.attributes["helper"],
+            edge.attributes["root"],
+        )
+        for edge in ir.relationships
+        if edge.source_kind == "capability"
+        and edge.target_kind == "control"
+        and edge.target_name == "path-prefix-check"
+        and edge.evidence.path == "class-helper.ts"
+    ] == [(9, 19, "weak-string-prefix-validation", "typescript", "this.resolve", "this.root")]
     assert [
         (
             edge.evidence.line,
@@ -9572,6 +9611,14 @@ def test_typescript_imported_path_boundary_suppresses_only_proven_guard() -> Non
         for edge in ir.relationships
         if edge.source_kind == "capability" and edge.relation == "governed-by"
     ] == [
+        (
+            9,
+            "path-prefix-check",
+            "class-helper.ts",
+            "weak-string-prefix-validation",
+            "class-helper.ts",
+            None,
+        ),
         (
             10,
             "path-boundary",

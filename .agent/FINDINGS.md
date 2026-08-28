@@ -465,7 +465,13 @@
   approval-enabled `shellTool` and `applyPatchTool` components, `human-approval` governed-by edges,
   `Local tools agent`/`Patch Assistant` reachability edges, and editor-backed local filesystem write
   capability evidence for literal `applyPatchTool({ editor, ... })` options, raising the public IR
-  truth set to 2,056 labels.
+  truth set to 2,062 labels.
+- TypeScript same-class filesystem helper methods now expose weak string-prefix checks without
+  treating them as strong path boundaries. A method that returns a path after
+  `candidate.startsWith(this.root)` with a throwing rejection marks downstream same-class writes
+  assigned from `await this.method(...)` with `path_prefix_check: true` and a `path-prefix-check`
+  control; the OpenAI Agents JS workspace-editor apply-patch example contributes four real
+  governed-by edges.
 - OpenAI Agents JS approval predicates can be made visible without overclaiming full approval
   coverage when the callback body is a shallow literal field predicate. AgentVerify now records
   prefix, contains, and literal-set predicate metadata for exact `needsApproval` callbacks across

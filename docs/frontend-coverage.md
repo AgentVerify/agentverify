@@ -667,11 +667,12 @@ explicit loopback policy, and binds the endpoint to the network card source orig
 separates two unconstrained TypeScript paths from two same-origin-constrained Python paths; configured
 card selection is not mislabeled as model-controlled `AV-NET001` input.
 
-Four additional Python edges record exact string-prefix checks at CrewAI Examples sinks. They target
-`path-prefix-check`, carry `weak-string-prefix-validation`, and never satisfy path-boundary policy.
-Two checks govern both a parent-directory creation and its write/copy action. The specialized
-`AV-FS002` result explains the sibling-prefix weakness without duplicating `AV-FS001` at the same
-sink.
+Four additional Python edges record exact string-prefix checks at CrewAI Examples sinks, and four
+TypeScript edges record the same weak-prefix shape in OpenAI Agents JS' workspace-editor
+apply-patch example. They target `path-prefix-check`, carry `weak-string-prefix-validation`, and
+never satisfy path-boundary policy. Two Python checks govern both a parent-directory creation and
+its write/copy action. The specialized `AV-FS002` result explains the sibling-prefix weakness
+without duplicating `AV-FS001` at the same sink.
 
 Schema v63 records 14 exact MCP-forwarding control edges: one explicit allowlist, three discovery
 registries, and ten fixed bindings. The fixed-binding edges split evenly between constructor-bound
@@ -1072,7 +1073,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 729-label rule truth set and 2,056-label IR component/relationship set are curated regression
+The 729-label rule truth set and 2,062-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

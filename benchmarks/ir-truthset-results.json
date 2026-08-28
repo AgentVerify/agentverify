@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T13:08:45.258913+00:00",
+  "generated_at": "2026-08-28T13:23:23.007565+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "dca767febed3a61eb77cddf9001ac591f4c7f366f637ea058338920152448a0e",
+    "labels_sha256": "0a347c3635226c0370cf3b72f2e9f569d8a9a4df554784e411f4367624a16597",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 2056,
-  "passed": 2056,
+  "labels": 2062,
+  "passed": 2062,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -603,9 +603,9 @@
       "recall": 1.0
     },
     "IR-TS-PATH-BOUNDARY": {
-      "tp": 2,
+      "tp": 7,
       "fp": 0,
-      "tn": 2,
+      "tn": 3,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -1393,6 +1393,60 @@
     },
     {
       "id": "typescript-path-boundary-local",
+      "check_id": "IR-TS-PATH-BOUNDARY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-path-prefix-class-helper-capability-local",
+      "check_id": "IR-TS-PATH-BOUNDARY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-path-prefix-class-helper-control-local",
+      "check_id": "IR-TS-PATH-BOUNDARY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-path-prefix-class-helper-edge-local",
+      "check_id": "IR-TS-PATH-BOUNDARY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-path-prefix-class-helper-unchecked-local-negative",
+      "check_id": "IR-TS-PATH-BOUNDARY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-path-prefix-openai-apply-patch-control-real",
+      "check_id": "IR-TS-PATH-BOUNDARY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-path-prefix-openai-apply-patch-edge-real",
       "check_id": "IR-TS-PATH-BOUNDARY",
       "expected": true,
       "observed": true,

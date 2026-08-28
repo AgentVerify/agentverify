@@ -362,6 +362,24 @@
 - Revisit when: the SDK introduces hosted or remote editor implementations, or examples expose
   explicit execution-environment options that need finer-grained classification.
 
+## TypeScript same-class startsWith path helpers are weak prefix checks
+
+- Decision: Record exact TypeScript same-class helper methods that return a `path.resolve(...)`
+  candidate after a throwing `candidate.startsWith(this.root)` rejection as `path-prefix-check`
+  controls, not as strong `path-boundary` controls. Propagate the weak check only to same-class
+  filesystem writes whose path argument is assigned from `await this.helper(...)`; leave unchecked
+  same-class writes unresolved.
+- Evidence: OpenAI Agents JS' `examples/tools/apply-patch.ts` `WorkspaceEditor.resolve` helper
+  checks `resolved.startsWith(this.root)` before returning `resolved`, and its create/update/delete
+  methods write paths assigned from `await this.resolve(operation.path)`. The local
+  `cases/typescript_path_boundary/class-helper.ts` fixture pins the positive propagation and an
+  unchecked same-class write negative; the public IR truth set adds six local/real labels.
+- Alternative: Treat `startsWith(this.root)` as a constrained path boundary, or ignore same-class
+  TypeScript helpers entirely. Rejected because raw string prefixes admit sibling-prefix paths such
+  as `/workspace-escape`, but ignoring the helper loses useful review evidence.
+- Revisit when: separator-aware TypeScript same-class helpers, `path.relative`/`path.matchesGlob`
+  patterns, or constructor-bound literal root scopes can be modeled without broad name matching.
+
 ## OpenAI approval predicate inventory starts with shallow literal predicates
 
 - Decision: Record only exact shallow literal `needsApproval` predicates in OpenAI Agents JS

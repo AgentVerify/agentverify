@@ -830,6 +830,122 @@
       }
     },
     {
+      "id": "typescript-path-prefix-class-helper-capability-local",
+      "target": {"kind": "local", "path": "cases/typescript_path_boundary"},
+      "check_id": "IR-TS-PATH-BOUNDARY",
+      "path": "class-helper.ts",
+      "line": 9,
+      "expected": true,
+      "component": {
+        "kind": "capability",
+        "name": "filesystem",
+        "attributes": {
+          "path_prefix_check": true,
+          "path_boundary_guard": false,
+          "path_boundary_scope": "unresolved",
+          "write_access": true
+        }
+      }
+    },
+    {
+      "id": "typescript-path-prefix-class-helper-control-local",
+      "target": {"kind": "local", "path": "cases/typescript_path_boundary"},
+      "check_id": "IR-TS-PATH-BOUNDARY",
+      "path": "class-helper.ts",
+      "line": 19,
+      "expected": true,
+      "component": {
+        "kind": "control",
+        "name": "path-prefix-check",
+        "attributes": {
+          "frontend": "typescript",
+          "policy_effect": "weak-string-prefix-validation",
+          "helper": "this.resolve",
+          "root": "this.root",
+          "strength": "weak-prefix"
+        }
+      }
+    },
+    {
+      "id": "typescript-path-prefix-class-helper-edge-local",
+      "target": {"kind": "local", "path": "cases/typescript_path_boundary"},
+      "check_id": "IR-TS-PATH-BOUNDARY",
+      "path": "class-helper.ts",
+      "line": 9,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-prefix-check",
+        "attributes": {
+          "control_line": 19,
+          "policy_effect": "weak-string-prefix-validation",
+          "frontend": "typescript",
+          "helper": "this.resolve",
+          "root": "this.root"
+        }
+      }
+    },
+    {
+      "id": "typescript-path-prefix-class-helper-unchecked-local-negative",
+      "target": {"kind": "local", "path": "cases/typescript_path_boundary"},
+      "check_id": "IR-TS-PATH-BOUNDARY",
+      "path": "class-helper.ts",
+      "line": 14,
+      "expected": false,
+      "source_contains": "await rm(unchecked, { force: true });",
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-prefix-check"
+      }
+    },
+    {
+      "id": "typescript-path-prefix-openai-apply-patch-control-real",
+      "target":{"kind":"repository","repository":"openai/openai-agents-js","commit":"0b944370c6fe019ac5b08364ca013826cd7d0668"},
+      "check_id": "IR-TS-PATH-BOUNDARY",
+      "path": "examples/tools/apply-patch.ts",
+      "line": 67,
+      "expected": true,
+      "component": {
+        "kind": "control",
+        "name": "path-prefix-check",
+        "attributes": {
+          "frontend": "typescript",
+          "policy_effect": "weak-string-prefix-validation",
+          "helper": "this.resolve",
+          "root": "this.root",
+          "strength": "weak-prefix"
+        }
+      }
+    },
+    {
+      "id": "typescript-path-prefix-openai-apply-patch-edge-real",
+      "target":{"kind":"repository","repository":"openai/openai-agents-js","commit":"0b944370c6fe019ac5b08364ca013826cd7d0668"},
+      "check_id": "IR-TS-PATH-BOUNDARY",
+      "path": "examples/tools/apply-patch.ts",
+      "line": 38,
+      "expected": true,
+      "relationship": {
+        "source_kind": "capability",
+        "source_name": "filesystem",
+        "relation": "governed-by",
+        "target_kind": "control",
+        "target_name": "path-prefix-check",
+        "attributes": {
+          "control_line": 67,
+          "policy_effect": "weak-string-prefix-validation",
+          "frontend": "typescript",
+          "helper": "this.resolve",
+          "root": "this.root"
+        }
+      }
+    },
+    {
       "id": "typescript-weak-path-boundary-local-negative",
       "target": {"kind": "local", "path": "cases/typescript_path_boundary"},
       "check_id": "IR-TS-PATH-BOUNDARY",

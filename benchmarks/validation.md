@@ -1615,8 +1615,10 @@ registered wrapper, and the Python SDK retry negative. Three method-registry lab
 resolved callee, a fallback negative, and FastMCP's real summary. Five imported-registry labels cover
 a local resolved manager, mutable/fallback/rebound negatives, and the pinned MCP Python SDK manager.
 Eleven same-class path-helper labels cover the local exact-return edge, seven adversarial negatives,
-and OpenAI's three real sinks. Eight path-prefix labels cover two local and four real positive sinks,
-plus post-write and separator-aware negatives. Seven Python post-registration labels cover two local
+and OpenAI's three real sinks. Fourteen path-prefix labels cover Python local/real weak-prefix
+checks, TypeScript same-class helper propagation, OpenAI Agents JS' workspace-editor prefix check,
+and post-write, separator-aware, and unchecked-helper negatives. Seven Python post-registration
+labels cover two local
 tool edges, one cross-file approval edge, three adversarial negatives, and Skyvern's real filesystem
 edge. Six transparent-wrapper labels cover direct, decorator-factory, and two-layer positives plus
 metadata-only, branch-only, and deferred-call negatives. Ten browser-evaluation labels cover eight
@@ -1705,7 +1707,7 @@ Twelve real OpenAI Agents JS built-in-tool labels pin approval-enabled `shellToo
 `applyPatchTool` components, their human-approval edges, reachable agent-tool edges from the local
 built-in tools documentation and workspace-editor examples, and the local filesystem write
 capability implied by literal `applyPatchTool({ editor, ... })` options.
-All 2,056 IR labels pass (1,538 positives and 518 negatives). The checked
+All 2,062 IR labels pass (1,543 positives and 519 negatives). The checked
 `benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
 breakdown, including the OpenAI Agents JS and Python safety-check labels added for
 `computerTool({ onSafetyCheck })` and `ComputerTool(on_safety_check=...)`, plus OpenAI Agents JS

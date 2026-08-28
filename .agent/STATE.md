@@ -564,13 +564,23 @@ catalog workflows.
   `shellTool` and `applyPatchTool` components, their `human-approval` governed-by edges, their
   reachable `Local tools agent`/`Patch Assistant` tool-use edges, and editor-backed local filesystem
   write capability evidence for literal `applyPatchTool({ editor, ... })` options.
-- The public IR truth set now passes 2,056/2,056 labels (1,538 positives and 518 negatives). The
+- The public IR truth set now passes 2,062/2,062 labels (1,543 positives and 519 negatives). The
   focused OpenAI built-in shell/apply-patch label slice passes 12/12.
 - Validation for the apply-patch local-filesystem slice passed touched-file `ruff`, focused scanner
   and CLI tests (3 passed), focused OpenAI built-in shell/apply-patch IR labels (12/12), full
-  2,056/2,056 public IR labels, full 71/71 engine benchmark refresh, checked benchmark
+  2,062/2,062 public IR labels, full 71/71 engine benchmark refresh, checked benchmark
   verification, full `pytest -q` (298 passed), JSON parsing, diff whitespace checks, and `uv build`
   plus distribution smoke/source verification.
+- Added TypeScript same-class weak path-prefix detection for editor-style helper methods. The
+  scanner now records `path-prefix-check` controls for writes using a path assigned from
+  `await this.resolve(...)` when that helper returns a `path.resolve(this.root, input)` candidate
+  after a throwing `candidate.startsWith(this.root)` rejection; it keeps unchecked same-class writes
+  unresolved. Focused local/real TypeScript path labels pass 8/8.
+- Validation for the TypeScript same-class path-prefix slice passed touched-file `ruff`, focused
+  scanner/CLI tests (2 passed), focused TypeScript path labels (8/8), full 2,062/2,062 public IR
+  labels, full 71/71 engine benchmark refresh, checked benchmark verification, full `pytest -q`
+  (298 passed), JSON parsing, diff whitespace checks, and `uv build` plus distribution smoke/source
+  verification.
 
 ## Current findings
 
