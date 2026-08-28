@@ -16,8 +16,8 @@
   provider-factory, and literal-callable cases.
 - Continue OpenAI Agents JS sandbox policy extraction from pinned examples where evidence remains
   exact, especially still-unmodeled Manifest structures such as nested entry directory shapes,
-  memory-specific workspace seeds/options, or additional sandbox policy fields that can be anchored
-  without broadening into ambiguous helper/config composition.
+  additional sandbox policy fields, or memory/session composition edges that can be anchored without
+  broadening into ambiguous helper/config composition.
 
 ## P2
 

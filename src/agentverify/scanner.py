@@ -16744,6 +16744,215 @@ def add_typescript_openai_sandbox_environment_from_arguments(
         )
 
 
+def typescript_literal_boolean_value(expression: str) -> bool | None:
+    """Resolve a direct TypeScript boolean literal."""
+    code = typescript_code_mask(expression).strip()
+    if code == "true":
+        return True
+    if code == "false":
+        return False
+    return None
+
+
+def typescript_literal_integer_value(expression: str) -> int | None:
+    """Resolve a direct non-negative TypeScript integer literal."""
+    code = typescript_code_mask(expression).strip()
+    if re.fullmatch(r"\d+", code) is None:
+        return None
+    return int(code)
+
+
+def typescript_openai_sandbox_memory_policy_attributes(
+    call_body: str,
+    *,
+    body_offset: int,
+    immutable_literal_bindings: dict[str, TypeScriptLiteralStringBinding] | None = None,
+) -> tuple[dict[str, object], int] | None:
+    """Return exact literal memory-capability policy attributes and source offset."""
+    immutable_literal_bindings = immutable_literal_bindings or {}
+    arguments = typescript_call_arguments(call_body, body_offset)
+    if len(arguments) != 1:
+        return None
+    config_expression, config_offset = arguments[0]
+    if not typescript_code_mask(config_expression).lstrip().startswith("{"):
+        return None
+
+    attributes: dict[str, object] = {
+        "analysis": "typescript-openai-sandbox-memory-config",
+        "module": "@openai/agents/sandbox",
+        "constructor": "memory",
+        "imported_symbol": "memory",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "memory",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+    }
+    policy_offset: int | None = None
+
+    layout_property = typescript_object_property_expression_location(
+        config_expression,
+        "layout",
+        config_offset,
+    )
+    if layout_property is not None:
+        layout_expression, property_offset, layout_offset = layout_property
+        layout_attributes: dict[str, object] = {}
+        for property_name, attribute_name in {
+            "memoriesDir": "memories_dir",
+            "sessionsDir": "sessions_dir",
+        }.items():
+            directory_property = typescript_object_property_expression_location(
+                layout_expression,
+                property_name,
+                layout_offset,
+            )
+            if directory_property is None:
+                continue
+            value = typescript_static_string_value(
+                directory_property[0],
+                expression_offset=directory_property[2],
+                immutable_literal_bindings=immutable_literal_bindings,
+            )
+            if value is None:
+                continue
+            layout_attributes[attribute_name] = value[0]
+            layout_attributes[f"{attribute_name}_resolution"] = value[1]
+        if layout_attributes:
+            attributes.update(layout_attributes)
+            policy_offset = property_offset if policy_offset is None else min(
+                policy_offset,
+                property_offset,
+            )
+
+    read_property = typescript_object_property_expression_location(
+        config_expression,
+        "read",
+        config_offset,
+    )
+    if read_property is not None:
+        read_expression, property_offset, read_offset = read_property
+        read_boolean = typescript_literal_boolean_value(read_expression)
+        if read_boolean is not None:
+            attributes["read_enabled"] = read_boolean
+            policy_offset = property_offset if policy_offset is None else min(
+                policy_offset,
+                property_offset,
+            )
+        else:
+            live_update_property = typescript_object_property_expression_location(
+                read_expression,
+                "liveUpdate",
+                read_offset,
+            )
+            if live_update_property is not None:
+                live_update = typescript_literal_boolean_value(live_update_property[0])
+                if live_update is not None:
+                    attributes["read_live_update"] = live_update
+                    policy_offset = property_offset if policy_offset is None else min(
+                        policy_offset,
+                        property_offset,
+                    )
+
+    generate_property = typescript_object_property_expression_location(
+        config_expression,
+        "generate",
+        config_offset,
+    )
+    if generate_property is not None:
+        generate_expression, property_offset, generate_offset = generate_property
+        generate_boolean = typescript_literal_boolean_value(generate_expression)
+        if generate_boolean is not None:
+            attributes["generation_enabled"] = generate_boolean
+            policy_offset = property_offset if policy_offset is None else min(
+                policy_offset,
+                property_offset,
+            )
+        else:
+            generate_attributes: dict[str, object] = {"generation_configured": True}
+            max_raw_property = typescript_object_property_expression_location(
+                generate_expression,
+                "maxRawMemoriesForConsolidation",
+                generate_offset,
+            )
+            if max_raw_property is not None:
+                max_raw = typescript_literal_integer_value(max_raw_property[0])
+                if max_raw is not None:
+                    generate_attributes["max_raw_memories_for_consolidation"] = max_raw
+            for property_name, attribute_name in {
+                "phaseOneModel": "phase_one_model",
+                "phaseTwoModel": "phase_two_model",
+                "extraPrompt": "extra_prompt",
+            }.items():
+                model_property = typescript_object_property_expression_location(
+                    generate_expression,
+                    property_name,
+                    generate_offset,
+                )
+                if model_property is None:
+                    continue
+                value = typescript_static_string_value(
+                    model_property[0],
+                    expression_offset=model_property[2],
+                    immutable_literal_bindings=immutable_literal_bindings,
+                )
+                if value is None:
+                    continue
+                generate_attributes[attribute_name] = value[0]
+                generate_attributes[f"{attribute_name}_resolution"] = value[1]
+            if len(generate_attributes) > 1:
+                attributes.update(generate_attributes)
+                policy_offset = property_offset if policy_offset is None else min(
+                    policy_offset,
+                    property_offset,
+                )
+
+    if policy_offset is None:
+        return None
+    return attributes, policy_offset
+
+
+def add_typescript_openai_sandbox_memory_policy_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    tool_name: str,
+    tool_id: str,
+    symbol_identity: str,
+    attributes: dict[str, object],
+) -> tuple[str, str]:
+    """Add an exact OpenAI Agents JS sandbox memory policy control."""
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    control_attributes = {**attributes, "scope": source_scope(relative)}
+    ir.add_component(
+        Component(
+            "control",
+            "sandbox-memory-policy",
+            Evidence(relative, line, excerpt(lines, line)),
+            control_attributes,
+            control_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            tool_name,
+            "configured-by",
+            "control",
+            "sandbox-memory-policy",
+            Evidence(relative, line, excerpt(lines, line)),
+            {
+                "analysis": "typescript-openai-sandbox-memory-config",
+                "configuration": "memory",
+            },
+            source_id=tool_id,
+            target_id=control_id,
+        )
+    )
+    return "sandbox-memory-policy", control_id
+
+
 def add_typescript_openai_sandbox_extension_runtime_control(
     ir: RepositoryIR,
     *,
@@ -16839,6 +17048,7 @@ def add_typescript_tool_observation(
     call_offset: int,
     body_offset: int,
     approval_bypass_function_summaries: dict[str, tuple[str, ...]],
+    immutable_literal_bindings: dict[str, TypeScriptLiteralStringBinding] | None = None,
 ) -> None:
     """Add one structure-backed TypeScript tool, its capabilities, and literal approval control."""
     line = line_at(text, call_offset)
@@ -16940,6 +17150,25 @@ def add_typescript_tool_observation(
                 source_id=tool_id,
             )
         )
+    if constructor == "memory":
+        memory_policy = typescript_openai_sandbox_memory_policy_attributes(
+            call_body,
+            body_offset=body_offset,
+            immutable_literal_bindings=immutable_literal_bindings,
+        )
+        if memory_policy is not None:
+            policy_attributes, policy_offset = memory_policy
+            policy_line = line_at(text, policy_offset)
+            add_typescript_openai_sandbox_memory_policy_control(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=policy_line,
+                tool_name=tool_name,
+                tool_id=tool_id,
+                symbol_identity=f"{tool_name}.memoryPolicy@{policy_line}",
+                attributes=policy_attributes,
+            )
     if approval_expression == "true" and constructor in TS_OPENAI_APPROVAL_BUILTINS:
         body_code = typescript_code_mask(call_body)
         approval_match = re.search(r"\bneedsApproval\s*:\s*true\b", body_code)
@@ -17100,13 +17329,18 @@ def typescript_graph(
     )
     immutable_literal_bindings = (
         typescript_immutable_module_literal_string_bindings(text)
-        if ("Manifest" in text or "snapshot" in text)
+        if ("Manifest" in text or "snapshot" in text or "memory" in text)
         and (
             "extraPathGrants" in text
             or "environment" in text
             or "entries" in text
             or "root" in text
             or "snapshot" in text
+            or "memoriesDir" in text
+            or "sessionsDir" in text
+            or "phaseOneModel" in text
+            or "phaseTwoModel" in text
+            or "extraPrompt" in text
         )
         else {}
     )
@@ -17195,6 +17429,7 @@ def typescript_graph(
                 call_offset=match.start(2),
                 body_offset=opening + 1,
                 approval_bypass_function_summaries=approval_bypass_function_summaries,
+                immutable_literal_bindings=immutable_literal_bindings,
             )
         else:
             add_typescript_generic_tool(
@@ -17921,6 +18156,7 @@ def typescript_graph(
                     call_offset=item_offset,
                     body_offset=item_offset + relative_body_offset,
                     approval_bypass_function_summaries=approval_bypass_function_summaries,
+                    immutable_literal_bindings=immutable_literal_bindings,
                 )
             else:
                 tool_name = local_factory

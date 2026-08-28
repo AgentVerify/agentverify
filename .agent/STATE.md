@@ -382,6 +382,11 @@ catalog workflows.
   permission/policy/summary/expiry arguments, and code-scanning SARIF permission/upload contracts.
   Negative distribution tests prove the sdist verifier rejects removed verifier upload, missing
   policy argument, and missing SARIF upload cases.
+- Added exact OpenAI Agents JS sandbox `memory(...)` policy inventory for literal generation
+  toggles, read live-update settings, memory/session layout directories, and literal generation
+  model/prompt settings. Dynamic memory option values remain unresolved. Local fixtures plus real
+  OpenAI Agents JS memory docs/examples raised regenerated public IR truth-set results to 1,838
+  passing labels.
 
 ## Current findings
 

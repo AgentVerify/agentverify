@@ -335,6 +335,13 @@
   and uploads verifier JSON while staying read-only; the policy gate keeps its policy/summary/expiry
   arguments without code-scanning write permission; and the code-scanning workflow keeps SARIF upload
   permission without becoming a policy gate.
+- Exact OpenAI Agents JS sandbox memory policy configuration is now IR evidence when an unshadowed
+  `@openai/agents/sandbox` `memory(...)` capability has literal option values. AgentVerify records
+  generation disabled/enabled configuration, read live-update settings, memory/session layout
+  directories, max raw memories, literal generation model IDs, and extra generation prompts as
+  `sandbox-memory-policy` controls linked from the memory tool. Dynamic memory option values and
+  unknown same-named factories remain unresolved. The public IR truth set now covers 1,838 passing
+  labels.
 
 ## Hypotheses
 

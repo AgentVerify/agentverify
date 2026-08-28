@@ -3783,6 +3783,8 @@ def test_typescript_openai_sandbox_agent_capabilities_require_exact_import() -> 
         ("positive.ts", 15, "Aliased Sandbox Assistant"),
         ("positive.ts", 23, "buildReturnedSandboxAgent"),
         ("positive.ts", 30, "Returned Named Sandbox Assistant"),
+        ("positive.ts", 53, "Memory Layout Sandbox"),
+        ("positive.ts", 74, "Memory Generation Sandbox"),
     }
     assert all(
         component.attributes["constructor"] == "SandboxAgent"
@@ -3813,6 +3815,7 @@ def test_typescript_openai_sandbox_agent_capabilities_require_exact_import() -> 
         if component.kind == "tool"
     }
     assert set(tools) == {
+        ("memory-policy-negative.ts", 8, "dynamicMemory"),
         ("positive.ts", 12, "filesystem@12"),
         ("positive.ts", 12, "shell@12"),
         ("positive.ts", 12, "skills@12"),
@@ -3820,6 +3823,8 @@ def test_typescript_openai_sandbox_agent_capabilities_require_exact_import() -> 
         ("positive.ts", 25, "memory@25"),
         ("positive.ts", 25, "shell@25"),
         ("positive.ts", 32, "shell@32"),
+        ("positive.ts", 56, "memory@56"),
+        ("positive.ts", 65, "generatedMemory"),
     }
     assert all(
         component.attributes["constructor"] == "shell"
@@ -3867,6 +3872,18 @@ def test_typescript_openai_sandbox_agent_capabilities_require_exact_import() -> 
     assert (
         "positive.ts",
         25,
+        "memory",
+        "memory",
+    ) in capabilities
+    assert (
+        "positive.ts",
+        56,
+        "memory",
+        "memory",
+    ) in capabilities
+    assert (
+        "positive.ts",
+        65,
         "memory",
         "memory",
     ) in capabilities
@@ -3938,7 +3955,152 @@ def test_typescript_openai_sandbox_agent_capabilities_require_exact_import() -> 
             "shell@32",
             "ts:positive.ts#tool:shell@32",
         ),
+        (
+            "Memory Layout Sandbox",
+            "uses",
+            "tool",
+            "memory@56",
+            "ts:positive.ts#tool:memory@56",
+        ),
+        (
+            "Memory Generation Sandbox",
+            "uses",
+            "tool",
+            "generatedMemory",
+            "ts:positive.ts#tool:generatedMemory",
+        ),
     }
+    memory_policies = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control" and component.name == "sandbox-memory-policy"
+    }
+    assert set(memory_policies) == {
+        (
+            "positive.ts",
+            25,
+            "ts:positive.ts#control:memory@25.memoryPolicy@25",
+        ),
+        (
+            "positive.ts",
+            57,
+            "ts:positive.ts#control:memory@56.memoryPolicy@57",
+        ),
+        (
+            "positive.ts",
+            66,
+            "ts:positive.ts#control:generatedMemory.memoryPolicy@66",
+        ),
+    }
+    assert memory_policies[
+        (
+            "positive.ts",
+            25,
+            "ts:positive.ts#control:memory@25.memoryPolicy@25",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-memory-config",
+        "module": "@openai/agents/sandbox",
+        "constructor": "memory",
+        "imported_symbol": "memory",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "memory",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "generation_enabled": False,
+        "scope": "production",
+    }
+    assert memory_policies[
+        (
+            "positive.ts",
+            57,
+            "ts:positive.ts#control:memory@56.memoryPolicy@57",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-memory-config",
+        "module": "@openai/agents/sandbox",
+        "constructor": "memory",
+        "imported_symbol": "memory",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "memory",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "memories_dir": "memories/engineering",
+        "memories_dir_resolution": "immutable-module-literal-binding",
+        "sessions_dir": "sessions/engineering",
+        "sessions_dir_resolution": "literal",
+        "scope": "production",
+    }
+    assert memory_policies[
+        (
+            "positive.ts",
+            66,
+            "ts:positive.ts#control:generatedMemory.memoryPolicy@66",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-memory-config",
+        "module": "@openai/agents/sandbox",
+        "constructor": "memory",
+        "imported_symbol": "memory",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "memory",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "read_enabled": False,
+        "generation_configured": True,
+        "max_raw_memories_for_consolidation": 128,
+        "phase_one_model": "gpt-5.4-mini",
+        "phase_one_model_resolution": "literal",
+        "phase_two_model": "gpt-5.4",
+        "phase_two_model_resolution": "literal",
+        "extra_prompt": "Remember exact verification commands.",
+        "extra_prompt_resolution": "literal",
+        "scope": "production",
+    }
+    assert [
+        (
+            relationship.source_id,
+            relationship.target_id,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            relationship.attributes,
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "tool"
+        and relationship.source_name in {"memory@25", "memory@56", "generatedMemory"}
+        and relationship.target_name == "sandbox-memory-policy"
+    ] == [
+        (
+            "ts:positive.ts#tool:memory@25",
+            "ts:positive.ts#control:memory@25.memoryPolicy@25",
+            "positive.ts",
+            25,
+            {
+                "analysis": "typescript-openai-sandbox-memory-config",
+                "configuration": "memory",
+            },
+        ),
+        (
+            "ts:positive.ts#tool:memory@56",
+            "ts:positive.ts#control:memory@56.memoryPolicy@57",
+            "positive.ts",
+            57,
+            {
+                "analysis": "typescript-openai-sandbox-memory-config",
+                "configuration": "memory",
+            },
+        ),
+        (
+            "ts:positive.ts#tool:generatedMemory",
+            "ts:positive.ts#control:generatedMemory.memoryPolicy@66",
+            "positive.ts",
+            66,
+            {
+                "analysis": "typescript-openai-sandbox-memory-config",
+                "configuration": "memory",
+            },
+        ),
+    ]
     assert not any(
         component.evidence.path == "negative.ts"
         and component.kind in {"agent", "tool", "capability"}
@@ -3947,6 +4109,12 @@ def test_typescript_openai_sandbox_agent_capabilities_require_exact_import() -> 
     assert not any(
         component.evidence.path == "capability-negative.ts"
         and component.kind in {"tool", "capability"}
+        for component in ir.components
+    )
+    assert not any(
+        component.evidence.path == "memory-policy-negative.ts"
+        and component.kind == "control"
+        and component.name == "sandbox-memory-policy"
         for component in ir.components
     )
 

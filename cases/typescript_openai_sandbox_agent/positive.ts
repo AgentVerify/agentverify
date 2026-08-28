@@ -48,3 +48,33 @@ await run(aliasedSandbox, 'Inspect the project.');
 await run(buildReturnedSandboxAgent('Returned Dynamic Sandbox Assistant'), 'Inspect the project.');
 await run(buildNamedReturnedSandboxAgent(), 'Inspect the project.');
 void buildConditionalReturnedSandboxAgent;
+
+const memoryLayoutDir = 'memories/engineering';
+const layoutMemoryAgent = new SandboxAgent({
+  name: 'Memory Layout Sandbox',
+  capabilities: [
+    memory({
+      layout: {
+        memoriesDir: memoryLayoutDir,
+        sessionsDir: 'sessions/engineering',
+      },
+    }),
+  ],
+});
+
+const generatedMemory = memory({
+  read: false,
+  generate: {
+    maxRawMemoriesForConsolidation: 128,
+    phaseOneModel: 'gpt-5.4-mini',
+    phaseTwoModel: 'gpt-5.4',
+    extraPrompt: 'Remember exact verification commands.',
+  },
+});
+const generationMemoryAgent = new SandboxAgent({
+  name: 'Memory Generation Sandbox',
+  capabilities: [generatedMemory],
+});
+
+void layoutMemoryAgent;
+void generationMemoryAgent;
