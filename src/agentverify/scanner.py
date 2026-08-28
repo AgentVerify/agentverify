@@ -17013,6 +17013,49 @@ def add_typescript_openai_as_tool_tracing_disabled_control(
     return "tracing-disabled", control_id
 
 
+def add_typescript_openai_as_tool_turn_limit_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    source_agent: tuple[str, str],
+    parent_agent: tuple[str, str],
+    tool_name: str | None,
+    max_turns: int,
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS asTool runOptions max-turn evidence."""
+    source_agent_name, source_agent_id = source_agent
+    parent_agent_name, parent_agent_id = parent_agent
+    attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-astool-turn-limit",
+        "module": "@openai/agents",
+        "adapter": "asTool",
+        "configuration": "asTool.runOptions.maxTurns",
+        "max_turns": max_turns,
+        "limit_scope": "delegated-agent-run",
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "parent_agent": parent_agent_name,
+        "parent_agent_id": parent_agent_id,
+        "scope": source_scope(relative),
+    }
+    if tool_name is not None:
+        attributes["tool_name"] = tool_name
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "agent-turn-limit",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    return "agent-turn-limit", control_id
+
+
 def add_typescript_openai_trace_id_control(
     ir: RepositoryIR,
     *,
@@ -20311,6 +20354,76 @@ def typescript_graph(
                     )
                 )
                 if target and call_arguments:
+                    run_options_location = typescript_object_property_expression_location(
+                        call_arguments[0][0],
+                        "runOptions",
+                        call_arguments[0][1],
+                    )
+                    if run_options_location is not None:
+                        run_options_expression, _, run_options_offset = run_options_location
+                        max_turns_location = typescript_object_property_expression_location(
+                            run_options_expression,
+                            "maxTurns",
+                            run_options_offset,
+                        )
+                        if max_turns_location is not None:
+                            max_turns_expression, max_turns_property_offset, _ = (
+                                max_turns_location
+                            )
+                            max_turns_code = typescript_code_mask(
+                                max_turns_expression
+                            ).strip()
+                            if re.fullmatch(r"\d+", max_turns_code):
+                                delegated_agent_name, delegated_agent_id = target
+                                tool_name = as_tool_attributes.get("tool_name")
+                                max_turns = int(max_turns_code)
+                                turn_limit_line = line_at(text, max_turns_property_offset)
+                                turn_limit_name, turn_limit_id = (
+                                    add_typescript_openai_as_tool_turn_limit_control(
+                                        ir,
+                                        relative=relative,
+                                        lines=lines,
+                                        line=turn_limit_line,
+                                        source_agent=(delegated_agent_name, delegated_agent_id),
+                                        parent_agent=(agent_name, agent_id),
+                                        tool_name=(
+                                            tool_name if isinstance(tool_name, str) else None
+                                        ),
+                                        max_turns=max_turns,
+                                        symbol_identity=(
+                                            f"{variable_name}.asTool.maxTurns@"
+                                            f"{turn_limit_line}:parent{as_tool_line}"
+                                        ),
+                                    )
+                                )
+                                turn_limit_attributes: dict[str, object] = {
+                                    "analysis": (
+                                        "typescript-openai-agents-astool-turn-limit"
+                                    ),
+                                    "configuration": "asTool-runOptions-maxTurns",
+                                    "binding": "maxTurns",
+                                    "adapter": "asTool",
+                                    "max_turns": max_turns,
+                                }
+                                if isinstance(tool_name, str):
+                                    turn_limit_attributes["tool_name"] = tool_name
+                                ir.add_relationship(
+                                    Relationship(
+                                        "agent",
+                                        delegated_agent_name,
+                                        "configured-by",
+                                        "control",
+                                        turn_limit_name,
+                                        Evidence(
+                                            relative,
+                                            turn_limit_line,
+                                            excerpt(lines, turn_limit_line),
+                                        ),
+                                        turn_limit_attributes,
+                                        source_id=delegated_agent_id,
+                                        target_id=turn_limit_id,
+                                    )
+                                )
                     run_config_location = typescript_object_property_expression_location(
                         call_arguments[0][0],
                         "runConfig",

@@ -778,12 +778,15 @@ source-proven `run(agent, ...)` call. Stable exact `new Runner({ groupId })` ins
 agent, and stable exact `new Runner({ tracingDisabled: true })` instances emit
 `tracing-disabled` controls for source-proven Runner calls. Exact delegated
 `agent.asTool({ runConfig: { tracingDisabled: true } })` calls also emit `tracing-disabled`
-controls on the delegated agent with parent-agent and tool-name provenance. The pinned `routing.ts`
-example contributes the corpus `trace-group` control for its dynamic `conversationId` binding, the
-Codex tool example contributes generated-trace-ID controls with a logged OpenAI platform trace URL,
-the sandbox memory-generation example contributes a Runner-level trace group, SDK testing examples
-contribute Runner tracing-disablement controls, and the sandbox agents-as-tools example contributes
-delegated reviewer tracing-disablement controls.
+controls on the delegated agent with parent-agent and tool-name provenance. Exact delegated
+`agent.asTool({ runOptions: { maxTurns } })` calls emit `agent-turn-limit` controls on the delegated
+agent with the literal turn cap. The pinned `routing.ts` example contributes the corpus
+`trace-group` control for its dynamic `conversationId` binding, the Codex tool example contributes
+generated-trace-ID controls with a logged OpenAI platform trace URL, the sandbox memory-generation
+example contributes a Runner-level trace group, SDK testing examples contribute Runner
+tracing-disablement controls, the sandbox agents-as-tools example contributes delegated reviewer
+tracing-disablement controls plus eight-turn delegated limits, and the translator agents-as-tools
+example contributes a three-turn delegated limit.
 
 The Python frontend inventories 449 canonical/import/callable-aliased and proven-`Path` mutations:
 179 creates, 191 deletes, 46 copies, and 33 moves. Of these, 434 use non-literal path expressions;

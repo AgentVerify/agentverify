@@ -3813,6 +3813,72 @@ def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> Non
             },
         ),
     ]
+    turn_limit_controls = {
+        (
+            component.evidence.path,
+            component.evidence.line,
+            component.symbol_id,
+            tuple(sorted(component.attributes.items())),
+        )
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "agent-turn-limit"
+        and component.attributes.get("analysis")
+        == "typescript-openai-agents-astool-turn-limit"
+    }
+    assert turn_limit_controls == {
+        (
+            "agent.ts",
+            44,
+            "ts:agent.ts#control:worker.asTool.maxTurns@44:parent42",
+            (
+                ("adapter", "asTool"),
+                ("analysis", "typescript-openai-agents-astool-turn-limit"),
+                ("configuration", "asTool.runOptions.maxTurns"),
+                ("limit_scope", "delegated-agent-run"),
+                ("max_turns", 3),
+                ("module", "@openai/agents"),
+                ("parent_agent", "operator"),
+                ("parent_agent_id", "ts:agent.ts#agent:operator"),
+                ("scope", "production"),
+                ("source_agent", "worker"),
+                ("source_agent_id", "ts:agent.ts#agent:worker"),
+                ("tool_name", "worker_tool"),
+            ),
+        )
+    }
+    turn_limit_edges = {
+        (
+            relationship.source_name,
+            relationship.source_id,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            relationship.target_id,
+            tuple(sorted(relationship.attributes.items())),
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "configured-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "agent-turn-limit"
+    }
+    assert turn_limit_edges == {
+        (
+            "worker",
+            "ts:agent.ts#agent:worker",
+            "agent.ts",
+            44,
+            "ts:agent.ts#control:worker.asTool.maxTurns@44:parent42",
+            (
+                ("adapter", "asTool"),
+                ("analysis", "typescript-openai-agents-astool-turn-limit"),
+                ("binding", "maxTurns"),
+                ("configuration", "asTool-runOptions-maxTurns"),
+                ("max_turns", 3),
+                ("tool_name", "worker_tool"),
+            ),
+        )
+    }
     assert (
         next(edge for edge in operator_edges if edge.target_name == "unrelatedShellTool").target_id
         is None

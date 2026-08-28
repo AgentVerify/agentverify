@@ -560,6 +560,11 @@
   while explicit false values remain unresolved. The pinned sandbox agents-as-tools example disables
   tracing for `Pricing Packet Reviewer` and `Rollout Risk Reviewer`, bringing the public IR truth
   set to 2,106 passing labels.
+- OpenAI Agents JS delegated `asTool` run options can bound delegated execution. Exact
+  `agent.asTool({ runOptions: { maxTurns: <integer> } })` calls now emit `agent-turn-limit`
+  controls on the delegated agent with parent-agent, tool-name, and literal `max_turns` provenance.
+  The pinned agents-as-tools translator and sandbox reviewer examples contribute three real
+  delegated turn-limit controls, bringing the public IR truth set to 2,115 passing labels.
 
 ## Hypotheses
 

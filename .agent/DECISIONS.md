@@ -628,3 +628,21 @@
   caller.
 - Revisit when: broader `runConfig` trace metadata or exported delegated-tool factories can be
   proven without weakening the exact `asTool` source/target attribution.
+
+## OpenAI Agents JS delegated asTool turn limits are bounded execution controls
+
+- Decision: Represent exact TypeScript OpenAI Agents SDK
+  `agent.asTool({ runOptions: { maxTurns: <integer> } })` configuration as an
+  `agent-turn-limit` control on the delegated/source agent. Preserve the parent agent and literal
+  `toolName` when proven, and emit only for literal integer `maxTurns`; missing and nonliteral
+  values stay unresolved.
+- Evidence: The local structured-tools fixture proves the `worker_tool` delegated agent limit and
+  a sibling delegated tool without `maxTurns` remains negative. The pinned OpenAI Agents JS
+  `examples/agent-patterns/agents-as-tools.ts` translator limits the Spanish delegated agent to
+  three turns, while `examples/sandbox/sandbox-agents-as-tools.ts` limits both sandbox reviewer
+  delegated agents to eight turns.
+- Alternative: Treat `maxTurns` as generic run metadata on the parent orchestrator. Rejected
+  because the bounded execution applies to the delegated agent invocation and should be reviewable
+  with the delegated agent's own capabilities and sandbox/tracing controls.
+- Revisit when: direct `run(..., { maxTurns })`, Runner defaults, or exported delegated-tool
+  factories can be linked to exact source-agent identity without broad receiver/name matching.

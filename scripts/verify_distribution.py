@@ -517,7 +517,7 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         failed.append("policy_signature_verified")
     if checks["benchmark_verification_passed"] is not True:
         failed.append("benchmark_verification_passed")
-    if checks["benchmark_verification_labels"] != [729, 2106]:
+    if checks["benchmark_verification_labels"] != [729, 2115]:
         failed.append("benchmark_verification_labels")
     if checks["benchmark_verification_failed"] != [0, 0]:
         failed.append("benchmark_verification_failed")

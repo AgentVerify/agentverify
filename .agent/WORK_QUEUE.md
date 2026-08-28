@@ -23,7 +23,8 @@
   bindings, plus separately modeled `withTrace(..., { groupId/traceId })` and stable
   `Runner({ groupId })` trace correlation plus stable `Runner({ tracingDisabled: true })` and
   delegated `asTool({ runConfig: { tracingDisabled: true } })` observability-disablement evidence,
-  without broadening into ambiguous helper/config composition.
+  plus delegated `asTool({ runOptions: { maxTurns } })` turn-limit evidence, without broadening into
+  ambiguous helper/config composition.
 - Continue OpenAI Agents JS HITL and safety-governance extraction where evidence remains exact:
   richer `needsApproval` predicate quality, automatic approval bypasses, and `computerTool`
   `onSafetyCheck` callbacks that distinguish explicit user/policy review from pass-through
