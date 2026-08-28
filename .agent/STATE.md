@@ -545,6 +545,20 @@ catalog workflows.
   full 2,038/2,038 IR labels, 71/71 engine repositories, checked benchmark verification, full
   `pytest -q` (298 passed), touched-file `ruff`, JSON parsing, diff whitespace checks, and
   `uv build` plus distribution smoke/source verification.
+- Added helper-derived OpenAI Agents JS run-state resume continuity using the same narrow
+  helper-parameter proof shape: non-exported same-file async helper, first parameter typed as the
+  exact SDK `Agent` import, proven `run(agentParam, ...) -> result.state`, and resumed
+  `run(agentParam, state)`. The local lexical-scope fixture and real `computer-use-hitl.ts`
+  `runWithHitl(agent, ...)` call sites now emit call-line-qualified `conversation-continuity`
+  controls plus configured-by resume edges.
+- The public IR truth set now passes 2,042/2,042 labels. Schema-v131 engine results report
+  TypeScript OpenAI run-state continuity separately from approval decisions: 8 continuity controls,
+  2 helper-parameter state resumes, 8 configured-by resume edges, and 2 helper-parameter resume
+  edges.
+- Validation for the helper-resume slice passed the focused scanner test, focused 10/10 helper IR
+  labels, full 2,042/2,042 IR labels, 71/71 engine repositories, checked benchmark verification,
+  full `pytest -q` (298 passed), touched-file `ruff`, JSON parsing, diff whitespace checks, and
+  `uv build` plus distribution smoke/source verification.
 
 ## Current findings
 
@@ -656,7 +670,7 @@ same-block `result.history`, same-file `result.state`, and serialized `RunState.
 semantics distinct. For OpenAI approval work, keep literal always-approval, callback-controlled
 approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
 approval metadata, literal predicate metadata, SDK state approval decisions, helper-parameter
-decision provenance, and proven human approval/resume handling separate. For performance work, use
+  decision provenance, and proven human approval/resume handling separate. For performance work, use
 `--progress` plus focused
 `--scan-label-paths` only when the target labels are self-contained; broader benchmark acceleration
 likely needs dependency-aware path expansion or scan-result reuse to preserve cross-file evidence.

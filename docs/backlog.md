@@ -479,6 +479,12 @@ repeated scoped `const agent` declarations stay distinct. The pinned `computer-u
 `runWithHitl(agent, ...)` example now contributes approval-bypass and template custom-rejection
 labels.
 
+Schema v131 extends the same narrow helper-call model to OpenAI Agents JS run-state resume
+continuity. When a same-file non-exported async helper proves `run(agentParam, ...) -> result.state`
+and then resumes with `run(agentParam, state)`, each lexically resolved call site emits a distinct
+`conversation-continuity` control and configured-by edge. The pinned `computer-use-hitl.ts`
+`runWithHitl(agent, ...)` example now contributes two helper-parameter state-resume controls/edges.
+
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
 server-controlled prompt/model hint/sampling parameters, model invocation, and response returned to
@@ -603,8 +609,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 729 pinned positive/negative locations, with 2,038 separately
-scored IR component/relationship labels. Schema-v130 engine results and
+The curated regression set has reached 729 pinned positive/negative locations, with 2,042 separately
+scored IR component/relationship labels. Schema-v131 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. The checked-in holdout design now defines the sampling strata, label protocol,

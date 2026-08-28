@@ -2,7 +2,7 @@
 
 ## Durable facts
 
-- The repository contains a 71-repository pinned research corpus and schema-v130 engine benchmark
+- The repository contains a 71-repository pinned research corpus and schema-v131 engine benchmark
   outputs.
 - The runtime catalog currently contains 25 enabled reporting rules.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
@@ -509,6 +509,12 @@
   real `computer-use-hitl.ts` `runWithHitl(agent, ...)` calls now emit separate controls for the
   singleton and per-request browser agents, including `AUTO_APPROVE_HITL` approval-bypass metadata
   and template custom-rejection-message provenance.
+- The same exact helper-parameter model can prove OpenAI Agents JS run-state resume continuity when
+  the helper stores `result.state` and later calls `run(agentParam, state)`. The scanner now emits
+  distinct call-line-qualified `conversation-continuity` controls and configured-by edges for each
+  lexical caller. The real `computer-use-hitl.ts` helper contributes two helper-parameter state
+  resumes; schema-v131 engine results report 8 TypeScript OpenAI run-state continuity controls and
+  8 configured-by resume edges overall.
 
 ## Hypotheses
 

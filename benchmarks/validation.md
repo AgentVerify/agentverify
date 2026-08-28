@@ -723,6 +723,8 @@ async helpers whose first parameter is typed as the exact SDK `Agent` import and
 [`computer-use-hitl.ts` helper](https://github.com/openai/openai-agents-js/blob/0b944370c6fe019ac5b08364ca013826cd7d0668/examples/tools/computer-use-hitl.ts#L201-L220)
 now yields separate controls for its two `runWithHitl(agent, ...)` call sites, preserving
 `AUTO_APPROVE_HITL` approval-bypass metadata and template custom-rejection-message provenance.
+The same helper proof now also captures `run(agentParam, state)` resume continuity, producing
+distinct `conversation-continuity` controls and configured-by edges for each lexical call site.
 
 For Python, files importing the OpenAI Agents SDK now inventory `ShellTool`, `ApplyPatchTool`,
 `ComputerTool`, and `CustomTool` instances with line-scoped identities. `ComputerTool` produces a
@@ -1695,13 +1697,14 @@ pin package/version/auto-install facts across JSON, Python constructors, Python 
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
 negatives. Five Python OpenAI run-state approval-decision persistence labels pin literal sticky,
 stable boolean, per-call, and prompt-derived dynamic `always_approve`/`always_reject` metadata.
-Fifteen OpenAI run-state rejection-message and helper-parameter labels pin Python literal,
+Nineteen OpenAI run-state rejection-message and helper-parameter labels pin Python literal,
 literal-binding, template, and dynamic `rejection_message` metadata, the TypeScript `{ message }`
-reject-options equivalent, and exact same-file helper-call provenance.
-All 2,038 IR labels pass (1,522 positives and 516 negatives). The checked
+reject-options equivalent, exact same-file helper-call decision provenance, and helper-derived
+run-state resume continuity.
+All 2,042 IR labels pass (1,526 positives and 516 negatives). The checked
 `benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
 breakdown, including the OpenAI Agents JS and Python safety-check labels added for
 `computerTool({ onSafetyCheck })` and `ComputerTool(on_safety_check=...)`, plus OpenAI Agents JS
 run-state approval-decision labels for JS and Python state approve/reject handling, persistence,
 custom rejection messages, JS env-backed approve branches, TypeScript local/helper reject-message
-metadata, and clean reject/reassigned near misses.
+metadata, helper-derived state resumes, and clean reject/reassigned near misses.

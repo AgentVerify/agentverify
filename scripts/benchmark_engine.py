@@ -729,6 +729,14 @@ def main() -> int:
             and item.attributes.get("analysis")
             == "typescript-openai-agents-run-state-approval-decision"
         ]
+        typescript_openai_run_state_continuities = [
+            item
+            for item in ir.components
+            if item.kind == "control"
+            and item.name == "conversation-continuity"
+            and item.attributes.get("analysis")
+            == "typescript-openai-agents-run-state-continuity"
+        ]
         python_agno_mcp_confirmation_servers = [
             item
             for item in ir.components
@@ -2283,6 +2291,34 @@ def main() -> int:
                 ),
                 "repositories": bool(typescript_openai_run_state_approval_decisions),
             },
+            "typescript_openai_run_state_continuity": {
+                "total": len(typescript_openai_run_state_continuities),
+                "helper_parameter_state_resumes": sum(
+                    item.attributes.get("resolution") == "same-file-helper-parameter-run-state"
+                    for item in typescript_openai_run_state_continuities
+                ),
+                "configured_by_edges": sum(
+                    edge.source_kind == "agent"
+                    and edge.relation == "configured-by"
+                    and edge.target_kind == "control"
+                    and edge.target_name == "conversation-continuity"
+                    and edge.attributes.get("analysis")
+                    == "typescript-openai-agents-run-state-continuity"
+                    for edge in ir.relationships
+                ),
+                "helper_parameter_state_resume_edges": sum(
+                    edge.source_kind == "agent"
+                    and edge.relation == "configured-by"
+                    and edge.target_kind == "control"
+                    and edge.target_name == "conversation-continuity"
+                    and edge.attributes.get("analysis")
+                    == "typescript-openai-agents-run-state-continuity"
+                    and edge.attributes.get("resolution")
+                    == "same-file-helper-parameter-run-state"
+                    for edge in ir.relationships
+                ),
+                "repositories": bool(typescript_openai_run_state_continuities),
+            },
             "python_agno_mcp_confirmation": {
                 "servers": len(python_agno_mcp_confirmation_servers),
                 "writable_servers": sum(
@@ -3063,7 +3099,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 130,
+        "schema_version": 131,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -3731,6 +3767,19 @@ def main() -> int:
                     "literal_rejection_messages",
                     "template_rejection_messages",
                     "dynamic_rejection_messages",
+                    "repositories",
+                )
+            },
+            "typescript_openai_run_state_continuity": {
+                name: sum(
+                    result["typescript_openai_run_state_continuity"][name]
+                    for result in successful
+                )
+                for name in (
+                    "total",
+                    "helper_parameter_state_resumes",
+                    "configured_by_edges",
+                    "helper_parameter_state_resume_edges",
                     "repositories",
                 )
             },

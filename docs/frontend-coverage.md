@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v130
+framework, wrapper, or configuration path. Counts come from schema-v131
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -766,6 +766,9 @@ exact run-state approval or rejection decision controls overall, including four 
 controls from the computer-use HITL example, four env-backed approve branches, and two template
 custom-rejection messages; local regression fixtures add boolean-binding, direct-call, reject,
 reassigned-guard, lexical helper-call, and unproven-helper negative coverage.
+The same narrow helper model now also contributes TypeScript run-state continuity: the pinned
+`computer-use-hitl.ts` `runWithHitl(agent, ...)` helper records two helper-parameter state resumes
+out of eight TypeScript OpenAI run-state continuity controls and eight configured-by resume edges.
 
 The Python frontend inventories 449 canonical/import/callable-aliased and proven-`Path` mutations:
 179 creates, 191 deletes, 46 copies, and 33 moves. Of these, 434 use non-literal path expressions;
@@ -1069,7 +1072,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 729-label rule truth set and 2,038-label IR component/relationship set are curated regression
+The 729-label rule truth set and 2,042-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

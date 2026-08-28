@@ -24,8 +24,9 @@
 - Continue OpenAI Agents JS HITL and safety-governance extraction where evidence remains exact:
   richer `needsApproval` predicate quality, automatic approval bypasses, and `computerTool`
   `onSafetyCheck` callbacks that distinguish explicit user/policy review from pass-through
-  acknowledgement, plus direct resume/continuity relationships for same-file helper state flows
-  only when they can stay call-site and source-agent exact.
+  acknowledgement. Same-file helper-derived run-state resumes are now covered for the narrow
+  exact-agent-parameter pattern; future helper work should focus only on richer predicate/action
+  quality or new exact helper shapes that preserve call-site and source-agent identity.
 - Continue OpenAI Agents Python safety-governance extraction where evidence remains exact: callbacks
   that distinguish explicit user/policy review from unconditional acknowledgement, and production
   sticky-approval defaults that can be separated from prompt-selected `always_approve`/
@@ -54,11 +55,11 @@
   in a caller-owned variable across repeated helper calls, but the current same-block scanner should
   not infer that without a narrowly validated function/call-state model.
 - Explore the remaining OpenAI Agents JS HITL approval-state gaps only if they can stay exact:
-  compound callback predicate quality, automatic approval bypasses, direct helper-derived resume
-  relationships, and any more complex serialized state flows beyond same-file literal
+  compound callback predicate quality, automatic approval bypasses, and any more complex serialized
+  state flows beyond same-file literal
   `writeFile`/`readFile` or direct `.toString()` chains. Direct `result.state`, bound-state,
   narrowly restored `RunState.fromString`, and non-exported async helper-parameter approval
-  decisions are now inventoried as `approval-decision` controls; generic tools, delegated-agent
+  decisions plus helper-derived state resumes are now inventoried; generic tools, delegated-agent
   adapters, and approval-capable builtin tools now distinguish literal approval from
   callback-controlled `needsApproval`, and the first shallow literal predicate metadata is now
   recorded for prefix/contains/literal-set checks. `computerTool({ onSafetyCheck })` pass-through

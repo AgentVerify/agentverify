@@ -487,5 +487,24 @@
   same-named `agent` binding as source proof. Rejected because the real file already has repeated
   scoped `const agent` bindings, and arbitrary helper parameters would turn state-like methods into
   false approval evidence.
-- Revisit when: a similarly narrow model can add helper-derived resume/continuity relationships or
-  can prove exported helper calls without accepting mixed/unproven call sites.
+- Revisit when: a similarly narrow model can prove exported helper calls without accepting
+  mixed/unproven call sites.
+
+## OpenAI Agents JS helper-parameter state resumes require exact helper-local state provenance
+
+- Decision: Resolve TypeScript OpenAI Agents SDK run-state resume continuity through the same
+  same-file helper-parameter model only when the helper proves `run(agentParam, ...) ->
+  result.state` and later passes that exact unreassigned state binding as the second argument to
+  imported SDK `run(agentParam, state)`. Helper-derived continuity control IDs include the helper
+  call line, and configured-by resume edges keep `helper_resume_line` and `helper_state_line`
+  provenance.
+- Evidence: The local `cases/typescript_openai_helper_hitl` fixture now emits two separate
+  `conversation-continuity` controls and resume edges for two sibling lexical `const agent` call
+  sites. The pinned OpenAI Agents JS `examples/tools/computer-use-hitl.ts` helper emits two
+  real-corpus helper-parameter state resumes tied to the singleton and per-request browser agents.
+- Alternative: Infer continuity for arbitrary helper parameters, exported helpers, or state-like
+  variables passed to helper calls. Rejected because that would collapse caller identity and turn
+  helper implementation details into cross-procedural claims without exact source-agent proof.
+- Revisit when: a broader interprocedural call-state model can retain per-call-site identity,
+  reject mixed/unproven call sites, and prove exported/imported helper bodies without repository-wide
+  name matching.

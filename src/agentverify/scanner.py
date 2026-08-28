@@ -12715,6 +12715,16 @@ class TypeScriptOpenAIRunStateHelperDecision:
     rejection_message_attributes: dict[str, object]
 
 
+@dataclass(frozen=True)
+class TypeScriptOpenAIRunStateHelperContinuity:
+    helper_name: str
+    result_binding: str
+    state_binding: str
+    state_line: int
+    resume_line: int
+    symbol_identity: str
+
+
 TypeScriptSandboxManifestControl = tuple[str, str]
 TypeScriptSandboxManifestBinding = tuple[int, list[TypeScriptSandboxManifestControl]]
 
@@ -16665,6 +16675,7 @@ def add_typescript_openai_run_state_continuity_control(
     state_binding: str | None,
     source_agent: tuple[str, str],
     symbol_identity: str,
+    extra_attributes: dict[str, object] | None = None,
 ) -> tuple[str, str]:
     """Add exact OpenAI Agents JS run-state resume evidence."""
     source_agent_name, source_agent_id = source_agent
@@ -16683,6 +16694,8 @@ def add_typescript_openai_run_state_continuity_control(
         attributes["state_binding"] = state_binding
     else:
         attributes["state_binding"] = "inline-result-state"
+    if extra_attributes:
+        attributes.update(extra_attributes)
     ir.add_component(
         Component(
             "control",
@@ -16859,7 +16872,10 @@ def typescript_openai_run_state_helper_decisions(
     agent_type_bindings: set[str],
     approval_bypass_function_summaries: dict[str, tuple[str, ...]],
     literal_bindings: dict[str, str],
-) -> dict[str, tuple[TypeScriptOpenAIRunStateHelperDecision, ...]]:
+) -> tuple[
+    dict[str, tuple[TypeScriptOpenAIRunStateHelperDecision, ...]],
+    dict[str, tuple[TypeScriptOpenAIRunStateHelperContinuity, ...]],
+]:
     """Summarize narrow same-file OpenAI Agents run-state decisions in helper bodies.
 
     This intentionally models only non-exported async function declarations whose first
@@ -16867,14 +16883,21 @@ def typescript_openai_run_state_helper_decisions(
     proven from imported SDK ``run(agentParam, ...)`` calls inside the same body.
     """
     if not run_bindings or not agent_type_bindings:
-        return {}
+        return {}, {}
     code = typescript_code_mask(text)
     function_pattern = re.compile(
         r"\b(?P<export>export\s+)?async\s+function\s+"
         r"(?P<name>[A-Za-z_$][\w$]*)\s*\("
     )
-    summaries: dict[str, tuple[TypeScriptOpenAIRunStateHelperDecision, ...]] = {}
-    helper_candidates: list[tuple[str, tuple[TypeScriptOpenAIRunStateHelperDecision, ...]]] = []
+    decision_summaries: dict[str, tuple[TypeScriptOpenAIRunStateHelperDecision, ...]] = {}
+    continuity_summaries: dict[str, tuple[TypeScriptOpenAIRunStateHelperContinuity, ...]] = {}
+    helper_candidates: list[
+        tuple[
+            str,
+            tuple[TypeScriptOpenAIRunStateHelperDecision, ...],
+            tuple[TypeScriptOpenAIRunStateHelperContinuity, ...],
+        ]
+    ] = []
 
     for function_match in function_pattern.finditer(code):
         if function_match.group("export"):
@@ -16953,7 +16976,7 @@ def typescript_openai_run_state_helper_decisions(
                 seen_result_assignments.add(assignment_key)
                 result_sources[result_name].append(body_start + call_end)
 
-        state_sources: dict[str, list[tuple[str, int]]] = defaultdict(list)
+        state_sources: dict[str, list[tuple[str, int, int]]] = defaultdict(list)
         state_patterns = (
             re.compile(
                 r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*(?::\s*[^=;\n]+)?=\s*"
@@ -16991,7 +17014,68 @@ def typescript_openai_run_state_helper_decisions(
                 if state_key in seen_state_assignments:
                     continue
                 seen_state_assignments.add(state_key)
-                state_sources[state_name].append((result_name, body_start + match.end()))
+                state_line = line_at(text, body_start + match.start())
+                state_sources[state_name].append(
+                    (result_name, body_start + match.end(), state_line)
+                )
+
+        helper_continuities: list[TypeScriptOpenAIRunStateHelperContinuity] = []
+        seen_continuities: set[tuple[int, str]] = set()
+        for match in re.finditer(r"\b([A-Za-z_$][\w$]*)\s*\(", body_code):
+            if match.start() > 0 and body_code[match.start() - 1] == ".":
+                continue
+            if match.group(1) not in run_bindings:
+                continue
+            call_opening = body_code.find("(", match.start(), match.end())
+            call_end = typescript_balanced_end(body_code, call_opening, "(", ")")
+            if call_end is None:
+                continue
+            arguments = typescript_call_arguments(
+                body[call_opening + 1 : call_end - 1],
+                body_start + call_opening + 1,
+            )
+            if len(arguments) < 2:
+                continue
+            agent_argument = typescript_code_mask(arguments[0][0]).strip()
+            if agent_argument != agent_parameter:
+                continue
+            state_argument = typescript_code_mask(arguments[1][0]).strip()
+            state_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", state_argument)
+            if state_identifier is None:
+                continue
+            state_name = state_identifier.group(0)
+            source_record = next(
+                (
+                    (candidate_result, candidate_end, candidate_line)
+                    for candidate_result, candidate_end, candidate_line in reversed(
+                        state_sources.get(state_name, [])
+                    )
+                    if candidate_end <= arguments[1][1]
+                ),
+                None,
+            )
+            if source_record is None:
+                continue
+            result_name, source_end, state_line = source_record
+            if re.search(
+                rf"(?<![\w$.]){re.escape(state_name)}\s*=(?!=)",
+                body_code[source_end - body_start : arguments[1][1] - body_start],
+            ):
+                continue
+            continuity_key = (body_start + match.start(), state_name)
+            if continuity_key in seen_continuities:
+                continue
+            seen_continuities.add(continuity_key)
+            helper_continuities.append(
+                TypeScriptOpenAIRunStateHelperContinuity(
+                    helper_name=function_match.group("name"),
+                    result_binding=result_name,
+                    state_binding=state_name,
+                    state_line=state_line,
+                    resume_line=line_at(text, body_start + match.start()),
+                    symbol_identity=f"{state_name}.state@{state_line}",
+                )
+            )
 
         helper_decisions: list[TypeScriptOpenAIRunStateHelperDecision] = []
         approval_decision_pattern = re.compile(
@@ -17028,7 +17112,7 @@ def typescript_openai_run_state_helper_decisions(
                 source_record = next(
                     (
                         (candidate_result, candidate_end)
-                        for candidate_result, candidate_end in reversed(
+                        for candidate_result, candidate_end, _ in reversed(
                             state_sources.get(receiver_name, [])
                         )
                         if candidate_end <= body_start + match.start()
@@ -17079,14 +17163,21 @@ def typescript_openai_run_state_helper_decisions(
                     rejection_message_attributes=rejection_message_attributes,
                 )
             )
-        if helper_decisions:
-            helper_candidates.append((function_match.group("name"), tuple(helper_decisions)))
+        if helper_decisions or helper_continuities:
+            helper_candidates.append(
+                (
+                    function_match.group("name"),
+                    tuple(helper_decisions),
+                    tuple(helper_continuities),
+                )
+            )
 
-    counts = Counter(name for name, _ in helper_candidates)
-    for name, decisions in helper_candidates:
+    counts = Counter(name for name, _, _ in helper_candidates)
+    for name, decisions, continuities in helper_candidates:
         if counts[name] == 1:
-            summaries[name] = decisions
-    return summaries
+            decision_summaries[name] = decisions
+            continuity_summaries[name] = continuities
+    return decision_summaries, continuity_summaries
 
 
 def add_typescript_openai_sandbox_path_grant_control(
@@ -19876,7 +19967,10 @@ def typescript_graph(
         for local_name, imported_name in openai_agents_imports.items()
         if imported_name == "Agent" and not typescript_import_binding_is_shadowed(text, local_name)
     }
-    openai_run_state_helper_decisions = typescript_openai_run_state_helper_decisions(
+    (
+        openai_run_state_helper_decisions,
+        openai_run_state_helper_continuities,
+    ) = typescript_openai_run_state_helper_decisions(
         text,
         run_bindings=run_bindings,
         agent_type_bindings=agent_type_bindings,
@@ -20359,10 +20453,50 @@ def typescript_graph(
             rejection_message_attributes=rejection_message_attributes,
         )
 
-    for helper_name, helper_decisions in openai_run_state_helper_decisions.items():
+    def add_conversation_session_relationship(
+        *,
+        agent_target: tuple[str, str],
+        run_line: int,
+        session_control: tuple[str, str],
+        configuration: str,
+        binding: str,
+        analysis: str,
+        extra_attributes: dict[str, object] | None = None,
+    ) -> None:
+        agent_name, agent_id = agent_target
+        session_name, session_id = session_control
+        attributes: dict[str, object] = {
+            "analysis": analysis,
+            "configuration": configuration,
+            "binding": binding,
+        }
+        if extra_attributes:
+            attributes.update(extra_attributes)
+        ir.add_relationship(
+            Relationship(
+                "agent",
+                agent_name,
+                "configured-by",
+                "control",
+                session_name,
+                Evidence(relative, run_line, excerpt(lines, run_line)),
+                attributes,
+                source_id=agent_id,
+                target_id=session_id,
+            )
+        )
+
+    for helper_name in sorted(
+        set(openai_run_state_helper_decisions) | set(openai_run_state_helper_continuities)
+    ):
+        helper_decisions = openai_run_state_helper_decisions.get(helper_name, ())
+        helper_continuities = openai_run_state_helper_continuities.get(helper_name, ())
         call_pattern = re.compile(rf"(?<![\w$.]){re.escape(helper_name)}\s*\(")
         for match in call_pattern.finditer(code):
-            if re.search(r"\bfunction\s+$", code[max(0, match.start() - 24) : match.start()]):
+            if re.search(
+                r"\b(?:async\s+)?function\s+$",
+                code[max(0, match.start() - 32) : match.start()],
+            ):
                 continue
             opening = code.find("(", match.start(), match.end())
             end = typescript_balanced_end(code, opening, "(", ")")
@@ -20383,6 +20517,44 @@ def typescript_graph(
             if source is None:
                 continue
             call_line = line_at(text, match.start())
+            base_extra_attributes: dict[str, object] = {
+                "resolution": "same-file-helper-parameter-run-state",
+                "helper": helper_name,
+                "helper_call_line": call_line,
+                "agent_argument": agent_argument_name,
+            }
+            for helper_continuity in helper_continuities:
+                continuity_attributes = {
+                    **base_extra_attributes,
+                    "helper_resume_line": helper_continuity.resume_line,
+                    "helper_state_line": helper_continuity.state_line,
+                }
+                continuity_control = add_typescript_openai_run_state_continuity_control(
+                    ir,
+                    relative=relative,
+                    lines=lines,
+                    line=helper_continuity.state_line,
+                    result_binding=(
+                        f"{helper_name}.{helper_continuity.result_binding}:call{call_line}"
+                    ),
+                    state_binding=(
+                        f"{helper_name}.{helper_continuity.state_binding}:call{call_line}"
+                    ),
+                    source_agent=source,
+                    symbol_identity=(
+                        f"{helper_name}.{helper_continuity.symbol_identity}:call{call_line}"
+                    ),
+                    extra_attributes=continuity_attributes,
+                )
+                add_conversation_session_relationship(
+                    agent_target=source,
+                    run_line=helper_continuity.resume_line,
+                    session_control=continuity_control,
+                    configuration="run-state-input",
+                    binding="state-input",
+                    analysis="typescript-openai-agents-run-state-continuity",
+                    extra_attributes=continuity_attributes,
+                )
             for helper_decision in helper_decisions:
                 state_binding = (
                     None
@@ -20408,42 +20580,10 @@ def typescript_graph(
                     ),
                     rejection_message_attributes=(helper_decision.rejection_message_attributes),
                     extra_attributes={
-                        "resolution": "same-file-helper-parameter-run-state",
-                        "helper": helper_name,
-                        "helper_call_line": call_line,
+                        **base_extra_attributes,
                         "helper_decision_line": helper_decision.line,
-                        "agent_argument": agent_argument_name,
                     },
                 )
-
-    def add_conversation_session_relationship(
-        *,
-        agent_target: tuple[str, str],
-        run_line: int,
-        session_control: tuple[str, str],
-        configuration: str,
-        binding: str,
-        analysis: str,
-    ) -> None:
-        agent_name, agent_id = agent_target
-        session_name, session_id = session_control
-        ir.add_relationship(
-            Relationship(
-                "agent",
-                agent_name,
-                "configured-by",
-                "control",
-                session_name,
-                Evidence(relative, run_line, excerpt(lines, run_line)),
-                {
-                    "analysis": analysis,
-                    "configuration": configuration,
-                    "binding": binding,
-                },
-                source_id=agent_id,
-                target_id=session_id,
-            )
-        )
 
     def conversation_session_from_options(
         options: str,

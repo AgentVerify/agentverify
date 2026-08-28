@@ -6053,6 +6053,46 @@ def test_typescript_openai_helper_hitl_resolves_lexical_agent_call_sites() -> No
         ].attributes["helper_call_line"]
         == 10
     )
+    continuity_controls = {
+        (component.evidence.path, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control" and component.name == "conversation-continuity"
+    }
+    assert set(continuity_controls) == {
+        ("positive.ts", "ts:positive.ts#control:runWithHitl.state.state@15:call5"),
+        ("positive.ts", "ts:positive.ts#control:runWithHitl.state.state@15:call10"),
+    }
+    assert continuity_controls[
+        ("positive.ts", "ts:positive.ts#control:runWithHitl.state.state@15:call5")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-run-state-continuity",
+        "module": "@openai/agents",
+        "configuration": "run.state",
+        "result_binding": "runWithHitl.result:call5",
+        "source_agent": "First helper agent",
+        "source_agent_id": "ts:positive.ts#agent:agent@4",
+        "state_scope": "openai-run-state-continuity",
+        "scope": "production",
+        "state_binding": "runWithHitl.state:call5",
+        "resolution": "same-file-helper-parameter-run-state",
+        "helper": "runWithHitl",
+        "helper_call_line": 5,
+        "agent_argument": "agent",
+        "helper_resume_line": 21,
+        "helper_state_line": 15,
+    }
+    assert (
+        continuity_controls[
+            ("positive.ts", "ts:positive.ts#control:runWithHitl.state.state@15:call10")
+        ].attributes["source_agent_id"]
+        == "ts:positive.ts#agent:agent@9"
+    )
+    assert (
+        continuity_controls[
+            ("positive.ts", "ts:positive.ts#control:runWithHitl.state.state@15:call10")
+        ].attributes["helper_call_line"]
+        == 10
+    )
 
     edges = {
         (
@@ -6081,10 +6121,40 @@ def test_typescript_openai_helper_hitl_resolves_lexical_agent_call_sites() -> No
             "ts:positive.ts#control:runWithHitl.state.reject@17:call10",
         ),
     }
+    continuity_edges = {
+        (
+            relationship.source_name,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            relationship.target_id,
+            relationship.attributes["helper_call_line"],
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "configured-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "conversation-continuity"
+    }
+    assert continuity_edges == {
+        (
+            "First helper agent",
+            "positive.ts",
+            21,
+            "ts:positive.ts#control:runWithHitl.state.state@15:call5",
+            5,
+        ),
+        (
+            "Second helper agent",
+            "positive.ts",
+            21,
+            "ts:positive.ts#control:runWithHitl.state.state@15:call10",
+            10,
+        ),
+    }
     assert not any(
         component.evidence.path == "negative.ts"
         and component.kind == "control"
-        and component.name == "approval-decision"
+        and component.name in {"approval-decision", "conversation-continuity"}
         for component in ir.components
     )
 
