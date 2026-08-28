@@ -18,8 +18,8 @@
   where evidence remains exact, especially additional Manifest/sandbox policy fields, additional
   `MemorySession`/server-managed conversation implementation semantics, or agent/session
   composition edges beyond the now-covered `client.create(...)`, `defaultManifest`, top-level
-  `session`, and exact `conversationId` bindings, without broadening into ambiguous helper/config
-  composition.
+  `session`, exact `conversationId`, and exact `previousResponseId` bindings, without broadening
+  into ambiguous helper/config composition.
 
 ## P2
 

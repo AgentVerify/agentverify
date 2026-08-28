@@ -30,3 +30,21 @@ const looseConversationId = 'thread_123';
 await run(agent, 'continue loose string state', {
   conversationId: looseConversationId,
 });
+
+declare const loosePreviousResponseId: string;
+await run(agent, 'continue loose previous response state', {
+  previousResponseId: loosePreviousResponseId,
+});
+
+const unknownFirst = await unknownRun(agent, 'unknown first run');
+const unknownPreviousResponseId = unknownFirst.lastResponseId;
+await run(agent, 'continue unknown first run state', {
+  previousResponseId: unknownPreviousResponseId,
+});
+
+const first = await run(agent, 'first run before reassigned result');
+first = replacementResult;
+const reassignedPreviousResponseId = first.lastResponseId;
+await run(agent, 'continue reassigned first run state', {
+  previousResponseId: reassignedPreviousResponseId,
+});

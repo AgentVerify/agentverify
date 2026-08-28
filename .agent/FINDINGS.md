@@ -401,6 +401,13 @@
   remain unresolved. The real pinned `examples/docs/running-agents/conversationId.ts` example
   validates 1 control and 2 composition edges; the public IR truth set now covers 1,897 passing
   labels.
+- OpenAI Agents JS `previousResponseId` is conversation-continuity evidence only when it is derived
+  from `.lastResponseId` on a stable local variable that was assigned from an exact imported
+  `run(agent, ...)` call. AgentVerify records a `conversation-continuity` control and links a later
+  `run(..., { previousResponseId })` option back to it. Loose string IDs, unknown run functions,
+  and reassigned result bindings remain unresolved. The real pinned
+  `examples/docs/running-agents/previousResponseId.ts` example validates 1 control and 1
+  composition edge; the public IR truth set now covers 1,904 passing labels.
 
 ## Hypotheses
 

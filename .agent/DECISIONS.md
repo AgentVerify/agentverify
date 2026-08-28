@@ -195,3 +195,19 @@
 - Revisit when: additional official examples show safe, exact aliases such as object-property
   conversation results (`conversation.id`) that can be tied back to `conversations.create(...)`
   without broad flow analysis.
+
+## OpenAI previousResponseId requires proof from a prior run result
+
+- Decision: Treat OpenAI Agents JS `previousResponseId` options as conversation-continuity evidence
+  only when the ID binding is derived from `.lastResponseId` on a stable result variable assigned by
+  an exact imported `run(agent, ...)` call.
+- Evidence: The pinned `examples/docs/running-agents/previousResponseId.ts` example creates
+  `first = await run(agent, ...)`, then derives `previousResponseId = first.lastResponseId`, then
+  passes that value to a later `run(...)`. This proves continuity through SDK result state without
+  relying on arbitrary identifier names.
+- Alternative: Accept any literal/string variable passed as `previousResponseId`. Rejected because
+  a string-shaped ID does not prove it belongs to the OpenAI Agents SDK's previous-response
+  continuity mechanism.
+- Revisit when: official examples show exact inline forms such as
+  `{ previousResponseId: first.lastResponseId }` or continuity through saved run state that can be
+  modeled without broad interprocedural flow.

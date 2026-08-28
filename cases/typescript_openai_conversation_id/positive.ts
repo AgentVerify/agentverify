@@ -18,3 +18,9 @@ const runner = new Runner({
 await runner.run(agent, 'continue this server-managed thread', {
   conversationId,
 });
+
+const first = await run(agent, 'start with previous response continuity');
+const previousResponseId = first.lastResponseId;
+await run(agent, 'continue with the previous response id', {
+  previousResponseId,
+});

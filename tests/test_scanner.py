@@ -5303,6 +5303,26 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         "scope": "production",
     }
 
+    continuity_controls = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control" and component.name == "conversation-continuity"
+    }
+    assert set(continuity_controls) == {
+        ("positive.ts", 23, "ts:positive.ts#control:previousResponseId@23"),
+    }
+    assert continuity_controls[
+        ("positive.ts", 23, "ts:positive.ts#control:previousResponseId@23")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-previous-response",
+        "module": "@openai/agents",
+        "configuration": "run.previousResponseId",
+        "result_binding": "first",
+        "previous_response_id_binding": "previousResponseId",
+        "state_scope": "openai-previous-response-continuity",
+        "scope": "production",
+    }
+
     edges = {
         (
             relationship.source_name,
@@ -5315,7 +5335,7 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         if relationship.source_kind == "agent"
         and relationship.relation == "configured-by"
         and relationship.target_kind == "control"
-        and relationship.target_name == "conversation-session"
+        and relationship.target_name in {"conversation-session", "conversation-continuity"}
     }
     assert edges == {
         (
@@ -5340,16 +5360,27 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
                 ("configuration", "runner-run-session"),
             ),
         ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            24,
+            "ts:positive.ts#control:previousResponseId@23",
+            (
+                ("analysis", "typescript-openai-agents-previous-response"),
+                ("binding", "previousResponseId-shorthand"),
+                ("configuration", "run-session"),
+            ),
+        ),
     }
     assert not any(
         component.evidence.path == "negative.ts"
         and component.kind == "control"
-        and component.name == "conversation-session"
+        and component.name in {"conversation-session", "conversation-continuity"}
         for component in ir.components
     )
     assert not any(
         relationship.evidence.path == "negative.ts"
-        and relationship.target_name == "conversation-session"
+        and relationship.target_name in {"conversation-session", "conversation-continuity"}
         for relationship in ir.relationships
     )
     assert not ir.findings

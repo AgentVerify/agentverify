@@ -16367,6 +16367,38 @@ def add_typescript_openai_server_conversation_control(
     return "conversation-session", control_id
 
 
+def add_typescript_openai_previous_response_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    result_binding: str,
+    previous_response_id_binding: str,
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS previous-response continuity evidence."""
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "conversation-continuity",
+            Evidence(relative, line, excerpt(lines, line)),
+            {
+                "analysis": "typescript-openai-agents-previous-response",
+                "module": "@openai/agents",
+                "configuration": "run.previousResponseId",
+                "result_binding": result_binding,
+                "previous_response_id_binding": previous_response_id_binding,
+                "state_scope": "openai-previous-response-continuity",
+                "scope": source_scope(relative),
+            },
+            control_id,
+        )
+    )
+    return "conversation-continuity", control_id
+
+
 def typescript_string_literal_value(expression: str) -> str | None:
     """Resolve a direct single- or double-quoted TypeScript string literal."""
     match = re.fullmatch(r"\s*(['\"])([^\\\r\n]*?)\1\s*", expression, re.DOTALL)
@@ -18860,6 +18892,59 @@ def typescript_graph(
         for local_name, imported_name in openai_agents_imports.items()
         if imported_name == "run" and not typescript_import_binding_is_shadowed(text, local_name)
     }
+    openai_agents_run_result_bindings: dict[str, tuple[str, str]] = {}
+    run_result_pattern = re.compile(
+        r"\bconst\s+([A-Za-z_$][\w$]*)\s*(?::\s*[^=;\n]+)?=\s*"
+        r"(?:await\s+)?([A-Za-z_$][\w$]*)\s*\("
+    )
+    for match in run_result_pattern.finditer(code):
+        result_name = match.group(1)
+        local_function = match.group(2)
+        if local_function not in run_bindings:
+            continue
+        opening = code.find("(", match.start(2), match.end())
+        end = typescript_balanced_end(code, opening, "(", ")")
+        if end is None:
+            continue
+        arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
+        if not arguments:
+            continue
+        agent_argument = typescript_code_mask(arguments[0][0]).strip()
+        agent_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", agent_argument)
+        if agent_identifier is None:
+            continue
+        agent_target = local_agents.get(agent_identifier.group(0))
+        if agent_target is None:
+            continue
+        if re.search(rf"(?<![\w$.]){re.escape(result_name)}\s*=(?!=)", code[end:]):
+            continue
+        openai_agents_run_result_bindings[result_name] = agent_target
+    previous_response_id_pattern = re.compile(
+        r"\bconst\s+([A-Za-z_$][\w$]*)\s*(?::\s*[^=;\n]+)?=\s*"
+        r"([A-Za-z_$][\w$]*)\s*\.\s*lastResponseId\b"
+    )
+    for match in previous_response_id_pattern.finditer(code):
+        previous_response_id_name = match.group(1)
+        result_name = match.group(2)
+        if result_name not in openai_agents_run_result_bindings:
+            continue
+        if re.search(
+            rf"(?<![\w$.]){re.escape(previous_response_id_name)}\s*=(?!=)",
+            code[match.end() :],
+        ) or typescript_parameter_binding_is_declared(text, previous_response_id_name):
+            continue
+        line = line_at(text, match.start())
+        conversation_session_bindings[previous_response_id_name] = (
+            add_typescript_openai_previous_response_control(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=line,
+                result_binding=result_name,
+                previous_response_id_binding=previous_response_id_name,
+                symbol_identity=f"{previous_response_id_name}@{line}",
+            )
+        )
 
     def add_conversation_session_relationship(
         *,
@@ -18928,6 +19013,31 @@ def typescript_graph(
             if session_control is not None:
                 return session_control, "conversationId-shorthand", (
                     "typescript-openai-agents-server-conversation"
+                )
+        previous_response_id_expression = typescript_object_property_expression(
+            options,
+            "previousResponseId",
+        )
+        if previous_response_id_expression is not None:
+            previous_response_id_code = typescript_code_mask(
+                previous_response_id_expression
+            ).strip()
+            if previous_response_id_identifier := re.fullmatch(
+                r"[A-Za-z_$][\w$]*",
+                previous_response_id_code,
+            ):
+                session_control = conversation_session_bindings.get(
+                    previous_response_id_identifier.group(0)
+                )
+                if session_control is not None:
+                    return session_control, "previousResponseId", (
+                        "typescript-openai-agents-previous-response"
+                    )
+        elif typescript_object_has_shorthand_property(options, "previousResponseId"):
+            session_control = conversation_session_bindings.get("previousResponseId")
+            if session_control is not None:
+                return session_control, "previousResponseId-shorthand", (
+                    "typescript-openai-agents-previous-response"
                 )
         return None
 
