@@ -17762,6 +17762,11 @@ def add_typescript_tool_observation(
         approval_policy = "disabled-default"
     else:
         approval_policy = "unresolved"
+    approval_predicate_attributes = (
+        typescript_openai_needs_approval_predicate_attributes(approval_expression)
+        if approval_policy == "callback-controlled" and approval_expression is not None
+        else {}
+    )
     execution_environment = "unresolved"
     if constructor in TS_OPENAI_SANDBOX_CAPABILITY_FACTORIES:
         execution_environment = "sdk-sandbox"
@@ -17796,6 +17801,7 @@ def add_typescript_tool_observation(
             if approval_policy == "callback-controlled"
             else {}
         ),
+        **approval_predicate_attributes,
         "execution_environment": execution_environment,
         "scope": source_scope(relative),
         **(
@@ -17996,7 +18002,106 @@ def add_typescript_generic_tool(
         tool_by_line[line_number] = (tool_name, tool_id)
 
 
-def typescript_openai_needs_approval_attributes(body: str) -> dict[str, str]:
+def typescript_callback_parameters(expression: str) -> list[str]:
+    """Extract shallow callback parameter texts from a direct arrow callback expression."""
+    code = typescript_code_mask(expression)
+    arrow = code.find("=>")
+    prefix = expression[:arrow].strip() if arrow >= 0 else expression.strip()
+    prefix = re.sub(r"^async\s+", "", prefix).strip()
+    if prefix.startswith("("):
+        prefix_code = typescript_code_mask(prefix)
+        end = typescript_balanced_end(prefix_code, 0, "(", ")")
+        if end is None:
+            return []
+        return [parameter.strip() for parameter, _ in typescript_call_arguments(prefix[1 : end - 1])]
+    first = prefix.split(":", 1)[0].strip()
+    return [first] if first else []
+
+
+def typescript_openai_needs_approval_predicate_attributes(
+    approval_expression: str,
+) -> dict[str, object]:
+    """Resolve exact literal field predicates from one OpenAI needsApproval callback."""
+    parameters = typescript_callback_parameters(approval_expression)
+    if len(parameters) < 2:
+        return {}
+    policy_input_root: str | None = None
+    field_aliases: dict[str, str] = {}
+    second_parameter = parameters[1]
+    if second_parameter.lstrip().startswith("{"):
+        for field in sorted(typescript_destructured_names(second_parameter)):
+            field_aliases[field] = field
+    elif parameter_match := re.match(r"[A-Za-z_$][\w$]*", second_parameter):
+        policy_input_root = parameter_match.group(0)
+    code = typescript_code_mask(approval_expression)
+    arrow = code.find("=>")
+    if arrow < 0:
+        return {}
+    expression_body = approval_expression[arrow + 2 :].strip()
+    expression_body_code = typescript_code_mask(expression_body)
+    if expression_body_code.startswith("{"):
+        opening = expression_body_code.find("{")
+        end = typescript_balanced_end(expression_body_code, opening, "{", "}")
+        if end is None:
+            return {}
+        block = expression_body[:end].strip()
+        return_matches = list(
+            re.finditer(r"\breturn\s+([\s\S]*?)\s*;", typescript_code_mask(block))
+        )
+        if len(return_matches) != 1:
+            return {}
+        expression_body = block[return_matches[0].start(1) : return_matches[0].end(1)].strip()
+        expression_body_code = typescript_code_mask(expression_body)
+    else:
+        expression_body = expression_body.rstrip(";").strip()
+        expression_body_code = typescript_code_mask(expression_body)
+
+    method_match = re.fullmatch(
+        r"\s*([A-Za-z_$][\w$]*)(?:\s*\.\s*([A-Za-z_$][\w$]*))?\s*\.\s*"
+        r"(includes|startsWith)\s*\(\s*(['\"])([^\\\r\n]*?)\4\s*\)\s*",
+        expression_body,
+        re.DOTALL,
+    )
+    if method_match:
+        root = method_match.group(1)
+        member = method_match.group(2)
+        method = method_match.group(3)
+        if member is not None:
+            if policy_input_root is None or root != policy_input_root:
+                return {}
+            field = member
+        else:
+            field = field_aliases.get(root)
+            if field is None:
+                return {}
+        return {
+            "approval_predicate": (
+                "field-contains-literal"
+                if method == "includes"
+                else "field-prefix-literal"
+            ),
+            "approval_predicate_field": field,
+            "approval_predicate_values": [method_match.group(5)],
+        }
+
+    includes_match = re.fullmatch(
+        r"\s*(\[[\s\S]*?\])\s*\.\s*includes\s*\(\s*"
+        r"([A-Za-z_$][\w$]*)\s*\.\s*([A-Za-z_$][\w$]*)\s*\)\s*",
+        expression_body,
+        re.DOTALL,
+    )
+    if includes_match and policy_input_root is not None and includes_match.group(2) == policy_input_root:
+        values = typescript_literal_string_arguments(includes_match.group(1))
+        if values is not None and all(value is not None for value in values):
+            return {
+                "approval_predicate": "field-in-literal-set",
+                "approval_predicate_field": includes_match.group(3),
+                "approval_predicate_values": list(values),
+            }
+    return {}
+
+
+def typescript_openai_needs_approval_attributes(body: str) -> dict[str, object]:
     """Resolve exact OpenAI Agents JS needsApproval metadata from one options object."""
     approval_expression = typescript_object_property_expression(body, "needsApproval")
     if approval_expression == "true":
@@ -18010,6 +18115,7 @@ def typescript_openai_needs_approval_attributes(body: str) -> dict[str, str]:
             "approval_policy": "callback-controlled",
             "approval_handler": "needsApproval-callback",
             "approval_decision": "dynamic-callback",
+            **typescript_openai_needs_approval_predicate_attributes(approval_expression),
         }
     return {}
 

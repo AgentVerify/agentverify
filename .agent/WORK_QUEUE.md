@@ -44,13 +44,14 @@
   in a caller-owned variable across repeated helper calls, but the current same-block scanner should
   not infer that without a narrowly validated function/call-state model.
 - Explore the remaining OpenAI Agents JS HITL approval-state gaps only if they can stay exact:
-  callback predicate quality, automatic approval bypasses, and any more complex serialized state
-  flows beyond same-file literal `writeFile`/`readFile` or direct `.toString()` chains. Direct
+  compound callback predicate quality, automatic approval bypasses, and any more complex serialized
+  state flows beyond same-file literal `writeFile`/`readFile` or direct `.toString()` chains. Direct
   `result.state`, bound-state, and narrowly restored `RunState.fromString` approval decisions are
   now inventoried as `approval-decision` controls; generic tools, delegated-agent adapters, and
   approval-capable builtin tools now distinguish literal approval from callback-controlled
-  `needsApproval`, but AgentVerify still does not claim approval quality without predicate/action
-  evidence.
+  `needsApproval`, and the first shallow literal predicate metadata is now recorded for
+  prefix/contains/literal-set checks. AgentVerify still does not claim full approval quality without
+  broader predicate/action evidence.
 
 ## Deferred until access/authorization
 

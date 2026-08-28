@@ -343,3 +343,22 @@
 - Revisit when: predicate-aware approval-quality analysis can inspect callback bodies and relate
   action/input predicates to risky builtin operations, especially automatic approvals or narrow
   action allowlists.
+
+## OpenAI approval predicate inventory starts with shallow literal predicates
+
+- Decision: Record only exact shallow literal `needsApproval` predicates in OpenAI Agents JS
+  approval metadata: `field.startsWith("literal")`, `field.includes("literal")`, and
+  `["literal", ...].includes(action.field)`. Apply the same vocabulary to generic `tool(...)`,
+  delegated `agent.asTool(...)`, and approval-capable builtin constructors.
+- Evidence: Pinned OpenAI Agents JS examples cover all three shapes: `command.startsWith(...)` in
+  the local CLI fixture, `subject.includes("spam")` in the docs tool definition,
+  `city.includes("Oakland")` and `input.includes("San Francisco")` in HITL examples, and
+  `["click", "type", "keypress"].includes(action.type)` in the computer-use HITL examples.
+  Focused approval-control labels passed 51/51 and the full public IR truth set regenerated at
+  1,987/1,987 passing labels.
+- Alternative: Interpret arbitrary callback bodies or helper calls as approval-quality evidence.
+  Rejected because callback semantics can invert, combine, or delegate decisions in ways that need
+  a real expression model; shallow literal predicates add useful review metadata without claiming
+  complete risky-action coverage.
+- Revisit when: compound boolean predicates, helper-return summaries, or action-specific risk
+  mapping can be modeled and regression-labeled without accepting broad same-named fields.

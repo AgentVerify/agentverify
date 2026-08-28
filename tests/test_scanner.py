@@ -2550,6 +2550,9 @@ def test_typescript_literal_approval_governs_only_its_tool() -> None:
         "approval_policy": "callback-controlled",
         "approval_handler": "needsApproval-callback",
         "approval_decision": "dynamic-callback",
+        "approval_predicate": "field-prefix-literal",
+        "approval_predicate_field": "command",
+        "approval_predicate_values": ["git status"],
     }
     assert tools["disabledApproval"] == {
         "constructor": "tool",
@@ -3724,6 +3727,9 @@ def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> Non
     assert tools["computerTool@38"].attributes["approval_policy"] == "callback-controlled"
     assert tools["computerTool@38"].attributes["approval_handler"] == "needsApproval-callback"
     assert tools["computerTool@38"].attributes["approval_decision"] == "dynamic-callback"
+    assert tools["computerTool@38"].attributes["approval_predicate"] == "field-in-literal-set"
+    assert tools["computerTool@38"].attributes["approval_predicate_field"] == "type"
+    assert tools["computerTool@38"].attributes["approval_predicate_values"] == ["click", "type"]
 
     operator_edges = [
         edge
@@ -3779,6 +3785,9 @@ def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> Non
                 "approval_policy": "callback-controlled",
                 "approval_handler": "needsApproval-callback",
                 "approval_decision": "dynamic-callback",
+                "approval_predicate": "field-contains-literal",
+                "approval_predicate_field": "input",
+                "approval_predicate_values": ["deploy"],
             },
         ),
     ]

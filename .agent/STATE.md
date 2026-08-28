@@ -498,6 +498,12 @@ catalog workflows.
   the older unresolved-handler fallback, while literal approval semantics remain unchanged. Local
   fixtures plus the real OpenAI Agents JS `examples/tools/computer-use-hitl.ts` singleton and
   per-request examples raised regenerated public IR truth-set results to 1,977 passing labels.
+- Added a first exact OpenAI Agents JS approval-predicate inventory slice. Callback-valued
+  `needsApproval` now records narrow literal predicate metadata for field prefix checks, field
+  substring checks, and field-in-literal-set checks across generic `tool(...)`, delegated
+  `agent.asTool(...)`, and approval-capable builtin tool constructors. Local fixtures plus real
+  OpenAI Agents JS docs/HITL/computer-use examples raised regenerated public IR truth-set results to
+  1,987 passing labels.
 
 ## Current findings
 
@@ -587,6 +593,10 @@ catalog workflows.
   literal `needsApproval: true` proves always-enabled approval metadata, while callback-valued
   `needsApproval` is callback-controlled policy evidence, not unresolved handler evidence and not
   full human-approval coverage until predicate/action coverage is analyzed.
+- The first OpenAI Agents JS predicate-quality inventory is intentionally literal and shallow:
+  `field.startsWith("literal")`, `field.includes("literal")`, and
+  `["literal"].includes(action.field)` are recorded, while compound conditions, helper calls, and
+  nonliteral values remain callback-controlled without predicate attributes.
 
 ## Blockers
 
@@ -603,7 +613,7 @@ work, keep local `MemorySession`, server-managed `conversationId`, `previousResp
 same-block `result.history`, same-file `result.state`, and serialized `RunState.fromString` resume
 semantics distinct. For OpenAI approval work, keep literal always-approval, callback-controlled
 approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
-approval metadata, SDK state approval decisions, and proven human approval/resume handling separate.
-For performance work, use `--progress` plus focused
+approval metadata, literal predicate metadata, SDK state approval decisions, and proven human
+approval/resume handling separate. For performance work, use `--progress` plus focused
 `--scan-label-paths` only when the target labels are self-contained; broader benchmark acceleration
 likely needs dependency-aware path expansion or scan-result reuse to preserve cross-file evidence.

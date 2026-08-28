@@ -460,6 +460,12 @@
   callback-controlled approval policy evidence, not an unresolved handler; AgentVerify still withholds
   full human-approval coverage until predicate/action quality is analyzed. The public IR truth set
   now covers 1,977 passing labels.
+- OpenAI Agents JS approval predicates can be made visible without overclaiming full approval
+  coverage when the callback body is a shallow literal field predicate. AgentVerify now records
+  prefix, contains, and literal-set predicate metadata for exact `needsApproval` callbacks across
+  generic tools, delegated-agent tools, and approval-capable builtin tools. Real OpenAI docs/HITL
+  and computer-use examples validate these forms, and the public IR truth set now covers 1,987
+  passing labels.
 
 ## Hypotheses
 
