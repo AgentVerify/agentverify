@@ -352,6 +352,13 @@
   immutable module-level string bindings become `sandbox-working-directory` controls linked from the
   runtime; dynamic cwd expressions remain unresolved. The public IR truth set now covers 1,856
   passing labels.
+- Exact OpenAI Agents JS Manifest composition now preserves policy-control provenance across direct
+  consumers. `client.create(manifest)`, `client.create({ manifest })`, and
+  `SandboxAgent({ defaultManifest: manifest })` add `configured-by` edges from the proven
+  `sandbox-runtime` or agent to the exact Manifest controls; same-file helper calls are accepted
+  only when one helper has one top-level `return new Manifest(...)`, allowing real `buildManifest()`
+  examples without guessing through ambiguous composition. The public IR truth set now covers 1,868
+  passing labels.
 
 ## Hypotheses
 

@@ -243,3 +243,31 @@ const dynamicCwdAgent = new SandboxAgent({
 await run(dynamicCwdAgent, 'summarize the dynamic task workspace', {
   sandbox: { session, cwd: dynamicCwd },
 });
+
+function buildLinkedManifest() {
+  return new Manifest({
+    entries: {
+      'linked-task.md': file({ content: 'Summarize the linked manifest.' }),
+    },
+    environment: {
+      NODE_ENV: 'test',
+    },
+  });
+}
+
+const linkedManifest = buildLinkedManifest();
+const linkedSession = await client.create(linkedManifest);
+const linkedManifestAgent = new SandboxAgent({
+  name: 'Linked Manifest Sandbox',
+  defaultManifest: linkedManifest,
+  capabilities: [shell()],
+});
+await run(linkedManifestAgent, 'inspect the linked manifest workspace', {
+  sandbox: { session: linkedSession },
+});
+
+const objectManifest = new Manifest({
+  root: '/object-workspace',
+});
+const objectManifestSession = await client.create({ manifest: objectManifest });
+void objectManifestSession;

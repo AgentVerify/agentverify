@@ -398,6 +398,12 @@ catalog workflows.
   become `sandbox-working-directory` controls linked to the runtime; dynamic cwd values remain
   unresolved. Local fixtures plus the real `shared-session-workdirs.ts` example raised regenerated
   public IR truth-set results to 1,856 passing labels.
+- Added exact OpenAI Agents JS Manifest composition links from proven consumers back to emitted
+  Manifest policy controls. `client.create(manifest)`, `client.create({ manifest })`,
+  `SandboxAgent({ defaultManifest: manifest })`, and same-file one-return Manifest helper calls now
+  add `configured-by` edges to entries, workspace roots, path grants, and environment controls while
+  ambiguous helpers and dynamic Manifest values remain unresolved. Local fixtures plus real OpenAI
+  Agents JS examples raised regenerated public IR truth-set results to 1,868 passing labels.
 
 ## Current findings
 
@@ -479,6 +485,7 @@ catalog workflows.
 
 ## Next action
 
-Continue toward the highest-value local P1/P2 work: additional real-world framework coverage
-without broad name matching, concrete CI/editor integration fixtures, or release-artifact checks that
-stay local until release publishing is explicit.
+Continue toward the highest-value local P1/P2 work: additional exact OpenAI Agents JS sandbox
+policy fields, real-world framework coverage without broad name matching, concrete CI/editor
+integration fixtures, or release-artifact checks that stay local until release publishing is
+explicit.

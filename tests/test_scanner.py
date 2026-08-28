@@ -4460,6 +4460,11 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
             218,
             "ts:positive.ts#control:nestedManifest.entry0.memories/engineering/notes.md@218",
         ),
+        (
+            "positive.ts",
+            250,
+            "ts:positive.ts#control:manifestReturn@248.entry0.linked-task.md@250",
+        ),
     }
     assert manifest_entries[
         (
@@ -4639,6 +4644,27 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         "entry_type": "file",
         "content_present": True,
     }
+    assert manifest_entries[
+        (
+            "positive.ts",
+            250,
+            "ts:positive.ts#control:manifestReturn@248.entry0.linked-task.md@250",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-manifest-entry",
+        "module": "@openai/agents/sandbox",
+        "constructor": "Manifest",
+        "imported_symbol": "Manifest",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "entries",
+        "entry_name": "linked-task.md",
+        "entry_source": "literal-file",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": "production",
+        "entry_factory": "file",
+        "content_present": True,
+    }
 
     manifest_environment = {
         (component.evidence.path, component.evidence.line, component.symbol_id): component
@@ -4655,6 +4681,11 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
             "positive.ts",
             181,
             "ts:positive.ts#control:grantManifest.environment.SANDBOX_TOKEN@181",
+        ),
+        (
+            "positive.ts",
+            253,
+            "ts:positive.ts#control:manifestReturn@248.environment.NODE_ENV@253",
         ),
     }
     assert manifest_environment[
@@ -4697,6 +4728,26 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         "value_resolution": "literal",
         "value_redacted": True,
     }
+    assert manifest_environment[
+        (
+            "positive.ts",
+            253,
+            "ts:positive.ts#control:manifestReturn@248.environment.NODE_ENV@253",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-manifest-environment",
+        "module": "@openai/agents/sandbox",
+        "constructor": "Manifest",
+        "imported_symbol": "Manifest",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "environment",
+        "environment_variable": "NODE_ENV",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": "production",
+        "value_resolution": "literal",
+        "value": "test",
+    }
 
     workspace_roots = {
         (component.evidence.path, component.evidence.line, component.symbol_id): component
@@ -4708,6 +4759,11 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
             "positive.ts",
             201,
             "ts:positive.ts#control:rootedManifest.root@201",
+        ),
+        (
+            "positive.ts",
+            270,
+            "ts:positive.ts#control:objectManifest.root@270",
         ),
     }
     assert workspace_roots[
@@ -4728,6 +4784,118 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         "execution_environment": "sdk-sandbox",
         "sandbox_policy": "openai-agents-sdk-sandbox",
         "scope": "production",
+    }
+    assert workspace_roots[
+        (
+            "positive.ts",
+            270,
+            "ts:positive.ts#control:objectManifest.root@270",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-manifest-root",
+        "module": "@openai/agents/sandbox",
+        "constructor": "Manifest",
+        "imported_symbol": "Manifest",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "root",
+        "root_path": "/object-workspace",
+        "root_path_resolution": "literal",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": "production",
+    }
+
+    manifest_composition_edges = {
+        (
+            relationship.source_kind,
+            relationship.source_name,
+            relationship.source_id,
+            relationship.target_name,
+            relationship.target_id,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            tuple(sorted(relationship.attributes.items())),
+        )
+        for relationship in ir.relationships
+        if relationship.attributes.get("analysis")
+        == "typescript-openai-sandbox-manifest-composition"
+    }
+    assert manifest_composition_edges == {
+        (
+            "control",
+            "sandbox-runtime",
+            "ts:positive.ts#control:client@39",
+            "sandbox-environment-variable",
+            "ts:positive.ts#control:manifestReturn@248.environment.NODE_ENV@253",
+            "positive.ts",
+            259,
+            (
+                ("analysis", "typescript-openai-sandbox-manifest-composition"),
+                ("binding", "identifier"),
+                ("configuration", "client.create"),
+                ("manifest_binding", "linkedManifest"),
+            ),
+        ),
+        (
+            "control",
+            "sandbox-runtime",
+            "ts:positive.ts#control:client@39",
+            "sandbox-manifest-entry",
+            "ts:positive.ts#control:manifestReturn@248.entry0.linked-task.md@250",
+            "positive.ts",
+            259,
+            (
+                ("analysis", "typescript-openai-sandbox-manifest-composition"),
+                ("binding", "identifier"),
+                ("configuration", "client.create"),
+                ("manifest_binding", "linkedManifest"),
+            ),
+        ),
+        (
+            "agent",
+            "Linked Manifest Sandbox",
+            "ts:positive.ts#agent:linkedManifestAgent",
+            "sandbox-environment-variable",
+            "ts:positive.ts#control:manifestReturn@248.environment.NODE_ENV@253",
+            "positive.ts",
+            262,
+            (
+                ("analysis", "typescript-openai-sandbox-manifest-composition"),
+                ("binding", "identifier"),
+                ("configuration", "defaultManifest"),
+                ("manifest_binding", "linkedManifest"),
+            ),
+        ),
+        (
+            "agent",
+            "Linked Manifest Sandbox",
+            "ts:positive.ts#agent:linkedManifestAgent",
+            "sandbox-manifest-entry",
+            "ts:positive.ts#control:manifestReturn@248.entry0.linked-task.md@250",
+            "positive.ts",
+            262,
+            (
+                ("analysis", "typescript-openai-sandbox-manifest-composition"),
+                ("binding", "identifier"),
+                ("configuration", "defaultManifest"),
+                ("manifest_binding", "linkedManifest"),
+            ),
+        ),
+        (
+            "control",
+            "sandbox-runtime",
+            "ts:positive.ts#control:client@39",
+            "sandbox-workspace-root",
+            "ts:positive.ts#control:objectManifest.root@270",
+            "positive.ts",
+            272,
+            (
+                ("analysis", "typescript-openai-sandbox-manifest-composition"),
+                ("binding", "manifest-property-identifier"),
+                ("configuration", "client.create"),
+                ("manifest_binding", "objectManifest"),
+            ),
+        ),
     }
 
     working_directories = {
@@ -4907,6 +5075,13 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
             "ts:positive.ts#control:client@39",
             "session-shorthand",
         ),
+        (
+            "Linked Manifest Sandbox",
+            "positive.ts",
+            265,
+            "ts:positive.ts#control:client@39",
+            "session",
+        ),
     }
     as_tool_edges = [
         edge
@@ -4959,6 +5134,12 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         and component.kind == "control"
         and component.name == "sandbox-working-directory"
         for component in ir.components
+    )
+    assert not any(
+        relationship.evidence.path == "negative.ts"
+        and relationship.attributes.get("analysis")
+        == "typescript-openai-sandbox-manifest-composition"
+        for relationship in ir.relationships
     )
     assert not ir.findings
 

@@ -12597,6 +12597,10 @@ class TypeScriptLiteralStringBinding:
     declaration_end: int
 
 
+TypeScriptSandboxManifestControl = tuple[str, str]
+TypeScriptSandboxManifestBinding = tuple[int, list[TypeScriptSandboxManifestControl]]
+
+
 @dataclass(frozen=True)
 class TypeScriptProviderFunction:
     name: str
@@ -16351,11 +16355,12 @@ def add_typescript_openai_sandbox_path_grants_from_arguments(
     local_constructor: str,
     manifest_name: str,
     immutable_literal_bindings: dict[str, TypeScriptLiteralStringBinding],
-) -> None:
+) -> list[TypeScriptSandboxManifestControl]:
     """Add exact Manifest extraPathGrants controls from literal grant arrays."""
+    controls: list[TypeScriptSandboxManifestControl] = []
     arguments = typescript_call_arguments(argument_body, argument_body_offset)
     if len(arguments) != 1:
-        return
+        return controls
     config_expression, config_offset = arguments[0]
     grants_property = typescript_object_property_expression_location(
         config_expression,
@@ -16363,11 +16368,11 @@ def add_typescript_openai_sandbox_path_grants_from_arguments(
         config_offset,
     )
     if grants_property is None:
-        return
+        return controls
     grants_expression, _, grants_value_offset = grants_property
     grant_items = typescript_array_items(grants_expression, grants_value_offset)
     if grant_items is None:
-        return
+        return controls
     for index, (grant_expression, grant_offset) in enumerate(grant_items):
         path_property = typescript_object_property_expression_location(
             grant_expression,
@@ -16405,18 +16410,21 @@ def add_typescript_openai_sandbox_path_grants_from_arguments(
         ):
             description = typescript_string_literal_value(description_expression)
         line = line_at(text, path_offset)
-        add_typescript_openai_sandbox_path_grant_control(
-            ir,
-            relative=relative,
-            lines=lines,
-            line=line,
-            local_constructor=local_constructor,
-            path_value=path_value,
-            path_resolution=path_resolution,
-            read_only=read_only_code == "true",
-            symbol_identity=f"{manifest_name}.extraPathGrant{index}@{line}",
-            description=description,
+        controls.append(
+            add_typescript_openai_sandbox_path_grant_control(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=line,
+                local_constructor=local_constructor,
+                path_value=path_value,
+                path_resolution=path_resolution,
+                read_only=read_only_code == "true",
+                symbol_identity=f"{manifest_name}.extraPathGrant{index}@{line}",
+                description=description,
+            )
         )
+    return controls
 
 
 def typescript_environment_value_attributes(
@@ -16506,11 +16514,12 @@ def add_typescript_openai_sandbox_workspace_root_from_arguments(
     local_constructor: str,
     manifest_name: str,
     immutable_literal_bindings: dict[str, TypeScriptLiteralStringBinding],
-) -> None:
+) -> list[TypeScriptSandboxManifestControl]:
     """Add exact Manifest root controls from direct or immutable literal strings."""
+    controls: list[TypeScriptSandboxManifestControl] = []
     arguments = typescript_call_arguments(argument_body, argument_body_offset)
     if len(arguments) != 1:
-        return
+        return controls
     config_expression, config_offset = arguments[0]
     root_property = typescript_object_property_expression_location(
         config_expression,
@@ -16518,7 +16527,7 @@ def add_typescript_openai_sandbox_workspace_root_from_arguments(
         config_offset,
     )
     if root_property is None:
-        return
+        return controls
     root_expression, property_offset, value_offset = root_property
     root_value = typescript_static_string_value(
         root_expression,
@@ -16526,18 +16535,21 @@ def add_typescript_openai_sandbox_workspace_root_from_arguments(
         immutable_literal_bindings=immutable_literal_bindings,
     )
     if root_value is None:
-        return
+        return controls
     line = line_at(text, property_offset)
-    add_typescript_openai_sandbox_workspace_root_control(
-        ir,
-        relative=relative,
-        lines=lines,
-        line=line,
-        local_constructor=local_constructor,
-        root_path=root_value[0],
-        root_path_resolution=root_value[1],
-        symbol_identity=f"{manifest_name}.root@{line}",
+    controls.append(
+        add_typescript_openai_sandbox_workspace_root_control(
+            ir,
+            relative=relative,
+            lines=lines,
+            line=line,
+            local_constructor=local_constructor,
+            root_path=root_value[0],
+            root_path_resolution=root_value[1],
+            symbol_identity=f"{manifest_name}.root@{line}",
+        )
     )
+    return controls
 
 
 def add_typescript_openai_sandbox_environment_control(
@@ -16819,11 +16831,12 @@ def add_typescript_openai_sandbox_entries_from_arguments(
     manifest_name: str,
     sandbox_factory_imports: dict[str, str],
     immutable_literal_bindings: dict[str, TypeScriptLiteralStringBinding],
-) -> None:
+) -> list[TypeScriptSandboxManifestControl]:
     """Add exact Manifest entries controls from supported literal entry sources."""
+    controls: list[TypeScriptSandboxManifestControl] = []
     arguments = typescript_call_arguments(argument_body, argument_body_offset)
     if len(arguments) != 1:
-        return
+        return controls
     config_expression, config_offset = arguments[0]
     entries_property = typescript_object_property_expression_location(
         config_expression,
@@ -16831,7 +16844,7 @@ def add_typescript_openai_sandbox_entries_from_arguments(
         config_offset,
     )
     if entries_property is None:
-        return
+        return controls
     entries_expression, _, entries_value_offset = entries_property
     for entry_index, (entry_text, entry_offset) in enumerate(
         typescript_literal_object_items(entries_expression, entries_value_offset)
@@ -16850,17 +16863,22 @@ def add_typescript_openai_sandbox_entries_from_arguments(
         )
         for record_entry_name, record_offset, entry_source, entry_attributes in entry_records:
             line = line_at(text, record_offset)
-            add_typescript_openai_sandbox_manifest_entry_control(
-                ir,
-                relative=relative,
-                lines=lines,
-                line=line,
-                local_constructor=local_constructor,
-                entry_name=record_entry_name,
-                entry_source=entry_source,
-                symbol_identity=f"{manifest_name}.entry{entry_index}.{record_entry_name}@{line}",
-                attributes=entry_attributes,
+            controls.append(
+                add_typescript_openai_sandbox_manifest_entry_control(
+                    ir,
+                    relative=relative,
+                    lines=lines,
+                    line=line,
+                    local_constructor=local_constructor,
+                    entry_name=record_entry_name,
+                    entry_source=entry_source,
+                    symbol_identity=(
+                        f"{manifest_name}.entry{entry_index}.{record_entry_name}@{line}"
+                    ),
+                    attributes=entry_attributes,
+                )
             )
+    return controls
 
 
 def add_typescript_openai_sandbox_environment_from_arguments(
@@ -16874,11 +16892,12 @@ def add_typescript_openai_sandbox_environment_from_arguments(
     local_constructor: str,
     manifest_name: str,
     immutable_literal_bindings: dict[str, TypeScriptLiteralStringBinding],
-) -> None:
+) -> list[TypeScriptSandboxManifestControl]:
     """Add exact Manifest environment controls from literal environment objects."""
+    controls: list[TypeScriptSandboxManifestControl] = []
     arguments = typescript_call_arguments(argument_body, argument_body_offset)
     if len(arguments) != 1:
-        return
+        return controls
     config_expression, config_offset = arguments[0]
     environment_property = typescript_object_property_expression_location(
         config_expression,
@@ -16886,7 +16905,7 @@ def add_typescript_openai_sandbox_environment_from_arguments(
         config_offset,
     )
     if environment_property is None:
-        return
+        return controls
     environment_expression, _, environment_value_offset = environment_property
     environment_items = typescript_literal_object_items(
         environment_expression,
@@ -16909,16 +16928,219 @@ def add_typescript_openai_sandbox_environment_from_arguments(
                 continue
             value, value_resolution = resolved_value
         line = line_at(text, property_offset)
-        add_typescript_openai_sandbox_environment_control(
+        controls.append(
+            add_typescript_openai_sandbox_environment_control(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=line,
+                local_constructor=local_constructor,
+                environment_variable=environment_variable,
+                value=value,
+                value_resolution=value_resolution,
+                symbol_identity=f"{manifest_name}.environment.{environment_variable}@{line}",
+            )
+        )
+    return controls
+
+
+def add_typescript_openai_sandbox_manifest_controls_from_arguments(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    text: str,
+    argument_body: str,
+    argument_body_offset: int,
+    local_constructor: str,
+    manifest_name: str,
+    sandbox_factory_imports: dict[str, str],
+    immutable_literal_bindings: dict[str, TypeScriptLiteralStringBinding],
+) -> list[TypeScriptSandboxManifestControl]:
+    """Add exact Manifest policy controls and return their stable IR targets."""
+    controls: list[TypeScriptSandboxManifestControl] = []
+    controls.extend(
+        add_typescript_openai_sandbox_workspace_root_from_arguments(
             ir,
             relative=relative,
             lines=lines,
-            line=line,
+            text=text,
+            argument_body=argument_body,
+            argument_body_offset=argument_body_offset,
             local_constructor=local_constructor,
-            environment_variable=environment_variable,
-            value=value,
-            value_resolution=value_resolution,
-            symbol_identity=f"{manifest_name}.environment.{environment_variable}@{line}",
+            manifest_name=manifest_name,
+            immutable_literal_bindings=immutable_literal_bindings,
+        )
+    )
+    controls.extend(
+        add_typescript_openai_sandbox_entries_from_arguments(
+            ir,
+            relative=relative,
+            lines=lines,
+            text=text,
+            argument_body=argument_body,
+            argument_body_offset=argument_body_offset,
+            local_constructor=local_constructor,
+            manifest_name=manifest_name,
+            sandbox_factory_imports=sandbox_factory_imports,
+            immutable_literal_bindings=immutable_literal_bindings,
+        )
+    )
+    controls.extend(
+        add_typescript_openai_sandbox_path_grants_from_arguments(
+            ir,
+            relative=relative,
+            lines=lines,
+            text=text,
+            argument_body=argument_body,
+            argument_body_offset=argument_body_offset,
+            local_constructor=local_constructor,
+            manifest_name=manifest_name,
+            immutable_literal_bindings=immutable_literal_bindings,
+        )
+    )
+    controls.extend(
+        add_typescript_openai_sandbox_environment_from_arguments(
+            ir,
+            relative=relative,
+            lines=lines,
+            text=text,
+            argument_body=argument_body,
+            argument_body_offset=argument_body_offset,
+            local_constructor=local_constructor,
+            manifest_name=manifest_name,
+            immutable_literal_bindings=immutable_literal_bindings,
+        )
+    )
+    return controls
+
+
+def typescript_enclosing_unique_function(
+    code: str,
+    function_spans: list[tuple[str, int, int]],
+    offset: int,
+) -> str | None:
+    """Return the narrowest same-file function enclosing a top-level statement."""
+    helpers = [
+        (name, start, end)
+        for name, start, end in function_spans
+        if start <= offset < end and typescript_curly_depth_between(code, start, offset) == 0
+    ]
+    if not helpers:
+        return None
+    return min(helpers, key=lambda item: item[2] - item[1])[0]
+
+
+def typescript_sandbox_manifest_controls_from_expression(
+    expression: str,
+    *,
+    expression_offset: int,
+    manifest_bindings: dict[str, TypeScriptSandboxManifestBinding],
+    helper_manifest_bindings: dict[str, TypeScriptSandboxManifestBinding],
+) -> tuple[list[TypeScriptSandboxManifestControl], str, str] | None:
+    """Resolve exact Manifest controls from an identifier, helper call, or create config."""
+
+    def from_identifier(
+        identifier: str,
+        *,
+        binding: str,
+    ) -> tuple[list[TypeScriptSandboxManifestControl], str, str] | None:
+        manifest_binding = manifest_bindings.get(identifier)
+        if manifest_binding is None:
+            return None
+        declaration_offset, controls = manifest_binding
+        if expression_offset <= declaration_offset or not controls:
+            return None
+        return list(controls), binding, identifier
+
+    def from_helper_call(
+        call_expression: str,
+        call_offset: int,
+        *,
+        binding: str,
+    ) -> tuple[list[TypeScriptSandboxManifestControl], str, str] | None:
+        call = typescript_call_parts(call_expression)
+        if call is None:
+            return None
+        helper_name, _, _ = call
+        manifest_binding = helper_manifest_bindings.get(helper_name)
+        if manifest_binding is None:
+            return None
+        declaration_offset, controls = manifest_binding
+        if call_offset <= declaration_offset or not controls:
+            return None
+        return list(controls), binding, helper_name
+
+    code = typescript_code_mask(expression).strip()
+    identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", code)
+    if identifier is not None:
+        return from_identifier(identifier.group(0), binding="identifier")
+    if helper_result := from_helper_call(
+        expression,
+        expression_offset,
+        binding="helper-call",
+    ):
+        return helper_result
+
+    if typescript_object_has_shorthand_property(expression, "manifest"):
+        shorthand_result = from_identifier("manifest", binding="manifest-object-shorthand")
+        if shorthand_result is not None:
+            return shorthand_result
+    manifest_property = typescript_object_property_expression_location(
+        expression,
+        "manifest",
+        expression_offset,
+    )
+    if manifest_property is None:
+        return None
+    manifest_expression, _, manifest_expression_offset = manifest_property
+    manifest_code = typescript_code_mask(manifest_expression).strip()
+    manifest_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", manifest_code)
+    if manifest_identifier is not None:
+        return from_identifier(
+            manifest_identifier.group(0),
+            binding="manifest-property-identifier",
+        )
+    return from_helper_call(
+        manifest_expression,
+        manifest_expression_offset,
+        binding="manifest-property-helper-call",
+    )
+
+
+def add_typescript_openai_sandbox_manifest_composition_relationships(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    source_kind: str,
+    source_name: str,
+    source_id: str,
+    configuration: str,
+    binding: str,
+    manifest_binding: str,
+    manifest_controls: list[TypeScriptSandboxManifestControl],
+) -> None:
+    """Link a proven Manifest consumer back to exact Manifest policy controls."""
+    for control_name, control_id in manifest_controls:
+        ir.add_relationship(
+            Relationship(
+                source_kind,
+                source_name,
+                "configured-by",
+                "control",
+                control_name,
+                Evidence(relative, line, excerpt(lines, line)),
+                {
+                    "analysis": "typescript-openai-sandbox-manifest-composition",
+                    "configuration": configuration,
+                    "binding": binding,
+                    "manifest_binding": manifest_binding,
+                },
+                source_id=source_id,
+                target_id=control_id,
+            )
         )
 
 
@@ -17696,6 +17918,11 @@ def typescript_graph(
         if imported_name in {"file", "gitRepo", "localDir"}
         and not typescript_import_binding_is_shadowed(text, local_name)
     }
+    function_spans = typescript_function_body_spans(text)
+    manifest_bindings: dict[str, TypeScriptSandboxManifestBinding] = {}
+    helper_manifest_candidates: dict[
+        str, list[TypeScriptSandboxManifestBinding]
+    ] = defaultdict(list)
     for match in TS_SANDBOX_CLIENT_ASSIGNMENT.finditer(code):
         manifest_name = match.group(1)
         local_constructor = match.group(2)
@@ -17705,18 +17932,7 @@ def typescript_graph(
         end = typescript_balanced_end(code, opening, "(", ")")
         if end is None:
             continue
-        add_typescript_openai_sandbox_workspace_root_from_arguments(
-            ir,
-            relative=relative,
-            lines=lines,
-            text=text,
-            argument_body=text[opening + 1 : end - 1],
-            argument_body_offset=opening + 1,
-            local_constructor=local_constructor,
-            manifest_name=manifest_name,
-            immutable_literal_bindings=immutable_literal_bindings,
-        )
-        add_typescript_openai_sandbox_entries_from_arguments(
+        manifest_controls = add_typescript_openai_sandbox_manifest_controls_from_arguments(
             ir,
             relative=relative,
             lines=lines,
@@ -17728,28 +17944,8 @@ def typescript_graph(
             sandbox_factory_imports=sandbox_entry_factory_imports,
             immutable_literal_bindings=immutable_literal_bindings,
         )
-        add_typescript_openai_sandbox_path_grants_from_arguments(
-            ir,
-            relative=relative,
-            lines=lines,
-            text=text,
-            argument_body=text[opening + 1 : end - 1],
-            argument_body_offset=opening + 1,
-            local_constructor=local_constructor,
-            manifest_name=manifest_name,
-            immutable_literal_bindings=immutable_literal_bindings,
-        )
-        add_typescript_openai_sandbox_environment_from_arguments(
-            ir,
-            relative=relative,
-            lines=lines,
-            text=text,
-            argument_body=text[opening + 1 : end - 1],
-            argument_body_offset=opening + 1,
-            local_constructor=local_constructor,
-            manifest_name=manifest_name,
-            immutable_literal_bindings=immutable_literal_bindings,
-        )
+        if manifest_controls:
+            manifest_bindings[manifest_name] = (match.start(), manifest_controls)
     for local_constructor in sorted(manifest_imports):
         return_manifest = re.compile(rf"\breturn\s+new\s+{re.escape(local_constructor)}\s*\(")
         for match in return_manifest.finditer(code):
@@ -17759,18 +17955,7 @@ def typescript_graph(
                 continue
             start_line = line_at(text, match.start())
             manifest_name = f"manifestReturn@{start_line}"
-            add_typescript_openai_sandbox_workspace_root_from_arguments(
-                ir,
-                relative=relative,
-                lines=lines,
-                text=text,
-                argument_body=text[opening + 1 : end - 1],
-                argument_body_offset=opening + 1,
-                local_constructor=local_constructor,
-                manifest_name=manifest_name,
-                immutable_literal_bindings=immutable_literal_bindings,
-            )
-            add_typescript_openai_sandbox_entries_from_arguments(
+            manifest_controls = add_typescript_openai_sandbox_manifest_controls_from_arguments(
                 ir,
                 relative=relative,
                 lines=lines,
@@ -17782,28 +17967,27 @@ def typescript_graph(
                 sandbox_factory_imports=sandbox_entry_factory_imports,
                 immutable_literal_bindings=immutable_literal_bindings,
             )
-            add_typescript_openai_sandbox_path_grants_from_arguments(
-                ir,
-                relative=relative,
-                lines=lines,
-                text=text,
-                argument_body=text[opening + 1 : end - 1],
-                argument_body_offset=opening + 1,
-                local_constructor=local_constructor,
-                manifest_name=manifest_name,
-                immutable_literal_bindings=immutable_literal_bindings,
-            )
-            add_typescript_openai_sandbox_environment_from_arguments(
-                ir,
-                relative=relative,
-                lines=lines,
-                text=text,
-                argument_body=text[opening + 1 : end - 1],
-                argument_body_offset=opening + 1,
-                local_constructor=local_constructor,
-                manifest_name=manifest_name,
-                immutable_literal_bindings=immutable_literal_bindings,
-            )
+            helper_name = typescript_enclosing_unique_function(code, function_spans, match.start())
+            if helper_name is not None and manifest_controls:
+                helper_manifest_candidates[helper_name].append((match.start(), manifest_controls))
+    helper_manifest_bindings = {
+        helper_name: candidates[0]
+        for helper_name, candidates in helper_manifest_candidates.items()
+        if len(candidates) == 1
+    }
+    for variable_name, initializer, initializer_offset in typescript_variable_initializers(text):
+        if variable_name in manifest_bindings:
+            continue
+        resolution = typescript_sandbox_manifest_controls_from_expression(
+            initializer,
+            expression_offset=initializer_offset,
+            manifest_bindings=manifest_bindings,
+            helper_manifest_bindings=helper_manifest_bindings,
+        )
+        if resolution is None:
+            continue
+        controls, _, _ = resolution
+        manifest_bindings[variable_name] = (initializer_offset, controls)
     sandbox_client_bindings: dict[str, tuple[str, str]] = {}
     sandbox_runtime_edge_analysis: dict[str, str] = {}
     sandbox_session_bindings: dict[str, tuple[str, str]] = {}
@@ -17925,6 +18109,37 @@ def typescript_graph(
         client_name = match.group(2)
         if client_binding := sandbox_client_bindings.get(client_name):
             sandbox_session_bindings[session_name] = client_binding
+            opening = code.find("(", match.start(), match.end())
+            end = typescript_balanced_end(code, opening, "(", ")")
+            if end is None:
+                continue
+            arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
+            if not arguments:
+                continue
+            resolution = typescript_sandbox_manifest_controls_from_expression(
+                arguments[0][0],
+                expression_offset=arguments[0][1],
+                manifest_bindings=manifest_bindings,
+                helper_manifest_bindings=helper_manifest_bindings,
+            )
+            if resolution is None:
+                continue
+            manifest_controls, binding, manifest_binding = resolution
+            runtime_name, runtime_id = client_binding
+            call_line = line_at(text, arguments[0][1])
+            add_typescript_openai_sandbox_manifest_composition_relationships(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=call_line,
+                source_kind="control",
+                source_name=runtime_name,
+                source_id=runtime_id,
+                configuration="client.create",
+                binding=binding,
+                manifest_binding=manifest_binding,
+                manifest_controls=manifest_controls,
+            )
     for match in TS_SANDBOX_INLINE_SESSION_ASSIGNMENT.finditer(code):
         session_name = match.group(1)
         local_constructor = match.group(2)
@@ -17976,6 +18191,43 @@ def typescript_graph(
         sandbox_session_bindings[session_name] = runtime_control
         sandbox_runtime_edge_analysis[runtime_control[1]] = (
             "typescript-openai-sandbox-local-client"
+        )
+        create_match = re.match(r"\s*\.create\s*\(", code[constructor_end:])
+        if create_match is None:
+            continue
+        create_opening = constructor_end + create_match.end() - 1
+        create_end = typescript_balanced_end(code, create_opening, "(", ")")
+        if create_end is None:
+            continue
+        arguments = typescript_call_arguments(
+            text[create_opening + 1 : create_end - 1],
+            create_opening + 1,
+        )
+        if not arguments:
+            continue
+        resolution = typescript_sandbox_manifest_controls_from_expression(
+            arguments[0][0],
+            expression_offset=arguments[0][1],
+            manifest_bindings=manifest_bindings,
+            helper_manifest_bindings=helper_manifest_bindings,
+        )
+        if resolution is None:
+            continue
+        manifest_controls, binding, manifest_binding = resolution
+        runtime_name, runtime_id = runtime_control
+        call_line = line_at(text, arguments[0][1])
+        add_typescript_openai_sandbox_manifest_composition_relationships(
+            ir,
+            relative=relative,
+            lines=lines,
+            line=call_line,
+            source_kind="control",
+            source_name=runtime_name,
+            source_id=runtime_id,
+            configuration="client.create",
+            binding=binding,
+            manifest_binding=manifest_binding,
+            manifest_controls=manifest_controls,
         )
     for match in TS_SANDBOX_RESUME_SESSION_ASSIGNMENT.finditer(code):
         session_name = match.group(1)
@@ -18046,7 +18298,6 @@ def typescript_graph(
         (match, "Agent", None, match.group(1), "assignment")
         for match in TS_AGENT_ASSIGNMENT.finditer(code)
     ]
-    function_spans = typescript_function_body_spans(text)
     for local_name, imported_name in sandbox_imports.items():
         if imported_name != "SandboxAgent" or typescript_import_binding_is_shadowed(
             text, local_name
@@ -18134,6 +18385,38 @@ def typescript_graph(
         ev = Evidence(
             relative, line_at(text, match.start()), excerpt(lines, line_at(text, match.start()))
         )
+        if agent_constructor == "SandboxAgent":
+            default_manifest_location = typescript_object_property_expression_location(
+                body,
+                "defaultManifest",
+                body_offset,
+            )
+            if default_manifest_location is not None:
+                manifest_expression, manifest_property_offset, manifest_expression_offset = (
+                    default_manifest_location
+                )
+                resolution = typescript_sandbox_manifest_controls_from_expression(
+                    manifest_expression,
+                    expression_offset=manifest_expression_offset,
+                    manifest_bindings=manifest_bindings,
+                    helper_manifest_bindings=helper_manifest_bindings,
+                )
+                if resolution is not None:
+                    manifest_controls, binding, manifest_binding = resolution
+                    manifest_line = line_at(text, manifest_property_offset)
+                    add_typescript_openai_sandbox_manifest_composition_relationships(
+                        ir,
+                        relative=relative,
+                        lines=lines,
+                        line=manifest_line,
+                        source_kind="agent",
+                        source_name=agent_name,
+                        source_id=agent_id,
+                        configuration="defaultManifest",
+                        binding=binding,
+                        manifest_binding=manifest_binding,
+                        manifest_controls=manifest_controls,
+                    )
         item_properties = ["capabilities"] if agent_constructor == "SandboxAgent" else ["tools"]
         for item, item_offset in [
             entry
