@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T04:26:44.750796+00:00",
+  "generated_at": "2026-08-28T04:42:08.226862+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "c6829c7024960fae3c8f2c8e9460edb01787335712371533d7e1305da774cad1",
+    "labels_sha256": "0c509e5802f737da5961f8d02bd8e79cd3fc165f8809bfb01891a1ec02d0ba9a",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 1937,
-  "passed": 1937,
+  "labels": 1949,
+  "passed": 1949,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -35,9 +35,9 @@
       "recall": 1.0
     },
     "IR-APPROVAL-CONTROL": {
-      "tp": 3,
+      "tp": 13,
       "fp": 0,
-      "tn": 4,
+      "tn": 6,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -790,6 +790,114 @@
     },
     {
       "id": "approval-builtin-openai-shell-real",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-generic-tool-approval-enabled-local",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-generic-tool-human-approval-edge-local",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-generic-tool-approval-callback-local",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-generic-tool-disabled-policy-local-negative",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-generic-tool-callback-human-approval-edge-local-negative",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-generic-tool-approval-enabled-doc-real",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-generic-tool-human-approval-edge-doc-real",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-generic-tool-approval-callback-doc-real",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-generic-tool-approval-enabled-nextjs-real",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-generic-tool-human-approval-edge-nextjs-real",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-generic-tool-approval-callback-hitl-real",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-generic-tool-approval-callback-hitl-stream-real",
       "check_id": "IR-APPROVAL-CONTROL",
       "expected": true,
       "observed": true,

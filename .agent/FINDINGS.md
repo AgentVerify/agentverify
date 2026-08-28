@@ -426,6 +426,15 @@
   `examples/docs/mcp/hostedHITL.ts`, `examples/mcp/hosted-mcp-human-in-the-loop.ts`, and
   `examples/agent-patterns/human-in-the-loop-stream.ts` validate 5 controls and 5 composition edges;
   the public IR truth set now covers 1,937 passing labels.
+- OpenAI Agents JS generic `tool({ needsApproval })` approval metadata is now inventoried for exact
+  unshadowed `@openai/agents` imports. Literal `needsApproval: true` records
+  `approval_policy: enabled` and emits the existing `human-approval` edge; callback-valued
+  `needsApproval` records `approval_policy: callback-controlled` while risky-action coverage remains
+  unresolved unless a concrete human-approval control is proven. Real pinned examples
+  `examples/docs/human-in-the-loop/toolApprovalDefinition.ts`, `examples/nextjs/src/agents.ts`,
+  `examples/agent-patterns/human-in-the-loop.ts`, and
+  `examples/agent-patterns/human-in-the-loop-stream.ts` validate 5 generic-tool approval components
+  and 2 literal human-approval edges; the public IR truth set now covers 1,949 passing labels.
 
 ## Hypotheses
 

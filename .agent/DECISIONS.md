@@ -249,3 +249,20 @@
 - Revisit when: approval-quality analysis is added on top of this resume backbone, especially to
   distinguish manual human approval, automatic approval, rejected-state handling, and missing
   approval callbacks.
+
+## OpenAI generic tool approval inventory is exact-import and policy-level
+
+- Decision: Record OpenAI Agents JS `tool({ needsApproval })` approval metadata only when `tool` is
+  an exact unshadowed value import from `@openai/agents`. Literal `needsApproval: true` remains the
+  only generic-tool form that creates a `human-approval` control edge; callback-valued
+  `needsApproval` is recorded as `approval_policy: callback-controlled` without claiming always-on
+  approval coverage.
+- Evidence: Pinned examples show both official forms: `examples/docs/human-in-the-loop/toolApprovalDefinition.ts`
+  contains `sensitiveTool` with literal approval and `sendEmail` with a callback; `examples/nextjs/src/agents.ts`
+  contains a literal-approved generic tool; `examples/agent-patterns/human-in-the-loop.ts` and
+  `examples/agent-patterns/human-in-the-loop-stream.ts` contain conditional callbacks.
+- Alternative: Treat callback-valued `needsApproval` as full `human-approval` coverage. Rejected
+  because the callback can approve only some calls and AgentVerify has not proven the predicate
+  covers every risky operation.
+- Revisit when: predicate-aware tool-risk analysis can relate callback conditions to specific tool
+  inputs, or when `agent.asTool({ needsApproval })` delegated-tool approval gets a distinct IR shape.

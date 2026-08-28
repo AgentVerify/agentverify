@@ -2532,6 +2532,30 @@ def test_approval_control_governs_privileged_tool() -> None:
 def test_typescript_literal_approval_governs_only_its_tool() -> None:
     ir = scan_repository(ROOT / "cases/typescript_approved")
 
+    tools = {
+        component.name: component.attributes
+        for component in ir.components
+        if component.kind == "tool"
+    }
+    assert tools["approvedCommand"] == {
+        "constructor": "tool",
+        "needs_approval": True,
+        "approval_policy": "enabled",
+        "approval_handler": "none",
+        "approval_decision": "always",
+    }
+    assert tools["conditionalCommand"] == {
+        "constructor": "tool",
+        "needs_approval": False,
+        "approval_policy": "callback-controlled",
+        "approval_handler": "needsApproval-callback",
+        "approval_decision": "dynamic-callback",
+    }
+    assert tools["disabledApproval"] == {
+        "constructor": "tool",
+        "needs_approval": False,
+    }
+
     shell_findings = [finding for finding in ir.findings if finding.rule_id == "AV-EXEC001"]
     coverage = {
         finding.analysis["tool"]: finding.analysis["approval_coverage"]

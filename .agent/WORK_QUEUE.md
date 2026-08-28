@@ -47,6 +47,9 @@
   approval callbacks, manual `state.approve`/`state.reject`, and automatic approval bypasses from
   generic same-named functions. The new `result.state` continuity inventory provides the resume
   backbone but does not yet claim approval quality.
+- Extend exact OpenAI Agents JS approval inventory from `tool({ needsApproval })` to
+  `agent.asTool({ needsApproval })` only if the IR can represent the delegated tool distinctly from
+  the source agent and keep callback-controlled coverage separate from literal always-approval.
 
 ## Deferred until access/authorization
 

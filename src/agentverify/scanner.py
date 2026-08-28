@@ -17837,16 +17837,32 @@ def add_typescript_generic_tool(
     call_offset: int,
     call_end: int,
     attributes: dict | None = None,
+    openai_approval_capable: bool = False,
 ) -> None:
     """Add a generic factory-backed tool and map its callback/configuration span."""
     start_line = line_at(text, call_offset)
     evidence = Evidence(relative, start_line, excerpt(lines, start_line))
+    approval_expression = typescript_object_property_expression(body, "needsApproval")
     approval_match = (
         TS_LITERAL_APPROVAL.search(typescript_code_mask(body))
         if constructor != "toolNamespace"
-        and typescript_object_property_expression(body, "needsApproval") == "true"
+        and approval_expression == "true"
         else None
     )
+    approval_attributes = {}
+    if openai_approval_capable and constructor == "tool":
+        if approval_expression == "true":
+            approval_attributes = {
+                "approval_policy": "enabled",
+                "approval_handler": "none",
+                "approval_decision": "always",
+            }
+        elif approval_expression is not None and approval_expression != "false":
+            approval_attributes = {
+                "approval_policy": "callback-controlled",
+                "approval_handler": "needsApproval-callback",
+                "approval_decision": "dynamic-callback",
+            }
     ir.add_component(
         Component(
             "tool",
@@ -17855,6 +17871,7 @@ def add_typescript_generic_tool(
             {
                 "constructor": constructor,
                 "needs_approval": approval_match is not None,
+                **approval_attributes,
                 **(attributes or {}),
             },
             tool_id,
@@ -18028,6 +18045,11 @@ def typescript_graph(
                 body_offset=opening + 1,
                 call_offset=match.start(),
                 call_end=end,
+                openai_approval_capable=(
+                    local_factory in openai_agents_imports
+                    and constructor == "tool"
+                    and not typescript_import_binding_is_shadowed(text, local_factory)
+                ),
             )
         if is_openai_builtin:
             for line_number in range(start_line, end_line + 1):
@@ -18057,6 +18079,11 @@ def typescript_graph(
             call_offset=match.start(),
             call_end=end,
             attributes={"binding": "object-property"},
+            openai_approval_capable=(
+                match.group(2) in openai_agents_imports
+                and constructor == "tool"
+                and not typescript_import_binding_is_shadowed(text, match.group(2))
+            ),
         )
 
     for match in registration_matches:

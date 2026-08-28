@@ -462,6 +462,13 @@ catalog workflows.
   a resume of the old state. Loose state objects, unknown run functions, stale result bindings, and
   reassigned named state inputs remain unresolved. Local fixtures plus real OpenAI Agents JS
   HITL/MCP examples raised regenerated public IR truth-set results to 1,937 passing labels.
+- Added exact OpenAI Agents JS generic `tool({ needsApproval })` approval inventory. Literal
+  `needsApproval: true` now records tool-level `approval_policy: enabled` metadata and still emits
+  the existing `human-approval` governed-by edge, while callback-valued `needsApproval` records
+  `approval_policy: callback-controlled` without treating coverage as proven always-present. The
+  slice is limited to exact unshadowed `tool` imports from `@openai/agents`; local fixtures plus
+  real OpenAI Agents JS docs/Next.js/HITL examples raised regenerated public IR truth-set results to
+  1,949 passing labels.
 
 ## Current findings
 
@@ -548,6 +555,8 @@ session-governance policy fields, real-world framework coverage without broad na
 concrete CI/editor integration fixtures, or release-artifact checks that stay local until release
 publishing is explicit. For OpenAI session work, keep local `MemorySession`, server-managed
 `conversationId`, `previousResponseId`, same-block `result.history`, and same-file `result.state`
-resume semantics distinct. For performance work, use `--progress` plus focused `--scan-label-paths`
-only when the target labels are self-contained; broader benchmark acceleration likely needs
-dependency-aware path expansion or scan-result reuse to preserve cross-file evidence.
+resume semantics distinct. For OpenAI approval work, keep literal always-approval, callback-controlled
+approval, and proven human approval/resume handling separate. For performance work, use `--progress`
+plus focused `--scan-label-paths` only when the target labels are self-contained; broader benchmark
+acceleration likely needs dependency-aware path expansion or scan-result reuse to preserve
+cross-file evidence.
