@@ -459,6 +459,12 @@ Schema v127 adds exact OpenAI Agents Python run-state approval-decision inventor
 `state.approve(...)` and `state.reject(...)`; loose state-like objects and rebound state variables
 stay unresolved.
 
+Schema v128 preserves OpenAI Agents Python approval-decision persistence metadata. Exact
+`state.approve(..., always_approve=...)` and `state.reject(..., always_reject=...)` calls now record
+whether the decision is sticky (`always`), per-call, or dynamic, using only literal booleans or stable
+same-function boolean bindings. The pinned OpenAI shell HITL example proves prompt-derived dynamic
+persistence, while SDK tests prove literal sticky decisions.
+
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
 server-controlled prompt/model hint/sampling parameters, model invocation, and response returned to
@@ -583,8 +589,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 729 pinned positive/negative locations, with 2,018 separately
-scored IR component/relationship labels. Schema-v126 engine results and
+The curated regression set has reached 729 pinned positive/negative locations, with 2,023 separately
+scored IR component/relationship labels. Schema-v128 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. The checked-in holdout design now defines the sampling strata, label protocol,

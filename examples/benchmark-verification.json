@@ -22,8 +22,8 @@
       "evaluation_kind": "public-regression",
       "label_scope": "agent-ir",
       "sealed": false,
-      "labels": 2018,
-      "passed": 2018,
+      "labels": 2023,
+      "passed": 2023,
       "failed": 0,
       "failure_summary": {
         "observation_mismatch": 0,

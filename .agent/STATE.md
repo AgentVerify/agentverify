@@ -527,6 +527,13 @@ catalog workflows.
   `Runner.run(...)`/`Runner.run_streamed(...).to_state()` or exact
   `RunState.from_json/from_string(...)` restoration tied to a proven agent. Local fixtures plus real
   OpenAI Agents Python HITL examples raise the public IR truth set to 2,018 labels.
+- Added OpenAI Agents Python approval-decision persistence metadata. Exact
+  `always_approve`/`always_reject` keywords on proven SDK `state.approve(...)` and
+  `state.reject(...)` calls now record sticky, per-call, or dynamic decision persistence based on
+  literal booleans and stable same-function boolean bindings. Local sticky fixtures plus the real
+  OpenAI shell HITL example raise the public IR truth set to 2,023 labels, and schema-v128 engine
+  results report 117 Python run-state approval decisions, including six sticky and two dynamic
+  persistence decisions.
 
 ## Current findings
 

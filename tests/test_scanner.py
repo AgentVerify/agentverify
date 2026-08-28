@@ -7308,7 +7308,7 @@ def test_openai_agents_python_run_state_approval_decisions_are_exact() -> None:
         for component in ir.components
         if component.kind == "control" and component.name == "approval-decision"
     }
-    assert set(controls) == {12, 13, 18}
+    assert set(controls) == {12, 13, 18, 32, 33, 34}
     assert controls[12].symbol_id == "py:agent.py#control:state.approve@12"
     assert controls[12].attributes == {
         "analysis": "python-openai-agents-run-state-approval-decision",
@@ -7325,6 +7325,17 @@ def test_openai_agents_python_run_state_approval_decisions_are_exact() -> None:
     assert controls[13].attributes["decision"] == "reject"
     assert controls[18].attributes["result_binding"] == "stream_result"
     assert controls[18].attributes["state_binding"] == "stream_state"
+    assert controls[32].attributes["decision_persistence_argument"] == "always_approve"
+    assert controls[32].attributes["decision_persistence"] == "always"
+    assert controls[32].attributes["decision_persistence_value"] is True
+    assert controls[33].attributes["decision_persistence_argument"] == "always_reject"
+    assert controls[33].attributes["decision_persistence_binding"] == "always"
+    assert controls[33].attributes["decision_persistence"] == "always"
+    assert controls[33].attributes["decision_persistence_value"] is True
+    assert controls[34].attributes["decision_persistence_argument"] == "always_approve"
+    assert controls[34].attributes["decision_persistence_binding"] == "once"
+    assert controls[34].attributes["decision_persistence"] == "per-call"
+    assert controls[34].attributes["decision_persistence_value"] is False
 
     governed_edges = {
         relationship.evidence.line: relationship
@@ -7334,7 +7345,7 @@ def test_openai_agents_python_run_state_approval_decisions_are_exact() -> None:
         and relationship.target_kind == "control"
         and relationship.target_name == "approval-decision"
     }
-    assert set(governed_edges) == {12, 13, 18}
+    assert set(governed_edges) == {12, 13, 18, 32, 33, 34}
     assert governed_edges[12].source_id == "py:agent.py#agent:agent"
     assert governed_edges[12].target_id == "py:agent.py#control:state.approve@12"
     assert governed_edges[13].attributes == {
@@ -7343,6 +7354,17 @@ def test_openai_agents_python_run_state_approval_decisions_are_exact() -> None:
         "binding": "state",
         "decision": "reject",
     }
+    assert governed_edges[32].attributes["decision_persistence_argument"] == "always_approve"
+    assert governed_edges[32].attributes["decision_persistence"] == "always"
+    assert governed_edges[32].attributes["decision_persistence_value"] is True
+    assert governed_edges[33].attributes["decision_persistence_argument"] == "always_reject"
+    assert governed_edges[33].attributes["decision_persistence_binding"] == "always"
+    assert governed_edges[33].attributes["decision_persistence"] == "always"
+    assert governed_edges[33].attributes["decision_persistence_value"] is True
+    assert governed_edges[34].attributes["decision_persistence_argument"] == "always_approve"
+    assert governed_edges[34].attributes["decision_persistence_binding"] == "once"
+    assert governed_edges[34].attributes["decision_persistence"] == "per-call"
+    assert governed_edges[34].attributes["decision_persistence_value"] is False
 
 
 def test_openai_agents_typescript_writable_mcp_tools_inherit_disabled_approval_default(

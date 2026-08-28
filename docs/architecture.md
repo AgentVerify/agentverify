@@ -825,7 +825,9 @@ approval-decision controls only when the receiver state is proven from an SDK ru
 SDK state. TypeScript covers `RunState.fromString(...)` and Python covers
 `RunState.from_json/from_string(...)`; JS approve controls additionally record env-backed bypass
 provenance only for braced branches guarded by a proven same-file confirmation helper, leaving
-reject and reassigned guards unannotated.
+reject and reassigned guards unannotated. Python approve/reject controls also preserve SDK sticky
+persistence hints: `always_approve` and `always_reject` are recorded as always, per-call, or dynamic
+decision persistence when their literal or stable same-function boolean source can be proven.
 Import-proven `LocalShellTool` instances emit local shell execution and explicitly distinguish an
 SDK with no approval hook from one whose approval option is merely disabled. A reachable instance
 can therefore trigger AV-APPROVAL002 as a review while preserving the executor as an unresolved

@@ -430,3 +430,21 @@
   the IR should preserve SDK provenance instead of granting generic method-name trust.
 - Revisit when: richer Python serialized-state chains can tie file or database persistence back to
   a specific `result.to_state()` without broad name matching.
+
+## OpenAI Agents Python sticky approval persistence stays metadata
+
+- Decision: Preserve OpenAI Agents Python `always_approve` and `always_reject` keyword arguments as
+  `approval-decision` control and governed-edge metadata, classifying literal or stable
+  same-function boolean values as `always` or `per-call` and unresolved prompt/runtime values as
+  `dynamic`.
+- Evidence: The local approval-decision fixture covers literal `always_approve=True`, stable
+  same-function `always_reject=always` with `always = True`, and stable
+  `always_approve=once` with `once = False`. The pinned OpenAI Agents Python shell HITL example
+  passes a prompt-derived `always` variable to both approve and reject calls, which is preserved as
+  dynamic persistence rather than over-resolved.
+- Alternative: Treat any `always_*` keyword as a reporting finding or infer arbitrary boolean
+  expressions. Rejected because sticky approval can be intentional SDK behavior, and prompt/runtime
+  expressions do not prove a default bypass statically.
+- Revisit when: a reporting rule can distinguish production-default sticky approval from explicit
+  user-selected persistence, or when richer local constant propagation can stay exact without
+  crossing mutable module/global state.

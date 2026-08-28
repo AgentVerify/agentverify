@@ -26,8 +26,10 @@
   `onSafetyCheck` callbacks that distinguish explicit user/policy review from pass-through
   acknowledgement.
 - Continue OpenAI Agents Python safety-governance extraction where evidence remains exact: callbacks
-  that distinguish explicit user/policy review from unconditional acknowledgement, without resolving
-  arbitrary boolean expressions or collapsing duplicate callback names across lexical scopes.
+  that distinguish explicit user/policy review from unconditional acknowledgement, and production
+  sticky-approval defaults that can be separated from prompt-selected `always_approve`/
+  `always_reject` persistence, without resolving arbitrary boolean expressions or collapsing
+  duplicate callback names across lexical scopes.
 
 ## P2
 

@@ -1786,6 +1786,18 @@ def main() -> int:
                     )
                     for item in python_openai_run_state_approval_decisions
                 ),
+                "sticky_decisions": sum(
+                    item.attributes.get("decision_persistence") == "always"
+                    for item in python_openai_run_state_approval_decisions
+                ),
+                "dynamic_persistence_decisions": sum(
+                    item.attributes.get("decision_persistence") == "dynamic"
+                    for item in python_openai_run_state_approval_decisions
+                ),
+                "per_call_persistence_decisions": sum(
+                    item.attributes.get("decision_persistence") == "per-call"
+                    for item in python_openai_run_state_approval_decisions
+                ),
                 "repositories": bool(python_openai_run_state_approval_decisions),
             },
             "python_openhands_conversation_security": {
@@ -3012,7 +3024,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 127,
+        "schema_version": 128,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -3473,6 +3485,9 @@ def main() -> int:
                     "approvals",
                     "rejections",
                     "restored_state_decisions",
+                    "sticky_decisions",
+                    "dynamic_persistence_decisions",
+                    "per_call_persistence_decisions",
                     "repositories",
                 )
             },

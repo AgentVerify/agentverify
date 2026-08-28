@@ -35125,6 +35125,97 @@ def add_python_openai_agents_run_state_approval_decision_flow(
             current = parent
         return None
 
+    def enclosing_statement_frames(
+        parent_by_id: dict[int, ast.AST],
+        node: ast.AST,
+    ) -> list[tuple[list[ast.stmt], int, ast.stmt]]:
+        frames: list[tuple[list[ast.stmt], int, ast.stmt]] = []
+        current = node
+        while parent := parent_by_id.get(id(current)):
+            for _field, value in ast.iter_fields(parent):
+                if not isinstance(value, list):
+                    continue
+                for index, item in enumerate(value):
+                    if item is current and isinstance(item, ast.stmt):
+                        frames.append((value, index, item))
+                        break
+            current = parent
+        return frames
+
+    def literal_bool_binding(
+        name: str,
+        frames: list[tuple[list[ast.stmt], int, ast.stmt]],
+        call_line: int,
+    ) -> bool | None:
+        for frame_index, (statements, statement_index, current_statement) in enumerate(frames):
+            if isinstance(current_statement, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                break
+            for index in range(statement_index - 1, -1, -1):
+                statement = statements[index]
+                if name not in assignment_targets(statement):
+                    continue
+                value = (
+                    statement.value
+                    if isinstance(statement, (ast.Assign, ast.AnnAssign))
+                    else None
+                )
+                same_frame_mutated = any(
+                    statement_mutates_name(candidate, name)
+                    for candidate in statements[index + 1 : statement_index]
+                    if getattr(candidate, "lineno", 0) < call_line
+                )
+                nested_frame_mutated = any(
+                    statement_mutates_name(candidate, name)
+                    for nested_statements, nested_index, _nested_current in frames[:frame_index]
+                    for candidate in nested_statements[:nested_index]
+                    if getattr(candidate, "lineno", 0) < call_line
+                )
+                if (
+                    isinstance(value, ast.Constant)
+                    and isinstance(value.value, bool)
+                    and not same_frame_mutated
+                    and not nested_frame_mutated
+                ):
+                    return value.value
+                return None
+        return None
+
+    def approval_decision_persistence_attributes(
+        call: ast.Call,
+        decision: str,
+        parent_by_id: dict[int, ast.AST],
+    ) -> dict[str, object]:
+        argument_name = "always_approve" if decision == "approve" else "always_reject"
+        keyword = next(
+            (candidate for candidate in call.keywords if candidate.arg == argument_name),
+            None,
+        )
+        if keyword is None:
+            return {}
+        attributes: dict[str, object] = {
+            "decision_persistence_argument": argument_name,
+        }
+        value = keyword.value
+        if isinstance(value, ast.Constant) and isinstance(value.value, bool):
+            attributes["decision_persistence"] = "always" if value.value else "per-call"
+            attributes["decision_persistence_value"] = value.value
+            return attributes
+        if isinstance(value, ast.Name):
+            resolved = literal_bool_binding(
+                value.id,
+                enclosing_statement_frames(parent_by_id, call),
+                call.lineno,
+            )
+            attributes["decision_persistence_binding"] = value.id
+            if resolved is not None:
+                attributes["decision_persistence"] = "always" if resolved else "per-call"
+                attributes["decision_persistence_value"] = resolved
+            else:
+                attributes["decision_persistence"] = "dynamic"
+            return attributes
+        attributes["decision_persistence"] = "dynamic"
+        return attributes
+
     for path in registry_paths:
         if path.suffix.lower() != ".py":
             continue
@@ -35249,6 +35340,12 @@ def add_python_openai_agents_run_state_approval_decision_flow(
                 "state_scope": "openai-run-state-approval-decision",
                 "scope": source_scope(relative),
             }
+            persistence_attributes = approval_decision_persistence_attributes(
+                call,
+                decision,
+                parent_by_id,
+            )
+            attributes.update(persistence_attributes)
             ir.add_component(
                 Component(
                     "control",
@@ -35271,6 +35368,7 @@ def add_python_openai_agents_run_state_approval_decision_flow(
                         "configuration": f"run.state.{decision}",
                         "binding": state_name,
                         "decision": decision,
+                        **persistence_attributes,
                     },
                     source_id=agent.symbol_id,
                     target_id=control_id,

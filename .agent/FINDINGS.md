@@ -2,7 +2,7 @@
 
 ## Durable facts
 
-- The repository contains a 71-repository pinned research corpus and schema-v127 engine benchmark
+- The repository contains a 71-repository pinned research corpus and schema-v128 engine benchmark
   outputs.
 - The runtime catalog currently contains 25 enabled reporting rules.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
@@ -492,6 +492,11 @@
   exact `RunState.from_json/from_string(...)` restored states tied to a proven agent, emit
   `approval-decision` controls for `state.approve(...)` and `state.reject(...)`. Loose state-like
   objects and rebound state variables remain unresolved.
+- OpenAI Agents Python sticky approval decisions are now visible as control metadata. Exact
+  `always_approve` and `always_reject` keyword arguments on proven SDK run-state decisions preserve
+  the keyword name, a stable same-function boolean binding when present, and whether the decision is
+  `always`, `per-call`, or `dynamic`. The real shell HITL example uses a prompt-derived dynamic
+  binding, while SDK tests contain literal sticky decisions.
 
 ## Hypotheses
 

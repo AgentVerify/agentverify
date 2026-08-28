@@ -109,7 +109,9 @@ never imported or executed.
   while an unimported lookalike stays ignored.
 - `python_openai_approval_decision`: OpenAI Agents Python `state.approve(...)` and
   `state.reject(...)` calls become approval-decision controls only when the receiver state comes
-  from an exact SDK run result or restored run state; loose and rebound state objects stay clean.
+  from an exact SDK run result or restored run state; `always_approve`/`always_reject` persistence
+  keywords preserve literal, stable same-function boolean, and dynamic variable provenance while
+  loose and rebound state objects stay clean.
 - `typescript_openai_approval_decision_env`: OpenAI Agents JS `RunState.approve(...)` decision
   controls record when the approval branch is guarded by a same-file confirmation helper with an
   environment-backed true-return path; reject branches and reassigned boolean guards stay clean.
