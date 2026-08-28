@@ -19,10 +19,12 @@ async function runWithHitl(agent: Agent<unknown, any>, input: string) {
   let result = await run(agent, input);
   const state = result.state;
   state.reject(result.interruptions[0], { message: "helper called with unknown agent" });
+  await run(agent, state);
 }
 
 async function looseRunWithHitl(agent, input: string) {
   let result = await run(agent, input);
   const state = result.state;
   state.reject(result.interruptions[0], { message: "missing Agent parameter type" });
+  await run(agent, state);
 }

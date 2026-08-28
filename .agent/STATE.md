@@ -551,12 +551,12 @@ catalog workflows.
   `run(agentParam, state)`. The local lexical-scope fixture and real `computer-use-hitl.ts`
   `runWithHitl(agent, ...)` call sites now emit call-line-qualified `conversation-continuity`
   controls plus configured-by resume edges.
-- The public IR truth set now passes 2,042/2,042 labels. Schema-v131 engine results report
+- The public IR truth set now passes 2,044/2,044 labels. Schema-v131 engine results report
   TypeScript OpenAI run-state continuity separately from approval decisions: 8 continuity controls,
   2 helper-parameter state resumes, 8 configured-by resume edges, and 2 helper-parameter resume
   edges.
-- Validation for the helper-resume slice passed the focused scanner test, focused 10/10 helper IR
-  labels, full 2,042/2,042 IR labels, 71/71 engine repositories, checked benchmark verification,
+- Validation for the helper-resume slice passed the focused scanner test, focused 12/12 helper IR
+  labels, full 2,044/2,044 IR labels, 71/71 engine repositories, checked benchmark verification,
   full `pytest -q` (298 passed), touched-file `ruff`, JSON parsing, diff whitespace checks, and
   `uv build` plus distribution smoke/source verification.
 
