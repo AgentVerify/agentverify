@@ -506,10 +506,12 @@ adds exact delegated `agent.asTool({ runOptions: { maxTurns } })` execution-boun
 schema v140 adds exact delegated `agent.asTool({ runConfig: { model, modelSettings } })`
 model-override controls. Schema v141 adds exact delegated
 `agent.asTool({ runConfig: { workflowName } })` trace-workflow controls, and schema v142 adds exact
-stable `new Runner({ workflowName })` per-run trace-workflow controls. AgentVerify emits distinct
-`trace-group`, `trace-id`, `tracing-disabled`, `agent-turn-limit`, `agent-model-override`, and
-`trace-workflow` controls and configured-by edges without treating any trace identifier as
-conversation memory. The real `routing.ts` example links the triage agent to
+stable `new Runner({ workflowName })` per-run trace-workflow controls. Schema v143 adds exact
+direct `run(agent, ..., { maxTurns })` and stable `runner.run(agent, ..., { maxTurns })` per-run
+execution-bound controls. AgentVerify emits distinct `trace-group`, `trace-id`,
+`tracing-disabled`, `agent-turn-limit`, `agent-model-override`, and `trace-workflow` controls and
+configured-by edges without treating any trace identifier as conversation memory. The real
+`routing.ts` example links the triage agent to
 its dynamic `conversationId` trace group, the real Codex tool example links two runs to a generated
 trace ID with a logged OpenAI platform trace URL, the real sandbox memory-generation example links
 its Runner-level group ID to the executed agent, SDK testing examples show Runner tracing
@@ -517,7 +519,9 @@ disablement, the sandbox agents-as-tools example shows delegated reviewer tracin
 eight-turn limits plus delegated workflow names, and the translator agents-as-tools example shows a
 three-turn delegated limit plus a delegated `gpt-5.4` model override with low reasoning/verbosity
 settings. The Blaxel and Cloudflare sandbox extension examples show stable Runner workflow names
-for both normal and streaming branches.
+for both normal and streaming branches, while the sandbox capabilities and hosted MCP
+human-in-the-loop examples show direct-run and Runner-run `maxTurns` bounds on source-proven
+agents.
 
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,

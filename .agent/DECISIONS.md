@@ -702,3 +702,21 @@
   same callsite-level edge for workflow names.
 - Revisit when: direct `run(..., { workflowName })`, exported Runner factories, or inherited Runner
   defaults can be linked to exact source-agent identity without broad receiver/name matching.
+
+## OpenAI Agents JS run-call maxTurns are agent-run execution controls
+
+- Decision: Represent exact TypeScript OpenAI Agents SDK direct
+  `run(agent, input, { maxTurns: <integer> })` calls and stable exact
+  `runner.run(agent, input, { maxTurns: <integer> })` calls as `agent-turn-limit` controls on the
+  source-proven run agent. Emit only for literal integer `maxTurns` values in the third options
+  argument, preserve the imported direct-run local binding or stable Runner binding, and do not
+  infer through missing, nonliteral, or reassigned options.
+- Evidence: The local conversation fixture proves both direct imported `run(...)` and
+  stable `Runner.run(...)` turn caps while its unrelated previous-response path remains negative.
+  The pinned OpenAI Agents JS sandbox capability examples contribute direct `run(..., { maxTurns })`
+  controls, and the hosted MCP human-in-the-loop example contributes stable Runner-run controls.
+- Alternative: Treat run-call `maxTurns` as generic runtime metadata detached from the source
+  agent. Rejected because policy review needs the exact agent whose execution is bounded at that
+  run site, alongside its conversation, sandbox, tracing, and approval evidence.
+- Revisit when: Runner constructor defaults, exported Runner factories, or inherited run options
+  can be linked to exact source-agent identity without broad receiver/name matching.

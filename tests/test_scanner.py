@@ -6036,6 +6036,50 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         "trace_scope": "openai-workflow",
         "scope": "production",
     }
+    turn_limit_controls = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "agent-turn-limit"
+        and component.attributes.get("analysis")
+        in {
+            "typescript-openai-agents-run-turn-limit",
+            "typescript-openai-agents-runner-run-turn-limit",
+        }
+    }
+    assert set(turn_limit_controls) == {
+        ("positive.ts", 12, "ts:positive.ts#control:run.maxTurns@12:run11"),
+        ("positive.ts", 19, "ts:positive.ts#control:runner.run.maxTurns@19:run18"),
+    }
+    assert turn_limit_controls[
+        ("positive.ts", 12, "ts:positive.ts#control:run.maxTurns@12:run11")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-run-turn-limit",
+        "module": "@openai/agents",
+        "configuration": "run.maxTurns",
+        "max_turns": 6,
+        "limit_scope": "agent-run",
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "scope": "production",
+        "imported_symbol": "run",
+        "local_function": "run",
+    }
+    assert turn_limit_controls[
+        ("positive.ts", 19, "ts:positive.ts#control:runner.run.maxTurns@19:run18")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-runner-run-turn-limit",
+        "module": "@openai/agents",
+        "configuration": "Runner.run.maxTurns",
+        "max_turns": 7,
+        "limit_scope": "agent-run",
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "scope": "production",
+        "constructor": "Runner",
+        "imported_symbol": "Runner",
+        "runner_binding": "runner",
+    }
 
     approval_decision_controls = {
         (component.evidence.path, component.evidence.line, component.symbol_id): component
@@ -6449,6 +6493,53 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
                 ("analysis", "typescript-openai-agents-runner-workflow-name"),
                 ("binding", "workflowName"),
                 ("configuration", "Runner-workflowName"),
+                ("runner_binding", "runner"),
+            ),
+        ),
+    }
+    turn_limit_edges = {
+        (
+            relationship.source_name,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            relationship.target_id,
+            tuple(sorted(relationship.attributes.items())),
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "configured-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "agent-turn-limit"
+        and relationship.attributes.get("analysis")
+        in {
+            "typescript-openai-agents-run-turn-limit",
+            "typescript-openai-agents-runner-run-turn-limit",
+        }
+    }
+    assert turn_limit_edges == {
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            11,
+            "ts:positive.ts#control:run.maxTurns@12:run11",
+            (
+                ("analysis", "typescript-openai-agents-run-turn-limit"),
+                ("binding", "maxTurns"),
+                ("configuration", "run-maxTurns"),
+                ("local_function", "run"),
+                ("max_turns", 6),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            18,
+            "ts:positive.ts#control:runner.run.maxTurns@19:run18",
+            (
+                ("analysis", "typescript-openai-agents-runner-run-turn-limit"),
+                ("binding", "maxTurns"),
+                ("configuration", "Runner-run-maxTurns"),
+                ("max_turns", 7),
                 ("runner_binding", "runner"),
             ),
         ),

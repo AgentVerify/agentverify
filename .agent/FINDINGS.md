@@ -581,6 +581,12 @@
   call supplies a source-proven agent; reassigned runners remain unresolved. The pinned Blaxel and
   Cloudflare sandbox extension examples contribute normal and streaming branch evidence, bringing
   the public IR truth set to 2,142 passing labels.
+- OpenAI Agents JS direct and stable Runner runs can bound the concrete run site with `maxTurns`.
+  Exact imported `run(agent, input, { maxTurns: <integer> })` and stable exact
+  `runner.run(agent, input, { maxTurns: <integer> })` calls now emit `agent-turn-limit` controls
+  and configured-by edges on source-proven agents. The pinned sandbox capability and hosted MCP
+  human-in-the-loop examples contribute real direct-run and Runner-run turn-limit evidence, bringing
+  the public IR truth set to 2,155 passing labels.
 
 ## Hypotheses
 

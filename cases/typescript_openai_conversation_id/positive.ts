@@ -9,14 +9,14 @@ const client = new OpenAI();
 const { id: conversationId } = await client.conversations.create({});
 
 await run(agent, 'remember this server-managed thread', {
-  conversationId,
+  conversationId, maxTurns: 6,
 });
 
 const runner = new Runner({
   workflowName: 'server-managed conversation example',
 });
 await runner.run(agent, 'continue this server-managed thread', {
-  conversationId,
+  conversationId, maxTurns: 7,
 });
 
 const first = await run(agent, 'start with previous response continuity');

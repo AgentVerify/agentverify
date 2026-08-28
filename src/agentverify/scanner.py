@@ -17098,6 +17098,52 @@ def add_typescript_openai_as_tool_turn_limit_control(
     return "agent-turn-limit", control_id
 
 
+def add_typescript_openai_run_turn_limit_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    configuration: str,
+    analysis: str,
+    source_agent: tuple[str, str],
+    max_turns: int,
+    symbol_identity: str,
+    local_function: str | None = None,
+    runner_binding: str | None = None,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS run/Runner.run max-turn evidence."""
+    source_agent_name, source_agent_id = source_agent
+    attributes: dict[str, object] = {
+        "analysis": analysis,
+        "module": "@openai/agents",
+        "configuration": configuration,
+        "max_turns": max_turns,
+        "limit_scope": "agent-run",
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "scope": source_scope(relative),
+    }
+    if local_function is not None:
+        attributes["imported_symbol"] = "run"
+        attributes["local_function"] = local_function
+    if runner_binding is not None:
+        attributes["constructor"] = "Runner"
+        attributes["imported_symbol"] = "Runner"
+        attributes["runner_binding"] = runner_binding
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "agent-turn-limit",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    return "agent-turn-limit", control_id
+
+
 def add_typescript_openai_as_tool_model_override_control(
     ir: RepositoryIR,
     *,
@@ -22129,6 +22175,23 @@ def typescript_graph(
             "state-input",
         )
 
+    def literal_max_turns_from_options(
+        options: str,
+        options_offset: int,
+    ) -> tuple[int, int] | None:
+        max_turns_location = typescript_object_property_expression_location(
+            options,
+            "maxTurns",
+            options_offset,
+        )
+        if max_turns_location is None:
+            return None
+        max_turns_expression, max_turns_property_offset, _ = max_turns_location
+        max_turns_code = typescript_code_mask(max_turns_expression).strip()
+        if re.fullmatch(r"\d+", max_turns_code) is None:
+            return None
+        return int(max_turns_code), line_at(text, max_turns_property_offset)
+
     for match in re.finditer(r"\b([A-Za-z_$][\w$]*)\s*\(", code):
         if match.start() > 0 and code[match.start() - 1] == ".":
             continue
@@ -22169,6 +22232,40 @@ def typescript_graph(
             )
         if len(arguments) < 3:
             continue
+        if turn_limit := literal_max_turns_from_options(arguments[2][0], arguments[2][1]):
+            max_turns, turn_limit_line = turn_limit
+            source_agent_name, source_agent_id = agent_target
+            turn_limit_name, turn_limit_id = add_typescript_openai_run_turn_limit_control(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=turn_limit_line,
+                configuration="run.maxTurns",
+                analysis="typescript-openai-agents-run-turn-limit",
+                source_agent=agent_target,
+                max_turns=max_turns,
+                local_function=match.group(1),
+                symbol_identity=f"{match.group(1)}.maxTurns@{turn_limit_line}:run{run_line}",
+            )
+            ir.add_relationship(
+                Relationship(
+                    "agent",
+                    source_agent_name,
+                    "configured-by",
+                    "control",
+                    turn_limit_name,
+                    Evidence(relative, run_line, excerpt(lines, run_line)),
+                    {
+                        "analysis": "typescript-openai-agents-run-turn-limit",
+                        "configuration": "run-maxTurns",
+                        "binding": "maxTurns",
+                        "max_turns": max_turns,
+                        "local_function": match.group(1),
+                    },
+                    source_id=source_agent_id,
+                    target_id=turn_limit_id,
+                )
+            )
         if conversation_session := conversation_session_from_options(arguments[2][0]):
             session_control, binding, analysis = conversation_session
             add_conversation_session_relationship(
@@ -22474,6 +22571,42 @@ def typescript_graph(
                 configuration="runner-run-session",
                 binding=binding,
                 analysis=analysis,
+            )
+        if len(arguments) >= 3 and (
+            turn_limit := literal_max_turns_from_options(arguments[2][0], arguments[2][1])
+        ):
+            max_turns, turn_limit_line = turn_limit
+            source_agent_name, source_agent_id = agent_target
+            turn_limit_name, turn_limit_id = add_typescript_openai_run_turn_limit_control(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=turn_limit_line,
+                configuration="Runner.run.maxTurns",
+                analysis="typescript-openai-agents-runner-run-turn-limit",
+                source_agent=agent_target,
+                max_turns=max_turns,
+                runner_binding=runner_name,
+                symbol_identity=f"{runner_name}.run.maxTurns@{turn_limit_line}:run{run_line}",
+            )
+            ir.add_relationship(
+                Relationship(
+                    "agent",
+                    source_agent_name,
+                    "configured-by",
+                    "control",
+                    turn_limit_name,
+                    Evidence(relative, run_line, excerpt(lines, run_line)),
+                    {
+                        "analysis": "typescript-openai-agents-runner-run-turn-limit",
+                        "configuration": "Runner-run-maxTurns",
+                        "binding": "maxTurns",
+                        "max_turns": max_turns,
+                        "runner_binding": runner_name,
+                    },
+                    source_id=source_agent_id,
+                    target_id=turn_limit_id,
+                )
             )
         runtime_control = None
         binding = None

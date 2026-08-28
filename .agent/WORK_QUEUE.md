@@ -26,7 +26,8 @@
   delegated `asTool({ runOptions: { maxTurns } })` turn-limit evidence, and delegated
   `asTool({ runConfig: { model } })` model-override evidence, plus delegated
   `asTool({ runConfig: { workflowName } })` trace-workflow evidence and stable
-  `Runner({ workflowName })` per-run workflow evidence, without broadening into ambiguous
+  `Runner({ workflowName })` per-run workflow evidence plus exact direct/stable Runner
+  `run(..., { maxTurns })` per-run turn-limit evidence, without broadening into ambiguous
   helper/config composition.
 - Continue OpenAI Agents JS HITL and safety-governance extraction where evidence remains exact:
   richer `needsApproval` predicate quality, automatic approval bypasses, and `computerTool`
