@@ -30,10 +30,12 @@
   they can be validated locally.
 - Improve installed CLI examples for benchmark verification and schema exports in CI/editor
   workflows; policy-gate GitHub Actions now has a checked workflow example.
-- Profile and reduce the remaining full public IR truth-set runtime. Focused label filters and
-  optional `--progress` timing now make detector-specific iteration measurable, but complete corpus
-  regeneration still spends minutes in broad repository scans and likely needs full-run timing,
-  scan-result reuse, or narrower dependency traversal.
+- Profile and reduce the remaining full public IR truth-set runtime. Focused label filters,
+  optional `--progress` timing, and explicit `--scan-label-paths` development scans now make
+  detector-specific iteration measurable and fast for self-contained labels, but complete corpus
+  regeneration still spends minutes in broad repository scans. A full selected-path experiment
+  failed cross-file-dependent labels, so the next credible acceleration needs dependency-aware path
+  expansion or scan-result reuse rather than label files only.
 
 ## Deferred until access/authorization
 

@@ -36,6 +36,9 @@
           "label_scope": {
             "enum": ["reporting-rules", "agent-ir", "mixed"]
           },
+          "scan_scope": {
+            "enum": ["selected-label-paths"]
+          },
           "sealed": {
             "type": "boolean"
           },

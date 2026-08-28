@@ -198,7 +198,7 @@ def verify_result(path: Path, *, schema: dict, root: Path) -> dict[str, object]:
         manifest_path = resolve_source(root, manifest_source)
         if file_sha256(manifest_path) != benchmark["manifest_sha256"]:
             raise RuntimeError(f"{path}: manifest_sha256 does not match {manifest_path}")
-    return {
+    result = {
         "result": str(path),
         "evaluation_kind": benchmark["evaluation_kind"],
         "label_scope": benchmark["label_scope"],
@@ -211,6 +211,9 @@ def verify_result(path: Path, *, schema: dict, root: Path) -> dict[str, object]:
         "claim_scope": benchmark["claim_scope"],
         "digest_ok": True,
     }
+    if scan_scope := benchmark.get("scan_scope"):
+        result["scan_scope"] = scan_scope
+    return result
 
 
 def enforce_release_requirements(

@@ -229,6 +229,90 @@ def test_evaluator_progress_is_opt_in_and_reports_target_timings(
     assert f"agentverify: scanned {second} labels=1 seconds=" in progress_streams.err
 
 
+def test_evaluator_can_scan_only_evaluated_label_paths_for_development(
+    tmp_path: Path, monkeypatch
+) -> None:
+    target = tmp_path / "repo"
+    target.mkdir()
+    (target / "agent.py").write_text("# labeled\n", encoding="utf-8")
+    (target / "helpers.py").write_text("# labeled helper\n", encoding="utf-8")
+    (target / "unlabeled.py").write_text("# not selected\n", encoding="utf-8")
+    labels = tmp_path / "labels.json"
+    labels.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "labels": [
+                    {
+                        "id": "first-missing-agent",
+                        "target": {"kind": "local", "path": str(target)},
+                        "check_id": "IR-FIRST",
+                        "path": "agent.py",
+                        "line": 1,
+                        "expected": False,
+                        "component": {"kind": "agent", "name": "missing"},
+                    },
+                    {
+                        "id": "second-missing-agent",
+                        "target": {"kind": "local", "path": str(target)},
+                        "check_id": "IR-SECOND",
+                        "path": "helpers.py",
+                        "line": 1,
+                        "expected": False,
+                        "component": {"kind": "agent", "name": "missing"},
+                    },
+                    {
+                        "id": "skipped-agent",
+                        "target": {"kind": "local", "path": str(target)},
+                        "check_id": "IR-SKIP",
+                        "path": "unlabeled.py",
+                        "line": 1,
+                        "expected": True,
+                        "component": {"kind": "agent", "name": "missing"},
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    selected_scans: list[tuple[Path, tuple[str, ...] | None]] = []
+
+    def fake_scan_repository(
+        path: Path, *, selected_paths: list[str] | None = None
+    ) -> RepositoryIR:
+        selected_scans.append((path, tuple(selected_paths or ()) if selected_paths else None))
+        return RepositoryIR(str(path))
+
+    monkeypatch.setattr(evaluate_truthset, "scan_repository", fake_scan_repository)
+    output = tmp_path / "selected-results.json"
+
+    assert (
+        evaluate_truthset.main(
+            [
+                "--labels",
+                str(labels),
+                "--output",
+                str(output),
+                "--check-id",
+                "IR-FIRST",
+                "--check-id",
+                "IR-SECOND",
+                "--scan-label-paths",
+            ]
+        )
+        == 0
+    )
+
+    result = json.loads(output.read_text(encoding="utf-8"))
+    assert selected_scans == [(target, ("agent.py", "helpers.py"))]
+    assert result["benchmark"]["scan_scope"] == "selected-label-paths"
+    assert result["labels"] == 2
+    Draft202012Validator(benchmark_results_schema()).validate(result)
+    verified = verify_result(output, schema=load_benchmark_result_schema(), root=Path("."))
+    assert verified["passed"] == 2
+    assert verified["scan_scope"] == "selected-label-paths"
+
+
 def test_evaluator_reports_source_anchor_failures_separately(tmp_path: Path) -> None:
     target = tmp_path / "repo"
     target.mkdir()

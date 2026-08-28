@@ -414,6 +414,13 @@ catalog workflows.
   prints per-target scan timings to stderr without changing benchmark-result JSON, and a focused
   OpenAI sandbox IR run showed the cached `openai/openai-agents-js` checkout dominating that slice
   at roughly 3.5 seconds versus subsecond local fixtures.
+- Added an explicit `--scan-label-paths` development shortcut for `scripts/evaluate_truthset.py`.
+  It scans only files referenced by the evaluated labels through the existing scanner selected-paths
+  path, records `benchmark.scan_scope: selected-label-paths`, and surfaces that optional scope from
+  benchmark verification. The focused OpenAI sandbox IR slice passed 235/235 in about 1.2 seconds
+  wall time, while a full selected-path all-IR experiment dropped timed scan cost from about 482.5
+  seconds to 57.5 seconds but failed 285 cross-file-dependent labels, confirming it is a fast
+  focused-development mode rather than release evidence.
 
 ## Current findings
 
@@ -498,6 +505,6 @@ catalog workflows.
 Continue toward the highest-value local P1/P2 work: additional exact OpenAI Agents JS sandbox
 policy fields, real-world framework coverage without broad name matching, concrete CI/editor
 integration fixtures, or release-artifact checks that stay local until release publishing is
-explicit. For performance work, run full public IR truth-set evaluation with `--progress` and use the
-per-target timings to choose between scan-result reuse, repository-scope pruning, or narrower
-dependency traversal.
+explicit. For performance work, use `--progress` plus focused `--scan-label-paths` only when the
+target labels are self-contained; broader benchmark acceleration likely needs dependency-aware path
+expansion or scan-result reuse to preserve cross-file evidence.

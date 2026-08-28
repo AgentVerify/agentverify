@@ -85,6 +85,22 @@
 - Revisit when: benchmark schemas move into a versioned package namespace or release automation
   publishes schema artifacts independently.
 
+## Selected-label-path benchmark scans are development evidence only
+
+- Decision: Allow `scripts/evaluate_truthset.py --scan-label-paths` to scan only files referenced by
+  the evaluated labels, but record `benchmark.scan_scope: selected-label-paths` and surface that
+  scope from benchmark verification.
+- Evidence: Full public IR profiling showed roughly 482.5 seconds of timed scan work, mostly from
+  large cached repositories with few labels. The selected-label-path experiment reduced timed scan
+  work to roughly 57.5 seconds, and focused OpenAI sandbox labels still passed 235/235, but the full
+  all-IR run failed 285 labels that require cross-file helper, import, reexport, or composition
+  summaries.
+- Alternative: Treat selected label paths as a drop-in benchmark acceleration. Rejected because that
+  would silently weaken cross-file evidence and could make release claims incomparable with
+  repository-wide scans.
+- Revisit when: the evaluator can expand selected paths with dependency-aware helper/reexport files,
+  or scanner result caching preserves repository-wide evidence while avoiding repeated parse work.
+
 ## Signed policy CI fixtures must use ephemeral keys
 
 - Decision: Prove signed-policy verification in CI with a generated in-memory Ed25519 key and

@@ -370,6 +370,17 @@
   A focused `IR-TS-OPENAI-SANDBOX` run printed three target timings: the cached
   `openai/openai-agents-js` checkout took about 3.5 seconds, while the two local sandbox fixtures
   were below 0.3 seconds each.
+- Full public IR truth-set profiling with `--progress` scanned 133 targets and reported about 482.5
+  seconds of timed scan work, with the slowest cached repositories being Roo Code (~71.4s), Flowise
+  (~39.7s), PydanticAI (~35.6s), Cline (~23.7s), and Skyvern (~23.4s). The top offenders are large
+  real repositories with comparatively few labels, so broad traversal/parsing dominates benchmark
+  iteration cost.
+- `--scan-label-paths` is a useful focused-development shortcut, not a replacement for repository
+  scans. It reduced the full public IR timed scan total to about 57.5 seconds but passed only
+  1,587/1,872 labels because many Python import/reexport/helper and TypeScript composition labels
+  intentionally require cross-file summaries. The OpenAI sandbox slice is self-contained enough to
+  pass 235/235 with selected label paths, reducing the cached `openai/openai-agents-js` target from
+  roughly 3.5 seconds to 0.9 seconds.
 
 ## Hypotheses
 

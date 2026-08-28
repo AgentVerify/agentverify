@@ -49,6 +49,7 @@
         "labels_source": {"type": "string", "minLength": 1},
         "labels_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         "label_filter": {"$ref": "#/$defs/label_filter"},
+        "scan_scope": {"enum": ["selected-label-paths"]},
         "sealed": {"type": "boolean"},
         "claim_scope": {"type": "string", "minLength": 1},
         "manifest_source": {"type": "string", "minLength": 1},

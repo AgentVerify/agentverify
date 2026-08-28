@@ -62,6 +62,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="print per-target scan timings to stderr without changing result JSON",
     )
+    parser.add_argument(
+        "--scan-label-paths",
+        action="store_true",
+        help=(
+            "development shortcut: scan only files referenced by the evaluated labels; "
+            "records selected-label-paths scan scope in result metadata"
+        ),
+    )
     return parser.parse_args(argv)
 
 
@@ -108,6 +116,8 @@ def benchmark_metadata(
     }
     if label_filter:
         metadata["label_filter"] = label_filter
+    if args.scan_label_paths:
+        metadata["scan_scope"] = "selected-label-paths"
     if args.manifest is not None:
         metadata["manifest_source"] = str(args.manifest)
         metadata["manifest_sha256"] = file_sha256(args.manifest)
@@ -139,6 +149,9 @@ def main(argv: list[str] | None = None) -> int:
     all_labels = json.loads(args.labels.read_text(encoding="utf-8"))["labels"]
     labels = apply_label_filter(all_labels, label_filter)
     target_label_counts = Counter(json.dumps(label["target"], sort_keys=True) for label in labels)
+    target_label_paths: dict[str, set[str]] = defaultdict(set)
+    for label in labels:
+        target_label_paths[json.dumps(label["target"], sort_keys=True)].add(label["path"])
     scans = {}
     outcomes = []
     matrices: dict[str, Counter] = defaultdict(Counter)
@@ -149,7 +162,13 @@ def main(argv: list[str] | None = None) -> int:
         if key not in scans:
             started = time.perf_counter()
             verify_commit(path, target)
-            scans[key] = scan_repository(path)
+            selected_paths = (
+                sorted(target_label_paths[key]) if args.scan_label_paths else None
+            )
+            if selected_paths is None:
+                scans[key] = scan_repository(path)
+            else:
+                scans[key] = scan_repository(path, selected_paths=selected_paths)
             if args.progress:
                 elapsed = time.perf_counter() - started
                 print(

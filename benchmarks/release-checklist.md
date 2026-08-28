@@ -29,9 +29,10 @@ agentverify schema holdout-manifest --output agentverify-holdout-manifest.schema
 agentverify schema holdout-labels --output agentverify-holdout-labels.schema.json
 ```
 
-During scanner development, add `--progress` to focused evaluator runs such as
-`--check-id IR-TS-OPENAI-SANDBOX` to print per-target scan timings to stderr without changing the
-benchmark-result JSON contract.
+During scanner development, use focused evaluator runs such as `--check-id
+IR-TS-OPENAI-SANDBOX --scan-label-paths --progress` to scan only label-referenced files and print
+per-target timings to stderr. The result records `benchmark.scan_scope: selected-label-paths`;
+release evidence should still come from the repository-wide commands above.
 
 For GitHub Actions, start from the copyable
 [`examples/github-benchmark-verify.yml`](../examples/github-benchmark-verify.yml) workflow. It runs
