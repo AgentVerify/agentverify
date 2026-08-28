@@ -694,6 +694,13 @@ catalog workflows.
   RealtimeSession config labels pass 7/7, full public IR labels pass 2,217/2,217, and the full
   schema-v151 engine benchmark refresh passes 71/71 repositories with 2,859 relationships and
   10,643 symbolized components.
+- Extended OpenAI Realtime `RealtimeSession` config inventory to exact
+  `config.reasoning.effort` string literals on the same source-proven session config policy. The
+  local realtime fixture now covers a reasoning-only positive, and the pinned voice-agent
+  `configureSession.ts` example contributes both low reasoning and parallel tool-call metadata on
+  one session config control. Focused RealtimeSession config labels pass 9/9, full public IR labels
+  pass 2,219/2,219, and the full schema-v152 engine benchmark refresh passes 71/71 repositories
+  with 2,859 relationships and 10,643 symbolized components.
 
 ## Current findings
 
@@ -809,8 +816,8 @@ catalog workflows.
   source-proven `.run(agent, ...)` calls. Exact Agent-level literal
   `modelSettings.reasoning.effort`, `modelSettings.text.verbosity`, and
   `modelSettings.parallelToolCalls` values expose `model-settings-policy` controls. Exact imported
-  RealtimeSession config with `parallelToolCalls` exposes `realtime-session-config-policy` controls
-  linked to source-proven RealtimeAgents. Exact imported
+  RealtimeSession config with `parallelToolCalls` and `reasoning.effort` exposes
+  `realtime-session-config-policy` controls linked to source-proven RealtimeAgents. Exact imported
   `withTrace` callbacks containing
   source-proven SDK `run(agent, ...)` calls, exact Runner instances with source-proven
   `.run(agent, ...)` calls, and exact delegated-agent `asTool` adapters emit `trace-group`,
@@ -842,9 +849,9 @@ semantics distinct from trace-correlation `withTrace(..., { groupId/traceId })` 
 `modelSettings.toolChoice` evidence and stable Runner-level `modelSettings.toolChoice` per-run
 evidence, plus exact `computerTool({ computer })` backend lifecycle metadata for external
 bindings, inline static objects, create/dispose per-run factories, and create-only factories, plus
-  exact Agent-level `modelSettings.reasoning.effort`, `modelSettings.text.verbosity`, and
-  `modelSettings.parallelToolCalls` metadata, plus exact RealtimeSession
-  `config.parallelToolCalls` policy. For OpenAI
+exact Agent-level `modelSettings.reasoning.effort`, `modelSettings.text.verbosity`, and
+`modelSettings.parallelToolCalls` metadata, plus exact RealtimeSession `config.parallelToolCalls`
+and `config.reasoning.effort` policy. For OpenAI
 approval work, keep literal always-approval, callback-controlled
 approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
 approval metadata, literal predicate metadata, SDK state approval decisions, helper-parameter

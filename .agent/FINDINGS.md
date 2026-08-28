@@ -626,10 +626,11 @@
   bindings remain unresolved. The local fixture plus pinned OpenAI Agents JS `tool-search.ts`
   examples bring the public IR truth set to 2,210 passing labels.
 - OpenAI Realtime session-level `parallelToolCalls` concurrency is now separately reviewable when
-  literal and source-proven. Exact `RealtimeSession(agent, { config: { parallelToolCalls } })`
-  settings emit `realtime-session-config-policy` controls linked to the resolved `RealtimeAgent`;
-  dynamic values remain unresolved. The local fixture plus pinned OpenAI Agents JS
-  `configureSession.ts` voice-agent example bring the public IR truth set to 2,217 passing labels.
+  literal and source-proven, alongside exact realtime `config.reasoning.effort` strings. Exact
+  `RealtimeSession(agent, { config: { parallelToolCalls, reasoning: { effort } } })` settings emit
+  `realtime-session-config-policy` controls linked to the resolved `RealtimeAgent`; dynamic values
+  remain unresolved. The local fixture plus pinned OpenAI Agents JS `configureSession.ts`
+  voice-agent example bring the public IR truth set to 2,219 passing labels.
 
 ## Hypotheses
 

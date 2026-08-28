@@ -17277,31 +17277,36 @@ def add_typescript_openai_realtime_session_config_control(
     local_constructor: str,
     session_binding: str,
     source_agent: tuple[str, str],
-    parallel_tool_calls: bool,
+    parallel_tool_calls: bool | None,
+    reasoning_effort: str | None,
     symbol_identity: str,
 ) -> tuple[str, str]:
     """Add exact OpenAI Agents JS RealtimeSession config governance evidence."""
     source_agent_name, source_agent_id = source_agent
     control_id = source_symbol("ts", relative, "control", symbol_identity)
+    attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-realtime-session-config",
+        "module": "@openai/agents/realtime",
+        "constructor": "RealtimeSession",
+        "imported_symbol": "RealtimeSession",
+        "local_constructor": local_constructor,
+        "configuration": "RealtimeSession.config",
+        "session_binding": session_binding,
+        "config_scope": "realtime-session-config",
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "scope": source_scope(relative),
+    }
+    if parallel_tool_calls is not None:
+        attributes["parallel_tool_calls"] = parallel_tool_calls
+    if reasoning_effort is not None:
+        attributes["reasoning_effort"] = reasoning_effort
     ir.add_component(
         Component(
             "control",
             "realtime-session-config-policy",
             Evidence(relative, line, excerpt(lines, line)),
-            {
-                "analysis": "typescript-openai-agents-realtime-session-config",
-                "module": "@openai/agents/realtime",
-                "constructor": "RealtimeSession",
-                "imported_symbol": "RealtimeSession",
-                "local_constructor": local_constructor,
-                "configuration": "RealtimeSession.config",
-                "session_binding": session_binding,
-                "config_scope": "realtime-session-config",
-                "source_agent": source_agent_name,
-                "source_agent_id": source_agent_id,
-                "parallel_tool_calls": parallel_tool_calls,
-                "scope": source_scope(relative),
-            },
+            attributes,
             control_id,
         )
     )
@@ -17451,14 +17456,33 @@ def typescript_literal_nested_object_string_property(
     path: tuple[str, ...],
 ) -> str | None:
     """Resolve a nested direct string property from literal TypeScript objects."""
+    location = typescript_literal_nested_object_string_property_location(
+        body,
+        body_offset=body_offset,
+        path=path,
+    )
+    return location[0] if location is not None else None
+
+
+def typescript_literal_nested_object_string_property_location(
+    body: str,
+    *,
+    body_offset: int,
+    path: tuple[str, ...],
+) -> tuple[str, int, int] | None:
+    """Resolve a nested direct string property plus property/value offsets."""
     expression = body
     offset = body_offset
+    property_offset = body_offset
     for name in path:
         location = typescript_object_property_expression_location(expression, name, offset)
         if location is None:
             return None
-        expression, _, offset = location
-    return typescript_string_literal_value(expression)
+        expression, property_offset, offset = location
+    value = typescript_string_literal_value(expression)
+    if value is None:
+        return None
+    return value, property_offset, offset
 
 
 def typescript_literal_nested_object_string_array_property_location(
@@ -21117,32 +21141,58 @@ def typescript_graph(
         if config_location is None:
             continue
         config_expression, _, config_offset = config_location
+        reasoning_effort = None
+        reasoning_effort_offset = None
+        reasoning_effort_location = typescript_literal_nested_object_string_property_location(
+            config_expression,
+            body_offset=config_offset,
+            path=("reasoning", "effort"),
+        )
+        if reasoning_effort_location is not None:
+            reasoning_effort, reasoning_effort_offset, _ = reasoning_effort_location
+        parallel_tool_calls = None
+        parallel_property_offset = None
         parallel_tool_calls_location = typescript_object_property_expression_location(
             config_expression,
             "parallelToolCalls",
             config_offset,
         )
-        if parallel_tool_calls_location is None:
+        if parallel_tool_calls_location is not None:
+            parallel_tool_calls_expression, parallel_property_offset, _ = (
+                parallel_tool_calls_location
+            )
+            parallel_tool_calls = typescript_literal_boolean_value(parallel_tool_calls_expression)
+        if reasoning_effort is None and parallel_tool_calls is None:
             continue
-        parallel_tool_calls_expression, parallel_property_offset, _ = (
-            parallel_tool_calls_location
+        policy_offset = min(
+            offset
+            for offset in (reasoning_effort_offset, parallel_property_offset)
+            if offset is not None
         )
-        parallel_tool_calls = typescript_literal_boolean_value(parallel_tool_calls_expression)
-        if parallel_tool_calls is None:
-            continue
-        parallel_tool_calls_line = line_at(text, parallel_property_offset)
+        policy_line = line_at(text, policy_offset)
         config_name, config_id = add_typescript_openai_realtime_session_config_control(
             ir,
             relative=relative,
             lines=lines,
-            line=parallel_tool_calls_line,
+            line=policy_line,
             local_constructor=local_constructor,
             session_binding=session_name,
             source_agent=source_agent,
             parallel_tool_calls=parallel_tool_calls,
-            symbol_identity=f"{session_name}.config.parallelToolCalls@{parallel_tool_calls_line}",
+            reasoning_effort=reasoning_effort,
+            symbol_identity=f"{session_name}.config@{policy_line}",
         )
         agent_name, agent_id = source_agent
+        config_attributes: dict[str, object] = {
+            "analysis": "typescript-openai-agents-realtime-session-config",
+            "configuration": "RealtimeSession-config",
+            "binding": "config",
+            "session_binding": session_name,
+        }
+        if parallel_tool_calls is not None:
+            config_attributes["parallel_tool_calls"] = parallel_tool_calls
+        if reasoning_effort is not None:
+            config_attributes["reasoning_effort"] = reasoning_effort
         ir.add_relationship(
             Relationship(
                 "agent",
@@ -21152,16 +21202,10 @@ def typescript_graph(
                 config_name,
                 Evidence(
                     relative,
-                    parallel_tool_calls_line,
-                    excerpt(lines, parallel_tool_calls_line),
+                    policy_line,
+                    excerpt(lines, policy_line),
                 ),
-                {
-                    "analysis": "typescript-openai-agents-realtime-session-config",
-                    "configuration": "RealtimeSession-config",
-                    "binding": "config.parallelToolCalls",
-                    "session_binding": session_name,
-                    "parallel_tool_calls": parallel_tool_calls,
-                },
+                config_attributes,
                 source_id=agent_id,
                 target_id=config_id,
             )

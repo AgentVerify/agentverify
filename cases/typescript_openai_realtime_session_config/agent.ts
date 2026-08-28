@@ -18,6 +18,14 @@ export const parallelSession = new RealtimeSession(greeter, {
   },
 });
 
+export const reasoningSession = new RealtimeSession(greeter, {
+  config: {
+    reasoning: {
+      effort: "low",
+    },
+  },
+});
+
 export const dynamicSession = new RealtimeSession(greeter, {
   config: {
     parallelToolCalls: dynamicParallelToolCalls,

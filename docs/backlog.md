@@ -519,7 +519,8 @@ plus literal `Agent.modelSettings.providerData.include` source-inclusion control
 adds exact literal `webSearchTool({ userLocation })` privacy/scope metadata, and schema v150 adds
 exact Agent-level `modelSettings.parallelToolCalls` concurrency metadata. Schema v151 adds exact
 OpenAI Realtime `RealtimeSession({ config.parallelToolCalls })` concurrency metadata tied to
-source-proven `RealtimeAgent` instances. AgentVerify emits
+source-proven `RealtimeAgent` instances, and schema v152 extends that control to exact realtime
+`config.reasoning.effort` metadata. AgentVerify emits
 distinct `trace-group`, `trace-id`, `tracing-disabled`, `agent-turn-limit`,
 `agent-model-override`, `trace-workflow`, `tool-choice-policy`, `model-settings-policy`,
 `web-search-policy`, `provider-data-policy`, and `realtime-session-config-policy` controls and
@@ -542,9 +543,10 @@ singleton external computer bindings from per-request create/dispose browser fac
 web-search filters and apply-patch examples expose low reasoning/verbosity model settings. The
 tool-search example exposes Agent-level sequential tool-call settings through
 `parallelToolCalls: false`, and the voice-agent configure-session example exposes realtime
-session-level parallel tool-call configuration. The web-search filters example also exposes a
-literal OpenAI-domain search allowlist, medium search context size, and explicit source-return
-inclusion, while the basic web-search example exposes an approximate New York user-location scope.
+session-level parallel tool-call and low-reasoning configuration. The web-search filters example
+also exposes a literal OpenAI-domain search allowlist, medium search context size, and explicit
+source-return inclusion, while the basic web-search example exposes an approximate New York
+user-location scope.
 
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
