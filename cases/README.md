@@ -110,11 +110,13 @@ never imported or executed.
 - `python_openai_approval_decision`: OpenAI Agents Python `state.approve(...)` and
   `state.reject(...)` calls become approval-decision controls only when the receiver state comes
   from an exact SDK run result or restored run state; `always_approve`/`always_reject` persistence
-  keywords preserve literal, stable same-function boolean, and dynamic variable provenance while
-  loose and rebound state objects stay clean.
+  keywords and custom `rejection_message` values preserve literal, stable same-function binding,
+  template, and dynamic provenance while loose and rebound state objects stay clean.
 - `typescript_openai_approval_decision_env`: OpenAI Agents JS `RunState.approve(...)` decision
   controls record when the approval branch is guarded by a same-file confirmation helper with an
-  environment-backed true-return path; reject branches and reassigned boolean guards stay clean.
+  environment-backed true-return path; the broader TypeScript conversation fixture also covers
+  custom reject-option `{ message }` provenance. Reject branches and reassigned boolean guards stay
+  clean.
 - `python_direct_callable_tool`: a sole same-block Python function passed through a literal Agent
   tools list becomes an analyzed tool asset; reassigned, cross-branch, forward, and parameter
   forms—including a parameter shadowing a unique module tool—remain unresolved.

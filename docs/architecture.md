@@ -828,6 +828,9 @@ provenance only for braced branches guarded by a proven same-file confirmation h
 reject and reassigned guards unannotated. Python approve/reject controls also preserve SDK sticky
 persistence hints: `always_approve` and `always_reject` are recorded as always, per-call, or dynamic
 decision persistence when their literal or stable same-function boolean source can be proven.
+Reject decisions preserve custom rejection-message provenance without storing the message text:
+Python `rejection_message=` and TypeScript `{ message }` options are classified as literal,
+literal-binding, template, or dynamic when the reject receiver itself is source-proven.
 Import-proven `LocalShellTool` instances emit local shell execution and explicitly distinguish an
 SDK with no approval hook from one whose approval option is merely disabled. A reachable instance
 can therefore trigger AV-APPROVAL002 as a review while preserving the executor as an unresolved

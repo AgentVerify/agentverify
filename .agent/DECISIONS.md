@@ -448,3 +448,22 @@
 - Revisit when: a reporting rule can distinguish production-default sticky approval from explicit
   user-selected persistence, or when richer local constant propagation can stay exact without
   crossing mutable module/global state.
+
+## OpenAI Agents run-state rejection messages preserve provenance, not text
+
+- Decision: Record custom rejection-message presence and source classification on source-proven
+  OpenAI Agents run-state `reject` decisions, but do not store the message text in Agent IR.
+  Python `rejection_message=` and TypeScript `{ message }` options are classified as `literal`,
+  `literal-binding`, `template`, or `dynamic`.
+- Evidence: The OpenAI Agents Python `RunState.reject(...)` signature includes
+  `rejection_message`; the pinned `human_in_the_loop_custom_rejection.py` example passes a literal
+  custom message on a source-proven state. Local Python and TypeScript fixtures pin literal,
+  literal-binding, template, and dynamic message sources. The visible TypeScript
+  `computer-use-hitl.ts` custom message is not labeled because its reject call receives the agent
+  through a helper parameter, which the current exact run-state detector intentionally does not
+  infer.
+- Alternative: Store full rejection strings or report custom messages as findings. Rejected because
+  full message text is unnecessary for governance inventory and may expose sensitive developer
+  policy text, while custom rejection messaging is not itself unsafe.
+- Revisit when: a narrow TypeScript function-parameter state model can prove helper calls from
+  exact run results without turning arbitrary helper parameters into SDK state evidence.

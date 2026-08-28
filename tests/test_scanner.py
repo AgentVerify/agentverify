@@ -5466,6 +5466,7 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         ("positive.ts", 45, "ts:positive.ts#control:resumeState.state@45"),
         ("positive.ts", 49, "ts:positive.ts#control:approvalState.state@49"),
         ("positive.ts", 69, "ts:positive.ts#control:persistedState.fromString@69"),
+        ("positive.ts", 79, "ts:positive.ts#control:messageState.state@79"),
     }
     assert continuity_controls[
         ("positive.ts", 23, "ts:positive.ts#control:previousResponseId@23")
@@ -5567,6 +5568,9 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         "state_scope": "openai-run-state-continuity",
         "scope": "production",
     }
+    assert continuity_controls[
+        ("positive.ts", 79, "ts:positive.ts#control:messageState.state@79")
+    ].attributes["state_binding"] == "messageState"
 
     approval_decision_controls = {
         (component.evidence.path, component.evidence.line, component.symbol_id): component
@@ -5580,6 +5584,10 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         ("positive.ts", 59, "ts:positive.ts#control:inlineApproval.state.reject@59"),
         ("positive.ts", 71, "ts:positive.ts#control:persistedState.approve@71"),
         ("positive.ts", 72, "ts:positive.ts#control:persistedState.reject@72"),
+        ("positive.ts", 81, "ts:positive.ts#control:messageState.reject@81"),
+        ("positive.ts", 82, "ts:positive.ts#control:messageState.reject@82"),
+        ("positive.ts", 83, "ts:positive.ts#control:messageState.reject@83"),
+        ("positive.ts", 84, "ts:positive.ts#control:messageState.reject@84"),
     }
     assert approval_decision_controls[
         ("positive.ts", 51, "ts:positive.ts#control:approvalState.approve@51")
@@ -5610,6 +5618,24 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
     assert approval_decision_controls[
         ("positive.ts", 72, "ts:positive.ts#control:persistedState.reject@72")
     ].attributes["state_binding"] == "persistedState"
+    assert approval_decision_controls[
+        ("positive.ts", 81, "ts:positive.ts#control:messageState.reject@81")
+    ].attributes["rejection_message_source"] == "literal"
+    assert approval_decision_controls[
+        ("positive.ts", 82, "ts:positive.ts#control:messageState.reject@82")
+    ].attributes["rejection_message_binding"] == "rejectionText"
+    assert approval_decision_controls[
+        ("positive.ts", 82, "ts:positive.ts#control:messageState.reject@82")
+    ].attributes["rejection_message_source"] == "literal-binding"
+    assert approval_decision_controls[
+        ("positive.ts", 83, "ts:positive.ts#control:messageState.reject@83")
+    ].attributes["rejection_message_source"] == "template"
+    assert approval_decision_controls[
+        ("positive.ts", 84, "ts:positive.ts#control:messageState.reject@84")
+    ].attributes["rejection_message_binding"] == "runtimeRejectionText"
+    assert approval_decision_controls[
+        ("positive.ts", 84, "ts:positive.ts#control:messageState.reject@84")
+    ].attributes["rejection_message_source"] == "dynamic"
 
     edges = {
         (
@@ -5736,6 +5762,17 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
                 ("configuration", "run-state-input"),
             ),
         ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            86,
+            "ts:positive.ts#control:messageState.state@79",
+            (
+                ("analysis", "typescript-openai-agents-run-state-continuity"),
+                ("binding", "state-input"),
+                ("configuration", "run-state-input"),
+            ),
+        ),
     }
     approval_edges = {
         (
@@ -5822,6 +5859,64 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
                 ("binding", "persistedState"),
                 ("configuration", "run.state.reject"),
                 ("decision", "reject"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            81,
+            "ts:positive.ts#control:messageState.reject@81",
+            (
+                ("analysis", "typescript-openai-agents-run-state-approval-decision"),
+                ("binding", "messageState"),
+                ("configuration", "run.state.reject"),
+                ("decision", "reject"),
+                ("rejection_message", "custom"),
+                ("rejection_message_source", "literal"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            82,
+            "ts:positive.ts#control:messageState.reject@82",
+            (
+                ("analysis", "typescript-openai-agents-run-state-approval-decision"),
+                ("binding", "messageState"),
+                ("configuration", "run.state.reject"),
+                ("decision", "reject"),
+                ("rejection_message", "custom"),
+                ("rejection_message_binding", "rejectionText"),
+                ("rejection_message_source", "literal-binding"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            83,
+            "ts:positive.ts#control:messageState.reject@83",
+            (
+                ("analysis", "typescript-openai-agents-run-state-approval-decision"),
+                ("binding", "messageState"),
+                ("configuration", "run.state.reject"),
+                ("decision", "reject"),
+                ("rejection_message", "custom"),
+                ("rejection_message_source", "template"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            84,
+            "ts:positive.ts#control:messageState.reject@84",
+            (
+                ("analysis", "typescript-openai-agents-run-state-approval-decision"),
+                ("binding", "messageState"),
+                ("configuration", "run.state.reject"),
+                ("decision", "reject"),
+                ("rejection_message", "custom"),
+                ("rejection_message_binding", "runtimeRejectionText"),
+                ("rejection_message_source", "dynamic"),
             ),
         ),
     }
@@ -7308,7 +7403,7 @@ def test_openai_agents_python_run_state_approval_decisions_are_exact() -> None:
         for component in ir.components
         if component.kind == "control" and component.name == "approval-decision"
     }
-    assert set(controls) == {12, 13, 18, 32, 33, 34}
+    assert set(controls) == {12, 13, 18, 32, 33, 34, 41, 42, 43, 44}
     assert controls[12].symbol_id == "py:agent.py#control:state.approve@12"
     assert controls[12].attributes == {
         "analysis": "python-openai-agents-run-state-approval-decision",
@@ -7336,6 +7431,13 @@ def test_openai_agents_python_run_state_approval_decisions_are_exact() -> None:
     assert controls[34].attributes["decision_persistence_binding"] == "once"
     assert controls[34].attributes["decision_persistence"] == "per-call"
     assert controls[34].attributes["decision_persistence_value"] is False
+    assert controls[41].attributes["rejection_message"] == "custom"
+    assert controls[41].attributes["rejection_message_source"] == "literal"
+    assert controls[42].attributes["rejection_message_binding"] == "rejection_text"
+    assert controls[42].attributes["rejection_message_source"] == "literal-binding"
+    assert controls[43].attributes["rejection_message_source"] == "template"
+    assert controls[44].attributes["rejection_message_binding"] == "runtime_message"
+    assert controls[44].attributes["rejection_message_source"] == "dynamic"
 
     governed_edges = {
         relationship.evidence.line: relationship
@@ -7345,7 +7447,7 @@ def test_openai_agents_python_run_state_approval_decisions_are_exact() -> None:
         and relationship.target_kind == "control"
         and relationship.target_name == "approval-decision"
     }
-    assert set(governed_edges) == {12, 13, 18, 32, 33, 34}
+    assert set(governed_edges) == {12, 13, 18, 32, 33, 34, 41, 42, 43, 44}
     assert governed_edges[12].source_id == "py:agent.py#agent:agent"
     assert governed_edges[12].target_id == "py:agent.py#control:state.approve@12"
     assert governed_edges[13].attributes == {
@@ -7365,6 +7467,13 @@ def test_openai_agents_python_run_state_approval_decisions_are_exact() -> None:
     assert governed_edges[34].attributes["decision_persistence_binding"] == "once"
     assert governed_edges[34].attributes["decision_persistence"] == "per-call"
     assert governed_edges[34].attributes["decision_persistence_value"] is False
+    assert governed_edges[41].attributes["rejection_message"] == "custom"
+    assert governed_edges[41].attributes["rejection_message_source"] == "literal"
+    assert governed_edges[42].attributes["rejection_message_binding"] == "rejection_text"
+    assert governed_edges[42].attributes["rejection_message_source"] == "literal-binding"
+    assert governed_edges[43].attributes["rejection_message_source"] == "template"
+    assert governed_edges[44].attributes["rejection_message_binding"] == "runtime_message"
+    assert governed_edges[44].attributes["rejection_message_source"] == "dynamic"
 
 
 def test_openai_agents_typescript_writable_mcp_tools_inherit_disabled_approval_default(

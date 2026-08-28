@@ -16742,6 +16742,7 @@ def add_typescript_openai_run_state_approval_decision_control(
     decision: str,
     symbol_identity: str,
     approval_bypass_environment_names: tuple[str, ...] = (),
+    rejection_message_attributes: dict[str, object] | None = None,
 ) -> tuple[str, str]:
     """Add exact OpenAI Agents JS run-state approval/rejection handling evidence."""
     source_agent_name, source_agent_id = source_agent
@@ -16768,6 +16769,8 @@ def add_typescript_openai_run_state_approval_decision_control(
                 "approval_bypass_resolution": "braced-if-condition-callback",
             }
         )
+    if decision == "reject" and rejection_message_attributes:
+        attributes.update(rejection_message_attributes)
     ir.add_component(
         Component(
             "control",
@@ -16792,6 +16795,8 @@ def add_typescript_openai_run_state_approval_decision_control(
                 "approval_bypass_resolution": "braced-if-condition-callback",
             }
         )
+    if decision == "reject" and rejection_message_attributes:
+        relationship_attributes.update(rejection_message_attributes)
     ir.add_relationship(
         Relationship(
             "agent",
@@ -16812,6 +16817,34 @@ def typescript_string_literal_value(expression: str) -> str | None:
     """Resolve a direct single- or double-quoted TypeScript string literal."""
     match = re.fullmatch(r"\s*(['\"])([^\\\r\n]*?)\1\s*", expression, re.DOTALL)
     return match.group(2) if match else None
+
+
+def typescript_rejection_message_attributes(
+    call_body: str,
+    literal_bindings: dict[str, str],
+) -> dict[str, object]:
+    """Classify exact OpenAI Agents JS reject-call custom message options."""
+    arguments = typescript_call_arguments(call_body)
+    if len(arguments) < 2:
+        return {}
+    message_expression = typescript_literal_object_property_expression(arguments[1][0], "message")
+    if message_expression is None:
+        return {}
+    attributes: dict[str, object] = {"rejection_message": "custom"}
+    raw_stripped = message_expression.strip()
+    stripped = typescript_code_mask(message_expression).strip()
+    if typescript_string_literal_value(message_expression) is not None:
+        attributes["rejection_message_source"] = "literal"
+    elif raw_stripped.startswith("`") and raw_stripped.endswith("`"):
+        attributes["rejection_message_source"] = "template"
+    elif re.fullmatch(r"[A-Za-z_$][\w$]*", stripped):
+        attributes["rejection_message_binding"] = stripped
+        attributes["rejection_message_source"] = (
+            "literal-binding" if stripped in literal_bindings else "dynamic"
+        )
+    else:
+        attributes["rejection_message_source"] = "dynamic"
+    return attributes
 
 
 def add_typescript_openai_sandbox_path_grant_control(
@@ -19947,6 +19980,10 @@ def typescript_graph(
     for match in approval_decision_pattern.finditer(code):
         receiver_name = match.group(1)
         decision = match.group(2)
+        opening = code.find("(", match.start(2), match.end())
+        end = typescript_balanced_end(code, opening, "(", ")")
+        if end is None:
+            continue
         has_inline_state = ".state" in code[match.start() : match.start(2)]
         line = line_at(text, match.start())
         if has_inline_state:
@@ -19987,6 +20024,14 @@ def typescript_graph(
             if decision == "approve"
             else ()
         )
+        rejection_message_attributes = (
+            typescript_rejection_message_attributes(
+                text[opening + 1 : end - 1],
+                literal_bindings,
+            )
+            if decision == "reject"
+            else {}
+        )
         add_typescript_openai_run_state_approval_decision_control(
             ir,
             relative=relative,
@@ -19998,6 +20043,7 @@ def typescript_graph(
             decision=decision,
             symbol_identity=f"{symbol_receiver}.{decision}@{line}",
             approval_bypass_environment_names=approval_bypass_environment_names,
+            rejection_message_attributes=rejection_message_attributes,
         )
 
     def add_conversation_session_relationship(
@@ -35180,6 +35226,78 @@ def add_python_openai_agents_run_state_approval_decision_flow(
                 return None
         return None
 
+    def literal_string_binding(
+        name: str,
+        frames: list[tuple[list[ast.stmt], int, ast.stmt]],
+        call_line: int,
+    ) -> bool:
+        for frame_index, (statements, statement_index, current_statement) in enumerate(frames):
+            if isinstance(current_statement, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                break
+            for index in range(statement_index - 1, -1, -1):
+                statement = statements[index]
+                if name not in assignment_targets(statement):
+                    continue
+                value = (
+                    statement.value
+                    if isinstance(statement, (ast.Assign, ast.AnnAssign))
+                    else None
+                )
+                same_frame_mutated = any(
+                    statement_mutates_name(candidate, name)
+                    for candidate in statements[index + 1 : statement_index]
+                    if getattr(candidate, "lineno", 0) < call_line
+                )
+                nested_frame_mutated = any(
+                    statement_mutates_name(candidate, name)
+                    for nested_statements, nested_index, _nested_current in frames[:frame_index]
+                    for candidate in nested_statements[:nested_index]
+                    if getattr(candidate, "lineno", 0) < call_line
+                )
+                return (
+                    isinstance(value, ast.Constant)
+                    and isinstance(value.value, str)
+                    and not same_frame_mutated
+                    and not nested_frame_mutated
+                )
+        return False
+
+    def approval_decision_rejection_message_attributes(
+        call: ast.Call,
+        decision: str,
+        parent_by_id: dict[int, ast.AST],
+    ) -> dict[str, object]:
+        if decision != "reject":
+            return {}
+        keyword = next(
+            (candidate for candidate in call.keywords if candidate.arg == "rejection_message"),
+            None,
+        )
+        if keyword is None or (
+            isinstance(keyword.value, ast.Constant) and keyword.value.value is None
+        ):
+            return {}
+        attributes: dict[str, object] = {"rejection_message": "custom"}
+        value = keyword.value
+        if isinstance(value, ast.Constant) and isinstance(value.value, str):
+            attributes["rejection_message_source"] = "literal"
+        elif isinstance(value, ast.JoinedStr):
+            attributes["rejection_message_source"] = "template"
+        elif isinstance(value, ast.Name):
+            attributes["rejection_message_binding"] = value.id
+            attributes["rejection_message_source"] = (
+                "literal-binding"
+                if literal_string_binding(
+                    value.id,
+                    enclosing_statement_frames(parent_by_id, call),
+                    call.lineno,
+                )
+                else "dynamic"
+            )
+        else:
+            attributes["rejection_message_source"] = "dynamic"
+        return attributes
+
     def approval_decision_persistence_attributes(
         call: ast.Call,
         decision: str,
@@ -35346,6 +35464,12 @@ def add_python_openai_agents_run_state_approval_decision_flow(
                 parent_by_id,
             )
             attributes.update(persistence_attributes)
+            rejection_message_attributes = approval_decision_rejection_message_attributes(
+                call,
+                decision,
+                parent_by_id,
+            )
+            attributes.update(rejection_message_attributes)
             ir.add_component(
                 Component(
                     "control",
@@ -35369,6 +35493,7 @@ def add_python_openai_agents_run_state_approval_decision_flow(
                         "binding": state_name,
                         "decision": decision,
                         **persistence_attributes,
+                        **rejection_message_attributes,
                     },
                     source_id=agent.symbol_id,
                     target_id=control_id,

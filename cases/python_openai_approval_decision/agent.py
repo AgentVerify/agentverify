@@ -32,3 +32,13 @@ async def main() -> None:
         sticky_state.approve(interruption, always_approve=True)
         sticky_state.reject(interruption, always_reject=always)
         sticky_state.approve(interruption, always_approve=once)
+
+    message_result = await Runner.run(agent, "start custom rejection flow")
+    message_state = message_result.to_state()
+    rejection_text = "Reviewer denied the requested tool call."
+    runtime_message = build_rejection_message()
+    for interruption in message_result.interruptions:
+        message_state.reject(interruption, rejection_message="Rejected by reviewer.")
+        message_state.reject(interruption, rejection_message=rejection_text)
+        message_state.reject(interruption, rejection_message=f"Rejected {interruption.name}")
+        message_state.reject(interruption, rejection_message=runtime_message)

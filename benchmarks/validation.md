@@ -1689,9 +1689,12 @@ pin package/version/auto-install facts across JSON, Python constructors, Python 
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
 negatives. Five Python OpenAI run-state approval-decision persistence labels pin literal sticky,
 stable boolean, per-call, and prompt-derived dynamic `always_approve`/`always_reject` metadata.
-All 2,023 IR labels pass (1,509 positives and 514 negatives). The checked
+Nine OpenAI run-state rejection-message labels pin Python literal, literal-binding, template, and
+dynamic `rejection_message` metadata plus the TypeScript `{ message }` reject-options equivalent.
+All 2,032 IR labels pass (1,518 positives and 514 negatives). The checked
 `benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
 breakdown, including the OpenAI Agents JS and Python safety-check labels added for
 `computerTool({ onSafetyCheck })` and `ComputerTool(on_safety_check=...)`, plus OpenAI Agents JS
-run-state approval-decision labels for Python state approve/reject handling and persistence, JS
-env-backed approve branches, and clean reject/reassigned near misses.
+run-state approval-decision labels for Python state approve/reject handling, persistence, and custom
+rejection messages, JS env-backed approve branches, TypeScript local reject-message metadata, and
+clean reject/reassigned near misses.

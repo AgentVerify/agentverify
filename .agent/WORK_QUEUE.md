@@ -24,7 +24,10 @@
 - Continue OpenAI Agents JS HITL and safety-governance extraction where evidence remains exact:
   richer `needsApproval` predicate quality, automatic approval bypasses, and `computerTool`
   `onSafetyCheck` callbacks that distinguish explicit user/policy review from pass-through
-  acknowledgement.
+  acknowledgement. A narrow helper-parameter state model may be worthwhile: the real
+  `examples/tools/computer-use-hitl.ts` custom rejection message is inside `runWithHitl(agent, ...)`,
+  but current TypeScript run-state proof intentionally does not infer SDK state from arbitrary
+  helper parameters.
 - Continue OpenAI Agents Python safety-governance extraction where evidence remains exact: callbacks
   that distinguish explicit user/policy review from unconditional acknowledgement, and production
   sticky-approval defaults that can be separated from prompt-selected `always_approve`/

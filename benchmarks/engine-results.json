@@ -1,6 +1,6 @@
 {
-  "schema_version": 128,
-  "generated_at": "2026-08-28T10:19:14.382297+00:00",
+  "schema_version": 129,
+  "generated_at": "2026-08-28T10:54:46.550085+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -375,6 +375,10 @@
       "sticky_decisions": 6,
       "dynamic_persistence_decisions": 2,
       "per_call_persistence_decisions": 0,
+      "custom_rejection_messages": 8,
+      "literal_rejection_messages": 7,
+      "template_rejection_messages": 0,
+      "dynamic_rejection_messages": 1,
       "repositories": 1
     },
     "python_openhands_conversation_security": {
@@ -494,6 +498,10 @@
       "approvals": 5,
       "rejections": 5,
       "env_bypass_approvals": 2,
+      "custom_rejection_messages": 0,
+      "literal_rejection_messages": 0,
+      "template_rejection_messages": 0,
+      "dynamic_rejection_messages": 0,
       "repositories": 1
     },
     "python_agno_mcp_confirmation": {
@@ -1047,7 +1055,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 828.2833
+    "elapsed_seconds": 814.8638
   },
   "repositories": [
     {
@@ -1379,6 +1387,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -1491,6 +1503,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -1716,7 +1732,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.0318
+      "elapsed_seconds": 15.1338
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -2064,6 +2080,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -2176,6 +2196,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -2412,7 +2436,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 13.8674
+      "elapsed_seconds": 19.6821
     },
     {
       "repository": "langchain-ai/langchain",
@@ -2743,6 +2767,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -2855,6 +2883,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -3078,7 +3110,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.9883
+      "elapsed_seconds": 5.4372
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -3413,6 +3445,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -3525,6 +3561,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -3756,7 +3796,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 21.3913
+      "elapsed_seconds": 19.1763
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -4096,6 +4136,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -4208,6 +4252,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -4435,7 +4483,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.9749
+      "elapsed_seconds": 0.7633
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -4780,6 +4828,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -4892,6 +4944,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -5132,7 +5188,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 27.3002
+      "elapsed_seconds": 17.7273
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -5482,6 +5538,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -5594,6 +5654,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -5841,7 +5905,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 17.7043
+      "elapsed_seconds": 11.0249
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -6186,6 +6250,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -6298,6 +6366,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -6535,7 +6607,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6852
+      "elapsed_seconds": 1.4023
     },
     {
       "repository": "microsoft/autogen",
@@ -6881,6 +6953,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -6993,6 +7069,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -7225,7 +7305,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.9993
+      "elapsed_seconds": 3.4315
     },
     {
       "repository": "microsoft/agent-framework",
@@ -7547,6 +7627,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -7659,6 +7743,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -7882,7 +7970,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.132
+      "elapsed_seconds": 0.0958
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -8229,6 +8317,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -8341,6 +8433,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -8576,7 +8672,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8155
+      "elapsed_seconds": 0.4948
     },
     {
       "repository": "openai/openai-agents-python",
@@ -8943,6 +9039,10 @@
         "sticky_decisions": 6,
         "dynamic_persistence_decisions": 2,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 8,
+        "literal_rejection_messages": 7,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 1,
         "repositories": true
       },
       "python_openhands_conversation_security": {
@@ -9055,6 +9155,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -9299,7 +9403,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 37.7798
+      "elapsed_seconds": 18.3125
     },
     {
       "repository": "openai/openai-agents-js",
@@ -9669,6 +9773,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -9781,6 +9889,10 @@
         "approvals": 5,
         "rejections": 5,
         "env_bypass_approvals": 2,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": true
       },
       "python_agno_mcp_confirmation": {
@@ -10015,7 +10127,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.8165
+      "elapsed_seconds": 5.8259
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -10372,6 +10484,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -10484,6 +10600,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -10720,7 +10840,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 35.0724
+      "elapsed_seconds": 42.9304
     },
     {
       "repository": "google/adk-python",
@@ -11073,6 +11193,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -11185,6 +11309,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -11422,7 +11550,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 13.7626
+      "elapsed_seconds": 13.6666
     },
     {
       "repository": "google/adk-js",
@@ -11766,6 +11894,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -11878,6 +12010,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -12108,7 +12244,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.1885
+      "elapsed_seconds": 8.4242
     },
     {
       "repository": "huggingface/smolagents",
@@ -12450,6 +12586,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -12562,6 +12702,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -12801,7 +12945,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.237
+      "elapsed_seconds": 4.0225
     },
     {
       "repository": "agno-agi/agno",
@@ -13155,6 +13299,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -13267,6 +13415,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -13507,7 +13659,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.5549
+      "elapsed_seconds": 2.0206
     },
     {
       "repository": "camel-ai/camel",
@@ -13860,6 +14012,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -13972,6 +14128,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -14214,7 +14374,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.7674
+      "elapsed_seconds": 9.0427
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -14555,6 +14715,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -14667,6 +14831,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -14896,7 +15064,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8176
+      "elapsed_seconds": 0.8009
     },
     {
       "repository": "run-llama/llama_index",
@@ -15232,6 +15400,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -15344,6 +15516,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -15567,7 +15743,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.7782
+      "elapsed_seconds": 3.389
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -15914,6 +16090,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -16026,6 +16206,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -16267,7 +16451,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.2844
+      "elapsed_seconds": 5.1448
     },
     {
       "repository": "InternLM/lagent",
@@ -16610,6 +16794,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -16722,6 +16910,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -16958,7 +17150,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.285
+      "elapsed_seconds": 2.5223
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -17300,6 +17492,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -17412,6 +17608,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -17650,7 +17850,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.8021
+      "elapsed_seconds": 4.3639
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -17989,6 +18189,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -18101,6 +18305,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -18342,7 +18550,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.6751
+      "elapsed_seconds": 5.805
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -18677,6 +18885,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -18789,6 +19001,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -19026,7 +19242,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.492
+      "elapsed_seconds": 3.9705
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -19362,6 +19578,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -19474,6 +19694,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -19707,7 +19931,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 14.1333
+      "elapsed_seconds": 14.3244
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -20039,6 +20263,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -20151,6 +20379,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -20383,7 +20615,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.0173
+      "elapsed_seconds": 4.8124
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -20716,6 +20948,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -20828,6 +21064,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -21051,7 +21291,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1872
+      "elapsed_seconds": 3.1295
     },
     {
       "repository": "letta-ai/letta-code",
@@ -21389,6 +21629,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -21501,6 +21745,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -21731,7 +21979,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 12.8143
+      "elapsed_seconds": 13.1265
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -22075,6 +22323,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -22187,6 +22439,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -22424,7 +22680,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.5997
+      "elapsed_seconds": 3.788
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -22773,6 +23029,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -22885,6 +23145,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -23123,7 +23387,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.7581
+      "elapsed_seconds": 7.1028
     },
     {
       "repository": "mastra-ai/mastra",
@@ -23466,6 +23730,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -23578,6 +23846,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -23807,7 +24079,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.2389
+      "elapsed_seconds": 6.3677
     },
     {
       "repository": "vercel/ai",
@@ -24145,6 +24417,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -24257,6 +24533,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -24485,7 +24765,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.8285
+      "elapsed_seconds": 6.9797
     },
     {
       "repository": "cline/cline",
@@ -24835,6 +25115,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -24947,6 +25231,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -25180,7 +25468,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 24.6105
+      "elapsed_seconds": 25.6692
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -25527,6 +25815,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -25639,6 +25931,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -25868,7 +26164,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 73.1584
+      "elapsed_seconds": 73.646
     },
     {
       "repository": "continuedev/continue",
@@ -26214,6 +26510,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -26326,6 +26626,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -26556,7 +26860,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.5659
+      "elapsed_seconds": 6.6418
     },
     {
       "repository": "Aider-AI/aider",
@@ -26889,6 +27193,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -27001,6 +27309,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -27239,7 +27551,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.8665
+      "elapsed_seconds": 7.5254
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -27567,6 +27879,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -27679,6 +27995,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -27910,7 +28230,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 2.5508
+      "elapsed_seconds": 2.693
     },
     {
       "repository": "plandex-ai/plandex",
@@ -28223,6 +28543,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -28335,6 +28659,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -28558,7 +28886,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0986
+      "elapsed_seconds": 0.1006
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -28886,6 +29214,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -28998,6 +29330,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -29227,7 +29563,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.7629
+      "elapsed_seconds": 4.027
     },
     {
       "repository": "stitionai/devika",
@@ -29567,6 +29903,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -29679,6 +30019,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -29906,7 +30250,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.0638
+      "elapsed_seconds": 1.1418
     },
     {
       "repository": "block/goose",
@@ -30243,6 +30587,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -30355,6 +30703,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -30588,7 +30940,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 9.1636
+      "elapsed_seconds": 9.4714
     },
     {
       "repository": "bytedance/trae-agent",
@@ -30941,6 +31293,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -31053,6 +31409,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -31296,7 +31656,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0215
+      "elapsed_seconds": 2.0691
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -31631,6 +31991,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -31743,6 +32107,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -31972,7 +32340,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 14.9568
+      "elapsed_seconds": 15.2154
     },
     {
       "repository": "openai/codex",
@@ -32292,6 +32660,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -32404,6 +32776,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -32633,7 +33009,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.8604
+      "elapsed_seconds": 1.8854
     },
     {
       "repository": "browser-use/browser-use",
@@ -32980,6 +33356,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -33092,6 +33472,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -33333,7 +33717,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.6756
+      "elapsed_seconds": 11.8781
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -33699,6 +34083,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -33811,6 +34199,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -34052,7 +34444,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 24.0603
+      "elapsed_seconds": 26.1563
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -34391,6 +34783,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -34503,6 +34899,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -34737,7 +35137,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.7071
+      "elapsed_seconds": 2.9725
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -35069,6 +35469,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -35181,6 +35585,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -35406,7 +35814,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4544
+      "elapsed_seconds": 3.5283
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -35739,6 +36147,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -35851,6 +36263,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -36084,7 +36500,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.2792
+      "elapsed_seconds": 3.3218
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -36425,6 +36841,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -36537,6 +36957,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -36769,7 +37193,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.232
+      "elapsed_seconds": 9.7743
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -37118,6 +37542,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -37230,6 +37658,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -37462,7 +37894,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 12.1599
+      "elapsed_seconds": 12.787
     },
     {
       "repository": "github/github-mcp-server",
@@ -37785,6 +38217,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -37897,6 +38333,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -38120,7 +38560,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0853
+      "elapsed_seconds": 0.0886
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -38444,6 +38884,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -38556,6 +39000,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -38779,7 +39227,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2674
+      "elapsed_seconds": 0.274
     },
     {
       "repository": "awslabs/mcp",
@@ -39115,6 +39563,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -39227,6 +39679,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -39458,7 +39914,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.7992
+      "elapsed_seconds": 6.4328
     },
     {
       "repository": "docker/mcp-gateway",
@@ -39782,6 +40238,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -39894,6 +40354,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -40119,7 +40583,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0669
+      "elapsed_seconds": 0.0792
     },
     {
       "repository": "jlowin/fastmcp",
@@ -40458,6 +40922,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -40570,6 +41038,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -40808,7 +41280,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.7444
+      "elapsed_seconds": 9.8483
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -41121,6 +41593,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -41233,6 +41709,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -41456,7 +41936,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.056
+      "elapsed_seconds": 0.0555
     },
     {
       "repository": "langflow-ai/langflow",
@@ -41798,6 +42278,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -41910,6 +42394,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -42142,7 +42630,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.328
+      "elapsed_seconds": 9.8322
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -42473,6 +42961,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -42585,6 +43077,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -42816,7 +43312,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 40.5299
+      "elapsed_seconds": 41.8351
     },
     {
       "repository": "langgenius/dify",
@@ -43146,6 +43642,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -43258,6 +43758,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -43484,7 +43988,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.1541
+      "elapsed_seconds": 6.7824
     },
     {
       "repository": "n8n-io/n8n",
@@ -43823,6 +44327,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -43935,6 +44443,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -44166,7 +44678,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.6763
+      "elapsed_seconds": 7.0584
     },
     {
       "repository": "activepieces/activepieces",
@@ -44515,6 +45027,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -44627,6 +45143,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -44860,7 +45380,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.3133
+      "elapsed_seconds": 9.8
     },
     {
       "repository": "simstudioai/sim",
@@ -45182,6 +45702,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -45294,6 +45818,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -45517,7 +46045,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 177.058
+      "elapsed_seconds": 178.5999
     },
     {
       "repository": "composiohq/composio",
@@ -45868,6 +46396,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -45980,6 +46512,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -46212,7 +46748,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.1652
+      "elapsed_seconds": 5.2616
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -46556,6 +47092,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -46668,6 +47208,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -46909,7 +47453,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.5845
+      "elapsed_seconds": 8.6855
     },
     {
       "repository": "e2b-dev/E2B",
@@ -47230,6 +47774,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -47342,6 +47890,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -47565,7 +48117,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 13.2604
+      "elapsed_seconds": 13.1349
     },
     {
       "repository": "daytonaio/daytona",
@@ -47878,6 +48430,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -47990,6 +48546,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -48213,7 +48773,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0009
+      "elapsed_seconds": 0.0006
     },
     {
       "repository": "AgentOps-AI/agentops",
@@ -48558,6 +49118,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -48670,6 +49234,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -48898,7 +49466,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.096
+      "elapsed_seconds": 4.8875
     },
     {
       "repository": "traceloop/openllmetry",
@@ -49253,6 +49821,10 @@
         "sticky_decisions": 0,
         "dynamic_persistence_decisions": 0,
         "per_call_persistence_decisions": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_openhands_conversation_security": {
@@ -49365,6 +49937,10 @@
         "approvals": 0,
         "rejections": 0,
         "env_bypass_approvals": 0,
+        "custom_rejection_messages": 0,
+        "literal_rejection_messages": 0,
+        "template_rejection_messages": 0,
+        "dynamic_rejection_messages": 0,
         "repositories": false
       },
       "python_agno_mcp_confirmation": {
@@ -49596,7 +50172,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.0617
+      "elapsed_seconds": 7.4524
     }
   ]
 }

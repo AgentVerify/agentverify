@@ -72,3 +72,15 @@ for (const interruption of persistedApproval.interruptions ?? []) {
   persistedState.reject(interruption);
 }
 await run(agent, persistedState);
+
+const rejectionText = 'Reviewer denied the requested tool call.';
+const runtimeRejectionText = process.env.REJECTION_REASON ?? 'fallback denial';
+let messageApproval = await run(agent, 'start custom rejection-message handling');
+const messageState = messageApproval.state;
+for (const interruption of messageApproval.interruptions ?? []) {
+  messageState.reject(interruption, { message: 'Rejected by reviewer.' });
+  messageState.reject(interruption, { message: rejectionText });
+  messageState.reject(interruption, { message: `Rejected ${interruption.name}` });
+  messageState.reject(interruption, { message: runtimeRejectionText });
+}
+await run(agent, messageState);

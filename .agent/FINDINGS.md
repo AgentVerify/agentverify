@@ -2,7 +2,7 @@
 
 ## Durable facts
 
-- The repository contains a 71-repository pinned research corpus and schema-v128 engine benchmark
+- The repository contains a 71-repository pinned research corpus and schema-v129 engine benchmark
   outputs.
 - The runtime catalog currently contains 25 enabled reporting rules.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
@@ -497,6 +497,12 @@
   the keyword name, a stable same-function boolean binding when present, and whether the decision is
   `always`, `per-call`, or `dynamic`. The real shell HITL example uses a prompt-derived dynamic
   binding, while SDK tests contain literal sticky decisions.
+- OpenAI Agents run-state reject decisions can carry custom rejection messages. Python exposes this
+  as `rejection_message=...`; TypeScript exposes the equivalent as a reject-options object
+  `{ message: ... }`. AgentVerify now records only presence and source class, not message text. The
+  pinned Python custom-rejection HITL example is source-proven; the visible TypeScript custom-message
+  example is inside a helper whose agent arrives as a parameter, so it remains a future
+  interprocedural target rather than a current real-corpus label.
 
 ## Hypotheses
 

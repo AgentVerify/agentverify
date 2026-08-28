@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T10:05:15.352263+00:00",
+  "generated_at": "2026-08-28T10:41:02.731310+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "b6b4b6a8f5a62eeac7170b7fe34edbe0fcd43c184f6f840bd4501c2c26fbd4ac",
+    "labels_sha256": "50159cdf683b3bf3ec08758cbef4785eebdb191d92f4c87095fe92aba1efd399",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 2023,
-  "passed": 2023,
+  "labels": 2032,
+  "passed": 2032,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -35,7 +35,7 @@
       "recall": 1.0
     },
     "IR-APPROVAL-CONTROL": {
-      "tp": 69,
+      "tp": 78,
       "fp": 0,
       "tn": 18,
       "fn": 0,
@@ -18294,6 +18294,42 @@
       "passed": true
     },
     {
+      "id": "python-openai-run-state-approval-decision-rejection-message-literal-local",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-run-state-approval-decision-rejection-message-binding-local",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-run-state-approval-decision-rejection-message-template-local",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-run-state-approval-decision-rejection-message-dynamic-local",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
       "id": "python-openai-run-state-approval-decision-loose-state-local-negative",
       "check_id": "IR-APPROVAL-CONTROL",
       "expected": false,
@@ -18322,6 +18358,15 @@
     },
     {
       "id": "python-openai-run-state-approval-decision-persistence-dynamic-reject-real",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-run-state-approval-decision-rejection-message-literal-real",
       "check_id": "IR-APPROVAL-CONTROL",
       "expected": true,
       "observed": true,
@@ -18691,6 +18736,42 @@
     },
     {
       "id": "typescript-openai-run-state-approval-decision-stream-reject-real",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-run-state-approval-decision-rejection-message-literal-local",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-run-state-approval-decision-rejection-message-binding-local",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-run-state-approval-decision-rejection-message-template-local",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-run-state-approval-decision-rejection-message-dynamic-local",
       "check_id": "IR-APPROVAL-CONTROL",
       "expected": true,
       "observed": true,

@@ -1798,6 +1798,23 @@ def main() -> int:
                     item.attributes.get("decision_persistence") == "per-call"
                     for item in python_openai_run_state_approval_decisions
                 ),
+                "custom_rejection_messages": sum(
+                    item.attributes.get("rejection_message") == "custom"
+                    for item in python_openai_run_state_approval_decisions
+                ),
+                "literal_rejection_messages": sum(
+                    item.attributes.get("rejection_message_source")
+                    in {"literal", "literal-binding"}
+                    for item in python_openai_run_state_approval_decisions
+                ),
+                "template_rejection_messages": sum(
+                    item.attributes.get("rejection_message_source") == "template"
+                    for item in python_openai_run_state_approval_decisions
+                ),
+                "dynamic_rejection_messages": sum(
+                    item.attributes.get("rejection_message_source") == "dynamic"
+                    for item in python_openai_run_state_approval_decisions
+                ),
                 "repositories": bool(python_openai_run_state_approval_decisions),
             },
             "python_openhands_conversation_security": {
@@ -2243,6 +2260,23 @@ def main() -> int:
                 ),
                 "env_bypass_approvals": sum(
                     bool(item.attributes.get("approval_bypass_environment_names"))
+                    for item in typescript_openai_run_state_approval_decisions
+                ),
+                "custom_rejection_messages": sum(
+                    item.attributes.get("rejection_message") == "custom"
+                    for item in typescript_openai_run_state_approval_decisions
+                ),
+                "literal_rejection_messages": sum(
+                    item.attributes.get("rejection_message_source")
+                    in {"literal", "literal-binding"}
+                    for item in typescript_openai_run_state_approval_decisions
+                ),
+                "template_rejection_messages": sum(
+                    item.attributes.get("rejection_message_source") == "template"
+                    for item in typescript_openai_run_state_approval_decisions
+                ),
+                "dynamic_rejection_messages": sum(
+                    item.attributes.get("rejection_message_source") == "dynamic"
                     for item in typescript_openai_run_state_approval_decisions
                 ),
                 "repositories": bool(typescript_openai_run_state_approval_decisions),
@@ -3027,7 +3061,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 128,
+        "schema_version": 129,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -3491,6 +3525,10 @@ def main() -> int:
                     "sticky_decisions",
                     "dynamic_persistence_decisions",
                     "per_call_persistence_decisions",
+                    "custom_rejection_messages",
+                    "literal_rejection_messages",
+                    "template_rejection_messages",
+                    "dynamic_rejection_messages",
                     "repositories",
                 )
             },
@@ -3686,6 +3724,10 @@ def main() -> int:
                     "approvals",
                     "rejections",
                     "env_bypass_approvals",
+                    "custom_rejection_messages",
+                    "literal_rejection_messages",
+                    "template_rejection_messages",
+                    "dynamic_rejection_messages",
                     "repositories",
                 )
             },

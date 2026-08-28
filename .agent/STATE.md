@@ -534,6 +534,12 @@ catalog workflows.
   OpenAI shell HITL example raise the public IR truth set to 2,023 labels, and schema-v128 engine
   results report 117 Python run-state approval decisions, including six sticky and two dynamic
   persistence decisions.
+- Added custom rejection-message provenance for OpenAI Agents run-state reject decisions. Python
+  `rejection_message=` and TypeScript `{ message }` reject options now record custom message
+  presence plus literal, literal-binding, template, or dynamic source classification without storing
+  message text. Local Python/TypeScript fixtures plus the real OpenAI Agents Python custom-rejection
+  HITL example raise the public IR truth set to 2,032 labels, and schema-v129 engine results report
+  eight custom Python rejection messages in the pinned corpus.
 
 ## Current findings
 
