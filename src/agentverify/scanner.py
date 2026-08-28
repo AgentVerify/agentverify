@@ -17108,6 +17108,51 @@ def add_typescript_openai_as_tool_model_override_control(
     return "agent-model-override", control_id
 
 
+def add_typescript_openai_as_tool_workflow_name_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    source_agent: tuple[str, str],
+    parent_agent: tuple[str, str],
+    tool_name: str | None,
+    workflow_name: str,
+    workflow_name_resolution: str,
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS asTool runConfig workflow-name evidence."""
+    source_agent_name, source_agent_id = source_agent
+    parent_agent_name, parent_agent_id = parent_agent
+    attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-astool-workflow-name",
+        "module": "@openai/agents",
+        "adapter": "asTool",
+        "configuration": "asTool.runConfig.workflowName",
+        "workflow_name": workflow_name,
+        "workflow_name_resolution": workflow_name_resolution,
+        "trace_scope": "openai-workflow",
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "parent_agent": parent_agent_name,
+        "parent_agent_id": parent_agent_id,
+        "scope": source_scope(relative),
+    }
+    if tool_name is not None:
+        attributes["tool_name"] = tool_name
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "trace-workflow",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    return "trace-workflow", control_id
+
+
 def typescript_literal_nested_object_string_property(
     body: str,
     *,
@@ -19375,6 +19420,7 @@ def typescript_graph(
             or "groupId" in text
             or "traceId" in text
             or "runConfig" in text
+            or "workflowName" in text
         )
         and (
             "extraPathGrants" in text
@@ -19391,6 +19437,7 @@ def typescript_graph(
             or "groupId" in text
             or "traceId" in text
             or "model" in text
+            or "workflowName" in text
         )
         else {}
     )
@@ -20589,6 +20636,76 @@ def typescript_graph(
                                         model_attributes,
                                         source_id=delegated_agent_id,
                                         target_id=model_control_id,
+                                    )
+                                )
+                        workflow_name_location = typescript_object_property_expression_location(
+                            run_config_expression,
+                            "workflowName",
+                            run_config_offset,
+                        )
+                        if workflow_name_location is not None:
+                            (
+                                workflow_name_expression,
+                                workflow_name_property_offset,
+                                workflow_name_expression_offset,
+                            ) = workflow_name_location
+                            static_workflow_name = typescript_static_string_value(
+                                workflow_name_expression,
+                                expression_offset=workflow_name_expression_offset,
+                                immutable_literal_bindings=immutable_literal_bindings,
+                            )
+                            if static_workflow_name is not None:
+                                workflow_name_value, workflow_name_resolution = (
+                                    static_workflow_name
+                                )
+                                delegated_agent_name, delegated_agent_id = target
+                                tool_name = as_tool_attributes.get("tool_name")
+                                workflow_line = line_at(text, workflow_name_property_offset)
+                                workflow_control_name, workflow_control_id = (
+                                    add_typescript_openai_as_tool_workflow_name_control(
+                                        ir,
+                                        relative=relative,
+                                        lines=lines,
+                                        line=workflow_line,
+                                        source_agent=(delegated_agent_name, delegated_agent_id),
+                                        parent_agent=(agent_name, agent_id),
+                                        tool_name=(
+                                            tool_name if isinstance(tool_name, str) else None
+                                        ),
+                                        workflow_name=workflow_name_value,
+                                        workflow_name_resolution=workflow_name_resolution,
+                                        symbol_identity=(
+                                            f"{variable_name}.asTool.workflowName@"
+                                            f"{workflow_line}:parent{as_tool_line}"
+                                        ),
+                                    )
+                                )
+                                workflow_attributes: dict[str, object] = {
+                                    "analysis": (
+                                        "typescript-openai-agents-astool-workflow-name"
+                                    ),
+                                    "configuration": "asTool-runConfig-workflowName",
+                                    "binding": "workflowName",
+                                    "adapter": "asTool",
+                                    "workflow_name": workflow_name_value,
+                                }
+                                if isinstance(tool_name, str):
+                                    workflow_attributes["tool_name"] = tool_name
+                                ir.add_relationship(
+                                    Relationship(
+                                        "agent",
+                                        delegated_agent_name,
+                                        "configured-by",
+                                        "control",
+                                        workflow_control_name,
+                                        Evidence(
+                                            relative,
+                                            workflow_line,
+                                            excerpt(lines, workflow_line),
+                                        ),
+                                        workflow_attributes,
+                                        source_id=delegated_agent_id,
+                                        target_id=workflow_control_id,
                                     )
                                 )
                         tracing_disabled_location = (

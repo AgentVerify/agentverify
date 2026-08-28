@@ -41,7 +41,7 @@ const operator = new Agent({
     }),
     worker.asTool({
       toolName: "worker_tool",
-      runConfig: { model: "gpt-5.4", modelSettings: { reasoning: { effort: "low" }, text: { verbosity: "low" } } }, runOptions: { maxTurns: 3 },
+      runConfig: { model: "gpt-5.4", modelSettings: { reasoning: { effort: "low" }, text: { verbosity: "low" } }, workflowName: "Worker delegation" }, runOptions: { maxTurns: 3 },
     }),
     worker.asTool({
       toolName: "approved_worker_tool",

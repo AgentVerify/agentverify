@@ -666,3 +666,21 @@
 - Revisit when: direct `run(..., { model/modelSettings })`, Runner defaults, or exported
   delegated-tool factories can be linked to exact source-agent identity without broad config/name
   matching.
+
+## OpenAI Agents JS delegated asTool workflow names are trace workflow provenance
+
+- Decision: Represent exact TypeScript OpenAI Agents SDK
+  `agent.asTool({ runConfig: { workflowName: ... } })` configuration as a `trace-workflow` control
+  on the delegated/source agent. Accept direct literal workflow names and earlier immutable
+  module-level literal bindings, preserve parent agent and tool name, and do not emit for missing,
+  mutable, or nonliteral workflow-name expressions.
+- Evidence: The local structured-tools fixture proves delegated `worker_tool` workflow naming as
+  `Worker delegation` while a sibling delegated tool without `workflowName` remains negative. The
+  pinned OpenAI Agents JS sandbox agents-as-tools example names the delegated pricing and rollout
+  reviewer workflows in `runConfig`.
+- Alternative: Treat delegated workflow names as generic trace metadata on the parent orchestrator.
+  Rejected because the workflow name applies to the delegated invocation and needs to be reviewed
+  with the delegated agent's own model, sandbox, tracing, and turn-limit policy.
+- Revisit when: direct `run(..., { workflowName })`, Runner defaults, exported delegated-tool
+  factories, or broader trace metadata can be linked to exact source-agent identity without broad
+  config/name matching.

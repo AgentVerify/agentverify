@@ -570,6 +570,11 @@
   controls on the delegated agent with parent-agent, tool-name, provider, model, and shallow literal
   reasoning/verbosity settings. The pinned agents-as-tools translator example contributes real
   delegated model override evidence, bringing the public IR truth set to 2,120 passing labels.
+- OpenAI Agents JS delegated `asTool` run configurations can name delegated trace workflows.
+  Exact `agent.asTool({ runConfig: { workflowName: ... } })` calls now emit `trace-workflow`
+  controls on the delegated agent with parent-agent, tool-name, and literal workflow-name
+  provenance. The pinned sandbox agents-as-tools example contributes pricing and rollout reviewer
+  workflow evidence, bringing the public IR truth set to 2,127 passing labels.
 
 ## Hypotheses
 
