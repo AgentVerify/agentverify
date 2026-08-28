@@ -3020,7 +3020,10 @@ def main() -> int:
             "elapsed_seconds": round(time.perf_counter() - repo_started, 4),
         }
         results.append(result)
-        print(f"[{index:>2}/{len(repositories)}] {repository}: {ir.files_scanned} files")
+        print(
+            f"[{index:>2}/{len(repositories)}] {repository}: {ir.files_scanned} files",
+            flush=True,
+        )
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
