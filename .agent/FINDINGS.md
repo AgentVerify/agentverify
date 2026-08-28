@@ -416,6 +416,16 @@
   Real pinned `openai/openai-agents-js` examples `examples/tools/web-search.ts` and
   `examples/agent-patterns/llm-as-a-judge.ts` validate 2 controls and 2 composition edges; the
   public IR truth set now covers 1,916 passing labels.
+- OpenAI Agents JS `result.state` proves run-state resume continuity only when the state comes from
+  an exact prior SDK run result. AgentVerify now records inline `run(agent, result.state)` and named
+  state handoffs such as `const state = stream.state; run(agent, state, ...)` as
+  `conversation-continuity` controls, including same-statement `result = await run(agent,
+  result.state)` resumes that read the old state before replacing the result binding. Loose state
+  objects, unknown run functions, stale result bindings, and reassigned named state inputs remain
+  unresolved. Real pinned examples `examples/mcp/hosted-mcp-on-approval.ts`,
+  `examples/docs/mcp/hostedHITL.ts`, `examples/mcp/hosted-mcp-human-in-the-loop.ts`, and
+  `examples/agent-patterns/human-in-the-loop-stream.ts` validate 5 controls and 5 composition edges;
+  the public IR truth set now covers 1,937 passing labels.
 
 ## Hypotheses
 

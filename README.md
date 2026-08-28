@@ -162,7 +162,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`benchmarks/engine-results.json`](benchmarks/engine-results.json) — full-corpus engine metrics
 - [`benchmarks/truthset.json`](benchmarks/truthset.json) — exact hand-labeled positives and negatives
 - [`benchmarks/truthset-results.json`](benchmarks/truthset-results.json) — per-rule seed precision/recall and label-failure summary
-- [`benchmarks/ir-truthset.json`](benchmarks/ir-truthset.json) — 1,916 separately scored component and relationship labels
+- [`benchmarks/ir-truthset.json`](benchmarks/ir-truthset.json) — 1,937 separately scored component and relationship labels
 - [`benchmarks/holdout-design.md`](benchmarks/holdout-design.md) — sealed benchmark plan for unbiased evaluation
 - [`benchmarks/release-checklist.md`](benchmarks/release-checklist.md) — claim boundaries and verifier gates for benchmark releases
 - [`examples/github-benchmark-verify.yml`](examples/github-benchmark-verify.yml) — copyable benchmark verifier workflow

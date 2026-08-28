@@ -229,3 +229,23 @@
 - Revisit when: same-file helper/caller state flow can be modeled narrowly enough to cover
   chat-loop patterns such as `thread = result.history` across repeated function calls without
   accepting arbitrary mutable state as continuity evidence.
+
+## OpenAI run-state resume requires prior SDK run-state proof
+
+- Decision: Treat OpenAI Agents JS `result.state` resume as `conversation-continuity` evidence only
+  when the state expression or state binding is sourced from a prior exact OpenAI Agents `run(...)`
+  or `Runner.run(...)` result in the same file and the source is not made stale before use. A
+  same-statement assignment such as `result = await run(agent, result.state)` is accepted because the
+  right-hand side reads the old result state before replacing the result binding.
+- Evidence: Pinned OpenAI Agents JS HITL/MCP examples use this exact resume shape:
+  `examples/mcp/hosted-mcp-on-approval.ts`, `examples/docs/mcp/hostedHITL.ts`, and
+  `examples/mcp/hosted-mcp-human-in-the-loop.ts` resume with inline `result.state`, while
+  `examples/agent-patterns/human-in-the-loop-stream.ts` assigns `const state = stream.state` and
+  resumes with that binding. Local negatives pin loose state objects, unknown run functions, stale
+  result bindings, and reassigned named state inputs.
+- Alternative: Treat any object named `state` or any `.state` property as run-state continuity.
+  Rejected because many libraries and applications use generic state objects unrelated to OpenAI
+  Agents SDK run resumption.
+- Revisit when: approval-quality analysis is added on top of this resume backbone, especially to
+  distinguish manual human approval, automatic approval, rejected-state handling, and missing
+  approval callbacks.

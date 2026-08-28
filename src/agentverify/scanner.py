@@ -16435,6 +16435,46 @@ def add_typescript_openai_history_continuity_control(
     return "conversation-continuity", control_id
 
 
+def add_typescript_openai_run_state_continuity_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    result_binding: str,
+    state_binding: str | None,
+    source_agent: tuple[str, str],
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS run-state resume evidence."""
+    source_agent_name, source_agent_id = source_agent
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-run-state-continuity",
+        "module": "@openai/agents",
+        "configuration": "run.state",
+        "result_binding": result_binding,
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "state_scope": "openai-run-state-continuity",
+        "scope": source_scope(relative),
+    }
+    if state_binding is not None:
+        attributes["state_binding"] = state_binding
+    else:
+        attributes["state_binding"] = "inline-result-state"
+    ir.add_component(
+        Component(
+            "control",
+            "conversation-continuity",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    return "conversation-continuity", control_id
+
+
 def typescript_string_literal_value(expression: str) -> str | None:
     """Resolve a direct single- or double-quoted TypeScript string literal."""
     match = re.fullmatch(r"\s*(['\"])([^\\\r\n]*?)\1\s*", expression, re.DOTALL)
@@ -18928,15 +18968,71 @@ def typescript_graph(
         for local_name, imported_name in openai_agents_imports.items()
         if imported_name == "run" and not typescript_import_binding_is_shadowed(text, local_name)
     }
+    openai_agents_run_result_sources: dict[str, list[tuple[tuple[str, str], int]]] = defaultdict(list)
     openai_agents_run_result_bindings: dict[str, tuple[str, str]] = {}
-    run_result_pattern = re.compile(
-        r"\bconst\s+([A-Za-z_$][\w$]*)\s*(?::\s*[^=;\n]+)?=\s*"
-        r"(?:await\s+)?([A-Za-z_$][\w$]*)\s*\("
+    direct_run_result_patterns = (
+        re.compile(
+            r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*(?::\s*[^=;\n]+)?=\s*"
+            r"(?:await\s+)?([A-Za-z_$][\w$]*)\s*\("
+        ),
+        re.compile(
+            r"(?<![\w$.])([A-Za-z_$][\w$]*)\s*=\s*"
+            r"(?:await\s+)?([A-Za-z_$][\w$]*)\s*\("
+        ),
     )
-    for match in run_result_pattern.finditer(code):
+    seen_run_result_matches: set[tuple[str, int]] = set()
+
+    def add_openai_agents_run_result_source(
+        *,
+        result_name: str,
+        agent_target: tuple[str, str],
+        end: int,
+    ) -> None:
+        openai_agents_run_result_sources[result_name].append((agent_target, end))
+        if not re.search(rf"(?<![\w$.]){re.escape(result_name)}\s*=(?!=)", code[end:]):
+            openai_agents_run_result_bindings[result_name] = agent_target
+
+    for pattern_index, pattern in enumerate(direct_run_result_patterns):
+        for match in pattern.finditer(code):
+            result_name = match.group(1)
+            local_function = match.group(2)
+            if pattern_index == 1 and re.search(
+                r"\b(?:const|let|var)\s+$",
+                code[max(0, match.start() - 24) : match.start()],
+            ):
+                continue
+            if (result_name, match.start()) in seen_run_result_matches:
+                continue
+            if local_function not in run_bindings:
+                continue
+            opening = code.find("(", match.start(2), match.end())
+            end = typescript_balanced_end(code, opening, "(", ")")
+            if end is None:
+                continue
+            arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
+            if not arguments:
+                continue
+            agent_argument = typescript_code_mask(arguments[0][0]).strip()
+            agent_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", agent_argument)
+            if agent_identifier is None:
+                continue
+            agent_target = local_agents.get(agent_identifier.group(0))
+            if agent_target is None:
+                continue
+            seen_run_result_matches.add((result_name, match.start()))
+            add_openai_agents_run_result_source(
+                result_name=result_name,
+                agent_target=agent_target,
+                end=end,
+            )
+    runner_run_result_pattern = re.compile(
+        r"\b(?:const|let)?\s*([A-Za-z_$][\w$]*)\s*(?::\s*[^=;\n]+)?=\s*"
+        r"(?:await\s+)?([A-Za-z_$][\w$]*)\.run\s*\("
+    )
+    for match in runner_run_result_pattern.finditer(code):
         result_name = match.group(1)
-        local_function = match.group(2)
-        if local_function not in run_bindings:
+        runner_name = match.group(2)
+        if runner_name not in sandbox_runner_instances:
             continue
         opening = code.find("(", match.start(2), match.end())
         end = typescript_balanced_end(code, opening, "(", ")")
@@ -18952,9 +19048,11 @@ def typescript_graph(
         agent_target = local_agents.get(agent_identifier.group(0))
         if agent_target is None:
             continue
-        if re.search(rf"(?<![\w$.]){re.escape(result_name)}\s*=(?!=)", code[end:]):
-            continue
-        openai_agents_run_result_bindings[result_name] = agent_target
+        add_openai_agents_run_result_source(
+            result_name=result_name,
+            agent_target=agent_target,
+            end=end,
+        )
     previous_response_id_pattern = re.compile(
         r"\bconst\s+([A-Za-z_$][\w$]*)\s*(?::\s*[^=;\n]+)?=\s*"
         r"([A-Za-z_$][\w$]*)\s*\.\s*lastResponseId\b"
@@ -19033,6 +19131,91 @@ def typescript_graph(
                         history_binding=history_name,
                         source_agent=source,
                         symbol_identity=f"{history_name}.history@{line}",
+                    ),
+                    match.end(),
+                )
+            )
+    state_continuity_bindings: dict[str, list[tuple[tuple[str, str], int]]] = defaultdict(list)
+
+    def latest_openai_agents_run_result_source(
+        result_name: str,
+        use_offset: int,
+        *,
+        current_call_start: int | None = None,
+    ) -> tuple[str, str] | None:
+        for source, assignment_end in reversed(openai_agents_run_result_sources.get(result_name, [])):
+            if assignment_end > use_offset:
+                continue
+            stale = False
+            for assignment in re.finditer(
+                rf"(?<![\w$.]){re.escape(result_name)}\s*=(?!=)",
+                code[assignment_end:use_offset],
+            ):
+                absolute_assignment_start = assignment_end + assignment.start()
+                absolute_assignment_end = assignment_end + assignment.end()
+                if current_call_start is not None and absolute_assignment_end <= current_call_start:
+                    between_assignment_and_call = code[absolute_assignment_end:current_call_start]
+                    if re.fullmatch(r"\s*(?:await\s+)?", between_assignment_and_call):
+                        continue
+                if absolute_assignment_start >= assignment_end:
+                    stale = True
+                    break
+            if not stale:
+                return source
+        return None
+
+    state_binding_patterns = (
+        re.compile(
+            r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*(?::\s*[^=;\n]+)?=\s*"
+            r"([A-Za-z_$][\w$]*)\s*\.\s*state\b"
+        ),
+        re.compile(r"(?<![\w$.])([A-Za-z_$][\w$]*)\s*=\s*([A-Za-z_$][\w$]*)\s*\.\s*state\b"),
+    )
+    seen_state_bindings: set[tuple[str, int]] = set()
+    for pattern_index, pattern in enumerate(state_binding_patterns):
+        for match in pattern.finditer(code):
+            state_name = match.group(1)
+            result_name = match.group(2)
+            if pattern_index == 1 and re.search(
+                r"\b(?:const|let|var)\s+$",
+                code[max(0, match.start() - 24) : match.start()],
+            ):
+                continue
+            if (state_name, match.start()) in seen_state_bindings:
+                continue
+            source = latest_openai_agents_run_result_source(result_name, match.start(2))
+            if source is None:
+                continue
+            if re.search(
+                rf"(?<![\w$.]){re.escape(state_name)}\s*=(?!=)",
+                code[match.end() :],
+            ):
+                next_use = re.search(
+                    rf"\b[A-Za-z_$][\w$]*(?:\.run)?\s*\(\s*[^,]+,\s*"
+                    rf"{re.escape(state_name)}\s*(?:,|\))",
+                    code[match.end() :],
+                )
+                next_assignment = re.search(
+                    rf"(?<![\w$.]){re.escape(state_name)}\s*=(?!=)",
+                    code[match.end() :],
+                )
+                if next_assignment is not None and (
+                    next_use is None or next_assignment.start() < next_use.start()
+                ):
+                    continue
+            line = line_at(text, match.start())
+            seen_state_bindings.add((state_name, match.start()))
+            state_continuity_bindings[state_name].append(
+                (
+                    add_typescript_openai_run_state_continuity_control(
+                        ir,
+                        relative=relative,
+                        lines=lines,
+                        line=line,
+                        result_binding=result_name,
+                        state_binding=state_name,
+                        source_agent=source,
+                        symbol_identity=f"{state_name}.state@{line}",
                     ),
                     match.end(),
                 )
@@ -19136,26 +19319,67 @@ def typescript_graph(
     def conversation_continuity_from_input(
         argument: str,
         argument_offset: int,
-    ) -> tuple[tuple[str, str], str, str] | None:
+        *,
+        current_call_start: int,
+    ) -> tuple[tuple[str, str], str, str, str] | None:
         input_code = typescript_code_mask(argument).strip()
         input_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", input_code)
-        if input_identifier is None:
-            return None
-        input_name = input_identifier.group(0)
-        for continuity_control, assignment_end in reversed(
-            history_continuity_bindings.get(input_name, [])
-        ):
-            if assignment_end > argument_offset:
-                continue
-            if re.search(
-                rf"(?<![\w$.]){re.escape(input_name)}\s*=(?!=)",
-                code[assignment_end:argument_offset],
+        if input_identifier is not None:
+            input_name = input_identifier.group(0)
+            for continuity_control, assignment_end in reversed(
+                history_continuity_bindings.get(input_name, [])
             ):
-                continue
-            return continuity_control, "history-input", (
-                "typescript-openai-agents-history-continuity"
-            )
-        return None
+                if assignment_end > argument_offset:
+                    continue
+                if re.search(
+                    rf"(?<![\w$.]){re.escape(input_name)}\s*=(?!=)",
+                    code[assignment_end:argument_offset],
+                ):
+                    continue
+                return continuity_control, "history-input", (
+                    "typescript-openai-agents-history-continuity"
+                ), "history-input"
+            for continuity_control, assignment_end in reversed(
+                state_continuity_bindings.get(input_name, [])
+            ):
+                if assignment_end > argument_offset:
+                    continue
+                if re.search(
+                    rf"(?<![\w$.]){re.escape(input_name)}\s*=(?!=)",
+                    code[assignment_end:argument_offset],
+                ):
+                    continue
+                return continuity_control, "state-input", (
+                    "typescript-openai-agents-run-state-continuity"
+                ), "state-input"
+            return None
+        state_member = re.fullmatch(r"([A-Za-z_$][\w$]*)\s*\.\s*state", input_code)
+        if state_member is None:
+            return None
+        result_name = state_member.group(1)
+        source = latest_openai_agents_run_result_source(
+            result_name,
+            argument_offset,
+            current_call_start=current_call_start,
+        )
+        if source is None:
+            return None
+        line = line_at(text, argument_offset)
+        return (
+            add_typescript_openai_run_state_continuity_control(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=line,
+                result_binding=result_name,
+                state_binding=None,
+                source_agent=source,
+                symbol_identity=f"{result_name}.state@{line}",
+            ),
+            "result-state-input",
+            "typescript-openai-agents-run-state-continuity",
+            "state-input",
+        )
 
     for match in re.finditer(r"\b([A-Za-z_$][\w$]*)\s*\(", code):
         if match.start() > 0 and code[match.start() - 1] == ".":
@@ -19180,13 +19404,14 @@ def typescript_graph(
         if conversation_continuity := conversation_continuity_from_input(
             arguments[1][0],
             arguments[1][1],
+            current_call_start=match.start(),
         ):
-            continuity_control, binding, analysis = conversation_continuity
+            continuity_control, binding, analysis, input_configuration = conversation_continuity
             add_conversation_session_relationship(
                 agent_target=agent_target,
                 run_line=run_line,
                 session_control=continuity_control,
-                configuration="run-history-input",
+                configuration=f"run-{input_configuration}",
                 binding=binding,
                 analysis=analysis,
             )
@@ -19346,14 +19571,15 @@ def typescript_graph(
             conversation_continuity := conversation_continuity_from_input(
                 arguments[1][0],
                 arguments[1][1],
+                current_call_start=match.start(),
             )
         ):
-            continuity_control, binding, analysis = conversation_continuity
+            continuity_control, binding, analysis, input_configuration = conversation_continuity
             add_conversation_session_relationship(
                 agent_target=agent_target,
                 run_line=run_line,
                 session_control=continuity_control,
-                configuration="runner-run-history-input",
+                configuration=f"runner-run-{input_configuration}",
                 binding=binding,
                 analysis=analysis,
             )

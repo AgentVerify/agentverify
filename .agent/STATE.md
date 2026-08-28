@@ -454,6 +454,14 @@ catalog workflows.
   functions, and reassigned history inputs remain unresolved. Local fixtures plus the real
   `examples/tools/web-search.ts` and `examples/agent-patterns/llm-as-a-judge.ts` examples raised
   regenerated public IR truth-set results to 1,916 passing labels.
+- Added exact OpenAI Agents JS `result.state` run-state resume inventory for same-file direct
+  `run(...)` and `Runner.run(...)` continuations. Inline `run(agent, result.state)` and named
+  `const state = stream.state; run(agent, state, ...)` become `conversation-continuity` controls
+  only when the state comes from a prior exact OpenAI Agents run result and is consumed before
+  invalidating reassignment; same-statement `result = await run(agent, result.state)` is accepted as
+  a resume of the old state. Loose state objects, unknown run functions, stale result bindings, and
+  reassigned named state inputs remain unresolved. Local fixtures plus real OpenAI Agents JS
+  HITL/MCP examples raised regenerated public IR truth-set results to 1,937 passing labels.
 
 ## Current findings
 
@@ -539,7 +547,7 @@ Continue toward the highest-value local P1/P2 work: additional exact OpenAI Agen
 session-governance policy fields, real-world framework coverage without broad name matching,
 concrete CI/editor integration fixtures, or release-artifact checks that stay local until release
 publishing is explicit. For OpenAI session work, keep local `MemorySession`, server-managed
-`conversationId`, `previousResponseId`, and same-block `result.history` continuity semantics
-distinct. For performance work, use `--progress` plus focused `--scan-label-paths` only when the
-target labels are self-contained; broader benchmark acceleration likely needs dependency-aware path
-expansion or scan-result reuse to preserve cross-file evidence.
+`conversationId`, `previousResponseId`, same-block `result.history`, and same-file `result.state`
+resume semantics distinct. For performance work, use `--progress` plus focused `--scan-label-paths`
+only when the target labels are self-contained; broader benchmark acceleration likely needs
+dependency-aware path expansion or scan-result reuse to preserve cross-file evidence.

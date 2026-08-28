@@ -60,3 +60,18 @@ const historyFirst = await run(agent, 'history before reassigned input');
 let reassignedMessages = historyFirst.history;
 reassignedMessages = [];
 await run(agent, reassignedMessages);
+
+const looseState = { opaque: true };
+await run(agent, looseState);
+
+const unknownStateResult = await unknownRun(agent, 'unknown state run');
+await run(agent, unknownStateResult.state);
+
+let staleStateResult = await run(agent, 'state source before result reassignment');
+staleStateResult = await unknownRun(agent, 'reassigned state source');
+await run(agent, staleStateResult.state);
+
+const namedStateResult = await run(agent, 'state before reassigned input');
+let reassignedState = namedStateResult.state;
+reassignedState = { opaque: true };
+await run(agent, reassignedState);

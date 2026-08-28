@@ -18,8 +18,9 @@
   where evidence remains exact, especially additional Manifest/sandbox policy fields, additional
   `MemorySession`/server-managed conversation implementation semantics, or agent/session
   composition edges beyond the now-covered `client.create(...)`, `defaultManifest`, top-level
-  `session`, exact `conversationId`, exact `previousResponseId`, and same-block `result.history`
-  bindings, without broadening into ambiguous helper/config composition.
+  `session`, exact `conversationId`, exact `previousResponseId`, same-block `result.history`, and
+  same-file `result.state` resume bindings, without broadening into ambiguous helper/config
+  composition.
 
 ## P2
 
@@ -42,6 +43,10 @@
   source-proven. The real `examples/docs/running-agents/chatLoop.ts` pattern stores `result.history`
   in a caller-owned variable across repeated helper calls, but the current same-block scanner should
   not infer that without a narrowly validated function/call-state model.
+- Explore OpenAI Agents JS HITL approval-state governance only if it can distinguish SDK-native
+  approval callbacks, manual `state.approve`/`state.reject`, and automatic approval bypasses from
+  generic same-named functions. The new `result.state` continuity inventory provides the resume
+  backbone but does not yet claim approval quality.
 
 ## Deferred until access/authorization
 

@@ -34,3 +34,13 @@ let carriedItems = [{ role: 'user', content: 'start carried history' }];
 const carriedFirst = await run(agent, carriedItems);
 carriedItems = carriedFirst.history;
 await runner.run(agent, carriedItems);
+
+const directStateFirst = await run(agent, 'start direct state resume');
+await run(agent, directStateFirst.state);
+
+let interrupted = await run(agent, 'start interrupted state');
+interrupted = await run(agent, interrupted.state);
+
+let streamed = await run(agent, 'start named state resume', { stream: true });
+const resumeState = streamed.state;
+await runner.run(agent, resumeState, { stream: true });

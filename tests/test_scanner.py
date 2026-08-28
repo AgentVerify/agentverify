@@ -5312,6 +5312,9 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         ("positive.ts", 23, "ts:positive.ts#control:previousResponseId@23"),
         ("positive.ts", 29, "ts:positive.ts#control:messages.history@29"),
         ("positive.ts", 35, "ts:positive.ts#control:carriedItems.history@35"),
+        ("positive.ts", 39, "ts:positive.ts#control:directStateFirst.state@39"),
+        ("positive.ts", 42, "ts:positive.ts#control:interrupted.state@42"),
+        ("positive.ts", 45, "ts:positive.ts#control:resumeState.state@45"),
     }
     assert continuity_controls[
         ("positive.ts", 23, "ts:positive.ts#control:previousResponseId@23")
@@ -5347,6 +5350,43 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         "source_agent_id": "ts:positive.ts#agent:agent",
         "state_scope": "openai-run-history-continuity",
         "scope": "production",
+    }
+    assert continuity_controls[
+        ("positive.ts", 39, "ts:positive.ts#control:directStateFirst.state@39")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-run-state-continuity",
+        "module": "@openai/agents",
+        "configuration": "run.state",
+        "result_binding": "directStateFirst",
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "state_scope": "openai-run-state-continuity",
+        "scope": "production",
+        "state_binding": "inline-result-state",
+    }
+    assert continuity_controls[
+        ("positive.ts", 42, "ts:positive.ts#control:interrupted.state@42")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-run-state-continuity",
+        "module": "@openai/agents",
+        "configuration": "run.state",
+        "result_binding": "interrupted",
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "state_scope": "openai-run-state-continuity",
+        "scope": "production",
+        "state_binding": "inline-result-state",
+    }
+    assert continuity_controls[("positive.ts", 45, "ts:positive.ts#control:resumeState.state@45")].attributes == {
+        "analysis": "typescript-openai-agents-run-state-continuity",
+        "module": "@openai/agents",
+        "configuration": "run.state",
+        "result_binding": "streamed",
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "state_scope": "openai-run-state-continuity",
+        "scope": "production",
+        "state_binding": "resumeState",
     }
 
     edges = {
@@ -5417,6 +5457,39 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
                 ("analysis", "typescript-openai-agents-history-continuity"),
                 ("binding", "history-input"),
                 ("configuration", "runner-run-history-input"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            39,
+            "ts:positive.ts#control:directStateFirst.state@39",
+            (
+                ("analysis", "typescript-openai-agents-run-state-continuity"),
+                ("binding", "result-state-input"),
+                ("configuration", "run-state-input"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            42,
+            "ts:positive.ts#control:interrupted.state@42",
+            (
+                ("analysis", "typescript-openai-agents-run-state-continuity"),
+                ("binding", "result-state-input"),
+                ("configuration", "run-state-input"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            46,
+            "ts:positive.ts#control:resumeState.state@45",
+            (
+                ("analysis", "typescript-openai-agents-run-state-continuity"),
+                ("binding", "state-input"),
+                ("configuration", "runner-run-state-input"),
             ),
         ),
     }
