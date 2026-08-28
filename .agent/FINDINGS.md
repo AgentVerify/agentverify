@@ -384,6 +384,15 @@
 - Python `SyntaxWarning`s from third-party source parsing are not useful AgentVerify diagnostics and
   can bury benchmark progress output. Wrapping repository scans in a `SyntaxWarning` filter keeps
   scanner stderr clean while preserving AgentVerify IR errors for parse failures and skipped files.
+- OpenAI Agents JS `MemorySession({ sessionId })` is exact conversation-state governance evidence
+  when `MemorySession` is an unshadowed value import from `@openai/agents` and `sessionId` is a
+  direct literal or earlier immutable module-level literal binding. AgentVerify records this as a
+  `conversation-session` control and links direct `run(..., { session })` and
+  `Runner.run(..., { session })` options from the agent to that control. Dynamic session IDs,
+  rebound imports, unknown same-named constructors, and sandbox runtime sessions remain unresolved
+  as conversation-session evidence. Real pinned `openai/openai-agents-js` examples
+  `conversation-identity.ts` and `memory-multi-agent-multiturn.ts` validate 3 controls and 5
+  composition edges; the public IR truth set now covers 1,887 passing labels.
 
 ## Hypotheses
 

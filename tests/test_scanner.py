@@ -5000,6 +5000,95 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         "configuration": "sandbox.cwd",
     }
 
+    conversation_sessions = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control" and component.name == "conversation-session"
+    }
+    assert set(conversation_sessions) == {
+        (
+            "positive.ts",
+            301,
+            "ts:positive.ts#control:conversation.sessionId@301",
+        ),
+        (
+            "positive.ts",
+            311,
+            "ts:positive.ts#control:runnerConversation.sessionId@311",
+        ),
+    }
+    assert conversation_sessions[
+        (
+            "positive.ts",
+            301,
+            "ts:positive.ts#control:conversation.sessionId@301",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-agents-memory-session",
+        "module": "@openai/agents",
+        "constructor": "MemorySession",
+        "imported_symbol": "MemorySession",
+        "resolution": "exact-openai-agents-import",
+        "local_constructor": "MemorySession",
+        "configuration": "MemorySession.sessionId",
+        "session_id": "agentverify-sandbox-conversation",
+        "session_id_resolution": "immutable-module-literal-binding",
+        "state_scope": "conversation-memory",
+        "scope": "production",
+    }
+    assert conversation_sessions[
+        (
+            "positive.ts",
+            311,
+            "ts:positive.ts#control:runnerConversation.sessionId@311",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-agents-memory-session",
+        "module": "@openai/agents",
+        "constructor": "MemorySession",
+        "imported_symbol": "MemorySession",
+        "resolution": "exact-openai-agents-import",
+        "local_constructor": "MemorySession",
+        "configuration": "MemorySession.sessionId",
+        "session_id": "agentverify-runner-conversation",
+        "session_id_resolution": "literal",
+        "state_scope": "conversation-memory",
+        "scope": "production",
+    }
+    conversation_edges = {
+        (
+            edge.source_name,
+            edge.evidence.path,
+            edge.evidence.line,
+            edge.target_id,
+            edge.attributes.get("configuration"),
+            edge.attributes.get("binding"),
+        )
+        for edge in ir.relationships
+        if edge.source_kind == "agent"
+        and edge.relation == "configured-by"
+        and edge.target_kind == "control"
+        and edge.target_name == "conversation-session"
+    }
+    assert conversation_edges == {
+        (
+            "Conversation Session Sandbox",
+            "positive.ts",
+            306,
+            "ts:positive.ts#control:conversation.sessionId@301",
+            "run-session",
+            "session",
+        ),
+        (
+            "Runner Conversation Session Sandbox",
+            "positive.ts",
+            320,
+            "ts:positive.ts#control:runnerConversation.sessionId@311",
+            "runner-run-session",
+            "session",
+        ),
+    }
+
     runtime_edges = {
         (
             edge.source_name,

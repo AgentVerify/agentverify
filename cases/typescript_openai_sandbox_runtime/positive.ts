@@ -1,4 +1,4 @@
-import { Agent, Runner, run } from '@openai/agents';
+import { Agent, MemorySession, Runner, run } from '@openai/agents';
 import { file, gitRepo, localDir, Manifest, SandboxAgent, shell } from '@openai/agents/sandbox';
 import { BlaxelSandboxClient } from '@openai/agents-extensions/sandbox/blaxel';
 import {
@@ -296,3 +296,27 @@ const ambiguousManifestAgent = new SandboxAgent({
 });
 void ambiguousManifestSession;
 void ambiguousManifestAgent;
+
+const conversationId = 'agentverify-sandbox-conversation';
+const conversation = new MemorySession({ sessionId: conversationId });
+const conversationAgent = new SandboxAgent({
+  name: 'Conversation Session Sandbox',
+  capabilities: [shell()],
+});
+await run(conversationAgent, 'remember the workspace review', {
+  session: conversation,
+});
+
+const runnerConversation = new MemorySession({
+  sessionId: 'agentverify-runner-conversation',
+});
+const conversationRunnerAgent = new SandboxAgent({
+  name: 'Runner Conversation Session Sandbox',
+  capabilities: [shell()],
+});
+const conversationRunner = new Runner({
+  workflowName: 'conversation session example',
+});
+await conversationRunner.run(conversationRunnerAgent, 'remember runner state', {
+  session: runnerConversation,
+});

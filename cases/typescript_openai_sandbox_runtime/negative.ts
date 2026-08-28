@@ -1,4 +1,4 @@
-import { Agent, Runner, run } from '@openai/agents';
+import { Agent, MemorySession, MemorySession as ReboundMemorySession, Runner, run } from '@openai/agents';
 import { Manifest, SandboxAgent } from '@openai/agents/sandbox';
 import {
   UnixLocalSandboxClient,
@@ -158,4 +158,28 @@ const dynamicDirectoryManifest = new Manifest({
       children: dynamicChildren,
     },
   },
+});
+
+declare const dynamicSessionId: string;
+ReboundMemorySession = ReplacementMemorySession;
+const dynamicConversation = new MemorySession({ sessionId: dynamicSessionId });
+const reboundConversation = new ReboundMemorySession({ sessionId: 'rebound-conversation' });
+const unknownConversation = new UnknownMemorySession({ sessionId: 'unknown-conversation' });
+const dynamicConversationAgent = new SandboxAgent({
+  name: 'Dynamic Conversation Session Sandbox',
+});
+await run(dynamicConversationAgent, 'inspect dynamic conversation memory', {
+  session: dynamicConversation,
+});
+const reboundConversationAgent = new SandboxAgent({
+  name: 'Rebound Conversation Session Sandbox',
+});
+await run(reboundConversationAgent, 'inspect rebound conversation memory', {
+  session: reboundConversation,
+});
+const unknownConversationAgent = new SandboxAgent({
+  name: 'Unknown Conversation Session Sandbox',
+});
+await run(unknownConversationAgent, 'inspect unknown conversation memory', {
+  session: unknownConversation,
 });

@@ -161,3 +161,21 @@
   snippets are easy to copy incompletely and are not caught by release artifact verification.
 - Revisit when: a hosted GitHub Action, reusable workflow, or release-pinned installation path
   replaces manual workflow copying.
+
+## OpenAI MemorySession is conversation-state evidence, not sandbox runtime evidence
+
+- Decision: Model exact OpenAI Agents JS `MemorySession({ sessionId })` as a
+  `conversation-session` control and link agents to it from top-level `session` run options, while
+  keeping sandbox `{ session }` bindings under `sandbox-runtime` only when they derive from a proven
+  sandbox client/session.
+- Evidence: Pinned `openai/openai-agents-js` examples use both concepts together:
+  `conversation-identity.ts` passes a `MemorySession` through top-level `session` while also passing
+  a sandbox runtime session through `sandbox.session`; `memory-multi-agent-multiturn.ts` uses two
+  named `MemorySession` instances across repeated sandboxed runs. Treating both as one control would
+  blur durable conversation memory with execution-environment selection.
+- Alternative: Reuse `sandbox-state-persistence` or `sandbox-runtime` controls. Rejected because
+  those controls describe sandbox filesystem/session behavior, not agent conversation identity or
+  continuity.
+- Revisit when: OpenAI Agents JS exposes additional session implementations with materially
+  different persistence or external storage semantics that deserve separate control names or
+  attributes.

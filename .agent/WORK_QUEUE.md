@@ -14,10 +14,11 @@
   wrapper factories, type-driven symbols, generic same-named provider wrappers, or additional
   non-provider wildcard/reexport forms beyond the current exact framework-constructor,
   provider-factory, and literal-callable cases.
-- Continue OpenAI Agents JS sandbox policy extraction from pinned examples where evidence remains
-  exact, especially additional Manifest/sandbox policy fields or agent/session composition edges
-  beyond the now-covered `client.create(...)` and `defaultManifest` bindings, without broadening into
-  ambiguous helper/config composition.
+- Continue OpenAI Agents JS sandbox and session-governance policy extraction from pinned examples
+  where evidence remains exact, especially additional Manifest/sandbox policy fields, additional
+  `MemorySession`/session implementation semantics, or agent/session composition edges beyond the
+  now-covered `client.create(...)`, `defaultManifest`, and top-level `session` bindings, without
+  broadening into ambiguous helper/config composition.
 
 ## P2
 

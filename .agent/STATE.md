@@ -424,6 +424,14 @@ catalog workflows.
 - Suppressed third-party Python `SyntaxWarning` noise at the scanner boundary, so benchmark progress
   output is no longer polluted by cached repositories with invalid escape sequences in string
   literals. A MetaGPT single-label slice now prints only the `--progress` timing line and passes.
+- Added exact OpenAI Agents JS `MemorySession({ sessionId })` conversation-session inventory,
+  keeping durable conversation identity distinct from sandbox runtime sessions. Direct
+  `run(..., { session })` and `Runner.run(..., { session })` options now link agents to
+  `conversation-session` controls when `MemorySession` is an unshadowed `@openai/agents` value
+  import and `sessionId` is literal or an earlier immutable module-level literal binding. Dynamic
+  session IDs, rebound imports, and unknown same-named constructors remain unresolved. Local
+  fixtures plus real `conversation-identity.ts` and `memory-multi-agent-multiturn.ts` examples
+  raised regenerated public IR truth-set results to 1,887 passing labels.
 
 ## Current findings
 
@@ -505,9 +513,9 @@ catalog workflows.
 
 ## Next action
 
-Continue toward the highest-value local P1/P2 work: additional exact OpenAI Agents JS sandbox
-policy fields, real-world framework coverage without broad name matching, concrete CI/editor
-integration fixtures, or release-artifact checks that stay local until release publishing is
-explicit. For performance work, use `--progress` plus focused `--scan-label-paths` only when the
-target labels are self-contained; broader benchmark acceleration likely needs dependency-aware path
-expansion or scan-result reuse to preserve cross-file evidence.
+Continue toward the highest-value local P1/P2 work: additional exact OpenAI Agents JS sandbox or
+session-governance policy fields, real-world framework coverage without broad name matching,
+concrete CI/editor integration fixtures, or release-artifact checks that stay local until release
+publishing is explicit. For performance work, use `--progress` plus focused `--scan-label-paths`
+only when the target labels are self-contained; broader benchmark acceleration likely needs
+dependency-aware path expansion or scan-result reuse to preserve cross-file evidence.

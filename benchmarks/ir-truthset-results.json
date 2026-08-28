@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T02:46:48.782672+00:00",
+  "generated_at": "2026-08-28T03:28:56.843558+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "2b730de050d40baf0b8b0dfc1592a332f6ccad50aaa43ee4812a11f261565df8",
+    "labels_sha256": "c29542547b3a7a80b20167d9049019ea429f19c982167d562f99e991d641b5a9",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 1872,
-  "passed": 1872,
+  "labels": 1887,
+  "passed": 1887,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -566,6 +566,14 @@
       "tp": 2,
       "fp": 0,
       "tn": 5,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "IR-TS-OPENAI-CONVERSATION-SESSION": {
+      "tp": 12,
+      "fp": 0,
+      "tn": 3,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -17478,6 +17486,141 @@
     {
       "id": "typescript-openai-sandbox-agent-runner-stream-edge-cloudflare-real",
       "check_id": "IR-TS-OPENAI-SANDBOX",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-conversation-session-control-local",
+      "check_id": "IR-TS-OPENAI-CONVERSATION-SESSION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-conversation-session-run-edge-local",
+      "check_id": "IR-TS-OPENAI-CONVERSATION-SESSION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-conversation-session-runner-control-local",
+      "check_id": "IR-TS-OPENAI-CONVERSATION-SESSION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-conversation-session-runner-edge-local",
+      "check_id": "IR-TS-OPENAI-CONVERSATION-SESSION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-conversation-session-dynamic-id-control-local-negative",
+      "check_id": "IR-TS-OPENAI-CONVERSATION-SESSION",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-conversation-session-rebound-control-local-negative",
+      "check_id": "IR-TS-OPENAI-CONVERSATION-SESSION",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-conversation-session-unknown-control-local-negative",
+      "check_id": "IR-TS-OPENAI-CONVERSATION-SESSION",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-conversation-session-control-conversation-identity-real",
+      "check_id": "IR-TS-OPENAI-CONVERSATION-SESSION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-conversation-session-run-edge-conversation-identity-first-real",
+      "check_id": "IR-TS-OPENAI-CONVERSATION-SESSION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-conversation-session-run-edge-conversation-identity-followup-real",
+      "check_id": "IR-TS-OPENAI-CONVERSATION-SESSION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-conversation-session-control-memory-multiturn-gtm-real",
+      "check_id": "IR-TS-OPENAI-CONVERSATION-SESSION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-conversation-session-run-edge-memory-multiturn-gtm-first-real",
+      "check_id": "IR-TS-OPENAI-CONVERSATION-SESSION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-conversation-session-run-edge-memory-multiturn-gtm-second-real",
+      "check_id": "IR-TS-OPENAI-CONVERSATION-SESSION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-conversation-session-control-memory-multiturn-engineering-real",
+      "check_id": "IR-TS-OPENAI-CONVERSATION-SESSION",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-conversation-session-run-edge-memory-multiturn-engineering-real",
+      "check_id": "IR-TS-OPENAI-CONVERSATION-SESSION",
       "expected": true,
       "observed": true,
       "anchor_ok": true,
