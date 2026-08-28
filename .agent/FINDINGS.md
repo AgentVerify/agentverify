@@ -2,7 +2,7 @@
 
 ## Durable facts
 
-- The repository contains a 71-repository pinned research corpus and schema-v134 engine benchmark
+- The repository contains a 71-repository pinned research corpus and schema-v135 engine benchmark
   outputs.
 - The runtime catalog currently contains 25 enabled reporting rules.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
@@ -534,9 +534,12 @@
   8 configured-by resume edges overall.
 - OpenAI Agents JS trace correlation is now visible without conflating it with conversation memory.
   Exact imported `withTrace(..., { groupId })` calls that wrap a source-proven
-  `run(agent, ...)` callback emit `trace-group` controls and configured-by edges. The pinned
+  `run(agent, ...)` callback emit `trace-group` controls and configured-by edges; exact
+  `withTrace(..., { traceId })` calls emit separate `trace-id` controls. The pinned
   `examples/agent-patterns/routing.ts` example links `triage_agent` to a dynamic
-  `conversationId` trace group, and the public IR truth set now covers 2,079 passing labels.
+  `conversationId` trace group, while `examples/tools/codex.ts` links two Codex-agent runs to a
+  generated trace ID with a logged OpenAI platform trace URL. The public IR truth set now covers
+  2,086 passing labels.
 
 ## Hypotheses
 

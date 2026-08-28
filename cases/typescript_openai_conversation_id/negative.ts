@@ -122,9 +122,9 @@ async function reassignedAgentAliasDoesNotProveHistoryFeedback() {
 }
 
 await withTrace(
-  'No AgentVerify trace group',
+  'No AgentVerify trace metadata',
   async () => {
-    await run(agent, 'not grouped for trace correlation');
+    await run(agent, 'not grouped or identified for trace correlation');
   },
-  { traceId: 'not-a-group-id' },
+  { metadata: 'not-a-trace-option' },
 );

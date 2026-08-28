@@ -496,11 +496,13 @@ scope and reassignment guard, so rebound aliases remain unresolved. This recover
 `routing.ts` loop where `run(agent, inputs)` flows through a triage-agent alias before
 `inputs = result.history`.
 
-Schema v134 adds exact OpenAI Agents JS trace correlation inventory for
-`withTrace(..., { groupId })`. When the imported SDK helper wraps a callback containing an exact
-`run(agent, ...)` call, AgentVerify emits a distinct `trace-group` control and configured-by edge
-without treating the group ID as conversation memory. The real `routing.ts` example now links the
-triage agent to its dynamic `conversationId` trace group.
+Schema v134/v135 adds exact OpenAI Agents JS trace correlation inventory for
+`withTrace(..., { groupId })` and `withTrace(..., { traceId })`. When the imported SDK helper wraps
+a callback containing an exact `run(agent, ...)` call, AgentVerify emits distinct `trace-group` or
+`trace-id` controls and configured-by edges without treating either trace identifier as conversation
+memory. The real `routing.ts` example links the triage agent to its dynamic `conversationId` trace
+group, while the real Codex tool example links two runs to a generated trace ID with a logged
+OpenAI platform trace URL.
 
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
@@ -626,7 +628,7 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 729 pinned positive/negative locations, with 2,079 separately
+The curated regression set has reached 729 pinned positive/negative locations, with 2,086 separately
 scored IR component/relationship labels. Schema-v133 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule

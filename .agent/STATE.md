@@ -593,11 +593,12 @@ catalog workflows.
   recovers the real routed `examples/agent-patterns/routing.ts` `let agent: Agent<...> =
   triageAgent` loop without accepting rebound aliases. Focused alias labels pass 6/6, former
   OpenAI sandbox/helper and run-state restore regressions pass focused checks.
-- Added exact OpenAI Agents JS trace correlation inventory for imported
-  `withTrace(..., { groupId })` callbacks containing source-proven SDK `run(agent, ...)` calls.
-  Focused trace-group labels pass 5/5, full public IR labels pass 2,079/2,079, and the full
-  schema-v134 engine benchmark refresh passes 71/71 repositories with 2,790 relationships and
-  10,555 symbolized components.
+- Added exact OpenAI Agents JS trace correlation inventory for imported `withTrace` callbacks
+  containing source-proven SDK `run(agent, ...)` calls. `groupId` emits `trace-group` evidence,
+  `traceId` emits `trace-id` evidence, and imported `generateTraceId()` bindings preserve generated
+  trace-ID plus logged OpenAI platform URL metadata. Focused trace labels pass 12/12, full public
+  IR labels pass 2,086/2,086, and the full schema-v135 engine benchmark refresh passes 71/71
+  repositories with 2,792 relationships and 10,557 symbolized components.
 
 ## Current findings
 
@@ -694,9 +695,10 @@ catalog workflows.
   `field.startsWith("literal")`, `field.includes("literal")`, and
   `["literal"].includes(action.field)` are recorded, while compound conditions, helper calls, and
   nonliteral values remain callback-controlled without predicate attributes.
-- OpenAI Agents JS `withTrace(..., { groupId })` is now represented as separate trace-correlation
-  governance evidence, not conversation memory. Exact imported `withTrace` callbacks containing
-  source-proven SDK `run(agent, ...)` calls emit `trace-group` controls and configured-by edges.
+- OpenAI Agents JS `withTrace(..., { groupId })` and `withTrace(..., { traceId })` are now
+  represented as separate trace-correlation governance evidence, not conversation memory. Exact
+  imported `withTrace` callbacks containing source-proven SDK `run(agent, ...)` calls emit
+  `trace-group` or `trace-id` controls and configured-by edges.
 
 ## Blockers
 
@@ -711,7 +713,7 @@ without broad name matching, concrete CI/editor integration fixtures, benchmark 
 release-artifact checks that stay local until release publishing is explicit. For OpenAI session
 work, keep local `MemorySession`, server-managed `conversationId`, `previousResponseId`,
 same-block `result.history`, same-file `result.state`, and serialized `RunState.fromString` resume
-semantics distinct from trace-correlation `withTrace(..., { groupId })` evidence. For OpenAI
+semantics distinct from trace-correlation `withTrace(..., { groupId/traceId })` evidence. For OpenAI
 approval work, keep literal always-approval, callback-controlled
 approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
 approval metadata, literal predicate metadata, SDK state approval decisions, helper-parameter

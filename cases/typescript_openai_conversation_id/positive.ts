@@ -1,4 +1,4 @@
-import { Agent, Runner, RunState, run, withTrace } from '@openai/agents';
+import { Agent, Runner, RunState, generateTraceId, run, withTrace } from '@openai/agents';
 import { OpenAI } from 'openai';
 
 const agent = new Agent({
@@ -117,4 +117,13 @@ await withTrace(
     await run(agent, 'trace grouped turn');
   },
   { groupId: 'agentverify-trace-group' },
+);
+
+const traceId = generateTraceId();
+await withTrace(
+  'AgentVerify trace id',
+  async () => {
+    await run(agent, 'trace identified turn');
+  },
+  { traceId },
 );

@@ -5649,6 +5649,33 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         "group_id": "agentverify-trace-group",
     }
 
+    trace_id_controls = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control" and component.name == "trace-id"
+    }
+    assert set(trace_id_controls) == {
+        ("positive.ts", 128, "ts:positive.ts#control:withTrace.traceId@128:run126"),
+    }
+    assert trace_id_controls[
+        ("positive.ts", 128, "ts:positive.ts#control:withTrace.traceId@128:run126")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-trace-id",
+        "module": "@openai/agents",
+        "imported_symbol": "withTrace",
+        "local_function": "withTrace",
+        "configuration": "withTrace.traceId",
+        "trace_id_resolution": "generateTraceId-binding",
+        "generated_trace_id": True,
+        "trace_url_logged": False,
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "trace_scope": "openai-trace-identity",
+        "scope": "production",
+        "trace_name": "AgentVerify trace id",
+        "trace_id_binding": "traceId",
+    }
+
     approval_decision_controls = {
         (component.evidence.path, component.evidence.line, component.symbol_id): component
         for component in ir.components
@@ -5941,6 +5968,33 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
                 ("analysis", "typescript-openai-agents-trace-group"),
                 ("binding", "groupId"),
                 ("configuration", "withTrace-groupId"),
+            ),
+        ),
+    }
+    trace_id_edges = {
+        (
+            relationship.source_name,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            relationship.target_id,
+            tuple(sorted(relationship.attributes.items())),
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "configured-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "trace-id"
+    }
+    assert trace_id_edges == {
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            126,
+            "ts:positive.ts#control:withTrace.traceId@128:run126",
+            (
+                ("analysis", "typescript-openai-agents-trace-id"),
+                ("binding", "traceId-binding"),
+                ("configuration", "withTrace-traceId"),
             ),
         ),
     }

@@ -553,18 +553,22 @@
   reject mixed/unproven call sites, and prove exported/imported helper bodies without repository-wide
   name matching.
 
-## OpenAI Agents JS trace groups are audit correlation, not memory
+## OpenAI Agents JS trace identifiers are audit correlation, not memory
 
-- Decision: Represent exact TypeScript OpenAI Agents SDK `withTrace(..., { groupId })` calls as a
-  distinct `trace-group` control only when the imported `withTrace` helper wraps a callback
-  containing a source-proven exact SDK `run(agent, ...)` call. Preserve static group IDs when
-  literal and direct identifier group IDs as dynamic bindings.
+- Decision: Represent exact TypeScript OpenAI Agents SDK `withTrace(..., { groupId })` calls as
+  distinct `trace-group` controls and `withTrace(..., { traceId })` calls as distinct `trace-id`
+  controls only when the imported `withTrace` helper wraps a callback containing a source-proven
+  exact SDK `run(agent, ...)` call. Preserve static IDs when literal, direct identifier group IDs as
+  dynamic bindings, and direct trace IDs from imported `generateTraceId()` as generated bindings.
 - Evidence: The local conversation fixture covers a literal `groupId` positive and a missing
-  `groupId` negative. The pinned OpenAI Agents JS `examples/agent-patterns/routing.ts` example
-  wraps `run(agent, inputs, ...)` inside `withTrace(..., { groupId: conversationId })`; the scanner
-  links the alias-resolved `triage_agent` to a `trace-group` configured-by edge.
-- Alternative: Fold trace grouping into `conversation-session` or `conversation-continuity`.
-  Rejected because trace `groupId` is observability/audit correlation evidence, not proof that the
-  SDK persists or reuses conversation state.
+  trace option negative, plus a generated `traceId` positive. The pinned OpenAI Agents JS
+  `examples/agent-patterns/routing.ts` example wraps `run(agent, inputs, ...)` inside
+  `withTrace(..., { groupId: conversationId })`; the scanner links the alias-resolved
+  `triage_agent` to a `trace-group` configured-by edge. The pinned `examples/tools/codex.ts`
+  example calls `generateTraceId()`, logs the OpenAI platform trace URL, and passes `{ traceId }`
+  around two Codex-agent runs.
+- Alternative: Fold trace identifiers into `conversation-session` or `conversation-continuity`.
+  Rejected because trace `groupId` and `traceId` are observability/audit correlation evidence, not
+  proof that the SDK persists or reuses conversation state.
 - Revisit when: trace exports, processors, or durable trace sinks can be proven and linked to the
   same source-agent identity.
