@@ -402,8 +402,9 @@ catalog workflows.
   Manifest policy controls. `client.create(manifest)`, `client.create({ manifest })`,
   `SandboxAgent({ defaultManifest: manifest })`, and same-file one-return Manifest helper calls now
   add `configured-by` edges to entries, workspace roots, path grants, and environment controls while
-  ambiguous helpers and dynamic Manifest values remain unresolved. Local fixtures plus real OpenAI
-  Agents JS examples raised regenerated public IR truth-set results to 1,868 passing labels.
+  ambiguous helpers and dynamic Manifest values remain unresolved. An ambiguous-helper regression
+  pins that no-link boundary. Local fixtures plus real OpenAI Agents JS examples raised regenerated
+  public IR truth-set results to 1,872 passing labels.
 
 ## Current findings
 

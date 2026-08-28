@@ -4465,6 +4465,16 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
             250,
             "ts:positive.ts#control:manifestReturn@248.entry0.linked-task.md@250",
         ),
+        (
+            "positive.ts",
+            279,
+            "ts:positive.ts#control:manifestReturn@277.entry0.ambiguous-a.md@279",
+        ),
+        (
+            "positive.ts",
+            285,
+            "ts:positive.ts#control:manifestReturn@283.entry0.ambiguous-b.md@285",
+        ),
     }
     assert manifest_entries[
         (
@@ -4665,6 +4675,20 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         "entry_factory": "file",
         "content_present": True,
     }
+    assert manifest_entries[
+        (
+            "positive.ts",
+            279,
+            "ts:positive.ts#control:manifestReturn@277.entry0.ambiguous-a.md@279",
+        )
+    ].attributes["entry_name"] == "ambiguous-a.md"
+    assert manifest_entries[
+        (
+            "positive.ts",
+            285,
+            "ts:positive.ts#control:manifestReturn@283.entry0.ambiguous-b.md@285",
+        )
+    ].attributes["entry_name"] == "ambiguous-b.md"
 
     manifest_environment = {
         (component.evidence.path, component.evidence.line, component.symbol_id): component
@@ -4897,6 +4921,16 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
             ),
         ),
     }
+    assert not any(
+        relationship.target_id
+        in {
+            "ts:positive.ts#control:manifestReturn@277.entry0.ambiguous-a.md@279",
+            "ts:positive.ts#control:manifestReturn@283.entry0.ambiguous-b.md@285",
+        }
+        and relationship.attributes.get("analysis")
+        == "typescript-openai-sandbox-manifest-composition"
+        for relationship in ir.relationships
+    )
 
     working_directories = {
         (component.evidence.path, component.evidence.line, component.symbol_id): component

@@ -17016,15 +17016,14 @@ def add_typescript_openai_sandbox_manifest_controls_from_arguments(
 
 
 def typescript_enclosing_unique_function(
-    code: str,
     function_spans: list[tuple[str, int, int]],
     offset: int,
 ) -> str | None:
-    """Return the narrowest same-file function enclosing a top-level statement."""
+    """Return the narrowest same-file function enclosing an offset."""
     helpers = [
         (name, start, end)
         for name, start, end in function_spans
-        if start <= offset < end and typescript_curly_depth_between(code, start, offset) == 0
+        if start <= offset < end
     ]
     if not helpers:
         return None
@@ -17967,7 +17966,7 @@ def typescript_graph(
                 sandbox_factory_imports=sandbox_entry_factory_imports,
                 immutable_literal_bindings=immutable_literal_bindings,
             )
-            helper_name = typescript_enclosing_unique_function(code, function_spans, match.start())
+            helper_name = typescript_enclosing_unique_function(function_spans, match.start())
             if helper_name is not None and manifest_controls:
                 helper_manifest_candidates[helper_name].append((match.start(), manifest_controls))
     helper_manifest_bindings = {

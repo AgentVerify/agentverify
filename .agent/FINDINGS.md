@@ -356,9 +356,10 @@
   consumers. `client.create(manifest)`, `client.create({ manifest })`, and
   `SandboxAgent({ defaultManifest: manifest })` add `configured-by` edges from the proven
   `sandbox-runtime` or agent to the exact Manifest controls; same-file helper calls are accepted
-  only when one helper has one top-level `return new Manifest(...)`, allowing real `buildManifest()`
-  examples without guessing through ambiguous composition. The public IR truth set now covers 1,868
-  passing labels.
+  only when one helper has one `return new Manifest(...)`, allowing real `buildManifest()`
+  examples without guessing through ambiguous composition. A helper with multiple Manifest returns
+  still emits exact controls for each return but does not link callers to either candidate. The
+  public IR truth set now covers 1,872 passing labels.
 
 ## Hypotheses
 

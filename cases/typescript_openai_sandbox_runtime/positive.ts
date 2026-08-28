@@ -271,3 +271,28 @@ const objectManifest = new Manifest({
 });
 const objectManifestSession = await client.create({ manifest: objectManifest });
 void objectManifestSession;
+
+function buildAmbiguousManifest(enabled: boolean) {
+  if (enabled) {
+    return new Manifest({
+      entries: {
+        'ambiguous-a.md': file({ content: 'A' }),
+      },
+    });
+  }
+  return new Manifest({
+    entries: {
+      'ambiguous-b.md': file({ content: 'B' }),
+    },
+  });
+}
+
+const ambiguousManifest = buildAmbiguousManifest(useDocker);
+const ambiguousManifestSession = await client.create(ambiguousManifest);
+const ambiguousManifestAgent = new SandboxAgent({
+  name: 'Ambiguous Manifest Sandbox',
+  defaultManifest: ambiguousManifest,
+  capabilities: [shell()],
+});
+void ambiguousManifestSession;
+void ambiguousManifestAgent;
