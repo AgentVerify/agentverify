@@ -18406,6 +18406,8 @@ def add_typescript_tool_observation(
             if literal_options
             else "unresolved"
         )
+    elif constructor == "applyPatchTool" and literal_options:
+        execution_environment = "local"
     attributes = {
         "constructor": constructor,
         "approval_policy": approval_policy,
@@ -18451,7 +18453,7 @@ def add_typescript_tool_observation(
         "approval_policy": approval_policy,
         "scope": source_scope(relative),
     }
-    if constructor in {"shellTool", *TS_OPENAI_SANDBOX_CAPABILITY_FACTORIES}:
+    if constructor in {"applyPatchTool", "shellTool", *TS_OPENAI_SANDBOX_CAPABILITY_FACTORIES}:
         capability_attributes["execution_environment"] = execution_environment
     if constructor in TS_OPENAI_SANDBOX_CAPABILITY_FACTORIES:
         capability_attributes["sandbox_policy"] = "openai-agents-sdk-sandbox"

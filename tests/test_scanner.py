@@ -3745,6 +3745,7 @@ def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> Non
     assert tools["assignedShell"].attributes["approval_policy"] == "disabled-explicit"
     assert tools["assignedShell"].attributes["execution_environment"] == "local"
     assert tools["applyPatchTool@34"].attributes["approval_policy"] == "enabled"
+    assert tools["applyPatchTool@34"].attributes["execution_environment"] == "local"
     assert tools["computerTool@38"].attributes["approval_policy"] == "callback-controlled"
     assert tools["computerTool@38"].attributes["approval_handler"] == "needsApproval-callback"
     assert tools["computerTool@38"].attributes["approval_decision"] == "dynamic-callback"
@@ -3896,18 +3897,19 @@ function second() {
 
 def test_typescript_builtin_options_variable_stays_unresolved(tmp_path: Path) -> None:
     (tmp_path / "agent.ts").write_text(
-        """import { Agent, shellTool } from "@openai/agents";
+        """import { Agent, applyPatchTool, shellTool } from "@openai/agents";
 const options = loadPolicyAtRuntime();
-const agent = new Agent({ name: "operator", tools: [shellTool(options)] });
+const agent = new Agent({ name: "operator", tools: [shellTool(options), applyPatchTool(options)] });
 """,
         encoding="utf-8",
     )
 
     ir = scan_repository(tmp_path)
 
-    tool = next(component for component in ir.components if component.kind == "tool")
-    assert tool.attributes["approval_policy"] == "unresolved"
-    assert tool.attributes["execution_environment"] == "unresolved"
+    tools = [component for component in ir.components if component.kind == "tool"]
+    assert len(tools) == 2
+    assert all(tool.attributes["approval_policy"] == "unresolved" for tool in tools)
+    assert all(tool.attributes["execution_environment"] == "unresolved" for tool in tools)
     assert not ir.findings
 
 

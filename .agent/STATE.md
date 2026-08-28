@@ -559,12 +559,18 @@ catalog workflows.
   labels, full 2,044/2,044 IR labels, 71/71 engine repositories, checked benchmark verification,
   full `pytest -q` (298 passed), touched-file `ruff`, JSON parsing, diff whitespace checks, and
   `uv build` plus distribution smoke/source verification.
-- Added six real OpenAI Agents JS built-in-tool approval labels for
+- Added seven real OpenAI Agents JS built-in-tool approval labels for
   `examples/docs/tools/localBuiltInTools.ts`: approval-enabled `shellTool` and `applyPatchTool`
-  components, their `human-approval` governed-by edges, and their reachable `Local tools agent`
-  tool-use edges.
-- The public IR truth set now passes 2,050/2,050 labels (1,532 positives and 518 negatives). The
-  focused OpenAI built-in shell/apply-patch label slice passes 6/6.
+  components, their `human-approval` governed-by edges, their reachable `Local tools agent`
+  tool-use edges, and the editor-backed local filesystem write capability for literal
+  `applyPatchTool({ editor, ... })` options.
+- The public IR truth set now passes 2,051/2,051 labels (1,533 positives and 518 negatives). The
+  focused OpenAI built-in shell/apply-patch label slice passes 7/7.
+- Validation for the apply-patch local-filesystem slice passed touched-file `ruff`, focused scanner
+  and CLI tests (3 passed), focused OpenAI built-in shell/apply-patch IR labels (7/7), full
+  2,051/2,051 public IR labels, full 71/71 engine benchmark refresh, checked benchmark
+  verification, full `pytest -q` (298 passed), JSON parsing, diff whitespace checks, and `uv build`
+  plus distribution smoke/source verification.
 
 ## Current findings
 
@@ -655,6 +661,8 @@ catalog workflows.
   literal `needsApproval: true` proves always-enabled approval metadata, while callback-valued
   `needsApproval` is callback-controlled policy evidence, not unresolved handler evidence and not
   full human-approval coverage until predicate/action coverage is analyzed.
+- OpenAI Agents JS `applyPatchTool({ editor, ... })` with literal options is editor-backed local
+  filesystem write capability evidence; nonliteral `applyPatchTool(options)` remains unresolved.
 - The first OpenAI Agents JS predicate-quality inventory is intentionally literal and shallow:
   `field.startsWith("literal")`, `field.includes("literal")`, and
   `["literal"].includes(action.field)` are recorded, while compound conditions, helper calls, and

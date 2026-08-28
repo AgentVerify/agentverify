@@ -344,6 +344,24 @@
   action/input predicates to risky builtin operations, especially automatic approvals or narrow
   action allowlists.
 
+## OpenAI applyPatchTool literal options imply local filesystem editing
+
+- Decision: Treat exact OpenAI Agents JS `applyPatchTool({ editor, ... })` calls with literal object
+  options as `execution_environment: local` and propagate that environment to the associated
+  filesystem capability with `write_access: true`. Keep nonliteral `applyPatchTool(options)` calls
+  unresolved because runtime-provided options can hide editor, approval, or environment policy.
+- Evidence: The OpenAI Agents JS SDK models `applyPatchTool` as an editor-backed builtin patch
+  tool, the docs `examples/docs/tools/localBuiltInTools.ts` example passes a local editor alongside
+  `needsApproval: true`, and `examples/tools/apply-patch.ts` constructs a `WorkspaceEditor` from a
+  workspace root before passing it to `applyPatchTool`. Local scanner tests now pin the literal
+  positive and the nonliteral-options negative, and the public IR truth set adds the real docs
+  filesystem-capability label.
+- Alternative: Leave all `applyPatchTool` execution environments unresolved, or mark every
+  `applyPatchTool(...)` call local. Rejected because literal object options prove the SDK-native
+  editor-backed filesystem surface while nonliteral options are intentionally opaque.
+- Revisit when: the SDK introduces hosted or remote editor implementations, or examples expose
+  explicit execution-environment options that need finer-grained classification.
+
 ## OpenAI approval predicate inventory starts with shallow literal predicates
 
 - Decision: Record only exact shallow literal `needsApproval` predicates in OpenAI Agents JS
