@@ -392,6 +392,12 @@ catalog workflows.
   controls for each visible directory/file path, while dynamic child maps remain unresolved. Local
   fixtures plus a real `memory-multi-agent-multiturn.ts` example raised regenerated public IR
   truth-set results to 1,849 passing labels.
+- Added exact OpenAI Agents JS `sandbox.cwd` inventory for direct `run(...)`, `runner.run(...)`,
+  `Runner({ sandbox })`, and delegated `asTool({ runConfig })` sandbox option objects when a proven
+  sandbox runtime is already attached. Literal or earlier immutable module-level working directories
+  become `sandbox-working-directory` controls linked to the runtime; dynamic cwd values remain
+  unresolved. Local fixtures plus the real `shared-session-workdirs.ts` example raised regenerated
+  public IR truth-set results to 1,856 passing labels.
 
 ## Current findings
 

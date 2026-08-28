@@ -288,12 +288,14 @@ remain withheld. Local regressions now pin nine positive object-map model labels
 negatives. Exact `@ai-sdk/azure` factory/configured embedding calls are now covered with a matching
 custom-endpoint spread negative and a real Activepieces Azure embedding provider label. Together with
 the expanded local-reexport, real Activepieces boundary, and TypeScript sandbox-helper labels, the
-public IR truth set now covers 1,849 labels. Exact OpenAI Agents JS sandbox memory configuration is
+public IR truth set now covers 1,856 labels. Exact OpenAI Agents JS sandbox memory configuration is
 now inventoried for literal `memory(...)` options, including generation toggles, read live-update
 settings, memory/session layout directories, and literal generation model/prompt settings, while
 dynamic option values remain unresolved. Exact nested `Manifest.entries` directory trees are now
 flattened into sandbox manifest-entry controls for literal seeded directories and files, while
-dynamic child maps remain unresolved.
+dynamic child maps remain unresolved. Exact `sandbox.cwd` options now become
+`sandbox-working-directory` controls linked to the proven sandbox runtime when the working directory
+is a direct literal or earlier immutable module-level literal string.
 
 Schema v77 separates Python MCP process inventory from package-launcher provenance and adds exact
 Agent→MCP-server identities. Import-proven literal stdio constructor calls are inventoried for any
@@ -1038,7 +1040,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 719-label rule truth set and 1,849-label IR component/relationship set are curated regression
+The 719-label rule truth set and 1,856-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

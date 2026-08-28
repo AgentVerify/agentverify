@@ -16194,6 +16194,101 @@ def add_typescript_openai_sandbox_concurrency_limits_from_sandbox(
     )
 
 
+def add_typescript_openai_sandbox_working_directory_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    working_directory: str,
+    working_directory_resolution: str,
+    symbol_identity: str,
+    runtime_control: tuple[str, str],
+) -> tuple[str, str]:
+    """Add an exact OpenAI Agents JS sandbox working-directory control."""
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    attributes = {
+        "analysis": "typescript-openai-sandbox-working-directory",
+        "module": "@openai/agents",
+        "configuration": "sandbox.cwd",
+        "working_directory": working_directory,
+        "working_directory_resolution": working_directory_resolution,
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": source_scope(relative),
+    }
+    ir.add_component(
+        Component(
+            "control",
+            "sandbox-working-directory",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    runtime_name, runtime_id = runtime_control
+    ir.add_relationship(
+        Relationship(
+            "control",
+            runtime_name,
+            "configured-by",
+            "control",
+            "sandbox-working-directory",
+            Evidence(relative, line, excerpt(lines, line)),
+            {
+                "analysis": "typescript-openai-sandbox-working-directory",
+                "configuration": "sandbox.cwd",
+            },
+            source_id=runtime_id,
+            target_id=control_id,
+        )
+    )
+    return "sandbox-working-directory", control_id
+
+
+def add_typescript_openai_sandbox_working_directory_from_sandbox(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    text: str,
+    sandbox_expression: str,
+    sandbox_expression_offset: int,
+    symbol_base: str,
+    runtime_control: tuple[str, str] | None,
+    immutable_literal_bindings: dict[str, TypeScriptLiteralStringBinding],
+) -> tuple[str, str] | None:
+    """Add literal sandbox.cwd controls from exact sandbox runtime options."""
+    if runtime_control is None:
+        return None
+    cwd_property = typescript_object_property_expression_location(
+        sandbox_expression,
+        "cwd",
+        sandbox_expression_offset,
+    )
+    if cwd_property is None:
+        return None
+    cwd_expression, property_offset, cwd_expression_offset = cwd_property
+    working_directory = typescript_static_string_value(
+        cwd_expression,
+        expression_offset=cwd_expression_offset,
+        immutable_literal_bindings=immutable_literal_bindings,
+    )
+    if working_directory is None:
+        return None
+    line = line_at(text, property_offset)
+    return add_typescript_openai_sandbox_working_directory_control(
+        ir,
+        relative=relative,
+        lines=lines,
+        line=line,
+        working_directory=working_directory[0],
+        working_directory_resolution=working_directory[1],
+        symbol_identity=f"{symbol_base}.cwd@{line}",
+        runtime_control=runtime_control,
+    )
+
+
 def typescript_string_literal_value(expression: str) -> str | None:
     """Resolve a direct single- or double-quoted TypeScript string literal."""
     match = re.fullmatch(r"\s*(['\"])([^\\\r\n]*?)\1\s*", expression, re.DOTALL)
@@ -17935,6 +18030,17 @@ def typescript_graph(
                 symbol_base=runner_name,
                 runtime_control=runtime_control,
             )
+            add_typescript_openai_sandbox_working_directory_from_sandbox(
+                ir,
+                relative=relative,
+                lines=lines,
+                text=text,
+                sandbox_expression=sandbox_expression,
+                sandbox_expression_offset=sandbox_expression_offset,
+                symbol_base=runner_name,
+                runtime_control=runtime_control,
+                immutable_literal_bindings=immutable_literal_bindings,
+            )
             sandbox_runner_bindings[runner_name] = (runtime_control, binding)
     agent_matches: list[tuple[re.Match[str], str, str | None, str, str]] = [
         (match, "Agent", None, match.group(1), "assignment")
@@ -18110,15 +18216,28 @@ def typescript_graph(
                         item_offset + call_opening + 1,
                     )
                     if call_arguments:
-                        run_config_expression = typescript_object_property_expression(
-                            call_arguments[0][0], "runConfig"
+                        run_config_location = typescript_object_property_expression_location(
+                            call_arguments[0][0],
+                            "runConfig",
+                            call_arguments[0][1],
                         )
-                        if run_config_expression is not None:
-                            sandbox_expression = typescript_object_property_expression(
-                                run_config_expression, "sandbox"
+                        if run_config_location is not None:
+                            run_config_expression, _, run_config_offset = run_config_location
+                            sandbox_location = typescript_object_property_expression_location(
+                                run_config_expression,
+                                "sandbox",
+                                run_config_offset,
                             )
+                            if sandbox_location is not None:
+                                sandbox_expression, _, sandbox_expression_offset = (
+                                    sandbox_location
+                                )
+                            else:
+                                sandbox_expression = None
+                                sandbox_expression_offset = None
                         else:
                             sandbox_expression = None
+                            sandbox_expression_offset = None
                         runtime_control = None
                         binding = None
                         if sandbox_expression is not None:
@@ -18160,6 +18279,21 @@ def typescript_graph(
                                 runtime_control = sandbox_session_bindings.get("session")
                                 binding = "session-shorthand"
                         if runtime_control is not None:
+                            if (
+                                sandbox_expression is not None
+                                and sandbox_expression_offset is not None
+                            ):
+                                add_typescript_openai_sandbox_working_directory_from_sandbox(
+                                    ir,
+                                    relative=relative,
+                                    lines=lines,
+                                    text=text,
+                                    sandbox_expression=sandbox_expression,
+                                    sandbox_expression_offset=sandbox_expression_offset,
+                                    symbol_base=variable_name,
+                                    runtime_control=runtime_control,
+                                    immutable_literal_bindings=immutable_literal_bindings,
+                                )
                             runtime_name, runtime_id = runtime_control
                             run_config_keyword = expression.find("runConfig")
                             sandbox_keyword = expression.find("sandbox", run_config_keyword)
@@ -18368,6 +18502,17 @@ def typescript_graph(
             symbol_base=agent_identifier.group(0),
             runtime_control=runtime_control,
         )
+        add_typescript_openai_sandbox_working_directory_from_sandbox(
+            ir,
+            relative=relative,
+            lines=lines,
+            text=text,
+            sandbox_expression=sandbox_expression,
+            sandbox_expression_offset=sandbox_expression_offset,
+            symbol_base=agent_identifier.group(0),
+            runtime_control=runtime_control,
+            immutable_literal_bindings=immutable_literal_bindings,
+        )
         runtime_name, runtime_id = runtime_control
         agent_name, agent_id = agent_target
         run_line = line_at(text, match.start())
@@ -18510,6 +18655,17 @@ def typescript_graph(
                 sandbox_expression_offset=sandbox_expression_offset,
                 symbol_base=agent_identifier.group(0),
                 runtime_control=runtime_control,
+            )
+            add_typescript_openai_sandbox_working_directory_from_sandbox(
+                ir,
+                relative=relative,
+                lines=lines,
+                text=text,
+                sandbox_expression=sandbox_expression,
+                sandbox_expression_offset=sandbox_expression_offset,
+                symbol_base=agent_identifier.group(0),
+                runtime_control=runtime_control,
+                immutable_literal_bindings=immutable_literal_bindings,
             )
         runtime_name, runtime_id = runtime_control
         agent_name, agent_id = agent_target

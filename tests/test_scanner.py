@@ -4730,6 +4730,63 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         "scope": "production",
     }
 
+    working_directories = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control" and component.name == "sandbox-working-directory"
+    }
+    assert set(working_directories) == {
+        (
+            "positive.ts",
+            235,
+            "ts:positive.ts#control:workdirAgent.cwd@235",
+        ),
+    }
+    assert working_directories[
+        (
+            "positive.ts",
+            235,
+            "ts:positive.ts#control:workdirAgent.cwd@235",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-working-directory",
+        "module": "@openai/agents",
+        "configuration": "sandbox.cwd",
+        "working_directory": "tasks/a",
+        "working_directory_resolution": "immutable-module-literal-binding",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": "production",
+    }
+    working_directory_edges = {
+        (
+            edge.source_kind,
+            edge.source_name,
+            edge.source_id,
+            edge.evidence.path,
+            edge.evidence.line,
+            edge.target_id,
+        ): edge
+        for edge in ir.relationships
+        if edge.relation == "configured-by"
+        and edge.target_kind == "control"
+        and edge.target_name == "sandbox-working-directory"
+    }
+    assert set(working_directory_edges) == {
+        (
+            "control",
+            "sandbox-runtime",
+            "ts:positive.ts#control:client@39",
+            "positive.ts",
+            235,
+            "ts:positive.ts#control:workdirAgent.cwd@235",
+        ),
+    }
+    assert next(iter(working_directory_edges.values())).attributes == {
+        "analysis": "typescript-openai-sandbox-working-directory",
+        "configuration": "sandbox.cwd",
+    }
+
     runtime_edges = {
         (
             edge.source_name,
@@ -4836,6 +4893,20 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
                 "ts:positive.ts#control:directClient@12",
                 "client",
             ),
+        (
+            "Workdir Sandbox",
+            "positive.ts",
+            234,
+            "ts:positive.ts#control:client@39",
+            "session-shorthand",
+        ),
+        (
+            "Dynamic Cwd Sandbox",
+            "positive.ts",
+            243,
+            "ts:positive.ts#control:client@39",
+            "session-shorthand",
+        ),
     }
     as_tool_edges = [
         edge
@@ -4881,6 +4952,12 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         component.evidence.path == "negative.ts"
         and component.kind == "control"
         and component.name == "sandbox-concurrency-limit"
+        for component in ir.components
+    )
+    assert not any(
+        component.evidence.path == "negative.ts"
+        and component.kind == "control"
+        and component.name == "sandbox-working-directory"
         for component in ir.components
     )
     assert not ir.findings

@@ -225,3 +225,21 @@ const nestedManifest = new Manifest({
     },
   },
 });
+
+const teamWorkdir = 'tasks/a';
+const workdirAgent = new SandboxAgent({
+  name: 'Workdir Sandbox',
+  capabilities: [shell()],
+});
+await run(workdirAgent, 'summarize the scoped task workspace', {
+  sandbox: { session, cwd: teamWorkdir },
+});
+
+declare const dynamicCwd: string;
+const dynamicCwdAgent = new SandboxAgent({
+  name: 'Dynamic Cwd Sandbox',
+  capabilities: [shell()],
+});
+await run(dynamicCwdAgent, 'summarize the dynamic task workspace', {
+  sandbox: { session, cwd: dynamicCwd },
+});

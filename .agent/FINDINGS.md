@@ -346,7 +346,12 @@
   when both the directory entry and its `children` map are literal. AgentVerify recursively emits
   `sandbox-manifest-entry` controls for visible seeded paths such as `memories/gtm/notes.md` without
   recording file contents; dynamic child maps and unknown same-named Manifest constructors remain
-  unresolved. The public IR truth set now covers 1,849 passing labels.
+  unresolved. The public IR truth set then covered 1,849 passing labels.
+- Exact OpenAI Agents JS `sandbox.cwd` values are now per-run sandbox working-directory evidence
+  only after an exact sandbox runtime is already proven. Direct literal strings and earlier
+  immutable module-level string bindings become `sandbox-working-directory` controls linked from the
+  runtime; dynamic cwd expressions remain unresolved. The public IR truth set now covers 1,856
+  passing labels.
 
 ## Hypotheses
 
