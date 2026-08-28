@@ -4435,6 +4435,31 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
             170,
             "ts:positive.ts#control:grantManifest.entry2.localRepo@170",
         ),
+        (
+            "positive.ts",
+            206,
+            "ts:positive.ts#control:nestedManifest.entry0.memories@206",
+        ),
+        (
+            "positive.ts",
+            209,
+            "ts:positive.ts#control:nestedManifest.entry0.memories/gtm@209",
+        ),
+        (
+            "positive.ts",
+            212,
+            "ts:positive.ts#control:nestedManifest.entry0.memories/gtm/notes.md@212",
+        ),
+        (
+            "positive.ts",
+            215,
+            "ts:positive.ts#control:nestedManifest.entry0.memories/engineering@215",
+        ),
+        (
+            "positive.ts",
+            218,
+            "ts:positive.ts#control:nestedManifest.entry0.memories/engineering/notes.md@218",
+        ),
     }
     assert manifest_entries[
         (
@@ -4502,6 +4527,117 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
         "entry_factory": "localDir",
         "source_path": "/opt/company/repo-template",
         "source_path_resolution": "immutable-module-literal-binding",
+    }
+    assert manifest_entries[
+        (
+            "positive.ts",
+            206,
+            "ts:positive.ts#control:nestedManifest.entry0.memories@206",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-manifest-entry",
+        "module": "@openai/agents/sandbox",
+        "constructor": "Manifest",
+        "imported_symbol": "Manifest",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "entries",
+        "entry_name": "memories",
+        "entry_source": "literal-directory",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": "production",
+        "entry_type": "dir",
+        "children_present": True,
+        "child_entry_count": 2,
+        "child_entry_names": ["gtm", "engineering"],
+    }
+    assert manifest_entries[
+        (
+            "positive.ts",
+            209,
+            "ts:positive.ts#control:nestedManifest.entry0.memories/gtm@209",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-manifest-entry",
+        "module": "@openai/agents/sandbox",
+        "constructor": "Manifest",
+        "imported_symbol": "Manifest",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "entries",
+        "entry_name": "memories/gtm",
+        "entry_source": "literal-directory",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": "production",
+        "entry_type": "dir",
+        "children_present": True,
+        "child_entry_count": 1,
+        "child_entry_names": ["notes.md"],
+    }
+    assert manifest_entries[
+        (
+            "positive.ts",
+            212,
+            "ts:positive.ts#control:nestedManifest.entry0.memories/gtm/notes.md@212",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-manifest-entry",
+        "module": "@openai/agents/sandbox",
+        "constructor": "Manifest",
+        "imported_symbol": "Manifest",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "entries",
+        "entry_name": "memories/gtm/notes.md",
+        "entry_source": "literal-file",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": "production",
+        "entry_type": "file",
+        "content_present": True,
+    }
+    assert manifest_entries[
+        (
+            "positive.ts",
+            215,
+            "ts:positive.ts#control:nestedManifest.entry0.memories/engineering@215",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-manifest-entry",
+        "module": "@openai/agents/sandbox",
+        "constructor": "Manifest",
+        "imported_symbol": "Manifest",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "entries",
+        "entry_name": "memories/engineering",
+        "entry_source": "literal-directory",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": "production",
+        "entry_type": "dir",
+        "children_present": True,
+        "child_entry_count": 1,
+        "child_entry_names": ["notes.md"],
+    }
+    assert manifest_entries[
+        (
+            "positive.ts",
+            218,
+            "ts:positive.ts#control:nestedManifest.entry0.memories/engineering/notes.md@218",
+        )
+    ].attributes == {
+        "analysis": "typescript-openai-sandbox-manifest-entry",
+        "module": "@openai/agents/sandbox",
+        "constructor": "Manifest",
+        "imported_symbol": "Manifest",
+        "resolution": "exact-openai-sandbox-import",
+        "configuration": "entries",
+        "entry_name": "memories/engineering/notes.md",
+        "entry_source": "literal-file",
+        "execution_environment": "sdk-sandbox",
+        "sandbox_policy": "openai-agents-sdk-sandbox",
+        "scope": "production",
+        "entry_type": "file",
+        "content_present": True,
     }
 
     manifest_environment = {

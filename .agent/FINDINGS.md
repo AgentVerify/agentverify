@@ -340,8 +340,13 @@
   generation disabled/enabled configuration, read live-update settings, memory/session layout
   directories, max raw memories, literal generation model IDs, and extra generation prompts as
   `sandbox-memory-policy` controls linked from the memory tool. Dynamic memory option values and
-  unknown same-named factories remain unresolved. The public IR truth set now covers 1,838 passing
+  unknown same-named factories remain unresolved. The public IR truth set then covered 1,838 passing
   labels.
+- Exact OpenAI Agents JS nested Manifest directory trees are now sandbox workspace-seed evidence
+  when both the directory entry and its `children` map are literal. AgentVerify recursively emits
+  `sandbox-manifest-entry` controls for visible seeded paths such as `memories/gtm/notes.md` without
+  recording file contents; dynamic child maps and unknown same-named Manifest constructors remain
+  unresolved. The public IR truth set now covers 1,849 passing labels.
 
 ## Hypotheses
 

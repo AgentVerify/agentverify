@@ -16626,7 +16626,90 @@ def typescript_openai_sandbox_manifest_entry_attributes(
                 is not None
             ),
         }
+    if entry_type == "dir":
+        children_property = typescript_object_property_expression_location(
+            entry_expression,
+            "children",
+            entry_offset,
+        )
+        if children_property is None:
+            return None
+        children_expression, _, children_offset = children_property
+        children_code = typescript_code_mask(children_expression)
+        children_opening = len(children_code) - len(children_code.lstrip())
+        if (
+            children_opening >= len(children_code)
+            or children_code[children_opening] != "{"
+            or typescript_balanced_end(children_code, children_opening, "{", "}") is None
+        ):
+            return None
+        children: list[str] = []
+        for child_text, _ in typescript_literal_object_items(
+            children_expression,
+            children_offset,
+        ):
+            child_property = typescript_named_object_property(child_text)
+            if child_property is not None:
+                children.append(child_property[0])
+        return "literal-directory", {
+            "entry_type": "dir",
+            "children_present": True,
+            "child_entry_count": len(children),
+            "child_entry_names": children,
+        }
     return None
+
+
+def typescript_openai_sandbox_manifest_entry_records(
+    *,
+    entry_name: str,
+    entry_expression: str,
+    entry_offset: int,
+    sandbox_factory_imports: dict[str, str],
+    immutable_literal_bindings: dict[str, TypeScriptLiteralStringBinding],
+    max_depth: int = 4,
+) -> list[tuple[str, int, str, dict[str, object]]]:
+    """Return exact Manifest entry controls, recursively flattening literal directories."""
+    attributes = typescript_openai_sandbox_manifest_entry_attributes(
+        entry_expression=entry_expression,
+        entry_offset=entry_offset,
+        sandbox_factory_imports=sandbox_factory_imports,
+        immutable_literal_bindings=immutable_literal_bindings,
+    )
+    if attributes is None:
+        return []
+    entry_source, entry_attributes = attributes
+    records = [(entry_name, entry_offset, entry_source, entry_attributes)]
+    if entry_source != "literal-directory" or max_depth <= 0:
+        return records
+    children_property = typescript_object_property_expression_location(
+        entry_expression,
+        "children",
+        entry_offset,
+    )
+    if children_property is None:
+        return records
+    children_expression, _, children_offset = children_property
+    for child_text, child_property_offset in typescript_literal_object_items(
+        children_expression,
+        children_offset,
+    ):
+        child_property = typescript_named_object_property(child_text)
+        if child_property is None:
+            continue
+        child_name, child_expression = child_property
+        child_expression_offset = child_property_offset + child_text.find(child_expression)
+        records.extend(
+            typescript_openai_sandbox_manifest_entry_records(
+                entry_name=f"{entry_name}/{child_name}",
+                entry_expression=child_expression,
+                entry_offset=child_expression_offset,
+                sandbox_factory_imports=sandbox_factory_imports,
+                immutable_literal_bindings=immutable_literal_bindings,
+                max_depth=max_depth - 1,
+            )
+        )
+    return records
 
 
 def add_typescript_openai_sandbox_entries_from_arguments(
@@ -16662,27 +16745,27 @@ def add_typescript_openai_sandbox_entries_from_arguments(
         if entry_property is None:
             continue
         entry_name, entry_expression = entry_property
-        attributes = typescript_openai_sandbox_manifest_entry_attributes(
+        entry_expression_offset = entry_offset + entry_text.find(entry_expression)
+        entry_records = typescript_openai_sandbox_manifest_entry_records(
+            entry_name=entry_name,
             entry_expression=entry_expression,
-            entry_offset=entry_offset + entry_text.find(entry_expression),
+            entry_offset=entry_expression_offset,
             sandbox_factory_imports=sandbox_factory_imports,
             immutable_literal_bindings=immutable_literal_bindings,
         )
-        if attributes is None:
-            continue
-        entry_source, entry_attributes = attributes
-        line = line_at(text, entry_offset)
-        add_typescript_openai_sandbox_manifest_entry_control(
-            ir,
-            relative=relative,
-            lines=lines,
-            line=line,
-            local_constructor=local_constructor,
-            entry_name=entry_name,
-            entry_source=entry_source,
-            symbol_identity=f"{manifest_name}.entry{entry_index}.{entry_name}@{line}",
-            attributes=entry_attributes,
-        )
+        for record_entry_name, record_offset, entry_source, entry_attributes in entry_records:
+            line = line_at(text, record_offset)
+            add_typescript_openai_sandbox_manifest_entry_control(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=line,
+                local_constructor=local_constructor,
+                entry_name=record_entry_name,
+                entry_source=entry_source,
+                symbol_identity=f"{manifest_name}.entry{entry_index}.{record_entry_name}@{line}",
+                attributes=entry_attributes,
+            )
 
 
 def add_typescript_openai_sandbox_environment_from_arguments(

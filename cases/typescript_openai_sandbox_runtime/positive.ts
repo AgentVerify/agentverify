@@ -200,3 +200,28 @@ const workspaceRoot = '/workspace';
 const rootedManifest = new Manifest({
   root: workspaceRoot,
 });
+
+const nestedManifest = new Manifest({
+  entries: {
+    memories: {
+      type: 'dir',
+      children: {
+        gtm: {
+          type: 'dir',
+          children: {
+            'notes.md': { type: 'file', content: '# GTM Notes\n\n' },
+          },
+        },
+        engineering: {
+          type: 'dir',
+          children: {
+            'notes.md': {
+              type: 'file',
+              content: '# Engineering Notes\n\n',
+            },
+          },
+        },
+      },
+    },
+  },
+});

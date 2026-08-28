@@ -387,6 +387,11 @@ catalog workflows.
   model/prompt settings. Dynamic memory option values remain unresolved. Local fixtures plus real
   OpenAI Agents JS memory docs/examples raised regenerated public IR truth-set results to 1,838
   passing labels.
+- Added exact OpenAI Agents JS nested Manifest directory/file seed inventory: literal
+  `entries` directories with literal `children` are flattened into `sandbox-manifest-entry`
+  controls for each visible directory/file path, while dynamic child maps remain unresolved. Local
+  fixtures plus a real `memory-multi-agent-multiturn.ts` example raised regenerated public IR
+  truth-set results to 1,849 passing labels.
 
 ## Current findings
 

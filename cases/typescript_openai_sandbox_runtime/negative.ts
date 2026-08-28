@@ -1,5 +1,5 @@
 import { Agent, Runner, run } from '@openai/agents';
-import { SandboxAgent } from '@openai/agents/sandbox';
+import { Manifest, SandboxAgent } from '@openai/agents/sandbox';
 import {
   UnixLocalSandboxClient,
   UnixLocalSandboxClient as ReboundUnixLocalSandboxClient,
@@ -148,4 +148,14 @@ const unknownRootManifest = new UnknownManifest({
 });
 const dynamicRootManifest = new Manifest({
   root: dynamicRoot,
+});
+
+declare const dynamicChildren: Record<string, unknown>;
+const dynamicDirectoryManifest = new Manifest({
+  entries: {
+    memories: {
+      type: 'dir',
+      children: dynamicChildren,
+    },
+  },
 });
