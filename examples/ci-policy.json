@@ -19,7 +19,8 @@
         "AV-APPROVAL007",
         "AV-APPROVAL008",
         "AV-APPROVAL009",
-        "AV-APPROVAL010"
+        "AV-APPROVAL010",
+        "AV-APPROVAL011"
       ],
       "result_kinds": ["review"],
       "min_severity": "high",

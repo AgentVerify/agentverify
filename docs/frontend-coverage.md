@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v123
+framework, wrapper, or configuration path. Counts come from schema-v124
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -738,6 +738,12 @@ return under an approval-specific enabled environment comparison. Schema v63 res
 tools and three configuration edges. Unused helpers, safe callbacks, ambiguous function names, and
 hosted/container shell tools do not produce `AV-APPROVAL003`.
 
+The OpenAI Agents JS computer-use resolver keeps `needsApproval` and `onSafetyCheck` as separate
+controls. Shallow literal `needsApproval` predicates are visible as callback metadata, while
+`onSafetyCheck` callbacks that return `true` or return the entire `pendingSafetyChecks` list become
+`safety_check_policy: auto-acknowledge-all` and trigger `AV-APPROVAL011` only when the computer tool
+is reachable from an agent.
+
 The Python frontend inventories 449 canonical/import/callable-aliased and proven-`Path` mutations:
 179 creates, 191 deletes, 46 copies, and 33 moves. Of these, 434 use non-literal path expressions;
 one is reached through a statement-ordered local callable alias and 20 are `Path.rename`/`replace`
@@ -1040,7 +1046,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 719-label rule truth set and 1,856-label IR component/relationship set are curated regression
+The 724-label rule truth set and 1,992-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

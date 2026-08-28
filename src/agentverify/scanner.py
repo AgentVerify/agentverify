@@ -17767,6 +17767,7 @@ def add_typescript_tool_observation(
         if approval_policy == "callback-controlled" and approval_expression is not None
         else {}
     )
+    safety_check_attributes = typescript_openai_safety_check_attributes(call_body, constructor)
     execution_environment = "unresolved"
     if constructor in TS_OPENAI_SANDBOX_CAPABILITY_FACTORIES:
         execution_environment = "sdk-sandbox"
@@ -17802,6 +17803,7 @@ def add_typescript_tool_observation(
             else {}
         ),
         **approval_predicate_attributes,
+        **safety_check_attributes,
         "execution_environment": execution_environment,
         "scope": source_scope(relative),
         **(
@@ -17830,6 +17832,8 @@ def add_typescript_tool_observation(
         capability_attributes["execution_environment"] = execution_environment
     if constructor in TS_OPENAI_SANDBOX_CAPABILITY_FACTORIES:
         capability_attributes["sandbox_policy"] = "openai-agents-sdk-sandbox"
+    if constructor == "computerTool":
+        capability_attributes.update(safety_check_attributes)
     if constructor == "applyPatchTool":
         capability_attributes["write_access"] = True
     for capability in TS_OPENAI_BUILTIN_TOOL_CAPABILITIES.get(constructor, ()):
@@ -18118,6 +18122,64 @@ def typescript_openai_needs_approval_attributes(body: str) -> dict[str, object]:
             **typescript_openai_needs_approval_predicate_attributes(approval_expression),
         }
     return {}
+
+
+def typescript_openai_safety_check_attributes(body: str, constructor: str) -> dict[str, object]:
+    """Resolve exact OpenAI Agents JS computer safety-check callback metadata."""
+    if constructor != "computerTool":
+        return {}
+    callback_expression = typescript_object_property_expression(body, "onSafetyCheck")
+    if callback_expression is None:
+        return {"safety_check_handler": "none"}
+    attributes: dict[str, object] = {
+        "safety_check_handler": "configured",
+        "safety_check_policy": "unresolved",
+    }
+    parameters = typescript_callback_parameters(callback_expression)
+    pending_binding = None
+    if parameters and parameters[0].lstrip().startswith("{"):
+        names = typescript_destructured_names(parameters[0])
+        if "pendingSafetyChecks" in names:
+            pending_binding = "pendingSafetyChecks"
+    elif parameters:
+        if parameter_match := re.match(r"[A-Za-z_$][\w$]*", parameters[0]):
+            pending_binding = f"{parameter_match.group(0)}.pendingSafetyChecks"
+    code = typescript_code_mask(callback_expression)
+    arrow = code.find("=>")
+    if arrow < 0:
+        return attributes
+    body_expression = callback_expression[arrow + 2 :].strip()
+    body_code = typescript_code_mask(body_expression)
+    if body_code.startswith("{"):
+        opening = body_code.find("{")
+        end = typescript_balanced_end(body_code, opening, "{", "}")
+        if end is None:
+            return attributes
+        block = body_expression[:end].strip()
+        return_matches = list(
+            re.finditer(r"\breturn\s+([\s\S]*?)\s*;", typescript_code_mask(block))
+        )
+        if len(return_matches) != 1:
+            return attributes
+        body_expression = block[return_matches[0].start(1) : return_matches[0].end(1)].strip()
+    else:
+        body_expression = body_expression.rstrip(";").strip()
+    if body_expression == "true":
+        return {
+            **attributes,
+            "safety_check_policy": "auto-acknowledge-all",
+            "safety_check_decision": "return-true",
+        }
+    acknowledged = typescript_object_property_expression(body_expression, "acknowledgedSafetyChecks")
+    if acknowledged is not None:
+        acknowledged_code = typescript_code_mask(acknowledged).strip()
+        if pending_binding in {acknowledged_code, acknowledged_code.replace(" ", "")}:
+            return {
+                **attributes,
+                "safety_check_policy": "auto-acknowledge-all",
+                "safety_check_decision": "returns-pendingSafetyChecks",
+            }
+    return attributes
 
 
 def typescript_graph(

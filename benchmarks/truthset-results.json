@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-26T19:04:40.469190+00:00",
+  "generated_at": "2026-08-28T06:33:58.476309+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "reporting-rules",
     "labels_source": "benchmarks/truthset.json",
-    "labels_sha256": "af4379d273ce853a059ce3687aec5fdf576473aa40b3abc586be61ffdb3775f1",
+    "labels_sha256": "a14f1e1ea01cab71739ef0baea4d222e192c4501a3ba888056876a409361bbb6",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 719,
-  "passed": 719,
+  "labels": 724,
+  "passed": 724,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -102,6 +102,14 @@
       "tp": 4,
       "fp": 0,
       "tn": 4,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "AV-APPROVAL011": {
+      "tp": 3,
+      "fp": 0,
+      "tn": 2,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -6677,6 +6685,51 @@
     {
       "id": "approval-cline-cli-subagent-forwarded-local-negative",
       "rule_id": "AV-APPROVAL010",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-openai-js-computer-safety-auto-ack-local",
+      "rule_id": "AV-APPROVAL011",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-openai-js-computer-safety-return-true-local",
+      "rule_id": "AV-APPROVAL011",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-openai-js-computer-safety-reviewed-local-negative",
+      "rule_id": "AV-APPROVAL011",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-openai-js-computer-safety-auto-ack-real",
+      "rule_id": "AV-APPROVAL011",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-openai-js-computer-safety-singleton-no-handler-real-negative",
+      "rule_id": "AV-APPROVAL011",
       "expected": false,
       "observed": false,
       "anchor_ok": true,

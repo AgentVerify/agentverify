@@ -90,7 +90,7 @@ def test_editor_contract_export_writes_valid_rules_and_sample_report(tmp_path: P
     Draft202012Validator(report_schema).validate(report)
 
     assert rules["schema_version"] == 1
-    assert len(rules["rules"]) == 24
+    assert len(rules["rules"]) == 25
     assert report["report_format"] == "AgentVerify JSON Report"
     assert report["schema_version"] == 1
     assert report["risk_summary"] == {"by_result_kind": {}, "by_rule": {}, "by_severity": {}}

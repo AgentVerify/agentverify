@@ -1022,7 +1022,7 @@ Two default-scope clients qualify: the Microsoft tutorial and FastMCP CLI both a
 do not show the target URL. The TypeScript SDK host is the negative control: it displays the full URL,
 rejects unsafe non-HTTPS/non-loopback destinations, and asks before proceeding. The rule matrix is 4
 TP, 3 TN, 0 FP, and 0 FN; seven additional positive IR labels pin full versus missing disclosure.
-All 719 cross-rule labels pass (328 positives and 391 negatives).
+All 724 cross-rule labels pass (332 positives and 392 negatives).
 
 During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
 to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
@@ -1521,14 +1521,14 @@ and surfacing failed writes through metrics or alerts.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 719 exact labels across all 24 enabled rules: 328 positives and 391
+`benchmarks/truthset.json` contains 724 exact labels across all 25 enabled rules: 332 positives and 392
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
 Compose/Kubernetes/Docker SDK settings, host credential bind near misses, and exact/prompt-only MCP
-package launchers. All 719 currently pass;
+package launchers. All 724 currently pass;
 each rule's seed precision and recall are 1.0. Negative labels must retain either an observed Agent IR
 component anchor or verified source text at the exact pinned line, preventing a missing or drifting
 location from passing silently.
@@ -1687,51 +1687,7 @@ Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 1,567 IR labels pass (1,141 positives and 426 negatives):
-397 component-taxonomy positives/156 negatives, three approval positives/four negatives,
-six approval-callback positives/two negatives,
-nine audit/action-record positives/four negatives, five import positives/three negatives, three
-contextual network-import positives, 14 filesystem-mutation positives/ten negatives,
-three imported-literal-origin positives/seven negatives,
-four import-shadow positives/one negative, eight block-dominance positives/three negatives, 20
-Agent-helper-return positives/ten negatives, seven imported-Agent-factory proof labels,
-23 tool-factory/adapter proof labels,
-19 imported-literal-tool proof labels, 16 literal-tool-binding proof labels,
-16 typed-tool-parameter positives/two negatives, seven
-Python ComputerTool positives/one negative, 11 Python LocalShellTool positives/four negatives,
-11 Python CodeInterpreterTool positives/four negatives, 27 Python OpenAI hosted-tool positives/six
-negatives, eight
-direct-callable positives/two negatives, 12
-function-tool-wrapper positives/one negative, three
-TypeScript graph
-positives/one negative, eight registration positives/one negative, five helper-summary positives/one
-negative, 18 Roo command-approval positives/two negatives, 30 Letta default-tool positives/two
-negatives, 11 path-boundary positives/nine negatives,
-20 Continue shell-policy positives/two negatives, 22 Continue MCP-policy positives/two negatives,
-24 Cline sub-agent approval positives/two negatives,
-four path-helper positives/seven negatives,
-six path-prefix positives/two negatives,
-12 filesystem-mutation positives/seven
-negatives, two MCP-registry positives/one negative, three
-fixed-instance positives/one negative, two closure positives/two negatives, two method-registry
-positives/one negative, four post-registration positives/three negatives, three transparent-wrapper
-positives/three negatives, eight browser-evaluation positives/two negatives, 63 browser-receiver
-positives/70 negatives, eight Python registry-tool
-positives/five negatives, six Python imported-network positives/five negatives, ten Python
-imported-class-network positives/five negatives, five urllib-network positives/two negatives, two
-Python network-origin-control positives/seven negatives, two TypeScript network-origin-policy
-positives/five negatives, four Python secure-network-helper positives/two negatives, and two
-imported-registry positives/three negatives, plus four proxy-conditional secure-network positives/one
-negative, plus four configurable pinned-network positives/one negative, plus eight A2A endpoint
-provenance positives/one negative, plus two TypeScript
-configurable-composition positives/one negative, plus two Flowise request-object positives/one
-negative, two Flowise `secureFetch` positives/one negative, two Google ADK fetch positives/one
-negative, four Axios-instance positives/one negative, and two Activepieces filtering-client
-positives/one negative, plus four Composio conditional-runtime positives/one negative, two Composio
-CLI upload positives/one negative, two Google ADK OpenAPI origin-lock positives/one negative, and two
-OpenAI Agents Python MCP-approval-default positives/one negative, six OpenAI Agents JS MCP approval
-composition positives/one negative, nine Agno MCP confirmation positives/one negative, nine Semantic
-Kernel MCP sampling positives/two negatives, 17 generic MCP sampling-consent positives/seven negatives,
-36 generic MCP elicitation-consent positives/four negatives,
-plus 22 MCP package-launcher positives/three negatives, and 31 Python Agent→MCP-binding
-positives/17 negatives.
+negatives. All 1,992 IR labels pass (1,485 positives and 507 negatives). The checked
+`benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
+breakdown, including the OpenAI Agents JS safety-check labels added for
+`computerTool({ onSafetyCheck })`.

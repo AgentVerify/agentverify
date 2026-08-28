@@ -362,3 +362,19 @@
   complete risky-action coverage.
 - Revisit when: compound boolean predicates, helper-return summaries, or action-specific risk
   mapping can be modeled and regression-labeled without accepting broad same-named fields.
+
+## OpenAI Agents JS computer safety checks are separate from human approval
+
+- Decision: Inventory exact `computerTool({ onSafetyCheck })` callbacks as safety-check metadata,
+  not generic human-approval metadata. Report `AV-APPROVAL011` only when a reachable
+  computer-control capability auto-acknowledges all pending safety checks by returning `true` or by
+  returning `{ acknowledgedSafetyChecks: pendingSafetyChecks }`.
+- Evidence: The pinned OpenAI Agents JS `examples/tools/computer-use-hitl.ts` file contains a
+  singleton computer tool with `needsApproval` but no `onSafetyCheck`, and a per-request computer
+  tool whose `onSafetyCheck` callback returns the full pending safety-check list as acknowledged.
+  Local focused rule and IR labels passed 10/10 before full benchmark regeneration.
+- Alternative: Treat any configured safety-check callback as safe or unsafe. Rejected because
+  callback existence alone does not prove review quality, while exact pass-through and return-true
+  callbacks prove auto-acknowledgement without modeling arbitrary helper logic.
+- Revisit when: richer safety-check callback semantics, safety-check type matching, or explicit
+  policy/user-review handoff patterns can be source-proven and labeled.

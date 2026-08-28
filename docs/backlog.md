@@ -433,6 +433,13 @@ forwarded policy/callback, or incomplete path stays negative. Next generalize ap
 across nested agents only where parent intent, child tool authority, and execution-policy
 propagation can all be proven.
 
+Schema v124 adds exact OpenAI Agents JS computer safety-check auto-acknowledgement detection.
+`computerTool({ onSafetyCheck })` is distinct from `needsApproval`: AgentVerify records safety-check
+handler state on the computer-control capability and `AV-APPROVAL011` reports only reachable
+callbacks that return `true` or pass the complete `pendingSafetyChecks` list back as acknowledged.
+The pinned `computer-use-hitl.ts` per-request example is positive, while the singleton/no-handler
+path and callbacks that do not acknowledge the pending list remain negative.
+
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
 server-controlled prompt/model hint/sampling parameters, model invocation, and response returned to
@@ -557,8 +564,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 719 pinned positive/negative locations, with 1,856 separately
-scored IR component/relationship labels. Schema-v123 engine results and
+The curated regression set has reached 724 pinned positive/negative locations, with 1,992 separately
+scored IR component/relationship labels. Schema-v124 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. The checked-in holdout design now defines the sampling strata, label protocol,

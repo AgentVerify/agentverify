@@ -21,6 +21,10 @@
   `session`, exact `conversationId`, exact `previousResponseId`, same-block `result.history`, and
   same-file `result.state` resume bindings, without broadening into ambiguous helper/config
   composition.
+- Continue OpenAI Agents JS HITL and safety-governance extraction where evidence remains exact:
+  richer `needsApproval` predicate quality, automatic approval bypasses, and `computerTool`
+  `onSafetyCheck` callbacks that distinguish explicit user/policy review from pass-through
+  acknowledgement.
 
 ## P2
 
@@ -50,8 +54,9 @@
   now inventoried as `approval-decision` controls; generic tools, delegated-agent adapters, and
   approval-capable builtin tools now distinguish literal approval from callback-controlled
   `needsApproval`, and the first shallow literal predicate metadata is now recorded for
-  prefix/contains/literal-set checks. AgentVerify still does not claim full approval quality without
-  broader predicate/action evidence.
+  prefix/contains/literal-set checks. `computerTool({ onSafetyCheck })` pass-through callbacks now
+  report as `AV-APPROVAL011`, but AgentVerify still does not claim full approval or safety quality
+  without broader predicate/action evidence.
 
 ## Deferred until access/authorization
 

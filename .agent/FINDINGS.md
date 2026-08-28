@@ -2,9 +2,9 @@
 
 ## Durable facts
 
-- The repository contains a 71-repository pinned research corpus and schema-v123 engine benchmark
+- The repository contains a 71-repository pinned research corpus and schema-v124 engine benchmark
   outputs.
-- The runtime catalog currently contains 24 enabled reporting rules.
+- The runtime catalog currently contains 25 enabled reporting rules.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
 - A freshly rebuilt wheel includes all fifteen runtime schemas; a verifier script now guards that
   package artifact expectation.
@@ -466,6 +466,13 @@
   generic tools, delegated-agent tools, and approval-capable builtin tools. Real OpenAI docs/HITL
   and computer-use examples validate these forms, and the public IR truth set now covers 1,987
   passing labels.
+- OpenAI Agents JS computer-use safety checks are a separate control surface from generic
+  `needsApproval`. The official `examples/tools/computer-use-hitl.ts` per-request flow
+  auto-acknowledges every pending safety check through `onSafetyCheck`, while the singleton
+  computer-use tool has no safety-check handler. AgentVerify now inventories exact
+  `onSafetyCheck` callbacks that return `true` or return the full `pendingSafetyChecks` list as
+  `safety_check_policy: auto-acknowledge-all`, and reports reachable cases through
+  `AV-APPROVAL011`. The public IR truth set now covers 1,992 passing labels.
 
 ## Hypotheses
 

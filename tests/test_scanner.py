@@ -3799,6 +3799,39 @@ def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> Non
     assert ir.findings[0].ir_path[:2] == ("agent:operator", "tool:assignedShell")
 
 
+def test_typescript_openai_computer_safety_check_auto_acknowledgement() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_openai_computer_safety")
+
+    tools = {
+        component.name: component
+        for component in ir.components
+        if component.kind == "tool"
+    }
+    assert tools["browser"].attributes["safety_check_policy"] == "auto-acknowledge-all"
+    assert (
+        tools["browser"].attributes["safety_check_decision"]
+        == "returns-pendingSafetyChecks"
+    )
+    assert tools["blindBrowser"].attributes["safety_check_policy"] == "auto-acknowledge-all"
+    assert tools["blindBrowser"].attributes["safety_check_decision"] == "return-true"
+    assert tools["reviewedBrowser"].attributes["safety_check_handler"] == "configured"
+    assert tools["reviewedBrowser"].attributes["safety_check_policy"] == "unresolved"
+
+    findings = [finding for finding in ir.findings if finding.rule_id == "AV-APPROVAL011"]
+    assert [(finding.evidence.line, finding.analysis["tool"]) for finding in findings] == [
+        (3, "browser"),
+        (11, "blindBrowser"),
+    ]
+    assert {finding.analysis["safety_check_policy"] for finding in findings} == {
+        "auto-acknowledge-all"
+    }
+    assert all(
+        finding.ir_path[-2:]
+        == (f"tool:{finding.analysis['tool']}", "capability:computer-control")
+        for finding in findings
+    )
+
+
 def test_repeated_typescript_agent_bindings_get_occurrence_qualified_ids(tmp_path: Path) -> None:
     (tmp_path / "agent.ts").write_text(
         """import { Agent, tool } from "@openai/agents";

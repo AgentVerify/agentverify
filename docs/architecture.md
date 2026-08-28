@@ -812,6 +812,10 @@ the exact environment names and callback-resolution basis.
 Import-proven `ComputerTool` instances instead emit a local computer-control capability. Their
 optional `on_safety_check` callback is recorded as SDK safety-check state, not promoted to a generic
 human-approval control because it applies only when the model response carries safety checks.
+The TypeScript OpenAI Agents `computerTool` path mirrors that distinction: `onSafetyCheck` is
+recorded separately from `needsApproval`, and `AV-APPROVAL011` reports only exact callbacks that
+auto-acknowledge every pending safety check by returning `true` or by returning the full
+`pendingSafetyChecks` list as acknowledged.
 Import-proven `LocalShellTool` instances emit local shell execution and explicitly distinguish an
 SDK with no approval hook from one whose approval option is merely disabled. A reachable instance
 can therefore trigger AV-APPROVAL002 as a review while preserving the executor as an unresolved

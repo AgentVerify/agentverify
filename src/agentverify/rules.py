@@ -118,6 +118,14 @@ RULE_DEFINITIONS = tuple(
                 "Forward the effective tool policies and approval callback into every spawned agent, and fail closed when either is unavailable.",
             ),
             RuleMetadata(
+                "AV-APPROVAL011",
+                "review",
+                "high",
+                "high",
+                "A computer-use safety-check callback acknowledges every pending safety check",
+                "Review each pending computer safety check before acknowledging it; fail closed for unknown or unsupported checks.",
+            ),
+            RuleMetadata(
                 "AV-AUDIT001",
                 "review",
                 "medium",
@@ -890,3 +898,35 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                         "review",
                     )
                 )
+        if (
+            component.kind == "capability"
+            and component.name == "computer-control"
+            and component.attributes.get("builtin_tool") == "computerTool"
+            and component.attributes.get("safety_check_policy") == "auto-acknowledge-all"
+        ):
+            _, context = component_context(ir, component)
+            if context.get("direct_agents"):
+                finding = make_finding(
+                    ir,
+                    component,
+                    "AV-APPROVAL011",
+                    "high",
+                    "high",
+                    "A reachable OpenAI computer tool auto-acknowledges every pending safety check",
+                    "Handle each pending safety check through an explicit user or policy decision, and fail closed for unknown checks instead of returning every pending check as acknowledged.",
+                    "review",
+                )
+                finding.analysis.update(
+                    {
+                        "safety_check_handler": component.attributes.get(
+                            "safety_check_handler"
+                        ),
+                        "safety_check_policy": component.attributes.get(
+                            "safety_check_policy"
+                        ),
+                        "safety_check_decision": component.attributes.get(
+                            "safety_check_decision"
+                        ),
+                    }
+                )
+                ir.findings.append(finding)

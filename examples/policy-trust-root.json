@@ -1,14 +1,14 @@
 {
-  "schema_version": 1,
-  "trust_model": "local-content-digest-allowlist",
   "policies": [
     {
-      "source": "org-policy.json",
-      "sha256": "fccda8d29ec6254587d9189866df42ca6db0268937639d0e859d9aca6fb7febb"
+      "sha256": "fccda8d29ec6254587d9189866df42ca6db0268937639d0e859d9aca6fb7febb",
+      "source": "org-policy.json"
     },
     {
-      "source": "repository-policy.json",
-      "sha256": "92454eef00a8e022c2071351863550c1fa436c4817fba8389f0489b8cda43f44"
+      "sha256": "c978c9b96580af014eb94a2f91211d048a6b2e364b0700ed6914834b39621e16",
+      "source": "repository-policy.json"
     }
-  ]
+  ],
+  "schema_version": 1,
+  "trust_model": "local-content-digest-allowlist"
 }
