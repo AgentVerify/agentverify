@@ -1710,7 +1710,10 @@ capability implied by literal `applyPatchTool({ editor, ... })` options.
 Twelve OpenAI Agents JS history-feedback labels pin local loop/concat feedback shapes, exact
 same-file agent aliases with reassignment negatives, the real `chatLoop.ts` caller-owned history
 helper, and the real routed `routing.ts` triage-agent alias.
-All 2,074 IR labels pass (1,553 positives and 521 negatives). The checked
+Five OpenAI Agents JS trace-group labels pin local and real `withTrace(..., { groupId })`
+correlation evidence, including the real `routing.ts` dynamic `conversationId` group binding and a
+missing-`groupId` local negative.
+All 2,079 IR labels pass (1,557 positives and 522 negatives). The checked
 `benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
 breakdown, including the OpenAI Agents JS and Python safety-check labels added for
 `computerTool({ onSafetyCheck })` and `ComputerTool(on_safety_check=...)`, plus OpenAI Agents JS

@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v133
+framework, wrapper, or configuration path. Counts come from schema-v134
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -770,6 +770,11 @@ reassigned-guard, lexical helper-call, and unproven-helper negative coverage.
 The same narrow helper model now also contributes TypeScript run-state continuity: the pinned
 `computer-use-hitl.ts` `runWithHitl(agent, ...)` helper records two helper-parameter state resumes
 out of eight TypeScript OpenAI run-state continuity controls and eight configured-by resume edges.
+OpenAI Agents JS trace correlation is inventoried separately from conversation continuity:
+`withTrace(..., { groupId })` now emits a `trace-group` control and configured-by edge only when
+the imported SDK helper wraps a callback with an exact source-proven `run(agent, ...)` call. The
+pinned `routing.ts` example contributes the corpus `trace-group` control for its dynamic
+`conversationId` binding.
 
 The Python frontend inventories 449 canonical/import/callable-aliased and proven-`Path` mutations:
 179 creates, 191 deletes, 46 copies, and 33 moves. Of these, 434 use non-literal path expressions;
@@ -1073,7 +1078,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 729-label rule truth set and 2,074-label IR component/relationship set are curated regression
+The 729-label rule truth set and 2,079-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

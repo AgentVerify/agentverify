@@ -1,4 +1,4 @@
-import { Agent, RunState, run } from '@openai/agents';
+import { Agent, RunState, run, withTrace } from '@openai/agents';
 import { OpenAI, OpenAI as ReboundOpenAI } from 'openai';
 
 ReboundOpenAI = ReplacementOpenAI;
@@ -120,3 +120,11 @@ async function reassignedAgentAliasDoesNotProveHistoryFeedback() {
     aliasItems = aliasResult.history;
   }
 }
+
+await withTrace(
+  'No AgentVerify trace group',
+  async () => {
+    await run(agent, 'not grouped for trace correlation');
+  },
+  { traceId: 'not-a-group-id' },
+);

@@ -2,7 +2,7 @@
 
 ## Durable facts
 
-- The repository contains a 71-repository pinned research corpus and schema-v133 engine benchmark
+- The repository contains a 71-repository pinned research corpus and schema-v134 engine benchmark
   outputs.
 - The runtime catalog currently contains 25 enabled reporting rules.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
@@ -420,8 +420,7 @@
   `openai/openai-agents-js` examples
   `examples/tools/web-search.ts`, `examples/agent-patterns/llm-as-a-judge.ts`, and
   `examples/docs/running-agents/chatLoop.ts`, plus routed alias evidence in
-  `examples/agent-patterns/routing.ts`, validate 4 controls and 4 composition edges; the public IR
-  truth set now covers 2,074 passing labels.
+  `examples/agent-patterns/routing.ts`, validate 4 controls and 4 composition edges.
 - OpenAI Agents JS `result.state` proves run-state resume continuity only when the state comes from
   an exact prior SDK run result. AgentVerify now records inline `run(agent, result.state)` and named
   state handoffs such as `const state = stream.state; run(agent, state, ...)` as
@@ -533,6 +532,11 @@
   lexical caller. The real `computer-use-hitl.ts` helper contributes two helper-parameter state
   resumes; schema-v131 engine results report 8 TypeScript OpenAI run-state continuity controls and
   8 configured-by resume edges overall.
+- OpenAI Agents JS trace correlation is now visible without conflating it with conversation memory.
+  Exact imported `withTrace(..., { groupId })` calls that wrap a source-proven
+  `run(agent, ...)` callback emit `trace-group` controls and configured-by edges. The pinned
+  `examples/agent-patterns/routing.ts` example links `triage_agent` to a dynamic
+  `conversationId` trace group, and the public IR truth set now covers 2,079 passing labels.
 
 ## Hypotheses
 

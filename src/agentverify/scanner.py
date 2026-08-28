@@ -16838,6 +16838,53 @@ def add_typescript_openai_history_continuity_control(
     return "conversation-continuity", control_id
 
 
+def add_typescript_openai_trace_group_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    local_function: str,
+    trace_name: str | None,
+    group_id_binding: str | None,
+    group_id: str | None,
+    group_id_resolution: str,
+    source_agent: tuple[str, str],
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS trace grouping evidence."""
+    source_agent_name, source_agent_id = source_agent
+    attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-trace-group",
+        "module": "@openai/agents",
+        "imported_symbol": "withTrace",
+        "local_function": local_function,
+        "configuration": "withTrace.groupId",
+        "group_id_resolution": group_id_resolution,
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "trace_scope": "openai-trace-correlation",
+        "scope": source_scope(relative),
+    }
+    if trace_name is not None:
+        attributes["trace_name"] = trace_name
+    if group_id_binding is not None:
+        attributes["group_id_binding"] = group_id_binding
+    if group_id is not None:
+        attributes["group_id"] = group_id
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "trace-group",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    return "trace-group", control_id
+
+
 def add_typescript_openai_run_state_continuity_control(
     ir: RepositoryIR,
     *,
@@ -20173,11 +20220,154 @@ def typescript_graph(
         for local_name, imported_name in openai_agents_imports.items()
         if imported_name == "run" and not typescript_import_binding_is_shadowed(text, local_name)
     }
+    with_trace_bindings = {
+        local_name
+        for local_name, imported_name in openai_agents_imports.items()
+        if imported_name == "withTrace"
+        and not typescript_import_binding_is_shadowed(text, local_name)
+    }
     agent_type_bindings = {
         local_name
         for local_name, imported_name in openai_agents_imports.items()
         if imported_name == "Agent" and not typescript_import_binding_is_shadowed(text, local_name)
     }
+
+    for trace_function in sorted(with_trace_bindings):
+        trace_pattern = re.compile(rf"(?<![\w$.]){re.escape(trace_function)}\s*\(")
+        for trace_match in trace_pattern.finditer(code):
+            trace_opening = code.find("(", trace_match.start(), trace_match.end())
+            trace_end = typescript_balanced_end(code, trace_opening, "(", ")")
+            if trace_end is None:
+                continue
+            trace_arguments = typescript_call_arguments(
+                text[trace_opening + 1 : trace_end - 1],
+                trace_opening + 1,
+            )
+            if len(trace_arguments) < 3:
+                continue
+            options_expression, options_offset = trace_arguments[2]
+            group_id_binding = None
+            group_id = None
+            group_id_resolution = None
+            group_id_line = line_at(text, options_offset)
+            group_id_location = typescript_object_property_expression_location(
+                options_expression,
+                "groupId",
+                options_offset,
+            )
+            if group_id_location is not None:
+                group_id_expression, group_id_property_offset, group_id_expression_offset = (
+                    group_id_location
+                )
+                group_id_line = line_at(text, group_id_property_offset)
+                static_group_id = typescript_static_string_value(
+                    group_id_expression,
+                    expression_offset=group_id_expression_offset,
+                    immutable_literal_bindings=immutable_literal_bindings,
+                )
+                if static_group_id is not None:
+                    group_id, group_id_resolution = static_group_id
+                else:
+                    group_id_code = typescript_code_mask(group_id_expression).strip()
+                    if group_id_identifier := re.fullmatch(
+                        r"[A-Za-z_$][\w$]*",
+                        group_id_code,
+                    ):
+                        group_id_binding = group_id_identifier.group(0)
+                        group_id_resolution = "dynamic-binding"
+            elif typescript_object_has_shorthand_property(options_expression, "groupId"):
+                group_id_binding = "groupId"
+                group_id_line = line_at(text, options_offset)
+                static_group_id = typescript_static_string_value(
+                    "groupId",
+                    expression_offset=options_offset,
+                    immutable_literal_bindings=immutable_literal_bindings,
+                )
+                if static_group_id is not None:
+                    group_id, group_id_resolution = static_group_id
+                else:
+                    group_id_resolution = "dynamic-binding"
+            if group_id_resolution is None:
+                continue
+            trace_name = None
+            static_trace_name = typescript_static_string_value(
+                trace_arguments[0][0],
+                expression_offset=trace_arguments[0][1],
+                immutable_literal_bindings=immutable_literal_bindings,
+            )
+            if static_trace_name is not None:
+                trace_name = static_trace_name[0]
+            callback_expression, callback_offset = trace_arguments[1]
+            callback_code = typescript_code_mask(callback_expression)
+            for run_match in re.finditer(r"\b([A-Za-z_$][\w$]*)\s*\(", callback_code):
+                if run_match.start() > 0 and callback_code[run_match.start() - 1] == ".":
+                    continue
+                if run_match.group(1) not in run_bindings:
+                    continue
+                run_opening = callback_code.find("(", run_match.start(), run_match.end())
+                run_opening_absolute = callback_offset + run_opening
+                run_end_absolute = typescript_balanced_end(
+                    code,
+                    run_opening_absolute,
+                    "(",
+                    ")",
+                )
+                if run_end_absolute is None or run_end_absolute > callback_offset + len(
+                    callback_expression
+                ):
+                    continue
+                run_arguments = typescript_call_arguments(
+                    text[run_opening_absolute + 1 : run_end_absolute - 1],
+                    run_opening_absolute + 1,
+                )
+                if not run_arguments:
+                    continue
+                agent_argument = typescript_code_mask(run_arguments[0][0]).strip()
+                agent_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", agent_argument)
+                if agent_identifier is None:
+                    continue
+                agent_name = agent_identifier.group(0)
+                agent_target = resolve_lexical_openai_agent_argument(
+                    agent_name,
+                    run_arguments[0][1],
+                ) or local_agents.get(agent_name)
+                if agent_target is None:
+                    continue
+                run_line = line_at(text, callback_offset + run_match.start())
+                trace_control = add_typescript_openai_trace_group_control(
+                    ir,
+                    relative=relative,
+                    lines=lines,
+                    line=group_id_line,
+                    local_function=trace_function,
+                    trace_name=trace_name,
+                    group_id_binding=group_id_binding,
+                    group_id=group_id,
+                    group_id_resolution=group_id_resolution,
+                    source_agent=agent_target,
+                    symbol_identity=f"{trace_function}.groupId@{group_id_line}:run{run_line}",
+                )
+                trace_control_name, trace_control_id = trace_control
+                source_agent_name, source_agent_id = agent_target
+                ir.add_relationship(
+                    Relationship(
+                        "agent",
+                        source_agent_name,
+                        "configured-by",
+                        "control",
+                        trace_control_name,
+                        Evidence(relative, run_line, excerpt(lines, run_line)),
+                        {
+                            "analysis": "typescript-openai-agents-trace-group",
+                            "configuration": "withTrace-groupId",
+                            "binding": "groupId"
+                            if group_id_binding is None
+                            else "groupId-binding",
+                        },
+                        source_id=source_agent_id,
+                        target_id=trace_control_id,
+                    )
+                )
     (
         openai_run_state_helper_decisions,
         openai_run_state_helper_continuities,

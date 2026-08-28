@@ -1,4 +1,4 @@
-import { Agent, Runner, RunState, run } from '@openai/agents';
+import { Agent, Runner, RunState, run, withTrace } from '@openai/agents';
 import { OpenAI } from 'openai';
 
 const agent = new Agent({
@@ -110,3 +110,11 @@ async function continueThroughAgentAlias() {
     aliasedAgent = agent;
   }
 }
+
+await withTrace(
+  'AgentVerify trace group',
+  async () => {
+    await run(agent, 'trace grouped turn');
+  },
+  { groupId: 'agentverify-trace-group' },
+);
