@@ -3712,14 +3712,18 @@ def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> Non
 
     tools = {component.name: component for component in ir.components if component.kind == "tool"}
     assert set(tools) == {
-        "applyPatchTool@33",
+        "applyPatchTool@34",
         "assignedShell",
+        "computerTool@38",
         "namespaceTools",
         "safeTool",
     }
     assert tools["assignedShell"].attributes["approval_policy"] == "disabled-explicit"
     assert tools["assignedShell"].attributes["execution_environment"] == "local"
-    assert tools["applyPatchTool@33"].attributes["approval_policy"] == "enabled"
+    assert tools["applyPatchTool@34"].attributes["approval_policy"] == "enabled"
+    assert tools["computerTool@38"].attributes["approval_policy"] == "callback-controlled"
+    assert tools["computerTool@38"].attributes["approval_handler"] == "needsApproval-callback"
+    assert tools["computerTool@38"].attributes["approval_decision"] == "dynamic-callback"
 
     operator_edges = [
         edge
@@ -3728,8 +3732,9 @@ def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> Non
     ]
     assert {(edge.relation, edge.target_kind, edge.target_name) for edge in operator_edges} == {
         ("delegates-to", "agent", "worker"),
-        ("uses", "tool", "applyPatchTool@33"),
+        ("uses", "tool", "applyPatchTool@34"),
         ("uses", "tool", "assignedShell"),
+        ("uses", "tool", "computerTool@38"),
         ("uses", "tool", "namespaceTools"),
         ("uses", "tool", "safeTool"),
         ("uses", "tool", "unknownFactory"),
@@ -3755,9 +3760,9 @@ def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> Non
         key=lambda edge: edge.evidence.line,
     )
     assert [(edge.evidence.line, edge.attributes) for edge in as_tool_edges] == [
-        (37, {"adapter": "asTool", "tool_name": "worker_tool"}),
+        (42, {"adapter": "asTool", "tool_name": "worker_tool"}),
         (
-            41,
+            46,
             {
                 "adapter": "asTool",
                 "tool_name": "approved_worker_tool",
@@ -3767,7 +3772,7 @@ def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> Non
             },
         ),
         (
-            45,
+            50,
             {
                 "adapter": "asTool",
                 "tool_name": "conditional_worker_tool",

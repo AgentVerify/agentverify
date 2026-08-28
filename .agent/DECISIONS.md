@@ -323,3 +323,23 @@
   handling.
 - Revisit when: cross-function or nonliteral persistence flows can be modeled with source-proven
   dataflow without accepting unrelated file/string state.
+
+## OpenAI builtin approval callbacks are callback-controlled policy evidence
+
+- Decision: Treat callback-valued `needsApproval` on exact OpenAI Agents JS approval-capable
+  builtin tool constructors, such as `computerTool({ needsApproval: async ... })`, as
+  `approval_policy: callback-controlled` with `approval_handler: needsApproval-callback` and
+  `approval_decision: dynamic-callback`. Keep separate `onApproval`/handler-like options as
+  unresolved-handler evidence unless a `needsApproval` policy expression is present.
+- Evidence: The pinned OpenAI Agents JS `examples/tools/computer-use-hitl.ts` example configures
+  `computerTool` with callback-valued `needsApproval` in both singleton and per-request computer
+  flows. Local `cases/typescript_structured_tools` now includes the same shape beside literal
+  approval and delegated-agent approval cases, and the public IR truth set regenerates at 1,977/1,977
+  passing labels.
+- Alternative: Continue classifying builtin callback approval as `unresolved-handler`. Rejected
+  because the callback is attached to the SDK-native `needsApproval` policy key and has the same
+  meaning as generic `tool({ needsApproval: async ... })`: dynamic policy selection, not an
+  unrelated handler.
+- Revisit when: predicate-aware approval-quality analysis can inspect callback bodies and relate
+  action/input predicates to risky builtin operations, especially automatic approvals or narrow
+  action allowlists.

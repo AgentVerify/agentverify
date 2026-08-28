@@ -47,9 +47,10 @@
   callback predicate quality, automatic approval bypasses, and any more complex serialized state
   flows beyond same-file literal `writeFile`/`readFile` or direct `.toString()` chains. Direct
   `result.state`, bound-state, and narrowly restored `RunState.fromString` approval decisions are
-  now inventoried as `approval-decision` controls, and `asTool({ needsApproval })` is now
-  inventoried on delegated-agent edges, but AgentVerify still does not claim approval quality
-  without predicate/action evidence.
+  now inventoried as `approval-decision` controls; generic tools, delegated-agent adapters, and
+  approval-capable builtin tools now distinguish literal approval from callback-controlled
+  `needsApproval`, but AgentVerify still does not claim approval quality without predicate/action
+  evidence.
 
 ## Deferred until access/authorization
 

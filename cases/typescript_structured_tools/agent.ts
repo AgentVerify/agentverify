@@ -1,6 +1,7 @@
 import {
   Agent,
   applyPatchTool,
+  computerTool as localComputerTool,
   shellTool as localShellTool,
   tool,
   toolNamespace,
@@ -33,6 +34,10 @@ const operator = new Agent({
     applyPatchTool({
       editor: {},
       needsApproval: true,
+    }),
+    localComputerTool({
+      computer: {},
+      needsApproval: async (_ctx, action) => ["click", "type"].includes(action.type),
     }),
     worker.asTool({
       toolName: "worker_tool",

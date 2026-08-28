@@ -454,6 +454,12 @@
   the restored agent matches the original run agent; approval decisions on that restored state are
   then inventoried normally. The real standard HITL example validates the file write/read restore
   path, and the public IR truth set now covers 1,974 passing labels.
+- OpenAI Agents JS approval-capable builtin tools use the same `needsApproval` semantics as generic
+  SDK tools for policy metadata. Callback-valued `computerTool({ needsApproval: async ... })` in the
+  real `examples/tools/computer-use-hitl.ts` singleton and per-request flows is source-proven
+  callback-controlled approval policy evidence, not an unresolved handler; AgentVerify still withholds
+  full human-approval coverage until predicate/action quality is analyzed. The public IR truth set
+  now covers 1,977 passing labels.
 
 ## Hypotheses
 

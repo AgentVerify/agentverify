@@ -17754,7 +17754,9 @@ def add_typescript_tool_observation(
         approval_policy = "enabled"
     elif approval_expression == "false":
         approval_policy = "disabled-explicit"
-    elif approval_expression is not None or approval_handler_expression is not None:
+    elif approval_expression is not None:
+        approval_policy = "callback-controlled"
+    elif approval_handler_expression is not None:
         approval_policy = "unresolved-handler"
     elif literal_options:
         approval_policy = "disabled-default"
@@ -17781,9 +17783,18 @@ def add_typescript_tool_observation(
         "approval_handler": (
             "not-applicable"
             if constructor not in TS_OPENAI_APPROVAL_BUILTINS
+            else "needsApproval-callback"
+            if approval_policy == "callback-controlled"
             else "configured"
             if approval_handler_expression
             else "none"
+        ),
+        **(
+            {
+                "approval_decision": "dynamic-callback",
+            }
+            if approval_policy == "callback-controlled"
+            else {}
         ),
         "execution_environment": execution_environment,
         "scope": source_scope(relative),

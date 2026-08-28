@@ -491,6 +491,13 @@ catalog workflows.
   then participates in resume and approval-decision inventory. Local fixtures plus the real
   standard OpenAI Agents JS HITL example raised regenerated public IR truth-set results to 1,974
   passing labels.
+- Added exact OpenAI Agents JS builtin-tool callback approval inventory for approval-capable
+  builtins such as `computerTool({ needsApproval: async ... })`. Callback-valued builtin
+  `needsApproval` now records `approval_policy: callback-controlled`,
+  `approval_handler: needsApproval-callback`, and `approval_decision: dynamic-callback` instead of
+  the older unresolved-handler fallback, while literal approval semantics remain unchanged. Local
+  fixtures plus the real OpenAI Agents JS `examples/tools/computer-use-hitl.ts` singleton and
+  per-request examples raised regenerated public IR truth-set results to 1,977 passing labels.
 
 ## Current findings
 
@@ -570,12 +577,16 @@ catalog workflows.
   review.
 - OpenAI Agents JS approval-state handling is now separate from approval-policy declaration:
   `needsApproval` metadata says a tool/delegated tool may require approval, while
-  `approval-decision` controls prove source-visible SDK state approval/rejection handling. The
-  current exact proof covers `.state` from SDK run results, not serialized/deserialized
-  `RunState.fromString(...)` flows.
+  `approval-decision` controls prove source-visible SDK state approval/rejection handling. Exact
+  approval decisions now cover direct run-result state, bound state, and narrowly restored
+  `RunState.fromString(...)` state when the serialized SDK state chain is proven.
 - OpenAI Agents JS serialized run-state restoration can be source-proven for simple same-file
   file-persistence flows. The scanner intentionally requires literal file names and matching agent
   identity, so arbitrary strings passed to `RunState.fromString` remain unresolved.
+- OpenAI Agents JS builtin approval-capable tools now share the generic-tool approval distinction:
+  literal `needsApproval: true` proves always-enabled approval metadata, while callback-valued
+  `needsApproval` is callback-controlled policy evidence, not unresolved handler evidence and not
+  full human-approval coverage until predicate/action coverage is analyzed.
 
 ## Blockers
 
@@ -591,7 +602,8 @@ release-artifact checks that stay local until release publishing is explicit. Fo
 work, keep local `MemorySession`, server-managed `conversationId`, `previousResponseId`,
 same-block `result.history`, same-file `result.state`, and serialized `RunState.fromString` resume
 semantics distinct. For OpenAI approval work, keep literal always-approval, callback-controlled
-approval, delegated-agent adapter approval metadata, SDK state approval decisions, and proven human
-approval/resume handling separate. For performance work, use `--progress` plus focused
+approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
+approval metadata, SDK state approval decisions, and proven human approval/resume handling separate.
+For performance work, use `--progress` plus focused
 `--scan-label-paths` only when the target labels are self-contained; broader benchmark acceleration
 likely needs dependency-aware path expansion or scan-result reuse to preserve cross-file evidence.
