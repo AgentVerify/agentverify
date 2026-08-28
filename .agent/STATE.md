@@ -432,6 +432,13 @@ catalog workflows.
   session IDs, rebound imports, and unknown same-named constructors remain unresolved. Local
   fixtures plus real `conversation-identity.ts` and `memory-multi-agent-multiturn.ts` examples
   raised regenerated public IR truth-set results to 1,887 passing labels.
+- Added exact OpenAI Agents JS server-managed conversation ID inventory. `const client = new
+  OpenAI()` from the exact `openai` package plus `const { id: conversationId } = await
+  client.conversations.create(...)` now emits a `conversation-session` control and links
+  `run(..., { conversationId })` / `Runner.run(..., { conversationId })` options from the agent to
+  it. Unknown clients, rebound OpenAI constructors, reassigned IDs, and loose string IDs remain
+  unresolved. Local fixtures plus the real `examples/docs/running-agents/conversationId.ts` example
+  raised regenerated public IR truth-set results to 1,897 passing labels.
 
 ## Current findings
 
@@ -516,6 +523,7 @@ catalog workflows.
 Continue toward the highest-value local P1/P2 work: additional exact OpenAI Agents JS sandbox or
 session-governance policy fields, real-world framework coverage without broad name matching,
 concrete CI/editor integration fixtures, or release-artifact checks that stay local until release
-publishing is explicit. For performance work, use `--progress` plus focused `--scan-label-paths`
-only when the target labels are self-contained; broader benchmark acceleration likely needs
-dependency-aware path expansion or scan-result reuse to preserve cross-file evidence.
+publishing is explicit. For OpenAI session work, keep local `MemorySession` and server-managed
+`conversationId` semantics distinct. For performance work, use `--progress` plus focused
+`--scan-label-paths` only when the target labels are self-contained; broader benchmark acceleration
+likely needs dependency-aware path expansion or scan-result reuse to preserve cross-file evidence.

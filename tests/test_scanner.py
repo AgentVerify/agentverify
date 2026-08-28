@@ -5278,6 +5278,83 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     assert not ir.findings
 
 
+def test_typescript_openai_conversation_id_requires_exact_server_conversation() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_openai_conversation_id")
+
+    controls = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control" and component.name == "conversation-session"
+    }
+    assert set(controls) == {
+        ("positive.ts", 9, "ts:positive.ts#control:conversationId@9"),
+    }
+    assert controls[("positive.ts", 9, "ts:positive.ts#control:conversationId@9")].attributes == {
+        "analysis": "typescript-openai-agents-server-conversation",
+        "module": "openai",
+        "constructor": "OpenAI",
+        "imported_symbol": "OpenAI",
+        "resolution": "exact-typescript-provider-import",
+        "local_constructor": "OpenAI",
+        "configuration": "client.conversations.create",
+        "client_binding": "client",
+        "conversation_id_binding": "conversationId",
+        "state_scope": "openai-server-managed-conversation",
+        "scope": "production",
+    }
+
+    edges = {
+        (
+            relationship.source_name,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            relationship.target_id,
+            tuple(sorted(relationship.attributes.items())),
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "configured-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "conversation-session"
+    }
+    assert edges == {
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            11,
+            "ts:positive.ts#control:conversationId@9",
+            (
+                ("analysis", "typescript-openai-agents-server-conversation"),
+                ("binding", "conversationId-shorthand"),
+                ("configuration", "run-session"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            18,
+            "ts:positive.ts#control:conversationId@9",
+            (
+                ("analysis", "typescript-openai-agents-server-conversation"),
+                ("binding", "conversationId-shorthand"),
+                ("configuration", "runner-run-session"),
+            ),
+        ),
+    }
+    assert not any(
+        component.evidence.path == "negative.ts"
+        and component.kind == "control"
+        and component.name == "conversation-session"
+        for component in ir.components
+    )
+    assert not any(
+        relationship.evidence.path == "negative.ts"
+        and relationship.target_name == "conversation-session"
+        for relationship in ir.relationships
+    )
+    assert not ir.findings
+
+
 def test_cline_inline_tool_links_only_dynamic_bun_shell_execution() -> None:
     ir = scan_repository(ROOT / "cases/typescript_bun_shell")
 

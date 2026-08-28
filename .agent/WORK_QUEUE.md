@@ -16,9 +16,10 @@
   provider-factory, and literal-callable cases.
 - Continue OpenAI Agents JS sandbox and session-governance policy extraction from pinned examples
   where evidence remains exact, especially additional Manifest/sandbox policy fields, additional
-  `MemorySession`/session implementation semantics, or agent/session composition edges beyond the
-  now-covered `client.create(...)`, `defaultManifest`, and top-level `session` bindings, without
-  broadening into ambiguous helper/config composition.
+  `MemorySession`/server-managed conversation implementation semantics, or agent/session
+  composition edges beyond the now-covered `client.create(...)`, `defaultManifest`, top-level
+  `session`, and exact `conversationId` bindings, without broadening into ambiguous helper/config
+  composition.
 
 ## P2
 

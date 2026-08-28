@@ -179,3 +179,19 @@
 - Revisit when: OpenAI Agents JS exposes additional session implementations with materially
   different persistence or external storage semantics that deserve separate control names or
   attributes.
+
+## OpenAI server conversation IDs require source proof from the OpenAI SDK
+
+- Decision: Treat top-level `conversationId` run options as `conversation-session` evidence only
+  when the identifier is destructured from `client.conversations.create(...)` and `client` is a
+  stable default-endpoint `new OpenAI()` instance from the exact `openai` package.
+- Evidence: The pinned OpenAI Agents JS `examples/docs/running-agents/conversationId.ts` example
+  creates a server-managed conversation via the native SDK and passes the same `conversationId` to
+  repeated `run(...)` calls. A variable named `conversationId` alone is too weak: it could be an
+  arbitrary string, reassigned value, or unrelated application ID.
+- Alternative: Accept any `conversationId` property passed to `run(...)`. Rejected because that
+  would turn naming convention into provider-state evidence and likely create false positives in
+  applications with their own conversation IDs.
+- Revisit when: additional official examples show safe, exact aliases such as object-property
+  conversation results (`conversation.id`) that can be tied back to `conversations.create(...)`
+  without broad flow analysis.

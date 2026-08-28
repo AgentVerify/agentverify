@@ -393,6 +393,14 @@
   as conversation-session evidence. Real pinned `openai/openai-agents-js` examples
   `conversation-identity.ts` and `memory-multi-agent-multiturn.ts` validate 3 controls and 5
   composition edges; the public IR truth set now covers 1,887 passing labels.
+- OpenAI Agents JS server-managed `conversationId` is also conversation-session evidence, but only
+  when the identifier comes from an exact native `openai` SDK client constructed with the default
+  endpoint and destructured from `client.conversations.create(...)`. AgentVerify links direct
+  `run(..., { conversationId })` and `Runner.run(..., { conversationId })` options to that control;
+  unknown clients, rebound `OpenAI` constructors, reassigned conversation IDs, and loose string IDs
+  remain unresolved. The real pinned `examples/docs/running-agents/conversationId.ts` example
+  validates 1 control and 2 composition edges; the public IR truth set now covers 1,897 passing
+  labels.
 
 ## Hypotheses
 

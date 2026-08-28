@@ -16330,6 +16330,43 @@ def add_typescript_openai_memory_session_control(
     return "conversation-session", control_id
 
 
+def add_typescript_openai_server_conversation_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    client_name: str,
+    local_constructor: str,
+    conversation_id_binding: str,
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add an exact OpenAI server-managed conversation ID control."""
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "conversation-session",
+            Evidence(relative, line, excerpt(lines, line)),
+            {
+                "analysis": "typescript-openai-agents-server-conversation",
+                "module": "openai",
+                "constructor": "OpenAI",
+                "imported_symbol": "OpenAI",
+                "resolution": "exact-typescript-provider-import",
+                "local_constructor": local_constructor,
+                "configuration": "client.conversations.create",
+                "client_binding": client_name,
+                "conversation_id_binding": conversation_id_binding,
+                "state_scope": "openai-server-managed-conversation",
+                "scope": source_scope(relative),
+            },
+            control_id,
+        )
+    )
+    return "conversation-session", control_id
+
+
 def typescript_string_literal_value(expression: str) -> str | None:
     """Resolve a direct single- or double-quoted TypeScript string literal."""
     match = re.fullmatch(r"\s*(['\"])([^\\\r\n]*?)\1\s*", expression, re.DOTALL)
@@ -18325,6 +18362,66 @@ def typescript_graph(
                 symbol_identity=f"{session_name}.sessionId@{line}",
             )
         )
+    openai_sdk_imports = (
+        typescript_provider_sdk_imports(text)
+        if "conversations.create" in text or "conversations" in text
+        else {}
+    )
+    openai_conversation_clients: dict[str, str] = {}
+    for match in TS_SANDBOX_CLIENT_ASSIGNMENT.finditer(code):
+        client_name = match.group(1)
+        local_constructor = match.group(2)
+        binding = openai_sdk_imports.get(local_constructor)
+        if (
+            binding is None
+            or binding.module != "openai"
+            or binding.imported_symbol != "OpenAI"
+            or binding.provider != "OpenAI"
+        ):
+            continue
+        opening = code.find("(", match.start(), match.end())
+        end = typescript_balanced_end(code, opening, "(", ")")
+        if end is None or not typescript_provider_config_uses_default_endpoint(
+            text,
+            opening,
+            end,
+        ):
+            continue
+        if not typescript_const_provider_binding_is_stable(text, client_name, end):
+            continue
+        openai_conversation_clients[client_name] = local_constructor
+    conversation_id_pattern = re.compile(
+        r"\bconst\s*\{\s*id\s*:\s*([A-Za-z_$][\w$]*)\s*\}\s*=\s*"
+        r"(?:await\s+)?([A-Za-z_$][\w$]*)\s*\.\s*conversations\s*\.\s*create\s*\("
+    )
+    for match in conversation_id_pattern.finditer(code):
+        conversation_id_name = match.group(1)
+        client_name = match.group(2)
+        local_constructor = openai_conversation_clients.get(client_name)
+        if local_constructor is None:
+            continue
+        opening = code.find("(", match.start(2), match.end())
+        end = typescript_balanced_end(code, opening, "(", ")")
+        if end is None:
+            continue
+        if re.search(
+            rf"(?<![\w$.]){re.escape(conversation_id_name)}\s*=(?!=)",
+            code[end:],
+        ) or typescript_parameter_binding_is_declared(text, conversation_id_name):
+            continue
+        line = line_at(text, match.start())
+        conversation_session_bindings[conversation_id_name] = (
+            add_typescript_openai_server_conversation_control(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=line,
+                client_name=client_name,
+                local_constructor=local_constructor,
+                conversation_id_binding=conversation_id_name,
+                symbol_identity=f"{conversation_id_name}@{line}",
+            )
+        )
     for match in TS_SANDBOX_CLIENT_ASSIGNMENT.finditer(code):
         runner_name = match.group(1)
         local_constructor = match.group(2)
@@ -18771,6 +18868,7 @@ def typescript_graph(
         session_control: tuple[str, str],
         configuration: str,
         binding: str,
+        analysis: str,
     ) -> None:
         agent_name, agent_id = agent_target
         session_name, session_id = session_control
@@ -18783,7 +18881,7 @@ def typescript_graph(
                 session_name,
                 Evidence(relative, run_line, excerpt(lines, run_line)),
                 {
-                    "analysis": "typescript-openai-agents-memory-session",
+                    "analysis": analysis,
                     "configuration": configuration,
                     "binding": binding,
                 },
@@ -18794,18 +18892,43 @@ def typescript_graph(
 
     def conversation_session_from_options(
         options: str,
-    ) -> tuple[tuple[str, str], str] | None:
+    ) -> tuple[tuple[str, str], str, str] | None:
         session_expression = typescript_object_property_expression(options, "session")
         if session_expression is not None:
             session_code = typescript_code_mask(session_expression).strip()
             if session_identifier := re.fullmatch(r"[A-Za-z_$][\w$]*", session_code):
                 session_control = conversation_session_bindings.get(session_identifier.group(0))
                 if session_control is not None:
-                    return session_control, "session"
+                    return session_control, "session", "typescript-openai-agents-memory-session"
         elif typescript_object_has_shorthand_property(options, "session"):
             session_control = conversation_session_bindings.get("session")
             if session_control is not None:
-                return session_control, "session-shorthand"
+                return session_control, "session-shorthand", (
+                    "typescript-openai-agents-memory-session"
+                )
+        conversation_id_expression = typescript_object_property_expression(
+            options,
+            "conversationId",
+        )
+        if conversation_id_expression is not None:
+            conversation_id_code = typescript_code_mask(conversation_id_expression).strip()
+            if conversation_id_identifier := re.fullmatch(
+                r"[A-Za-z_$][\w$]*",
+                conversation_id_code,
+            ):
+                session_control = conversation_session_bindings.get(
+                    conversation_id_identifier.group(0)
+                )
+                if session_control is not None:
+                    return session_control, "conversationId", (
+                        "typescript-openai-agents-server-conversation"
+                    )
+        elif typescript_object_has_shorthand_property(options, "conversationId"):
+            session_control = conversation_session_bindings.get("conversationId")
+            if session_control is not None:
+                return session_control, "conversationId-shorthand", (
+                    "typescript-openai-agents-server-conversation"
+                )
         return None
 
     for match in re.finditer(r"\b([A-Za-z_$][\w$]*)\s*\(", code):
@@ -18829,13 +18952,14 @@ def typescript_graph(
             continue
         run_line = line_at(text, match.start())
         if conversation_session := conversation_session_from_options(arguments[2][0]):
-            session_control, binding = conversation_session
+            session_control, binding, analysis = conversation_session
             add_conversation_session_relationship(
                 agent_target=agent_target,
                 run_line=run_line,
                 session_control=session_control,
                 configuration="run-session",
                 binding=binding,
+                analysis=analysis,
             )
         sandbox_location = typescript_object_property_expression_location(
             arguments[2][0],
@@ -18980,13 +19104,14 @@ def typescript_graph(
         if len(arguments) >= 3 and (
             conversation_session := conversation_session_from_options(arguments[2][0])
         ):
-            session_control, binding = conversation_session
+            session_control, binding, analysis = conversation_session
             add_conversation_session_relationship(
                 agent_target=agent_target,
                 run_line=run_line,
                 session_control=session_control,
                 configuration="runner-run-session",
                 binding=binding,
+                analysis=analysis,
             )
         runtime_control = None
         binding = None
