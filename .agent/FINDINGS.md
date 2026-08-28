@@ -381,6 +381,9 @@
   intentionally require cross-file summaries. The OpenAI sandbox slice is self-contained enough to
   pass 235/235 with selected label paths, reducing the cached `openai/openai-agents-js` target from
   roughly 3.5 seconds to 0.9 seconds.
+- Python `SyntaxWarning`s from third-party source parsing are not useful AgentVerify diagnostics and
+  can bury benchmark progress output. Wrapping repository scans in a `SyntaxWarning` filter keeps
+  scanner stderr clean while preserving AgentVerify IR errors for parse failures and skipped files.
 
 ## Hypotheses
 

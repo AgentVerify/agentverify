@@ -2469,6 +2469,17 @@ def test_agno_provider_wrappers_require_exact_unrebound_imports() -> None:
     )
 
 
+def test_scan_repository_suppresses_third_party_python_syntax_warnings(
+    tmp_path: Path, capsys
+) -> None:
+    (tmp_path / "agent.py").write_text('PATTERN = "\\F"\n', encoding="utf-8")
+
+    ir = scan_repository(tmp_path)
+
+    assert ir.files_scanned == 1
+    assert capsys.readouterr().err == ""
+
+
 def test_python_agent_inventory_and_dynamic_shell_finding() -> None:
     ir = scan_repository(ROOT / "cases/python_dangerous")
 

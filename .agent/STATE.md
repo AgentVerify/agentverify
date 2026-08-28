@@ -421,6 +421,9 @@ catalog workflows.
   wall time, while a full selected-path all-IR experiment dropped timed scan cost from about 482.5
   seconds to 57.5 seconds but failed 285 cross-file-dependent labels, confirming it is a fast
   focused-development mode rather than release evidence.
+- Suppressed third-party Python `SyntaxWarning` noise at the scanner boundary, so benchmark progress
+  output is no longer polluted by cached repositories with invalid escape sequences in string
+  literals. A MetaGPT single-label slice now prints only the `--progress` timing line and passes.
 
 ## Current findings
 

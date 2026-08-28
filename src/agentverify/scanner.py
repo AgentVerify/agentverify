@@ -33445,7 +33445,7 @@ def repository_files(root: Path) -> list[Path]:
     return paths
 
 
-def scan_repository(
+def _scan_repository(
     root: Path,
     *,
     include_tests: bool = False,
@@ -33687,3 +33687,23 @@ def scan_repository(
     )
     ir.findings.sort(key=lambda item: (item.evidence.path, item.evidence.line, item.rule_id))
     return ir
+
+
+def scan_repository(
+    root: Path,
+    *,
+    include_tests: bool = False,
+    selected_paths: list[str] | set[str] | tuple[str, ...] | None = None,
+    require_suppression_expiry: bool = False,
+    current_date: date | None = None,
+) -> RepositoryIR:
+    """Scan a repository without leaking third-party Python SyntaxWarnings to callers."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", SyntaxWarning)
+        return _scan_repository(
+            root,
+            include_tests=include_tests,
+            selected_paths=selected_paths,
+            require_suppression_expiry=require_suppression_expiry,
+            current_date=current_date,
+        )
