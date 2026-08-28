@@ -753,3 +753,21 @@
   callsite-level edge used for Runner trace and workflow policy.
 - Revisit when: run-level `modelSettings.toolChoice`, exported Runner factories, or inherited
   Runner defaults can be linked to exact source-agent identity without broad receiver/name matching.
+
+## OpenAI Agents JS computerTool backend lifecycle is review metadata
+
+- Decision: Record exact TypeScript OpenAI Agents SDK `computerTool({ computer })` backend lifecycle
+  metadata on the tool and `computer-control` capability. Object literals with callback-valued
+  `create` and `dispose` are `create-dispose-per-run`; object literals with callback-valued `create`
+  and no `dispose` are `factory-without-dispose`; shorthand or identifier computer values remain
+  `external-binding` metadata without inferred ownership.
+- Evidence: The local computer-safety fixture covers inline static computer objects, a per-run
+  create/dispose factory, and a create-only factory. The pinned OpenAI Agents JS
+  `examples/tools/computer-use-hitl.ts` and `examples/tools/computer-use.ts` per-request examples
+  use `create` and `dispose` callbacks that receive `runContext` and `computer`, while the
+  singleton HITL example passes an external `computer` binding.
+- Alternative: Treat any `computer` object as equally lifecycle-managed. Rejected because a
+  create-only factory lacks disposal evidence, while an external binding may be intentionally
+  singleton or managed elsewhere.
+- Revisit when: imported computer factory helpers, class methods, or explicit browser/backend
+  constructor provenance can be linked without broad name matching.

@@ -660,6 +660,12 @@ catalog workflows.
   tool-choice labels pass 7/7, full public IR labels pass 2,169/2,169, and the full schema-v145
   engine benchmark refresh passes 71/71 repositories with 2,840 relationships and 10,605
   symbolized components.
+- Added exact OpenAI Agents JS `computerTool({ computer })` backend lifecycle inventory.
+  `computer: { create, dispose }` object factories now record create/dispose-per-run lifecycle
+  evidence, create-only factories record missing disposal, and shorthand/external computer bindings
+  stay external-binding metadata rather than inferred ownership. Focused approval-control labels
+  pass 116/116, full public IR labels pass 2,175/2,175, and the full schema-v146 engine benchmark
+  refresh passes 71/71 repositories with 2,840 relationships and 10,605 symbolized components.
 
 ## Current findings
 
@@ -801,7 +807,8 @@ semantics distinct from trace-correlation `withTrace(..., { groupId/traceId })` 
 `Runner({ workflowName })` runner-level workflow evidence and exact direct/stable Runner
 `run(..., { maxTurns })` per-run turn-limit evidence, plus exact Agent
 `modelSettings.toolChoice` evidence and stable Runner-level `modelSettings.toolChoice` per-run
-evidence. For OpenAI
+evidence, plus exact `computerTool({ computer })` backend lifecycle metadata for external
+bindings, inline static objects, create/dispose per-run factories, and create-only factories. For OpenAI
 approval work, keep literal always-approval, callback-controlled
 approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
 approval metadata, literal predicate metadata, SDK state approval decisions, helper-parameter

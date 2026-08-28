@@ -33,7 +33,8 @@
 - Continue OpenAI Agents JS HITL and safety-governance extraction where evidence remains exact:
   richer `needsApproval` predicate quality, automatic approval bypasses, and `computerTool`
   `onSafetyCheck` callbacks that distinguish explicit user/policy review from pass-through
-  acknowledgement. Same-file helper-derived run-state resumes are now covered for the narrow
+  acknowledgement beyond the current exact auto-acknowledgement and computer backend lifecycle
+  inventory. Same-file helper-derived run-state resumes are now covered for the narrow
   exact-agent-parameter pattern; future helper work should focus only on richer predicate/action
   quality or new exact helper shapes that preserve call-site and source-agent identity.
 - Continue OpenAI Agents Python safety-governance extraction where evidence remains exact: callbacks

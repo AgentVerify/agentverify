@@ -599,6 +599,13 @@
   call supplies a source-proven agent; rebound runners remain unresolved. The pinned hosted MCP HITL
   example contributes `required` initial-run and `auto` resume-run policy evidence, bringing the
   public IR truth set to 2,169 passing labels.
+- OpenAI Agents JS `computerTool({ computer })` backend lifecycle is now visible alongside
+  approval and safety-check metadata. Exact object factories with both `create` and `dispose`
+  callbacks record `create-dispose-per-run`; create-only factories record
+  `factory-without-dispose`, and shorthand/external computer bindings remain external-binding
+  metadata. The pinned computer-use HITL and basic computer-use examples contribute per-request
+  create/dispose evidence, while the singleton HITL example remains external-binding, bringing the
+  public IR truth set to 2,175 passing labels.
 
 ## Hypotheses
 

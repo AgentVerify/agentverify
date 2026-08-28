@@ -34,6 +34,25 @@ const expressionBrowser = computerTool({
   }),
 });
 
+const perRequestBrowser = computerTool({
+  computer: {
+    create: async ({ runContext }) => {
+      return await createBrowser(runContext);
+    },
+    dispose: async ({ runContext, computer }) => {
+      await closeBrowser(runContext, computer);
+    },
+  },
+});
+
+const leakyFactoryBrowser = computerTool({
+  computer: {
+    create: async ({ runContext }) => {
+      return await createBrowser(runContext);
+    },
+  },
+});
+
 const operator = new Agent({
   name: "operator",
   tools: [
@@ -42,6 +61,8 @@ const operator = new Agent({
     reviewedBrowser,
     snakeCaseBrowser,
     expressionBrowser,
+    perRequestBrowser,
+    leakyFactoryBrowser,
   ],
 });
 

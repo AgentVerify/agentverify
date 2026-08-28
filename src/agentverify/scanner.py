@@ -19115,6 +19115,9 @@ def add_typescript_tool_observation(
         else {}
     )
     safety_check_attributes = typescript_openai_safety_check_attributes(call_body, constructor)
+    computer_provider_attributes = typescript_openai_computer_provider_attributes(
+        call_body, constructor
+    )
     execution_environment = "unresolved"
     if constructor in TS_OPENAI_SANDBOX_CAPABILITY_FACTORIES:
         execution_environment = "sdk-sandbox"
@@ -19153,6 +19156,7 @@ def add_typescript_tool_observation(
         ),
         **approval_predicate_attributes,
         **safety_check_attributes,
+        **computer_provider_attributes,
         "execution_environment": execution_environment,
         "scope": source_scope(relative),
         **(
@@ -19183,6 +19187,7 @@ def add_typescript_tool_observation(
         capability_attributes["sandbox_policy"] = "openai-agents-sdk-sandbox"
     if constructor == "computerTool":
         capability_attributes.update(safety_check_attributes)
+        capability_attributes.update(computer_provider_attributes)
     if constructor == "applyPatchTool":
         capability_attributes["write_access"] = True
     for capability in TS_OPENAI_BUILTIN_TOOL_CAPABILITIES.get(constructor, ()):
@@ -19547,6 +19552,69 @@ def typescript_openai_safety_check_attributes(body: str, constructor: str) -> di
                 "safety_check_decision": "returns-pendingSafetyChecks",
                 "safety_check_acknowledgement_field": acknowledgement_field,
             }
+    return attributes
+
+
+def typescript_openai_computer_provider_attributes(
+    body: str, constructor: str
+) -> dict[str, object]:
+    """Resolve exact OpenAI Agents JS computer backend lifecycle metadata."""
+    if constructor != "computerTool":
+        return {}
+    computer_expression = typescript_object_property_expression(body, "computer")
+    if computer_expression is None:
+        if typescript_object_has_shorthand_property(body, "computer"):
+            return {
+                "computer_provider": "external-binding",
+                "computer_binding": "computer",
+                "computer_lifecycle": "external-binding",
+            }
+        return {}
+    expression_code = typescript_code_mask(computer_expression).strip()
+    if identifier := re.fullmatch(r"[A-Za-z_$][\w$]*", expression_code):
+        return {
+            "computer_provider": "external-binding",
+            "computer_binding": identifier.group(0),
+            "computer_lifecycle": "external-binding",
+        }
+    if not expression_code.startswith("{"):
+        return {"computer_provider": "unresolved", "computer_lifecycle": "unresolved"}
+    create_expression = typescript_object_property_expression(computer_expression, "create")
+    dispose_expression = typescript_object_property_expression(computer_expression, "dispose")
+    if create_expression is None:
+        return {"computer_provider": "inline-object", "computer_lifecycle": "inline-static"}
+    create_is_callback = "=>" in typescript_code_mask(create_expression)
+    dispose_is_callback = (
+        dispose_expression is not None and "=>" in typescript_code_mask(dispose_expression)
+    )
+    attributes: dict[str, object] = {
+        "computer_provider": "factory-object",
+        "computer_create_handler": "configured" if create_is_callback else "unresolved",
+        "computer_dispose_handler": (
+            "configured"
+            if dispose_is_callback
+            else "missing"
+            if dispose_expression is None
+            else "unresolved"
+        ),
+    }
+    if create_is_callback and dispose_is_callback:
+        attributes["computer_lifecycle"] = "create-dispose-per-run"
+    elif create_is_callback and dispose_expression is None:
+        attributes["computer_lifecycle"] = "factory-without-dispose"
+    else:
+        attributes["computer_lifecycle"] = "unresolved"
+    create_parameters = typescript_callback_parameters(create_expression)
+    if create_parameters and "runContext" in typescript_destructured_names(create_parameters[0]):
+        attributes["computer_create_receives_run_context"] = True
+    if dispose_expression is not None:
+        dispose_parameters = typescript_callback_parameters(dispose_expression)
+        if dispose_parameters:
+            dispose_names = typescript_destructured_names(dispose_parameters[0])
+            if "runContext" in dispose_names:
+                attributes["computer_dispose_receives_run_context"] = True
+            if "computer" in dispose_names:
+                attributes["computer_dispose_receives_computer"] = True
     return attributes
 
 

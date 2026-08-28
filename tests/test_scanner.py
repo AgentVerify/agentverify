@@ -4096,6 +4096,8 @@ def test_typescript_openai_computer_safety_check_auto_acknowledgement() -> None:
     tools = {component.name: component for component in ir.components if component.kind == "tool"}
     assert tools["browser"].attributes["safety_check_policy"] == "auto-acknowledge-all"
     assert tools["browser"].attributes["safety_check_decision"] == "returns-pendingSafetyChecks"
+    assert tools["browser"].attributes["computer_provider"] == "inline-object"
+    assert tools["browser"].attributes["computer_lifecycle"] == "inline-static"
     assert (
         tools["browser"].attributes["safety_check_acknowledgement_field"]
         == "acknowledgedSafetyChecks"
@@ -4113,6 +4115,33 @@ def test_typescript_openai_computer_safety_check_auto_acknowledgement() -> None:
     assert (
         tools["expressionBrowser"].attributes["safety_check_acknowledgement_field"]
         == "acknowledgedSafetyChecks"
+    )
+    assert tools["perRequestBrowser"].attributes["computer_provider"] == "factory-object"
+    assert tools["perRequestBrowser"].attributes["computer_lifecycle"] == "create-dispose-per-run"
+    assert tools["perRequestBrowser"].attributes["computer_create_handler"] == "configured"
+    assert tools["perRequestBrowser"].attributes["computer_dispose_handler"] == "configured"
+    assert tools["perRequestBrowser"].attributes["computer_create_receives_run_context"] is True
+    assert tools["perRequestBrowser"].attributes["computer_dispose_receives_run_context"] is True
+    assert tools["perRequestBrowser"].attributes["computer_dispose_receives_computer"] is True
+    assert tools["leakyFactoryBrowser"].attributes["computer_provider"] == "factory-object"
+    assert tools["leakyFactoryBrowser"].attributes["computer_lifecycle"] == "factory-without-dispose"
+    assert tools["leakyFactoryBrowser"].attributes["computer_create_handler"] == "configured"
+    assert tools["leakyFactoryBrowser"].attributes["computer_dispose_handler"] == "missing"
+
+    computer_capabilities = [
+        component
+        for component in ir.components
+        if component.kind == "capability" and component.name == "computer-control"
+    ]
+    assert any(
+        capability.attributes.get("computer_lifecycle") == "create-dispose-per-run"
+        and capability.attributes.get("computer_dispose_receives_computer") is True
+        for capability in computer_capabilities
+    )
+    assert any(
+        capability.attributes.get("computer_lifecycle") == "factory-without-dispose"
+        and capability.attributes.get("computer_dispose_handler") == "missing"
+        for capability in computer_capabilities
     )
 
     findings = [finding for finding in ir.findings if finding.rule_id == "AV-APPROVAL011"]

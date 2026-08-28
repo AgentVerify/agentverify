@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T20:10:02.590216+00:00",
+  "generated_at": "2026-08-28T20:36:49.574237+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "e355914f861d4d37c95e577481da6dd2d682e40fc733ec3c93fe08aa22e518ad",
+    "labels_sha256": "cb226f0d000fd42d4ba40346163b9abca9920a1808940bc09b5f750b13d4039a",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 2169,
-  "passed": 2169,
+  "labels": 2175,
+  "passed": 2175,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -35,7 +35,7 @@
       "recall": 1.0
     },
     "IR-APPROVAL-CONTROL": {
-      "tp": 90,
+      "tp": 96,
       "fp": 0,
       "tn": 20,
       "fn": 0,
@@ -20220,6 +20220,60 @@
     },
     {
       "id": "typescript-openai-computer-safety-expression-auto-ack-local",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-computer-lifecycle-inline-static-local",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-computer-lifecycle-per-run-factory-local",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-computer-lifecycle-factory-without-dispose-local",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-computer-lifecycle-external-binding-real",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-computer-lifecycle-per-run-factory-real",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-computer-lifecycle-per-run-factory-basic-real",
       "check_id": "IR-APPROVAL-CONTROL",
       "expected": true,
       "observed": true,

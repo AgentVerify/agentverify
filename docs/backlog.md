@@ -509,8 +509,10 @@ model-override controls. Schema v141 adds exact delegated
 stable `new Runner({ workflowName })` per-run trace-workflow controls. Schema v143 adds exact
 direct `run(agent, ..., { maxTurns })` and stable `runner.run(agent, ..., { maxTurns })` per-run
 execution-bound controls. Schema v144 adds exact Agent-level `modelSettings.toolChoice` policy
-controls, and schema v145 adds exact stable Runner-level `modelSettings.toolChoice` per-run policy
-controls. AgentVerify emits distinct `trace-group`, `trace-id`, `tracing-disabled`,
+controls, schema v145 adds exact stable Runner-level `modelSettings.toolChoice` per-run policy
+controls, and schema v146 adds exact OpenAI Agents JS `computerTool({ computer })` backend
+lifecycle metadata for external bindings, inline static objects, create/dispose per-run factories,
+and create-only factories. AgentVerify emits distinct `trace-group`, `trace-id`, `tracing-disabled`,
 `agent-turn-limit`, `agent-model-override`, `trace-workflow`, and `tool-choice-policy` controls and
 configured-by edges without treating any trace identifier as conversation memory. The real
 `routing.ts` example links the triage agent to
@@ -526,7 +528,8 @@ human-in-the-loop examples show direct-run and Runner-run `maxTurns` bounds on s
 agents. The forcing-tool-use and programmatic tool-calling examples show Agent-level
 `modelSettings.toolChoice` values including `required` and `programmatic_tool_calling`, and the
 hosted MCP human-in-the-loop example shows Runner-level `required` initial-run and `auto`
-resume-run tool-choice policy.
+resume-run tool-choice policy. The computer-use HITL and basic computer-use examples distinguish
+singleton external computer bindings from per-request create/dispose browser factories.
 
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
