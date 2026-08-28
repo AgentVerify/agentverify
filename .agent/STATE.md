@@ -684,10 +684,16 @@ catalog workflows.
 - Added exact OpenAI Agents JS Agent-level `modelSettings.parallelToolCalls` inventory. Literal
   boolean settings now emit `model-settings-policy` controls and configured-by edges on the source
   agent, while dynamic values stay unresolved. The pinned OpenAI Agents JS `tool-search.ts` example
-  contributes two real sequential-tool-call settings; RealtimeSession `parallelToolCalls` remains
-  intentionally separate until session configuration is modeled. Focused Agent model-settings labels
-  pass 16/16, full public IR labels pass 2,210/2,210, and the full schema-v150 engine benchmark
+  contributes two real sequential-tool-call settings. Focused Agent model-settings labels pass
+  16/16, full public IR labels pass 2,210/2,210, and the full schema-v150 engine benchmark
   refresh passes 71/71 repositories with 2,852 relationships and 10,617 symbolized components.
+- Added exact OpenAI Realtime `RealtimeSession({ config.parallelToolCalls })` inventory.
+  Source-proven `RealtimeAgent` constructors are now recognized, and literal RealtimeSession
+  boolean concurrency settings emit `realtime-session-config-policy` controls and configured-by
+  edges linked to the session's first-agent argument while dynamic values stay unresolved. Focused
+  RealtimeSession config labels pass 7/7, full public IR labels pass 2,217/2,217, and the full
+  schema-v151 engine benchmark refresh passes 71/71 repositories with 2,859 relationships and
+  10,643 symbolized components.
 
 ## Current findings
 
@@ -803,6 +809,8 @@ catalog workflows.
   source-proven `.run(agent, ...)` calls. Exact Agent-level literal
   `modelSettings.reasoning.effort`, `modelSettings.text.verbosity`, and
   `modelSettings.parallelToolCalls` values expose `model-settings-policy` controls. Exact imported
+  RealtimeSession config with `parallelToolCalls` exposes `realtime-session-config-policy` controls
+  linked to source-proven RealtimeAgents. Exact imported
   `withTrace` callbacks containing
   source-proven SDK `run(agent, ...)` calls, exact Runner instances with source-proven
   `.run(agent, ...)` calls, and exact delegated-agent `asTool` adapters emit `trace-group`,
@@ -835,7 +843,8 @@ semantics distinct from trace-correlation `withTrace(..., { groupId/traceId })` 
 evidence, plus exact `computerTool({ computer })` backend lifecycle metadata for external
 bindings, inline static objects, create/dispose per-run factories, and create-only factories, plus
   exact Agent-level `modelSettings.reasoning.effort`, `modelSettings.text.verbosity`, and
-  `modelSettings.parallelToolCalls` metadata. For OpenAI
+  `modelSettings.parallelToolCalls` metadata, plus exact RealtimeSession
+  `config.parallelToolCalls` policy. For OpenAI
 approval work, keep literal always-approval, callback-controlled
 approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
 approval metadata, literal predicate metadata, SDK state approval decisions, helper-parameter

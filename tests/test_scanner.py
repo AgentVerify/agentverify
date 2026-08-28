@@ -4422,6 +4422,99 @@ def test_typescript_openai_agent_parallel_tool_calls_policy_is_exact() -> None:
     }
 
 
+def test_typescript_openai_realtime_session_parallel_tool_calls_policy_is_exact() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_openai_realtime_session_config")
+
+    controls = {
+        component.symbol_id: component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "realtime-session-config-policy"
+    }
+    assert set(controls) == {
+        "ts:agent.ts#control:sequentialSession.config.parallelToolCalls@11",
+        "ts:agent.ts#control:parallelSession.config.parallelToolCalls@17",
+    }
+    assert controls[
+        "ts:agent.ts#control:sequentialSession.config.parallelToolCalls@11"
+    ].attributes == {
+        "analysis": "typescript-openai-agents-realtime-session-config",
+        "module": "@openai/agents/realtime",
+        "constructor": "RealtimeSession",
+        "imported_symbol": "RealtimeSession",
+        "local_constructor": "RealtimeSession",
+        "configuration": "RealtimeSession.config",
+        "session_binding": "sequentialSession",
+        "config_scope": "realtime-session-config",
+        "source_agent": "Realtime greeter",
+        "source_agent_id": "ts:agent.ts#agent:greeter",
+        "parallel_tool_calls": False,
+        "scope": "production",
+    }
+    assert controls[
+        "ts:agent.ts#control:parallelSession.config.parallelToolCalls@17"
+    ].attributes == {
+        "analysis": "typescript-openai-agents-realtime-session-config",
+        "module": "@openai/agents/realtime",
+        "constructor": "RealtimeSession",
+        "imported_symbol": "RealtimeSession",
+        "local_constructor": "RealtimeSession",
+        "configuration": "RealtimeSession.config",
+        "session_binding": "parallelSession",
+        "config_scope": "realtime-session-config",
+        "source_agent": "Realtime greeter",
+        "source_agent_id": "ts:agent.ts#agent:greeter",
+        "parallel_tool_calls": True,
+        "scope": "production",
+    }
+
+    edges = {
+        (
+            relationship.source_name,
+            relationship.source_id,
+            relationship.target_id,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            tuple(sorted(relationship.attributes.items())),
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "configured-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "realtime-session-config-policy"
+    }
+    assert edges == {
+        (
+            "Realtime greeter",
+            "ts:agent.ts#agent:greeter",
+            "ts:agent.ts#control:sequentialSession.config.parallelToolCalls@11",
+            "agent.ts",
+            11,
+            (
+                ("analysis", "typescript-openai-agents-realtime-session-config"),
+                ("binding", "config.parallelToolCalls"),
+                ("configuration", "RealtimeSession-config"),
+                ("parallel_tool_calls", False),
+                ("session_binding", "sequentialSession"),
+            ),
+        ),
+        (
+            "Realtime greeter",
+            "ts:agent.ts#agent:greeter",
+            "ts:agent.ts#control:parallelSession.config.parallelToolCalls@17",
+            "agent.ts",
+            17,
+            (
+                ("analysis", "typescript-openai-agents-realtime-session-config"),
+                ("binding", "config.parallelToolCalls"),
+                ("configuration", "RealtimeSession-config"),
+                ("parallel_tool_calls", True),
+                ("session_binding", "parallelSession"),
+            ),
+        ),
+    }
+
+
 def test_typescript_openai_computer_safety_check_auto_acknowledgement() -> None:
     ir = scan_repository(ROOT / "cases/typescript_openai_computer_safety")
 

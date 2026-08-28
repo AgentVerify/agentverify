@@ -624,8 +624,12 @@
   Exact `new Agent({ modelSettings: { parallelToolCalls: true|false } })` values emit
   `model-settings-policy` controls and configured-by edges on the source agent, while dynamic
   bindings remain unresolved. The local fixture plus pinned OpenAI Agents JS `tool-search.ts`
-  examples bring the public IR truth set to 2,210 passing labels. RealtimeSession-level
-  `parallelToolCalls` is intentionally not claimed by this Agent-constructor detector.
+  examples bring the public IR truth set to 2,210 passing labels.
+- OpenAI Realtime session-level `parallelToolCalls` concurrency is now separately reviewable when
+  literal and source-proven. Exact `RealtimeSession(agent, { config: { parallelToolCalls } })`
+  settings emit `realtime-session-config-policy` controls linked to the resolved `RealtimeAgent`;
+  dynamic values remain unresolved. The local fixture plus pinned OpenAI Agents JS
+  `configureSession.ts` voice-agent example bring the public IR truth set to 2,217 passing labels.
 
 ## Hypotheses
 

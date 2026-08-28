@@ -790,9 +790,26 @@
   provider choice, from whether tools are forced/auto-selected, and from session constructor
   configuration.
 - Revisit when: run-level model settings, Runner-level defaults, or imported model-settings objects
-  can be tied to exact source-agent identity without broad config/name matching. Model
-  `RealtimeSession({ modelSettings: { parallelToolCalls } })` separately if session-level
-  concurrency policy becomes a first-class IR target.
+  can be tied to exact source-agent identity without broad config/name matching.
+
+## OpenAI Realtime session config is separate source-agent policy metadata
+
+- Decision: Represent exact TypeScript OpenAI Realtime
+  `new RealtimeSession(agent, { config: { parallelToolCalls: <boolean> } })` configuration as a
+  `realtime-session-config-policy` control tied to the source-proven `RealtimeAgent` passed as the
+  session's first constructor argument. Emit only for exact imported `RealtimeAgent` and
+  `RealtimeSession` constructors and direct boolean literals; keep dynamic config values and
+  unresolved session-agent arguments unresolved.
+- Evidence: The local realtime-session fixture covers false, true, and dynamic negative
+  `parallelToolCalls` values. The pinned OpenAI Agents JS
+  `examples/docs/voice-agents/configureSession.ts` example sets
+  `config.parallelToolCalls: true` for the `Greeter` RealtimeAgent.
+- Alternative: Fold realtime session config into Agent-level `model-settings-policy`. Rejected
+  because `RealtimeSession` configuration is a different constructor scope from `Agent.modelSettings`
+  and should not imply the same inheritance or override semantics.
+- Revisit when other RealtimeSession config fields such as audio modalities, transcription model,
+  turn detection, or realtime reasoning effort can be tied to source-proven realtime agents without
+  broad option-object matching.
 
 ## OpenAI Agents JS web-search scope is tool/provider policy metadata
 

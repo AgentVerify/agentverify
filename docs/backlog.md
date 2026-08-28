@@ -517,11 +517,13 @@ and create-only factories, and schema v147 adds exact Agent-level
 OpenAI Agents JS `webSearchTool({ filters.allowedDomains, searchContextSize })` policy metadata
 plus literal `Agent.modelSettings.providerData.include` source-inclusion controls, schema v149
 adds exact literal `webSearchTool({ userLocation })` privacy/scope metadata, and schema v150 adds
-exact Agent-level `modelSettings.parallelToolCalls` concurrency metadata. AgentVerify emits
+exact Agent-level `modelSettings.parallelToolCalls` concurrency metadata. Schema v151 adds exact
+OpenAI Realtime `RealtimeSession({ config.parallelToolCalls })` concurrency metadata tied to
+source-proven `RealtimeAgent` instances. AgentVerify emits
 distinct `trace-group`, `trace-id`, `tracing-disabled`, `agent-turn-limit`,
 `agent-model-override`, `trace-workflow`, `tool-choice-policy`, `model-settings-policy`,
-`web-search-policy`, and `provider-data-policy` controls and configured-by edges without treating
-any trace identifier as conversation memory. The real
+`web-search-policy`, `provider-data-policy`, and `realtime-session-config-policy` controls and
+configured-by edges without treating any trace identifier as conversation memory. The real
 `routing.ts` example links the triage agent to
 its dynamic `conversationId` trace group, the real Codex tool example links two runs to a generated
 trace ID with a logged OpenAI platform trace URL, the real sandbox memory-generation example links
@@ -539,9 +541,10 @@ resume-run tool-choice policy. The computer-use HITL and basic computer-use exam
 singleton external computer bindings from per-request create/dispose browser factories, and the
 web-search filters and apply-patch examples expose low reasoning/verbosity model settings. The
 tool-search example exposes Agent-level sequential tool-call settings through
-`parallelToolCalls: false`. The web-search filters example also exposes a literal OpenAI-domain
-search allowlist, medium search context size, and explicit source-return inclusion, while the basic
-web-search example exposes an approximate New York user-location scope.
+`parallelToolCalls: false`, and the voice-agent configure-session example exposes realtime
+session-level parallel tool-call configuration. The web-search filters example also exposes a
+literal OpenAI-domain search allowlist, medium search context size, and explicit source-return
+inclusion, while the basic web-search example exposes an approximate New York user-location scope.
 
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,

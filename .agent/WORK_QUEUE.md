@@ -30,7 +30,8 @@
   `run(..., { maxTurns })` per-run turn-limit evidence and exact Agent-level
   `modelSettings.toolChoice` evidence plus stable Runner-level `modelSettings.toolChoice` per-run
   evidence and exact Agent-level literal reasoning/verbosity/parallel-tool-calls model settings,
-  without broadening into ambiguous helper/config composition.
+  plus exact RealtimeSession `config.parallelToolCalls` session policy, without broadening into
+  ambiguous helper/config composition.
 - Continue OpenAI Agents JS HITL and safety-governance extraction where evidence remains exact:
   richer `needsApproval` predicate quality, automatic approval bypasses, and `computerTool`
   `onSafetyCheck` callbacks that distinguish explicit user/policy review from pass-through

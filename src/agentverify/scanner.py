@@ -17268,6 +17268,46 @@ def add_typescript_openai_agent_model_settings_control(
     return "model-settings-policy", control_id
 
 
+def add_typescript_openai_realtime_session_config_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    local_constructor: str,
+    session_binding: str,
+    source_agent: tuple[str, str],
+    parallel_tool_calls: bool,
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS RealtimeSession config governance evidence."""
+    source_agent_name, source_agent_id = source_agent
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "realtime-session-config-policy",
+            Evidence(relative, line, excerpt(lines, line)),
+            {
+                "analysis": "typescript-openai-agents-realtime-session-config",
+                "module": "@openai/agents/realtime",
+                "constructor": "RealtimeSession",
+                "imported_symbol": "RealtimeSession",
+                "local_constructor": local_constructor,
+                "configuration": "RealtimeSession.config",
+                "session_binding": session_binding,
+                "config_scope": "realtime-session-config",
+                "source_agent": source_agent_name,
+                "source_agent_id": source_agent_id,
+                "parallel_tool_calls": parallel_tool_calls,
+                "scope": source_scope(relative),
+            },
+            control_id,
+        )
+    )
+    return "realtime-session-config-policy", control_id
+
+
 def add_typescript_openai_agent_provider_data_control(
     ir: RepositoryIR,
     *,
@@ -19818,8 +19858,13 @@ def typescript_graph(
     local_tool_ids: dict[str, str] = {}
     code = typescript_code_mask(text)
     openai_agents_imports = typescript_named_import_bindings(text, "@openai/agents")
+    openai_realtime_imports = {
+        **typescript_named_import_bindings(text, "@openai/agents/realtime"),
+        **typescript_named_import_bindings(text, "@openai/agents-realtime"),
+    }
     openai_imports = {
         **openai_agents_imports,
+        **openai_realtime_imports,
         **typescript_named_import_bindings(text, "@openai/agents-extensions"),
         **typescript_named_import_bindings(text, "@openai/agents/sandbox"),
     }
@@ -20384,6 +20429,12 @@ def typescript_graph(
         if imported_name == "MemorySession"
         and not typescript_import_binding_is_shadowed(text, local_name)
     }
+    realtime_session_imports = {
+        local_name
+        for local_name, imported_name in openai_realtime_imports.items()
+        if imported_name == "RealtimeSession"
+        and not typescript_import_binding_is_shadowed(text, local_name)
+    }
     conversation_session_bindings: dict[str, tuple[str, str]] = {}
     for match in TS_SANDBOX_CLIENT_ASSIGNMENT.finditer(code):
         session_name = match.group(1)
@@ -20657,6 +20708,18 @@ def typescript_graph(
         (match, "Agent", None, match.group(1), "assignment")
         for match in TS_AGENT_ASSIGNMENT.finditer(code)
     ]
+    for local_name, imported_name in openai_realtime_imports.items():
+        if imported_name != "RealtimeAgent" or typescript_import_binding_is_shadowed(
+            text, local_name
+        ):
+            continue
+        realtime_agent_pattern = re.compile(
+            TS_SANDBOX_AGENT_ASSIGNMENT_TEMPLATE.format(constructor=re.escape(local_name))
+        )
+        agent_matches.extend(
+            (match, "RealtimeAgent", local_name, match.group(1), "assignment")
+            for match in realtime_agent_pattern.finditer(code)
+        )
     for local_name, imported_name in sandbox_imports.items():
         if imported_name != "SandboxAgent" or typescript_import_binding_is_shadowed(
             text, local_name
@@ -20715,6 +20778,17 @@ def typescript_graph(
                     "imported_symbol": "SandboxAgent",
                     "resolution": "exact-openai-sandbox-import",
                     "execution_environment": "sdk-sandbox",
+                }
+            )
+            if constructor_local and constructor_local != constructor:
+                attributes["local_constructor"] = constructor_local
+        elif constructor == "RealtimeAgent":
+            attributes.update(
+                {
+                    "module": "@openai/agents/realtime",
+                    "imported_symbol": "RealtimeAgent",
+                    "resolution": "exact-openai-realtime-import",
+                    "execution_environment": "openai-realtime",
                 }
             )
             if constructor_local and constructor_local != constructor:
@@ -21011,6 +21085,87 @@ def typescript_graph(
             ):
                 return None
         return local_agents.get(argument_name)
+
+    for match in TS_SANDBOX_CLIENT_ASSIGNMENT.finditer(code):
+        session_name = match.group(1)
+        local_constructor = match.group(2)
+        if local_constructor not in realtime_session_imports:
+            continue
+        opening = code.find("(", match.start(), match.end())
+        end = typescript_balanced_end(code, opening, "(", ")")
+        if end is None:
+            continue
+        arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
+        if len(arguments) < 2:
+            continue
+        agent_argument = typescript_code_mask(arguments[0][0]).strip()
+        agent_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", agent_argument)
+        if agent_identifier is None:
+            continue
+        source_agent = resolve_lexical_openai_agent_argument(
+            agent_identifier.group(0),
+            arguments[0][1],
+        )
+        if source_agent is None:
+            continue
+        options_expression, options_offset = arguments[1]
+        config_location = typescript_object_property_expression_location(
+            options_expression,
+            "config",
+            options_offset,
+        )
+        if config_location is None:
+            continue
+        config_expression, _, config_offset = config_location
+        parallel_tool_calls_location = typescript_object_property_expression_location(
+            config_expression,
+            "parallelToolCalls",
+            config_offset,
+        )
+        if parallel_tool_calls_location is None:
+            continue
+        parallel_tool_calls_expression, parallel_property_offset, _ = (
+            parallel_tool_calls_location
+        )
+        parallel_tool_calls = typescript_literal_boolean_value(parallel_tool_calls_expression)
+        if parallel_tool_calls is None:
+            continue
+        parallel_tool_calls_line = line_at(text, parallel_property_offset)
+        config_name, config_id = add_typescript_openai_realtime_session_config_control(
+            ir,
+            relative=relative,
+            lines=lines,
+            line=parallel_tool_calls_line,
+            local_constructor=local_constructor,
+            session_binding=session_name,
+            source_agent=source_agent,
+            parallel_tool_calls=parallel_tool_calls,
+            symbol_identity=f"{session_name}.config.parallelToolCalls@{parallel_tool_calls_line}",
+        )
+        agent_name, agent_id = source_agent
+        ir.add_relationship(
+            Relationship(
+                "agent",
+                agent_name,
+                "configured-by",
+                "control",
+                config_name,
+                Evidence(
+                    relative,
+                    parallel_tool_calls_line,
+                    excerpt(lines, parallel_tool_calls_line),
+                ),
+                {
+                    "analysis": "typescript-openai-agents-realtime-session-config",
+                    "configuration": "RealtimeSession-config",
+                    "binding": "config.parallelToolCalls",
+                    "session_binding": session_name,
+                    "parallel_tool_calls": parallel_tool_calls,
+                },
+                source_id=agent_id,
+                target_id=config_id,
+            )
+        )
 
     for match, body_offset, body, agent_name, agent_id, agent_constructor in agent_bodies:
         ev = Evidence(
