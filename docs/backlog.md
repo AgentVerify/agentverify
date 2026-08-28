@@ -515,8 +515,9 @@ lifecycle metadata for external bindings, inline static objects, create/dispose 
 and create-only factories, and schema v147 adds exact Agent-level
 `modelSettings.reasoning.effort` / `modelSettings.text.verbosity` controls. Schema v148 adds exact
 OpenAI Agents JS `webSearchTool({ filters.allowedDomains, searchContextSize })` policy metadata
-plus literal `Agent.modelSettings.providerData.include` source-inclusion controls, and schema v149
-adds exact literal `webSearchTool({ userLocation })` privacy/scope metadata. AgentVerify emits
+plus literal `Agent.modelSettings.providerData.include` source-inclusion controls, schema v149
+adds exact literal `webSearchTool({ userLocation })` privacy/scope metadata, and schema v150 adds
+exact Agent-level `modelSettings.parallelToolCalls` concurrency metadata. AgentVerify emits
 distinct `trace-group`, `trace-id`, `tracing-disabled`, `agent-turn-limit`,
 `agent-model-override`, `trace-workflow`, `tool-choice-policy`, `model-settings-policy`,
 `web-search-policy`, and `provider-data-policy` controls and configured-by edges without treating
@@ -537,9 +538,10 @@ hosted MCP human-in-the-loop example shows Runner-level `required` initial-run a
 resume-run tool-choice policy. The computer-use HITL and basic computer-use examples distinguish
 singleton external computer bindings from per-request create/dispose browser factories, and the
 web-search filters and apply-patch examples expose low reasoning/verbosity model settings. The
-web-search filters example also exposes a literal OpenAI-domain search allowlist, medium search
-context size, and explicit source-return inclusion, while the basic web-search example exposes an
-approximate New York user-location scope.
+tool-search example exposes Agent-level sequential tool-call settings through
+`parallelToolCalls: false`. The web-search filters example also exposes a literal OpenAI-domain
+search allowlist, medium search context size, and explicit source-return inclusion, while the basic
+web-search example exposes an approximate New York user-location scope.
 
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,

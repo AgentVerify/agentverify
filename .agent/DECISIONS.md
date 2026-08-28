@@ -775,18 +775,24 @@
 ## OpenAI Agents JS Agent model settings are source-agent policy metadata
 
 - Decision: Record exact TypeScript OpenAI Agents SDK Agent-level literal
-  `modelSettings.reasoning.effort` and `modelSettings.text.verbosity` as `model-settings-policy`
-  controls on the source agent. Emit only for direct nested string literals in exact imported
-  `new Agent(...)` model settings; keep mutable or nonliteral nested values unresolved.
+  `modelSettings.reasoning.effort`, `modelSettings.text.verbosity`, and
+  `modelSettings.parallelToolCalls` as `model-settings-policy` controls on the source agent. Emit
+  only for direct nested string literals or direct boolean `parallelToolCalls` literals in exact
+  imported `new Agent(...)` model settings; keep mutable or nonliteral nested values unresolved.
 - Evidence: The local structured-tools fixture covers a worker agent with literal low reasoning and
   verbosity settings and a dynamic-policy negative with a mutable nested effort. The pinned OpenAI
   Agents JS `examples/tools/web-search-filters.ts` example sets both low reasoning and low
   verbosity, while `examples/tools/apply-patch.ts` sets low reasoning for a patch-capable agent.
+  The local parallel-tool-calls fixture covers true, false, and dynamic negative cases, and the
+  pinned `examples/tools/tool-search.ts` example sets `parallelToolCalls: false` for two Agents.
 - Alternative: Fold reasoning/verbosity into generic provider/model components or into
   `tool-choice-policy`. Rejected because these settings alter model behavior but are distinct from
-  provider choice and from whether tools are forced/auto-selected.
+  provider choice, from whether tools are forced/auto-selected, and from session constructor
+  configuration.
 - Revisit when: run-level model settings, Runner-level defaults, or imported model-settings objects
-  can be tied to exact source-agent identity without broad config/name matching.
+  can be tied to exact source-agent identity without broad config/name matching. Model
+  `RealtimeSession({ modelSettings: { parallelToolCalls } })` separately if session-level
+  concurrency policy becomes a first-class IR target.
 
 ## OpenAI Agents JS web-search scope is tool/provider policy metadata
 

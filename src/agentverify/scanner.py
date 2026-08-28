@@ -17233,6 +17233,7 @@ def add_typescript_openai_agent_model_settings_control(
     source_agent: tuple[str, str],
     reasoning_effort: str | None,
     text_verbosity: str | None,
+    parallel_tool_calls: bool | None,
     symbol_identity: str,
 ) -> tuple[str, str]:
     """Add exact OpenAI Agents JS Agent modelSettings governance evidence."""
@@ -17252,6 +17253,8 @@ def add_typescript_openai_agent_model_settings_control(
         attributes["reasoning_effort"] = reasoning_effort
     if text_verbosity is not None:
         attributes["text_verbosity"] = text_verbosity
+    if parallel_tool_calls is not None:
+        attributes["parallel_tool_calls"] = parallel_tool_calls
     control_id = source_symbol("ts", relative, "control", symbol_identity)
     ir.add_component(
         Component(
@@ -20794,7 +20797,23 @@ def typescript_graph(
                     body_offset=model_settings_expression_offset,
                     path=("text", "verbosity"),
                 )
-                if reasoning_effort is not None or text_verbosity is not None:
+                parallel_tool_calls = None
+                parallel_tool_calls_location = typescript_object_property_expression_location(
+                    model_settings_expression,
+                    "parallelToolCalls",
+                    model_settings_expression_offset,
+                )
+                if parallel_tool_calls_location is not None:
+                    parallel_tool_calls_expression = typescript_code_mask(
+                        parallel_tool_calls_location[0]
+                    ).strip()
+                    if parallel_tool_calls_expression in {"true", "false"}:
+                        parallel_tool_calls = parallel_tool_calls_expression == "true"
+                if (
+                    reasoning_effort is not None
+                    or text_verbosity is not None
+                    or parallel_tool_calls is not None
+                ):
                     model_settings_line = line_at(text, model_settings_expression_offset)
                     model_settings_name, model_settings_id = (
                         add_typescript_openai_agent_model_settings_control(
@@ -20805,6 +20824,7 @@ def typescript_graph(
                             source_agent=(agent_name, agent_id),
                             reasoning_effort=reasoning_effort,
                             text_verbosity=text_verbosity,
+                            parallel_tool_calls=parallel_tool_calls,
                             symbol_identity=(
                                 f"{agent_identity}.modelSettings@{model_settings_line}"
                             ),
@@ -20819,6 +20839,8 @@ def typescript_graph(
                         model_settings_attributes["reasoning_effort"] = reasoning_effort
                     if text_verbosity is not None:
                         model_settings_attributes["text_verbosity"] = text_verbosity
+                    if parallel_tool_calls is not None:
+                        model_settings_attributes["parallel_tool_calls"] = parallel_tool_calls
                     ir.add_relationship(
                         Relationship(
                             "agent",

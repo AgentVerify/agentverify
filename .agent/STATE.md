@@ -681,6 +681,13 @@ catalog workflows.
   labels pass 19/19, full public IR labels pass 2,201/2,201, and the full schema-v149 engine
   benchmark refresh passes 71/71 repositories with 2,850 relationships and 10,615 symbolized
   components.
+- Added exact OpenAI Agents JS Agent-level `modelSettings.parallelToolCalls` inventory. Literal
+  boolean settings now emit `model-settings-policy` controls and configured-by edges on the source
+  agent, while dynamic values stay unresolved. The pinned OpenAI Agents JS `tool-search.ts` example
+  contributes two real sequential-tool-call settings; RealtimeSession `parallelToolCalls` remains
+  intentionally separate until session configuration is modeled. Focused Agent model-settings labels
+  pass 16/16, full public IR labels pass 2,210/2,210, and the full schema-v150 engine benchmark
+  refresh passes 71/71 repositories with 2,852 relationships and 10,617 symbolized components.
 
 ## Current findings
 
@@ -794,8 +801,9 @@ catalog workflows.
   `tool-choice-policy` controls, and stable exact
   `new Runner({ modelSettings: { toolChoice } })` instances expose per-run tool-choice policy for
   source-proven `.run(agent, ...)` calls. Exact Agent-level literal
-  `modelSettings.reasoning.effort` and `modelSettings.text.verbosity` values expose
-  `model-settings-policy` controls. Exact imported `withTrace` callbacks containing
+  `modelSettings.reasoning.effort`, `modelSettings.text.verbosity`, and
+  `modelSettings.parallelToolCalls` values expose `model-settings-policy` controls. Exact imported
+  `withTrace` callbacks containing
   source-proven SDK `run(agent, ...)` calls, exact Runner instances with source-proven
   `.run(agent, ...)` calls, and exact delegated-agent `asTool` adapters emit `trace-group`,
   `trace-id`, `tracing-disabled`, `agent-turn-limit`, `agent-model-override`, or
@@ -826,7 +834,8 @@ semantics distinct from trace-correlation `withTrace(..., { groupId/traceId })` 
 `modelSettings.toolChoice` evidence and stable Runner-level `modelSettings.toolChoice` per-run
 evidence, plus exact `computerTool({ computer })` backend lifecycle metadata for external
 bindings, inline static objects, create/dispose per-run factories, and create-only factories, plus
-exact Agent-level `modelSettings.reasoning.effort` and `modelSettings.text.verbosity` metadata. For OpenAI
+  exact Agent-level `modelSettings.reasoning.effort`, `modelSettings.text.verbosity`, and
+  `modelSettings.parallelToolCalls` metadata. For OpenAI
 approval work, keep literal always-approval, callback-controlled
 approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
 approval metadata, literal predicate metadata, SDK state approval decisions, helper-parameter

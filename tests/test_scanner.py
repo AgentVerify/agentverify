@@ -4335,6 +4335,93 @@ def test_typescript_openai_web_search_tool_policy_is_exact() -> None:
     }
 
 
+def test_typescript_openai_agent_parallel_tool_calls_policy_is_exact() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_openai_model_settings_parallel")
+
+    controls = {
+        component.symbol_id: component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "model-settings-policy"
+        and component.attributes.get("analysis")
+        == "typescript-openai-agents-agent-model-settings"
+    }
+    assert set(controls) == {
+        "ts:agent.ts#control:sequentialAgent.modelSettings@7",
+        "ts:agent.ts#control:parallelAgent.modelSettings@14",
+    }
+    assert controls[
+        "ts:agent.ts#control:sequentialAgent.modelSettings@7"
+    ].attributes == {
+        "analysis": "typescript-openai-agents-agent-model-settings",
+        "module": "@openai/agents",
+        "constructor": "Agent",
+        "imported_symbol": "Agent",
+        "configuration": "Agent.modelSettings",
+        "settings_scope": "agent-model-settings",
+        "source_agent": "Sequential tool agent",
+        "source_agent_id": "ts:agent.ts#agent:sequentialAgent",
+        "scope": "production",
+        "parallel_tool_calls": False,
+    }
+    assert controls["ts:agent.ts#control:parallelAgent.modelSettings@14"].attributes == {
+        "analysis": "typescript-openai-agents-agent-model-settings",
+        "module": "@openai/agents",
+        "constructor": "Agent",
+        "imported_symbol": "Agent",
+        "configuration": "Agent.modelSettings",
+        "settings_scope": "agent-model-settings",
+        "source_agent": "Parallel tool agent",
+        "source_agent_id": "ts:agent.ts#agent:parallelAgent",
+        "scope": "production",
+        "parallel_tool_calls": True,
+    }
+
+    edges = {
+        (
+            relationship.source_name,
+            relationship.source_id,
+            relationship.target_id,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            tuple(sorted(relationship.attributes.items())),
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "configured-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "model-settings-policy"
+    }
+    assert edges == {
+        (
+            "Sequential tool agent",
+            "ts:agent.ts#agent:sequentialAgent",
+            "ts:agent.ts#control:sequentialAgent.modelSettings@7",
+            "agent.ts",
+            7,
+            (
+                ("analysis", "typescript-openai-agents-agent-model-settings"),
+                ("binding", "modelSettings"),
+                ("configuration", "Agent-modelSettings"),
+                ("parallel_tool_calls", False),
+            ),
+        ),
+        (
+            "Parallel tool agent",
+            "ts:agent.ts#agent:parallelAgent",
+            "ts:agent.ts#control:parallelAgent.modelSettings@14",
+            "agent.ts",
+            14,
+            (
+                ("analysis", "typescript-openai-agents-agent-model-settings"),
+                ("binding", "modelSettings"),
+                ("configuration", "Agent-modelSettings"),
+                ("parallel_tool_calls", True),
+            ),
+        ),
+    }
+
+
 def test_typescript_openai_computer_safety_check_auto_acknowledgement() -> None:
     ir = scan_repository(ROOT / "cases/typescript_openai_computer_safety")
 

@@ -620,6 +620,12 @@
   remain unresolved; dynamic `userLocation` bindings remain unresolved as well. The local fixture
   plus pinned OpenAI Agents JS `web-search-filters.ts`, `web-search.ts`, and hosted-tools examples
   bring the public IR truth set to 2,201 passing labels.
+- OpenAI Agents JS Agent-level `parallelToolCalls` concurrency is now reviewable when literal.
+  Exact `new Agent({ modelSettings: { parallelToolCalls: true|false } })` values emit
+  `model-settings-policy` controls and configured-by edges on the source agent, while dynamic
+  bindings remain unresolved. The local fixture plus pinned OpenAI Agents JS `tool-search.ts`
+  examples bring the public IR truth set to 2,210 passing labels. RealtimeSession-level
+  `parallelToolCalls` is intentionally not claimed by this Agent-constructor detector.
 
 ## Hypotheses
 
