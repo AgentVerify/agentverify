@@ -141,7 +141,7 @@ const asToolOrchestrator = new Agent({
     asToolRuntimeAgent.asTool({
       toolName: 'review_sandbox_workspace',
       runConfig: {
-        sandbox: { session },
+        sandbox: { session }, tracingDisabled: true,
       },
     }),
   ],

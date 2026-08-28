@@ -611,6 +611,12 @@ catalog workflows.
   agent. Focused tracing-disabled labels pass 8/8, full public IR labels pass 2,099/2,099, and the
   full schema-v137 engine benchmark refresh passes 71/71 repositories with 2,795 relationships and
   10,560 symbolized components.
+- Added exact OpenAI Agents JS delegated `asTool({ runConfig: { tracingDisabled: true } })`
+  inventory. The scanner now emits `tracing-disabled` controls on the delegated agent, preserves
+  parent/orchestrator and tool-name provenance, and leaves explicit `false` unresolved. Focused
+  tracing-disabled labels pass 15/15, full public IR labels pass 2,106/2,106, and the full
+  schema-v138 engine benchmark refresh passes 71/71 repositories with 2,797 relationships and
+  10,562 symbolized components.
 
 ## Current findings
 
@@ -708,11 +714,12 @@ catalog workflows.
   `["literal"].includes(action.field)` are recorded, while compound conditions, helper calls, and
   nonliteral values remain callback-controlled without predicate attributes.
 - OpenAI Agents JS `withTrace(..., { groupId })`, stable exact `new Runner({ groupId })`,
-  `withTrace(..., { traceId })`, and stable exact `new Runner({ tracingDisabled: true })` are now
-  represented as separate trace/observability governance evidence, not conversation memory. Exact
-  imported `withTrace` callbacks containing source-proven SDK `run(agent, ...)` calls and exact
-  Runner instances with source-proven `.run(agent, ...)` calls emit `trace-group`, `trace-id`, or
-  `tracing-disabled` controls and configured-by edges.
+  `withTrace(..., { traceId })`, stable exact `new Runner({ tracingDisabled: true })`, and exact
+  delegated `agent.asTool({ runConfig: { tracingDisabled: true } })` calls are now represented as
+  separate trace/observability governance evidence, not conversation memory. Exact imported
+  `withTrace` callbacks containing source-proven SDK `run(agent, ...)` calls, exact Runner
+  instances with source-proven `.run(agent, ...)` calls, and exact delegated-agent `asTool`
+  adapters emit `trace-group`, `trace-id`, or `tracing-disabled` controls and configured-by edges.
 
 ## Blockers
 
@@ -729,7 +736,8 @@ work, keep local `MemorySession`, server-managed `conversationId`, `previousResp
 same-block `result.history`, same-file `result.state`, and serialized `RunState.fromString` resume
 semantics distinct from trace-correlation `withTrace(..., { groupId/traceId })` and stable
 `Runner({ groupId })` evidence, plus explicit tracing disablement through stable
-`Runner({ tracingDisabled: true })`. For OpenAI
+`Runner({ tracingDisabled: true })` and delegated
+`asTool({ runConfig: { tracingDisabled: true } })`. For OpenAI
 approval work, keep literal always-approval, callback-controlled
 approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
 approval metadata, literal predicate metadata, SDK state approval decisions, helper-parameter

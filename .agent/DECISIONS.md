@@ -606,5 +606,25 @@
 - Alternative: Treat disabled tracing as an audit finding by default. Rejected for now because
   examples often disable tracing intentionally in tests; the IR should preserve the governance fact
   and let policy decide whether disabled tracing is acceptable for the repository scope.
-- Revisit when: run-level or delegated-agent `runConfig.tracingDisabled` can be attributed to exact
-  source agents without collapsing adapter/tool semantics.
+- Revisit when: run-level `runConfig.tracingDisabled` or exported Runner/delegated-tool factories
+  can be attributed to exact source agents without collapsing adapter/tool semantics.
+
+## OpenAI Agents JS delegated asTool tracing disablement belongs to the delegated agent
+
+- Decision: Represent exact TypeScript OpenAI Agents SDK
+  `agent.asTool({ runConfig: { tracingDisabled: true } })` configuration as a
+  `tracing-disabled` control on the delegated/source agent, not on the parent orchestrator or on a
+  synthetic tool. Preserve the parent agent, delegated agent, and literal `toolName` when proven,
+  and emit only for literal `true`; literal `false`, missing values, and ambiguous targets stay
+  unresolved.
+- Evidence: The local sandbox-runtime fixture covers a positive delegated tool and an explicit
+  false negative. The pinned OpenAI Agents JS
+  `examples/sandbox/sandbox-agents-as-tools.ts` example disables tracing for both the
+  `Pricing Packet Reviewer` and `Rollout Risk Reviewer` delegated reviewers while the parent
+  remains `Revenue Operations Coordinator`.
+- Alternative: Attach delegated `runConfig.tracingDisabled` to the parent agent's
+  `delegates-to` edge only. Rejected because the SDK run configuration applies to the delegated
+  agent execution, and policy review needs that source-agent identity even when the parent is the
+  caller.
+- Revisit when: broader `runConfig` trace metadata or exported delegated-tool factories can be
+  proven without weakening the exact `asTool` source/target attribution.

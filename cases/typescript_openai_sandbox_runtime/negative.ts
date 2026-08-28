@@ -96,7 +96,7 @@ const unknownAsToolOrchestrator = new Agent({
     unknownAsToolRuntimeAgent.asTool({
       toolName: 'review_unknown_sandbox_workspace',
       runConfig: {
-        sandbox: { session: inlineUnknownSession },
+        sandbox: { session: inlineUnknownSession }, tracingDisabled: false,
       },
     }),
   ],

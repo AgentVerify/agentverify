@@ -16971,6 +16971,48 @@ def add_typescript_openai_runner_tracing_disabled_control(
     return "tracing-disabled", control_id
 
 
+def add_typescript_openai_as_tool_tracing_disabled_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    source_agent: tuple[str, str],
+    parent_agent: tuple[str, str],
+    tool_name: str | None,
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS asTool runConfig tracing-disablement evidence."""
+    source_agent_name, source_agent_id = source_agent
+    parent_agent_name, parent_agent_id = parent_agent
+    attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-astool-tracing-disabled",
+        "module": "@openai/agents",
+        "adapter": "asTool",
+        "configuration": "asTool.runConfig.tracingDisabled",
+        "tracing_disabled": True,
+        "trace_scope": "openai-tracing",
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "parent_agent": parent_agent_name,
+        "parent_agent_id": parent_agent_id,
+        "scope": source_scope(relative),
+    }
+    if tool_name is not None:
+        attributes["tool_name"] = tool_name
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "tracing-disabled",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    return "tracing-disabled", control_id
+
+
 def add_typescript_openai_trace_id_control(
     ir: RepositoryIR,
     *,
@@ -20274,8 +20316,79 @@ def typescript_graph(
                         "runConfig",
                         call_arguments[0][1],
                     )
+                    run_config_expression = None
+                    run_config_offset = None
                     if run_config_location is not None:
                         run_config_expression, _, run_config_offset = run_config_location
+                        tracing_disabled_location = (
+                            typescript_object_property_expression_location(
+                                run_config_expression,
+                                "tracingDisabled",
+                                run_config_offset,
+                            )
+                        )
+                        if tracing_disabled_location is not None:
+                            (
+                                tracing_disabled_expression,
+                                tracing_disabled_property_offset,
+                                _,
+                            ) = tracing_disabled_location
+                            if (
+                                typescript_literal_boolean_value(tracing_disabled_expression)
+                                is True
+                            ):
+                                delegated_agent_name, delegated_agent_id = target
+                                tool_name = as_tool_attributes.get("tool_name")
+                                tracing_line = line_at(text, tracing_disabled_property_offset)
+                                tracing_control_name, tracing_control_id = (
+                                    add_typescript_openai_as_tool_tracing_disabled_control(
+                                        ir,
+                                        relative=relative,
+                                        lines=lines,
+                                        line=tracing_line,
+                                        source_agent=(delegated_agent_name, delegated_agent_id),
+                                        parent_agent=(agent_name, agent_id),
+                                        tool_name=(
+                                            tool_name if isinstance(tool_name, str) else None
+                                        ),
+                                        symbol_identity=(
+                                            f"{variable_name}.asTool.tracingDisabled@"
+                                            f"{tracing_line}:parent{as_tool_line}"
+                                        ),
+                                    )
+                                )
+                                ir.add_relationship(
+                                    Relationship(
+                                        "agent",
+                                        delegated_agent_name,
+                                        "configured-by",
+                                        "control",
+                                        tracing_control_name,
+                                        Evidence(
+                                            relative,
+                                            tracing_line,
+                                            excerpt(lines, tracing_line),
+                                        ),
+                                        {
+                                            "analysis": (
+                                                "typescript-openai-agents-astool-"
+                                                "tracing-disabled"
+                                            ),
+                                            "configuration": (
+                                                "asTool-runConfig-tracingDisabled"
+                                            ),
+                                            "binding": "tracingDisabled",
+                                            "adapter": "asTool",
+                                            **(
+                                                {"tool_name": as_tool_attributes["tool_name"]}
+                                                if "tool_name" in as_tool_attributes
+                                                else {}
+                                            ),
+                                        },
+                                        source_id=delegated_agent_id,
+                                        target_id=tracing_control_id,
+                                    )
+                                )
                         sandbox_location = typescript_object_property_expression_location(
                             run_config_expression,
                             "sandbox",

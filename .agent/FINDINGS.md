@@ -554,6 +554,12 @@
   tracing for `Weather assistant` and `Workspace assistant`, demonstrating why this belongs in IR
   policy evidence rather than as an unconditional finding. The public IR truth set now covers 2,099
   passing labels.
+- OpenAI Agents JS delegated `asTool` run configurations can also disable tracing for the delegated
+  agent execution. Exact `agent.asTool({ runConfig: { tracingDisabled: true } })` calls now emit
+  `tracing-disabled` controls on the delegated agent with parent-agent and tool-name provenance,
+  while explicit false values remain unresolved. The pinned sandbox agents-as-tools example disables
+  tracing for `Pricing Packet Reviewer` and `Rollout Risk Reviewer`, bringing the public IR truth
+  set to 2,106 passing labels.
 
 ## Hypotheses
 

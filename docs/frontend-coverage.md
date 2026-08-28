@@ -776,11 +776,14 @@ emits a `trace-id` control only when the imported SDK helper wraps a callback wi
 source-proven `run(agent, ...)` call. Stable exact `new Runner({ groupId })` instances also emit
 `trace-group` controls when a later same-instance `.run(agent, ...)` call supplies a source-proven
 agent, and stable exact `new Runner({ tracingDisabled: true })` instances emit
-`tracing-disabled` controls for source-proven Runner calls. The pinned `routing.ts` example
-contributes the corpus `trace-group` control for its dynamic `conversationId` binding, the Codex
-tool example contributes generated-trace-ID controls with a logged OpenAI platform trace URL, the
-sandbox memory-generation example contributes a Runner-level trace group, and SDK testing examples
-contribute explicit tracing-disablement controls.
+`tracing-disabled` controls for source-proven Runner calls. Exact delegated
+`agent.asTool({ runConfig: { tracingDisabled: true } })` calls also emit `tracing-disabled`
+controls on the delegated agent with parent-agent and tool-name provenance. The pinned `routing.ts`
+example contributes the corpus `trace-group` control for its dynamic `conversationId` binding, the
+Codex tool example contributes generated-trace-ID controls with a logged OpenAI platform trace URL,
+the sandbox memory-generation example contributes a Runner-level trace group, SDK testing examples
+contribute Runner tracing-disablement controls, and the sandbox agents-as-tools example contributes
+delegated reviewer tracing-disablement controls.
 
 The Python frontend inventories 449 canonical/import/callable-aliased and proven-`Path` mutations:
 179 creates, 191 deletes, 46 copies, and 33 moves. Of these, 434 use non-literal path expressions;

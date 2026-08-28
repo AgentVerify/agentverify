@@ -5377,6 +5377,73 @@ def test_typescript_openai_sandbox_runtime_requires_exact_local_client_import() 
     ]
     assert len(as_tool_edges) == 1
     assert as_tool_edges[0].attributes["configuration"] == "asTool-runConfig"
+    tracing_disabled_controls = {
+        (
+            component.evidence.path,
+            component.evidence.line,
+            component.symbol_id,
+            tuple(sorted(component.attributes.items())),
+        )
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "tracing-disabled"
+        and component.attributes.get("analysis")
+        == "typescript-openai-agents-astool-tracing-disabled"
+    }
+    assert tracing_disabled_controls == {
+        (
+            "positive.ts",
+            144,
+            "ts:positive.ts#control:asToolRuntimeAgent.asTool.tracingDisabled@144:parent141",
+            (
+                ("adapter", "asTool"),
+                ("analysis", "typescript-openai-agents-astool-tracing-disabled"),
+                ("configuration", "asTool.runConfig.tracingDisabled"),
+                ("module", "@openai/agents"),
+                ("parent_agent", "asTool Runtime Orchestrator"),
+                ("parent_agent_id", "ts:positive.ts#agent:asToolOrchestrator"),
+                ("scope", "production"),
+                ("source_agent", "asTool Runtime Sandbox"),
+                ("source_agent_id", "ts:positive.ts#agent:asToolRuntimeAgent"),
+                ("tool_name", "review_sandbox_workspace"),
+                ("trace_scope", "openai-tracing"),
+                ("tracing_disabled", True),
+            ),
+        )
+    }
+    tracing_disabled_edges = {
+        (
+            relationship.source_name,
+            relationship.source_id,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            relationship.target_id,
+            tuple(sorted(relationship.attributes.items())),
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "configured-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "tracing-disabled"
+        and relationship.attributes.get("analysis")
+        == "typescript-openai-agents-astool-tracing-disabled"
+    }
+    assert tracing_disabled_edges == {
+        (
+            "asTool Runtime Sandbox",
+            "ts:positive.ts#agent:asToolRuntimeAgent",
+            "positive.ts",
+            144,
+            "ts:positive.ts#control:asToolRuntimeAgent.asTool.tracingDisabled@144:parent141",
+            (
+                ("adapter", "asTool"),
+                ("analysis", "typescript-openai-agents-astool-tracing-disabled"),
+                ("binding", "tracingDisabled"),
+                ("configuration", "asTool-runConfig-tracingDisabled"),
+                ("tool_name", "review_sandbox_workspace"),
+            ),
+        )
+    }
     assert not any(
         component.evidence.path == "negative.ts" and component.kind == "control"
         for component in ir.components

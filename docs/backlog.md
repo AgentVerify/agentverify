@@ -500,13 +500,15 @@ Schema v134/v135 adds exact OpenAI Agents JS trace correlation inventory for
 `withTrace(..., { groupId })` and `withTrace(..., { traceId })`. Schema v136 extends the same
 trace-correlation family to exact, stable `new Runner({ groupId })` instances that later call
 `.run(agent, ...)`. Schema v137 adds exact `new Runner({ tracingDisabled: true })` inventory as a
-separate `tracing-disabled` control. AgentVerify emits distinct `trace-group`, `trace-id`, and
-`tracing-disabled` controls and configured-by edges without treating any trace identifier as
-conversation memory. The real `routing.ts` example links the triage agent to its dynamic
-`conversationId` trace group, the real Codex tool example links two runs to a generated trace ID
-with a logged OpenAI platform trace URL, the real sandbox memory-generation example links its
-Runner-level group ID to the executed agent, and the real SDK testing examples show tracing
-disablement as explicit observability policy.
+separate `tracing-disabled` control, and schema v138 extends that observability policy evidence to
+exact delegated `agent.asTool({ runConfig: { tracingDisabled: true } })` executions. AgentVerify
+emits distinct `trace-group`, `trace-id`, and `tracing-disabled` controls and configured-by edges
+without treating any trace identifier as conversation memory. The real `routing.ts` example links
+the triage agent to its dynamic `conversationId` trace group, the real Codex tool example links two
+runs to a generated trace ID with a logged OpenAI platform trace URL, the real sandbox
+memory-generation example links its Runner-level group ID to the executed agent, SDK testing
+examples show Runner tracing disablement, and the sandbox agents-as-tools example shows delegated
+reviewer tracing disablement.
 
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
