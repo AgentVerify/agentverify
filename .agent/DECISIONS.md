@@ -771,3 +771,19 @@
   singleton or managed elsewhere.
 - Revisit when: imported computer factory helpers, class methods, or explicit browser/backend
   constructor provenance can be linked without broad name matching.
+
+## OpenAI Agents JS Agent model settings are source-agent policy metadata
+
+- Decision: Record exact TypeScript OpenAI Agents SDK Agent-level literal
+  `modelSettings.reasoning.effort` and `modelSettings.text.verbosity` as `model-settings-policy`
+  controls on the source agent. Emit only for direct nested string literals in exact imported
+  `new Agent(...)` model settings; keep mutable or nonliteral nested values unresolved.
+- Evidence: The local structured-tools fixture covers a worker agent with literal low reasoning and
+  verbosity settings and a dynamic-policy negative with a mutable nested effort. The pinned OpenAI
+  Agents JS `examples/tools/web-search-filters.ts` example sets both low reasoning and low
+  verbosity, while `examples/tools/apply-patch.ts` sets low reasoning for a patch-capable agent.
+- Alternative: Fold reasoning/verbosity into generic provider/model components or into
+  `tool-choice-policy`. Rejected because these settings alter model behavior but are distinct from
+  provider choice and from whether tools are forced/auto-selected.
+- Revisit when: run-level model settings, Runner-level defaults, or imported model-settings objects
+  can be tied to exact source-agent identity without broad config/name matching.

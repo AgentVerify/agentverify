@@ -3876,6 +3876,70 @@ def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> Non
             ),
         )
     }
+    model_settings_controls = {
+        (
+            component.evidence.path,
+            component.evidence.line,
+            component.symbol_id,
+            tuple(sorted(component.attributes.items())),
+        )
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "model-settings-policy"
+        and component.attributes.get("analysis")
+        == "typescript-openai-agents-agent-model-settings"
+    }
+    assert model_settings_controls == {
+        (
+            "agent.ts",
+            26,
+            "ts:agent.ts#control:worker.modelSettings@26",
+            (
+                ("analysis", "typescript-openai-agents-agent-model-settings"),
+                ("configuration", "Agent.modelSettings"),
+                ("constructor", "Agent"),
+                ("imported_symbol", "Agent"),
+                ("module", "@openai/agents"),
+                ("reasoning_effort", "low"),
+                ("scope", "production"),
+                ("settings_scope", "agent-model-settings"),
+                ("source_agent", "worker"),
+                ("source_agent_id", "ts:agent.ts#agent:worker"),
+                ("text_verbosity", "low"),
+            ),
+        )
+    }
+    model_settings_edges = {
+        (
+            relationship.source_name,
+            relationship.source_id,
+            relationship.evidence.path,
+            relationship.evidence.line,
+            relationship.target_id,
+            tuple(sorted(relationship.attributes.items())),
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "configured-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "model-settings-policy"
+    }
+    assert model_settings_edges == {
+        (
+            "worker",
+            "ts:agent.ts#agent:worker",
+            "agent.ts",
+            26,
+            "ts:agent.ts#control:worker.modelSettings@26",
+            (
+                ("analysis", "typescript-openai-agents-agent-model-settings"),
+                ("binding", "modelSettings"),
+                ("configuration", "Agent-modelSettings"),
+                ("reasoning_effort", "low"),
+                ("text_verbosity", "low"),
+            ),
+        )
+    }
     turn_limit_controls = {
         (
             component.evidence.path,

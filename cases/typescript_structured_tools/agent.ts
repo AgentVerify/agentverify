@@ -23,7 +23,7 @@ const assignedShell = localShellTool({
   needsApproval: false,
 });
 
-const worker = new Agent({ name: "worker", modelSettings: { toolChoice: "required" } });
+const worker = new Agent({ name: "worker", modelSettings: { toolChoice: "required", reasoning: { effort: "low" }, text: { verbosity: "low" } } });
 
 const operator = new Agent({
   name: "operator",
@@ -61,5 +61,5 @@ const operator = new Agent({
 let mutableToolChoice = "auto";
 const dynamicPolicyAgent = new Agent({
   name: "dynamic policy",
-  modelSettings: { toolChoice: mutableToolChoice },
+  modelSettings: { toolChoice: mutableToolChoice, reasoning: { effort: mutableToolChoice } },
 });

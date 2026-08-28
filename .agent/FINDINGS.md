@@ -606,6 +606,11 @@
   metadata. The pinned computer-use HITL and basic computer-use examples contribute per-request
   create/dispose evidence, while the singleton HITL example remains external-binding, bringing the
   public IR truth set to 2,175 passing labels.
+- OpenAI Agents JS Agent-level literal model settings are now reviewable beyond `toolChoice`.
+  Exact `new Agent({ modelSettings: { reasoning: { effort }, text: { verbosity } } })` values emit
+  `model-settings-policy` controls and configured-by edges on the source agent, while mutable nested
+  values remain unresolved. The pinned web-search filters and apply-patch examples contribute real
+  low-reasoning/verbosity evidence, bringing the public IR truth set to 2,182 passing labels.
 
 ## Hypotheses
 

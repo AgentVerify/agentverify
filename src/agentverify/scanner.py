@@ -17224,6 +17224,47 @@ def add_typescript_openai_agent_tool_choice_control(
     return "tool-choice-policy", control_id
 
 
+def add_typescript_openai_agent_model_settings_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    source_agent: tuple[str, str],
+    reasoning_effort: str | None,
+    text_verbosity: str | None,
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS Agent modelSettings governance evidence."""
+    source_agent_name, source_agent_id = source_agent
+    attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-agent-model-settings",
+        "module": "@openai/agents",
+        "constructor": "Agent",
+        "imported_symbol": "Agent",
+        "configuration": "Agent.modelSettings",
+        "settings_scope": "agent-model-settings",
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "scope": source_scope(relative),
+    }
+    if reasoning_effort is not None:
+        attributes["reasoning_effort"] = reasoning_effort
+    if text_verbosity is not None:
+        attributes["text_verbosity"] = text_verbosity
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "model-settings-policy",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    return "model-settings-policy", control_id
+
+
 def add_typescript_openai_as_tool_model_override_control(
     ir: RepositoryIR,
     *,
@@ -20599,6 +20640,58 @@ def typescript_graph(
                                 target_id=tool_choice_id,
                             )
                         )
+                reasoning_effort = typescript_literal_nested_object_string_property(
+                    model_settings_expression,
+                    body_offset=model_settings_expression_offset,
+                    path=("reasoning", "effort"),
+                )
+                text_verbosity = typescript_literal_nested_object_string_property(
+                    model_settings_expression,
+                    body_offset=model_settings_expression_offset,
+                    path=("text", "verbosity"),
+                )
+                if reasoning_effort is not None or text_verbosity is not None:
+                    model_settings_line = line_at(text, model_settings_expression_offset)
+                    model_settings_name, model_settings_id = (
+                        add_typescript_openai_agent_model_settings_control(
+                            ir,
+                            relative=relative,
+                            lines=lines,
+                            line=model_settings_line,
+                            source_agent=(agent_name, agent_id),
+                            reasoning_effort=reasoning_effort,
+                            text_verbosity=text_verbosity,
+                            symbol_identity=(
+                                f"{agent_identity}.modelSettings@{model_settings_line}"
+                            ),
+                        )
+                    )
+                    model_settings_attributes: dict[str, object] = {
+                        "analysis": "typescript-openai-agents-agent-model-settings",
+                        "configuration": "Agent-modelSettings",
+                        "binding": "modelSettings",
+                    }
+                    if reasoning_effort is not None:
+                        model_settings_attributes["reasoning_effort"] = reasoning_effort
+                    if text_verbosity is not None:
+                        model_settings_attributes["text_verbosity"] = text_verbosity
+                    ir.add_relationship(
+                        Relationship(
+                            "agent",
+                            agent_name,
+                            "configured-by",
+                            "control",
+                            model_settings_name,
+                            Evidence(
+                                relative,
+                                model_settings_line,
+                                excerpt(lines, model_settings_line),
+                            ),
+                            model_settings_attributes,
+                            source_id=agent_id,
+                            target_id=model_settings_id,
+                        )
+                    )
         if binding_kind == "assignment":
             assigned_agents[variable_name].append(
                 (match.start(), match.end(), agent_name, agent_id)

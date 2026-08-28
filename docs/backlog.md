@@ -510,10 +510,12 @@ stable `new Runner({ workflowName })` per-run trace-workflow controls. Schema v1
 direct `run(agent, ..., { maxTurns })` and stable `runner.run(agent, ..., { maxTurns })` per-run
 execution-bound controls. Schema v144 adds exact Agent-level `modelSettings.toolChoice` policy
 controls, schema v145 adds exact stable Runner-level `modelSettings.toolChoice` per-run policy
-controls, and schema v146 adds exact OpenAI Agents JS `computerTool({ computer })` backend
+controls, schema v146 adds exact OpenAI Agents JS `computerTool({ computer })` backend
 lifecycle metadata for external bindings, inline static objects, create/dispose per-run factories,
-and create-only factories. AgentVerify emits distinct `trace-group`, `trace-id`, `tracing-disabled`,
-`agent-turn-limit`, `agent-model-override`, `trace-workflow`, and `tool-choice-policy` controls and
+and create-only factories, and schema v147 adds exact Agent-level
+`modelSettings.reasoning.effort` / `modelSettings.text.verbosity` controls. AgentVerify emits
+distinct `trace-group`, `trace-id`, `tracing-disabled`, `agent-turn-limit`,
+`agent-model-override`, `trace-workflow`, `tool-choice-policy`, and `model-settings-policy` controls and
 configured-by edges without treating any trace identifier as conversation memory. The real
 `routing.ts` example links the triage agent to
 its dynamic `conversationId` trace group, the real Codex tool example links two runs to a generated
@@ -529,7 +531,8 @@ agents. The forcing-tool-use and programmatic tool-calling examples show Agent-l
 `modelSettings.toolChoice` values including `required` and `programmatic_tool_calling`, and the
 hosted MCP human-in-the-loop example shows Runner-level `required` initial-run and `auto`
 resume-run tool-choice policy. The computer-use HITL and basic computer-use examples distinguish
-singleton external computer bindings from per-request create/dispose browser factories.
+singleton external computer bindings from per-request create/dispose browser factories, and the
+web-search filters and apply-patch examples expose low reasoning/verbosity model settings.
 
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
