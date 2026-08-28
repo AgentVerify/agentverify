@@ -581,6 +581,14 @@ catalog workflows.
   labels, full 71/71 engine benchmark refresh, checked benchmark verification, full `pytest -q`
   (298 passed), JSON parsing, diff whitespace checks, and `uv build` plus distribution smoke/source
   verification.
+- Added exact OpenAI Agents JS history-feedback continuity. The scanner now links a run to
+  `result.history` when the same exact SDK call consumes a caller/loop-owned history binding and
+  refreshes that binding from its own history result; local fixtures cover loop-owned `inputs` and
+  `thread.concat(...)`, and the real `examples/docs/running-agents/chatLoop.ts` example pins the
+  caller-owned helper shape. Agent aliases in the routed `withTrace(... groupId ...)` example remain
+  unresolved rather than broadening the model. Focused history-feedback labels pass 6/6, full public
+  IR labels pass 2,068/2,068, checked benchmark verification passes, and the full 71/71 engine
+  benchmark refresh now reports 2,788 relationships.
 
 ## Current findings
 

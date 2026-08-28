@@ -215,20 +215,25 @@
 ## OpenAI run history continuation requires local result-history proof
 
 - Decision: Treat OpenAI Agents JS `result.history` handoff as `conversation-continuity` evidence
-  only when an input binding is assigned from `.history` on a stable result variable returned by an
-  exact imported `run(agent, ...)` call, and a later same-file `run(agent, inputBinding)` or
-  `runner.run(agent, inputBinding)` consumes that binding before reassignment.
+  only when an input binding is assigned from `.history` on a stable or locally latest result
+  variable returned by an exact imported `run(agent, ...)` call, and either a later same-file
+  `run(agent, inputBinding)`/`runner.run(agent, inputBinding)` consumes that binding before
+  reassignment or the same exact call visibly feeds a caller/loop-owned history binding that it then
+  refreshes from its own `result.history`.
 - Evidence: Pinned OpenAI Agents JS examples include `examples/tools/web-search.ts`, where
   `messages = result.history` is extended and passed to a second `run`, and
   `examples/agent-patterns/llm-as-a-judge.ts`, where `inputItems = storyOutlineResult.history` is
-  passed to an evaluator run. Local positives cover both direct imported `run` and `Runner.run`;
+  passed to an evaluator run. The pinned `examples/docs/running-agents/chatLoop.ts` helper now
+  validates the weaker `run-history-feedback-input` shape, where `thread.concat(...)` is consumed
+  and `thread = result.history` refreshes the caller-owned history for subsequent helper calls.
+  Local positives cover direct imported `run`, `Runner.run`, loop feedback, and concat feedback;
   local negatives pin loose arrays, unknown run functions, and reassigned history inputs.
 - Alternative: Treat any array passed as the second `run` argument as conversation continuity.
   Rejected because OpenAI Agents run inputs can also be fresh user messages; continuity requires
   proof that the input was returned by SDK history.
-- Revisit when: same-file helper/caller state flow can be modeled narrowly enough to cover
-  chat-loop patterns such as `thread = result.history` across repeated function calls without
-  accepting arbitrary mutable state as continuity evidence.
+- Revisit when: same-file agent aliases can be resolved narrowly enough to cover routed loop
+  patterns such as `let agent = triageAgent; result = await run(agent, inputs); inputs =
+  result.history` without accepting arbitrary mutable state as continuity evidence.
 
 ## OpenAI run-state resume requires prior SDK run-state proof
 

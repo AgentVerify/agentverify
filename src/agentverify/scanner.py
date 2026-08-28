@@ -20156,6 +20156,7 @@ def typescript_graph(
         list
     )
     openai_agents_run_result_bindings: dict[str, tuple[str, str]] = {}
+    openai_agents_run_result_call_bindings: dict[int, str] = {}
     direct_run_result_patterns = (
         re.compile(
             r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*(?::\s*[^=;\n]+)?=\s*"
@@ -20211,6 +20212,7 @@ def typescript_graph(
                 agent_target=agent_target,
                 end=end,
             )
+            openai_agents_run_result_call_bindings[match.start(2)] = result_name
     runner_run_result_pattern = re.compile(
         r"\b(?:const|let)?\s*([A-Za-z_$][\w$]*)\s*(?::\s*[^=;\n]+)?=\s*"
         r"(?:await\s+)?([A-Za-z_$][\w$]*)\.run\s*\("
@@ -20239,6 +20241,7 @@ def typescript_graph(
             agent_target=agent_target,
             end=end,
         )
+        openai_agents_run_result_call_bindings[match.start(2)] = result_name
     previous_response_id_pattern = re.compile(
         r"\bconst\s+([A-Za-z_$][\w$]*)\s*(?::\s*[^=;\n]+)?=\s*"
         r"([A-Za-z_$][\w$]*)\s*\.\s*lastResponseId\b"
@@ -20265,7 +20268,45 @@ def typescript_graph(
                 symbol_identity=f"{previous_response_id_name}@{line}",
             )
         )
+
+    def latest_openai_agents_run_result_source(
+        result_name: str,
+        use_offset: int,
+        *,
+        current_call_start: int | None = None,
+    ) -> tuple[str, str] | None:
+        for source, assignment_end in reversed(
+            openai_agents_run_result_sources.get(result_name, [])
+        ):
+            if assignment_end > use_offset:
+                continue
+            stale = False
+            for assignment in re.finditer(
+                rf"(?<![\w$.]){re.escape(result_name)}\s*=(?!=)",
+                code[assignment_end:use_offset],
+            ):
+                absolute_assignment_start = assignment_end + assignment.start()
+                absolute_assignment_end = assignment_end + assignment.end()
+                if (
+                    current_call_start is not None
+                    and absolute_assignment_end <= current_call_start
+                ):
+                    between_assignment_and_call = code[
+                        absolute_assignment_end:current_call_start
+                    ]
+                    if re.fullmatch(r"\s*(?:await\s+)?", between_assignment_and_call):
+                        continue
+                if absolute_assignment_start >= assignment_end:
+                    stale = True
+                    break
+            if not stale:
+                return source
+        return None
+
     history_continuity_bindings: dict[str, list[tuple[tuple[str, str], int]]] = defaultdict(list)
+    history_feedback_bindings: dict[str, list[tuple[tuple[str, str], int, int, str]]] = (
+        defaultdict(list)
+    )
     history_binding_patterns = (
         re.compile(
             r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*(?::\s*[^=;\n]+)?=\s*"
@@ -20287,6 +20328,8 @@ def typescript_graph(
                 continue
             source = openai_agents_run_result_bindings.get(result_name)
             if source is None:
+                source = latest_openai_agents_run_result_source(result_name, match.start())
+            if source is None:
                 continue
             if re.search(
                 rf"(?<![\w$.]){re.escape(history_name)}\s*=(?!=)",
@@ -20306,52 +20349,27 @@ def typescript_graph(
                     continue
             line = line_at(text, match.start())
             seen_history_bindings.add((history_name, match.start()))
+            history_control = add_typescript_openai_history_continuity_control(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=line,
+                result_binding=result_name,
+                history_binding=history_name,
+                source_agent=source,
+                symbol_identity=f"{history_name}.history@{line}",
+            )
             history_continuity_bindings[history_name].append(
                 (
-                    add_typescript_openai_history_continuity_control(
-                        ir,
-                        relative=relative,
-                        lines=lines,
-                        line=line,
-                        result_binding=result_name,
-                        history_binding=history_name,
-                        source_agent=source,
-                        symbol_identity=f"{history_name}.history@{line}",
-                    ),
+                    history_control,
                     match.end(),
                 )
             )
+            history_feedback_bindings[history_name].append(
+                (history_control, match.start(), match.end(), result_name)
+            )
     state_continuity_bindings: dict[str, list[tuple[tuple[str, str], int]]] = defaultdict(list)
     run_state_binding_sources: dict[str, list[tuple[str, tuple[str, str], int]]] = defaultdict(list)
-
-    def latest_openai_agents_run_result_source(
-        result_name: str,
-        use_offset: int,
-        *,
-        current_call_start: int | None = None,
-    ) -> tuple[str, str] | None:
-        for source, assignment_end in reversed(
-            openai_agents_run_result_sources.get(result_name, [])
-        ):
-            if assignment_end > use_offset:
-                continue
-            stale = False
-            for assignment in re.finditer(
-                rf"(?<![\w$.]){re.escape(result_name)}\s*=(?!=)",
-                code[assignment_end:use_offset],
-            ):
-                absolute_assignment_start = assignment_end + assignment.start()
-                absolute_assignment_end = assignment_end + assignment.end()
-                if current_call_start is not None and absolute_assignment_end <= current_call_start:
-                    between_assignment_and_call = code[absolute_assignment_end:current_call_start]
-                    if re.fullmatch(r"\s*(?:await\s+)?", between_assignment_and_call):
-                        continue
-                if absolute_assignment_start >= assignment_end:
-                    stale = True
-                    break
-            if not stale:
-                return source
-        return None
 
     state_binding_patterns = (
         re.compile(
@@ -20836,6 +20854,64 @@ def typescript_graph(
                 )
         return None
 
+    def call_span_is_inside_loop(call_start: int, assignment_start: int) -> bool:
+        """Return whether a call and later assignment share an enclosing TS loop block."""
+        for loop_match in reversed(list(re.finditer(r"\b(?:while|for)\s*\(", code[:call_start]))):
+            loop_opening = code.find("(", loop_match.start(), loop_match.end())
+            loop_condition_end = typescript_balanced_end(code, loop_opening, "(", ")")
+            if loop_condition_end is None:
+                continue
+            brace_start = code.find("{", loop_condition_end, call_start)
+            if brace_start < 0:
+                continue
+            brace_end = typescript_balanced_end(code, brace_start, "{", "}")
+            if brace_end is not None and brace_start < call_start < assignment_start < brace_end:
+                return True
+        return False
+
+    def history_feedback_continuity_from_input(
+        argument: str,
+        argument_offset: int,
+        *,
+        current_call_start: int,
+    ) -> tuple[tuple[str, str], str, str, str] | None:
+        result_name = openai_agents_run_result_call_bindings.get(current_call_start)
+        if result_name is None:
+            return None
+        input_code = typescript_code_mask(argument).strip()
+        for history_name, feedback_bindings in history_feedback_bindings.items():
+            if not re.search(rf"(?<![\w$.]){re.escape(history_name)}(?![\w$])", input_code):
+                continue
+            concat_feedback = re.search(
+                rf"(?<![\w$.]){re.escape(history_name)}\s*\.\s*concat\s*\(",
+                input_code,
+            )
+            for (
+                continuity_control,
+                assignment_start,
+                _assignment_end,
+                feedback_result_name,
+            ) in feedback_bindings:
+                if feedback_result_name != result_name or assignment_start <= argument_offset:
+                    continue
+                if re.search(
+                    rf"(?<![\w$.]){re.escape(history_name)}\s*=(?!=)",
+                    code[argument_offset:assignment_start],
+                ):
+                    continue
+                if concat_feedback is None and not call_span_is_inside_loop(
+                    current_call_start,
+                    assignment_start,
+                ):
+                    continue
+                return (
+                    continuity_control,
+                    "history-feedback-input",
+                    "typescript-openai-agents-history-continuity",
+                    "history-feedback-input",
+                )
+        return None
+
     def conversation_continuity_from_input(
         argument: str,
         argument_offset: int,
@@ -20862,6 +20938,12 @@ def typescript_graph(
                     ("typescript-openai-agents-history-continuity"),
                     "history-input",
                 )
+            if feedback_continuity := history_feedback_continuity_from_input(
+                argument,
+                argument_offset,
+                current_call_start=current_call_start,
+            ):
+                return feedback_continuity
             for continuity_control, assignment_end in reversed(
                 state_continuity_bindings.get(input_name, [])
             ):
@@ -20879,6 +20961,12 @@ def typescript_graph(
                     "state-input",
                 )
             return None
+        if feedback_continuity := history_feedback_continuity_from_input(
+            argument,
+            argument_offset,
+            current_call_start=current_call_start,
+        ):
+            return feedback_continuity
         state_member = re.fullmatch(r"([A-Za-z_$][\w$]*)\s*\.\s*state", input_code)
         if state_member is None:
             return None

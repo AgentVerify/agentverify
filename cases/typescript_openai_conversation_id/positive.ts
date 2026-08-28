@@ -84,3 +84,19 @@ for (const interruption of messageApproval.interruptions ?? []) {
   messageState.reject(interruption, { message: runtimeRejectionText });
 }
 await run(agent, messageState);
+
+let loopItems = [{ role: 'user', content: 'start loop history feedback' }];
+while (shouldContinue) {
+  const loopResult = await run(agent, loopItems);
+  loopItems = loopResult.history;
+  loopItems.push({ role: 'user', content: 'continue loop history' });
+}
+
+let concatThread = [{ role: 'user', content: 'start concat history feedback' }];
+async function continueConcatHistory(text: string) {
+  const concatResult = await run(
+    agent,
+    concatThread.concat({ role: 'user', content: text }),
+  );
+  concatThread = concatResult.history;
+}

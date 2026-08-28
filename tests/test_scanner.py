@@ -5470,6 +5470,8 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         ("positive.ts", 49, "ts:positive.ts#control:approvalState.state@49"),
         ("positive.ts", 69, "ts:positive.ts#control:persistedState.fromString@69"),
         ("positive.ts", 79, "ts:positive.ts#control:messageState.state@79"),
+        ("positive.ts", 91, "ts:positive.ts#control:loopItems.history@91"),
+        ("positive.ts", 101, "ts:positive.ts#control:concatThread.history@101"),
     }
     assert continuity_controls[
         ("positive.ts", 23, "ts:positive.ts#control:previousResponseId@23")
@@ -5581,6 +5583,32 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         ].attributes["state_binding"]
         == "messageState"
     )
+    assert continuity_controls[
+        ("positive.ts", 91, "ts:positive.ts#control:loopItems.history@91")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-history-continuity",
+        "module": "@openai/agents",
+        "configuration": "run.history",
+        "result_binding": "loopResult",
+        "history_binding": "loopItems",
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "state_scope": "openai-run-history-continuity",
+        "scope": "production",
+    }
+    assert continuity_controls[
+        ("positive.ts", 101, "ts:positive.ts#control:concatThread.history@101")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-history-continuity",
+        "module": "@openai/agents",
+        "configuration": "run.history",
+        "result_binding": "concatResult",
+        "history_binding": "concatThread",
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "state_scope": "openai-run-history-continuity",
+        "scope": "production",
+    }
 
     approval_decision_controls = {
         (component.evidence.path, component.evidence.line, component.symbol_id): component
@@ -5748,6 +5776,28 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
                 ("analysis", "typescript-openai-agents-history-continuity"),
                 ("binding", "history-input"),
                 ("configuration", "runner-run-history-input"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            90,
+            "ts:positive.ts#control:loopItems.history@91",
+            (
+                ("analysis", "typescript-openai-agents-history-continuity"),
+                ("binding", "history-feedback-input"),
+                ("configuration", "run-history-feedback-input"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            97,
+            "ts:positive.ts#control:concatThread.history@101",
+            (
+                ("analysis", "typescript-openai-agents-history-continuity"),
+                ("binding", "history-feedback-input"),
+                ("configuration", "run-history-feedback-input"),
             ),
         ),
         (

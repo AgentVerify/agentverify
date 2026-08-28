@@ -2,7 +2,7 @@
 
 ## Durable facts
 
-- The repository contains a 71-repository pinned research corpus and schema-v131 engine benchmark
+- The repository contains a 71-repository pinned research corpus and schema-v132 engine benchmark
   outputs.
 - The runtime catalog currently contains 25 enabled reporting rules.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
@@ -410,12 +410,15 @@
   composition edge; the public IR truth set now covers 1,904 passing labels.
 - OpenAI Agents JS `result.history` can prove conversation continuity when a stable history input
   binding is assigned from a stable exact `run(agent, ...)` result and then consumed by a later
-  direct `run(agent, input)` or `runner.run(agent, input)` before reassignment. AgentVerify records a
+  direct `run(agent, input)` or `runner.run(agent, input)` before reassignment. It can also prove a
+  weaker feedback-loop continuity edge when the same exact call visibly consumes a caller/loop-owned
+  history binding and refreshes that binding from its own `result.history`. AgentVerify records a
   `conversation-continuity` control and a `configured-by` edge from the consuming agent to that
-  control. Loose arrays, unknown run functions, and reassigned history inputs remain unresolved.
-  Real pinned `openai/openai-agents-js` examples `examples/tools/web-search.ts` and
-  `examples/agent-patterns/llm-as-a-judge.ts` validate 2 controls and 2 composition edges; the
-  public IR truth set now covers 1,916 passing labels.
+  control. Loose arrays, unknown run functions, reassigned history inputs, and unresolved agent
+  aliases remain unresolved. Real pinned `openai/openai-agents-js` examples
+  `examples/tools/web-search.ts`, `examples/agent-patterns/llm-as-a-judge.ts`, and
+  `examples/docs/running-agents/chatLoop.ts` validate 3 controls and 3 composition edges; the public
+  IR truth set now covers 2,068 passing labels.
 - OpenAI Agents JS `result.state` proves run-state resume continuity only when the state comes from
   an exact prior SDK run result. AgentVerify now records inline `run(agent, result.state)` and named
   state handoffs such as `const state = stream.state; run(agent, state, ...)` as

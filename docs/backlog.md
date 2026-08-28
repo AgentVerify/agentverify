@@ -485,6 +485,13 @@ and then resumes with `run(agentParam, state)`, each lexically resolved call sit
 `conversation-continuity` control and configured-by edge. The pinned `computer-use-hitl.ts`
 `runWithHitl(agent, ...)` example now contributes two helper-parameter state-resume controls/edges.
 
+Schema v132 adds exact OpenAI Agents JS history-feedback continuity for caller/loop-owned history
+bindings. When an exact SDK `run(agent, ...)` call consumes a visible history variable and then
+refreshes that same variable from its own `result.history`, AgentVerify emits a weaker
+`run-history-feedback-input` edge. The real `chatLoop.ts` example is now covered, while routed
+`let agent = triageAgent` aliases remain unresolved until same-file agent aliasing can be proven
+without broad name matching.
+
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
 server-controlled prompt/model hint/sampling parameters, model invocation, and response returned to
@@ -609,8 +616,8 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 729 pinned positive/negative locations, with 2,062 separately
-scored IR component/relationship labels. Schema-v131 engine results and
+The curated regression set has reached 729 pinned positive/negative locations, with 2,068 separately
+scored IR component/relationship labels. Schema-v132 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule
 changes are complete. The checked-in holdout design now defines the sampling strata, label protocol,
