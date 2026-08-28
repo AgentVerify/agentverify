@@ -18150,7 +18150,17 @@ def typescript_openai_safety_check_attributes(body: str, constructor: str) -> di
         return attributes
     body_expression = callback_expression[arrow + 2 :].strip()
     body_code = typescript_code_mask(body_expression)
-    if body_code.startswith("{"):
+    expression_body_object = False
+    if body_code.startswith("("):
+        end = typescript_balanced_end(body_code, 0, "(", ")")
+        if end is not None and not body_code[end:].strip():
+            unwrapped_expression = body_expression[1 : end - 1].strip()
+            unwrapped_code = typescript_code_mask(unwrapped_expression)
+            if unwrapped_code.startswith("{"):
+                body_expression = unwrapped_expression
+                body_code = unwrapped_code
+                expression_body_object = True
+    if body_code.startswith("{") and not expression_body_object:
         opening = body_code.find("{")
         end = typescript_balanced_end(body_code, opening, "{", "}")
         if end is None:

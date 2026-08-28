@@ -509,8 +509,9 @@ catalog workflows.
   full `pendingSafetyChecks` list are recorded as `safety_check_policy: auto-acknowledge-all` and
   reported only when the computer-control capability is reachable. Local fixtures plus the real
   OpenAI Agents JS `examples/tools/computer-use-hitl.ts` per-request flow raised regenerated public
-  IR truth-set coverage to 1,993 labels and cross-rule coverage to 725 labels after adding the
-  SDK-supported `acknowledged_safety_checks` spelling as a local regression.
+  IR truth-set coverage to 1,994 labels and cross-rule coverage to 726 labels after adding the
+  SDK-supported `acknowledged_safety_checks` spelling and expression-bodied object return shape as
+  local regressions.
 
 ## Current findings
 

@@ -369,12 +369,13 @@
   not generic human-approval metadata. Report `AV-APPROVAL011` only when a reachable
   computer-control capability auto-acknowledges all pending safety checks by returning `true` or by
   returning the full `pendingSafetyChecks` list through the SDK-supported
-  `acknowledgedSafetyChecks` or `acknowledged_safety_checks` result key.
+  `acknowledgedSafetyChecks` or `acknowledged_safety_checks` result key, including ordinary
+  block-body returns and parenthesized expression-bodied object returns.
 - Evidence: The pinned OpenAI Agents JS `examples/tools/computer-use-hitl.ts` file contains a
   singleton computer tool with `needsApproval` but no `onSafetyCheck`, and a per-request computer
   tool whose `onSafetyCheck` callback returns the full pending safety-check list as acknowledged.
-  Local focused rule and IR labels passed 12/12 before full benchmark regeneration, including the
-  SDK-supported snake_case acknowledgement key.
+  Local focused rule and IR labels passed 14/14 before full benchmark regeneration, including the
+  SDK-supported snake_case acknowledgement key and expression-bodied object return shape.
 - Alternative: Treat any configured safety-check callback as safe or unsafe. Rejected because
   callback existence alone does not prove review quality, while exact pass-through and return-true
   callbacks prove auto-acknowledgement without modeling arbitrary helper logic.

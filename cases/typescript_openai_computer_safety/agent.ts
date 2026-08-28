@@ -27,9 +27,22 @@ const snakeCaseBrowser = computerTool({
   },
 });
 
+const expressionBrowser = computerTool({
+  computer: {},
+  onSafetyCheck: async ({ pendingSafetyChecks }) => ({
+    acknowledgedSafetyChecks: pendingSafetyChecks,
+  }),
+});
+
 const operator = new Agent({
   name: "operator",
-  tools: [browser, blindBrowser, reviewedBrowser, snakeCaseBrowser],
+  tools: [
+    browser,
+    blindBrowser,
+    reviewedBrowser,
+    snakeCaseBrowser,
+    expressionBrowser,
+  ],
 });
 
 void operator;
