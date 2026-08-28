@@ -472,7 +472,8 @@
   computer-use tool has no safety-check handler. AgentVerify now inventories exact
   `onSafetyCheck` callbacks that return `true` or return the full `pendingSafetyChecks` list as
   `safety_check_policy: auto-acknowledge-all`, and reports reachable cases through
-  `AV-APPROVAL011`. The public IR truth set now covers 1,992 passing labels.
+  `AV-APPROVAL011`. The public IR truth set now covers 1,993 passing labels after adding the
+  SDK-supported `acknowledged_safety_checks` spelling as a local regression.
 
 ## Hypotheses
 

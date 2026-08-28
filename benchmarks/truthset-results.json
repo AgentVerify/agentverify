@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T06:33:58.476309+00:00",
+  "generated_at": "2026-08-28T06:55:59.522757+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "reporting-rules",
     "labels_source": "benchmarks/truthset.json",
-    "labels_sha256": "a14f1e1ea01cab71739ef0baea4d222e192c4501a3ba888056876a409361bbb6",
+    "labels_sha256": "b12fd875fbd306300f05e23593ffde480d90e29df3d09149ba36088c43914e09",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 724,
-  "passed": 724,
+  "labels": 725,
+  "passed": 725,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -107,7 +107,7 @@
       "recall": 1.0
     },
     "AV-APPROVAL011": {
-      "tp": 3,
+      "tp": 4,
       "fp": 0,
       "tn": 2,
       "fn": 0,
@@ -6714,6 +6714,15 @@
       "rule_id": "AV-APPROVAL011",
       "expected": false,
       "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "approval-openai-js-computer-safety-snake-case-auto-ack-local",
+      "rule_id": "AV-APPROVAL011",
+      "expected": true,
+      "observed": true,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

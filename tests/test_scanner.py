@@ -3812,15 +3812,28 @@ def test_typescript_openai_computer_safety_check_auto_acknowledgement() -> None:
         tools["browser"].attributes["safety_check_decision"]
         == "returns-pendingSafetyChecks"
     )
+    assert (
+        tools["browser"].attributes["safety_check_acknowledgement_field"]
+        == "acknowledgedSafetyChecks"
+    )
     assert tools["blindBrowser"].attributes["safety_check_policy"] == "auto-acknowledge-all"
     assert tools["blindBrowser"].attributes["safety_check_decision"] == "return-true"
     assert tools["reviewedBrowser"].attributes["safety_check_handler"] == "configured"
     assert tools["reviewedBrowser"].attributes["safety_check_policy"] == "unresolved"
+    assert (
+        tools["snakeCaseBrowser"].attributes["safety_check_policy"]
+        == "auto-acknowledge-all"
+    )
+    assert (
+        tools["snakeCaseBrowser"].attributes["safety_check_acknowledgement_field"]
+        == "acknowledged_safety_checks"
+    )
 
     findings = [finding for finding in ir.findings if finding.rule_id == "AV-APPROVAL011"]
     assert [(finding.evidence.line, finding.analysis["tool"]) for finding in findings] == [
         (3, "browser"),
         (11, "blindBrowser"),
+        (23, "snakeCaseBrowser"),
     ]
     assert {finding.analysis["safety_check_policy"] for finding in findings} == {
         "auto-acknowledge-all"

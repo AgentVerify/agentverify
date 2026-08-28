@@ -815,7 +815,8 @@ human-approval control because it applies only when the model response carries s
 The TypeScript OpenAI Agents `computerTool` path mirrors that distinction: `onSafetyCheck` is
 recorded separately from `needsApproval`, and `AV-APPROVAL011` reports only exact callbacks that
 auto-acknowledge every pending safety check by returning `true` or by returning the full
-`pendingSafetyChecks` list as acknowledged.
+`pendingSafetyChecks` list through either SDK result key, `acknowledgedSafetyChecks` or
+`acknowledged_safety_checks`.
 Import-proven `LocalShellTool` instances emit local shell execution and explicitly distinguish an
 SDK with no approval hook from one whose approval option is merely disabled. A reachable instance
 can therefore trigger AV-APPROVAL002 as a review while preserving the executor as an unresolved

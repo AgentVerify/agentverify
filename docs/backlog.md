@@ -436,7 +436,8 @@ propagation can all be proven.
 Schema v124 adds exact OpenAI Agents JS computer safety-check auto-acknowledgement detection.
 `computerTool({ onSafetyCheck })` is distinct from `needsApproval`: AgentVerify records safety-check
 handler state on the computer-control capability and `AV-APPROVAL011` reports only reachable
-callbacks that return `true` or pass the complete `pendingSafetyChecks` list back as acknowledged.
+callbacks that return `true` or pass the complete `pendingSafetyChecks` list back through either SDK
+acknowledgement key.
 The pinned `computer-use-hitl.ts` per-request example is positive, while the singleton/no-handler
 path and callbacks that do not acknowledge the pending list remain negative.
 
@@ -564,7 +565,7 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 724 pinned positive/negative locations, with 1,992 separately
+The curated regression set has reached 725 pinned positive/negative locations, with 1,993 separately
 scored IR component/relationship labels. Schema-v124 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule

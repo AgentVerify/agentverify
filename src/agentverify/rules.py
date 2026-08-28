@@ -927,6 +927,9 @@ def run_rules(ir: RepositoryIR, *, include_tests: bool = False) -> None:
                         "safety_check_decision": component.attributes.get(
                             "safety_check_decision"
                         ),
+                        "safety_check_acknowledgement_field": component.attributes.get(
+                            "safety_check_acknowledgement_field"
+                        ),
                     }
                 )
                 ir.findings.append(finding)

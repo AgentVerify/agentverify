@@ -20,9 +20,16 @@ const reviewedBrowser = computerTool({
   },
 });
 
+const snakeCaseBrowser = computerTool({
+  computer: {},
+  onSafetyCheck: async ({ pendingSafetyChecks }) => {
+    return { acknowledged_safety_checks: pendingSafetyChecks };
+  },
+});
+
 const operator = new Agent({
   name: "operator",
-  tools: [browser, blindBrowser, reviewedBrowser],
+  tools: [browser, blindBrowser, reviewedBrowser, snakeCaseBrowser],
 });
 
 void operator;

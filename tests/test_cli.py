@@ -652,7 +652,7 @@ def test_cli_verifies_checked_in_benchmark_results(capsys) -> None:
     ] == [
         (
             "reporting-rules",
-            724,
+            725,
             0,
             {
                 "observation_mismatch": 0,
@@ -663,7 +663,7 @@ def test_cli_verifies_checked_in_benchmark_results(capsys) -> None:
         ),
         (
             "agent-ir",
-            1992,
+            1993,
             0,
             {
                 "observation_mismatch": 0,
@@ -723,7 +723,7 @@ def test_cli_benchmark_verify_writes_output_file(tmp_path: Path, capsys) -> None
     assert captured.out == ""
     assert captured.err == ""
     payload = __import__("json").loads(output.read_text(encoding="utf-8"))
-    assert payload["results"][0]["labels"] == 724
+    assert payload["results"][0]["labels"] == 725
     assert payload["results"][0]["digest_ok"] is True
     schema = __import__("json").loads(render_schema("benchmark-verification"))
     Draft202012Validator(schema).validate(payload)

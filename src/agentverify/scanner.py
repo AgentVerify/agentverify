@@ -18170,14 +18170,22 @@ def typescript_openai_safety_check_attributes(body: str, constructor: str) -> di
             "safety_check_policy": "auto-acknowledge-all",
             "safety_check_decision": "return-true",
         }
-    acknowledged = typescript_object_property_expression(body_expression, "acknowledgedSafetyChecks")
-    if acknowledged is not None:
+    for acknowledgement_field in (
+        "acknowledgedSafetyChecks",
+        "acknowledged_safety_checks",
+    ):
+        acknowledged = typescript_object_property_expression(
+            body_expression, acknowledgement_field
+        )
+        if acknowledged is None:
+            continue
         acknowledged_code = typescript_code_mask(acknowledged).strip()
         if pending_binding in {acknowledged_code, acknowledged_code.replace(" ", "")}:
             return {
                 **attributes,
                 "safety_check_policy": "auto-acknowledge-all",
                 "safety_check_decision": "returns-pendingSafetyChecks",
+                "safety_check_acknowledgement_field": acknowledgement_field,
             }
     return attributes
 

@@ -740,9 +740,9 @@ hosted/container shell tools do not produce `AV-APPROVAL003`.
 
 The OpenAI Agents JS computer-use resolver keeps `needsApproval` and `onSafetyCheck` as separate
 controls. Shallow literal `needsApproval` predicates are visible as callback metadata, while
-`onSafetyCheck` callbacks that return `true` or return the entire `pendingSafetyChecks` list become
-`safety_check_policy: auto-acknowledge-all` and trigger `AV-APPROVAL011` only when the computer tool
-is reachable from an agent.
+`onSafetyCheck` callbacks that return `true` or return the entire `pendingSafetyChecks` list through
+either SDK acknowledgement key become `safety_check_policy: auto-acknowledge-all` and trigger
+`AV-APPROVAL011` only when the computer tool is reachable from an agent.
 
 The Python frontend inventories 449 canonical/import/callable-aliased and proven-`Path` mutations:
 179 creates, 191 deletes, 46 copies, and 33 moves. Of these, 434 use non-literal path expressions;
@@ -1046,7 +1046,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 724-label rule truth set and 1,992-label IR component/relationship set are curated regression
+The 725-label rule truth set and 1,993-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed
