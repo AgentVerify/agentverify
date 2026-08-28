@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T08:01:33.105478+00:00",
+  "generated_at": "2026-08-28T08:28:42.501195+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "reporting-rules",

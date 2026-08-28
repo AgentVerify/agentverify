@@ -2943,6 +2943,12 @@ def test_python_computer_tool_has_exact_agent_and_capability_identity() -> None:
         (19, "ComputerTool@19"),
         (24, "ComputerTool@24"),
     ]
+    assert {
+        finding.analysis["safety_check_resolution"] for finding in safety_findings
+    } == {
+        "inline-lambda",
+        "same-file-callback",
+    }
 
 
 def test_assigned_builtin_tool_uses_binding_identity_for_agent_context(tmp_path: Path) -> None:
