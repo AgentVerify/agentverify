@@ -34967,6 +34967,316 @@ def add_python_adk_a2a_card_endpoint_policy(
             )
         )
 
+def add_python_openai_agents_run_state_approval_decision_flow(
+    ir: RepositoryIR,
+    root: Path,
+    registry_paths: list[Path],
+) -> None:
+    """Resolve exact OpenAI Agents Python run-state approve/reject handling."""
+
+    analysis = "python-openai-agents-run-state-approval-decision"
+
+    def call_value(node: ast.AST) -> ast.Call | None:
+        if isinstance(node, ast.Await):
+            node = node.value
+        return node if isinstance(node, ast.Call) else None
+
+    def import_bindings(
+        tree: ast.Module,
+    ) -> tuple[set[str], set[str], set[str], set[str]]:
+        runner_names: set[str] = set()
+        run_names: set[str] = set()
+        run_state_names: set[str] = set()
+        module_names: set[str] = set()
+        for statement in tree.body:
+            if isinstance(statement, ast.Import):
+                for alias in statement.names:
+                    if alias.name == "agents":
+                        module_names.add(alias.asname or alias.name)
+                continue
+            if not isinstance(statement, ast.ImportFrom) or statement.level != 0:
+                continue
+            if statement.module in {"agents", "agents.run", "agents.runner"}:
+                for alias in statement.names:
+                    if alias.name == "Runner":
+                        runner_names.add(alias.asname or alias.name)
+                    elif alias.name == "RunState":
+                        run_state_names.add(alias.asname or alias.name)
+                    elif alias.name == "run":
+                        run_names.add(alias.asname or alias.name)
+        return runner_names, run_names, run_state_names, module_names
+
+    def exact_run_call(
+        call: ast.Call,
+        runner_names: set[str],
+        run_names: set[str],
+        module_names: set[str],
+    ) -> str | None:
+        name = dotted_name(call.func)
+        if name in run_names:
+            return "run"
+        for runner_name in runner_names:
+            if name in {f"{runner_name}.run", f"{runner_name}.run_streamed"}:
+                return name.rsplit(".", 1)[-1]
+        for module_name in module_names:
+            if name in {
+                f"{module_name}.Runner.run",
+                f"{module_name}.Runner.run_streamed",
+                f"{module_name}.run",
+            }:
+                return name.removeprefix(f"{module_name}.")
+        return None
+
+    def exact_run_state_restore_call(
+        call: ast.Call,
+        run_state_names: set[str],
+        module_names: set[str],
+    ) -> str | None:
+        name = dotted_name(call.func)
+        for run_state_name in run_state_names:
+            if name in {f"{run_state_name}.from_json", f"{run_state_name}.from_string"}:
+                return name.rsplit(".", 1)[-1]
+        for module_name in module_names:
+            if name in {
+                f"{module_name}.RunState.from_json",
+                f"{module_name}.RunState.from_string",
+            }:
+                return name.removeprefix(f"{module_name}.RunState.")
+        return None
+
+    def assignment_targets(statement: ast.stmt) -> list[str]:
+        if isinstance(statement, ast.Assign):
+            return [target.id for target in statement.targets if isinstance(target, ast.Name)]
+        if isinstance(statement, ast.AnnAssign) and isinstance(statement.target, ast.Name):
+            return [statement.target.id]
+        return []
+
+    def statement_assigned_call(statement: ast.stmt) -> tuple[str, ast.Call] | None:
+        targets = assignment_targets(statement)
+        if len(targets) != 1:
+            return None
+        value = statement.value if isinstance(statement, (ast.Assign, ast.AnnAssign)) else None
+        call = call_value(value) if value is not None else None
+        if call is None:
+            return None
+        return targets[0], call
+
+    def statement_mutates_name(statement: ast.stmt, name: str) -> bool:
+        mutated = False
+
+        def visit(node: ast.AST) -> None:
+            nonlocal mutated
+            if mutated:
+                return
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                if node.name == name:
+                    mutated = True
+                return
+            if (
+                isinstance(node, ast.Name)
+                and isinstance(node.ctx, (ast.Store, ast.Del))
+                and node.id == name
+            ):
+                mutated = True
+                return
+            for child in ast.iter_child_nodes(node):
+                visit(child)
+
+        visit(statement)
+        return mutated
+
+    def module_agent_components(relative: str) -> dict[str, list[Component]]:
+        prefix = f"py:{relative}#agent:"
+        components: dict[str, list[Component]] = defaultdict(list)
+        for component in ir.components:
+            if component.kind != "agent" or not component.symbol_id.startswith(prefix):
+                continue
+            identity = component.symbol_id[len(prefix) :]
+            variable = identity.split("@", 1)[0]
+            components[variable].append(component)
+        for values in components.values():
+            values.sort(key=lambda item: item.evidence.line)
+        return components
+
+    def latest_agent(
+        components_by_variable: dict[str, list[Component]],
+        variable: str,
+        line: int,
+    ) -> Component | None:
+        candidates = [
+            component
+            for component in components_by_variable.get(variable, [])
+            if component.evidence.line <= line
+        ]
+        return candidates[-1] if candidates else None
+
+    def enclosing_statement_list(
+        parent_by_id: dict[int, ast.AST],
+        node: ast.AST,
+    ) -> tuple[list[ast.stmt], int] | None:
+        current = node
+        while parent := parent_by_id.get(id(current)):
+            for _field, value in ast.iter_fields(parent):
+                if not isinstance(value, list):
+                    continue
+                for index, item in enumerate(value):
+                    if item is current and isinstance(item, ast.stmt):
+                        return value, index
+            current = parent
+        return None
+
+    for path in registry_paths:
+        if path.suffix.lower() != ".py":
+            continue
+        try:
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+            relative = path.relative_to(root).as_posix()
+            tree = ast.parse(text, filename=relative)
+        except (OSError, SyntaxError, ValueError):
+            continue
+        runner_names, run_names, run_state_names, module_names = import_bindings(tree)
+        if not (runner_names or run_names or module_names):
+            continue
+        lines = text.splitlines()
+        nodes = list(ast.walk(tree))
+        parent_by_id = {
+            id(child): parent
+            for parent in nodes
+            for child in ast.iter_child_nodes(parent)
+        }
+        components_by_variable = module_agent_components(relative)
+        if not components_by_variable:
+            continue
+        run_results: dict[str, list[tuple[Component, int, str]]] = defaultdict(list)
+        state_bindings: dict[str, list[tuple[str, Component, int]]] = defaultdict(list)
+        for statement in (node for node in nodes if isinstance(node, ast.stmt)):
+            assigned = statement_assigned_call(statement)
+            if assigned is None:
+                continue
+            target, call = assigned
+            run_configuration = exact_run_call(call, runner_names, run_names, module_names)
+            if (
+                run_configuration is not None
+                and call.args
+                and isinstance(call.args[0], ast.Name)
+            ):
+                agent = latest_agent(components_by_variable, call.args[0].id, call.lineno)
+                if agent is not None:
+                    run_results[target].append((agent, statement.lineno, run_configuration))
+                continue
+            if (
+                isinstance(call.func, ast.Attribute)
+                and call.func.attr == "to_state"
+                and isinstance(call.func.value, ast.Name)
+            ):
+                result_name = call.func.value.id
+                for agent, result_line, _configuration in reversed(run_results.get(result_name, [])):
+                    if result_line <= statement.lineno:
+                        state_bindings[target].append((result_name, agent, statement.lineno))
+                        break
+                continue
+            restore_configuration = exact_run_state_restore_call(
+                call,
+                run_state_names,
+                module_names,
+            )
+            if (
+                restore_configuration is not None
+                and call.args
+                and isinstance(call.args[0], ast.Name)
+            ):
+                agent = latest_agent(components_by_variable, call.args[0].id, call.lineno)
+                if agent is not None:
+                    state_bindings[target].append(
+                        (
+                            f"restored-run-state:{restore_configuration}",
+                            agent,
+                            statement.lineno,
+                        )
+                    )
+        seen: set[tuple[str, int, str]] = set()
+        for call in (node for node in nodes if isinstance(node, ast.Call)):
+            if (
+                not isinstance(call.func, ast.Attribute)
+                or call.func.attr not in {"approve", "reject"}
+                or not isinstance(call.func.value, ast.Name)
+            ):
+                continue
+            state_name = call.func.value.id
+            decision = call.func.attr
+            statement_location = enclosing_statement_list(parent_by_id, call)
+            if statement_location is None:
+                continue
+            statements, statement_index = statement_location
+            state_record: tuple[str, Component, int] | None = None
+            for result_name, agent, state_line in reversed(state_bindings.get(state_name, [])):
+                if state_line > call.lineno:
+                    continue
+                same_block_mutated = any(
+                    statement_mutates_name(statement, state_name)
+                    for statement in statements[:statement_index]
+                    if getattr(statement, "lineno", 0) > state_line
+                )
+                cross_block_mutated = any(
+                    statement is not call
+                    and statement_mutates_name(statement, state_name)
+                    for statement in nodes
+                    if isinstance(statement, ast.stmt)
+                    and state_line < getattr(statement, "lineno", 0) < call.lineno
+                )
+                if same_block_mutated or cross_block_mutated:
+                    continue
+                state_record = (result_name, agent, state_line)
+                break
+            if state_record is None:
+                continue
+            result_name, agent, _state_line = state_record
+            key = (state_name, call.lineno, decision)
+            if key in seen:
+                continue
+            seen.add(key)
+            symbol_identity = f"{state_name}.{decision}@{call.lineno}"
+            control_id = source_symbol("py", relative, "control", symbol_identity)
+            attributes: dict[str, object] = {
+                "analysis": analysis,
+                "module": "agents",
+                "configuration": f"run.state.{decision}",
+                "result_binding": result_name,
+                "state_binding": state_name,
+                "decision": decision,
+                "source_agent": agent.name,
+                "source_agent_id": agent.symbol_id,
+                "state_scope": "openai-run-state-approval-decision",
+                "scope": source_scope(relative),
+            }
+            ir.add_component(
+                Component(
+                    "control",
+                    "approval-decision",
+                    Evidence(relative, call.lineno, excerpt(lines, call.lineno)),
+                    attributes,
+                    control_id,
+                )
+            )
+            ir.add_relationship(
+                Relationship(
+                    "agent",
+                    agent.name,
+                    "governed-by",
+                    "control",
+                    "approval-decision",
+                    Evidence(relative, call.lineno, excerpt(lines, call.lineno)),
+                    {
+                        "analysis": analysis,
+                        "configuration": f"run.state.{decision}",
+                        "binding": state_name,
+                        "decision": decision,
+                    },
+                    source_id=agent.symbol_id,
+                    target_id=control_id,
+                )
+            )
+
 
 def repository_files(root: Path) -> list[Path]:
     paths = []
@@ -35191,6 +35501,7 @@ def _scan_repository(
     add_python_semantic_kernel_mcp_sampling_flow(ir, root, registry_paths)
     add_python_adk_a2a_card_endpoint_policy(ir, root, registry_paths)
     add_python_openai_agents_mcp_approval_default_flow(ir, root, registry_paths)
+    add_python_openai_agents_run_state_approval_decision_flow(ir, root, registry_paths)
     add_python_google_adk_bigquery_audit_flow(ir, root, registry_paths)
     add_python_skyvern_action_history_flow(ir, root, registry_paths)
     add_python_trae_agent_default_tool_flow(ir, root, registry_paths)

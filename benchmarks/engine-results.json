@@ -1,6 +1,6 @@
 {
-  "schema_version": 126,
-  "generated_at": "2026-08-28T09:13:51.725804+00:00",
+  "schema_version": 127,
+  "generated_at": "2026-08-28T09:47:20.219714+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -20,10 +20,10 @@
     "dependency_files_materialized": 202,
     "repositories_with_dependency_expansion": 25,
     "config_files_scanned": 155,
-    "relationships": 2659,
-    "symbolized_components": 10430,
-    "identified_symbol_endpoints": 4469,
-    "resolved_symbol_endpoints": 4469,
+    "relationships": 2776,
+    "symbolized_components": 10547,
+    "identified_symbol_endpoints": 4703,
+    "resolved_symbol_endpoints": 4703,
     "unmatched_identified_symbol_endpoints": 0,
     "ambiguous_repeated_binding_targets": 2,
     "resolved_binding_targets_by_basis": {
@@ -40,11 +40,11 @@
       "same-class-helper-return": 3,
       "typed-parameter-callsite-consensus": 1
     },
-    "relationship_endpoints": 5318,
+    "relationship_endpoints": 5552,
     "bom_endpoint_resolutions": {
       "ambiguous": 40,
       "evidence-location": 740,
-      "symbol-id": 4461,
+      "symbol-id": 4695,
       "unique-display-name": 21,
       "unresolved": 56
     },
@@ -58,7 +58,7 @@
       "target:tool": 21
     },
     "resolved_symbol_endpoints_by_frontend": {
-      "py": 3625,
+      "py": 3859,
       "ts": 844
     },
     "python_provider_call_attribution": {
@@ -366,6 +366,13 @@
       "disabled_default": 1,
       "agent_server_edges": 1,
       "configured_by_edges": 1
+    },
+    "python_openai_run_state_approval_decisions": {
+      "total": 117,
+      "approvals": 100,
+      "rejections": 17,
+      "restored_state_decisions": 27,
+      "repositories": 1
     },
     "python_openhands_conversation_security": {
       "tools": 11,
@@ -819,7 +826,7 @@
         "a2a-card-rpc-origin-policy": 1,
         "action-risk-analysis": 1,
         "action-trace": 1,
-        "approval-decision": 1,
+        "approval-decision": 2,
         "command-allowlist": 1,
         "conversation-continuity": 1,
         "conversation-session": 1,
@@ -1037,7 +1044,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 796.4401
+    "elapsed_seconds": 748.6987
   },
   "repositories": [
     {
@@ -1360,6 +1367,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -1696,7 +1710,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.8662
+      "elapsed_seconds": 7.4414
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -2035,6 +2049,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 11,
@@ -2382,7 +2403,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 12.0684
+      "elapsed_seconds": 11.2676
     },
     {
       "repository": "langchain-ai/langchain",
@@ -2704,6 +2725,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -3038,7 +3066,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.0596
+      "elapsed_seconds": 4.7231
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -3364,6 +3392,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -3706,7 +3741,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 16.7057
+      "elapsed_seconds": 15.6727
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -4037,6 +4072,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -4375,7 +4417,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7833
+      "elapsed_seconds": 0.7807
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -4711,6 +4753,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -5062,7 +5111,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 18.5591
+      "elapsed_seconds": 16.8875
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -5403,6 +5452,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -5761,7 +5817,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.2056
+      "elapsed_seconds": 10.2627
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -6097,6 +6153,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -6445,7 +6508,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3533
+      "elapsed_seconds": 1.2578
     },
     {
       "repository": "microsoft/autogen",
@@ -6782,6 +6845,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -7125,7 +7195,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1708
+      "elapsed_seconds": 2.9401
     },
     {
       "repository": "microsoft/agent-framework",
@@ -7438,6 +7508,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -7772,7 +7849,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0836
+      "elapsed_seconds": 0.0726
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -8110,6 +8187,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -8456,7 +8540,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4748
+      "elapsed_seconds": 0.4388
     },
     {
       "repository": "openai/openai-agents-python",
@@ -8468,7 +8552,7 @@
       "components": {
         "agent": 1097,
         "capability": 464,
-        "control": 80,
+        "control": 197,
         "control-setting": 3,
         "framework": 763,
         "mcp": 1,
@@ -8493,6 +8577,7 @@
           "shell-execution"
         ],
         "control": [
+          "approval-decision",
           "human-approval",
           "path-boundary"
         ],
@@ -8561,10 +8646,10 @@
         "groq": 0,
         "cohere": 0
       },
-      "relationships": 703,
-      "symbolized_components": 1549,
-      "identified_symbol_endpoints": 1146,
-      "resolved_symbol_endpoints": 1146,
+      "relationships": 820,
+      "symbolized_components": 1666,
+      "identified_symbol_endpoints": 1380,
+      "resolved_symbol_endpoints": 1380,
       "unmatched_identified_symbol_endpoints": 0,
       "ambiguous_repeated_binding_targets": 2,
       "resolved_binding_targets_by_basis": {
@@ -8575,7 +8660,7 @@
         "typed-parameter-callsite-consensus": 1
       },
       "resolved_symbol_endpoints_by_frontend": {
-        "py": 1146,
+        "py": 1380,
         "ts": 0
       },
       "typescript_graph": {
@@ -8813,6 +8898,13 @@
         "disabled_default": 1,
         "agent_server_edges": 1,
         "configured_by_edges": 1
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 117,
+        "approvals": 100,
+        "rejections": 17,
+        "restored_state_decisions": 27,
+        "repositories": true
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -9151,7 +9243,7 @@
       "bom_endpoint_resolutions": {
         "ambiguous": 12,
         "evidence-location": 216,
-        "symbol-id": 1146,
+        "symbol-id": 1380,
         "unique-display-name": 3,
         "unresolved": 29
       },
@@ -9168,7 +9260,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 18.8423
+      "elapsed_seconds": 17.4801
     },
     {
       "repository": "openai/openai-agents-js",
@@ -9530,6 +9622,13 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
+      },
       "python_openhands_conversation_security": {
         "tools": 0,
         "terminal_tools": 0,
@@ -9874,7 +9973,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.0101
+      "elapsed_seconds": 3.7765
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -10223,6 +10322,13 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
+      },
       "python_openhands_conversation_security": {
         "tools": 0,
         "terminal_tools": 0,
@@ -10569,7 +10675,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 38.8935
+      "elapsed_seconds": 33.9821
     },
     {
       "repository": "google/adk-python",
@@ -10913,6 +11019,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -11261,7 +11374,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 14.894
+      "elapsed_seconds": 13.1518
     },
     {
       "repository": "google/adk-js",
@@ -11596,6 +11709,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -11937,7 +12057,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.7279
+      "elapsed_seconds": 8.2786
     },
     {
       "repository": "huggingface/smolagents",
@@ -12270,6 +12390,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -12620,7 +12747,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.2682
+      "elapsed_seconds": 3.9378
     },
     {
       "repository": "agno-agi/agno",
@@ -12965,6 +13092,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -13316,7 +13450,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1353
+      "elapsed_seconds": 1.9828
     },
     {
       "repository": "camel-ai/camel",
@@ -13660,6 +13794,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -14013,7 +14154,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.1323
+      "elapsed_seconds": 8.4142
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -14345,6 +14486,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -14685,7 +14833,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.7967
+      "elapsed_seconds": 0.7169
     },
     {
       "repository": "run-llama/llama_index",
@@ -15012,6 +15160,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -15346,7 +15501,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4004
+      "elapsed_seconds": 3.1316
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -15684,6 +15839,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -16036,7 +16198,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.9874
+      "elapsed_seconds": 4.686
     },
     {
       "repository": "InternLM/lagent",
@@ -16370,6 +16532,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -16717,7 +16886,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.2937
+      "elapsed_seconds": 2.1146
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -17050,6 +17219,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -17399,7 +17575,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.0383
+      "elapsed_seconds": 3.8057
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -17729,6 +17905,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -18081,7 +18264,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.7477
+      "elapsed_seconds": 5.4213
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -18407,6 +18590,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -18755,7 +18945,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.4946
+      "elapsed_seconds": 3.2721
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -19082,6 +19272,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -19426,7 +19623,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 13.7207
+      "elapsed_seconds": 12.7756
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -19749,6 +19946,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -20092,7 +20296,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.6778
+      "elapsed_seconds": 4.4098
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -20416,6 +20620,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -20750,7 +20961,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.1234
+      "elapsed_seconds": 2.9337
     },
     {
       "repository": "letta-ai/letta-code",
@@ -21079,6 +21290,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -21420,7 +21638,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 13.4191
+      "elapsed_seconds": 12.6268
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -21755,6 +21973,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -22103,7 +22328,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.8439
+      "elapsed_seconds": 3.5558
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -22443,6 +22668,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -22792,7 +23024,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.2493
+      "elapsed_seconds": 6.9128
     },
     {
       "repository": "mastra-ai/mastra",
@@ -23126,6 +23358,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -23466,7 +23705,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.5871
+      "elapsed_seconds": 6.29
     },
     {
       "repository": "vercel/ai",
@@ -23795,6 +24034,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -24134,7 +24380,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.176
+      "elapsed_seconds": 6.8129
     },
     {
       "repository": "cline/cline",
@@ -24475,6 +24721,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -24819,7 +25072,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 25.5587
+      "elapsed_seconds": 24.6562
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -25157,6 +25410,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -25497,7 +25757,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 74.5722
+      "elapsed_seconds": 72.4911
     },
     {
       "repository": "continuedev/continue",
@@ -25834,6 +26094,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -26175,7 +26442,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.7485
+      "elapsed_seconds": 6.3488
     },
     {
       "repository": "Aider-AI/aider",
@@ -26499,6 +26766,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -26848,7 +27122,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.3342
+      "elapsed_seconds": 6.8714
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -27167,6 +27441,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -27509,7 +27790,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 2.7426
+      "elapsed_seconds": 2.4969
     },
     {
       "repository": "plandex-ai/plandex",
@@ -27813,6 +28094,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -28147,7 +28435,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.1037
+      "elapsed_seconds": 0.0967
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -28466,6 +28754,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -28806,7 +29101,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.0217
+      "elapsed_seconds": 3.7363
     },
     {
       "repository": "stitionai/devika",
@@ -29137,6 +29432,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -29475,7 +29777,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.1203
+      "elapsed_seconds": 1.052
     },
     {
       "repository": "block/goose",
@@ -29803,6 +30105,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -30147,7 +30456,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 9.546
+      "elapsed_seconds": 9.0413
     },
     {
       "repository": "bytedance/trae-agent",
@@ -30491,6 +30800,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -30845,7 +31161,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.1532
+      "elapsed_seconds": 2.0005
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -31171,6 +31487,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -31511,7 +31834,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 15.8401
+      "elapsed_seconds": 14.9309
     },
     {
       "repository": "openai/codex",
@@ -31822,6 +32145,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -32162,7 +32492,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.9759
+      "elapsed_seconds": 1.7959
     },
     {
       "repository": "browser-use/browser-use",
@@ -32500,6 +32830,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -32852,7 +33189,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.903
+      "elapsed_seconds": 10.481
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -33210,6 +33547,13 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
+      },
       "python_openhands_conversation_security": {
         "tools": 0,
         "terminal_tools": 0,
@@ -33561,7 +33905,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 26.3678
+      "elapsed_seconds": 23.9058
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -33891,6 +34235,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -34236,7 +34587,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.8126
+      "elapsed_seconds": 2.6506
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -34559,6 +34910,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -34895,7 +35253,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.5464
+      "elapsed_seconds": 3.3687
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -35219,6 +35577,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -35563,7 +35928,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3379
+      "elapsed_seconds": 3.1729
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -35895,6 +36260,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -36238,7 +36610,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.9244
+      "elapsed_seconds": 8.4365
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -36578,6 +36950,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -36921,7 +37300,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 12.8002
+      "elapsed_seconds": 12.0865
     },
     {
       "repository": "github/github-mcp-server",
@@ -37235,6 +37614,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -37569,7 +37955,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0889
+      "elapsed_seconds": 0.0819
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -37885,6 +38271,13 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
+      },
       "python_openhands_conversation_security": {
         "tools": 0,
         "terminal_tools": 0,
@@ -38218,7 +38611,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.2762
+      "elapsed_seconds": 0.2657
     },
     {
       "repository": "awslabs/mcp",
@@ -38545,6 +38938,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -38887,7 +39287,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.1444
+      "elapsed_seconds": 5.7718
     },
     {
       "repository": "docker/mcp-gateway",
@@ -39202,6 +39602,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -39538,7 +39945,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0764
+      "elapsed_seconds": 0.0671
     },
     {
       "repository": "jlowin/fastmcp",
@@ -39868,6 +40275,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -40217,7 +40631,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.5101
+      "elapsed_seconds": 8.7308
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -40521,6 +40935,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -40855,7 +41276,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0574
+      "elapsed_seconds": 0.0541
     },
     {
       "repository": "langflow-ai/langflow",
@@ -41188,6 +41609,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -41531,7 +41959,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.6537
+      "elapsed_seconds": 9.1078
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -41853,6 +42281,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -42195,7 +42630,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 41.7341
+      "elapsed_seconds": 40.3583
     },
     {
       "repository": "langgenius/dify",
@@ -42516,6 +42951,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -42853,7 +43295,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.7027
+      "elapsed_seconds": 6.0891
     },
     {
       "repository": "n8n-io/n8n",
@@ -43183,6 +43625,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -43525,7 +43974,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.0721
+      "elapsed_seconds": 6.6942
     },
     {
       "repository": "activepieces/activepieces",
@@ -43865,6 +44314,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -44209,7 +44665,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.0117
+      "elapsed_seconds": 9.3001
     },
     {
       "repository": "simstudioai/sim",
@@ -44522,6 +44978,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -44856,7 +45319,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 181.3835
+      "elapsed_seconds": 173.5408
     },
     {
       "repository": "composiohq/composio",
@@ -45198,6 +45661,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -45541,7 +46011,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.5957
+      "elapsed_seconds": 4.9698
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -45876,6 +46346,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -46228,7 +46705,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.566
+      "elapsed_seconds": 7.836
     },
     {
       "repository": "e2b-dev/E2B",
@@ -46541,6 +47018,13 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
+      },
       "python_openhands_conversation_security": {
         "tools": 0,
         "terminal_tools": 0,
@@ -46874,7 +47358,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 13.0183
+      "elapsed_seconds": 12.441
     },
     {
       "repository": "daytonaio/daytona",
@@ -47179,6 +47663,13 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
+      },
       "python_openhands_conversation_security": {
         "tools": 0,
         "terminal_tools": 0,
@@ -47512,7 +48003,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0012
+      "elapsed_seconds": 0.0026
     },
     {
       "repository": "AgentOps-AI/agentops",
@@ -47848,6 +48339,13 @@
         "disabled_default": 0,
         "agent_server_edges": 0,
         "configured_by_edges": 0
+      },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
       },
       "python_openhands_conversation_security": {
         "tools": 0,
@@ -48187,7 +48685,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.9583
+      "elapsed_seconds": 4.5623
     },
     {
       "repository": "traceloop/openllmetry",
@@ -48534,6 +49032,13 @@
         "agent_server_edges": 0,
         "configured_by_edges": 0
       },
+      "python_openai_run_state_approval_decisions": {
+        "total": 0,
+        "approvals": 0,
+        "rejections": 0,
+        "restored_state_decisions": 0,
+        "repositories": false
+      },
       "python_openhands_conversation_security": {
         "tools": 0,
         "terminal_tools": 0,
@@ -48875,7 +49380,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.3819
+      "elapsed_seconds": 6.9847
     }
   ]
 }

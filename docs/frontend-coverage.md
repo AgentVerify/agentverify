@@ -2,7 +2,7 @@
 
 This document separates implemented syntax from empirical corpus observations. A missing signature
 does not mean a repository lacks agents or controls: AgentVerify may not support its language,
-framework, wrapper, or configuration path. Counts come from schema-v126
+framework, wrapper, or configuration path. Counts come from schema-v127
 `benchmarks/engine-results.json`, generated from the 71 pinned partial checkouts.
 
 ## Empirical coverage by repository category
@@ -746,6 +746,13 @@ controls. Shallow literal `needsApproval` predicates are visible as callback met
 `onSafetyCheck` callbacks that return `true` or return the entire `pendingSafetyChecks` list through
 either SDK acknowledgement key become `safety_check_policy: auto-acknowledge-all` and trigger
 `AV-APPROVAL011` only when the computer tool is reachable from an agent.
+OpenAI Agents Python run-state approval decisions are now inventoried separately from approval-policy
+declaration: exact `Runner.run(...)` or `Runner.run_streamed(...)` results that produce a stable
+`result.to_state()` binding, plus exact `RunState.from_json/from_string(...)` restored states, emit
+`approval-decision` controls for `state.approve(...)` and `state.reject(...)`. Loose state-like
+objects and reassigned state bindings remain unresolved. The pinned corpus now has 117 Python
+OpenAI run-state approval decisions, including 100 approvals, 17 rejections, and 27 restored-state
+decisions.
 OpenAI Agents JS run-state approval decisions now also retain env-backed bypass provenance: braced
 `RunState.approve(...)` branches guarded by a same-file confirmation helper with an env-backed
 true-return path record `approval_bypass_environment_names`, while corresponding reject branches
@@ -1056,7 +1063,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 729-label rule truth set and 2,007-label IR component/relationship set are curated regression
+The 729-label rule truth set and 2,018-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

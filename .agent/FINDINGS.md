@@ -2,7 +2,7 @@
 
 ## Durable facts
 
-- The repository contains a 71-repository pinned research corpus and schema-v126 engine benchmark
+- The repository contains a 71-repository pinned research corpus and schema-v127 engine benchmark
   outputs.
 - The runtime catalog currently contains 25 enabled reporting rules.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
@@ -487,6 +487,11 @@
   condition is a direct proven confirmation helper call or an unreassigned boolean bound to that
   helper. The real HITL examples prove `AUTO_APPROVE_HITL` on approve branches; reject branches and
   reassigned boolean guards stay unannotated.
+- OpenAI Agents Python run-state approval decisions are now source-proven IR evidence. Exact
+  `Runner.run(...)`/`Runner.run_streamed(...)` results that flow through `result.to_state()`, plus
+  exact `RunState.from_json/from_string(...)` restored states tied to a proven agent, emit
+  `approval-decision` controls for `state.approve(...)` and `state.reject(...)`. Loose state-like
+  objects and rebound state variables remain unresolved.
 
 ## Hypotheses
 

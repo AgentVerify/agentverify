@@ -453,6 +453,12 @@ helper with an env-backed true-return path records the environment variable on t
 while reject branches and reassigned boolean guards stay clean. The pinned HITL examples prove this
 for `AUTO_APPROVE_HITL`; it remains control metadata rather than a new reporting rule.
 
+Schema v127 adds exact OpenAI Agents Python run-state approval-decision inventory. Source-proven
+`Runner.run(...)` and `Runner.run_streamed(...)` results, plus exact restored
+`RunState.from_json/from_string(...)` states, now emit `approval-decision` controls for
+`state.approve(...)` and `state.reject(...)`; loose state-like objects and rebound state variables
+stay unresolved.
+
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,
 server-controlled prompt/model hint/sampling parameters, model invocation, and response returned to
@@ -577,7 +583,7 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 729 pinned positive/negative locations, with 2,007 separately
+The curated regression set has reached 729 pinned positive/negative locations, with 2,018 separately
 scored IR component/relationship labels. Schema-v126 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule

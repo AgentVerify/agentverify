@@ -649,6 +649,14 @@ def main() -> int:
             and item.name == "mcp-tool-approval"
             and item.attributes.get("analysis") == "python-openai-agents-mcp-approval-default"
         ]
+        python_openai_run_state_approval_decisions = [
+            item
+            for item in ir.components
+            if item.kind == "control"
+            and item.name == "approval-decision"
+            and item.attributes.get("analysis")
+            == "python-openai-agents-run-state-approval-decision"
+        ]
         python_openhands_components = [
             item
             for item in ir.components
@@ -1761,6 +1769,24 @@ def main() -> int:
                     == "python-openai-agents-mcp-approval-default"
                     for edge in ir.relationships
                 ),
+            },
+            "python_openai_run_state_approval_decisions": {
+                "total": len(python_openai_run_state_approval_decisions),
+                "approvals": sum(
+                    item.attributes.get("decision") == "approve"
+                    for item in python_openai_run_state_approval_decisions
+                ),
+                "rejections": sum(
+                    item.attributes.get("decision") == "reject"
+                    for item in python_openai_run_state_approval_decisions
+                ),
+                "restored_state_decisions": sum(
+                    str(item.attributes.get("result_binding", "")).startswith(
+                        "restored-run-state:"
+                    )
+                    for item in python_openai_run_state_approval_decisions
+                ),
+                "repositories": bool(python_openai_run_state_approval_decisions),
             },
             "python_openhands_conversation_security": {
                 "tools": len(python_openhands_tools),
@@ -2986,7 +3012,7 @@ def main() -> int:
     successful = [result for result in results if result["status"] == "ok"]
     finding_rule_ids = sorted({rule_id for result in successful for rule_id in result["findings"]})
     payload = {
-        "schema_version": 126,
+        "schema_version": 127,
         "generated_at": datetime.now(UTC).isoformat(),
         "defaults": {"include_tests": False},
         "sampling": {
@@ -3435,6 +3461,19 @@ def main() -> int:
                     "disabled_default",
                     "agent_server_edges",
                     "configured_by_edges",
+                )
+            },
+            "python_openai_run_state_approval_decisions": {
+                name: sum(
+                    result["python_openai_run_state_approval_decisions"][name]
+                    for result in successful
+                )
+                for name in (
+                    "total",
+                    "approvals",
+                    "rejections",
+                    "restored_state_decisions",
+                    "repositories",
                 )
             },
             "python_openhands_conversation_security": {

@@ -1687,9 +1687,9 @@ Twenty-five MCP
 package-launcher labels separately
 pin package/version/auto-install facts across JSON, Python constructors, Python dictionaries, and
 four real repositories. Forty-eight Python Agent→MCP-binding labels comprise 31 positives and 17
-negatives. All 2,007 IR labels pass (1,495 positives and 512 negatives). The checked
+negatives. All 2,018 IR labels pass (1,504 positives and 514 negatives). The checked
 `benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
 breakdown, including the OpenAI Agents JS and Python safety-check labels added for
 `computerTool({ onSafetyCheck })` and `ComputerTool(on_safety_check=...)`, plus OpenAI Agents JS
-run-state approval-decision labels for env-backed approve branches and clean reject/reassigned
-near misses.
+run-state approval-decision labels for Python state approve/reject handling, JS env-backed approve
+branches, and clean reject/reassigned near misses.

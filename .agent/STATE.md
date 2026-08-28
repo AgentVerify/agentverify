@@ -522,6 +522,11 @@ catalog workflows.
   helper with an environment-backed true-return path, while reject branches and reassigned boolean
   guards remain clean. Local fixtures plus real OpenAI Agents JS HITL examples raise the public IR
   truth set to 2,007 labels.
+- Added exact OpenAI Agents Python run-state approval-decision inventory. `state.approve(...)` and
+  `state.reject(...)` controls are recorded only when the receiver state is proven from
+  `Runner.run(...)`/`Runner.run_streamed(...).to_state()` or exact
+  `RunState.from_json/from_string(...)` restoration tied to a proven agent. Local fixtures plus real
+  OpenAI Agents Python HITL examples raise the public IR truth set to 2,018 labels.
 
 ## Current findings
 
@@ -602,8 +607,9 @@ catalog workflows.
 - OpenAI Agents JS approval-state handling is now separate from approval-policy declaration:
   `needsApproval` metadata says a tool/delegated tool may require approval, while
   `approval-decision` controls prove source-visible SDK state approval/rejection handling. Exact
-  approval decisions now cover direct run-result state, bound state, and narrowly restored
-  `RunState.fromString(...)` state when the serialized SDK state chain is proven.
+  approval decisions now cover TypeScript direct run-result state, bound state, narrowly restored
+  `RunState.fromString(...)` state, and Python `result.to_state()`/`RunState.from_json` state when
+  the SDK chain is proven.
 - OpenAI Agents JS serialized run-state restoration can be source-proven for simple same-file
   file-persistence flows. The scanner intentionally requires literal file names and matching agent
   identity, so arbitrary strings passed to `RunState.fromString` remain unresolved.

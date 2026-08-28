@@ -414,3 +414,19 @@
   defaults or CI.
 - Revisit when: reporting policy can distinguish intentional test/demo auto-approval from
   production approval bypasses on restored run-state decisions.
+
+## OpenAI Agents Python approval decisions require proven SDK run state
+
+- Decision: Record Python OpenAI Agents SDK `state.approve(...)` and `state.reject(...)` as
+  `approval-decision` controls only when the receiver state is source-proven from an exact SDK run
+  result via `result.to_state()` or from an exact `RunState.from_json/from_string(...)` restore tied
+  to a proven agent.
+- Evidence: Local regression fixtures cover direct `Runner.run`, module-qualified
+  `agents.Runner.run_streamed`, loose state lookalikes, and rebound state variables. Pinned OpenAI
+  Agents Python HITL examples validate restored JSON state, streaming state, and hosted MCP
+  approve/reject handling.
+- Alternative: Treat any `.approve(...)` or `.reject(...)` call as approval evidence. Rejected
+  because real Python repositories and tests contain arbitrary helper names and state-like objects;
+  the IR should preserve SDK provenance instead of granting generic method-name trust.
+- Revisit when: richer Python serialized-state chains can tie file or database persistence back to
+  a specific `result.to_state()` without broad name matching.

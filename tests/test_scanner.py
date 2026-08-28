@@ -7300,6 +7300,51 @@ def test_openai_agents_python_mcp_tools_inherit_disabled_approval_default(
         )
 
 
+def test_openai_agents_python_run_state_approval_decisions_are_exact() -> None:
+    ir = scan_repository(ROOT / "cases/python_openai_approval_decision")
+
+    controls = {
+        component.evidence.line: component
+        for component in ir.components
+        if component.kind == "control" and component.name == "approval-decision"
+    }
+    assert set(controls) == {12, 13, 18}
+    assert controls[12].symbol_id == "py:agent.py#control:state.approve@12"
+    assert controls[12].attributes == {
+        "analysis": "python-openai-agents-run-state-approval-decision",
+        "module": "agents",
+        "configuration": "run.state.approve",
+        "result_binding": "result",
+        "state_binding": "state",
+        "decision": "approve",
+        "source_agent": "Python approval decision agent",
+        "source_agent_id": "py:agent.py#agent:agent",
+        "state_scope": "openai-run-state-approval-decision",
+        "scope": "production",
+    }
+    assert controls[13].attributes["decision"] == "reject"
+    assert controls[18].attributes["result_binding"] == "stream_result"
+    assert controls[18].attributes["state_binding"] == "stream_state"
+
+    governed_edges = {
+        relationship.evidence.line: relationship
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "governed-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "approval-decision"
+    }
+    assert set(governed_edges) == {12, 13, 18}
+    assert governed_edges[12].source_id == "py:agent.py#agent:agent"
+    assert governed_edges[12].target_id == "py:agent.py#control:state.approve@12"
+    assert governed_edges[13].attributes == {
+        "analysis": "python-openai-agents-run-state-approval-decision",
+        "configuration": "run.state.reject",
+        "binding": "state",
+        "decision": "reject",
+    }
+
+
 def test_openai_agents_typescript_writable_mcp_tools_inherit_disabled_approval_default(
     tmp_path: Path,
 ) -> None:

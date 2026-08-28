@@ -820,11 +820,12 @@ recorded separately from `needsApproval`, and `AV-APPROVAL011` reports only exac
 auto-acknowledge every pending safety check by returning `true` or by returning the full
 `pendingSafetyChecks` list through either SDK result key, `acknowledgedSafetyChecks` or
 `acknowledged_safety_checks`.
-For restored/interrupted OpenAI Agents JS runs, `RunState.approve(...)` and `.reject(...)` are
-approval-decision controls only when the receiver state is proven from an SDK run result or
-`RunState.fromString(...)`; approve controls additionally record env-backed bypass provenance only
-for braced branches guarded by a proven same-file confirmation helper, leaving reject and reassigned
-guards unannotated.
+For restored/interrupted OpenAI Agents runs, state approval and rejection calls are
+approval-decision controls only when the receiver state is proven from an SDK run result or restored
+SDK state. TypeScript covers `RunState.fromString(...)` and Python covers
+`RunState.from_json/from_string(...)`; JS approve controls additionally record env-backed bypass
+provenance only for braced branches guarded by a proven same-file confirmation helper, leaving
+reject and reassigned guards unannotated.
 Import-proven `LocalShellTool` instances emit local shell execution and explicitly distinguish an
 SDK with no approval hook from one whose approval option is merely disabled. A reachable instance
 can therefore trigger AV-APPROVAL002 as a review while preserving the executor as an unresolved
