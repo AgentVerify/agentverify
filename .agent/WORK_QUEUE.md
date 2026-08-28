@@ -44,12 +44,11 @@
   in a caller-owned variable across repeated helper calls, but the current same-block scanner should
   not infer that without a narrowly validated function/call-state model.
 - Explore OpenAI Agents JS HITL approval-state governance only if it can distinguish SDK-native
-  approval callbacks, manual `state.approve`/`state.reject`, and automatic approval bypasses from
-  generic same-named functions. The new `result.state` continuity inventory provides the resume
-  backbone but does not yet claim approval quality.
-- Extend exact OpenAI Agents JS approval inventory from `tool({ needsApproval })` to
-  `agent.asTool({ needsApproval })` only if the IR can represent the delegated tool distinctly from
-  the source agent and keep callback-controlled coverage separate from literal always-approval.
+  approval callbacks, delegated-agent `asTool` approval metadata, manual `state.approve`/
+  `state.reject`, and automatic approval bypasses from generic same-named functions. The new
+  `result.state` continuity inventory provides the resume backbone, and `asTool({ needsApproval })`
+  is now inventoried on delegated-agent edges, but AgentVerify still does not claim approval quality
+  without predicate/action evidence.
 
 ## Deferred until access/authorization
 

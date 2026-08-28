@@ -334,6 +334,11 @@
     {"id":"typescript-openai-generic-tool-human-approval-edge-nextjs-real","target":{"kind":"repository","repository":"openai/openai-agents-js","commit":"0b944370c6fe019ac5b08364ca013826cd7d0668"},"check_id":"IR-APPROVAL-CONTROL","path":"examples/nextjs/src/agents.ts","line":14,"expected":true,"relationship":{"source_kind":"tool","source_name":"getWeather","source_id":"ts:examples/nextjs/src/agents.ts#tool:getWeather","relation":"governed-by","target_kind":"control","target_name":"human-approval"}},
     {"id":"typescript-openai-generic-tool-approval-callback-hitl-real","target":{"kind":"repository","repository":"openai/openai-agents-js","commit":"0b944370c6fe019ac5b08364ca013826cd7d0668"},"check_id":"IR-APPROVAL-CONTROL","path":"examples/agent-patterns/human-in-the-loop.ts","line":27,"expected":true,"component":{"kind":"tool","name":"getTemperatureTool","symbol_id":"ts:examples/agent-patterns/human-in-the-loop.ts#tool:getTemperatureTool","attributes":{"constructor":"tool","needs_approval":false,"approval_policy":"callback-controlled","approval_handler":"needsApproval-callback","approval_decision":"dynamic-callback"}}},
     {"id":"typescript-openai-generic-tool-approval-callback-hitl-stream-real","target":{"kind":"repository","repository":"openai/openai-agents-js","commit":"0b944370c6fe019ac5b08364ca013826cd7d0668"},"check_id":"IR-APPROVAL-CONTROL","path":"examples/agent-patterns/human-in-the-loop-stream.ts","line":44,"expected":true,"component":{"kind":"tool","name":"getTemperatureTool","symbol_id":"ts:examples/agent-patterns/human-in-the-loop-stream.ts#tool:getTemperatureTool","attributes":{"constructor":"tool","needs_approval":false,"approval_policy":"callback-controlled","approval_handler":"needsApproval-callback","approval_decision":"dynamic-callback"}}},
+    {"id":"typescript-openai-agent-tool-approval-enabled-local","target":{"kind":"local","path":"cases/typescript_structured_tools"},"check_id":"IR-APPROVAL-CONTROL","path":"agent.ts","line":41,"expected":true,"relationship":{"source_kind":"agent","source_name":"operator","source_id":"ts:agent.ts#agent:operator","relation":"delegates-to","target_kind":"agent","target_name":"worker","target_id":"ts:agent.ts#agent:worker","attributes":{"adapter":"asTool","tool_name":"approved_worker_tool","approval_policy":"enabled","approval_handler":"none","approval_decision":"always"}}},
+    {"id":"typescript-openai-agent-tool-approval-callback-local","target":{"kind":"local","path":"cases/typescript_structured_tools"},"check_id":"IR-APPROVAL-CONTROL","path":"agent.ts","line":45,"expected":true,"relationship":{"source_kind":"agent","source_name":"operator","source_id":"ts:agent.ts#agent:operator","relation":"delegates-to","target_kind":"agent","target_name":"worker","target_id":"ts:agent.ts#agent:worker","attributes":{"adapter":"asTool","tool_name":"conditional_worker_tool","approval_policy":"callback-controlled","approval_handler":"needsApproval-callback","approval_decision":"dynamic-callback"}}},
+    {"id":"typescript-openai-agent-tool-approval-disabled-local-negative","target":{"kind":"local","path":"cases/typescript_structured_tools"},"check_id":"IR-APPROVAL-CONTROL","path":"agent.ts","line":37,"expected":false,"source_contains":"worker.asTool({","relationship":{"source_kind":"agent","source_name":"operator","source_id":"ts:agent.ts#agent:operator","relation":"delegates-to","target_kind":"agent","target_name":"worker","target_id":"ts:agent.ts#agent:worker","attributes":{"adapter":"asTool","tool_name":"worker_tool","approval_policy":"enabled"}}},
+    {"id":"typescript-openai-agent-tool-approval-callback-hitl-real","target":{"kind":"repository","repository":"openai/openai-agents-js","commit":"0b944370c6fe019ac5b08364ca013826cd7d0668"},"check_id":"IR-APPROVAL-CONTROL","path":"examples/agent-patterns/human-in-the-loop.ts","line":47,"expected":true,"relationship":{"source_kind":"agent","source_name":"Basic test agent","source_id":"ts:examples/agent-patterns/human-in-the-loop.ts#agent:agent","relation":"delegates-to","target_kind":"agent","target_name":"Weather agent","target_id":"ts:examples/agent-patterns/human-in-the-loop.ts#agent:weatherAgent","attributes":{"adapter":"asTool","tool_name":"ask_weather_agent","approval_policy":"callback-controlled","approval_handler":"needsApproval-callback","approval_decision":"dynamic-callback"}}},
+    {"id":"typescript-openai-agent-tool-approval-callback-hitl-stream-real","target":{"kind":"repository","repository":"openai/openai-agents-js","commit":"0b944370c6fe019ac5b08364ca013826cd7d0668"},"check_id":"IR-APPROVAL-CONTROL","path":"examples/agent-patterns/human-in-the-loop-stream.ts","line":63,"expected":true,"relationship":{"source_kind":"agent","source_name":"Main agent","source_id":"ts:examples/agent-patterns/human-in-the-loop-stream.ts#agent:mainAgent","relation":"delegates-to","target_kind":"agent","target_name":"Weather agent","target_id":"ts:examples/agent-patterns/human-in-the-loop-stream.ts#agent:weatherAgent","attributes":{"adapter":"asTool","tool_name":"ask_weather_agent","approval_policy":"callback-controlled","approval_handler":"needsApproval-callback","approval_decision":"dynamic-callback"}}},
     {
       "id": "typescript-agent-as-tool-real",
       "target": {
@@ -343,7 +348,7 @@
       },
       "check_id": "IR-TS-TOOL-GRAPH",
       "path": "examples/agent-patterns/agents-as-tools.ts",
-      "line": 21,
+      "line": 29,
       "expected": true,
       "relationship": {
         "source_kind": "agent",
@@ -353,7 +358,7 @@
         "target_kind": "agent",
         "target_name": "spanish_agent",
         "target_id": "ts:examples/agent-patterns/agents-as-tools.ts#agent:spanishAgent",
-        "attributes": {"adapter": "asTool"}
+        "attributes": {"adapter": "asTool", "tool_name": "translate_to_spanish"}
       }
     },
     {

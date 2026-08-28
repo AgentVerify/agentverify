@@ -38,6 +38,14 @@ const operator = new Agent({
       toolName: "worker_tool",
       runOptions: { maxTurns: 3 },
     }),
+    worker.asTool({
+      toolName: "approved_worker_tool",
+      needsApproval: true,
+    }),
+    worker.asTool({
+      toolName: "conditional_worker_tool",
+      needsApproval: async (_ctx, { input }) => input.includes("deploy"),
+    }),
     // A leading comment belongs to the next entry, not to an extra tool token.
     unknownFactory({ description: "do not parse these words as tools" }),
     unrelatedShellTool({ shell: {} }),

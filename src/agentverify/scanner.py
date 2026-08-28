@@ -17849,20 +17849,11 @@ def add_typescript_generic_tool(
         and approval_expression == "true"
         else None
     )
-    approval_attributes = {}
-    if openai_approval_capable and constructor == "tool":
-        if approval_expression == "true":
-            approval_attributes = {
-                "approval_policy": "enabled",
-                "approval_handler": "none",
-                "approval_decision": "always",
-            }
-        elif approval_expression is not None and approval_expression != "false":
-            approval_attributes = {
-                "approval_policy": "callback-controlled",
-                "approval_handler": "needsApproval-callback",
-                "approval_decision": "dynamic-callback",
-            }
+    approval_attributes = (
+        typescript_openai_needs_approval_attributes(body)
+        if openai_approval_capable and constructor == "tool"
+        else {}
+    )
     ir.add_component(
         Component(
             "tool",
@@ -17895,6 +17886,24 @@ def add_typescript_generic_tool(
         )
     for line_number in range(start_line, line_at(text, call_end) + 1):
         tool_by_line[line_number] = (tool_name, tool_id)
+
+
+def typescript_openai_needs_approval_attributes(body: str) -> dict[str, str]:
+    """Resolve exact OpenAI Agents JS needsApproval metadata from one options object."""
+    approval_expression = typescript_object_property_expression(body, "needsApproval")
+    if approval_expression == "true":
+        return {
+            "approval_policy": "enabled",
+            "approval_handler": "none",
+            "approval_decision": "always",
+        }
+    if approval_expression is not None and approval_expression != "false":
+        return {
+            "approval_policy": "callback-controlled",
+            "approval_handler": "needsApproval-callback",
+            "approval_decision": "dynamic-callback",
+        }
+    return {}
 
 
 def typescript_graph(
@@ -18794,6 +18803,26 @@ def typescript_graph(
                 target_name, target_id = target if target else (variable_name, None)
                 if agent_assignment_counts[variable_name] > 1:
                     attributes["target_identity"] = "ambiguous-repeated-binding"
+                call_opening = expression.find("(")
+                call_end = balanced_call_end(expression, call_opening)
+                call_arguments = (
+                    typescript_call_arguments(
+                        expression[call_opening + 1 : call_end - 1],
+                        item_offset + call_opening + 1,
+                    )
+                    if call_end is not None
+                    else []
+                )
+                as_tool_attributes = {**attributes, "adapter": "asTool"}
+                if call_arguments:
+                    tool_name = typescript_object_string_property(call_arguments[0][0], "toolName")
+                    if tool_name is not None:
+                        as_tool_attributes["tool_name"] = tool_name
+                    as_tool_attributes.update(
+                        typescript_openai_needs_approval_attributes(call_arguments[0][0])
+                    )
+                as_tool_line = line_at(text, item_offset)
+                as_tool_evidence = Evidence(relative, as_tool_line, excerpt(lines, as_tool_line))
                 ir.add_relationship(
                     Relationship(
                         "agent",
@@ -18801,128 +18830,112 @@ def typescript_graph(
                         "delegates-to",
                         "agent",
                         target_name,
-                        ev,
-                        {**attributes, "adapter": "asTool"},
+                        as_tool_evidence,
+                        as_tool_attributes,
                         source_id=agent_id,
                         target_id=target_id,
                     )
                 )
-                if target:
-                    call_opening = expression.find("(")
-                    call_end = balanced_call_end(expression, call_opening)
-                    call_arguments = typescript_call_arguments(
-                        expression[call_opening + 1 : call_end - 1],
-                        item_offset + call_opening + 1,
+                if target and call_arguments:
+                    run_config_location = typescript_object_property_expression_location(
+                        call_arguments[0][0],
+                        "runConfig",
+                        call_arguments[0][1],
                     )
-                    if call_arguments:
-                        run_config_location = typescript_object_property_expression_location(
-                            call_arguments[0][0],
-                            "runConfig",
-                            call_arguments[0][1],
+                    if run_config_location is not None:
+                        run_config_expression, _, run_config_offset = run_config_location
+                        sandbox_location = typescript_object_property_expression_location(
+                            run_config_expression,
+                            "sandbox",
+                            run_config_offset,
                         )
-                        if run_config_location is not None:
-                            run_config_expression, _, run_config_offset = run_config_location
-                            sandbox_location = typescript_object_property_expression_location(
-                                run_config_expression,
-                                "sandbox",
-                                run_config_offset,
-                            )
-                            if sandbox_location is not None:
-                                sandbox_expression, _, sandbox_expression_offset = (
-                                    sandbox_location
-                                )
-                            else:
-                                sandbox_expression = None
-                                sandbox_expression_offset = None
+                        if sandbox_location is not None:
+                            sandbox_expression, _, sandbox_expression_offset = sandbox_location
                         else:
                             sandbox_expression = None
                             sandbox_expression_offset = None
-                        runtime_control = None
-                        binding = None
-                        if sandbox_expression is not None:
-                            client_expression = typescript_object_property_expression(
-                                sandbox_expression, "client"
-                            )
-                            if client_expression is not None:
-                                client_code = typescript_code_mask(client_expression).strip()
-                                if client_identifier := re.fullmatch(
-                                    r"[A-Za-z_$][\w$]*", client_code
-                                ):
-                                    runtime_control = sandbox_client_bindings.get(
-                                        client_identifier.group(0)
-                                    )
-                                    binding = "client"
-                            elif typescript_object_has_shorthand_property(
-                                sandbox_expression, "client"
+                    else:
+                        sandbox_expression = None
+                        sandbox_expression_offset = None
+                    runtime_control = None
+                    binding = None
+                    if sandbox_expression is not None:
+                        client_expression = typescript_object_property_expression(
+                            sandbox_expression, "client"
+                        )
+                        if client_expression is not None:
+                            client_code = typescript_code_mask(client_expression).strip()
+                            if client_identifier := re.fullmatch(
+                                r"[A-Za-z_$][\w$]*", client_code
                             ):
-                                runtime_control = sandbox_client_bindings.get("client")
-                                binding = "client-shorthand"
-                            session_expression = typescript_object_property_expression(
+                                runtime_control = sandbox_client_bindings.get(
+                                    client_identifier.group(0)
+                                )
+                                binding = "client"
+                        elif typescript_object_has_shorthand_property(sandbox_expression, "client"):
+                            runtime_control = sandbox_client_bindings.get("client")
+                            binding = "client-shorthand"
+                        session_expression = typescript_object_property_expression(
+                            sandbox_expression, "session"
+                        )
+                        if runtime_control is None and session_expression is not None:
+                            session_code = typescript_code_mask(session_expression).strip()
+                            if session_identifier := re.fullmatch(
+                                r"[A-Za-z_$][\w$]*", session_code
+                            ):
+                                runtime_control = sandbox_session_bindings.get(
+                                    session_identifier.group(0)
+                                )
+                                binding = "session"
+                        elif (
+                            runtime_control is None
+                            and typescript_object_has_shorthand_property(
                                 sandbox_expression, "session"
                             )
-                            if runtime_control is None and session_expression is not None:
-                                session_code = typescript_code_mask(session_expression).strip()
-                                if session_identifier := re.fullmatch(
-                                    r"[A-Za-z_$][\w$]*", session_code
-                                ):
-                                    runtime_control = sandbox_session_bindings.get(
-                                        session_identifier.group(0)
-                                    )
-                                    binding = "session"
-                            elif (
-                                runtime_control is None
-                                and typescript_object_has_shorthand_property(
-                                    sandbox_expression, "session"
-                                )
-                            ):
-                                runtime_control = sandbox_session_bindings.get("session")
-                                binding = "session-shorthand"
-                        if runtime_control is not None:
-                            if (
-                                sandbox_expression is not None
-                                and sandbox_expression_offset is not None
-                            ):
-                                add_typescript_openai_sandbox_working_directory_from_sandbox(
-                                    ir,
-                                    relative=relative,
-                                    lines=lines,
-                                    text=text,
-                                    sandbox_expression=sandbox_expression,
-                                    sandbox_expression_offset=sandbox_expression_offset,
-                                    symbol_base=variable_name,
-                                    runtime_control=runtime_control,
-                                    immutable_literal_bindings=immutable_literal_bindings,
-                                )
-                            runtime_name, runtime_id = runtime_control
-                            run_config_keyword = expression.find("runConfig")
-                            sandbox_keyword = expression.find("sandbox", run_config_keyword)
-                            sandbox_line_offset = (
-                                item_offset + sandbox_keyword
-                                if sandbox_keyword >= 0
-                                else item_offset
+                        ):
+                            runtime_control = sandbox_session_bindings.get("session")
+                            binding = "session-shorthand"
+                    if runtime_control is not None:
+                        if sandbox_expression is not None and sandbox_expression_offset is not None:
+                            add_typescript_openai_sandbox_working_directory_from_sandbox(
+                                ir,
+                                relative=relative,
+                                lines=lines,
+                                text=text,
+                                sandbox_expression=sandbox_expression,
+                                sandbox_expression_offset=sandbox_expression_offset,
+                                symbol_base=variable_name,
+                                runtime_control=runtime_control,
+                                immutable_literal_bindings=immutable_literal_bindings,
                             )
-                            sandbox_line = line_at(text, sandbox_line_offset)
-                            delegated_agent_name, delegated_agent_id = target
-                            ir.add_relationship(
-                                Relationship(
-                                    "agent",
-                                    delegated_agent_name,
-                                    "configured-by",
-                                    "control",
-                                    runtime_name,
-                                    Evidence(relative, sandbox_line, excerpt(lines, sandbox_line)),
-                                    {
-                                        "analysis": sandbox_runtime_edge_analysis.get(
-                                            runtime_id,
-                                            "typescript-openai-sandbox-local-client",
-                                        ),
-                                        "configuration": "asTool-runConfig",
-                                        "binding": binding,
-                                    },
-                                    source_id=delegated_agent_id,
-                                    target_id=runtime_id,
-                                )
+                        runtime_name, runtime_id = runtime_control
+                        run_config_keyword = expression.find("runConfig")
+                        sandbox_keyword = expression.find("sandbox", run_config_keyword)
+                        sandbox_line_offset = (
+                            item_offset + sandbox_keyword if sandbox_keyword >= 0 else item_offset
+                        )
+                        sandbox_line = line_at(text, sandbox_line_offset)
+                        delegated_agent_name, delegated_agent_id = target
+                        ir.add_relationship(
+                            Relationship(
+                                "agent",
+                                delegated_agent_name,
+                                "configured-by",
+                                "control",
+                                runtime_name,
+                                Evidence(relative, sandbox_line, excerpt(lines, sandbox_line)),
+                                {
+                                    "analysis": sandbox_runtime_edge_analysis.get(
+                                        runtime_id,
+                                        "typescript-openai-sandbox-local-client",
+                                    ),
+                                    "configuration": "asTool-runConfig",
+                                    "binding": binding,
+                                },
+                                source_id=delegated_agent_id,
+                                target_id=runtime_id,
                             )
+                        )
                 continue
             call = typescript_call_parts(expression)
             if not call:

@@ -266,3 +266,23 @@
   covers every risky operation.
 - Revisit when: predicate-aware tool-risk analysis can relate callback conditions to specific tool
   inputs, or when `agent.asTool({ needsApproval })` delegated-tool approval gets a distinct IR shape.
+
+## OpenAI delegated-agent asTool approval inventory belongs on exact adapter edges
+
+- Decision: Record OpenAI Agents JS `agent.asTool({ needsApproval })` approval metadata on the
+  `agent delegates-to agent` adapter relationship, using the exact `asTool(...)` call line as
+  evidence. Literal `needsApproval: true` records `approval_policy: enabled`,
+  `approval_handler: none`, and `approval_decision: always`; callback-valued `needsApproval`
+  records `approval_policy: callback-controlled`, `approval_handler: needsApproval-callback`, and
+  `approval_decision: dynamic-callback`; omitted or explicit false approval stays unclaimed.
+- Evidence: Local `cases/typescript_structured_tools` now has three `worker.asTool(...)` entries to
+  the same target agent, proving that parent-constructor evidence would collapse distinct adapter
+  policies. Pinned OpenAI Agents JS HITL examples use `weatherAgent.asTool({ toolName:
+  "ask_weather_agent", needsApproval: async ... })` in both standard and streaming flows.
+- Alternative: Create a synthetic tool component for each delegated agent adapter. Deferred because
+  the current IR already has a source/target agent relationship, and adding delegated-tool
+  components would be a larger schema/semantics choice. Edge attributes preserve identity now
+  without overclaiming approval coverage.
+- Revisit when: predicate-aware approval-quality analysis needs a first-class delegated-tool node,
+  or reporting rules need to reason about delegated-agent tools independently of the source/target
+  agent relationship.

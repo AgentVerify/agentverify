@@ -435,6 +435,13 @@
   `examples/agent-patterns/human-in-the-loop.ts`, and
   `examples/agent-patterns/human-in-the-loop-stream.ts` validate 5 generic-tool approval components
   and 2 literal human-approval edges; the public IR truth set now covers 1,949 passing labels.
+- OpenAI Agents JS delegated-agent `asTool({ needsApproval })` approval metadata is now inventoried
+  on exact adapter relationships. Evidence is anchored to the `agent.asTool(...)` call line, which
+  prevents repeated adapters to the same target agent from collapsing and allows each tool name and
+  approval policy to remain visible. Local fixtures validate omitted, literal true, and
+  callback-valued delegated-agent approval forms; real pinned OpenAI Agents JS HITL examples
+  validate callback-controlled `weatherAgent.asTool` delegation in both standard and streaming
+  flows. The public IR truth set now covers 1,954 passing labels.
 
 ## Hypotheses
 

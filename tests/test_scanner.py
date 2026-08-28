@@ -3746,6 +3746,37 @@ def test_typescript_tool_arrays_are_structure_aware_and_identity_linked() -> Non
     assert next(edge for edge in operator_edges if edge.target_name == "worker").target_id == (
         "ts:agent.ts#agent:worker"
     )
+    as_tool_edges = sorted(
+        [
+            edge
+            for edge in operator_edges
+            if edge.relation == "delegates-to" and edge.target_name == "worker"
+        ],
+        key=lambda edge: edge.evidence.line,
+    )
+    assert [(edge.evidence.line, edge.attributes) for edge in as_tool_edges] == [
+        (37, {"adapter": "asTool", "tool_name": "worker_tool"}),
+        (
+            41,
+            {
+                "adapter": "asTool",
+                "tool_name": "approved_worker_tool",
+                "approval_policy": "enabled",
+                "approval_handler": "none",
+                "approval_decision": "always",
+            },
+        ),
+        (
+            45,
+            {
+                "adapter": "asTool",
+                "tool_name": "conditional_worker_tool",
+                "approval_policy": "callback-controlled",
+                "approval_handler": "needsApproval-callback",
+                "approval_decision": "dynamic-callback",
+            },
+        ),
+    ]
     assert (
         next(edge for edge in operator_edges if edge.target_name == "unrelatedShellTool").target_id
         is None
