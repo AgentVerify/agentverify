@@ -497,12 +497,14 @@ scope and reassignment guard, so rebound aliases remain unresolved. This recover
 `inputs = result.history`.
 
 Schema v134/v135 adds exact OpenAI Agents JS trace correlation inventory for
-`withTrace(..., { groupId })` and `withTrace(..., { traceId })`. When the imported SDK helper wraps
-a callback containing an exact `run(agent, ...)` call, AgentVerify emits distinct `trace-group` or
-`trace-id` controls and configured-by edges without treating either trace identifier as conversation
-memory. The real `routing.ts` example links the triage agent to its dynamic `conversationId` trace
-group, while the real Codex tool example links two runs to a generated trace ID with a logged
-OpenAI platform trace URL.
+`withTrace(..., { groupId })` and `withTrace(..., { traceId })`. Schema v136 extends the same
+trace-correlation family to exact, stable `new Runner({ groupId })` instances that later call
+`.run(agent, ...)`. AgentVerify emits distinct `trace-group` or `trace-id` controls and
+configured-by edges without treating any trace identifier as conversation memory. The real
+`routing.ts` example links the triage agent to its dynamic `conversationId` trace group, the real
+Codex tool example links two runs to a generated trace ID with a logged OpenAI platform trace URL,
+and the real sandbox memory-generation example links its Runner-level group ID to the executed
+agent.
 
 Semantic Kernel adds a different MCP authority direction: the server can request a client-side model
 completion. Schema v68 proves the callback registration, fail-closed default, callback precedence,

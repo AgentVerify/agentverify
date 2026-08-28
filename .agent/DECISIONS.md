@@ -572,3 +572,21 @@
   proof that the SDK persists or reuses conversation state.
 - Revisit when: trace exports, processors, or durable trace sinks can be proven and linked to the
   same source-agent identity.
+
+## OpenAI Agents JS Runner group IDs are trace correlation, not Runner memory
+
+- Decision: Represent exact TypeScript OpenAI Agents SDK `new Runner({ groupId })` configuration as
+  `trace-group` controls only when the `Runner` constructor is an unshadowed exact SDK import, the
+  Runner variable is stable, and a later `.run(agent, ...)` call on the same variable supplies a
+  source-proven Agent. Keep this as a separate `typescript-openai-agents-runner-trace-group`
+  analysis from `withTrace(..., { groupId })`.
+- Evidence: The local conversation fixture adds an immutable module literal `runnerTraceGroupId`
+  positive and a reassigned Runner negative. The pinned OpenAI Agents JS
+  `examples/sandbox/memory-generation.ts` example constructs
+  `new Runner({ groupId: 'sandbox-memory-generation-example' })` and immediately runs
+  `Sandbox Memory Generation Demo`; AgentVerify links that agent to the Runner-level trace group.
+- Alternative: Treat any object named `runner` or any `.run(...)` receiver with a `groupId`-looking
+  constructor nearby as trace evidence. Rejected because Runner-level metadata only follows the run
+  when the exact SDK constructor and stable instance identity are proven.
+- Revisit when: exported Runner factories or shared Runner instances can be resolved without
+  collapsing source-agent identity across unrelated `.run(...)` receivers.

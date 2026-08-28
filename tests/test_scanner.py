@@ -5631,6 +5631,11 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
     }
     assert set(trace_controls) == {
         ("positive.ts", 119, "ts:positive.ts#control:withTrace.groupId@119:run117"),
+        (
+            "positive.ts",
+            133,
+            "ts:positive.ts#control:traceGroupedRunner.groupId@133:run135",
+        ),
     }
     assert trace_controls[
         ("positive.ts", 119, "ts:positive.ts#control:withTrace.groupId@119:run117")
@@ -5647,6 +5652,23 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         "scope": "production",
         "trace_name": "AgentVerify trace group",
         "group_id": "agentverify-trace-group",
+    }
+    assert trace_controls[
+        ("positive.ts", 133, "ts:positive.ts#control:traceGroupedRunner.groupId@133:run135")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-runner-trace-group",
+        "module": "@openai/agents",
+        "constructor": "Runner",
+        "imported_symbol": "Runner",
+        "local_constructor": "Runner",
+        "configuration": "Runner.groupId",
+        "runner_binding": "traceGroupedRunner",
+        "group_id_resolution": "immutable-module-literal-binding",
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "trace_scope": "openai-trace-correlation",
+        "scope": "production",
+        "group_id": "agentverify-runner-trace-group",
     }
 
     trace_id_controls = {
@@ -5968,6 +5990,18 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
                 ("analysis", "typescript-openai-agents-trace-group"),
                 ("binding", "groupId"),
                 ("configuration", "withTrace-groupId"),
+            ),
+        ),
+        (
+            "Server Conversation Agent",
+            "positive.ts",
+            135,
+            "ts:positive.ts#control:traceGroupedRunner.groupId@133:run135",
+            (
+                ("analysis", "typescript-openai-agents-runner-trace-group"),
+                ("binding", "groupId"),
+                ("configuration", "Runner-groupId"),
+                ("runner_binding", "traceGroupedRunner"),
             ),
         ),
     }

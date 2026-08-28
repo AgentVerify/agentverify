@@ -127,3 +127,9 @@ await withTrace(
   },
   { traceId },
 );
+
+const runnerTraceGroupId = 'agentverify-runner-trace-group';
+const traceGroupedRunner = new Runner({
+  groupId: runnerTraceGroupId,
+});
+await traceGroupedRunner.run(agent, 'runner trace grouped turn');

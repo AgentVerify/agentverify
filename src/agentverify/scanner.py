@@ -16885,6 +16885,53 @@ def add_typescript_openai_trace_group_control(
     return "trace-group", control_id
 
 
+def add_typescript_openai_runner_trace_group_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    local_constructor: str,
+    runner_binding: str,
+    group_id_binding: str | None,
+    group_id: str | None,
+    group_id_resolution: str,
+    source_agent: tuple[str, str],
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS Runner-level trace grouping evidence."""
+    source_agent_name, source_agent_id = source_agent
+    attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-runner-trace-group",
+        "module": "@openai/agents",
+        "constructor": "Runner",
+        "imported_symbol": "Runner",
+        "local_constructor": local_constructor,
+        "configuration": "Runner.groupId",
+        "runner_binding": runner_binding,
+        "group_id_resolution": group_id_resolution,
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "trace_scope": "openai-trace-correlation",
+        "scope": source_scope(relative),
+    }
+    if group_id_binding is not None:
+        attributes["group_id_binding"] = group_id_binding
+    if group_id is not None:
+        attributes["group_id"] = group_id
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "trace-group",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    return "trace-group", control_id
+
+
 def add_typescript_openai_trace_id_control(
     ir: RepositoryIR,
     *,
@@ -19127,7 +19174,14 @@ def typescript_graph(
     )
     immutable_literal_bindings = (
         typescript_immutable_module_literal_string_bindings(text)
-        if ("Manifest" in text or "snapshot" in text or "memory" in text or "MemorySession" in text)
+        if (
+            "Manifest" in text
+            or "snapshot" in text
+            or "memory" in text
+            or "MemorySession" in text
+            or "groupId" in text
+            or "traceId" in text
+        )
         and (
             "extraPathGrants" in text
             or "environment" in text
@@ -19140,6 +19194,8 @@ def typescript_graph(
             or "phaseTwoModel" in text
             or "extraPrompt" in text
             or "sessionId" in text
+            or "groupId" in text
+            or "traceId" in text
         )
         else {}
     )
@@ -19644,6 +19700,10 @@ def typescript_graph(
             sandbox_session_bindings[session_name] = client_binding
     sandbox_runner_bindings: dict[str, tuple[tuple[str, str], str]] = {}
     sandbox_runner_instances: set[str] = set()
+    runner_trace_group_bindings: dict[
+        str,
+        tuple[int, str, str | None, str | None, str],
+    ] = {}
     runner_imports = {
         local_name
         for local_name, imported_name in openai_agents_imports.items()
@@ -19763,6 +19823,56 @@ def typescript_graph(
         if end is None:
             continue
         body = text[opening + 1 : end - 1]
+        if typescript_const_provider_binding_is_stable(text, runner_name, end):
+            group_id_binding = None
+            group_id = None
+            group_id_resolution = None
+            group_id_line = line_at(text, opening)
+            group_id_location = typescript_object_property_expression_location(
+                body,
+                "groupId",
+                opening + 1,
+            )
+            if group_id_location is not None:
+                group_id_expression, group_id_property_offset, group_id_expression_offset = (
+                    group_id_location
+                )
+                group_id_line = line_at(text, group_id_property_offset)
+                static_group_id = typescript_static_string_value(
+                    group_id_expression,
+                    expression_offset=group_id_expression_offset,
+                    immutable_literal_bindings=immutable_literal_bindings,
+                )
+                if static_group_id is not None:
+                    group_id, group_id_resolution = static_group_id
+                else:
+                    group_id_code = typescript_code_mask(group_id_expression).strip()
+                    if group_id_identifier := re.fullmatch(
+                        r"[A-Za-z_$][\w$]*",
+                        group_id_code,
+                    ):
+                        group_id_binding = group_id_identifier.group(0)
+                        group_id_resolution = "dynamic-binding"
+            elif typescript_object_has_shorthand_property(body, "groupId"):
+                group_id_binding = "groupId"
+                group_id_line = line_at(text, opening)
+                static_group_id = typescript_static_string_value(
+                    "groupId",
+                    expression_offset=opening,
+                    immutable_literal_bindings=immutable_literal_bindings,
+                )
+                if static_group_id is not None:
+                    group_id, group_id_resolution = static_group_id
+                else:
+                    group_id_resolution = "dynamic-binding"
+            if group_id_resolution is not None:
+                runner_trace_group_bindings[runner_name] = (
+                    group_id_line,
+                    local_constructor,
+                    group_id_binding,
+                    group_id,
+                    group_id_resolution,
+                )
         sandbox_location = typescript_object_property_expression_location(
             body,
             "sandbox",
@@ -21593,6 +21703,51 @@ def typescript_graph(
         if not agent_target:
             continue
         run_line = line_at(text, match.start())
+        runner_trace_group = runner_trace_group_bindings.get(runner_name)
+        if runner_trace_group is not None:
+            (
+                group_id_line,
+                local_constructor,
+                group_id_binding,
+                group_id,
+                group_id_resolution,
+            ) = runner_trace_group
+            source_agent_name, source_agent_id = agent_target
+            trace_control_name, trace_control_id = (
+                add_typescript_openai_runner_trace_group_control(
+                    ir,
+                    relative=relative,
+                    lines=lines,
+                    line=group_id_line,
+                    local_constructor=local_constructor,
+                    runner_binding=runner_name,
+                    group_id_binding=group_id_binding,
+                    group_id=group_id,
+                    group_id_resolution=group_id_resolution,
+                    source_agent=agent_target,
+                    symbol_identity=f"{runner_name}.groupId@{group_id_line}:run{run_line}",
+                )
+            )
+            ir.add_relationship(
+                Relationship(
+                    "agent",
+                    source_agent_name,
+                    "configured-by",
+                    "control",
+                    trace_control_name,
+                    Evidence(relative, run_line, excerpt(lines, run_line)),
+                    {
+                        "analysis": "typescript-openai-agents-runner-trace-group",
+                        "configuration": "Runner-groupId",
+                        "binding": "groupId"
+                        if group_id_binding is None
+                        else "groupId-binding",
+                        "runner_binding": runner_name,
+                    },
+                    source_id=source_agent_id,
+                    target_id=trace_control_id,
+                )
+            )
         if len(arguments) >= 2 and (
             conversation_continuity := conversation_continuity_from_input(
                 arguments[1][0],

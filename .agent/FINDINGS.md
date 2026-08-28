@@ -540,6 +540,13 @@
   `conversationId` trace group, while `examples/tools/codex.ts` links two Codex-agent runs to a
   generated trace ID with a logged OpenAI platform trace URL. The public IR truth set now covers
   2,086 passing labels.
+- OpenAI Agents JS Runner-level `groupId` is the same trace-correlation family but a different SDK
+  surface from `withTrace`. Exact imported `new Runner({ groupId })` instances now emit a
+  `trace-group` control only when the Runner binding is stable and a later same-instance
+  `.run(agent, ...)` call supplies a source-proven agent. The pinned
+  `examples/sandbox/memory-generation.ts` example links `Sandbox Memory Generation Demo` to its
+  literal `sandbox-memory-generation-example` trace group; a local reassigned Runner remains
+  unresolved.
 
 ## Hypotheses
 

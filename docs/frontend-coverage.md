@@ -773,9 +773,12 @@ out of eight TypeScript OpenAI run-state continuity controls and eight configure
 OpenAI Agents JS trace correlation is inventoried separately from conversation continuity:
 `withTrace(..., { groupId })` emits a `trace-group` control and `withTrace(..., { traceId })`
 emits a `trace-id` control only when the imported SDK helper wraps a callback with an exact
-source-proven `run(agent, ...)` call. The pinned `routing.ts` example contributes the corpus
-`trace-group` control for its dynamic `conversationId` binding, and the Codex tool example
-contributes generated-trace-ID controls with a logged OpenAI platform trace URL.
+source-proven `run(agent, ...)` call. Stable exact `new Runner({ groupId })` instances also emit
+`trace-group` controls when a later same-instance `.run(agent, ...)` call supplies a source-proven
+agent. The pinned `routing.ts` example contributes the corpus `trace-group` control for its
+dynamic `conversationId` binding, the Codex tool example contributes generated-trace-ID controls
+with a logged OpenAI platform trace URL, and the sandbox memory-generation example contributes a
+Runner-level trace group.
 
 The Python frontend inventories 449 canonical/import/callable-aliased and proven-`Path` mutations:
 179 creates, 191 deletes, 46 copies, and 33 moves. Of these, 434 use non-literal path expressions;

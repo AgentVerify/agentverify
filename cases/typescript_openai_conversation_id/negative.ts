@@ -1,4 +1,4 @@
-import { Agent, RunState, run, withTrace } from '@openai/agents';
+import { Agent, Runner, RunState, run, withTrace } from '@openai/agents';
 import { OpenAI, OpenAI as ReboundOpenAI } from 'openai';
 
 ReboundOpenAI = ReplacementOpenAI;
@@ -128,3 +128,7 @@ await withTrace(
   },
   { metadata: 'not-a-trace-option' },
 );
+
+let mutableRunner = new Runner({ groupId: 'mutable-runner-trace-group' });
+mutableRunner = unknownRunner;
+await mutableRunner.run(agent, 'runner variable was rebound before use');
