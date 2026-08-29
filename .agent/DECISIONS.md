@@ -966,6 +966,22 @@
 - Revisit when exception behavior can be tied to helper-created or imported guardrails without
   broad control-flow interpretation.
 
+## OpenAI Agents JS tool guardrail reject predicates are shallow condition metadata
+
+- Decision: Record `guardrail_reject_condition_sources` and
+  `guardrail_reject_condition_literals` on exact TypeScript OpenAI Agents SDK tool guardrail
+  controls only when a guardrail contains a direct `if (...) { return rejectContent }` branch whose
+  predicate uses a literal `.includes(...)` or literal string non-equality check.
+- Evidence: The local `typescript_openai_tool_guardrails` fixture and pinned OpenAI Agents JS
+  `examples/docs/guardrails/toolGuardrails.ts` use `.includes("sk-")` before rejecting input/output
+  content, while `examples/basic/tools.ts` rejects non-Tokyo weather requests through a literal
+  `!== "tokyo"` predicate.
+- Alternative: Treat all code near a `rejectContent` return as a guardrail predicate. Rejected
+  because arbitrary boolean logic, nested branches, helper predicates, and mutation can overstate
+  the exact condition enforced at the configured tool guardrail.
+- Revisit when helper predicate calls or imported literal predicate constants can be resolved while
+  preserving the exact configured tool and guardrail binding.
+
 ## OpenAI Agents JS tool guardrails are source-tool governance controls
 
 - Decision: Represent exact TypeScript OpenAI Agents SDK

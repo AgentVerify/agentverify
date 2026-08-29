@@ -4942,6 +4942,10 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
         "guardrail_actions": ["allow", "reject-content"],
         "guardrail_action_count": 2,
         "guardrail_reject_content": True,
+        "guardrail_reject_condition_sources": ["string-includes"],
+        "guardrail_reject_condition_count": 1,
+        "guardrail_reject_condition_literals": ["sk-"],
+        "guardrail_reject_condition_literal_count": 1,
     }
     assert controls["ts:agent.ts#control:classifyTool.outputGuardrails@45"].attributes[
         "guardrail_names"
@@ -4952,6 +4956,12 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
     assert controls["ts:agent.ts#control:classifyTool.outputGuardrails@45"].attributes[
         "guardrail_reject_content"
     ] is True
+    assert controls["ts:agent.ts#control:classifyTool.outputGuardrails@45"].attributes[
+        "guardrail_reject_condition_sources"
+    ] == ["string-includes"]
+    assert controls["ts:agent.ts#control:classifyTool.outputGuardrails@45"].attributes[
+        "guardrail_reject_condition_literals"
+    ] == ["sk-"]
     assert controls["ts:agent.ts#control:dynamicTool.inputGuardrails@62"].attributes == {
         "analysis": "typescript-openai-agents-tool-guardrails",
         "module": "@openai/agents",
@@ -4972,6 +4982,9 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
     assert controls["ts:agent.ts#control:mutableTool.inputGuardrails@76"].attributes[
         "guardrail_bindings"
     ] == ["mutableGuardrail"]
+    assert "guardrail_reject_condition_sources" not in controls[
+        "ts:agent.ts#control:mutableTool.inputGuardrails@76"
+    ].attributes
 
     edges = {
         relationship.target_id: relationship
@@ -4998,6 +5011,10 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
         "guardrail_actions": ["allow", "reject-content"],
         "guardrail_action_count": 2,
         "guardrail_reject_content": True,
+        "guardrail_reject_condition_sources": ["string-includes"],
+        "guardrail_reject_condition_count": 1,
+        "guardrail_reject_condition_literals": ["sk-"],
+        "guardrail_reject_condition_literal_count": 1,
     }
 
 

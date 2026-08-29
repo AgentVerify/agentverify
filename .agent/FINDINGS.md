@@ -685,7 +685,7 @@
   contribute dynamic-expression or literal tripwire source counts; mutated arrays and settings-only
   sessions remain unresolved. The local fixture plus pinned OpenAI Agents JS
   `examples/docs/voice-agents/guardrails.ts` bring the Realtime guardrail truth-set slice to
-  18/18 labels within the 2,341-label public IR truth set.
+  18/18 labels within the 2,348-label public IR truth set.
 - OpenAI Agents JS Agent-level input/output guardrails are now reviewable when source-proven.
   Exact `new Agent({ inputGuardrails })` and `new Agent({ outputGuardrails })` constructor options
   emit `agent-guardrail-policy` controls linked to the source agent, including
@@ -722,13 +722,19 @@
   agent-to-control governance edge. Mutated guardrail bindings and dynamic guardrail arrays do not
   expose stale tripwire metadata. The local fixture plus pinned OpenAI Agents JS
   `input-guardrails.ts`, `output-guardrails.ts`, and `exceptions1.ts` examples bring the public IR
-  truth set to 2,341 passing labels while the 71-repository engine benchmark remains at
+  truth set to 2,348 passing labels while the 71-repository engine benchmark remains at
   2,900 relationships / 10,689 symbolized components.
 - OpenAI Agents JS Agent guardrails now expose conservative direct-throw execution metadata when a
   stable inline or typed guardrail binding has an `execute` body whose first direct statement is
   `throw`. The local fixture and pinned OpenAI Agents JS `examples/docs/running-agents/exceptions1.ts`
   unstable input/output guardrails now distinguish guardrail failure/fallback setup from normal
   tripwire predicates, bringing the Agent guardrail truth-set slice to 43/43 labels.
+- OpenAI Agents JS tool guardrails now expose exact shallow reject-condition metadata when an
+  `if` branch directly returns `rejectContent` behavior and the predicate uses a literal
+  `.includes(...)` or literal string non-equality check. Local dynamic and mutated guardrail
+  configurations remain bounded, while pinned OpenAI Agents JS `examples/basic/tools.ts` and
+  `examples/docs/guardrails/toolGuardrails.ts` raise the tool guardrail truth-set slice to 23/23
+  labels.
 
 ## Hypotheses
 

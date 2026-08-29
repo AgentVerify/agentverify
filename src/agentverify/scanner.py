@@ -17406,6 +17406,10 @@ def add_typescript_openai_tool_guardrail_control(
         "guardrail_actions",
         "guardrail_action_count",
         "guardrail_reject_content",
+        "guardrail_reject_condition_sources",
+        "guardrail_reject_condition_count",
+        "guardrail_reject_condition_literals",
+        "guardrail_reject_condition_literal_count",
     ):
         if key in attributes:
             relationship_attributes[key] = attributes[key]
@@ -20512,6 +20516,88 @@ def typescript_graph(
             actions.add("reject-content")
         return sorted(actions)
 
+    def openai_tool_guardrail_reject_condition_attributes(
+        expression: str,
+    ) -> dict[str, object]:
+        expression_code = typescript_code_mask(expression)
+        condition_sources: list[str] = []
+        condition_literals: list[str] = []
+
+        def add_condition_source(source: str) -> None:
+            if source not in condition_sources:
+                condition_sources.append(source)
+
+        def add_condition_literal(value: str) -> None:
+            if value not in condition_literals:
+                condition_literals.append(value)
+
+        for if_match in re.finditer(r"\bif\s*\(", expression_code):
+            condition_opening = expression_code.find("(", if_match.start(), if_match.end())
+            condition_end = typescript_balanced_end(
+                expression_code,
+                condition_opening,
+                "(",
+                ")",
+            )
+            if condition_end is None:
+                continue
+            cursor = condition_end
+            while cursor < len(expression_code) and expression_code[cursor].isspace():
+                cursor += 1
+            if cursor >= len(expression_code) or expression_code[cursor] != "{":
+                continue
+            block_end = typescript_balanced_end(expression_code, cursor, "{", "}")
+            if block_end is None:
+                continue
+            block = expression[cursor:block_end]
+            if "reject-content" not in openai_tool_guardrail_actions(block):
+                continue
+            condition = expression[condition_opening + 1 : condition_end - 1]
+            condition_code = expression_code[condition_opening + 1 : condition_end - 1]
+            for includes_match in re.finditer(r"\.\s*includes\s*\(", condition_code):
+                includes_opening = condition_code.find(
+                    "(",
+                    includes_match.start(),
+                    includes_match.end(),
+                )
+                includes_end = typescript_balanced_end(
+                    condition_code,
+                    includes_opening,
+                    "(",
+                    ")",
+                )
+                if includes_end is None:
+                    continue
+                arguments = typescript_call_arguments(
+                    condition[includes_opening + 1 : includes_end - 1],
+                    includes_opening + 1,
+                )
+                if not arguments:
+                    continue
+                literal_value = typescript_string_literal_value(arguments[0][0])
+                if literal_value is None:
+                    continue
+                add_condition_source("string-includes")
+                add_condition_literal(literal_value)
+            for comparison_match in re.finditer(
+                r"!\s*==\s*(['\"])([^\\\r\n]*?)\1",
+                condition,
+                re.DOTALL,
+            ):
+                add_condition_source("string-not-equals")
+                add_condition_literal(comparison_match.group(2))
+
+        if not condition_sources:
+            return {}
+        attributes: dict[str, object] = {
+            "guardrail_reject_condition_sources": condition_sources,
+            "guardrail_reject_condition_count": len(condition_sources),
+        }
+        if condition_literals:
+            attributes["guardrail_reject_condition_literals"] = condition_literals
+            attributes["guardrail_reject_condition_literal_count"] = len(condition_literals)
+        return attributes
+
     def openai_tool_guardrail_definition_bindings(
         *,
         guardrail_kind: str,
@@ -20548,6 +20634,7 @@ def typescript_graph(
                     attributes["guardrail_action_count"] = len(actions)
                     if "reject-content" in actions:
                         attributes["guardrail_reject_content"] = True
+                attributes.update(openai_tool_guardrail_reject_condition_attributes(body))
                 bindings[match.group(1)] = (attributes, end)
         return bindings
 
@@ -20575,6 +20662,7 @@ def typescript_graph(
             attributes["guardrail_action_count"] = len(actions)
             if "reject-content" in actions:
                 attributes["guardrail_reject_content"] = True
+        attributes.update(openai_tool_guardrail_reject_condition_attributes(item))
         item_code = typescript_code_mask(item).strip()
         identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", item_code)
         if identifier is None:
@@ -20622,6 +20710,8 @@ def typescript_graph(
         guardrail_names: list[str] = []
         guardrail_bindings: list[str] = []
         guardrail_actions: set[str] = set()
+        guardrail_reject_condition_sources: list[str] = []
+        guardrail_reject_condition_literals: list[str] = []
         for item, item_offset in concrete_items:
             item_attributes, item_binding = openai_tool_guardrail_item_attributes(
                 item,
@@ -20636,6 +20726,16 @@ def typescript_graph(
             actions = item_attributes.get("guardrail_actions")
             if isinstance(actions, list):
                 guardrail_actions.update(action for action in actions if isinstance(action, str))
+            condition_sources = item_attributes.get("guardrail_reject_condition_sources")
+            if isinstance(condition_sources, list):
+                guardrail_reject_condition_sources.extend(
+                    source for source in condition_sources if isinstance(source, str)
+                )
+            condition_literals = item_attributes.get("guardrail_reject_condition_literals")
+            if isinstance(condition_literals, list):
+                guardrail_reject_condition_literals.extend(
+                    literal for literal in condition_literals if isinstance(literal, str)
+                )
         if guardrail_bindings:
             attributes["guardrail_bindings"] = guardrail_bindings
         if guardrail_names:
@@ -20647,6 +20747,20 @@ def typescript_graph(
             attributes["guardrail_action_count"] = len(sorted_actions)
             if "reject-content" in sorted_actions:
                 attributes["guardrail_reject_content"] = True
+        if guardrail_reject_condition_sources:
+            attributes["guardrail_reject_condition_sources"] = (
+                guardrail_reject_condition_sources
+            )
+            attributes["guardrail_reject_condition_count"] = len(
+                guardrail_reject_condition_sources
+            )
+        if guardrail_reject_condition_literals:
+            attributes["guardrail_reject_condition_literals"] = (
+                guardrail_reject_condition_literals
+            )
+            attributes["guardrail_reject_condition_literal_count"] = len(
+                guardrail_reject_condition_literals
+            )
         return attributes
 
     def add_openai_tool_guardrail_controls(

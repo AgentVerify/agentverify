@@ -7,9 +7,12 @@ catalog workflows.
 
 ## Completed recently
 
+- Added exact TypeScript OpenAI Agents SDK tool guardrail reject-condition metadata for shallow
+  `if` branches that directly return `rejectContent`, including literal string-includes and
+  string-not-equals predicates in pinned OpenAI Agents JS examples.
 - Added exact TypeScript OpenAI Agents SDK Agent guardrail tripwire metadata for direct returned
   `tripwireTriggered` objects in inline guardrails and stable typed `InputGuardrail`/
-  `OutputGuardrail` bindings. Regenerated public IR truth-set results now cover 2,341/2,341
+  `OutputGuardrail` bindings. Regenerated public IR truth-set results now cover 2,348/2,348
   passing labels, and the 71-repository engine benchmark still reports 2,900 relationships /
   10,689 symbolized components.
 - Added exact TypeScript OpenAI Agents SDK Agent guardrail direct-throw metadata for stable guardrail
